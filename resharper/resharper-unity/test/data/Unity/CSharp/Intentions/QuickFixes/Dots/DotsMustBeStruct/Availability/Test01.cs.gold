@@ -1,0 +1,52 @@
+﻿using Unity.Entities;
+
+class |EnemySpawnSystem|(0) : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+    }
+
+    public void OnCreate(ref SystemState state)
+    {
+    }
+
+    public void OnDestroy(ref SystemState state)
+    {
+    }
+}
+
+class ||ShorelineSettingsAspect|(1)|(2) : IAspect
+{
+}
+
+public class ||MyJobEntity|(3)|(4) : IJobEntity
+{
+}
+
+class Factory4 : IComponentData //could be a class instance
+{
+}
+
+------------------------------------------------
+0: ISystem's inheritor 'EnemySpawnSystem' must be struct
+QUICKFIXES:
+ISystem's inheritor 'EnemySpawnSystem' must be struct
+--ISystem's inheritor 'EnemySpawnSystem' must be struct in file
+--ISystem's inheritor 'EnemySpawnSystem' must be struct in project
+--ISystem's inheritor 'EnemySpawnSystem' must be struct in solution
+1: IAspect's inheritor 'ShorelineSettingsAspect' must be 'partial readonly'
+NO QUICKFIXES
+2: IAspect's inheritor 'ShorelineSettingsAspect' must be struct
+QUICKFIXES:
+IAspect's inheritor 'ShorelineSettingsAspect' must be struct
+--IAspect's inheritor 'ShorelineSettingsAspect' must be struct in file
+--IAspect's inheritor 'ShorelineSettingsAspect' must be struct in project
+--IAspect's inheritor 'ShorelineSettingsAspect' must be struct in solution
+3: IJobEntity's inheritor 'MyJobEntity' must be 'partial'
+NO QUICKFIXES
+4: IJobEntity's inheritor 'MyJobEntity' must be struct
+QUICKFIXES:
+IJobEntity's inheritor 'MyJobEntity' must be struct
+--IJobEntity's inheritor 'MyJobEntity' must be struct in file
+--IJobEntity's inheritor 'MyJobEntity' must be struct in project
+--IJobEntity's inheritor 'MyJobEntity' must be struct in solution

@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
-        baseClass="CSharpUnityHighlightingBase, IUnityIndicatorHighlighting">
-
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP" baseClass="CSharpUnityHighlightingBase, IUnityIndicatorHighlighting">
   <Usings>
     JetBrains.ReSharper.Psi.CSharp;
     JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -10,13 +8,13 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
     JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
   </Usings>
-
+  
   <!-- Register the static severity groups. This is mostly used in grouping items in SWEA results.
        The groups should be different to any configurable severity groups -->
   <StaticSeverityGroups>
     <Group name="Unity Gutter Marks" key="UnityGutterMarks" />
   </StaticSeverityGroups>
-
+  
   <Info name="UnityGutterMark" staticGroup="UnityGutterMarks">
     <Parameter type="IDeclaration" name="declaration" />
     <Parameter type="string" name="text" />
@@ -25,7 +23,7 @@
     </Message>
     <Range>Declaration.GetNameDocumentRange()</Range>
   </Info>
-
+  
   <Info name="UnityHotGutterMark" staticGroup="UnityGutterMarks">
     <Parameter type="IDeclaration" name="declaration" />
     <Parameter type="string" name="text" />

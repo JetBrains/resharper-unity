@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var anchors = root.GetMapEntryValue<IBlockSequenceNode>(recordKey)?.Entries
                 .SelectNotNull(t => t?.Value as IBlockMappingNode)
                 .SelectNotNull(t => t.GetMapEntryValue<IFlowMappingNode>(innerRecordKey))
-                .SelectNotNull(t => t.GetMapEntryPlainScalarText("fileID"))
+                .SelectNotNull(t => t.GetMapEntryScalarText("fileID"))
                 .SelectNotNull(t => long.TryParse(t, out var anchor) ? anchor : (long?) null);
             var list = new LocalList<long>();
             if (anchors is null) return list;
@@ -103,8 +103,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var root = GetUnityObjectProperties();
             var animatorStateName = ExtractAnimatorStateNameFrom(root);
             var stateMachineBehavioursAnchors = ExtractStateMachineBehavioursAnchorsFrom(root);
+            Guid? guid = null;
+            if (AssetUtils.GetAnimReference(myFile, myDocument.Buffer) is ExternalReference animReference)
+                guid = animReference.ExternalAssetGuid;
             return new AnimatorStateScriptUsage(referenceToAnimatorState, animatorStateName,
-                stateMachineBehavioursAnchors);
+                stateMachineBehavioursAnchors, guid);
         }
 
         private LocalReference CreateReferenceToAnimatorState()
@@ -124,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         [NotNull]
         private static string ExtractAnimatorStateNameFrom([NotNull] IBlockMappingNode root)
         {
-            return root.GetMapEntryPlainScalarText("m_Name") ?? throw new AnimatorExtractorException();
+            return root.GetMapEntryScalarText("m_Name") ?? throw new AnimatorExtractorException();
         }
 
         private static LocalList<long> ExtractStateMachineBehavioursAnchorsFrom([NotNull] IBlockMappingNode root)
@@ -137,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         {
             if (!(record.Value is IFlowMappingNode node)) throw new AnimatorExtractorException();
             var entries = node.Entries;
-            if (entries.Count != 1 || !long.TryParse(entries[0]?.Value?.GetPlainScalarText(), out var anchor))
+            if (entries.Count != 1 || !long.TryParse(entries[0]?.Value?.GetScalarText(), out var anchor))
                 throw new AnimatorExtractorException();
             anchors.Add(anchor);
             return anchors;

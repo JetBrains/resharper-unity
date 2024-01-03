@@ -72,7 +72,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 var enumMemberType = @enum?.EnumMembers.FirstOrDefault()?.ConstantValue.Type;
                 if (enumMemberType == null)
                     return "...";
-                var enumMembers = CSharpEnumUtil.CalculateEnumMembers(new ConstantValue(result, enumMemberType), @enum);
+
+                var enumConstantValue = ConstantValue.Enum(ConstantValue.Int(result, type.Module), enumMemberType);
+                var enumMembers = CSharpEnumUtil.CalculateEnumMembers(enumConstantValue, @enum);
 
                 return string.Join(" | ", enumMembers.Select(t => t.ShortName));
             }

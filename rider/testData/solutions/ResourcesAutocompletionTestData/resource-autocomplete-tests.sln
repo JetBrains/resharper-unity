@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{24d3cb8d-827d-e639-e576-ecd6440610d7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.com.jetbrains.from_disk", "Unity.com.jetbrains.from_disk.csproj", "{4741f31e-53e0-6af2-3b39-bb7b62b2d047}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.com.jetbrains.from_pack_folder.Editor", "Unity.com.jetbrains.from_pack_folder.Editor.csproj", "{795110de-3bba-ee39-67d6-1b1e58dc57a9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.com.jetbrains.from_pack_folder", "Unity.com.jetbrains.from_pack_folder.csproj", "{9bf11d10-db86-06b4-45f3-8d37904d6f23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.com.jetbrains.from_disk.Editor", "Unity.com.jetbrains.from_disk.Editor.csproj", "{27d5de94-0f40-bd0f-377b-aa2a71fb949e}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{24d3cb8d-827d-e639-e576-ecd6440610d7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24d3cb8d-827d-e639-e576-ecd6440610d7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4741f31e-53e0-6af2-3b39-bb7b62b2d047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4741f31e-53e0-6af2-3b39-bb7b62b2d047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{795110de-3bba-ee39-67d6-1b1e58dc57a9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{795110de-3bba-ee39-67d6-1b1e58dc57a9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9bf11d10-db86-06b4-45f3-8d37904d6f23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9bf11d10-db86-06b4-45f3-8d37904d6f23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27d5de94-0f40-bd0f-377b-aa2a71fb949e}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27d5de94-0f40-bd0f-377b-aa2a71fb949e}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

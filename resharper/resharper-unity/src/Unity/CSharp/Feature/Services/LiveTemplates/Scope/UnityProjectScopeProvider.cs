@@ -17,7 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         public UnityProjectScopeProvider()
         {
             // These factory methods are used to create scope points when reading templates from settings
-            Creators.Add(TryToCreate<UnityFileTemplateSectionMarker>);
             Creators.Add(TryToCreate<InUnityCSharpProject>);
             Creators.Add(TryToCreate<InUnityCSharpAssetsFolder>);
             Creators.Add(TryToCreate<InUnityCSharpEditorFolder>);
@@ -32,6 +31,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             if (!context.Solution.HasUnityReference())
                 yield break;
 
+            // Project might be null if the selected file or folder belongs to more than one project. In this case, we
+            // should get a valid Location, which will be the folder of the selected file
             var project = context.GetProject();
             if (project != null && !project.IsUnityProject())
                 yield break;
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             // TODO: Review all scope points
             // See JetBrains/resharper-unity#1922
 
-            var rootFolder = folders[folders.Count - 1];
+            var rootFolder = folders[^1];
             if (rootFolder.Equals(ProjectExtensions.AssetsFolder, StringComparison.OrdinalIgnoreCase))
             {
                 yield return new InUnityCSharpAssetsFolder();

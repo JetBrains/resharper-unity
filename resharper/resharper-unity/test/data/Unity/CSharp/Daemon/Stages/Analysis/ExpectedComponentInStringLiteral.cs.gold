@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Test
 {
+    [Obsolete("Needed to legalize obsoleted AddComponent invocation")]
     public void Method(GameObject go)
     {
         // Built in components must derive from Component
@@ -14,5 +16,5 @@ public class Test
 }
 
 ---------------------------------------------------------
-(0): ReSharper Warning: Expected type derived from 'UnityEngine.Component'
-(1): ReSharper Warning: Expected type derived from 'UnityEngine.Component'
+(0): ReSharper Warning: Expected a type derived from 'UnityEngine.Component'
+(1): ReSharper Warning: Expected a type derived from 'UnityEngine.Component'

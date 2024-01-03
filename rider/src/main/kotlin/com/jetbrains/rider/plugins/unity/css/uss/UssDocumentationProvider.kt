@@ -8,8 +8,10 @@ import com.intellij.psi.css.descriptor.CssValueOwnerDescriptor
 import com.intellij.psi.css.impl.util.CssDocumentationProvider
 import com.intellij.psi.css.impl.util.MdnDocumentationUtil
 import com.intellij.psi.css.impl.util.table.CssDescriptorsUtil
+import org.jetbrains.annotations.Nls
 
 class UssDocumentationProvider : DocumentationProvider {
+    @Nls
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
         if (element?.containingFile?.language is UssLanguage) {
             val docElement = findDocumentationElement(element)
@@ -20,17 +22,10 @@ class UssDocumentationProvider : DocumentationProvider {
         return null
     }
 
-    override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
-        if (element?.containingFile?.language is UssLanguage) {
-            // Returning an empty list overrides the default CSS documentation list, so we get the default docs
-            return emptyList()
-        }
-        return null
-    }
-
     private fun findDocumentationElement(element: PsiElement) =
         CssDocumentationProvider.findDocumentationElement(element)
 
+    @Nls
     private fun generateDoc(descriptorText: String?,
                             documentationElement: PsiElement,
                             context: PsiElement?): String? {

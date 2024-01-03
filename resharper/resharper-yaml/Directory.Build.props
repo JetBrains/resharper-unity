@@ -4,10 +4,6 @@
        If we're being built standalone, this file won't exist, so we have sensible defaults -->
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
-  <PropertyGroup>
-    <PackageLockFilePath>$(MSBuildThisFileDirectory)src\PackagesLock.targets</PackageLockFilePath>
-  </PropertyGroup>
-
   <!-- We have multiple projects in the same folder, so need to rename the bin and obj
        folders so that they are unique and we don't overwrite anything. We can do this
        in the project files for the bin folders, but not for the obj folders, because
@@ -34,6 +30,6 @@
 
   <PropertyGroup>
     <RiderSDKVersion Condition=" '$(RiderSDKVersion)' == '' ">2018.2.3</RiderSDKVersion>
-    <ReSharperSDKVersion Condition=" '$(ReSharperSDKVersion)' == '' ">2018.2.3</ReSharperSDKVersion>    
-  </PropertyGroup>  
+    <ReSharperSDKVersion Condition=" '$(ReSharperSDKVersion)' == '' ">2018.2.3</ReSharperSDKVersion>
+  </PropertyGroup>
 </Project>

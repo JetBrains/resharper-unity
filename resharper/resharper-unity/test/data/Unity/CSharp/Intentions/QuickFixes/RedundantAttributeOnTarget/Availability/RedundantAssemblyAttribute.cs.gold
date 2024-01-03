@@ -3,7 +3,7 @@
 [assembly: |SerializeField|(0)]
 
 ------------------------------------------------
-0: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+0: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
 QUICKFIXES:
 Remove redundant attribute
 --Remove redundant Unity attributes in file

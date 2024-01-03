@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         [NotNull] public readonly OneToListMap<long, AnimatorStateMachineScriptUsage> ScriptAnchorToStateMachineUsages;
         [NotNull] public readonly OneToListMap<long, AnimatorStateScriptUsage> ScriptAnchorToStateUsages;
         [NotNull] public readonly IDictionary<long, AnimatorStateMachineScriptUsage> StateMachineAnchorToUsage;
+        public HashSet<Guid> AnimReferences;
         [NotNull] public readonly ICollection<string> StateNames;
 
         public AnimatorUsagesDataElement()
@@ -31,17 +32,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             StateMachineAnchorToUsage = new Dictionary<long, AnimatorStateMachineScriptUsage>();
             ChildToParent = new Dictionary<long, long>();
             StateNames = new List<string>();
+            AnimReferences = new HashSet<Guid>();
         }
 
         private AnimatorUsagesDataElement([NotNull] OneToListMap<Guid, long> guidToAnchors,
-                                          [NotNull]
-                                          OneToListMap<long, AnimatorStateScriptUsage> scriptAnchorToStateUsages,
-                                          [NotNull] OneToListMap<long, AnimatorStateMachineScriptUsage>
-                                              scriptAnchorToStateMachineUsages,
-                                          [NotNull]
-                                          IDictionary<long, AnimatorStateMachineScriptUsage> stateMachineAnchorToUsage,
-                                          [NotNull] IDictionary<long, long> childToParent,
-                                          [NotNull] ICollection<string> stateNames)
+            [NotNull] OneToListMap<long, AnimatorStateScriptUsage> scriptAnchorToStateUsages,
+            [NotNull] OneToListMap<long, AnimatorStateMachineScriptUsage> scriptAnchorToStateMachineUsages,
+            [NotNull] IDictionary<long, AnimatorStateMachineScriptUsage> stateMachineAnchorToUsage,
+            [NotNull] IDictionary<long, long> childToParent,
+            [NotNull] ICollection<string> stateNames,
+            [NotNull] Guid[] animReferences)
         {
             GuidToAnchors = guidToAnchors;
             ScriptAnchorToStateUsages = scriptAnchorToStateUsages;
@@ -49,6 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             StateMachineAnchorToUsage = stateMachineAnchorToUsage;
             ChildToParent = childToParent;
             StateNames = stateNames;
+            AnimReferences = new HashSet<Guid>(animReferences);
         }
 
         public string ContainerId => nameof(AnimatorScriptUsagesElementContainer);
@@ -59,6 +60,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             {
                 case AnimatorStateScriptUsage animatorStateScriptUsage:
                     AddStateUsageInfoFor(animatorStateScriptUsage);
+                    if (animatorStateScriptUsage.AnimReference.HasValue) 
+                        AnimReferences.Add(animatorStateScriptUsage.AnimReference.Value);
                     break;
                 case AnimatorScript script:
                     AddScriptInfos(script);
@@ -137,8 +140,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var stateMachineAnchorToUsageMap = ReadStateMachineAnchorToUsageMap(reader);
             var childToParent = ReadChildToParentMap(reader);
             var stateNames = ReadStateNames(reader);
+            var animReferences = reader.ReadArray(unsafeReader => unsafeReader.ReadGuid()) ?? EmptyArray<Guid>.Instance;
             return new AnimatorUsagesDataElement(guidToAnchor, anchorToStateUsagesMap, anchorToStateMachineUsagesMap,
-                stateMachineAnchorToUsageMap, childToParent, stateNames);
+                stateMachineAnchorToUsageMap, childToParent, stateNames, animReferences);
         }
 
         [NotNull]
@@ -228,6 +232,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             WriteStateMachineAnchorToUsageMap(writer, value.StateMachineAnchorToUsage);
             WriteChildToParentMap(writer, value.ChildToParent);
             WriteStateNames(writer, value.StateNames);
+            WriteAnimReferences(writer, value.AnimReferences);
+        }
+
+        private static void WriteAnimReferences(UnsafeWriter writer, HashSet<Guid> list)
+        {
+            writer.Write(list.Count);
+            foreach (var animReference in list)
+            {
+               writer.Write(animReference);
+            }
         }
 
         private static void WriteGuidToAnchorsMap([NotNull] UnsafeWriter writer,

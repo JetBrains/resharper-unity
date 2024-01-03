@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Collections.Synchronized;
@@ -5,34 +6,46 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.FeaturesStatistics;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UsageStatistics.FUS.EventLog;
 using JetBrains.UsageStatistics.FUS.EventLog.Events;
 using JetBrains.UsageStatistics.FUS.EventLog.Fus;
 using JetBrains.UsageStatistics.FUS.Utils;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
     [SolutionComponent]
     public class UnityAssetInfoCollector : SolutionUsagesCollector
     {
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
         private EventLogGroup myGroup;
         
         private readonly EventId2<long, bool> myMetaFileAverage;
         private readonly EventId1<long> myFilesAverage;
+        private readonly EventId3<FileType,long, bool> myFileSizeMax;
         private readonly EventId1<int> myMetaCount;
         private readonly EventId1<int> myAssetCount;
 
         private IViewableProperty<bool> IsReady { get; } = new ViewableProperty<bool>(false);
         private IViewableProperty<bool> InitialUpdateFinished { get; } = new ViewableProperty<bool>(false);
 
-        public UnityAssetInfoCollector(Lifetime lifetime, PackageManager packageManager, FeatureUsageLogger featureUsageLogger)
+        public UnityAssetInfoCollector(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker, PackageManager packageManager, FeatureUsageLogger featureUsageLogger)
         {
-            myGroup = new EventLogGroup("dotnet.unity.assets", "Unity Asset Information", 1, featureUsageLogger);
+            myUnitySolutionTracker = unitySolutionTracker;
+            myGroup = new EventLogGroup("dotnet.unity.assets", "Unity Asset Information", 2, featureUsageLogger);
             
             myMetaFileAverage = myGroup.RegisterEvent("metaAverage", "Meta Files Average", EventFields.Long("average", "Average (bytes)"), EventFields.Boolean("isReadonly", "IsReadonly"));
             myFilesAverage = myGroup.RegisterEvent("assetAverage", "All Asset Files Average", EventFields.Long("average", "Average (mb)"));
+
+            myFileSizeMax = myGroup.RegisterEvent("fileSizeMax", "Max file size (bytes) for each file type", 
+                EventFields.Enum<FileType>("type", "File Type"), 
+                EventFields.Long("size", "Max size (bytes)"),
+                EventFields.Boolean("isReadonly", "IsReadonly")
+                );
+
             myMetaCount = myGroup.RegisterEvent("metaCount", "Meta Files Count", EventFields.Int("count", "Count"));
             myAssetCount = myGroup.RegisterEvent("assetCount", "Asset Files Count", EventFields.Int("count", "Count"));
 
@@ -62,67 +75,97 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             return myGroup;
         }
 
-        public override Task<ISet<MetricEvent>> GetMetricsAsync(Lifetime lifetime)
+        // cache answer
+        private ISet<MetricEvent> myEvents = null;
+        public override async Task<ISet<MetricEvent>> GetMetricsAsync(Lifetime lifetime)
         {
-            var tcs = lifetime.CreateTaskCompletionSource<ISet<MetricEvent>>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            IsReady.AdviseUntil(lifetime, v =>
+            if (!myUnitySolutionTracker.IsUnityProject.HasTrueValue())
+                return EmptySet<MetricEvent>.Instance;
+                    
+            return await lifetime.StartMainReadAsync(async () =>
             {
-                if (v)
+                if (myEvents != null)
+                    return myEvents;
+
+                await IsReady.NextTrueValueAsync(lifetime);
+
+                var events = await lifetime.StartBackground(() =>
                 {
-                    lifetime.StartBackground(() =>
+                    var hashSet = new HashSet<MetricEvent>();
+
+                    long totalSize = 0;
+                    long metaSize = 0;
+                    long readonlyMetaSize = 0;
+
+                    var maxFileSizes = new Dictionary<FileType, long>();
+                    var readonlyMaxFileSizes = new Dictionary<FileType, long>();
+
+                    int metaCount = 0;
+                    int assetCount = 0;
+
+                    foreach (var statistic in myStatistics)
                     {
-                        var hashSet = new HashSet<MetricEvent>();
-
-                        long totalSize = 0;
-                        long metaSize = 0;
-                        long readonlyMetaSize = 0;
-
-                        int metaCount = 0;
-                        int assetCount = 0;
-                        
-                        foreach (var statistic in myStatistics)
+                        if (statistic.FileType == FileType.Meta)
                         {
-                            if (statistic.FileType == FileType.Meta)
+                            if (statistic.IsUserEditable)
                             {
-                                if (statistic.IsUserEditable)
-                                {
-                                    metaSize += statistic.Length;
-                                }
-                                else
-                                {
-                                    readonlyMetaSize += statistic.Length;
-                                }
-
-
-                                metaCount++;
+                                metaSize += statistic.Length;
                             }
                             else
                             {
-                                totalSize += statistic.Length;
-                                assetCount++;
+                                readonlyMetaSize += statistic.Length;
                             }
+
+
+                            metaCount++;
                         }
+                        else
+                        {
+                            if (statistic.IsUserEditable)
+                            {
+                                if (maxFileSizes.TryGetValue(statistic.FileType) < statistic.Length)
+                                    maxFileSizes[statistic.FileType] = statistic.Length;
+                            }
+                            else
+                            {
+                                if (readonlyMaxFileSizes.TryGetValue(statistic.FileType) < statistic.Length)
+                                    readonlyMaxFileSizes[statistic.FileType] = statistic.Length;
+                            }
 
-                        myStatistics = null;
+                            totalSize += statistic.Length;
+                            assetCount++;
+                        }
+                    }
 
-                        hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(metaSize), false));
-                        hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(readonlyMetaSize), true));
-                        hashSet.Add(myFilesAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(totalSize / 1024 / 1024)));
-                        
-                        hashSet.Add(myMetaCount.Metric(StatisticsUtil.GetNextPowerOfTwo(metaCount)));
-                        hashSet.Add(myAssetCount.Metric(StatisticsUtil.GetNextPowerOfTwo(assetCount)));
+                    hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(metaSize), false));
+                    hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(readonlyMetaSize), true));
+                    hashSet.Add(myFilesAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(totalSize / 1024 / 1024)));
 
-                        tcs.TrySetResult(hashSet);
-                    });
+                    foreach (var fileType in maxFileSizes.Keys)
+                    {
+                        hashSet.Add(myFileSizeMax.Metric(fileType,
+                            StatisticsUtil.GetNextPowerOfTwo(maxFileSizes[fileType]), false));
+                    }
 
-                    return true;
-                }
+                    foreach (var fileType in readonlyMaxFileSizes.Keys)
+                    {
+                        hashSet.Add(myFileSizeMax.Metric(fileType,
+                            StatisticsUtil.GetNextPowerOfTwo(readonlyMaxFileSizes[fileType]), true));
+                    }
 
-                return false;
+                    hashSet.Add(myMetaCount.Metric(StatisticsUtil.GetNextPowerOfTwo(metaCount)));
+                    hashSet.Add(myAssetCount.Metric(StatisticsUtil.GetNextPowerOfTwo(assetCount)));
+
+                    myStatistics = null;
+
+                    return hashSet;
+                });
+
+                myEvents = events;
+
+                return events;
+
             });
-            
-            return tcs.Task;
         }
 
         public struct AssetData
@@ -147,6 +190,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             AsmDef,
             AsmRef,
             Meta,
+            InputActions,
+            Anim,
+            Controller,
 
             KnownBinary,
             ExcludedByName
@@ -173,6 +219,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
 
         // called from MT
         private SynchronizedList<Data> myStatistics = new();
+        
         public void AddStatistic(FileType fileType, long externalFileLength, bool externalFileIsUserEditable)
         {
             if (IsReady.Value)

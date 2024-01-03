@@ -13,6 +13,11 @@
       <xs:documentation>Matches a Unity serialized field</xs:documentation>
     </xs:annotation>
   </xs:element>
+  <xs:element name="AutoPropertyWithSerializedBackingField" substitutionGroup="patterns:CustomConstraint" type="patterns:TSimpleConstraint">
+    <xs:annotation>
+      <xs:documentation>Matches an auto-property with a Unity serialized backing field</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="EventFunction" substitutionGroup="patterns:CustomConstraint" type="patterns:TSimpleConstraint">
     <xs:annotation>
       <xs:documentation>Matches a Unity event function</xs:documentation>

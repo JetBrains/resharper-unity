@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -23,8 +24,9 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Convert XML doc to 'Tooltip' attribute",
-        Description = "Convert XML documentation to show a tooltip in the Unity Editor Inspector")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ConvertXmlDocToTooltipAttributeAction_Name), 
+        DescriptionResourceName = nameof(Strings.ConvertXmlDocToTooltipAttributeAction_Description)
+        )]
     public class ConvertXmlDocToTooltipAttributeAction : IContextAction
     {
         private static readonly IAnchor ourAnchor = new SubmenuAnchor(IntentionsAnchors.LowPriorityContextActionsAnchor,
@@ -56,10 +58,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (hasTooltipAttribute)
                 return false;
 
-            var isSerialisedField = unityApi.IsSerialisedField(firstFieldDeclaration.DeclaredElement);
             var hasXml = multipleFieldDeclaration.DocCommentBlock != null;
 
-            if (!isSerialisedField || !hasXml) return false;
+            if (unityApi.IsSerialisedField(firstFieldDeclaration.DeclaredElement) == SerializedFieldStatus.NonSerializedField || !hasXml) return false;
 
             var psi = ((ICSharpDocCommentBlock) multipleFieldDeclaration.DocCommentBlock).GetXmlPsi();
             foreach (var innerTag in psi.XmlFile.InnerTags)
@@ -119,10 +120,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 {
                     return (myCaretOnXml: myIsCaretOnXml, myDestructiveConvert) switch
                     {
-                        (true, true) => "Convert to 'Tooltip' attribute",
-                        (true, false) => "Add 'Tooltip' attribute",
-                        (false, true) => "Convert XML doc to 'Tooltip' attribute",
-                        (false, false) => "Add 'Tooltip' attribute from XML doc"
+                        (true, true) => Strings.AddTooltipAttributeAction_Text_Convert_to__Tooltip__attribute,
+                        (true, false) => Strings.AddTooltipAttributeAction_Text_Add__Tooltip__attribute,
+                        (false, true) => Strings.AddTooltipAttributeAction_Text_Convert_XML_doc_to__Tooltip__attribute,
+                        (false, false) => Strings.AddTooltipAttributeAction_Text_Add__Tooltip__attribute_from_XML_doc
                     };
                 }
             }
@@ -130,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 var module = myFieldDeclaration.GetPsiModule();
-                var values = new[] { new AttributeValue(new ConstantValue(mySummary, module)) };
+                var values = new[] { new AttributeValue(ConstantValue.String(mySummary, module)) };
                 AttributeUtil.AddAttributeToEntireDeclaration(myFieldDeclaration, KnownTypes.TooltipAttribute,
                     values, null, module, myElementFactory);
 

@@ -1,5 +1,6 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.TextControl.DocumentMarkup;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon
@@ -16,49 +17,65 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.KEYWORD,
         EffectType = EffectType.TEXT,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.Keyword_RiderPresentableName))]
     [RegisterHighlighter(NUMBER,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.NUMBER,
         EffectType = EffectType.TEXT,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.Number_RiderPresentableName))]
     [RegisterHighlighter(FIELD_IDENTIFIER,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.FIELD,
         EffectType = EffectType.TEXT,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.FieldIdentifier_RiderPresentableName))]
     [RegisterHighlighter(FUNCTION_IDENTIFIER,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.FUNCTION,
         EffectType = EffectType.TEXT,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.FunctionIdentifier_RiderPresentableName))]
     [RegisterHighlighter(TYPE_IDENTIFIER,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.CLASS,
         EffectType = EffectType.TEXT,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.TypeIdentifier_RiderPresentableName))]
     [RegisterHighlighter(VARIABLE_IDENTIFIER,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.LOCAL_VARIABLE,
         EffectType = EffectType.TEXT,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.VariableIdentifier_RiderPresentableName))]
     [RegisterHighlighter(LINE_COMMENT,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.LINE_COMMENT,
-        RiderPresentableName = "Comments//Line comment",
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.CommentsLineComment_RiderPresentableName),
         EffectType = EffectType.TEXT,
         Layer = HighlighterLayer.SYNTAX)]
     [RegisterHighlighter(DELIMITED_COMMENT,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.BLOCK_COMMENT,
-        RiderPresentableName = "Comments//Block comment",
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.CommentsBlockComment_RiderPresentableName),
         EffectType = EffectType.TEXT,
         Layer = HighlighterLayer.SYNTAX)]
     [RegisterHighlighter(PREPROCESSOR_LINE_CONTENT,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.CONSTANT,
         EffectType = EffectType.TEXT,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.PreprocessorLineContent_RiderPresentableName))]
     public static class CgHighlightingAttributeIds
     {
         public const string GROUP_ID = "ReSharper Cg Highlighters";

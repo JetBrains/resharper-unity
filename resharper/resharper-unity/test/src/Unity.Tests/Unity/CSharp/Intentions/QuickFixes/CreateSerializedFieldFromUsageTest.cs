@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
             return menu =>
                 menu.Select(a =>
                         (a.BulbAction as PartSelectionBulbItemProxy).IfNotNull(
-                            proxy => proxy.UnproxyItem(GetPartSelectionNumber()), a.BulbAction)).
+                            proxy => proxy!.UnproxyItem(GetPartSelectionNumber()), a.BulbAction)).
                     Single(_ => _.GetType() == typeof(T));
 #pragma warning restore 618
         }

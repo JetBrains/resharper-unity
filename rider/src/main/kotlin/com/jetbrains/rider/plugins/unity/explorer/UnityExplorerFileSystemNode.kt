@@ -7,8 +7,8 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.intellij.workspaceModel.ide.impl.virtualFile
+import com.intellij.platform.backend.workspace.WorkspaceModel
+import com.intellij.platform.backend.workspace.virtualFile
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
@@ -42,7 +42,6 @@ enum class AncestorNodeType {
     }
 }
 
-@Suppress("UnstableApiUsage")
 open class UnityExplorerFileSystemNode(project: Project,
                                        virtualFile: VirtualFile,
                                        nestedFiles: List<NestingNode<VirtualFile>>,
@@ -52,7 +51,8 @@ open class UnityExplorerFileSystemNode(project: Project,
     companion object {
         // can be folder or file
         // note that children of hidden folder are not matched by this function
-        fun isHiddenAsset(file: VirtualFile): Boolean {
+        fun isHiddenAsset(file: VirtualFile?): Boolean {
+            if (file == null) return false
             // See https://docs.unity3d.com/Manual/SpecialFolders.html
             val extension = file.extension?.lowercase(Locale.getDefault())
             if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
@@ -64,11 +64,17 @@ open class UnityExplorerFileSystemNode(project: Project,
                 return true
             }
 
-            if (file.name.endsWith("~")) {
-                return true
+            return file.name.endsWith("~")
+        }
+
+        private fun isDescendantOfReadOnlyPackage(node: UnityExplorerFileSystemNode?): Boolean {
+            if (node == null) return false
+
+            if (node.descendentOf == AncestorNodeType.HiddenAsset || node.descendentOf == AncestorNodeType.IgnoredFolder) {
+                return isDescendantOfReadOnlyPackage(node.parent as? UnityExplorerFileSystemNode)
             }
 
-            return false
+            return node.descendentOf == AncestorNodeType.ReadOnlyPackage
         }
     }
 
@@ -159,11 +165,14 @@ open class UnityExplorerFileSystemNode(project: Project,
             .sortedWith(String.CASE_INSENSITIVE_ORDER)
             .distinct()
         if (projectNames.any()) {
-            var description = projectNames.take(3).joinToString(", ")
-            if (projectNames.count() > 3) {
+            val maxProjectsInDescription = 3
+            val maxProjectsInTooltip = 10
+            var description = projectNames.take(maxProjectsInDescription).joinToString(", ")
+            if (projectNames.count() > maxProjectsInDescription) {
                 description += ", …"
-                presentation.tooltip = UnityPluginExplorerBundle.message("tooltip.contains.files.from.multiple.projects") + "<br/>" + projectNames.take(10).joinToString("<br/>"
-                    + if (projectNames.count() > 10) "<br/>" + UnityPluginExplorerBundle.message("tooltip.and.count.others", projectNames.count() - 10) else "")
+                presentation.tooltip = UnityPluginExplorerBundle.message("tooltip.contains.files.from.multiple.projects") + "<br/>" +
+                                       projectNames.take(maxProjectsInTooltip).joinToString("<br/>") +
+                                       if (projectNames.count() > maxProjectsInTooltip) "<br/>" + UnityPluginExplorerBundle.message("tooltip.and.count.others", projectNames.count() - maxProjectsInTooltip) else ""
             }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
@@ -176,51 +185,51 @@ open class UnityExplorerFileSystemNode(project: Project,
         return it.name.replace(UnityExplorer.DefaultProjectPrefixRegex, "")
     }
 
-    private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {
-        if (descendentOf == AncestorNodeType.FileSystem) {
-            return null
-        }
-
-        if (entity.isProject())
-            return null
-
-        val projectEntity = entity.containingProjectEntity() ?: return null
-
-        // Show the project on the owner of the assembly definition file
-        val dir = entity.url?.virtualFile
-        if (dir != null && hasAssemblyDefinitionFile(dir)) {
-            return projectEntity
-        }
-
-        // Hide the project if we're under an assembly definition - the first .asmdef we meet is the root of this project
-        if (isUnderAssemblyDefinition()) {
-            return null
-        }
-
-        // These special folders aren't used in Packages
-        if (descendentOf == AncestorNodeType.Assets) {
-
-            // This won't work if the projects are renamed by some kind of Unity plugin
-            // If the project is -Editor, hide if this node is under the Editor folder
-            // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
-            // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
-            //   Plugins, Standard Assets, Pro Standard Assets
-            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
-                return null
-            }
-            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
-                return null
-            }
-            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
-                val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
-                if (editor != null && isUnderFirstpassFolder(editor)) {
-                    return null
-                }
-            }
-        }
-
-        return projectEntity
+  private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {
+    if (descendentOf == AncestorNodeType.FileSystem) {
+      return null
     }
+
+    if (entity.isProject())
+      return null
+
+    val projectEntity = entity.containingProjectEntity() ?: return null
+
+    // Show the project on the owner of the assembly definition file
+    val dir = entity.url?.virtualFile
+    if (dir != null && hasAssemblyDefinitionFile(dir)) {
+      return projectEntity
+    }
+
+    // Hide the project if we're under an assembly definition - the first .asmdef we meet is the root of this project
+    if (isUnderAssemblyDefinition()) {
+      return null
+    }
+
+    // These special folders aren't used in Packages
+    if (descendentOf == AncestorNodeType.Assets) {
+
+      // This won't work if the projects are renamed by some kind of Unity plugin
+      // If the project is -Editor, hide if this node is under the Editor folder
+      // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
+      // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
+      //   Plugins, Standard Assets, Pro Standard Assets
+      if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
+        return null
+      }
+      if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
+        return null
+      }
+      if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
+        val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
+        if (editor != null && isUnderFirstpassFolder(editor)) {
+          return null
+        }
+      }
+    }
+
+    return projectEntity
+  }
 
     private fun forEachAncestor(root: FileSystemNodeBase?, action: FileSystemNodeBase.() -> Boolean): FileSystemNodeBase? {
         var node: FileSystemNodeBase? = root
@@ -260,7 +269,7 @@ open class UnityExplorerFileSystemNode(project: Project,
         return dir.children.any { it.extension.equals("asmdef", true) }
     }
 
-    private fun calculateIcon(): Icon? {
+    private fun calculateIcon(): Icon {
         if (isIgnoredFolder(virtualFile) || (virtualFile.isDirectory && descendentOf == AncestorNodeType.IgnoredFolder)) {
             return UnityIcons.Explorer.UnloadedFolder
         }
@@ -337,14 +346,21 @@ open class UnityExplorerFileSystemNode(project: Project,
     }
 
     override fun getFileStatus(): FileStatus {
-        // Read only package files are cached under Library, which is ignored by VCS, but it's pointless us showing them
-        // as IGNORED
-        return if (descendentOf == AncestorNodeType.ReadOnlyPackage) FileStatus.NOT_CHANGED else super.getFileStatus()
+        // Read only package files are cached in the Library folder, which is ignored by VCS, but it's pointless showing
+        // these as IGNORED. We need to get the ultimate ancestor of this node, so we don't mark hidden or ignored files
+        // inside read only packages as IGNORED.
+        return if (isDescendantOfReadOnlyPackage(this)) {
+            FileStatus.NOT_CHANGED
+        }
+        else {
+            super.getFileStatus()
+        }
     }
 
     override fun getFileStatusColor(status: FileStatus?): Color? {
-        // NOT_CHANGED colour is discovered recursively, so if any files under this are ignored, we'd get the wrong colour
-        return if (descendentOf == AncestorNodeType.ReadOnlyPackage && status == FileStatus.NOT_CHANGED) {
+        // The super implementation will try to recursively discover a more appropriate status if asked for NOT_CHANGED,
+        // so it can propagate changes from descendants. Make sure that we always show NOT_CHANGED for readonly packages
+        return if (isDescendantOfReadOnlyPackage(this) && status == FileStatus.NOT_CHANGED) {
             status?.color
         } else {
             super.getFileStatusColor(status)

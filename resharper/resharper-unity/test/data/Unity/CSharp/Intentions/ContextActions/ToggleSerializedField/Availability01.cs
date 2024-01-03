@@ -1,5 +1,10 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+
+public interface ICustomInterface
+{
+}
 
 public class Foo : MonoBehaviour
 {
@@ -55,4 +60,8 @@ public class Foo : MonoBehaviour
 
     pub{off}lic read{off}only i{off}nt myValue52;
     priv{off}ate read{off}only i{off}nt myValue53;
+
+    private readonly ICustomInterface myCu{off}stomInterface;
+    private readonly List<ICustomInterface> myCu{off}stomInterfaces;
+    private readonly string[][] my{off}NotSerialisedJaggedArray;
 }

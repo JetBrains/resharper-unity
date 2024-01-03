@@ -1,20 +1,24 @@
-import com.jetbrains.rider.plugins.gradle.BackendPaths
-
 plugins {
     kotlin("jvm")
 }
 
-val backend: BackendPaths = gradle.rootProject.extra["backend"] as BackendPaths
+val rdLibDirectory: () -> File by rootProject.extra
+val monoRepoRootDir: File? by rootProject.extra
+
 
 repositories {
     maven { setUrl { "https://cache-redirector.jetbrains.com/maven-central" } }
-    flatDir {
-        dir({ backend.getRdLibDirectory() })
+    if (monoRepoRootDir == null) {
+        flatDir {
+            dir(rdLibDirectory())
+        }
     }
 }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("", "rider-model")
-    implementation("", "rd-gen")
+    if (monoRepoRootDir == null) {
+        implementation("", "rider-model")
+        implementation("", "rd-gen")
+    }
 }

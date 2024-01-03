@@ -315,7 +315,7 @@ This function can be a coroutine.
 
 OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
 This function can be a coroutine.
-(64): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
+(64): Unity Gutter Icon: Called when Unity first launches the editor or the player, or when it recompiles scripts
 (65): ReSharper Unity Implicitly Used Identifier: 
 (66): Unity Gutter Icon: This field is serialized by Unity
 (67): ReSharper Unity Implicitly Used Identifier: 

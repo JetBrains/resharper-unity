@@ -18,4 +18,4 @@ public class MyScriptableObject : ScriptableObject
 }
 
 ---------------------------------------------------------
-(0): ReSharper Warning: Expected type derived from 'UnityEngine.ScriptableObject'
+(0): ReSharper Warning: Expected a type derived from 'UnityEngine.ScriptableObject'

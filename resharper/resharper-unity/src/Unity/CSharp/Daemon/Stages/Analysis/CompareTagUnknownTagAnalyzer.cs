@@ -22,15 +22,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (element.IsCompareTagMethod())
+            if (element.IsCompareTagMethod() || element.IsFindObjectByTagMethod())
             {
+                // TODO: Use conditional access when the monorepo build uses a more modern C# compiler
+                // Currently (as of 01/2023) the monorepo build for Unity uses C#9 compiler, which will complain that
+                // the out variable is uninitialised when we use conditional access
+                // See also https://youtrack.jetbrains.com/issue/RSRP-489147
                 var argument = element.ArgumentList.Arguments.FirstOrDefault();
-                var literal = (argument?.Value as ICSharpLiteralExpression)?.ConstantValue.Value as string;
-                if (literal == null)
-                    return;
-
-                if (!ProjectSettingsCache.HasTag(literal))
+                if (argument?.Value != null && argument.Value.ConstantValue.IsNotNullString(out var literal)
+                                            && !ProjectSettingsCache.HasTag(literal))
+                {
                     consumer.AddHighlighting(new UnknownTagWarning(argument));
+                }
             }
         }
     }

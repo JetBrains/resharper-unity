@@ -1,7 +1,9 @@
+﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using JetBrains.Application.InlayHints;
+
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
@@ -13,26 +15,26 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options;
-using JetBrains.TextControl.DocumentMarkup;
-using JetBrains.UI.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.TextControl.DocumentMarkup.Adornments;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
-#nullable enable
-
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
-    public class AsmDefIntraTextAdornmentModel : IIntraTextAdornmentDataModel
+    public class AsmDefIntraTextAdornmentModel : IAdornmentDataModel
     {
         private readonly IAsmDefInlayHintHighlighting myHighlighting;
-        private readonly Expression<Func<UnityInlayHintSettings, InlayHintsMode>> myOption;
+        private readonly Expression<Func<UnityInlayHintSettings, PushToHintMode>> myOption;
         private readonly ISolution mySolution;
         private readonly ISettingsStore mySettingsStore;
         private IList<BulbMenuItem>? myContextMenuItems;
 
+        private readonly AdornmentData myData;
+
         public AsmDefIntraTextAdornmentModel(IAsmDefInlayHintHighlighting highlighting,
-                                             Expression<Func<UnityInlayHintSettings, InlayHintsMode>> option,
+                                             Expression<Func<UnityInlayHintSettings, PushToHintMode>> option,
                                              ISolution solution,
                                              ISettingsStore settingsStore)
         {
@@ -43,25 +45,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 
             ContextMenuTitle = new PresentableItem(FeaturesIntellisenseThemedIcons.ParameterInfoPage.Id,
                 highlighting.ContextMenuTitle);
+            
+            myData = AdornmentData.New.
+                WithText(myHighlighting.Text).
+                WithMode(myHighlighting.Mode).
+                WithFlags(AdornmentFlags.HasContextMenu); // Context menu appears to be ReSharper only. Rider doesn't show any context menus for inlay hints
         }
 
         public void ExecuteNavigation(PopupWindowContextSource popupWindowContextSource)
         {
         }
-
-        public RichText Text => myHighlighting.Text;
-        public InlayHintsMode InlayHintsMode => myHighlighting.Mode;
-        public bool IsPreceding => false;
-        public int Order => 0;
-
-        // Context menu appears to be ReSharper only. Rider doesn't show any context menus for inlay hints
-        public bool HasContextMenu => true;
+        
         public IPresentableItem ContextMenuTitle { get; }
         public IEnumerable<BulbMenuItem> ContextMenuItems => myContextMenuItems ??= BuildContextMenuItems();
 
-        public bool IsNavigable => false;
         public TextRange? SelectionRange => null;
-        public IconId? IconId => null;
 
         private IList<BulbMenuItem> BuildContextMenuItems()
         {
@@ -76,10 +74,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
                         if (optionsDialogOwner != null)
                             Logger.Catch(() => optionsDialogOwner.Show(page: UnityInlayHintsOptionsPage.PID));
                     }),
-                    new RichText("Configure..."),
+                    new RichText(Strings.AsmDefIntraTextAdornmentModel_BuildContextMenuItems_Configure___),
                     null,
                     BulbMenuAnchors.SecondClassContextItems)
             };
         }
+
+        /// <inheritdoc />
+        AdornmentData IAdornmentDataModel.Data => myData;
     }
 }

@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
   {
     private readonly CppDummyFormatterBase myCppDummyFormatter;
 
-    public InjectedHlslBraceHandler(TypingAssistLanguageBase<ShaderLabLanguage> owner, CppDummyFormatterBase cppDummyFormatter, bool isRiderMode, bool isInternalMode) : base(owner, cppDummyFormatter, isRiderMode, isInternalMode)
+    public InjectedHlslBraceHandler(TypingAssistLanguageBase<ShaderLabLanguage> owner, CppDummyFormatterBase cppDummyFormatter) : base(owner, cppDummyFormatter)
     {
       myCppDummyFormatter = cppDummyFormatter;
     }

@@ -1,9 +1,9 @@
 ﻿# 7 ITEMS #
 
 + _Color
-+ _Cull
-+ _DstBlend
-+ _SrcBlend
-+ _ZBias
-+ _ZTest
-+ _ZWrite
+_Cull
+_DstBlend
+_SrcBlend
+_ZBias
+_ZTest
+_ZWrite

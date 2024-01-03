@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
-        baseClass="CSharpUnityHighlightingBase, ICommonCodeHighlighting">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP" baseClass="CSharpUnityHighlightingBase, ICommonCodeHighlighting">
   <Usings>
     JetBrains.ReSharper.Psi.CSharp;
     JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -9,23 +7,22 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnalysis.Highlightings;
+    Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
   </Usings>
-
+  
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.Burst">
       <Tag externalName="SharedStaticUnmanagedTypeWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Shared static type parameter requires the unmanaged constraint</Title>
-        <Description>
-          Shared static type parameter requires the unmanaged constraint
-        </Description>
+        <Title resourceName="SharedStaticTypeParameterRequiresTheUnmanagedConstraint" resourceType="Strings" />
+        <Description resourceName="SharedStaticTypeParameterRequiresTheUnmanagedConstraint" resourceType="Strings" />
       </Tag>
     </Group>
   </SeverityConfiguration>
-
+  
   <Warning name="SharedStaticUnmanagedType" configurableSeverity="Unity.SharedStaticUnmanagedType">
     <Parameter type="ITreeNode" name="node" />
-    <Parameter type="string" name="name" isValid="skip"/>
-    <Message value="Type parameter must be unmanaged, '{0}' is not">
+    <Parameter type="string" name="name" isValid="skip" />
+    <Message resourceName="TypeParameterMustBeUnmanagedIsNotMessage" resourceType="Strings">
       <Argument>name</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>

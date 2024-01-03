@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string ExtraPath => @"AddExpensiveComment\Availability";
         [Test] public void Everything() { DoNamedTest(); }
     }
-    
+
     [TestUnity]
     public class AddExpensiveCommentContextActionTests : ContextActionExecuteAfterSwaTestBase<AddExpensiveCommentContextAction>
     {

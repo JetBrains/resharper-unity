@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Application.I18n;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
@@ -9,12 +10,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
     {
         private readonly Lazy<UnityTypes> myTypes;
 
-        public UnityTypesProvider()
+        public UnityTypesProvider(CultureContextComponent cultureContextComponent)
         {
             myTypes = Lazy.Of(() =>
             {
                 var apiXml = new ApiXml();
-                return apiXml.LoadTypes();
+                return apiXml.LoadTypes(cultureContextComponent.Culture.Value);
             }, true);
         }
 

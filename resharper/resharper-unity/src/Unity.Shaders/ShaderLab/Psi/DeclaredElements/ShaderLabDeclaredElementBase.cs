@@ -11,29 +11,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
 {
     public abstract class ShaderLabDeclaredElementBase : IShaderLabDeclaredElement
     {
-        private readonly IPsiSourceFile mySourceFile;
+        protected readonly IPsiSourceFile SourceFile;
+        protected int TreeOffset { get; }
+        public string ShortName { get; }
+
+        // Note that ShaderLab variable references and Cg parameters are case sensitive
+        public bool CaseSensitiveName => true;
+
+        // ReSharper disable once AssignNullToNotNullAttribute
+        public PsiLanguageType PresentationLanguage => ShaderLabLanguage.Instance;
 
         protected ShaderLabDeclaredElementBase(string shortName, IPsiSourceFile sourceFile, int treeOffset)
         {
-            mySourceFile = sourceFile;
+            SourceFile = sourceFile;
             TreeOffset = treeOffset;
             ShortName = shortName;
         }
 
-        protected int TreeOffset { get; }
+        public IPsiServices GetPsiServices() => SourceFile.GetPsiServices();
 
-        public IPsiServices GetPsiServices()
+        public virtual IList<IDeclaration> GetDeclarations()
         {
-            return mySourceFile.GetPsiServices();
-        }
-
-        public IList<IDeclaration> GetDeclarations()
-        {
-            if (!(mySourceFile.GetPrimaryPsiFile() is IShaderLabFile psi))
+            if (SourceFile.GetPrimaryPsiFile() is not IShaderLabFile psi)
                 return EmptyList<IDeclaration>.InstanceList;
 
             var node = psi.FindNodeAt(TreeTextRange.FromLength(new TreeOffset(TreeOffset), 1));
-            while (node != null && !(node is IDeclaration))
+            while (node != null && node is not IDeclaration)
                 node = node.Parent;
             if (node == null)
                 return EmptyList<IDeclaration>.Instance;
@@ -43,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
 
         public IList<IDeclaration> GetDeclarationsIn(IPsiSourceFile sourceFile)
         {
-            if (mySourceFile == sourceFile)
+            if (SourceFile == sourceFile)
                 return GetDeclarations();
             return EmptyList<IDeclaration>.Instance;
         }
@@ -55,22 +58,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
         public bool IsValid() => true;
         public bool IsSynthetic() => false;
 
-        public HybridCollection<IPsiSourceFile> GetSourceFiles()
+        public HybridCollection<IPsiSourceFile> GetSourceFiles() => new(SourceFile);
+
+        public bool HasDeclarationsIn(IPsiSourceFile sourceFile) => SourceFile == sourceFile;
+
+        public override bool Equals(object obj)
         {
-            return new HybridCollection<IPsiSourceFile>(mySourceFile);
+            if (ReferenceEquals(obj, this)) return true;
+            if (ReferenceEquals(obj, null) || obj.GetType() != GetType()) return false;
+            var other = (ShaderLabDeclaredElementBase)obj;
+            return TreeOffset == other.TreeOffset && ShortName == other.ShortName && SourceFile.Equals(other.SourceFile);
         }
 
-        public bool HasDeclarationsIn(IPsiSourceFile sourceFile)
-        {
-            return mySourceFile == sourceFile;
-        }
-
-        public string ShortName { get; }
-
-        // Note that ShaderLab variable references and Cg parameters are case sensitive
-        public bool CaseSensitiveName => true;
-
-        // ReSharper disable once AssignNullToNotNullAttribute
-        public PsiLanguageType PresentationLanguage => ShaderLabLanguage.Instance;
+        public override int GetHashCode() => Hash.Combine(SourceFile.GetHashCode(), ShortName.GetHashCode());
     }
 }

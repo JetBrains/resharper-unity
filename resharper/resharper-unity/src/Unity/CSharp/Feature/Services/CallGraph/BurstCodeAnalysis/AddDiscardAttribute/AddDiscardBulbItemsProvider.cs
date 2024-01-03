@@ -3,6 +3,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 
@@ -11,8 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
     [SolutionComponent]
     public class AddDiscardBulbItemsProvider : BurstBulbItemsProvider
     {
-        public AddDiscardBulbItemsProvider(ISolution solution)
-            : base(solution)
+        public AddDiscardBulbItemsProvider(ISolution solution, BurstContextProvider burstContextProvider)
+            : base(solution, burstContextProvider)
         {
         }
 

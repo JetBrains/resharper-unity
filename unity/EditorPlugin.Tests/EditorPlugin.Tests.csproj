@@ -5,17 +5,25 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor.Tests</RootNamespace>
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\EditorPlugin\EditorPlugin.csproj" />
+    <ProjectReference Include="..\EditorPlugin\EditorPlugin.SinceUnity.4.7.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PathLocator\PathLocator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
     <PackageReference Include="xunit" Version="1.9.2" />
-    <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
     <Import Project="$(MSBuildProjectDirectory)\..\EditorPlugin\ILRepack.targets" />
 </Project>

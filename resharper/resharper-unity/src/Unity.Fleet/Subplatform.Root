@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SubplatformInfo xmlns="urn:schemas-jetbrains-com:build-subplatform-info" CompanyNameHuman="JetBrains">
+  <SubplatformInfo.SubplatformReferences>
+    <SubplatformReference Name="Platform\RdProtocol" />
+    <SubplatformReference Name="Psi.Features\src" />
+    <SubplatformReference Name="Psi.Features\Web\Core" />
+    <SubplatformReference Name="Fleet\Fleet.Protocol" />
+    <SubplatformReference Name="Fleet\Fleet.Backend" />
+    <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src\Unity" />
+  </SubplatformInfo.SubplatformReferences>
+</SubplatformInfo>

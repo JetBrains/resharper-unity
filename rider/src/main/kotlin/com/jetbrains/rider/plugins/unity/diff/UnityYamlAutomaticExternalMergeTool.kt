@@ -16,8 +16,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.delete
-import com.intellij.util.io.exists
-import com.intellij.util.io.readBytes
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.toIOFile
@@ -26,6 +24,8 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
+import kotlin.io.path.exists
+import kotlin.io.path.readBytes
 
 class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     companion object {
@@ -56,7 +56,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             }
 
             myLogger.info("PreMerge with $mergeExePath $mergeParameters")
-            val externalTool = ExternalDiffSettings.ExternalTool(mergeExePath, mergeParameters,
+            val externalTool = ExternalDiffSettings.ExternalTool(programPath = mergeExePath, argumentPattern = mergeParameters,
                 isMergeTrustExitCode = isMergeTrustExitCode, groupName = ExternalDiffSettings.ExternalToolGroup.MERGE_TOOL
             )
             if (!tryExecuteMerge(project, externalTool, request as ThreesideMergeRequest)) {

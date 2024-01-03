@@ -4,7 +4,7 @@
   <version>2021.3.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
-  <idea-version since-build="2022.3" />
+  <idea-version since-build="2023.2" />
 
   <depends>com.intellij.modules.rider</depends>
   <depends>com.intellij.modules.xdebugger</depends>
@@ -22,13 +22,57 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater"
-                    preload="true" />
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerInitializer"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdaterInitializer"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost"/>
 
-    <rider.defaultVcsRootPolicyExtension implementation="com.jetbrains.rider.plugins.unity.vcs.UnityDefaultVcsRootPolicyExtension" />
+    <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.FrontendBackendHost"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.FrontendBackendHost$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder$ProtocolListener"/>
+
+    <fileDocumentManagerListener implementation="com.jetbrains.rider.plugins.unity.UnityFileDocumentManagerListener"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
+
+    <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
 
     <!-- Options pages -->
-    <applicationConfigurable groupId="language" instance="com.jetbrains.rider.plugins.unity.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
+    <applicationConfigurable groupId="language"
+                             id="preferences.build.unityPlugin"
+                             bundle="messages.UnityBundle"
+                             instance="com.jetbrains.rider.plugins.unity.settings.UnityPluginOptionsPage"
+                             key="configurable.name.unity.engine"/>
 
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
     <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
@@ -46,20 +90,21 @@
 
     <!-- ShaderLab support -->
     <fileType name="ShaderLab" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType" language="ShaderLab" extensions="shader"/>
-    <lang.altEnter language="ShaderLab" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
+    <lang.altEnter language="ShaderLab" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
     <lang.parserDefinition language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabParserDefinition" />
     <lang.syntaxHighlighterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabSyntaxHighlighterProvider" />
     <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.autoPopup.support language="ShaderLab" implementationClass="com.jetbrains.rider.completion.BackendAndGenericRider" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
-    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
+    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
     <codeInsight.parameterInfo language="ShaderLab" implementationClass="com.jetbrains.rdclient.parameterInfo.FrontendParameterInfoHandler"/>
-    <lang.documentationProvider language="ShaderLab" implementationClass="com.jetbrains.rdclient.quickDoc.FrontendDocumentationProvider"/>
+    <lang.documentationProvider language="ShaderLab" implementationClass="com.jetbrains.rider.quickDoc.FrontendDocumentationProvider"/>
     <backend.typedHandler language="ShaderLab" implementationClass="com.jetbrains.rider.cpp.fileType.CppTypedHandler"/>
     <langCodeStyleSettingsProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.settings.ShaderLabStyleSettingsProvider"/>
+    <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.breadcrumbs.ShaderLabBreadcrumbsInfoProvider"/>
 
-    <fileType name="C++" extensions="cg;cginc;hlslinc;compute" />
+    <fileType name="HLSL" extensions="cg;cginc;hlslinc;compute" />
 
     <!-- Cg support -->
     <!-- Don't forget to update CgProjectFileType list on the backend -->
@@ -78,9 +123,12 @@
     <fileType name="AsmRef" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefFileType" language="JSON" extensions="asmref"/>
     <quoteHandler fileType="AsmRef" className="com.intellij.json.JsonQuoteHandler"/>
 
-    <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
+    <fileType name="InputActions" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.inputactions.InputActionsFileType" language="JSON" extensions="inputactions"/>
+    <quoteHandler fileType="InputActions" className="com.intellij.json.JsonQuoteHandler"/>
+
+    <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
     <backend.markup.adapterFactory language="JSON" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
-    <completion.contributor language="JSON" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
+    <completion.contributor language="JSON" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
     <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefActionCallPolicy" />
     <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefActionCallPolicy" />
     <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.spellchecker.AsmDefSpellcheckerStrategy" />
@@ -89,17 +137,22 @@
     <!-- YAML asset support -->
     <fileType name="UnityYaml" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType" language="UnityYaml" extensions="meta;unity;prefab;asset;controller;anim"/>
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlIconProvider" />
-    <lang.altEnter language="UnityYaml" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
+    <lang.altEnter language="UnityYaml" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
     <lang.parserDefinition language="UnityYaml" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlParserDefinition" />
     <backend.actions.support language="UnityYaml" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.markup.adapterFactory language="UnityYaml" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
-    <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rdclient.editorActions.FrontendTypedHandler"/>
+    <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rider.editorActions.FrontendTypedHandler"/>
 
     <!-- UXML support -->
     <fileType name="UXML" language="UXML" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType" extensions="uxml" />
+    <lang.altEnter language="UXML" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
     <lang.parserDefinition language="UXML" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileParserDefinition"/>
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
+    <backend.markup.adapterFactory language="UXML" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
+    <backend.actions.support language="UXML" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
+    <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlIconProvider" />
+    <completion.contributor language="UXML" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
 
     <!-- JSON support -->
     <fileType name="JSON" extensions="inputactions"/>
@@ -115,15 +168,18 @@
 
     <!-- Project Model -->
     <solutionExplorerCustomization implementation="com.jetbrains.rider.plugins.unity.explorer.UnitySolutionExplorerCustomization" />
+    <rider.documentBehaviour implementation="com.jetbrains.rider.plugins.unity.document.UnityRiderDocumentBehaviour" />
 
     <!-- Run configurations -->
-    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
+    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType" />
+    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationType" />
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType" />
     <rider.newRunConfigurationTreeGroupingProvider implementation="com.jetbrains.rider.plugins.unity.run.UnityNewRunConfigurationTreeGroupingProvider" />
 
     <!-- Debugger -->
     <xdebugger.attachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityLocalAttachProcessDebuggerProvider" />
     <xdebugger.breakpointType implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType" />
+    <xdebugger.dialog.item.presentation.provider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityLocalAttachDialogItemPresentationProvider" />
     <rider.breakpoint.customPanelProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointPanelProvider" />
     <rider.debug.breakpoint.handler.factory implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointHandlerFactory" />
     <rider.breakpoint.customPopupActionsProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.ConvertToPausepointPopupActionProvider" />
@@ -135,13 +191,6 @@
     <rd.platform.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
     <feedbackDescriptionProvider implementation="com.jetbrains.rider.plugins.unity.UnityFeedbackDescriptionProvider" />
 
-    <!-- TODO: Fix up ordering once Rider's own status bar widgets have been migrated to StatusBarWidgetFactory
-         Modern status bar widgets have an order defined in xml, the legacy style order is decided at runtime, so we
-         can't order relative to other Rider status bar widgets. Previously, we only had "after readOnlyWidget", with
-         no "before" -->
-    <!--suppress PluginXmlValidity -->
-    <statusBarWidgetFactory implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetFactory" order="before unityWidget" />
-
     <!-- File Layout -->
     <standardResourceProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutStandardResourceProvider"/>
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutSchemaProvider"/>
@@ -149,121 +198,101 @@
     <navbar implementation="com.jetbrains.rider.plugins.unity.ide.navigationToolbar.UnityNavBarModelExtension"/>
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer"/>
 
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdater" preload="true"/>
     <solutionManagerExtensions implementation="com.jetbrains.rider.plugins.unity.workspace.UnitySolutionManagerExtensions"/>
 
     <diff.merge.external.AutomaticExternalMergeTool implementation="com.jetbrains.rider.plugins.unity.diff.UnityYamlAutomaticExternalMergeTool"/>
 
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinHandlerFactory"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnityCheckinState"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedCheckinState"/>
+
+    <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinHandlerFactory"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinState"/>
 
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
+    <rider.unityDetector implementation="com.jetbrains.rider.plugins.unity.UnityDetectorImpl"/>
+    <rider.debugger.value.evaluator.factory implementation="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluatorFactory"/>
+    <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider" order="after projectAndFrameworkResolveContextWidget"/>
+    <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsService" order="after projectAndFrameworkResolveContextWidget"/>
+
+    <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantEventLogger"/>
+
   </extensions>
 
-  <project-components>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.FrontendBackendHost</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification</implementation-class></component>
-    <component>
-      <implementation-class>com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher</implementation-class>
-    </component>
-  </project-components>
-
   <applicationListeners>
-    <listener class="com.jetbrains.rider.plugins.unity.SaveAllTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
-    <listener class="com.jetbrains.rider.plugins.unity.explorer.MetaTracker" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    <listener class="com.jetbrains.rider.plugins.unity.SaveAllActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
+    <listener class="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    <listener topic="com.jetbrains.rdclient.editors.FrontendTextControlHostListener" class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost$TextControlListener" />
   </applicationListeners>
 
   <actions>
     <action id="AttachToUnityProcessAction"
             class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction"
-            text="Attach to Unity Process&#8230;"
-            description="Attach debugger to Unity Editor process"
             icon="UnityIcons.Actions.AttachToUnity">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="com.jetbrains.rider.debugger.actions.RiderAttachToRemoteProcessAction" />
     </action>
 
+    <action id="AttachToUnityEditorAction"
+            class="com.jetbrains.rider.plugins.unity.actions.AttachUnityEditorAction"
+            icon="UnityIcons.Actions.AttachToUnity">
+    </action>
+
     <action id="ShowUnitySettingsInRider"
             class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction"
-            text="Unity Settings&#8230;"
-            description="Show Unity settings"
             icon="AllIcons.General.Settings" />
 
     <action id="RiderUnityOpenEditorLogAction"
             class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction"
-            text="Open Unity Editor Log"
             icon="UnityIcons.Actions.OpenEditorLog" />
     <action id="RiderUnityOpenPlayerLogAction"
             class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction"
-            text="Open Unity Player Log"
             icon="UnityIcons.Actions.OpenPlayerLog" />
     <action id="TriggerRefreshInUnity"
             class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
-            text="Refresh Unity Assets"
-            description="Trigger refresh assets in Unity Editor"
             icon="UnityIcons.Actions.RefreshInUnity" />
 
     <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
-      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
-      <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
-
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionBar" anchor="after" />
+      <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionBar" anchor="after" />
       <separator/>
-      <action id="UnityToolbarLabel"
-              class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"
-              text="Unity:"/>
+      <action id="UnityToolbarLabel" class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"/>
+    </group>
+
+    <group id="NewUI_UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.NewUIUnityToolbarActionsGroup">
+      <add-to-group group-id="UnityToolbarActions" anchor="last"/>
+      <add-to-group group-id="MainToolbarCenter" anchor="last" /> <!--new UI -->
+
       <action id="TriggerPlayInUnity"
               class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"
-              text="Play/Edit"
-              description="Toggle play mode in Unity Editor"
               icon="UnityIcons.Actions.Execute" />
       <action id="TriggerPauseInUnityEditor"
               class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"
-              text="Pause/Resume"
-              description="Toggle play/pause in Unity Editor"
               icon="UnityIcons.Actions.Pause" />
       <action id="TriggerStepInUnityEditor"
               class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction"
-              text="Step"
-              description="Step a single frame in Unity Editor"
               icon="UnityIcons.Actions.Step" />
 
-      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity Related Actions">
+      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions">
         <action id="UnityProtocolStatusAction"
-                class="com.jetbrains.rider.plugins.unity.ui.UnityProtocolConnectionAction"
-                text="Unity Editor Connection Status" />
+                class="com.jetbrains.rider.plugins.unity.ui.UnityProtocolConnectionAction" />
         <action id="StartUnityAction"
                 class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction"
-                text="Start Unity"
-                description="Start Unity with current project"
                 icon="UnityIcons.Actions.StartUnity" />
+        <reference ref="AttachToUnityEditorAction" />
         <reference ref="AttachToUnityProcessAction" />
         <reference ref="ShowUnitySettingsInRider" />
         <action id="ShowUnityLogInRiderAction"
-                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"
-                text="Unity Log Window&#8230;" />
+                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"/>
         <separator/>
 
-        <action id="SwitchUIModeAction"
-                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
-                text="Toggle UI Mode"
-                description="Show or hide unnecessary UI tool windows" />
         <action id="HideUnityPlayActions"
-                class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction"
-                text="Toggle Play/Pause Actions"
-                description="Show or hide Unity Play/Pause actions" />
+                class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction" />
+        <action id="SwitchUIModeAction"
+                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" />
       </group>
 
-      <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity Related Actions">
+      <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions">
+        <reference ref="StartUnityAction" />
         <reference ref="AttachToUnityProcessAction" />
         <reference ref="ShowUnitySettingsInRider" />
       </group>
@@ -278,51 +307,55 @@
     <action id="DumpUnityExplorerAction" class="com.jetbrains.rider.plugins.unity.actions.internal.DumpUnityExplorerAction" internal="true" />
 
     <action id="InstallEditorPluginAction"
-            class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
-            text="Install Unity Editor Plugin" />
+            class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" />
 
-    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction" text="Find Unity Usages">
-      <add-to-group group-id="FindMenuGroup" anchor="after" relative-to-action="FindUsages"/>
-      <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="after" relative-to-action="FindUsages"/>
-    </action>
-
-    <group id="RiderInternal.Unity" text="Unity Actions" popup="true" internal="true">
+    <group id="RiderInternal.Unity" popup="true" internal="true">
       <add-to-group group-id="RiderInternal" anchor="last" />
 
       <action id="Unity_Internal_DumpDuplicateTypeNames"
               class="com.jetbrains.rider.plugins.unity.actions.internal.DumpDuplicateTypeNamesAction"
-              text="Dump Duplicate Type Names"
               internal="true" />
 
       <action id="Unity_Internal_DumpSpellCheckWordLists"
               class="com.jetbrains.rider.plugins.unity.actions.internal.DumpSpellCheckWordListsAction"
-              text="Dump Spell Check Word Lists"
               internal="true" />
     </group>
     <action id="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction"
             class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction"
-            icon="UnityIcons.Actions.StartUnity"
-            text="Show in Unity">
-      <add-to-group group-id="SolutionExplorerPopupMenu" anchor="after" relative-to-action="RiderRevealFile"/>
-    </action>
-    <action id="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromExplorerAction"
-            class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromExplorerAction"
-            icon="UnityIcons.Actions.StartUnity"
-            text="Unity">
+            icon="UnityIcons.Actions.StartUnity">
       <add-to-group group-id="RevealGroup" anchor="last"/>
+      <override-text place="EditorTabPopup"/>
+      <override-text place="ProjectViewPopup" use-text-of-place="EditorTabPopup" />
+      <override-text place="EditorPopup" use-text-of-place="EditorTabPopup"/>
+      <override-text place="FavoritesPopup" use-text-of-place="EditorTabPopup"/>
+    </action>
+
+    <action id="ShowAllInUnityExplorer" class="com.jetbrains.rider.plugins.unity.explorer.UnityShowAllFilesAction">
+      <add-to-group group-id="ProjectViewTabToolbar" anchor="first"/>
+    </action>
+
+    <action id="AddPauseBreakpoint" class="com.jetbrains.rider.plugins.unity.debugger.actions.handlers.AddPauseBreakpoint">
+      <add-to-group group-id="XDebugger.Hover.Breakpoint.Context.Menu"/>
     </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- IDEA default schemes -->
-    <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
-    <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
+    <additionalTextAttributes file="colorSchemes/UnityDefault.xml" scheme="Default" />
+    <additionalTextAttributes file="colorSchemes/UnityDarcula.xml" scheme="Darcula" />
 
-    <notificationGroup id="Unity log open" displayType="BALLOON"/>
-    <notificationGroup id="Unity Asset Mode" displayType="BALLOON"/>
-    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON"/>
-    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON"/>
-    <statistics.projectUsagesCollector implementation="com.jetbrains.rider.plugins.unity.fus.UnityProjectUsageCollector" />
+    <notificationGroup id="Unity log open" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.log.open" />
+    <notificationGroup id="Unity Asset Mode" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.asset.mode" />
+    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.project.open"/>
+    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.connection.out.of.sync"/>
+    <notificationGroup id="Unity commit failure" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.unity.commit.failure"/>
+    <iconMapper mappingFile="UnityIconMappings.json"/>
+    <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.TextureDebuggerCollector"/>
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">
@@ -370,4 +403,5 @@
 </p>
 ]]>
   </description>
+  <resource-bundle>messages.UnityPluginActionsBundle</resource-bundle>
 </idea-plugin>

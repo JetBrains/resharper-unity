@@ -6,17 +6,19 @@ using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.Rd;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
-using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.EditorPlugin;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Threading;
 using JetBrains.Util;
+using JetBrains.Util.Concurrency.Threading;
 using Newtonsoft.Json;
 
 #nullable enable
@@ -33,10 +35,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private readonly UnityPluginInstaller myPluginInstaller;
         private readonly JetHashSet<VirtualFileSystemPath> myPluginInstallations;
 
+        public readonly IViewableProperty<bool> Connected = new ViewableProperty<bool> { Value = false };
+        public readonly DataFlow.ISignal<Lifetime> OutOfSync = new DataFlow.Signal<Lifetime>("BackendUnityProtocol.OutOfSync");
+
         private DateTime myLastChangeTime;
+        private readonly SequentialScheduler myBackgroundScheduler;
 
         public BackendUnityProtocol(Lifetime lifetime,
                                     ILogger logger,
@@ -45,8 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                     IShellLocks locks,
                                     ISolution solution,
                                     UnitySolutionTracker unitySolutionTracker,
-                                    IFileSystemTracker fileSystemTracker,
-                                    UnityPluginInstaller pluginInstaller)
+                                    IFileSystemTracker fileSystemTracker)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -56,10 +60,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
-            myPluginInstaller = pluginInstaller;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
+            myBackgroundScheduler = new SequentialScheduler("BackendUnityProtocol");
 
-            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (!solution.HasProtocolSolution())
                 return;
 
             unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) =>
@@ -70,11 +74,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                 // todo: consider non-Unity Solution with Unity-generated projects
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
-                fileSystemTracker.AdviseFileChanges(lf, protocolInstancePath, OnProtocolInstanceJsonChange);
+                fileSystemTracker.AdviseFileChanges(lf, protocolInstancePath, delta =>
+                {
+                    // Connect when ProtocolInstance.json is updated (AppDomain start/reload in Unity editor)
+                    if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
+                    if (!delta.NewPath.ExistsFile) return;
+                    if (delta.NewPath.FileModificationTimeUtc == myLastChangeTime) return;
+                    myLastChangeTime = delta.NewPath.FileModificationTimeUtc;
+            
+                    CreateProtocol(lf, protocolInstancePath);
+                });
 
                 // connect on start of Rider
-                CreateProtocol(protocolInstancePath);
+                CreateProtocol(lf, protocolInstancePath);
             });
+        }
+
+        private void CreateProtocol(Lifetime lf, VirtualFileSystemPath protocolInstancePath)
+        {
+            lf.Start(myBackgroundScheduler, () =>
+            {
+                var protocolInstance = GetProtocolInstanceData(protocolInstancePath);
+                if (protocolInstance == null)
+                    return;
+                
+                SafeExecuteOrQueueEx("CreateProtocol", () => CreateProtocol(protocolInstance));
+            }).NoAwait();
         }
 
         private void SafeExecuteOrQueueEx(string name, Action action)
@@ -82,23 +107,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             if (myLifetime.IsAlive) myLocks.ExecuteOrQueueEx(myLifetime, name, action);
         }
 
-        private void OnProtocolInstanceJsonChange(FileSystemChangeDelta delta)
+        private void CreateProtocol(ProtocolInstance protocolInstance)
         {
-            // Connect when protocols.json is updated (AppDomain start/reload in Unity editor)
-            if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
-            if (!delta.NewPath.ExistsFile) return;
-            if (delta.NewPath.FileModificationTimeUtc == myLastChangeTime) return;
-            myLastChangeTime = delta.NewPath.FileModificationTimeUtc;
-
-            SafeExecuteOrQueueEx("CreateProtocol", () => CreateProtocol(delta.NewPath));
-        }
-
-        private void CreateProtocol(VirtualFileSystemPath protocolInstancePath)
-        {
-            var protocolInstance = GetProtocolInstanceData(protocolInstancePath);
-            if (protocolInstance == null)
-                return;
-
+            myLocks.AssertMainThread();
             myLogger.Info($"EditorPlugin protocol port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
 
             var thisSessionLifetime = mySessionLifetimes.Next();
@@ -128,6 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                 protocol.OutOfSyncModels.AdviseOnce(thisSessionLifetime, _ => OnOutOfSync(thisSessionLifetime));
 
+                wire.Connected.FlowInto(myLifetime, Connected);
                 wire.Connected.WhenTrue(thisSessionLifetime, connectionLifetime =>
                 {
                     myLogger.Info("WireConnected.");
@@ -145,6 +157,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                             // Clear model
                             myBackendUnityHost.BackendUnityModel.SetValue(null);
+
+                            if (thisSessionLifetime.IsAlive)
+                            {
+                                myLogger.Verbose("mySessionLifetimes.TerminateCurrent()");
+                                mySessionLifetimes.TerminateCurrent(); // avoid any reconnection attempts
+                            }
                         });
                     });
                 });
@@ -194,8 +212,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
             // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
             myPluginInstallations.Add(mySolution.SolutionFilePath);
-
-            myPluginInstaller.ShowOutOfSyncNotification(lifetime);
+            
+            OutOfSync.Fire(lifetime);
         }
     }
 

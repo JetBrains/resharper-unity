@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             }
         }
 
-        public int RootIndex
+        public int RootOrder
         {
             get
             {
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                         return index;
                 }
 
-                return myTransformHierarchy.RootIndex;
+                return myTransformHierarchy.RootOrder;
             }
         }
     }

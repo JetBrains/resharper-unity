@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity
 
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -9,9 +10,16 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
-import com.jetbrains.rider.projectView.solutionDirectory
-import com.jetbrains.rider.projectView.solutionFile
+import com.jetbrains.rider.unity.UnityDetector
 
+class UnityDetectorImpl(private val project: Project) : UnityDetector {
+    override fun isUnitySolution(): Boolean
+    {
+        return UnityProjectDiscoverer.getInstance(project).isUnityProject
+    }
+}
+
+@Service(Service.Level.PROJECT)
 class UnityProjectDiscoverer(private val project: Project) : LifetimedService() {
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
     val isUnityProjectFolder = hasUnityFileStructure(project)
@@ -20,9 +28,6 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
     val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project)
-    val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
-    @Suppress("unused")
-    val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
 
     // Note that this will only return a sensible value once the solution + backend have finished loading
     val isUnityClassLibraryProject: Boolean?
@@ -35,7 +40,8 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
         fun getInstance(project: Project): UnityProjectDiscoverer = project.service()
 
         fun hasUnityFileStructure(project: Project): Boolean {
-            return hasUnityFileStructure(project.projectDir)
+            // projectDir will fail with the default project
+            return !project.isDefault && hasUnityFileStructure(project.projectDir)
         }
 
         fun hasUnityFileStructure(projectDir: VirtualFile): Boolean {
@@ -56,6 +62,21 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
                 it.name == "ProjectVersion.txt" || it.extension == "asset"
             }
         }
+
+        fun searchUpForFolderWithUnityFileStructure(file: VirtualFile, maxSteps:Int = 10): Pair<Boolean, VirtualFile?> {
+            var dir: VirtualFile? = file
+            repeat(maxSteps) {
+                if (dir == null) return@repeat
+
+                dir?.let{
+                    if ((it.name == "Assets" || it.name == "Packages") && hasUnityFileStructure(it.parent)) {
+                        return Pair(true, it.parent)
+                    }
+                    dir = it.parent
+                }
+            }
+            return Pair(false, null)
+        }
     }
 
     // When Unity has generated sln, Library folder was also created. Lets' be more strict and check it.
@@ -68,14 +89,8 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
     private fun isCorrectlyLoadedSolution(project: Project): Boolean {
         return project.solutionDescription is RdExistingSolution
     }
-
-    private fun solutionNameMatchesUnityProjectName(project: Project): Boolean {
-        val solutionFile = project.solutionFile
-        return solutionFile.nameWithoutExtension == project.solutionDirectory.name
-    }
 }
 
-fun Project.isUnityGeneratedProject() = UnityProjectDiscoverer.getInstance(this).isUnityGeneratedProject
 fun Project.isUnityClassLibraryProject() = UnityProjectDiscoverer.getInstance(this).isUnityClassLibraryProject
 fun Project.isUnityProject()= UnityProjectDiscoverer.getInstance(this).isUnityProject
 fun Project.isUnityProjectFolder()= UnityProjectDiscoverer.getInstance(this).isUnityProjectFolder

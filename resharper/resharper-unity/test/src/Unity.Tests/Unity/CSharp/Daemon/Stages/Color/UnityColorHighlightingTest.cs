@@ -1,4 +1,5 @@
 ﻿using JetBrains.ReSharper.Daemon.VisualElements;
+using JetBrains.ReSharper.Feature.Services.ColorHints;
 using JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
@@ -9,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Color
     [Category("ColorHighlighting")]
     [TestUnity]
     [CSharpLanguageLevel(CSharpLanguageLevel.CSharp90)]
-    public class UnityColorHighlightingTest : CSharpHighlightingTestBase<ColorHighlighting>
+    public class UnityColorHighlightingTest : CSharpHighlightingTestBase<ColorHintHighlighting>
     {
         protected override bool ColorIdentifiers => true;
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Colors";

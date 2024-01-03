@@ -6,4 +6,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
     public class AsmDefErrors
     {
     }
+
+    [RegisterStaticHighlightingsGroup("AsmDef Warnings", true)]
+    public class AsmDefWarnings
+    {
+    }
 }

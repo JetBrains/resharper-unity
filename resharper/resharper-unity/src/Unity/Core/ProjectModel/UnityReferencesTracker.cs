@@ -8,6 +8,7 @@ using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Properties.Flavours;
 using JetBrains.Util;
 using JetBrains.Util.Reflection;
 
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
     [SolutionComponent]
     public class UnityReferencesTracker : IChangeProvider
     {
-        public static readonly Key<UnityReferencesTracker> UnityReferencesTrackerKey = new Key<UnityReferencesTracker>("UnityReferencesTrackerKey");
+        public static readonly Key<UnityReferencesTracker> UnityReferencesTrackerKey = new("UnityReferencesTrackerKey");
 
         // Unity 2017.3 split UnityEngine into modules. The copy in the Managed folder is the original monolithic build.
         // The Managed/UnityEngine/ folder contains the version split into modules, and generated projects reference the
@@ -91,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             // we'll initialise our custom PSI module. We have to initialise our PSI module before Done, or the
             // PersistentIndexManager will clean out the "orphaned" external (YAML) files and we'll have to reparse all
             // files on every startup
-            scheduler.EnqueueTask(new SolutionLoadTask("Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
+            scheduler.EnqueueTask(new SolutionLoadTask(GetType(), "Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
                 OnSolutionPreparePsiModules));
         }
 
@@ -178,19 +179,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             return null;
         }
 
-        public bool IsUnityProject(IProject? project)
+        public bool IsUnityProject(IProject? project) =>
+            project != null && project.IsValid() && myUnityProjects.Contains(project);
+
+        private static bool HasUnityReferenceOrFlavour(IProject project)
         {
-            if (project == null || !project.IsValid())
-                return false;
             // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
-            if (project.HasUnityFlavour())
-                return true;
-
-            return myUnityProjects.Contains(project);
+            return project.HasFlavour<UnityProjectFlavor>() || ReferencesUnity(project);
         }
-
-        private static bool HasUnityReferenceOrFlavour(IProject project) =>
-            project.HasUnityFlavour() || ReferencesUnity(project);
 
         private static bool ReferencesUnity(IProject project)
         {

@@ -1,8 +1,10 @@
+#nullable enable
+
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
@@ -14,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     {
         private readonly UnityShortcutCache myCache;
 
-        public DuplicateMenuItemShortCutProblemAnalyzer([NotNull] UnityApi unityApi, UnityShortcutCache cache)
+        public DuplicateMenuItemShortCutProblemAnalyzer(UnityApi unityApi, UnityShortcutCache cache)
             : base(unityApi)
         {
             myCache = cache;
@@ -24,29 +26,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             var arguments = element.Arguments;
             var argument = UnityShortcutCache.GetArgument(0, "itemName", arguments);
-            var name = argument?.Value?.ConstantValue.Value as string;
-            if (name == null)
-                return;
 
-            var shortcut = UnityShortcutCache.ExtractShortcutFromName(name);
-            if (shortcut == null)
-                return;
-
-            if (myCache.GetCount(shortcut) > 1)
+            // TODO: Use conditional access when the monorepo build uses a more modern C# compiler
+            // Currently (as of 01/2023) the monorepo build for Unity uses C#9 compiler, which will complain that the
+            // out variable is uninitialised when we use conditional access
+            // See also https://youtrack.jetbrains.com/issue/RSRP-489147
+            if (argument?.Value != null && argument.Value.ConstantValue.IsNotNullString(out var name))
             {
-                var files = myCache.GetSourceFileWithShortCut(shortcut);
-                var sourceFile = element.GetSourceFile();
-                var anotherFile = files.FirstOrDefault(t => t != sourceFile);
-                if (anotherFile == null)
+                var shortcut = UnityShortcutCache.ExtractShortcutFromName(name);
+                if (shortcut == null)
+                    return;
+
+                if (myCache.GetCount(shortcut) > 1)
                 {
-                    consumer.AddHighlighting(new DuplicateShortcutWarning(argument, "this file"));
-                }
-                else
-                {
-                    consumer.AddHighlighting(new DuplicateShortcutWarning(argument, anotherFile.Name));
+                    var files = myCache.GetSourceFileWithShortCut(shortcut);
+                    var sourceFile = element.GetSourceFile();
+                    var anotherFile = files.FirstOrDefault(t => t != sourceFile);
+                    consumer.AddHighlighting(anotherFile == null
+                        ? new DuplicateShortcutWarning(argument,
+                            Strings.DuplicateMenuItemShortCutProblemAnalyzer_Analyze_this_file)
+                        : new DuplicateShortcutWarning(argument, anotherFile.Name));
                 }
             }
         }
     }
-
 }

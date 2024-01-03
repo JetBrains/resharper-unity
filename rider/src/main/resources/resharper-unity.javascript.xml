@@ -1,6 +1,6 @@
 <idea-plugin package="com.jetbrains.rider.plugins.unity.javascript">
   <dependencies>
-    <module name="rider-plugins-appender/javascript"/>
+    <module name="intellij.rider.plugins.appender/javascript"/>
     <plugin id="JavaScript"/>
   </dependencies>
 

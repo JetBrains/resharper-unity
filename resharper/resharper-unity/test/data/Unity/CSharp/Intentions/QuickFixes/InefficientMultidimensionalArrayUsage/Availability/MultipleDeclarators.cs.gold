@@ -14,11 +14,11 @@ public class Foo : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+0: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
 NO QUICKFIXES
-1: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+1: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
 NO QUICKFIXES
-2: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+2: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
 NO QUICKFIXES
-3: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+3: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
 NO QUICKFIXES

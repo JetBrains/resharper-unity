@@ -17,6 +17,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         [TestCase("ShaderWithErrors01")]
         [TestCase("ShaderWithErrors02")]
         [TestCase("ShaderWithErrors03")]
+        [TestCase("ShaderWithErrors04")]
+        
+        [TestCase("PackageRequirements01")]
+        [TestCase("PackageRequirements02")]
 
         [TestCase("PropertiesEmpty")]
         [TestCase("Properties")]
@@ -71,6 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         [TestCase("LegacyTextureCombiner02")]
         [TestCase("LegacyTextureCombiner03")]
         [TestCase("LegacyTextureCombiner04")]
+        [TestCase("LegacyTextureCombiner05")]
 
         [TestCase("LegacyAlphaTesting01")]
         [TestCase("LegacyAlphaTesting02")]

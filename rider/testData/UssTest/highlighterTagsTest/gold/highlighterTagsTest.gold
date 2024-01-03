@@ -1,0 +1,48 @@
+.<INFORMATION>screen</INFORMATION> {
+    flex-grow: 1;
+    background-image: url("project:/Assets/UI/TitleScreen.png");
+    align-items: center;
+    justify-content: center;
+    -unity-font: url('/Assets/UI/Fonts/LilitaOne-Regular.ttf');
+    font-size: 20px;
+    -unity-background-scale-mode: scale-and-crop;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.<INFORMATION>screen--tinted</INFORMATION> {
+    flex-grow: 1;
+    -unity-background-image-tint-color: <INFORMATION>rgb(108, 108, 108)</INFORMATION>;
+}
+
+.<INFORMATION>header</INFORMATION> {
+    font-size: 36px;
+    margin-bottom: 18px;
+    margin-top: 15px;
+    color: <INFORMATION>rgb(255, 255, 255)</INFORMATION>;
+}
+
+.<INFORMATION>button</INFORMATION> {
+    background-color: <INFORMATION>rgba(228, 228, 228, 0)</INFORMATION>;
+    background-image: url('/Assets/UI/Elements/ui_btn_menus.png');
+    height: 87px;
+    justify-content: center;
+    align-items: stretch;
+    -unity-slice-left: 80;
+    -unity-slice-right: 80;
+    -unity-slice-top: 40;
+    -unity-slice-bottom: 40;
+    border-color: <INFORMATION>rgba(0, 0, 0, 0)</INFORMATION>;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 32px;
+    color: <INFORMATION>rgb(255, 255, 255)</INFORMATION>;
+    width: 266px;
+}
+
+.<INFORMATION>button</INFORMATION>:hover {
+    border-color: <INFORMATION>rgba(0, 0, 0, 0)</INFORMATION>;
+    color: <INFORMATION>rgb(180, 178, 178)</INFORMATION>;
+}

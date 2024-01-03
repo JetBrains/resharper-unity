@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ios-list-usb-devices", "ios-list-usb-devices\src\ios-list-usb-devices.csproj", "{F2D958CA-D124-449A-89B7-4BDD7F807F2D}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "usbmuxd", "usbmuxd\usbmuxd.shproj", "{53672050-AE7E-4ED9-B1A1-5604536DC42C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "texture-debugger", "texture-debugger\texture-debugger.csproj", "{AABD4DE6-025A-44F4-B99B-B24870616237}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F2D958CA-D124-449A-89B7-4BDD7F807F2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2D958CA-D124-449A-89B7-4BDD7F807F2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2D958CA-D124-449A-89B7-4BDD7F807F2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2D958CA-D124-449A-89B7-4BDD7F807F2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AABD4DE6-025A-44F4-B99B-B24870616237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AABD4DE6-025A-44F4-B99B-B24870616237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AABD4DE6-025A-44F4-B99B-B24870616237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AABD4DE6-025A-44F4-B99B-B24870616237}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

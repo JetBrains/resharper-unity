@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.MoveQuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
@@ -24,9 +25,8 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Initialize field in Start or Awake method",
-        Description =
-            "Initializes current field in Start or Awake method via calling `GetComponent`")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.InitializeFieldComponentContextAction_Name), 
+        DescriptionResourceName = nameof(Strings.InitializeFieldComponentContextAction_Description))]
     public class InitializeFieldComponentContextAction : InitializeComponentContextActionBase<IFieldDeclaration>
     {
         public InitializeFieldComponentContextAction(ICSharpContextActionDataProvider dataProvider)
@@ -36,9 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
     }
 
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Initialize property in Start or Awake method",
-        Description =
-            "Initializes current property in Start or Awake method via calling `GetComponent`")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.InitializePropertyComponentContextAction_Name), 
+        DescriptionResourceName = nameof(Strings.InitializePropertyComponentContextAction_Description))]
     public class InitializePropertyComponentContextAction : InitializeComponentContextActionBase<IPropertyDeclaration>
     {
         public InitializePropertyComponentContextAction(ICSharpContextActionDataProvider dataProvider)
@@ -174,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return null;
             }
 
-            public override string Text => $"Initialize in '{myMethodName}'";
+            public override string Text => string.Format(Strings.InitializeComponentBulbActionBase_Text_Initialize_in___0__, myMethodName);
         }
 
         private class AddRequireComponentBulbActionBase : BulbActionBase
@@ -197,7 +196,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return null;
             }
 
-            public override string Text => $"Add 'RequireComponent'";
+            public override string Text => Strings.AddRequireComponentBulbActionBase_Text_Add__RequireComponent_;
         }
     }
 }

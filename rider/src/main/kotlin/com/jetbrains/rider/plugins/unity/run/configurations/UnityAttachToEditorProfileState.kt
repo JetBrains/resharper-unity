@@ -6,8 +6,8 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.rd.util.withLongBackgroundContext
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.withBackgroundContext
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
@@ -37,7 +37,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
         // Make sure we have a pid and port to connect. This requires fetching the OS process list, which must happen
         // on the background thread
-        return withLongBackgroundContext(lifetime) {
+        return withBackgroundContext(lifetime) {
             if (!remoteConfiguration.updatePidAndPort()) {
                 logger.trace("Have not found Unity, would start a new Unity Editor instead.")
                 exeDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
@@ -63,7 +63,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                         if (it == DebuggerInitializingState.Initialized) {
                             logger.info("Pass value to backend, which will push Unity to enter play mode.")
                             var prevState = false
-                            lt.bracket(opening = {
+                            lt.bracketIfAlive(opening = {
                                 // pass value to backend, which will push Unity to enter play mode.
                                 prevState = executionEnvironment.project.solution.frontendBackendModel.playControls.play.valueOrDefault(false)
                                 executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(true)

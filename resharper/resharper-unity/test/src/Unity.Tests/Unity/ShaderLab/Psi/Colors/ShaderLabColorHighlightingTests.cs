@@ -1,4 +1,4 @@
-﻿using JetBrains.ReSharper.Daemon.VisualElements;
+﻿using JetBrains.ReSharper.Feature.Services.ColorHints;
 using JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.TestFramework;
@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Colors
     [Category("ColorHighlighting")]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
-    public class ShaderLabColorHighlightingTests : ShaderLabHighlightingTestBase<ColorHighlighting>
+    public class ShaderLabColorHighlightingTests : ShaderLabHighlightingTestBase<ColorHintHighlighting>
     {
         protected override bool ColorIdentifiers => true;
         protected override string RelativeTestDataPath => @"ShaderLab\Daemon\Stages\Colors";

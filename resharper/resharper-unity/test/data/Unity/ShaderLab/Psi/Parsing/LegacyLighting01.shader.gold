@@ -19,32 +19,33 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IColorCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:COLOR_KEYWORD, text:Color)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IColorValue
-                      IVectorLiteral
-                        ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
-                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
-                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
-                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
-                        ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                    IColorCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:COLOR_KEYWORD, text:Color)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IColorValue
+                        IVectorLiteral
+                          ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+                          ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+                          ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+                          ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+                          ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

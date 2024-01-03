@@ -16,7 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
     {
         public Patterns GetPattern(IContextBoundSettingsStore store, ICSharpTypeAndNamespaceHolderDeclaration declaration)
         {
-            if (!declaration.GetSolution().HasUnityReference())
+            var solution = declaration.GetSolution();
+            if (!solution.HasUnityReference())
                 return null;
 
             // TODO: This doesn't work with ReSharper - the resources haven't been added
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
             try
             {
                 var pattern = store.GetValue((AdditionalFileLayoutSettings s) => s.Pattern);
-                return FileLayoutUtil.ParseFileLayoutPattern(pattern);
+                return FileLayoutUtil.ParseFileLayoutPattern(solution, pattern);
             }
             catch (Exception ex)
             {

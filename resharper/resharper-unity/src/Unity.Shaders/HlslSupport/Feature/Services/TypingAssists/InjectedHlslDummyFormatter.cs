@@ -1,7 +1,9 @@
+#nullable enable
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.Cpp.Language;
@@ -16,28 +18,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
     public class InjectedHlslDummyFormatter : CppDummyFormatterBase
     {
         private readonly ISolution mySolution;
+        private readonly UnityDialects myDialects;
 
         public InjectedHlslDummyFormatter(ISolution solution, CachingLexerService cachingLexerService,
-            DocumentToProjectFileMappingStorage projectFileMappingStorage)
+            DocumentToProjectFileMappingStorage projectFileMappingStorage, UnityDialects dialects)
             : base(solution, cachingLexerService, projectFileMappingStorage)
         {
             mySolution = solution;
+            myDialects = dialects;
         }
 
         public CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer(ITextControl textControl)
         {
-            var dialect = new CppHLSLDialect(true, false);
-            var cachingLexer = LexerExtensions.ToCachingLexer(new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create)).TokenBuffer.CreateLexer();
-
+            var dialect = myDialects.ShaderLabHlslDialect;
+            var cachingLexer = new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
             return new CppCachingKeywordResolvingLexer(cachingLexer, dialect);
         }
 
         public override string CalculateInjectionIndent(CppDummyFormatterContext context, CachingLexer lexer)
         {
-            var offset = context.TextControl.Caret.DocumentOffset();
+            var offset = context.TextControl.Caret.DocumentOffset().Offset;
             using (LexerStateCookie.Create(lexer))
             {
-                if (!lexer.FindTokenAt(offset.Offset))
+                if (!lexer.FindTokenAt(offset))
                     return "";
 
                 var tt = lexer.TokenType;
@@ -54,48 +57,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
 
                 if (tt != null)
                 {
-                    var doc = context.TextControl.Document;
-                    var lineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
-                    lexer.FindTokenAt(lineStart);
-                    tt = lexer.TokenType;
+                    var blockStartPos = lexer.CurrentPosition;
+                    for (lexer.Advance(); lexer.TokenEnd <= offset && (tt = lexer.TokenType) is { IsWhitespace: true }; lexer.Advance()) { } // skip to next non-whitespace token 
 
-                    Assertion.AssertNotNull(tt, "Lexer.TokenType may not be null");
-                    while (tt.IsWhitespace)
-                    {
-                        lexer.Advance();
-                        tt = lexer.TokenType;
-                    }
-
-                    var tokenLineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
-                    return doc.GetText(new TextRange(tokenLineStart, lexer.TokenStart));
+                    // if next non-empty token is end of block then reset to block start otherwise use offset of first line in the block 
+                    if (tt == ShaderLabTokenType.CG_END ||
+                        tt == ShaderLabTokenType.HLSL_END ||
+                        tt == ShaderLabTokenType.GLSL_END)
+                        lexer.CurrentPosition = blockStartPos;
+                    
+                    return CalculateLineIndent(context, lexer);
                 }
             }
 
             return "";
         }
 
-        public class HlslDummyFormatterContext : CppDummyFormatterContext
+        private static string CalculateLineIndent(CppDummyFormatterContext context, CachingLexer lexer)
         {
-            public HlslDummyFormatterContext(ISolution solution, ITextControl originalTextControl,
-                ITextControl textControl, CppLanguageDialect dialect)
-                : base(solution, originalTextControl, textControl, dialect)
+            var doc = context.TextControl.Document;
+            var lineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
+            lexer.FindTokenAt(lineStart);
+            var tt = lexer.TokenType;
+
+            Assertion.AssertNotNull(tt, "Lexer.TokenType may not be null");
+            while (tt!.IsWhitespace)
+            {
+                lexer.Advance();
+                tt = lexer.TokenType;
+            }
+
+            var tokenLineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
+            return doc.GetText(new TextRange(tokenLineStart, lexer.TokenStart));
+        }
+
+        private class HlslDummyFormatterContext : CppDummyFormatterContext
+        {
+            public HlslDummyFormatterContext(ISolution solution, ITextControl textControl, CppLanguageDialect dialect)
+                : base(solution, textControl, dialect)
             {
             }
 
             public override CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer()
             {
-                var dialect = new CppHLSLDialect(true, false);
-                var cachingLexer = LexerExtensions.ToCachingLexer(new ShaderLabLexerGenerated(Document.Buffer, CppLexer.Create))
-                    .TokenBuffer.CreateLexer();
-                return new CppCachingKeywordResolvingLexer(cachingLexer, dialect);
+                var cachingLexer = new ShaderLabLexerGenerated(Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
+                return new CppCachingKeywordResolvingLexer(cachingLexer, Dialect);
             }
         }
 
-        public override CppDummyFormatterContext CreateContext(ITextControl textControl,
-            ITextControl originalTextControl)
+        public override CppDummyFormatterContext CreateContext(ITextControl textControl)
         {
-            var dialect = new CppHLSLDialect(true, false);
-            return new HlslDummyFormatterContext(mySolution, originalTextControl, textControl, dialect);
+            var dialect = myDialects.ShaderLabHlslDialect;
+            return new HlslDummyFormatterContext(mySolution, textControl, dialect);
         }
     }
 }

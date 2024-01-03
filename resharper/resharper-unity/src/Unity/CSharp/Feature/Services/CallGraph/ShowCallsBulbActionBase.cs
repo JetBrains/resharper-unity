@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 
         private void ShowCalls(CallHierarchyExplorerViewManager manager,
             Func<CallHierarchyFindResult, bool> filter,
-            DeclaredElementInstance<IClrDeclaredElement> start, 
+            DeclaredElementInstance<IClrDeclaredElement> start,
             ShowCallsType callType)
         {
             var text = Text;
@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
             {
                 case ShowCallsType.INCOMING:
                     text += " to " + start.Element.ShortName;
-                    manager.ShowIncoming(start, text, filter);
+                    manager.ShowIncoming(new DeclaredElementInstance<IDeclaredElement>(start.Element, start.Substitution), text, filter);
                     break;
                 case ShowCallsType.OUTGOING:
                     text += " from " + start.Element.ShortName;

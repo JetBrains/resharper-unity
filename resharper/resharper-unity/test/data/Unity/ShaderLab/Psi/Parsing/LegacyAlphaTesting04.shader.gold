@@ -49,46 +49,47 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  IAlphaTestCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:ALPHA_TEST_KEYWORD, text:AlphaTest)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IAlphaTestValue
-                      ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  ISetTextureCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    ISetTextureValue
-                      IVariableReference
-                        ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
-                        IReferenceName
-                          IShaderLabIdentifier
-                            Identifier(type:IDENTIFIER, text:_MainTex)
-                        ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                    IAlphaTestCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:ALPHA_TEST_KEYWORD, text:AlphaTest)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                      IAlphaTestValue
+                        ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                    ISetTextureCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:SET_TEXTURE_KEYWORD, text:SetTexture)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      ICombineCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:COMBINE_KEYWORD, text:combine)
+                      ISetTextureValue
+                        IVariableReference
+                          ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+                          IReferenceName
+                            IShaderLabIdentifier
+                              Identifier(type:IDENTIFIER, text:_MainTex)
+                          ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        ICombineValue
-                          ICombineCalculation
-                            ICombineOperation
-                              ICombineSrc
-                                ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_KEYWORD, text:texture)
-                      Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                        ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ICombineCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:COMBINE_KEYWORD, text:combine)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          ICombineValue
+                            ICombineCalculation
+                              ICombineOperation
+                                ICombineSrc
+                                  ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_KEYWORD, text:texture)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

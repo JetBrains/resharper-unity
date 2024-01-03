@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
-using JetBrains.Util.Extension;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
@@ -23,15 +23,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         /// If file has m_Target modification and does not have any m_MethodName modification, we will add it to that counting set and
         /// for each find usages request for method we will scan all files from that set for usages
         ///
-        /// Possible improvment:
+        /// Possible improvement:
         /// 1. Store for each IPsiSourceFile collection of m_Target references
         /// 2. GetPossibleFilesWithUsage will resolve m_Target to real ScriptComponentHierarchy with m_Script guid
-        /// 3. GetPossibleFilesWithUsage will check that assosiated with guid type element is derived from method's type element and process only in that case
-        /// NB : resolve to real ScriptComponentHierarchy will be cached in PrefabImportCache for stripped elements or will be simply availble in current scene hierarchy
+        /// 3. GetPossibleFilesWithUsage will check that associated with guid type element is derived from method's type element and process only in that case
+        /// NB : resolve to real ScriptComponentHierarchy will be cached in PrefabImportCache for stripped elements or will be simply available in current scene hierarchy
         /// </summary>
         private readonly CountingSet<IPsiSourceFile> myFilesToCheckForUsages = new CountingSet<IPsiSourceFile>();
         
-        // both collection could be removed and replaced by pointer to UnityEventsDataElement with coressponding sourceFile
+        // both collection could be removed and replaced by pointer to UnityEventsDataElement with corresponding sourceFile
         // NB: LocalReference == pointer to source file too.
         private readonly Dictionary<IPsiSourceFile, ImportedUnityEventData> myImportedUnityEventDatas = new Dictionary<IPsiSourceFile, ImportedUnityEventData>();
         #endregion
@@ -45,22 +45,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 var assetMethodDataToModifiedFields = new OneToSetMap<(LocalReference, string, int), string>();
                 foreach (var modification in prefabInstanceHierarchy.PrefabModifications)
                 {
-                    if (!(modification.Target is ExternalReference externalReference))
+                    if (modification.Target is not ExternalReference externalReference)
                         continue;
-                    
-                    if (!modification.PropertyPath.Contains("m_PersistentCalls"))
+
+                    if (!modification.PropertyPath.Contains(".m_PersistentCalls."))
                         continue;
                     
                     var location = new LocalReference(currentFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
-                    var parts = modification.PropertyPath.Split('.');
-                    var unityEventName = parts[0];
                     
-
-                    var dataPart = parts.FirstOrDefault(t => t.StartsWith("data"));
-                    if (dataPart == null)
-                        continue;
-                    
-                    if (!int.TryParse(dataPart.RemoveStart("data[").RemoveEnd("]"), out var index))
+                    var (unityEventName, parts) = UnityEventUtils.SplitPropertyPath(modification.PropertyPath);
+                    if (!UnityEventUtils.TryGetDataIndex(parts, out var index))
                         continue;
 
                     result.UnityEventToModifiedIndex.Add((location, unityEventName), index);
@@ -128,19 +122,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     // missed script
                     if (script == null)
                         continue;
-                    
+
+                    var names = new JetHashSet<string>() { unityEventName };
+                     
+                    // sources-case : get all formerly serialized field names, let's assume that we do not need it for scripts from assemblies
                     var scriptType = AssetUtils.GetTypeElementFromScriptAssetGuid(mySolution, script.ScriptReference.ExternalAssetGuid);
                     var field = scriptType?.GetMembers().FirstOrDefault(t => t is IField f && AssetUtils.GetAllNamesFor(f).Contains(unityEventName)) as IField;
-                    if (field == null)
-                        continue;
-
-                    var names = AssetUtils.GetAllNamesFor(field).ToJetHashSet();
+                    
+                    if (field != null)
+                        names.AddRange(AssetUtils.GetAllNamesFor(field).ToJetHashSet());
+                    
                     var modifications = script.ImportUnityEventData(this, names);
 
                     foreach (var index in modifiedEvents)
                     {
                         Assertion.Assert(index < modifications.Count, "index < modifications.Count");
-                        var result = AssetMethodUsages.TryCreateAssetMethodFromModifications(location, unityEventName, modifications[index]);
+                        var result = Logger.Catch(()=>AssetMethodUsages.TryCreateAssetMethodFromModifications(location, unityEventName, modifications[index]));
                         if (result != null)
                             yield return (location, result);
                     }

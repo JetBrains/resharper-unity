@@ -1,4 +1,5 @@
-﻿using JetBrains.Application.Settings;
+﻿#nullable enable
+using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Settings;
@@ -34,21 +35,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
         {
             if (!myShaderLabIntellisenseManager.GetAutopopupEnabled(boundSettingsStore))
                 return false;
-            return c == '[';
+            return c is '[' or '_' || char.IsLetterOrDigit(c);
         }
 
-        public bool ProcessSubsequentTyping(char c, ITextControl textControl)
-        {
-            // What does this mean?
-            return true;
-        }
+        public bool ProcessSubsequentTyping(char c, ITextControl textControl) => c is not ']';
 
-        public bool AcceptsFile(IFile file, ITextControl textControl)
-        {
-            return file is IShaderLabFile;
-        }
+        public bool AcceptsFile(IFile file, ITextControl textControl) => file is IShaderLabFile && this.MatchToken(file, textControl, node => node.GetContainingNode<IVariableReference>() is not null);
 
-        public PsiLanguageType Language => ShaderLabLanguage.Instance;
+        public PsiLanguageType Language => ShaderLabLanguage.Instance!;
         public bool ForceHideCompletion => false;
     }
 }

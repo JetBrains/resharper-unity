@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 return new KeywordTokenElement(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
             }
 
-            public override bool IsKeyword => true;
+            public sealed override bool IsKeyword => true;
         }
 
         public class KeywordTokenElement : ShaderLabTokenBase

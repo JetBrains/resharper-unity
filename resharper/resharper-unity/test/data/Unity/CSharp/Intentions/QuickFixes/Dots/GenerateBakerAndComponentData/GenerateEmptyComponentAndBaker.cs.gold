@@ -1,0 +1,29 @@
+﻿Provided elements:
+ 0: FieldDimensions:UnityEngine.Vector2
+
+// ${KIND:Unity.GenerateBakerAndComponent}
+
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace ComponentsAndTags
+{
+    public class Graveyard{caret}PropertiesAuthoring : MonoBehaviour
+    {
+        public Vector2 FieldDimensions;
+
+        public class GraveyardPropertiesAuthoringBaker : Baker<GraveyardPropertiesAuthoring>
+        {
+          public override void Bake(GraveyardPropertiesAuthoring authoring)
+          {
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+            AddComponent(entity, new GraveyardPropertiesComponentData());
+          }
+        }
+    }
+
+    public struct GraveyardPropertiesComponentData : IComponentData
+    {
+    }
+}

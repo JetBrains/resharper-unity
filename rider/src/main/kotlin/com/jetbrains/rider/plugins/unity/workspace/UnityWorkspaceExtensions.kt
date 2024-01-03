@@ -2,11 +2,17 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.ide.WorkspaceModel
-import java.nio.file.Path
+import com.intellij.platform.backend.workspace.WorkspaceModel
+import com.intellij.platform.workspace.storage.EntitySource
+import com.intellij.platform.workspace.storage.MutableEntityStorage
+import com.intellij.platform.workspace.jps.entities.ContentRootEntity
+import com.intellij.platform.workspace.jps.entities.ExcludeUrlEntity
+import com.intellij.platform.workspace.jps.entities.ModuleEntity
+import com.intellij.platform.workspace.storage.url.VirtualFileUrl
 
-val UNITY_EXCLUDED_PATTERNS = listOf("*.tmp")
+val UNITY_EXCLUDED_PATTERNS = listOf("*.tmp") // don't exclude meta - undo would not work RIDER-81449, see also RIDER-79712, RIDER-83846
 val UNITY_PACKAGE_ID_MAPPING = "rider.unity.package.id"
 
 
@@ -26,4 +32,17 @@ fun WorkspaceModel.tryGetPackage(id: String): UnityPackageEntity? {
 
 fun WorkspaceModel.tryGetPackage(packageFolder: VirtualFile): UnityPackageEntity? {
     return getPackages().singleOrNull { it.packageFolder == packageFolder }
+}
+
+// previously was com.intellij.workspaceModel.storage.bridgeEntities.ExtensionsKt.addContentRootEntity
+fun MutableEntityStorage.addContentRootEntity(url: VirtualFileUrl,
+                                              excludedUrls: List<VirtualFileUrl>,
+                                              excludedPatterns: List<@NlsSafe String>,
+                                              module: ModuleEntity,
+                                              source: EntitySource = module.entitySource): ContentRootEntity {
+    val excludes = excludedUrls.map { this addEntity ExcludeUrlEntity(it, source) }
+    return this addEntity ContentRootEntity(url, excludedPatterns, source) {
+        this.excludedUrls = excludes
+        this.module = module
+    }
 }

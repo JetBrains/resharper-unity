@@ -1,0 +1,18 @@
+Search target
+    AnimEventHolder
+Found usages  (3 usages found)
+    Unity component usage  (3 usages found)
+        Assets  (3 usages found)
+            Scenes  (3 usages found)
+                SampleScene.unity  (1 usage found)
+                    Cube  (1 usage found)
+                        AnimEventHolder  (1 usage found)
+                             Guid: 6ac41652670e9df4ab006f6284da3404
+                WithControllerMod.prefab  (1 usage found)
+                    WithControllerMod  (1 usage found)
+                        AnimEventHolder  (1 usage found)
+                             Guid: 6ac41652670e9df4ab006f6284da3404
+                WithScriptMod.prefab  (1 usage found)
+                    WithScriptMod  (1 usage found)
+                        AnimEventHolder  (1 usage found)
+                             Guid: 6ac41652670e9df4ab006f6284da3404

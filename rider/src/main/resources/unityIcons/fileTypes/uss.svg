@@ -1,22 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <g id="Uss" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
-    <g id="Group" transform="translate(2 2)">
-      <polygon id="Fill-9" fill="#40B6E0" points=".001 2 3.001 2 3.001 0 .001 0"/>
-      <polygon id="Fill-11" fill="#40B6E0" points=".001 4 3.001 4 3.001 2 .001 2" opacity=".75"/>
-      <polygon id="Fill-12" fill="#9AA7B0" points="2.207 6.258 2.207 6.258 2.465 6 0 6 0 8.465"/>
-      <polygon id="Fill-13" fill="#40B6E0" points="3.001 5.465 3.001 4 .001 4 .001 6 2.465 6" opacity=".5"/>
-    </g>
-    <g id="Group-3" transform="translate(3.879 4.016)">
-      <polygon id="Fill-14" fill="#F4AF3D" points="6.691 3.535 4.57 1.414 5.984 0 8.105 2.121"/>
-      <polygon id="Fill-15" fill="#F4AF3D" points="5.277 4.949 3.155 2.828 4.57 1.414 6.691 3.535" opacity=".75"/>
-      <polygon id="Fill-16" fill="#9AA7B0" points="3.121 5.984 3.484 5.984 1.742 4.242 0 5.984"/>
-      <polygon id="Fill-17" fill="#F4AF3D" points="4.242 5.984 5.277 4.949 3.156 2.828 1.742 4.242 3.484 5.984" opacity=".5"/>
-    </g>
-    <g id="Group-2" transform="translate(2 11)">
-      <polygon id="Fill-2" fill="#F98B9E" points="10 3 12 3 12 0 10 0"/>
-      <polygon id="Fill-3" fill="#F98B9E" points="8 0 10 0 10 3 8 3" opacity=".75"/>
-      <polygon id="Fill-5" fill="#F98B9E" points="6 3 8 3 8 0 6 0" opacity=".5"/>
-      <path id="Fill-7" fill="#9AA7B0" d="M1,1.5 C1,1.224 1.224,1 1.5,1 C1.776,1 2,1.224 2,1.5 C2,1.776 1.776,2 1.5,2 C1.224,2 1,1.776 1,1.5 L1,1.5 Z M6,0 L1.5,0 C0.673,0 0,0.673 0,1.5 C0,2.327 0.673,3 1.5,3 L6,3 L6,0 Z"/>
-    </g>
-  </g>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#40b6e0" d="M2 4h3.001V2H2v2z"/>
+  <path fill="#40b6e0" d="M2 6h3.001V4H2v2z" opacity=".75"/>
+  <path fill="#9aa7b0" d="M4.207 8.258 4.465 8H2v2.465l2.207-2.207z"/>
+  <path fill="#40b6e0" d="M5.001 7.465V6H2v2h2.465l.536-.535z" opacity=".5"/>
+  <path fill="#f4af3d" d="M10.57 7.551 8.449 5.43l1.414-1.414 2.121 2.121-1.414 1.414z"/>
+  <path fill="#f4af3d" d="M9.156 8.965 7.034 6.844 8.449 5.43l2.121 2.121-1.414 1.414z" opacity=".75"/>
+  <path fill="#9aa7b0" d="M7 10h.363L5.621 8.258 3.879 10H7z"/>
+  <path fill="#f4af3d" d="m8.121 10 1.035-1.035-2.122-2.121-1.413 1.414L7.363 10h.758z" opacity=".5"/>
+  <path fill="#f98b9e" d="M12 14h2v-3h-2v3z"/>
+  <path fill="#f98b9e" d="M10 11h2v3h-2v-3z" opacity=".75"/>
+  <path fill="#f98b9e" d="M8 14h2v-3H8v3z" opacity=".5"/>
+  <path fill="#9aa7b0" d="M3 12.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0ZM8 11H3.5c-.827 0-1.5.673-1.5 1.5S2.673 14 3.5 14H8v-3Z"/>
 </svg>

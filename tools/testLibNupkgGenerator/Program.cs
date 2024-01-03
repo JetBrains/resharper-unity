@@ -27,7 +27,7 @@ namespace TestDataGenerator
             Directory.CreateDirectory(packagePath);
             File.WriteAllText(nuspecPath, template);
             
-            foreach (var filePath in Directory.GetFiles(engineLocation, "*.dll"))
+            foreach (var filePath in Directory.GetFiles(engineLocation, "*.dll", SearchOption.AllDirectories))
             {
                 var name = Path.GetFileName(filePath);
                 if (!name.StartsWith("UnityEngine") && !name.StartsWith("UnityEditor"))
@@ -43,7 +43,7 @@ namespace TestDataGenerator
 
         private static string GetNuspecTemplate()
         {
-            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestDataGenerator.nuspec.template"))
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TestLibNupkgGenerator.nuspec.template"))
             using (StreamReader reader = new StreamReader(stream))
             {
                 return reader.ReadToEnd();

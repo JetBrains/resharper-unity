@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Test
 {
+    [Obsolete("Needed to legalize obsoleted AddComponent invocation")]
     public void Method(GameObject go)
     {
         // User components must implement MonoBehaviour
@@ -29,7 +31,7 @@ public class MyMonoBehaviour : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
-(1): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
-(2): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
-(3): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
+(0): ReSharper Warning: Expected a type derived from 'UnityEngine.MonoBehaviour'
+(1): ReSharper Warning: Expected a type derived from 'UnityEngine.MonoBehaviour'
+(2): ReSharper Warning: Expected a type derived from 'UnityEngine.MonoBehaviour'
+(3): ReSharper Warning: Expected a type derived from 'UnityEngine.MonoBehaviour'

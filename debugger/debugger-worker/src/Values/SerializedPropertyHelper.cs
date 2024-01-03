@@ -6,9 +6,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
 {
     public static class SerializedPropertyHelper
     {
-        public static string GetEnumValueIndexAsEnumName<TValue>(IObjectValueRole<TValue> serializedProperty,
-                                                                 IValueReference<TValue> enumValueIndexReference,
-                                                                 IPresentationOptions options)
+        public static string? GetEnumValueIndexAsEnumName<TValue>(IObjectValueRole<TValue> serializedProperty,
+                                                                  IValueReference<TValue> enumValueIndexReference,
+                                                                  IPresentationOptions options)
             where TValue : class
         {
             var primitiveValue = enumValueIndexReference.AsPrimitiveSafe(options)?.GetPrimitive();
@@ -22,8 +22,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
             return null;
         }
 
-        public static string GetIntValueAsPrintableChar<TValue>(IValueReference<TValue> intValueReference,
-                                                                IValueFetchOptions options)
+        public static string? GetIntValueAsPrintableChar<TValue>(IValueReference<TValue> intValueReference,
+                                                                 IValueFetchOptions options)
             where TValue : class
         {
             var primitiveValue = intValueReference.AsPrimitiveSafe(options)?.GetPrimitive();

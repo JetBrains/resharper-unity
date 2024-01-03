@@ -1,7 +1,9 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using JetBrains.Application.InlayHints;
+
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
@@ -10,16 +12,15 @@ using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options;
-
-#nullable enable
+using JetBrains.TextControl.DocumentMarkup.Adornments;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
     public class SimpleInlayHintBulbActionsProvider : IInlayHintBulbActionsProvider
     {
-        private readonly Expression<Func<UnityInlayHintSettings, InlayHintsMode>> myOption;
+        private readonly Expression<Func<UnityInlayHintSettings, PushToHintMode>> myOption;
 
-        protected SimpleInlayHintBulbActionsProvider(Expression<Func<UnityInlayHintSettings, InlayHintsMode>> option)
+        protected SimpleInlayHintBulbActionsProvider(Expression<Func<UnityInlayHintSettings, PushToHintMode>> option)
         {
             myOption = option;
         }

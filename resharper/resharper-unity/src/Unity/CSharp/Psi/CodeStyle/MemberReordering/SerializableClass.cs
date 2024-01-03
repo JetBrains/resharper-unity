@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReorderin
             if (!(node is IDeclaration declaration)) return false;
             var unityApi = node.GetSolution().GetComponent<UnityApi>();
             return unityApi.IsUnityType(declaration.DeclaredElement as ITypeElement)
-                   || unityApi.IsSerializableTypeDeclaration(declaration.DeclaredElement as ITypeElement);
+                   || unityApi.IsSerializableTypeDeclaration(declaration.DeclaredElement as ITypeElement) == SerializedFieldStatus.SerializedField;
         }
 
         public int? Compare(INodeConstraint other)

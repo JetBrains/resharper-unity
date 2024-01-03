@@ -2,6 +2,7 @@ using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
 using JetBrains.ReSharper.Features.Navigation.Features.FindUsages;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 
@@ -35,10 +36,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Navigation.FindUsages
                 if (api != null)
                 {
                     if (declaredElement is IMethod method && api.IsEventFunction(method)
-                        || declaredElement is IField field && api.IsSerialisedField(field)
+                        || declaredElement is IField field && api.IsSerialisedField(field) == SerializedFieldStatus.SerializedField
                         || declaredElement is ITypeElement type && api.IsUnityType(type))
                     {
-                        return request.Title + " are only implicit.";
+                        return string.Format(Strings.UnityFindUsagesProvider_GetNotFoundMessage_SearchRequestLocalizedTitle_are_only_implicit_, request.Title);
                     }
                 }
             }

@@ -1,4 +1,4 @@
-﻿# 1131 ITEMS #
+﻿# 1132 ITEMS #
 
 + private Awake() { ... }
 private CreateGUI() { ... }
@@ -55,6 +55,7 @@ public
 readonly
 record
 ref
+required
 sbyte
 sealed
 short
@@ -1132,7 +1133,7 @@ public override GetExtraPaneTypes() { … }    IEnumerable<Type>
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 1131 ITEMS #
+# 1132 ITEMS #
 
 + private Awake() { ... }
 private CreateGUI() { ... }
@@ -1189,6 +1190,7 @@ public
 readonly
 record
 ref
+required
 sbyte
 sealed
 short

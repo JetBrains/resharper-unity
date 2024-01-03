@@ -11,18 +11,21 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointUtil
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import icons.UnityIcons
+import org.jetbrains.annotations.Nls
 import java.util.*
 import javax.swing.Icon
 
 class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
     companion object {
         const val Id = "UnityPausepointType"
-        const val Title = "Unity Pausepoints"
+        @Nls
+        val Title = UnityBundle.message("breakpoint.type.unity.pausepoints")
     }
 
     override fun getDisplayText(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>?): String {
-        return "Pause Unity editor when debugger reaches " + super.getDisplayText(breakpoint)
+        return UnityBundle.message("pause.unity.editor.when.debugger.reaches.0", super.getDisplayText(breakpoint))
     }
 
     override fun getDisabledIcon(): Icon = UnityIcons.Debugger.Db_disabled_pausepoint
@@ -47,7 +50,7 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
     override fun getVisibleStandardPanels(): EnumSet<StandardPanels> = EnumSet.of(StandardPanels.DEPENDENCY)
 
     override fun getAdditionalPopupMenuActions(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>, currentSession: XDebugSession?): MutableList<out AnAction> {
-        val action = DumbAwareAction.create(UnityPausepointConstants.convertToLineBreakpointText) {
+        val action = DumbAwareAction.create(UnityPausepointConstants.convertToLineBreakpointActionText) {
             val dataContext = it.dataContext
             val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return@create
             val project = editor.project ?: return@create

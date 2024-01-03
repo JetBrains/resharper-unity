@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.I18n;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
@@ -12,6 +13,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -151,13 +153,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
                     myArgument.Expression.ReplaceBy(CSharpElementFactory.GetInstance(myArgument)
                         .CreateStringLiteralExpression(mySceneName));
 
-                solution.GetComponent<IDaemon>().Invalidate();
+                solution.GetComponent<IDaemon>().Invalidate("SceneManagerLoadSceneQuickFix.LoadSceneFixBulbAction.ExecutePsiTransaction".NON_LOCALIZABLE());
 
                 solution.GetComponent<UnityRefresher>().StartRefresh(RefreshType.Normal);
                 return null;
             }
 
-            public override string Text => $"Add '{mySceneName}' to build settings";
+            public override string Text => string.Format(Strings.LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings, mySceneName);
 
             private static IBlockSequenceNode CreateBlockSequenceNode(string sceneName, Guid guid, IPsiModule module)
             {

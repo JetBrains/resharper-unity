@@ -1,0 +1,2 @@
+{//MakeLog: true, DumpRulesForInterval: { Left: "[SerializeField]", Right: "[Obsolete]" }, 
+ENFORCE_CUSTOM_HEADER_FORMATTING: true, BLANK_LINES_AFTER_HEADER: [0, 2, 10] }

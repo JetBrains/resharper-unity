@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Collections.Viewable;
 using Mono.Debugging.Client.DebuggerOptions;
-using Mono.Debugging.Client.HotReload;
+using Mono.Debugging.HotReload;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
@@ -23,6 +23,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         public virtual bool BreakOnUnhandledExceptions => DebuggerSessionOptionsImplementation.BreakOnUnhandledExceptions;
         public bool DisableJitOptimizationOnModuleLoad => DebuggerSessionOptionsImplementation.DisableJitOptimizationOnModuleLoad;
         public bool EnableExternalSourceDebug => DebuggerSessionOptionsImplementation.EnableExternalSourceDebug;
+        public bool StepIntoExternalCodeSupported => DebuggerSessionOptionsImplementation.StepIntoExternalCodeSupported;
         public bool AutomaticallyRefreshWatches => DebuggerSessionOptionsImplementation.AutomaticallyRefreshWatches;
         public bool EditAndContinueEnabled => DebuggerSessionOptionsImplementation.EditAndContinueEnabled;
         public bool EditAndContinueSupported => DebuggerSessionOptionsImplementation.EditAndContinueSupported;
@@ -38,5 +39,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         public bool ForceLoadMethodByToken => DebuggerSessionOptionsImplementation.ForceLoadMethodByToken;
         public HotReloadInfo HotReload => DebuggerSessionOptionsImplementation.HotReload;
         public bool DisableRuntimeLoadTimeout => DebuggerSessionOptionsImplementation.DisableRuntimeLoadTimeout;
+        public bool DisableSteppingHandlers => DebuggerSessionOptionsImplementation.DisableSteppingHandlers;
+        public bool TrackHandledExceptionsInAsyncCode => DebuggerSessionOptionsImplementation.TrackHandledExceptionsInAsyncCode;
     }
 }

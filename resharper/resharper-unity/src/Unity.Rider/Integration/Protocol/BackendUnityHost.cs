@@ -6,12 +6,12 @@ using JetBrains.Application.UI.Components;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Diagnostics;
+using JetBrains.HabitatDetector;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
@@ -33,6 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         private readonly UnityEditorUsageCollector myUnityEditorUsageCollector;
 
         private UnityEditorState myEditorState;
+        
+        private string? myApplicationPath;
 
         // Do not use for subscriptions! Should only be used to read values and start tasks.
         // The property's value will be null when the backend/Unity protocol is not available
@@ -98,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
         private static void SetRiderProcessId(BackendUnityModel backendUnityModel)
         {
-            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
+            if (PlatformUtil.RuntimePlatform == JetPlatform.Windows)
             {
                 // RiderProcessId is only used on Windows (for AllowSetForegroundWindow)
                 var frontendProcess = Process.GetCurrentProcess().GetParent();
@@ -118,8 +120,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         private void AdvisePackages(BackendUnityModel backendUnityModel, Lifetime modelLifetime,
                                     PackageManager packageManager)
         {
-            backendUnityModel.UnityApplicationData.Advise(modelLifetime, _ =>
+            backendUnityModel.UnityApplicationData.AdviseNotNull(modelLifetime, data =>
             {
+                // We want to refresh package only if applicationPath is new  
+                if (myApplicationPath == data.ApplicationPath) return;
+                myApplicationPath = data.ApplicationPath;
+                
                 // When the backend gets new application data, refresh packages, so we can be up to date with
                 // builtin packages. Note that we don't refresh when we lose the model. This means we're
                 // potentially viewing stale builtin packages, but that's ok. It's better than clearing all packages

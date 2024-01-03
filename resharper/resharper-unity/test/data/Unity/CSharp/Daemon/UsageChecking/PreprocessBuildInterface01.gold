@@ -33,9 +33,9 @@ public class C : A
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning [CS0618]: CS0618: Interface 'UnityEditor.Build.IPreprocessBuild' is obsolete: Use IPreprocessBuildWithReport instead
+(0): ReSharper Warning [CS0618]: CS0618: Interface 'UnityEditor.Build.IPreprocessBuild' is obsolete: 'Use IPreprocessBuildWithReport instead'
 (1): ReSharper Warning: Get-only auto-property 'RandomProperty' is never assigned
 (2): ReSharper Dead Code: Property 'RandomProperty' is never used
 (3): ReSharper Dead Code: Method 'RandomMethod' is never used
-(4): ReSharper Warning [CS0618]: CS0618: Interface 'UnityEditor.Build.IPostprocessBuild' is obsolete: Use IPostprocessBuildWithReport instead
+(4): ReSharper Warning [CS0618]: CS0618: Interface 'UnityEditor.Build.IPostprocessBuild' is obsolete: 'Use IPostprocessBuildWithReport instead'
 

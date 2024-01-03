@@ -1,8 +1,9 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
-using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -20,14 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
     [SolutionComponent]
     public class UnityShortcutCache : SimpleICache<CountingSet<string>>
     {
-        private readonly UnitySolutionTracker myUnitySolutionTracker;
-        private CountingSet<string> myLocalCache = new CountingSet<string>();
-        private OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithShortCut = new OneToCompactCountingSet<string, IPsiSourceFile>();
+        private readonly CountingSet<string> myLocalCache = new();
+        private readonly OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithShortCut = new();
 
-        public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, UnitySolutionTracker unitySolutionTracker)
+        public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager)
             : base(lifetime, shellLocks, persistentIndexManager,  CreateMarshaller())
         {
-            myUnitySolutionTracker = unitySolutionTracker;
         }
 
 
@@ -39,7 +38,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
                     var set = new CountingSet<string>(count);
                     for (int i = 0; i < count; i++)
                     {
-                        set.Add(reader.ReadString(), reader.ReadInt32());
+                        var key = reader.ReadString();
+                        if (key != null)
+                            set.Add(key, reader.ReadInt32());
                     }
 
                     return set;
@@ -58,10 +59,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return myUnitySolutionTracker.HasUnityReference.HasTrueValue() && base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>();
+            return base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>() && sf.GetProject().IsUnityProject();
         }
 
-        public override object Build(IPsiSourceFile sourceFile, bool isStartup)
+        public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
         {
             var file = sourceFile.GetDominantPsiFile<CSharpLanguage>();
             if (file == null)
@@ -75,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
                 var current = childrenEnumerator.Current;
                 switch (current)
                 {
-                    case IChameleonNode chameleonNode:
+                    case IChameleonNode:
                         childrenEnumerator.SkipThisNode();
                         break;
                     case IMethodDeclaration methodDeclaration:
@@ -89,10 +90,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
                             var isValidateFunction = validateArgument?.Value?.ConstantValue.IsTrue();
                             if (!isValidateFunction.HasValue || !isValidateFunction.Value)
                             {
-                                var name = GetArgument(0, "itemName", arguments)?.Value?.ConstantValue.Value as string;
-                                if (name != null)
+                                var constantValue = GetArgument(0, "itemName", arguments)?.Value?.ConstantValue;
+                                if (constantValue != null && constantValue.IsString(out var nameValue) && nameValue != null)
                                 {
-                                    var shortcut = ExtractShortcutFromName(name);
+                                    var shortcut = ExtractShortcutFromName(nameValue);
                                     if (shortcut != null)
                                     {
                                         result.Add(shortcut);
@@ -112,13 +113,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
         }
 
 
-        public static string ExtractShortcutFromName(string name)
+        public static string? ExtractShortcutFromName(string name)
         {
             var parts = name.Split(' ');
             if (parts.Length == 1)
                 return null;
 
-            var shortCut = parts[parts.Length - 1];
+            var shortCut = parts[^1];
             if (shortCut.Length == 0)
                 return null;
 
@@ -131,19 +132,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
         }
 
 
-        public static ICSharpArgument GetArgument(int position, string name, IList<ICSharpArgument> arguments)
+        public static ICSharpArgument? GetArgument(int position, string name, IList<ICSharpArgument> arguments)
         {
             var fromName = arguments.FirstOrDefault(t => name.Equals(t?.NameIdentifier?.Name));
             if (fromName != null)
                 return fromName;
             var positionalArguments = arguments.Where(x => !x.IsNamedArgument).ToList();
-            if (positionalArguments.Count <= position)
-                return null;
-
-            return positionalArguments[position];
+            return positionalArguments.Count <= position ? null : positionalArguments[position];
         }
 
-        public override void Merge(IPsiSourceFile sourceFile, object builtPart)
+        public override void Merge(IPsiSourceFile sourceFile, object? builtPart)
         {
             RemoveFromLocalCache(sourceFile);
             base.Merge(sourceFile, builtPart);

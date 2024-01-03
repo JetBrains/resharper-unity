@@ -3,45 +3,48 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.jetbrains.rider.model.RdProjectsCount
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rider.model.RdSolutionDescriptor
 import com.jetbrains.rider.model.RdSolutionState
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.projectView.ProjectModelStatuses
 import com.jetbrains.rider.projectView.views.addAdditionalText
 import com.jetbrains.rider.projectView.views.presentSyncNode
 import com.jetbrains.rider.projectView.workspace.findProjects
 import com.jetbrains.rider.projectView.workspace.getSolutionEntity
+import com.jetbrains.rider.projectView.workspace.impl.WorkspaceProjectsCount
 import icons.UnityIcons
 
-@Suppress("UnstableApiUsage")
 class AssetsRootNode(project: Project, virtualFile: VirtualFile)
     : UnityExplorerFileSystemNode(project, virtualFile, emptyList(), AncestorNodeType.Assets) {
 
     private val referenceRoot = ReferenceRootNode(project)
+    @NlsSafe private val assets = "Assets"
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
-        presentation.addText("Assets", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+        presentation.addText(assets, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.AssetsRoot)
 
         val solutionEntity = WorkspaceModel.getInstance(myProject).getSolutionEntity() ?: return
         val descriptor = solutionEntity.descriptor as? RdSolutionDescriptor ?: return
+        val projectsCount =  WorkspaceProjectsCount.getInstance(project).get(solutionEntity)
 
         if (isSolutionOrProjectsSync()) {
             presentation.presentSyncNode()
         } else {
             when (descriptor.state) {
                 RdSolutionState.Default -> {
-                    if (descriptor.projectsCount.failed + descriptor.projectsCount.unloaded > 0) {
-                        presentProjectsCount(presentation, descriptor.projectsCount, true)
+                    if (projectsCount.failed + projectsCount.unloaded > 0) {
+                        presentProjectsCount(presentation, projectsCount, true)
                     }
                 }
-                RdSolutionState.WithErrors -> presentation.addAdditionalText("load failed")
-                RdSolutionState.WithWarnings -> presentProjectsCount(presentation, descriptor.projectsCount, true)
+                RdSolutionState.WithErrors -> presentation.addAdditionalText(UnityBundle.message("load.failed"))
+                RdSolutionState.WithWarnings -> presentProjectsCount(presentation, projectsCount, true)
             }
         }
     }
@@ -56,13 +59,18 @@ class AssetsRootNode(project: Project, virtualFile: VirtualFile)
         }
     }
 
-    private fun presentProjectsCount(presentation: PresentationData, count: RdProjectsCount, showZero: Boolean) {
+    private fun presentProjectsCount(presentation: PresentationData, count: WorkspaceProjectsCount.ProjectsCount, showZero: Boolean) {
         if (count.total == 0 && !showZero) return
 
-        var text = "${count.total} ${StringUtil.pluralize("project", count.total)}"
+        var text: String
         val unloadedCount = count.failed + count.unloaded
+        if (count.total == 1) {
+            text = UnityBundle.message("one.project.count", count.total)
+        } else {
+            text = UnityBundle.message("many.projects.count", count.total)
+        }
         if (unloadedCount > 0) {
-            text += ", $unloadedCount unloaded"
+            text += UnityBundle.message("unloaded.projects.count", unloadedCount)
         }
         presentation.addAdditionalText(text)
     }

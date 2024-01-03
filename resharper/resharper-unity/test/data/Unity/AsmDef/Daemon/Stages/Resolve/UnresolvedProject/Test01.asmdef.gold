@@ -4,4 +4,4 @@
 }
 
 ---------------------------------------------------------
-(0): ReSharper Error Highlighting: Unknown project reference 'unresolvedAsm'
+(0): ReSharper Dead Code: Missing assembly reference 'unresolvedAsm'. Assembly will not be referenced during compilation.

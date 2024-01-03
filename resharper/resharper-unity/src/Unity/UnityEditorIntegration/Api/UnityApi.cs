@@ -7,6 +7,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Caches;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -15,6 +16,13 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
+    public enum SerializedFieldStatus
+    {
+        Unknown = 0,
+        NonSerializedField = 1,
+        SerializedField = 2
+    }
+
     [SolutionComponent]
     public class UnityApi
     {
@@ -31,48 +39,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             KnownTypes.Bounds, KnownTypes.BoundsInt,
             KnownTypes.AnimationCurve,
             KnownTypes.Gradient,
-            KnownTypes.GUIStyle
+            KnownTypes.GUIStyle,
+            KnownTypes.SphericalHarmonicsL2,
+            KnownTypes.LazyLoadReference
         };
 
         private readonly UnityVersion myUnityVersion;
         private readonly UnityTypeCache myUnityTypeCache;
         private readonly UnityTypesProvider myUnityTypesProvider;
         private readonly KnownTypesCache myKnownTypesCache;
+        private readonly IUnitySerializedReferenceProvider mySerializedReferenceProvider;
 
-        public UnityApi(UnityVersion unityVersion, UnityTypeCache unityTypeCache, UnityTypesProvider unityTypesProvider, KnownTypesCache knownTypesCache)
+        public UnityApi(UnityVersion unityVersion, UnityTypeCache unityTypeCache, UnityTypesProvider unityTypesProvider,
+            KnownTypesCache knownTypesCache, IUnitySerializedReferenceProvider serializedReferenceProvider)
         {
             myUnityVersion = unityVersion;
             myUnityTypeCache = unityTypeCache;
             myUnityTypesProvider = unityTypesProvider;
             myKnownTypesCache = knownTypesCache;
+            mySerializedReferenceProvider = serializedReferenceProvider;
         }
 
-        public bool IsUnityType([NotNullWhen(true)] ITypeElement? type) => type != null && myUnityTypeCache.IsUnityType(type);
-
-        public bool IsComponentSystemType([NotNullWhen(true)] ITypeElement? typeElement)
-        {
-            // This covers ComponentSystem, JobComponentSystem and SystemBase
-            return typeElement.DerivesFrom(KnownTypes.ComponentSystemBase);
-        }
+        public bool IsUnityType([NotNullWhen(true)] ITypeElement? type) =>
+            type != null && myUnityTypeCache.IsUnityType(type);
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
         // method differentiates between a type declaration and a type usage. Consider renaming if we ever need to
         // expose stricter checking publicly
-        public bool IsSerializableTypeDeclaration([NotNullWhen(true)] ITypeElement? type)
+        public SerializedFieldStatus IsSerializableTypeDeclaration([NotNullWhen(true)] ITypeElement? type, bool useSwea = true) //TODO - use serializedRefProvider
         {
             // We only support type declarations in a project. We shouldn't get any other type
             if (type?.Module is IProjectPsiModule projectPsiModule)
             {
                 var project = projectPsiModule.Project;
-                return IsSerializableType(type, project, false);
+                return IsSerializableType(type, project, false, useSwea);
             }
 
-            return false;
+            return SerializedFieldStatus.NonSerializedField;
+        }
+
+        private SerializedFieldStatus IsSerializableType([NotNullWhen(true)] ITypeElement? type, IProject project, bool isTypeUsage,
+            bool useSwea = true,
+            bool hasSerializeReference = false)
+        {
+            if (IsSerializableTypeSimpleCheck(type, project, isTypeUsage, hasSerializeReference))
+                return SerializedFieldStatus.SerializedField;
+
+            return mySerializedReferenceProvider.GetSerializableStatus(type, useSwea);
         }
 
         // NOTE: This method assumes that the type is not a descendant of UnityEngine.Object!
-        private bool IsSerializableType([NotNullWhen(true)] ITypeElement? type, IProject project, bool isTypeUsage,
-                                        bool hasSerializeReference = false)
+        private bool IsSerializableTypeSimpleCheck([NotNullWhen(true)] ITypeElement? type, IProject project, bool isTypeUsage,
+            bool hasSerializeReference = false)
         {
             if (type is not (IStruct or IClass))
                 return false;
@@ -105,68 +123,88 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             // "System.Version" (which is marked [Serializable]). However, it doesn't exclude string, int, etc.
             // TODO: Rewrite this whole section to properly mimic UnitySerializationLogic.cs
             var name = type.GetClrName();
+
             if (Equals(name, KnownTypes.SystemVersion) || Equals(name, PredefinedType.GENERIC_DICTIONARY_FQN))
                 return false;
 
+            if (name.FullName.StartsWith("System."))
+                return false;
+
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
+            {
+                var hasAttributeInstance = type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
+                return hasAttributeInstance;
+            }
         }
 
         public bool IsEventFunction([NotNullWhen(true)] IMethod? method) => method != null && GetUnityEventFunction(method) != null;
 
-        public bool IsSerialisedField([NotNullWhen(true)] IField? field)
+        public SerializedFieldStatus IsSerialisedField(IField? field, bool useSwea = true)
         {
-            if (field == null || field.IsStatic || field.IsConstant || field.IsReadonly)
-                return false;
-
-            var containingType = field.ContainingType;
-            if (!IsUnityType(containingType) && !IsSerializableTypeDeclaration(containingType))
-                return false;
+            if (field == null || field.IsStatic || !field.IsField || field.IsReadonly)
+                return SerializedFieldStatus.NonSerializedField;
 
             // [NonSerialized] trumps everything, even if there's a [SerializeField] as well
             if (field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false))
-                return false;
+                return SerializedFieldStatus.NonSerializedField;
 
+            var hasSerializeField = field.HasAttributeInstance(KnownTypes.SerializeField, false);
             var hasSerializeReference = field.HasAttributeInstance(KnownTypes.SerializeReference, false);
-            if (field.GetAccessRights() != AccessRights.PUBLIC
-                && !field.HasAttributeInstance(KnownTypes.SerializeField, false)
-                && !hasSerializeReference)
+
+            // TODO - could be private (at least in Unity2019.4 up to 2021)
+            if (field.GetAccessRights() != AccessRights.PUBLIC && !hasSerializeField && !hasSerializeReference)
+                return SerializedFieldStatus.NonSerializedField;
+
+            // Field is now either public or has [SerializeField] or [SerializeReference], so is likely to be serialised
+
+            var containingType = field.ContainingType;
+            if (!IsUnityType(containingType))
             {
-                return false;
+                var isSerializableTypeDeclaration = IsSerializableTypeDeclaration(containingType, useSwea);
+                if (isSerializableTypeDeclaration != SerializedFieldStatus.SerializedField)
+                    return isSerializableTypeDeclaration;
+            }
+
+            return IsFieldTypeSerializable(field, hasSerializeReference, useSwea);
+        }
+
+        private SerializedFieldStatus IsFieldTypeSerializable(IProperty property, bool hasSerializeReference, bool useSwea)
+        {
+            // We need the project to get the current Unity version. this is only called for type usage (e.g. field
+            // type), so it's safe to assume that the field is in a source file belonging to a project
+            var project = (property.Module as IProjectPsiModule)?.Project;
+            return project == null
+                ? SerializedFieldStatus.NonSerializedField
+                : IsFieldTypeSerializable(property.Type, project, hasSerializeReference, useSwea);
+        }
+
+        public SerializedFieldStatus IsFieldTypeSerializable(IField field, bool hasSerializeReference, bool useSwea)
+        {
+            // Rules for what field types can be serialised.
+            // See https://docs.unity3d.com/ScriptReference/SerializeField.html
+
+            // example: [SerializeField] public unsafe fixed byte MyByteBuff[3];
+            if (field.IsFixedSizeBufferField()
+                && field.Type is IPointerType pointerType
+                && IsUnitySimplePredefined(pointerType.ElementType))
+            {
+                return SerializedFieldStatus.SerializedField;
             }
 
             // We need the project to get the current Unity version. this is only called for type usage (e.g. field
             // type), so it's safe to assume that the field is in a source file belonging to a project
             var project = (field.Module as IProjectPsiModule)?.Project;
-
-            // Rules for what field types can be serialised.
-            // See https://docs.unity3d.com/ScriptReference/SerializeField.html
-            return project != null &&
-                   (IsSimpleSerialisedFieldType(field.Type, project, hasSerializeReference) ||
-                    IsSerialisedFieldContainerType(field.Type, project, hasSerializeReference));
+            return project == null
+                ? SerializedFieldStatus.NonSerializedField
+                : IsFieldTypeSerializable(field.Type, project, hasSerializeReference, useSwea);
         }
 
-        private bool IsSimpleSerialisedFieldType([NotNullWhen(true)] IType? type, IProject project,
-                                                 bool hasSerializeReference)
+        private SerializedFieldStatus IsFieldTypeSerializable([NotNullWhen(true)] IType? type, IProject project,
+            bool hasSerializeReference, bool useSwea)
         {
-            // We include type parameter types (T) in this test, which Unity obviously won't. We treat them as
-            // serialised fields rather than show false positive redundant attribute warnings, etc. Adding the test
-            // here allows us to support T[] and List<T>
-            return type != null && (type.IsSimplePredefined()
-                                    || type.IsEnumType()
-                                    || IsUnityBuiltinType(type)
-                                    || type.GetTypeElement().DerivesFrom(KnownTypes.Object)
-                                    || IsSerializableType(type.GetTypeElement(), project, true, hasSerializeReference)
-                                    || type.IsTypeParameterType());
-        }
-
-        private bool IsSerialisedFieldContainerType([NotNullWhen(true)] IType? type, IProject project,
-                                                    bool hasSerializeReference)
-        {
-            if (type is IArrayType { Rank: 1 } arrayType &&
-                IsSimpleSerialisedFieldType(arrayType.ElementType, project, hasSerializeReference))
+            if (type is IArrayType { Rank: 1 } arrayType)
             {
-                return true;
+                return IsSimpleFieldTypeSerializable(arrayType.ElementType, project, hasSerializeReference, useSwea);
             }
 
             if (type is IDeclaredType declaredType &&
@@ -177,12 +215,73 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 if (typeParameter != null)
                 {
                     var substitutedType = substitution.Apply(typeParameter);
-                    return substitutedType.IsTypeParameterType() ||
-                           IsSimpleSerialisedFieldType(substitutedType, project, hasSerializeReference);
+                    if (substitutedType.IsTypeParameterType())
+                        return SerializedFieldStatus.SerializedField;
+                    return IsSimpleFieldTypeSerializable(substitutedType, project, hasSerializeReference, useSwea);
                 }
             }
 
-            return false;
+            return IsSimpleFieldTypeSerializable(type, project, hasSerializeReference, useSwea);
+        }
+
+        private SerializedFieldStatus IsSimpleFieldTypeSerializable(IType? type, IProject project,
+            bool hasSerializeReference, bool useSwea)
+        {
+            // We include type parameter types (T) in this test, which Unity obviously won't. We treat them as
+            // serialised fields rather than show false positive redundant attribute warnings, etc. Adding the test
+            // here allows us to support T[] and List<T>
+
+            if (type == null)
+                return SerializedFieldStatus.NonSerializedField;
+
+            if (IsUnitySimplePredefined(type))
+                return SerializedFieldStatus.SerializedField;
+
+            if (type.IsEnumType())
+                return SerializedFieldStatus.SerializedField;
+
+            if (IsUnityBuiltinType(type))
+                return SerializedFieldStatus.SerializedField;
+
+            if (type.GetTypeElement().DerivesFrom(KnownTypes.Object))
+                return SerializedFieldStatus.SerializedField;
+
+            if (type.IsTypeParameterType())
+                return SerializedFieldStatus.SerializedField;
+
+            return IsSerializableType(type.GetTypeElement(), project, true, useSwea, hasSerializeReference);
+        }
+
+        private static bool IsUnitySimplePredefined(IType type)
+        {
+            return type.IsSimplePredefined() && !Equals(((IDeclaredType)type).GetClrName(), PredefinedType.DECIMAL_FQN);
+        }
+
+        // An auto property can have [field: SerializeField] which makes the backing field a seralised field, albeit
+        // with a weird name. The auto property must be writable, or the backing field is generated as readonly, which
+        // isn't serialisable (so not true for getter only or init setter only properties)
+        public SerializedFieldStatus IsSerialisedAutoProperty(IProperty? property, bool useSwea) //TODO - probably update it as well
+        {
+            if (property is not { IsAuto: true, IsWritable: true, IsStatic: false })
+                return SerializedFieldStatus.NonSerializedField;
+
+            var hasSerializeField = property.HasFieldAttribute(KnownTypes.SerializeField);
+            var hasSerializeReference = property.HasFieldAttribute(KnownTypes.SerializeReference);
+
+            if (!hasSerializeField && !hasSerializeReference)
+                return SerializedFieldStatus.NonSerializedField;
+
+            var containingType = property.ContainingType;
+            if (!IsUnityType(containingType))
+            {
+                // if (IsSerializableTypeDeclaration(containingType, useSwea) != SerializedFieldStatus.SerializedField)//TODO != SerializedField, maybe is not the best solution
+                //     return SerializedFieldStatus.NonSerializedField;
+                var isSerializableTypeDeclaration = IsSerializableTypeDeclaration(containingType, useSwea);
+                if (isSerializableTypeDeclaration != SerializedFieldStatus.SerializedField)
+                    return isSerializableTypeDeclaration;
+            }
+
+            return IsFieldTypeSerializable(property, hasSerializeReference, useSwea);
         }
 
         // Best effort attempt at preventing false positives for type members that are actually being used inside a
@@ -233,7 +332,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         }
 
         public UnityEventFunction? GetUnityEventFunction(IMethod method, Version unityVersion,
-                                                         out MethodSignatureMatch match)
+            out MethodSignatureMatch match)
         {
             match = MethodSignatureMatch.NoMatch;
 
@@ -261,5 +360,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             return type is IDeclaredType declaredType &&
                    ourUnityBuiltinSerializedFieldTypes.Contains(declaredType.GetClrName());
         }
+
     }
 }

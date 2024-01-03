@@ -4,6 +4,7 @@ import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import model.lib.Library
+import model.lib.Library.ProfilingData
 
 // backend <-> Unity Editor model, from point of view of backend, meaning:
 // Sink is a one-way signal the backend subscribes to (editor fires)
@@ -103,11 +104,6 @@ object BackendUnityModel: Root() {
         +"Normal"
     }
 
-    private val CompiledAssembly = structdef {
-        field("name", string)
-        field("outputPath", string)
-    }
-
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
@@ -164,15 +160,19 @@ object BackendUnityModel: Root() {
         call("getCompilationResult", void, bool).documentation = "Called after Refresh to get the compilation result before launching unit tests"
         call("generateUIElementsSchema", void, bool).documentation = "Generates the UIElements schema, if available"
         call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
+        call("getAndroidSdkRoot", void, string.nullable).documentation = "Get the currently configured Android SDK root location, if available"
 
         // Actions called from Unity to the backend
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
-        sink("compiledAssemblies", immutableList(CompiledAssembly)).documentation = "Fired from Unity to provide a list of the assemblies compiled by Unity"
 
         // Unit testing
         property("unitTestLaunch", UnitTestLaunch).documentation = "Set the details of the current unit test session"
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
 
-        call ("hasUnsavedScenes", void, bool)
+        call ("hasUnsavedState", void, bool)
+
+        // profiler
+        call ("startProfiling", ProfilingData, void).documentation = "Start profiling and enter PlayMode, depending on the param"
+        call ("stopProfiling", ProfilingData, void)
     }
 }

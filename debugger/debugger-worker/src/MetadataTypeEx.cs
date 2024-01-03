@@ -1,13 +1,11 @@
-using JetBrains.Annotations;
-using MetadataLite.API;
+using Mono.Debugging.MetadataLite.API;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
     // TODO move into platform
     public static class MetadataTypeEx
     {
-        [CanBeNull]
-        public static IMetadataTypeLite FindTypeThroughHierarchy([NotNull] this IMetadataTypeLite metadataType, string fullClrName)
+        public static IMetadataTypeLite? FindTypeThroughHierarchy(this IMetadataTypeLite metadataType, string fullClrName)
         {
             var current = metadataType;
             while (current != null)

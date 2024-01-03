@@ -1,4 +1,13 @@
+root = true
+
 [*.cs]
+indent_size = 2
+indent_style = space
+
 [*.targets]
+indent_size = 2
+indent_style = space
+
 [*.props]
 indent_size = 2
+indent_style = space

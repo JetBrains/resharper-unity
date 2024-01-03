@@ -63,26 +63,26 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
             {
                 try
                 {
-                    Usbmuxd.Setup(myIOSUsbStartInfo.IosSupportPath);
-                    Usbmuxd.StartUsbmuxdListenThread();
+                    var usbmuxd = Usbmuxd.Create(myIOSUsbStartInfo.IosSupportPath);
+                    usbmuxd.StartUsbmuxdListenThread();
 
-                    var found = WaitForDevice(myIOSUsbStartInfo.IosDeviceId);
+                    var found = WaitForDevice(usbmuxd, myIOSUsbStartInfo.IosDeviceId);
 
                     // This shouldn't happen. Log it and let everything else continue to fail
                     if (!found) myLogger.Error("Unable to find device");
 
                     // Create a proxy between our local port (12000) and the port on the device (56000). These numbers
                     // are hardcoded, and reflect Unity's own values
-                    var localPort = (ushort) myIOSUsbStartInfo.MonoPort;
-                    if (!Usbmuxd.StartIosProxy(localPort, 56000, myIOSUsbStartInfo.IosDeviceId))
+                    var localPort = (ushort)myIOSUsbStartInfo.MonoPort;
+                    if (!usbmuxd.StartIosProxy(localPort, 56000, myIOSUsbStartInfo.IosDeviceId))
                     {
                         myLogger.Error("StartIosProxy returned false");
-                        Usbmuxd.StopUsbmuxdListenThread();
-                        Usbmuxd.Shutdown();
+                        usbmuxd.StopUsbmuxdListenThread();
+                        usbmuxd.Shutdown();
                         return;
                     }
 
-                    myLifetime.OnTermination(() => ShutdownProxy(localPort));
+                    myLifetime.OnTermination(() => ShutdownProxy(usbmuxd, localPort));
                 }
                 catch (Exception ex)
                 {
@@ -91,13 +91,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                 }
             }
 
-            private bool WaitForDevice(string deviceId)
+            private bool WaitForDevice(Usbmuxd usbmuxd, string deviceId)
             {
                 // There is a potential race condition with starting the proxy thread before the listen thread has
                 // discovered the devices. Make sure our device ID is found
                 var retries = 0;
                 bool found;
-                while ((found = CanFindDevice(deviceId)) == false && retries < 10)
+                while ((found = CanFindDevice(usbmuxd, deviceId)) == false && retries < 10)
                 {
                     myLogger.Info("Cannot find device. Sleeping for 10ms");
                     Thread.Sleep(10);
@@ -107,14 +107,14 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                 return found;
             }
 
-            private bool CanFindDevice(string deviceId)
+            private bool CanFindDevice(Usbmuxd usbmuxd, string deviceId)
             {
-                var deviceCount = Usbmuxd.UsbmuxdGetDeviceCount();
+                var deviceCount = usbmuxd.UsbmuxdGetDeviceCount();
 
                 myLogger.Trace($"UsbmuxdGetDeviceCount: {deviceCount}");
                 for (uint i = 0; i < deviceCount; i++)
                 {
-                    if (Usbmuxd.UsbmuxdGetDevice(i, out var device))
+                    if (usbmuxd.UsbmuxdGetDevice(i, out var device))
                     {
                         myLogger.Trace($"UsbmuxdGetDevice({i}): {device.udid}");
                         if (device.udid == deviceId)
@@ -125,15 +125,15 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                 return false;
             }
 
-            private void ShutdownProxy(ushort localPort)
+            private void ShutdownProxy(Usbmuxd usbmuxd, ushort localPort)
             {
                 try
                 {
                     // Note that during shutdown, usbmuxd outputs an empty line with an [Error] marker. It's
                     // harmless and can be ignored
-                    Usbmuxd.StopIosProxy(localPort);
-                    Usbmuxd.StopUsbmuxdListenThread();
-                    Usbmuxd.Shutdown();
+                    usbmuxd.StopIosProxy(localPort);
+                    usbmuxd.StopUsbmuxdListenThread();
+                    usbmuxd.Shutdown();
                 }
                 catch (Exception e)
                 {

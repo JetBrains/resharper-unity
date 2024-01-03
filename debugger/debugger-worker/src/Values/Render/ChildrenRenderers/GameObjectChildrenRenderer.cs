@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using JetBrains.Annotations;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
-using MetadataLite.API;
-using MetadataLite.API.Selectors;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.ValueReferences;
@@ -16,8 +13,10 @@ using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
+using Mono.Debugging.MetadataLite.API;
+using Mono.Debugging.MetadataLite.API.Selectors;
 using Mono.Debugging.Soft;
-using TypeSystem;
+using Mono.Debugging.TypeSystem;
 
 // ReSharper disable StaticMemberInGenericType
 
@@ -166,8 +165,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             }
 
             private string GetComponentName(IValueReference<TValue> componentValue,
-                                            [CanBeNull] IReifiedType<TValue> objectNamesType,
-                                            [CanBeNull] IMetadataMethodLite getInspectorTitleMethod,
+                                            IReifiedType<TValue>? objectNamesType,
+                                            IMetadataMethodLite? getInspectorTitleMethod,
                                             IStackFrame frame,
                                             IValueFetchOptions options,
                                             IValueServicesFacade<TValue> services,
@@ -209,7 +208,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             private readonly IObjectValueRole<TValue> myGameObjectRole;
             private readonly IValueServicesFacade<TValue> myValueServices;
             private readonly ILogger myLogger;
-            private IMetadataMethodLite myGetChildMethod;
+            private IMetadataMethodLite? myGetChildMethod;
 
             public GameObjectChildrenGroup(IObjectValueRole<TValue> gameObjectRole,
                                            IValueServicesFacade<TValue> valueServices, ILogger logger)
@@ -278,7 +277,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 {
                     var frame = myGameObjectRole.ValueReference.OriginatingFrame;
                     var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
-                    var childTransformValue = collection.CallInstanceMethod(myGetChildMethod, indexValue);
+                    var childTransformValue = collection.CallInstanceMethod(myGetChildMethod!, indexValue);
                     var childTransform = new SimpleValueReference<TValue>(childTransformValue,
                         frame, myValueServices.RoleFactory).AsObjectSafe(options);
                     var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)

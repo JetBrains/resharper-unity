@@ -65,13 +65,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         }
                     }
                 }
-                else if (literal.ConstantValue.IsInteger())
+                else if (literal.ConstantValue.IsInteger(out var value) && value >= ProjectSettingsCache.SceneCount)
                 {
-                    var value = (int) literal.ConstantValue.Value;
-                    if (value >= ProjectSettingsCache.SceneCount)
-                    {
-                        consumer.AddHighlighting(new LoadSceneWrongIndexWarning(argument));
-                    }
+                    consumer.AddHighlighting(new LoadSceneWrongIndexWarning(argument));
                 }
             }
 
@@ -102,11 +98,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             // There are 3 ways to present scene name in unity
             // Consider scene : Assets/Scenes/myScene.unity
-            // User could use "myScene", "Scenes/myScene" and "Assets/Scenes/myScene.unity" to load scene
+            // User could use "myScene", "Scenes/myScene" and "Assets/Scenes/myScene.unity" // todo: maybe consider RIDER-94615 Support Scenes in the local packages
             // Internally, we work only with first and second format (see UnityProjectSettingsCache)
 
-            var constantValue = literalExpression.ConstantValue.Value as string;
-            if (constantValue == null)
+            if (!literalExpression.ConstantValue.IsString(out var constantValue) || constantValue == null)
                 return null;
 
             var sceneName = constantValue;

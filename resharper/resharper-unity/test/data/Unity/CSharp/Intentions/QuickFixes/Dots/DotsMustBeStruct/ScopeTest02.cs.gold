@@ -1,0 +1,10 @@
+﻿using Unity.Entities;
+
+
+public struct BotData{caret}Aspect : IAspect
+{
+}
+
+public readonly struct IKAnimationAspect : IAspect
+{
+}

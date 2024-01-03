@@ -20,37 +20,27 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
+// @formatter:indent_size 2
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services.TypingAssists
 {
   [SolutionComponent]
   public class InjectedHlslTypingAssist : TypingAssistLanguageBase<ShaderLabLanguage>, ITypingHandler
-  {
-      [NotNull] private readonly CachingLexerService myCachingLexerService;
-      [NotNull] private readonly InjectedHlslDummyFormatter myDummyFormatter;
+  { 
+    [NotNull] private readonly InjectedHlslDummyFormatter myDummyFormatter;
 
     public InjectedHlslTypingAssist(
       Lifetime lifetime,
-      [NotNull] ISolution solution,
-      [NotNull] IPsiServices psiServices,
-      [NotNull] ICommandProcessor commandProcessor,
-      [NotNull] ISettingsStore settingsStore,
-      [NotNull] RunsProducts.ProductConfigurations productConfigurations,
-      [NotNull] CachingLexerService cachingLexerService,
-      [NotNull] ITypingAssistManager typingAssistManager,
-      [NotNull] IExternalIntellisenseHost externalIntellisenseHost,
-      [NotNull] SkippingTypingAssist skippingTypingAssist,
-      [NotNull] LastTypingAction lastTypingAssistAction,
-      [NotNull] InjectedHlslDummyFormatter dummyFormatter,
-      [NotNull] StructuralRemoveManager structuralRemoveManager)
-      : base(solution, settingsStore, cachingLexerService, commandProcessor, psiServices, externalIntellisenseHost,
-        skippingTypingAssist, lastTypingAssistAction, structuralRemoveManager)
-    {
-        myCachingLexerService = cachingLexerService;
-        myDummyFormatter = dummyFormatter;
-      var braceHandler = new InjectedHlslBraceHandler(this, dummyFormatter, false, productConfigurations.IsInternalMode());
+      [NotNull] TypingAssistDependencies dependencies,
+      [NotNull] InjectedHlslDummyFormatter dummyFormatter)
+      : base(dependencies)
+    { 
+      myDummyFormatter = dummyFormatter;
+      var braceHandler = new InjectedHlslBraceHandler(this, dummyFormatter);
       var quoteHandler = new CppQuoteHandler<ShaderLabLanguage>(this);
       var deleteHandler = new CppDeleteHandler<ShaderLabLanguage>(this, dummyFormatter, braceHandler);
 
+      var typingAssistManager = dependencies.TypingAssistManager;
+      
       typingAssistManager.AddTypingHandler(lifetime, '{', this, c => ExecuteTypingInCppContextOnly(c, braceHandler.HandleLeftBraceTyped),
         IsTypingHandlerAvailable);
       typingAssistManager.AddTypingHandler(lifetime, '}', this, c => ExecuteTypingInCppContextOnly(c, braceHandler.HandleRightBraceTyped),

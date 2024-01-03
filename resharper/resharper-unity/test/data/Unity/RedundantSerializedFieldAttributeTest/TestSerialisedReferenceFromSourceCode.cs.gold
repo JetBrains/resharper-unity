@@ -1,0 +1,30 @@
+﻿using UnityEngine;
+
+namespace Test001
+{
+    public class B : A
+    {
+        [SerializeField] private int x;
+    }
+}
+---------------------------------------------------------
+using System;
+
+namespace Test001
+{
+    [Serializable]
+    public abstract class A
+    {
+    }
+}
+---------------------------------------------------------
+using UnityEngine;
+
+namespace Test001
+{
+    public class Foo : MonoBehaviour
+    {
+        [SerializeReference] private A bar = new B();
+    }
+}
+---------------------------------------------------------

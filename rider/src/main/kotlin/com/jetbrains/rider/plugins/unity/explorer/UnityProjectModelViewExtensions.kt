@@ -2,15 +2,13 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.jetbrains.rd.util.assert
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.ProjectElementView
 import com.jetbrains.rider.projectView.ProjectEntityView
 import com.jetbrains.rider.projectView.ProjectModelViewExtensions
 import com.jetbrains.rider.projectView.workspace.*
 
-@Suppress("UnstableApiUsage")
 class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtensions(project) {
 
     // this is called for rename, we should filter .Player projects and return node itself
@@ -51,10 +49,9 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         val items = filterOutItemsFromNonPrimaryProjects(WorkspaceModel.getInstance(project).getProjectModelEntities(targetLocation, project))
 
         // when to stop going up
-        if (items.any { it.isSolutionFolder() || it.isSolution() }) // don't forget to check File System Explorer
+        // !isProjectFolder may happen for Local and Registry packages
+        if (items.any { it.isSolutionFolder() || it.isSolution() || !it.isProjectFolder() }) // don't forget to check File System Explorer
             return null
-
-        assert(items.all { it.isProjectFolder() }) { "Only ProjectFolders are expected." }
 
         if (isHiddenFolder(targetLocation))
             return null
@@ -115,5 +112,10 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         }
 
         return res
+    }
+
+    override fun shouldShowSolutionConfigurationsGotIt(): Boolean {
+        if (project.isUnityProject()) return false
+        return true
     }
 }

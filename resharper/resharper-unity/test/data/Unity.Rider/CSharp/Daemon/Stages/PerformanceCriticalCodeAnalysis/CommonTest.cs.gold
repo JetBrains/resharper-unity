@@ -39,9 +39,9 @@ namespace DefaultNamespace
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(2): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (4): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (5): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -49,7 +49,7 @@ namespace DefaultNamespace
 (7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (8): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(10): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(10): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (11): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(12): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(12): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (13): ReSharper Unity Expensive Method Invocation: Expensive method invocation

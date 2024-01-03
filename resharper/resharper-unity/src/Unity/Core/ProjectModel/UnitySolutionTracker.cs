@@ -15,36 +15,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
     public class UnitySolutionTracker : IUnityReferenceChangeHandler
     {
         private readonly ISolution mySolution;
+        private readonly VirtualFileSystemPath mySolutionDirectory;
 
         public readonly ViewableProperty<bool> IsUnityProjectFolder = new();
         public readonly ViewableProperty<bool> IsUnityProject = new();
+        [Obsolete("Use IsUnityProject instead")] // Only use this for collecting statistics
         public readonly ViewableProperty<bool> IsUnityGeneratedProject = new();
 
         // If all you're interested in is being notified that we're a Unity solution, advise this. If you need to know
         // we're a Unity solution *and*/or know about Unity projects (and get a per-project lifetime), implement
         // IUnityReferenceChangeHandler
         public readonly ViewableProperty<bool> HasUnityReference = new(false);
+                 
+        public bool IsUnityProjectOrHasUnityReference => IsUnityProject.HasTrueValue() || HasUnityReference.HasTrueValue();
 
-        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
-                                    bool inTests = false)
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
         {
             mySolution = solution;
-            if (inTests)
-            {
-                IsUnityGeneratedProject.Value = false;
-                IsUnityProject.Value = false;
-                IsUnityProjectFolder.Value = false;
-                HasUnityReference.Value = false;
-                return;
-            }
+
+            // SolutionDirectory isn't absolute in tests, and will throw an exception if we use it when we call Exists
+            mySolutionDirectory = solution.SolutionDirectory;
+            if (!mySolutionDirectory.IsAbsolute)
+                mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
             SetValues();
 
             fileSystemTracker.AdviseDirectoryChanges(lifetime,
-                mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false, OnChangeAction);
+                mySolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false, OnChangeAction);
             // track not only folder itself, but also files inside
             fileSystemTracker.AdviseDirectoryChanges(lifetime,
-                mySolution.SolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder), true,
+                mySolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder), true,
                 OnChangeActionProjectSettingsFolder);
         }
 
@@ -54,11 +54,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             // to open a clean checkout of a Unity solution (perhaps just as a directory, not a solution), then
             // IsUnityProjectFolder will be true, but everything else will be false. Once we have a solution file, that
             // means Unity has opened the project, generated a solution file and we'll also have a Library folder
-            IsUnityProjectFolder.SetValue(HasUnityFileStructure(mySolution.SolutionDirectory));
+            IsUnityProjectFolder.SetValue(HasUnityFileStructure(mySolutionDirectory));
             IsUnityProject.SetValue(IsUnityProjectFolder.Value && mySolution.IsValid() &&
                                     mySolution.SolutionFilePath.ExistsFile &&
-                                    HasLibraryFolder(mySolution.SolutionDirectory));
+                                    HasLibraryFolder(mySolutionDirectory));
+#pragma warning disable CS0618 // Type or member is obsolete
             IsUnityGeneratedProject.SetValue(IsUnityProject.Value && SolutionNameMatchesUnityProjectName());
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         private void OnChangeAction(FileSystemChangeDelta delta)
@@ -91,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             // very bad.
             // Furthermore, loading a solution from Rider's recent solution list keeps the old case, so even if things
             // have been renamed to match, we'll still have incorrect casing here. So let's just do case insensitive.
-            return string.Equals(mySolution.SolutionFilePath.NameWithoutExtension, mySolution.SolutionDirectory.Name,
+            return string.Equals(mySolution.SolutionFilePath.NameWithoutExtension, mySolutionDirectory.Name,
                 StringComparison.OrdinalIgnoreCase);
         }
 

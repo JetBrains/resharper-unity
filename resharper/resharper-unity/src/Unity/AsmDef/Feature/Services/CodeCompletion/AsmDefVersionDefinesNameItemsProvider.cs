@@ -53,8 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.CodeCompleti
             var visualReplaceRangeMarker = textLookupRanges.CreateVisualReplaceRangeMarker();
 
             // Special "Unity" resource, to allow setting a define based on the version of the app
-            // TODO: Proper icon
-            var lookupItem = new TextLookupItem("Unity", UnityFileTypeThemedIcons.FileUnity.Id);
+            var lookupItem = new TextLookupItem("Unity", UnityFileTypeThemedIcons.Asmdef.Id);
             lookupItem.InitializeRanges(textLookupRanges, context.BasicContext);
             lookupItem.VisualReplaceRangeMarker = visualReplaceRangeMarker;
             lookupItem.Placement.Relevance |= (ulong)LookupItemRelevance.HighSelectionPriority;

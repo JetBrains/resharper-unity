@@ -1,5 +1,9 @@
+﻿using System.Drawing;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes.Idea;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Psi.Cpp.Daemon;
 using JetBrains.TextControl.DocumentMarkup;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
@@ -14,34 +18,78 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
     // Define the highlighters, which describe how a highlighting is displayed
     [RegisterHighlighter(INJECTED_LANGUAGE_FRAGMENT,
         GroupId = GROUP_ID,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.InjectedLanguageFragment_RiderPresentableName))]
     [RegisterHighlighter(NUMBER,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         FallbackAttributeId = DefaultLanguageAttributeIds.NUMBER,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.Number_RiderPresentableName))]
     [RegisterHighlighter(KEYWORD,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         FallbackAttributeId = DefaultLanguageAttributeIds.KEYWORD,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.Keyword_RiderPresentableName))]
     [RegisterHighlighter(STRING,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         FallbackAttributeId = DefaultLanguageAttributeIds.STRING,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.String_RiderPresentableName))]
     [RegisterHighlighter(LINE_COMMENT,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
-        RiderPresentableName = "Comments//Line comment",
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.CommentsLineComment_RiderPresentableName),
         FallbackAttributeId = DefaultLanguageAttributeIds.LINE_COMMENT,
         Layer = HighlighterLayer.SYNTAX)]
     [RegisterHighlighter(BLOCK_COMMENT,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
-        RiderPresentableName = "Comments//Block comment",
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.CommentsBlockComment_RiderPresentableName),
         FallbackAttributeId = DefaultLanguageAttributeIds.BLOCK_COMMENT,
         Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(IMPLICITLY_ENABLED_SHADER_KEYWORD,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.ActiveShaderKeyword_RiderPresentableName),
+        FallbackAttributeId = ENABLED_SHADER_KEYWORD,
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
+    )]
+    [RegisterHighlighter(ENABLED_SHADER_KEYWORD,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.ActiveShaderKeyword_RiderPresentableName),
+        FallbackAttributeId = CppHighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE,
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
+    )]
+    [RegisterHighlighter(DISABLED_SHADER_KEYWORD,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.InactiveShaderKeyword_RiderPresentableName),
+        FallbackAttributeId = IdeaHighlightingAttributeIds.NOT_USED_ELEMENT_ATTRIBUTES,
+        ForegroundColor = "LightGray", 
+        DarkForegroundColor = "DarkGray",
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
+    )]
+    [RegisterHighlighter(SUPPRESSED_SHADER_KEYWORD,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.SuppressedShaderKeyword_RiderPresentableName),
+        FontStyle = FontStyle.Strikeout,
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
+    )]
     public static class ShaderLabHighlightingAttributeIds
     {
         public const string GROUP_ID = "ReSharper ShaderLab Highlighters";
@@ -54,6 +102,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         public const string STRING = "ReSharper ShaderLab String";
         public const string LINE_COMMENT = "ReSharper ShaderLab Line Comment";
         public const string BLOCK_COMMENT = "ReSharper ShaderLab Block Comment";
+        public const string IMPLICITLY_ENABLED_SHADER_KEYWORD = "ReSharper ShaderLab Implicitly Enabled Shader Keyword";
+        public const string ENABLED_SHADER_KEYWORD = "ReSharper ShaderLab Enabled Shader Keyword";
+        public const string SUPPRESSED_SHADER_KEYWORD = "ReSharper ShaderLab Suppressed Shader Keyword";
+        public const string DISABLED_SHADER_KEYWORD = "ReSharper ShaderLab Disabled Shader Keyword";
 
         public const string DEMO_TEXT =
 @"<ReSharper.ShaderLab_BLOCK_COMMENT>/* Sample shader */</ReSharper.ShaderLab_BLOCK_COMMENT>

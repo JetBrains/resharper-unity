@@ -1,0 +1,8 @@
+Search target
+    AnimEventHolder.AnimEvent() : void
+Found usages  (1 usage found)
+    Other  (1 usage found)
+        Assets  (1 usage found)
+            Anim  (1 usage found)
+                Animation.anim  (1 usage found)
+                    [1322, Assets/Anim/Animation.anim] (55: 17)  functionName: AnimEvent

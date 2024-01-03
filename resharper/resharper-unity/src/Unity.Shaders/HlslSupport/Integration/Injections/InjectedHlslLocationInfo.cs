@@ -1,3 +1,5 @@
+#nullable enable
+
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.Serialization;
 using JetBrains.Util;
@@ -16,16 +18,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
 
         public static InjectedHlslLocationInfo Read(UnsafeReader reader)
         {
-            return new InjectedHlslLocationInfo(UnsafeMarshallers.VirtualFileSystemPathCurrentSolutionMarshaller.Unmarshal(reader), new TextRange(reader.ReadInt(), reader.ReadInt()), 
-                reader.ReadEnum(InjectedHlslProgramType.Uknown));
-
+            return new InjectedHlslLocationInfo(
+                UnsafeMarshallers.VirtualFileSystemPathCurrentSolutionCorrectCaseMarshaller.Unmarshal(reader),
+                new TextRange(reader.ReadInt32(), reader.ReadInt32()), reader.ReadEnum(InjectedHlslProgramType.Unknown));
         }
 
         public static void Write(UnsafeWriter writer, InjectedHlslLocationInfo value)
         {
-            UnsafeMarshallers.VirtualFileSystemPathCurrentSolutionMarshaller.Marshal(writer, value.FileSystemPath);
-            writer.Write(value.Range.StartOffset);
-            writer.Write(value.Range.EndOffset);
+            UnsafeMarshallers.VirtualFileSystemPathCurrentSolutionCorrectCaseMarshaller.Marshal(writer, value.FileSystemPath);
+            writer.WriteInt32(value.Range.StartOffset);
+            writer.WriteInt32(value.Range.EndOffset);
             writer.WriteEnum(value.ProgramType);
         }
 
@@ -38,12 +40,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
         public VirtualFileSystemPath FileSystemPath { get; }
         public InjectedHlslProgramType ProgramType { get; }
 
-        protected bool Equals(InjectedHlslLocationInfo other)
+        private bool Equals(InjectedHlslLocationInfo other)
         {
             return Range.Equals(other.Range) && FileSystemPath.Equals(other.FileSystemPath) && ProgramType == other.ProgramType;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

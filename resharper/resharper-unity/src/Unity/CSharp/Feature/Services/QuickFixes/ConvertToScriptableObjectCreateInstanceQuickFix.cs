@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -42,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         }
 
         public override string Text =>
-            $"Convert to 'ScriptableObject.CreateInstance<{myWarningCreationExpression.TypeName.ShortName}>()'";
+            string.Format(Strings.ConvertToScriptableObjectCreateInstanceQuickFix_Text_Convert_to__ScriptableObject_CreateInstance__0_____, myWarningCreationExpression.TypeName.ShortName);
 
         public override bool IsAvailable(IUserDataHolder cache) => ValidUtils.Valid(myWarningCreationExpression);
     }

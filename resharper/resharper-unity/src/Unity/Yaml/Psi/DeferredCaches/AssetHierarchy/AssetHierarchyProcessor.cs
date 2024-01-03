@@ -89,11 +89,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (transform == null)
                 return;
             
-            if (!consumer.AddGameObject(owner, gameObject))
+            if (!consumer.AddGameObject(owner, gameObject, myAssetDocumentHierarchyElementContainer, prefabImport))
                 return;
-                
-            var parentTransform = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(transform.ParentTransform, prefabImport) as ITransformHierarchy;
-            if (parentTransform == null)
+
+            if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(transform.ParentTransform, prefabImport) is not ITransformHierarchy parentTransform)
                 return;
 
             visited.Add(gameObject.Location.LocalDocumentAnchor);

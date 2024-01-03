@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
-    [Language(typeof(UnityYamlLanguage))]
+    [Language(typeof(UnityYamlLanguage), Instantiation.DemandAnyThreadSafe)]
     public class UnityYamlUsageCheckingServices : UsageCheckingServices
     {
         public UnityYamlUsageCheckingServices(Lifetime lifetime, IEnumerable<IUsageInspectionsSuppressor> suppressors, 

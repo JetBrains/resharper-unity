@@ -6,9 +6,10 @@ using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
+using JetBrains.Rider.PathLocator;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -16,17 +17,26 @@ namespace JetBrains.Rider.Unity.Editor
   public class OnOpenAssetHandler
   {
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
+    private readonly Lifetime myLifetime;
     private readonly RiderPathProvider myRiderPathProvider;
-    private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
+    private readonly RiderFileOpener myOpener;
 
-    public OnOpenAssetHandler(RiderPathProvider riderPathProvider, IPluginSettings pluginSettings, string slnFile)
+    internal OnOpenAssetHandler(Lifetime lifetime,
+                                RiderPathProvider riderPathProvider,
+                                string slnFile)
     {
+      myLifetime = lifetime;
       myRiderPathProvider = riderPathProvider;
-      myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
+      myOpener = new RiderFileOpener(RiderPathProvider.RiderPathLocator.RiderLocatorEnvironment);
     }
 
+    // DO NOT RENAME OR CHANGE SIGNATURE!
+    // Used from package via reflection. Must remain public and non-static.
+    // Note that the package gets the type from PluginEntryPoint.OpenAssetHandler, so name, namespace and visibility of
+    // the class is not important
+    [PublicAPI]
     public bool OnOpenedAsset(int instanceID, int line, int column)
     {
       // determine asset that has been double clicked in the project view
@@ -68,7 +78,9 @@ namespace JetBrains.Rider.Unity.Editor
       return extensionStrings;
     }
 
-    [UsedImplicitly] // https://github.com/JetBrains/resharper-unity/issues/475
+    // DO NOT RENAME OR CHANGE SIGNATURE!
+    // Created as a public API for external users. See https://github.com/JetBrains/resharper-unity/issues/475
+    [PublicAPI]
     public bool OnOpenedAsset(string assetFilePath, int line, int column = 0)
     {
       var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
@@ -81,33 +93,29 @@ namespace JetBrains.Rider.Unity.Editor
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
       }
 
-      var models = PluginEntryPoint.UnityModels.Where(a=>a.Lifetime.IsAlive).ToArray();
-      if (models.Any())
+      var model = UnityEditorProtocol.Models.FirstOrDefault();
+      if (model != null)
       {
-        var modelLifetime = models.First();
-        var model = modelLifetime.Model;
         if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
 
           if (model.RiderProcessId.HasValue())
-            AllowSetForegroundWindow(model.RiderProcessId.Value);
+            myOpener.AllowSetForegroundWindow(model.RiderProcessId.Value);
           else
-            AllowSetForegroundWindow();
+            myOpener.AllowSetForegroundWindow();
 
-          model.OpenFileLineCol.Start(modelLifetime.Lifetime, new RdOpenFileArgs(assetFilePath, line, column));
+          model.OpenFileLineCol.Start(myLifetime, new RdOpenFileArgs(assetFilePath, line, column));
 
-          // todo: maybe fallback to CallRider, if returns false
+          // todo: maybe fallback to OpenFile, if returns false
           return true;
         }
       }
-
-      var argsString = assetFilePath == "" ? "" : $" --line {line} --column {column} \"{assetFilePath}\""; // on mac empty string in quotes is causing additional solution to be opened https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider/issues/21
-      var args = $"\"{mySlnFile}\"{argsString}";
-      return CallRider(args);
+      
+      return OpenInRider(mySlnFile, assetFilePath, line, column);
     }
 
-    public bool CallRider(string args)
+    public bool OpenInRider(string slnFile, string assetFilePath, int line, int column)
     {
       var defaultApp = myRiderPathProvider.ValidateAndReturnActualRider(EditorPrefsWrapper.ExternalScriptEditor);
       if (string.IsNullOrEmpty(defaultApp))
@@ -116,69 +124,7 @@ namespace JetBrains.Rider.Unity.Editor
         return false;
       }
 
-      var proc = new Process();
-      if (myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX)
-      {
-        proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = $"-n \"{defaultApp}\" --args {args}";
-      }
-      else
-      {
-        proc.StartInfo.FileName = defaultApp;
-        proc.StartInfo.Arguments = args;
-      }
-
-      proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
-      var message = $"\"{proc.StartInfo.FileName}\" {proc.StartInfo.Arguments}";
-      myLogger.Verbose(message);
-      if (!proc.Start())
-      {
-        myLogger.Error($"Process failed to start. {message}");
-        return false;
-      }
-      AllowSetForegroundWindow(proc.Id);
-      return true;
-    }
-
-    // This is required to be called to help frontend Focus itself
-    private void AllowSetForegroundWindow(int? processId=null)
-    {
-      if (myPluginSettings.OperatingSystemFamilyRider != OperatingSystemFamilyRider.Windows)
-        return;
-
-      try
-      {
-        var process = processId == null ? GetRiderProcess() : Process.GetProcessById((int)processId);
-        if (process == null)
-          return;
-
-        if (process.Id > 0)
-          User32Dll.AllowSetForegroundWindow(process.Id);
-      }
-      catch (Exception e)
-      {
-        myLogger.Warn("Exception on AllowSetForegroundWindow: " + e);
-      }
-    }
-
-    private static Process GetRiderProcess()
-    {
-      var process = Process.GetProcesses().FirstOrDefault(p =>
-      {
-        string processName;
-        try
-        {
-          processName =
-            p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
-        }
-        catch (Exception)
-        {
-          return false;
-        }
-
-        return !p.HasExited && processName.ToLower().Contains("rider");
-      });
-      return process;
+      return myOpener.OpenFile(defaultApp, slnFile, assetFilePath, line, column);
     }
   }
 }

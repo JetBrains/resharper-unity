@@ -1,0 +1,218 @@
+﻿BLANK_LINES_AFTER_HEADER = 0
+using System;
+using UnityEngine;
+
+public class CustomHeaderFormatting : MonoBehaviour
+{
+  [Header("Something")]
+  [SerializeField] public const int OooooField = 42;
+
+  [Header("Something")]
+  [SerializeField] public const int HhhhhField = 42;
+
+  public const int OooooField = 42;
+
+  [Header("Something")]
+  [SerializeField] private int YyyyyyField; // Serialised field
+
+  [Header("Something else")]
+  [SerializeField] public string AaaaaField3;
+
+  [Header("Something else")]
+  [SerializeField] [Obsolete] public string AaaaaField4;
+
+  [Header("Something else")]
+  [SerializeField] [Obsolete] [Obsolete] [Obsolete]
+  public string AaaaaField6;
+
+  [Header("Something else")]
+  [SerializeField // 123
+  ]
+  [Obsolete]
+  public string AaaaaField5;
+
+  [Header("Something else")]
+  public string AaaaaField2; // Serialised field
+
+  [SerializeField] private int ZzzzzField; // Serialised field
+
+  [SerializeField] [Obsolete] private int ZzzzzField1;
+}
+================
+BLANK_LINES_AFTER_HEADER = 2
+using System;
+using UnityEngine;
+
+public class CustomHeaderFormatting : MonoBehaviour
+{
+  [Header("Something")]
+
+
+  [SerializeField] public const int OooooField = 42;
+
+  [Header("Something")]
+
+
+  [SerializeField] public const int HhhhhField = 42;
+
+  public const int OooooField = 42;
+
+  [Header("Something")]
+
+
+  [SerializeField] private int YyyyyyField; // Serialised field
+
+  [Header("Something else")]
+
+
+  [SerializeField] public string AaaaaField3;
+
+  [Header("Something else")]
+
+
+  [SerializeField] [Obsolete] public string AaaaaField4;
+
+  [Header("Something else")]
+
+
+  [SerializeField] [Obsolete] [Obsolete] [Obsolete]
+  public string AaaaaField6;
+
+  [Header("Something else")]
+
+
+  [SerializeField // 123
+  ]
+  [Obsolete]
+  public string AaaaaField5;
+
+  [Header("Something else")]
+
+
+  public string AaaaaField2; // Serialised field
+
+  [SerializeField] private int ZzzzzField; // Serialised field
+
+  [SerializeField] [Obsolete] private int ZzzzzField1;
+}
+================
+BLANK_LINES_AFTER_HEADER = 10
+using System;
+using UnityEngine;
+
+public class CustomHeaderFormatting : MonoBehaviour
+{
+  [Header("Something")]
+
+
+
+
+
+
+
+
+
+
+  [SerializeField] public const int OooooField = 42;
+
+  [Header("Something")]
+
+
+
+
+
+
+
+
+
+
+  [SerializeField] public const int HhhhhField = 42;
+
+  public const int OooooField = 42;
+
+  [Header("Something")]
+
+
+
+
+
+
+
+
+
+
+  [SerializeField] private int YyyyyyField; // Serialised field
+
+  [Header("Something else")]
+
+
+
+
+
+
+
+
+
+
+  [SerializeField] public string AaaaaField3;
+
+  [Header("Something else")]
+
+
+
+
+
+
+
+
+
+
+  [SerializeField] [Obsolete] public string AaaaaField4;
+
+  [Header("Something else")]
+
+
+
+
+
+
+
+
+
+
+  [SerializeField] [Obsolete] [Obsolete] [Obsolete]
+  public string AaaaaField6;
+
+  [Header("Something else")]
+
+
+
+
+
+
+
+
+
+
+  [SerializeField // 123
+  ]
+  [Obsolete]
+  public string AaaaaField5;
+
+  [Header("Something else")]
+
+
+
+
+
+
+
+
+
+
+  public string AaaaaField2; // Serialised field
+
+  [SerializeField] private int ZzzzzField; // Serialised field
+
+  [SerializeField] [Obsolete] private int ZzzzzField1;
+}

@@ -243,20 +243,18 @@ namespace ApiParser
     {
         private bool myIsStatic;
         private bool myIsCoroutine;
-        [CanBeNull] private string myDescription;
+        private readonly UnityApiDescriptions myDescriptions;
         [CanBeNull] private readonly string myDocPath;
         private ApiType myReturnType;
         private readonly IList<UnityApiParameter> myParameters;
 
         public UnityApiEventFunction(string name, bool isStatic, bool isCoroutine, ApiType returnType,
-            Version apiVersion, string description = null, string docPath = null, bool undocumented = false)
+            Version apiVersion, string docPath = null, bool undocumented = false)
         {
             Name = name;
             myIsStatic = isStatic;
             myIsCoroutine = isCoroutine;
-            myDescription = description;
-            if (myDescription?.StartsWith(":ref::") == true) // Yes, really. MonoBehaviour.OnCollisionStay in 2018.1
-                myDescription = myDescription.Substring(6);
+            myDescriptions = new UnityApiDescriptions();
             myDocPath = docPath;
             IsUndocumented = undocumented;
             myReturnType = returnType;
@@ -271,12 +269,24 @@ namespace ApiParser
 
         // Force undocumented functions to the bottom of the export list. More for consistency than anything else
         public object OrderingString => (IsUndocumented ? "zz" : string.Empty) + Name;
-
-        public UnityApiParameter AddParameter(string name, ApiType type, string description = null)
+        
+        public void AddDescription(string text, RiderSupportedLanguages langCode)
+        {
+            if (text.StartsWith(":ref::") == true) // Yes, really. MonoBehaviour.OnCollisionStay in 2018.1
+                text = text.Substring(6);
+            myDescriptions.Add(langCode, text);
+        }
+        
+        public void AddParameter(string name, ApiType type, KeyValuePair<RiderSupportedLanguages, string>? description = null)
         {
             var parameter = new UnityApiParameter(name, type, description);
             myParameters.Add(parameter);
-            return parameter;
+        }
+        
+        public void AddParameter(string name, ApiType type, UnityApiDescriptions descriptions)
+        {
+            var parameter = new UnityApiParameter(name, type, descriptions);
+            myParameters.Add(parameter);
         }
 
         public void Update(UnityApiEventFunction function, Version apiVersion)
@@ -286,11 +296,8 @@ namespace ApiParser
             if (IsSupportedVersion(apiVersion))
             {
                 myIsStatic = function.myIsStatic;
-
-                if (function.myDescription != myDescription && !string.IsNullOrEmpty(function.myDescription))
-                {
-                    myDescription = function.myDescription;
-                }
+                
+                myDescriptions.Update(function.myDescriptions);
 
                 for (var i = 0; i < myParameters.Count; i++)
                 {
@@ -344,15 +351,15 @@ namespace ApiParser
             ExportVersionRange(xmlWriter, defaultVersions);
             if (IsUndocumented)
                 xmlWriter.WriteAttributeString("undocumented", "True");
-            if (!string.IsNullOrEmpty(myDescription))
-                xmlWriter.WriteAttributeString("description", myDescription);
             if (!string.IsNullOrEmpty(myDocPath))
                 xmlWriter.WriteAttributeString("path", myDocPath.Replace(@"\", "/"));
+            myDescriptions.WriteDescriptions(xmlWriter);
             WriteParameters(xmlWriter);
             WriteReturns(xmlWriter);
             xmlWriter.WriteEndElement();
         }
 
+        
         private void WriteParameters(XmlTextWriter xmlWriter)
         {
             if (!Enumerable.Any(myParameters))
@@ -388,7 +395,6 @@ namespace ApiParser
             var isStatic = bool.Parse(message.Attribute("static").Value);
             var coroutineAttribute = message.Attribute("coroutine");
             var isCoroutine = coroutineAttribute != null && bool.Parse(coroutineAttribute.Value);
-            var description = message.Attribute("description")?.Value;
             var path = message.Attribute("path")?.Value;
             var undocumentedAttribute = message.Attribute("undocumented");
             var isUndocumented = undocumentedAttribute != null && bool.Parse(undocumentedAttribute.Value);
@@ -396,25 +402,108 @@ namespace ApiParser
             var type = returns.Attribute("type").Value;
             var isArray = bool.Parse(returns.Attribute("array").Value);
             var returnType = new ApiType(type + (isArray ? "[]" : string.Empty));
-            var function = new UnityApiEventFunction(name, isStatic, isCoroutine, returnType, new Version(int.MaxValue, 0), description,
+            var function = new UnityApiEventFunction(name, isStatic, isCoroutine, returnType, new Version(int.MaxValue, 0),
                 path, isUndocumented);
+            foreach (var description in message.Elements("descriptions"))
+            {
+                function.myDescriptions.ImportFrom(description.Elements("description"));
+            }
+
             function.ImportVersionRange(message, versions);
-            foreach (var parameter in message.Descendants("parameter"))
+            foreach (var parameters in message.Elements("parameters"))
+            foreach (var parameter in parameters.Elements("parameter"))
                 function.myParameters.Add(UnityApiParameter.ImportFrom(parameter));
             return function;
         }
     }
 
+    public class UnityApiDescriptions : Dictionary<RiderSupportedLanguages, string>
+    {
+        private void ExportTo(XmlTextWriter xmlWriter)
+        {
+            foreach (var description in this)
+            {
+                xmlWriter.WriteStartElement("description");
+                xmlWriter.WriteAttributeString("text", description.Value);
+                xmlWriter.WriteAttributeString("langCode", description.Key.ToString());
+                xmlWriter.WriteEndElement();
+            }
+        }
+
+        public void ImportFrom(IEnumerable<XElement> xElements)
+        {
+            foreach (var description in xElements)
+            {
+                var t = ImportFrom(description);
+                this[t.Key] = t.Value;
+            }
+        }
+    
+        private static KeyValuePair<RiderSupportedLanguages, string> ImportFrom(XElement description)
+        {
+            var text = description.Attribute("text")?.Value;
+            var langCode = description.Attribute("langCode")?.Value;
+            
+            if (Enum.TryParse<RiderSupportedLanguages>(langCode, out var code)) 
+                return new KeyValuePair<RiderSupportedLanguages, string>(code, text);
+            throw new Exception($"Unable to parse lang code {langCode}");
+        }
+    
+        public void Update(UnityApiDescriptions newDescriptions)
+        {
+                foreach (var newDesc in newDescriptions)
+                {
+                    if (!string.IsNullOrEmpty(newDesc.Value)) 
+                        this[newDesc.Key] = newDesc.Value;
+                }
+        }
+        
+        public void Add(RiderSupportedLanguages key, string value)
+        {
+            this[key] = value;
+        }
+
+        public void WriteDescriptions(XmlTextWriter xmlWriter)
+        {
+            if (!this.Any())
+                return;
+
+            xmlWriter.WriteStartElement("descriptions");
+            ExportTo(xmlWriter);
+            xmlWriter.WriteEndElement();
+        }
+
+        public string GetByLangCode(RiderSupportedLanguages langCode)
+        {
+            return this[langCode];
+        }
+    }
+
     public class UnityApiParameter
     {
-        private string myDescription;
+        private readonly UnityApiDescriptions myDescriptions;
         private string myJustification;
 
-        public UnityApiParameter(string name, ApiType type, string description)
+        public UnityApiParameter(string name, ApiType type, KeyValuePair<RiderSupportedLanguages, string>? description = null)
         {
             Name = name;
             Type = type;
-            myDescription = description;
+            myDescriptions = new UnityApiDescriptions();
+            if (description != null)
+                myDescriptions.Add(description.Value.Key, description.Value.Value);
+            myJustification = string.Empty;
+        }
+        
+        public UnityApiParameter(string name, ApiType type, UnityApiDescriptions descriptions)
+        {
+            Name = name;
+            Type = type;
+            myDescriptions = new UnityApiDescriptions();
+            foreach (var description in descriptions)
+            {
+                myDescriptions.Add(description.Key, description.Value);
+            }
+                
             myJustification = string.Empty;
         }
 
@@ -439,8 +528,7 @@ namespace ApiParser
                 xmlWriter.WriteAttributeString("optional", "True");
                 xmlWriter.WriteAttributeString("justification", myJustification);
             }
-            if (!string.IsNullOrEmpty(myDescription))
-                xmlWriter.WriteAttributeString("description", myDescription);
+            myDescriptions.WriteDescriptions(xmlWriter);
             xmlWriter.WriteEndElement();
         }
 
@@ -454,19 +542,17 @@ namespace ApiParser
             var name = parameter.Attribute("name").Value;
             var justification = parameter.Attribute("justification")?.Value;
             var isOptional = justification != null && bool.Parse(parameter.Attribute("optional").Value);
-            var description = parameter.Attribute("description")?.Value;
             var apiType = new ApiType(typeName + (isArray ? "[]" : string.Empty) + (isByRef ? "&" : string.Empty));
-            var p = new UnityApiParameter(name, apiType, description);
+            var p = new UnityApiParameter(name, apiType);
+            
+            foreach (var description in parameter.Elements("descriptions"))
+            {
+                p.myDescriptions.ImportFrom(description.Elements("description"));
+            }
+            
             if (isOptional)
                 p.SetOptional(justification);
             return p;
-        }
-
-        public bool IsEquivalent(UnityApiParameter other)
-        {
-            if (myDescription != other.myDescription && !string.IsNullOrEmpty(other.myDescription))
-                return false;
-            return Equals(Type, other.Type);
         }
 
         public void Update(UnityApiParameter newParameter, string functionName)
@@ -477,11 +563,8 @@ namespace ApiParser
             {
                 Name = newParameter.Name;
             }
-
-            if (myDescription != newParameter.myDescription && !string.IsNullOrEmpty(newParameter.myDescription))
-            {
-                myDescription = newParameter.myDescription;
-            }
+            
+            myDescriptions.Update(newParameter.myDescriptions);
 
             if (Type.FullName != newParameter.Type.FullName)
                 throw new InvalidOperationException($"Parameter type differences for parameter {Name} of {functionName}! {Type.FullName} != {newParameter.Type.FullName}");

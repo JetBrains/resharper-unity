@@ -1,4 +1,5 @@
-using JetBrains.Annotations;
+#nullable enable
+
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -14,9 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
     public abstract class StringLiteralReferenceBase : CheckedReferenceBase<ILiteralExpression>,
         IUnityReferenceFromStringLiteral
     {
-        protected StringLiteralReferenceBase([NotNull] ILiteralExpression owner)
+        protected StringLiteralReferenceBase(ILiteralExpression owner)
             : base(owner)
         {
+            Assertion.Assert(owner.ConstantValue.IsString());
         }
 
         public override ResolveResultWithInfo ResolveWithoutCache()
@@ -26,10 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             return !resolveResultWithInfo.Result.IsEmpty ? resolveResultWithInfo : ResolveResultWithInfo.Unresolved;
         }
 
-        public override string GetName()
-        {
-            return myOwner.ConstantValue.Value as string ?? SharedImplUtil.MISSING_DECLARATION_NAME;
-        }
+        public override string GetName() => myOwner.ConstantValue.IsNotNullString(out var name)
+            ? name
+            : SharedImplUtil.MISSING_DECLARATION_NAME;
 
         public override TreeTextRange GetTreeTextRange()
         {
@@ -46,9 +47,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
         public override IReference BindTo(IDeclaredElement element)
         {
             var literalAlterer = StringLiteralAltererUtil.CreateStringLiteralByExpression(myOwner);
-            var constantValue = (string)myOwner.ConstantValue.Value;
-            Assertion.AssertNotNull(constantValue, "constantValue != null");
-            literalAlterer.Replace(constantValue, element.ShortName);
+            var stringValue = myOwner.ConstantValue.StringValue.NotNull();
+            literalAlterer.Replace(stringValue, element.ShortName);
             var newOwner = literalAlterer.Expression;
             if (!myOwner.Equals(newOwner))
                 return newOwner.FindReference<StringLiteralReferenceBase>(r => r.GetType() == GetType()) ?? this;

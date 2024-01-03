@@ -1,11 +1,14 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
+using JetBrains.Collections.Viewable;
 using JetBrains.DocumentManagers;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Impl;
@@ -18,6 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
     public class ShaderFilesProperties : IPsiSourceFileProperties
     {
+        internal static readonly ShaderFilesProperties ShaderLabUserFileProperties = new(true);
+        internal static readonly ShaderFilesProperties ShaderLabPackageLocalCacheFileProperties = new(true) { IsNonUserFile = true };
+        internal static readonly ShaderFilesProperties NoCacheFilesProperties = new(false);
+        internal static readonly ShaderFilesProperties HlslUserFileProperties = new(false);
+        internal static readonly ShaderFilesProperties HlslPackageLocalCacheFileProperties = new(false) { IsNonUserFile = true };
+        
         public ShaderFilesProperties(bool isICacheParticipant)
         {
             IsICacheParticipant = isICacheParticipant;
@@ -30,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 
         public bool ProvidesCodeModel => true;
 
-        public bool IsNonUserFile => false;
+        public bool IsNonUserFile { get; init; }
 
         public IEnumerable<string> GetPreImportedNamespaces()
         {
@@ -50,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         private readonly ISolution mySolution;
         private readonly string myPersistentId;
 
-        public UnityShaderModule(ISolution solution, String name, TargetFrameworkId targetFrameworkId)
+        public UnityShaderModule(ISolution solution, string name, TargetFrameworkId targetFrameworkId)
         {
             mySolution = solution;
             myPersistentId = "UnityShaderModule:" + name;
@@ -64,32 +73,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 
         public TargetFrameworkId TargetFrameworkId { get; }
 
-        public ISolution GetSolution()
-        {
-            return mySolution;
-        }
-
+        public ISolution GetSolution() => mySolution;
 
         public Dictionary<IProjectFile, PsiProjectFile> Files { get; }
 
         public IEnumerable<IPsiSourceFile> GetPsiSourceFileFor(IProjectFile projectFile)
         {
-            if (Files.ContainsKey(projectFile))
-                return new[] {Files[projectFile]};
+            if (Files.TryGetValue(projectFile, out var file))
+                return new[] { file };
             return EmptyList<IPsiSourceFile>.InstanceList;
         }
 
-        public PsiLanguageType PsiLanguage => CppLanguage.Instance;
+        public PsiLanguageType? PsiLanguage => CppLanguage.Instance;
 
-        public ProjectFileType ProjectFileType => KnownProjectFileType.Instance;
+        public ProjectFileType? ProjectFileType => KnownProjectFileType.Instance;
 
         public IEnumerable<IPsiModuleReference> GetReferences(
-            IModuleReferenceResolveContext moduleReferenceResolveContext)
+            IModuleReferenceResolveContext? moduleReferenceResolveContext)
         {
             return EmptyList<IPsiModuleReference>.InstanceList;
         }
 
-        public IModule ContainingProjectModule => null;
+        public IModule? ContainingProjectModule => null;
 
         public IEnumerable<IPsiSourceFile> SourceFiles => Files.Values;
 
@@ -118,10 +123,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
     [SolutionComponent]
     public class UnityShaderPsiModuleProviderFilter : IProjectPsiModuleProviderFilter
     {
-        public Tuple<IProjectPsiModuleHandler, IPsiModuleDecorator> OverrideHandler(Lifetime lifetime, IProject project,
+        public Tuple<IProjectPsiModuleHandler, IPsiModuleDecorator>? OverrideHandler(Lifetime lifetime, IProject project,
             IProjectPsiModuleHandler handler)
         {
-            if ( handler.PrimaryModule != null && project.GetComponent<UnityReferencesTracker>().IsUnityProject(project))
+            if (handler.PrimaryModule != null && (project.IsUnityProject() || project.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue()) && !project.IsPlayerProject())
             {
                 var module = new UnityShaderModule(project.GetSolution(), project.Name, handler.PrimaryModule.TargetFrameworkId);
                 var newHandlerAndDecorator = new UnityShaderModuleHandlerAndDecorator(module, handler);
@@ -137,9 +142,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
     {
         private readonly IList<IPsiModule> myAllModules;
         private readonly DocumentManager myDocumentManager;
-        private UnityShaderModule myModule;
-        private ShaderFilesProperties myShaderLabProperties;
-        private ShaderFilesProperties myCppProperties;
+        private readonly UnityShaderModule myModule;
+        private readonly PackageManager myPackageManager;
 
         public UnityShaderModuleHandlerAndDecorator(
             UnityShaderModule module,
@@ -149,10 +153,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             myAllModules = new List<IPsiModule>(base.GetAllModules());
             myAllModules.Add(module);
 
-            myShaderLabProperties = new ShaderFilesProperties(true);
-            myCppProperties = new ShaderFilesProperties(false);
             myModule = module;
-            myDocumentManager = module.GetSolution().GetComponent<DocumentManager>();
+            var solution = module.GetSolution();
+            myPackageManager = solution.GetComponent<PackageManager>();
+            myDocumentManager = solution.GetComponent<DocumentManager>();
         }
 
         public IEnumerable<IPsiModuleReference> OverrideModuleReferences(IEnumerable<IPsiModuleReference> references)
@@ -207,7 +211,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             {
                 var sourceFile = new PsiProjectFile(myModule,
                     projectFile,
-                    (file, sf) => sf.GetLocation().ExtensionWithDot.Equals(ShaderLabProjectFileType.SHADERLAB_EXTENSION) ? myShaderLabProperties : myCppProperties,
+                    (file, sf) => GetFileProperties(sf),
                     (file, sf) => myModule.Files.ContainsKey(file),
                     myDocumentManager,
                     BaseHandler.PrimaryModule.GetResolveContextEx(projectFile));
@@ -220,6 +224,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                 if (myModule.Files.TryGetValue(projectFile, out var psiFile))
                     changeBuilder.AddFileChange(psiFile, PsiModuleChange.ChangeType.Modified);
             }
+        }
+
+        private ShaderFilesProperties GetFileProperties(IPsiSourceFile sourceFile)
+        {
+            var isLocalPackageCacheFile = myPackageManager.IsLocalPackageCacheFile(sourceFile.GetLocation());
+            if (sourceFile.GetLocation().ExtensionWithDot.Equals(ShaderLabProjectFileType.SHADERLAB_EXTENSION))
+                return isLocalPackageCacheFile ? ShaderFilesProperties.ShaderLabPackageLocalCacheFileProperties : ShaderFilesProperties.ShaderLabUserFileProperties;
+            return isLocalPackageCacheFile ? ShaderFilesProperties.HlslPackageLocalCacheFileProperties : ShaderFilesProperties.HlslUserFileProperties;
         }
     }
 }

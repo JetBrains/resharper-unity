@@ -1,11 +1,9 @@
-using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Transaction;
-using JetBrains.RdBackend.Common.Env;
 using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -84,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Psi.Modules
 
             // Avoid SolutionMiscFiles.CreateMiscFile as this will involve transactions, and loading/saving the document
             // for each file
-            DocumentHostBase.CreateMiscFile(mySolution, path);
+            DocumentHostProjectFileUtil.CreateMiscFile(mySolution, path);
         }
 
         private void RemoveExternalProjectFiles(VirtualFileSystemPath path)

@@ -1,10 +1,13 @@
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
+using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.ReSharper.Psi.Format;
 using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.Psi.Impl.Shared.InjectedPsi;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -26,10 +29,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
     
     public override string OverridenSettingPrefix => "// @formatter:";
 
-    protected override CodeFormattingContext CreateFormatterContext(CodeFormatProfile profile, ITreeNode firstNode, ITreeNode lastNode,
-      AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider)
+    protected override CodeFormattingContext CreateFormatterContext(
+        AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider, int tabWidth, SingleLangChangeAccu changeAccu, FormatTask[] formatTasks)
     {
-      return new CodeFormattingContext(this, firstNode, lastNode, FormatterLoggerProvider.FormatterLogger, parameters);
+      return new CodeFormattingContext(this, FormatterLoggerProvider.FormatterLogger, parameters, tabWidth, changeAccu, formatTasks);
     }
 
     public override MinimalSeparatorType GetMinimalSeparatorByNodeTypes(TokenNodeType leftToken, TokenNodeType rightToken)
@@ -37,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
       return MinimalSeparatorType.NotRequired;
     }
 
-    public override ITreeNode CreateSpace(string indent, ITreeNode replacedSpace)
+    public override ITreeNode CreateSpace(string indent, NodeType replacedOrLeftSiblingType)
     {
       return ShaderLabTokenType.WHITESPACE.CreateLeafElement(indent);
     }
@@ -62,36 +65,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 
       var settings = GetFormattingSettings(task.FirstElement, parameters, myShaderLabFormattingInfo);
       settings.Settings.SetValue((key => key.WRAP_LINES), false);
-      
+
+      // TODO: this is a hack to warmup injected CPP nodes in PSI to avoid problems with parsing under write lock during formatting, we need more robust solution for that problem 
+      if (firstElement.GetSourceFile() is {} sourceFile)
+        _ = sourceFile.GetPsiFiles<CppLanguage>().Count;
       DoDeclarativeFormat(settings, myShaderLabFormattingInfo, null, new[] { task }, parameters,
-        _ => false, null, FormatChildren, false);
+        null, FormatChildren);
 
       return FormatterImplHelper.PointerToRange(pointer, firstElement, lastElement);
       
-      void FormatChildren(FormatTask formatTask, FmtSettings<ShaderLabFormatSettingsKey> formatSettings, CodeFormattingContext context)
+      void FormatChildren(FormatTask formatTask, FmtSettingsHolder<ShaderLabFormatSettingsKey> formatSettings, CodeFormattingContext context, IProgressIndicator pi)
       {
-        using (var fmtProgress = parameters.ProgressIndicator.CreateSubProgress(1))
-        {
+          using var fmtProgress = pi.CreateSubProgress(1);
+          
           Assertion.Assert(formatTask.FirstElement != null, "firstNode != null");
           var file = formatTask.FirstElement.GetContainingFile();
           if (file != null)
           {
-            if (ShaderLabDoNotFormatInjectionsCookie.IsInjectionFormatterSuppressed)
-              return;
+              if (ShaderLabDoNotFormatInjectionsCookie.IsInjectionFormatterSuppressed)
+                  return;
               
-            using (new SuspendInjectRegenerationCookie())
-            {
-              FormatterImplHelper.RunFormatterForGeneratedLanguages(file, formatTask.FirstElement, lastNode, profile,
-                it => true, PsiLanguageCategories.All, parameters.ChangeProgressIndicator(fmtProgress));
-            }
+              using (new SuspendInjectRegenerationCookie())
+              {
+                  FormatterImplHelper.RunFormatterForGeneratedLanguages(file, formatTask.FirstElement, lastNode, profile,
+                      _ => true, PsiLanguageCategories.All, parameters.ChangeProgressIndicator(fmtProgress));
+              }
           }
-        }
       }
     }
 
 
 
-    public override void FormatInsertedNodes(ITreeNode nodeFirst, ITreeNode nodeLast, bool formatSurround)
+    public override void FormatInsertedNodes(ITreeNode nodeFirst, ITreeNode nodeLast, bool formatSurround,
+        bool indentSurround = false)
     {
       
     }
@@ -112,5 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
     public override void FormatDeletedNodes(ITreeNode parent, ITreeNode prevNode, ITreeNode nextNode)
     {
     }
+
+    public override bool CanBeMultilineToken(ITreeNode node) => base.CanBeMultilineToken(node) || node.GetTokenType() is { IsStringLiteral: true } || node.Parent is ICgContent;
   }
 }

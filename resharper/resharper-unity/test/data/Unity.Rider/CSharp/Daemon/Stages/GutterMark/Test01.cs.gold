@@ -223,7 +223,7 @@ static class NotSerialisableStaticClass
 (31): UnityCodeInsights: Event function | Event function | Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 (32): ReSharper Unity Implicitly Used Identifier: 
 (33): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
-(34): UnityCodeInsights: Used implicitly | Used implicitly | Called when Unity first launches the editor, the player, or recompiles scripts
+(34): UnityCodeInsights: Used implicitly | Used implicitly | Called when Unity first launches the editor or the player, or when it recompiles scripts
 (35): ReSharper Unity Implicitly Used Identifier: 
 (36): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
 (37): ReSharper Unity Implicitly Used Identifier: 

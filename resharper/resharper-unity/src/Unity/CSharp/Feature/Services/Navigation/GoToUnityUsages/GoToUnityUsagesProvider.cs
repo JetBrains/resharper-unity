@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Navigation.ExecutionHosting;
 using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
 using JetBrains.ReSharper.Features.Navigation.Features.Usages;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages
 {
@@ -39,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.G
             var execution = GetSearchesExecution(dataContext, navigationExecutionHost);
             if (execution != null)
             {
-                yield return new ContextNavigation("Unity Usages of Symbol", "FindUnityUsages",
+                yield return new ContextNavigation(Strings.GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol, "FindUnityUsages",
                     NavigationActionGroup.Important, execution);
             }
         }
