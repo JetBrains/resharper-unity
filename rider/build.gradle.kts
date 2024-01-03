@@ -58,7 +58,7 @@ val runTests = extra["RunTests"].toString().lowercase(Locale.getDefault()).toBoo
 val monoRepoRootDir by lazy {
     var currentDir = projectDir
     while (currentDir.parentFile != null) {
-        if (currentDir.resolve(".dotnet-products.root.marker").exists()) {
+        if (currentDir.resolve(".ultimate.root.marker").exists()) {
             return@lazy currentDir
         }
         currentDir = currentDir.parentFile
@@ -66,7 +66,7 @@ val monoRepoRootDir by lazy {
     return@lazy null
 }
 val monorepoPreGeneratedRootDir by lazy {
-    monoRepoRootDir?.resolve("Plugins/_Unity.Pregenerated") ?: error("Building not in monorepo")
+    monoRepoRootDir?.resolve("dotnet/Plugins/_Unity.Pregenerated") ?: error("Building not in monorepo")
 }
 val monorepoPreGeneratedFrontendDir by lazy { monorepoPreGeneratedRootDir.resolve("Frontend") }
 val monorepoPreGeneratedBackendDir by lazy { monorepoPreGeneratedRootDir.resolve("BackendModel") }

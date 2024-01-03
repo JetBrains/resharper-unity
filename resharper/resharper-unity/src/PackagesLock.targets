@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
         <PackageLock Include="Antlr2.Runtime" Version="2.7.7.3" />
-        <PackageLock Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.4.0" IsDevelopmentDependency="True" />
+        <PackageLock Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.5.0" IsDevelopmentDependency="True" />
         <PackageLock Include="JetBrains.Annotations" Version="2023.3.0" />
         <PackageLock Include="JetBrains.Build.Platform.DistributedCache" Version="1.0.20230909.199" />
         <PackageLock Include="JetBrains.HabitatDetector" Version="1.0.2" IsDevelopmentDependency="True" />

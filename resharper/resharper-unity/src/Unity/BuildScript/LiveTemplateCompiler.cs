@@ -62,7 +62,8 @@ public static class LiveTemplateCompiler
                     .Select(x => x.PathWithCurrentPlatformSeparators().QuoteIfNeeded())))
                 .AppendSwitchIfNotNull("-o", RelativePath.Parse(liveTemplateItem.OutputFile).PathWithCurrentPlatformSeparators())
                 .AppendSwitchIfNotNull("-r", RelativePath.Parse(liveTemplateItem.ReadmeFile).PathWithCurrentPlatformSeparators())
-                .AppendSwitchIfNotNull("-n", "unix")
+                .AppendSwitchIfNotNull("-n", "unix"),
+            AdditionalEnvironmentVariables = {{"DOTNET_SYSTEM_GLOBALIZATION_INVARIANT", "true"}}
         };
         logger.Verbose($"Starting \"\"{dotnetHost} {startInfo.Arguments.ToString()}\"\" in directory {liveTemplateItem.ProjectDir}");
         return Lifetime.UsingAsync

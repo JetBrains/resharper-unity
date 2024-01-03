@@ -9,10 +9,10 @@ import io.qameta.allure.Feature
 import io.qameta.allure.Severity
 import io.qameta.allure.SeverityLevel
 
-@Epic(Subsystem.UNITY_DEBUG)
-@Feature("Debug Unity2022")
+@Epic(Subsystem.UNITY_PLUGIN)
+@Feature("PlayMode Action for Unity")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DebuggerTest2022 : DebuggerTestBase() {
-    override val unityMajorVersion = UnityVersion.V2022
+class PlayModeTest2023 : PlayModeTestBase() {
+    override val unityMajorVersion = UnityVersion.V2023
 }
