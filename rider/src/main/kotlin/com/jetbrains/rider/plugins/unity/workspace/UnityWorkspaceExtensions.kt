@@ -5,15 +5,16 @@ package com.jetbrains.rider.plugins.unity.workspace
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.backend.workspace.WorkspaceModel
-import com.intellij.platform.workspace.storage.EntitySource
-import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.platform.workspace.jps.entities.ContentRootEntity
 import com.intellij.platform.workspace.jps.entities.ExcludeUrlEntity
 import com.intellij.platform.workspace.jps.entities.ModuleEntity
+import com.intellij.platform.workspace.storage.EntitySource
+import com.intellij.platform.workspace.storage.ExternalMappingKey
+import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.platform.workspace.storage.url.VirtualFileUrl
 
 val UNITY_EXCLUDED_PATTERNS = listOf("*.tmp") // don't exclude meta - undo would not work RIDER-81449, see also RIDER-79712, RIDER-83846
-val UNITY_PACKAGE_ID_MAPPING = "rider.unity.package.id"
+val UNITY_PACKAGE_ID_MAPPING = ExternalMappingKey.create<String>("rider.unity.package.id")
 
 
 fun WorkspaceModel.getPackages(): List<UnityPackageEntity> {
@@ -21,12 +22,12 @@ fun WorkspaceModel.getPackages(): List<UnityPackageEntity> {
 }
 
 fun WorkspaceModel.hasPackage(id: String): Boolean {
-    val mapping = entityStorage.current.getExternalMapping<String>(UNITY_PACKAGE_ID_MAPPING)
+    val mapping = entityStorage.current.getExternalMapping(UNITY_PACKAGE_ID_MAPPING)
     return mapping.getEntities(id).any()
 }
 
 fun WorkspaceModel.tryGetPackage(id: String): UnityPackageEntity? {
-    val mapping = entityStorage.current.getExternalMapping<String>(UNITY_PACKAGE_ID_MAPPING)
+    val mapping = entityStorage.current.getExternalMapping(UNITY_PACKAGE_ID_MAPPING)
     return mapping.getEntities(id).filterIsInstance<UnityPackageEntity>().singleOrNull()
 }
 

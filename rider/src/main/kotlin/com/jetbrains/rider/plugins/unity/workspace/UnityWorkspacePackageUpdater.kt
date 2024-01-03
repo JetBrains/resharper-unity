@@ -9,12 +9,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
-import com.intellij.util.application
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.backend.workspace.toVirtualFileUrl
-import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.platform.workspace.storage.url.VirtualFileUrlManager
+import com.intellij.util.application
+import com.intellij.workspaceModel.ide.getInstance
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -104,14 +104,14 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
         }
         entityStorage.addEntity(entity)
 
-        val mapping = entityStorage.getMutableExternalMapping<String>(UNITY_PACKAGE_ID_MAPPING)
+        val mapping = entityStorage.getMutableExternalMapping(UNITY_PACKAGE_ID_MAPPING)
         mapping.addMapping(entity, entity.packageId)
     }
 
     private fun removePackage(unityPackage: UnityPackage, builder: MutableEntityStorage) {
         logger.trace("Removing Unity package: ${unityPackage.id}")
 
-        val mapping = builder.getExternalMapping<String>(UNITY_PACKAGE_ID_MAPPING)
+        val mapping = builder.getExternalMapping(UNITY_PACKAGE_ID_MAPPING)
         for (entity in mapping.getEntities(unityPackage.id)) {
             builder.removeEntity(entity)
         }
