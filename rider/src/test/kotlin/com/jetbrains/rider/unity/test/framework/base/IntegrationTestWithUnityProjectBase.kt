@@ -47,8 +47,10 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
                 }
             }.assertCompleted("Sln/csproj structure has not been created by Unity in the batch mode")
         } finally {
-            frameworkLogger.info("Killing Unity process which did not generate csproj structure")
-            unityProcessHandle.destroyForcibly()
+            if (unityProcessHandle.isAlive) {
+                frameworkLogger.info("Killing Unity process which did not generate csproj structure in ${timeoutMinutes.toMinutes()} minutes")
+                unityProcessHandle.destroyForcibly()
+            }
         }
     }
 
