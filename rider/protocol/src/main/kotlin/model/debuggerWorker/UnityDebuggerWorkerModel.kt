@@ -83,4 +83,7 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
     val unityTextureAdditionalAction = classdef extends DebuggerWorkerModel.objectAdditionalAction {
         call("evaluateTexture", unityTextureAdditionalActionParams, unityTextureAdditionalActionResult)
     }
+
+    val unityPausepointAdditionalAction = classdef extends DebuggerWorkerModel.additionalBreakpointAction {
+    }
 }
