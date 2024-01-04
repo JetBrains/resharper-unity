@@ -18,9 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         public const string PID = "UnityInlayHintsOptions";
 
         public UnityInlayHintsOptionsPage(Lifetime lifetime, OptionsPageContext optionsPageContext,
-                                          OptionsSettingsSmartContext optionsSettingsSmartContext,
-                                          bool wrapInScrollablePanel = false)
-            : base(lifetime, optionsPageContext, optionsSettingsSmartContext, wrapInScrollablePanel)
+                                          OptionsSettingsSmartContext optionsSettingsSmartContext)
+            : base(lifetime, optionsPageContext, optionsSettingsSmartContext, optionsPageContext.IsReSharper)
         {
             AddVisibilityHelpText();
 
