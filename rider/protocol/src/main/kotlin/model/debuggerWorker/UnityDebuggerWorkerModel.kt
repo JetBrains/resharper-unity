@@ -9,6 +9,10 @@ import com.jetbrains.rider.model.nova.debugger.main.DebuggerWorkerModel
 @Suppress("unused")
 object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
 
+    private val unityBundleInfo = structdef {
+        field("id", string)
+        field("absolutePath", string)
+    }
     // Not used in this model, but referenced via debuggerStartInfoBase. Serialisers will be registered along with this
     // model (directly via UnityDebuggerWorkerModel.RegisterDeclaredTypesSerializers() or indirectly via creating a new
     // UnityDebuggerWorkerModel)
@@ -16,6 +20,7 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         field("monoAddress", string.nullable)
         field("monoPort", int)
         field("listenForConnections", bool)
+        field("bundles", immutableList(unityBundleInfo))
     }
 
     // Default start info. Performs the same as MonoAttachStartInfo but allows overriding some options for IL2CPP
@@ -66,7 +71,6 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
     }
 
     var unityTextureAdditionalActionParams = structdef {
-        field("helperDllLocation", string)
         field("evaluationTimeout", int)
     }
 

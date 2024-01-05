@@ -8,6 +8,8 @@ import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.execution.ui.RunConfigurationStartHistory
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.RiderEnvironment
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityBundleInfo
 import com.jetbrains.rider.plugins.unity.run.*
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 
@@ -156,4 +158,13 @@ private fun startDebugRunConfiguration(
     // The new UI only adds items to the run widget if explicitly started from the run widget or via context action
     // (IDEA-310169)
     RunConfigurationStartHistory.getInstance(project).register(configurationSettings)
+}
+
+
+fun getUnityBundlesList(): List<UnityBundleInfo> {
+
+    val textureHelperAssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture"
+    val textureHelperBundle = RiderEnvironment.getBundledFile("$textureHelperAssemblyName.dll")
+
+    return listOf(UnityBundleInfo(textureHelperAssemblyName, textureHelperBundle.absolutePath))
 }

@@ -13,6 +13,6 @@ class UnityAttachLocalUwpProfileState(private val remoteConfiguration: RemoteCon
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, targetName, false) {
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
-        return UnityLocalUwpStartInfo(packageName, remoteConfiguration.address, remoteConfiguration.port, false)
+        return UnityLocalUwpStartInfo(packageName, remoteConfiguration.address, remoteConfiguration.port, false, getUnityBundlesList())
     }
 }

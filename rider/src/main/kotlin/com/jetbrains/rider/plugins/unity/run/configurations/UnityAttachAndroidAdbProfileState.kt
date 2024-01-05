@@ -41,7 +41,8 @@ class UnityAttachAndroidAdbProfileState(private val project: Project,
             deviceId,
             remoteConfiguration.address,
             remoteConfiguration.port,
-            false
+            false,
+            getUnityBundlesList()
         )
     }
 }
