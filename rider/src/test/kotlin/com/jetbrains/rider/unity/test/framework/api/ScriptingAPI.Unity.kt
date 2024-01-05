@@ -20,8 +20,8 @@ import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
+import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoint
@@ -256,7 +256,7 @@ fun getUnityProcessHandle(project: Project): ProcessHandle {
 }
 
 fun getRiderDevAppPath(): File {
-    val editorPluginFolderPath = RiderEnvironment.getBundledPluginFile("EditorPlugin", "com.intellij.resharper.unity")
+    val editorPluginFolderPath = UnityPluginEnvironment.getBundledFile("EditorPlugin")
     val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
 
     val riderDevAppPath = editorPluginFolderPath.resolve("rider-dev.app").apply { mkdirs() }
