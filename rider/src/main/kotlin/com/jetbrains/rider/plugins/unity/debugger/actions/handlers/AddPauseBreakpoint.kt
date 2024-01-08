@@ -33,7 +33,6 @@ class AddPauseBreakpoint : DumbAwareAction() {
                                             properties)
             .apply {
                 this.suspendPolicy = SuspendPolicy.NONE
-                this.setLogExpression(UnityPausepointConstants.pauseEditorCommand)
             }
     }
 
