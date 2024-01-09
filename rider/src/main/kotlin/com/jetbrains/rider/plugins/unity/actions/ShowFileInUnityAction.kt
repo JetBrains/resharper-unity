@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.ide.actions.RevealFileAction
 import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAwareAction
@@ -20,7 +21,7 @@ open class ShowFileInUnityAction : DumbAwareAction() {
 
         execute(project, file)
     }
-
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     override fun update(e: AnActionEvent) {
         val project = e.project ?: return
         // see `com.intellij.ide.actions.RevealFileAction.update`

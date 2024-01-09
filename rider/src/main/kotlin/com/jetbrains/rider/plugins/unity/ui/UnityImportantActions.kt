@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ui
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.TooltipDescriptionProvider
@@ -13,6 +14,7 @@ import com.jetbrains.rider.projectView.solution
 import icons.UnityIcons
 
 class UnityImportantActions : DefaultActionGroup(), DumbAware, TooltipDescriptionProvider {
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     override fun update(e: AnActionEvent) {
         val project = e.project
         if (project != null && isVisible(e)) {
@@ -42,6 +44,7 @@ class UnityImportantActions : DefaultActionGroup(), DumbAware, TooltipDescriptio
 }
 
 class UnityDllImportantActions : DefaultActionGroup(), DumbAware {
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     override fun update(e: AnActionEvent) {
         val project = e.project ?: return
         if (project.solution.frontendBackendModel.hasUnityReference.valueOrDefault(false)

@@ -5,6 +5,7 @@ import com.intellij.execution.Executor
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionUtil
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbAwareAction
@@ -26,7 +27,7 @@ open class  StartUnityAction : DumbAwareAction() {
 
         startUnity(project)
     }
-
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     override fun update(e: AnActionEvent) {
         val model = e.project?.solution?.frontendBackendModel
         @NlsSafe

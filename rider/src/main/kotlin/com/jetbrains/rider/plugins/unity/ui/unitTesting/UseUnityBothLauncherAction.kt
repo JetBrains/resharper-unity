@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ui.unitTesting
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
@@ -12,6 +13,8 @@ class UseUnityBothLauncherAction : DumbAwareAction(BothModeText,
     companion object {
         val BothModeText = UnityUIBundle.message("action.run.with.unity.editor.text")
     }
+
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return

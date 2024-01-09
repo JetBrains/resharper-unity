@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.debugger.breakpoints
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -20,6 +21,7 @@ class ConvertToPausepointPopupActionProvider : IDotNetLineBreakpointPopupActions
     }
 
     private class ConvertToPausepointAction(private val breakpoint: XLineBreakpoint<*>): DumbAwareAction(UnityPausepointConstants.convertToPausepointActionText) {
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         override fun update(e: AnActionEvent) {
             e.presentation.isVisible = e.project?.let { UnityProjectDiscoverer.getInstance(it).isUnityProject } == true
         }

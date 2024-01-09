@@ -4,10 +4,7 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.Separator
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.DumbAwareAction
@@ -124,6 +121,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         UnityBundle.message("action.toggle.output.position.text"),
         UnityBundle.message("action.toggle.output.pane.position.right.bottom.description"),
         AllIcons.Actions.SplitVertically) {
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         override fun actionPerformed(e: AnActionEvent) {
             mainSplitterOrientation.invert()
             update(e)

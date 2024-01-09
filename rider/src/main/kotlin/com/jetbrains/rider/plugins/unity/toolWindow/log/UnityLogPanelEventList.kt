@@ -4,6 +4,7 @@ import com.intellij.application.subscribe
 import com.intellij.ide.CopyProvider
 import com.intellij.ide.ui.UISettings
 import com.intellij.ide.ui.UISettingsListener
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -27,6 +28,7 @@ import javax.swing.DefaultListModel
 import javax.swing.ListSelectionModel
 
 class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyList()), DataProvider, CopyProvider {
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     val riderModel: DefaultListModel<LogPanelItem>
         get() = model as DefaultListModel<LogPanelItem>
 

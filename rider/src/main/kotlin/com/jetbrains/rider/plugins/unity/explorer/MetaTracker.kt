@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.command.CommandEvent
 import com.intellij.openapi.command.CommandListener
 import com.intellij.openapi.command.CommandProcessor
@@ -9,6 +8,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
+import com.intellij.openapi.rd.util.lifetime
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.vfs.*
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
@@ -16,7 +16,6 @@ import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
 import com.intellij.util.application
 import com.jetbrains.rd.platform.util.getLogger
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.addUnique
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater
@@ -276,9 +275,8 @@ class MetaTracker : VfsBackendRequester {
     }
 }
 
-class MetaTrackerListener: BulkFileListener, Disposable {
+class MetaTrackerListener: BulkFileListener {
     override fun after(events: MutableList<out VFileEvent>) {
         MetaTracker.getInstance().onEvent(events)
     }
-    override fun dispose() = Unit
 }

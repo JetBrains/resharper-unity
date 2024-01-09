@@ -54,7 +54,7 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
             }
             debugNotification.notify(project)
 
-            val debuggerManager = project.getService(XDebuggerManager::class.java)
+            val debuggerManager = XDebuggerManager.getInstance(project)
             val debugProcess = debuggerManager.currentSession?.debugProcess as? DotNetDebugProcess
 
             if (debugProcess != null) {

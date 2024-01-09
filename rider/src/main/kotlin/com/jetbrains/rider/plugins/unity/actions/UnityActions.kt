@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.actions
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
@@ -9,7 +10,7 @@ import com.jetbrains.rider.plugins.unity.ui.UnityUIManager
 import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
 
 class PlayInUnityAction : ToggleAction(), DumbAware {
-
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     override fun isSelected(e: AnActionEvent):Boolean {
         val model = e.getFrontendBackendModel() ?: return false
         return model.playControls.play.valueOrDefault(false)
@@ -37,7 +38,7 @@ class PlayInUnityAction : ToggleAction(), DumbAware {
 }
 
 class PauseInUnityAction : ToggleAction(), DumbAware {
-
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     override fun isSelected(e: AnActionEvent):Boolean {
         val model = e.getFrontendBackendModel() ?: return false
         return model.playControls.pause.valueOrDefault(false)
@@ -65,7 +66,7 @@ class PauseInUnityAction : ToggleAction(), DumbAware {
 }
 
 class StepInUnityAction : AnAction(), DumbAware {
-
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     override fun actionPerformed(e: AnActionEvent) {
         e.getFrontendBackendModel()?.playControls?.step?.fire(Unit)
     }
