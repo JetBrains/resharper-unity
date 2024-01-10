@@ -8,10 +8,11 @@ import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.execution.ui.RunConfigurationStartHistory
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.RiderEnvironment
+import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityBundleInfo
 import com.jetbrains.rider.plugins.unity.run.*
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
+import java.io.File
 
 /**
  * Returns true if any "Attach to Unity Editor" or "Attach to Unity Editor & Play" run configuration is running
@@ -164,7 +165,7 @@ private fun startDebugRunConfiguration(
 fun getUnityBundlesList(): List<UnityBundleInfo> {
 
     val textureHelperAssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture"
-    val textureHelperBundle = RiderEnvironment.getBundledFile("$textureHelperAssemblyName.dll")
+    val textureHelperBundle = UnityPluginEnvironment.getBundledFile("$textureHelperAssemblyName.dll", "DotFiles")
 
     return listOf(UnityBundleInfo(textureHelperAssemblyName, textureHelperBundle.absolutePath))
 }

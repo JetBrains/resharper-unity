@@ -18,16 +18,16 @@ val UNITY_PACKAGE_ID_MAPPING = ExternalMappingKey.create<String>("rider.unity.pa
 
 
 fun WorkspaceModel.getPackages(): List<UnityPackageEntity> {
-    return entityStorage.current.entities(UnityPackageEntity::class.java).toList()
+    return currentSnapshot.entities(UnityPackageEntity::class.java).toList()
 }
 
 fun WorkspaceModel.hasPackage(id: String): Boolean {
-    val mapping = entityStorage.current.getExternalMapping(UNITY_PACKAGE_ID_MAPPING)
+    val mapping = currentSnapshot.getExternalMapping(UNITY_PACKAGE_ID_MAPPING)
     return mapping.getEntities(id).any()
 }
 
 fun WorkspaceModel.tryGetPackage(id: String): UnityPackageEntity? {
-    val mapping = entityStorage.current.getExternalMapping(UNITY_PACKAGE_ID_MAPPING)
+    val mapping = currentSnapshot.getExternalMapping(UNITY_PACKAGE_ID_MAPPING)
     return mapping.getEntities(id).filterIsInstance<UnityPackageEntity>().singleOrNull()
 }
 

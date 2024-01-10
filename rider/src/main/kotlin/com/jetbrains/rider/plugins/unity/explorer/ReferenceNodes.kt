@@ -34,7 +34,7 @@ class ReferenceRootNode(project: Project) : AbstractTreeNode<Any>(project, key) 
                     val item = referenceNames.getOrCreate(itemKey) {
                       ReferenceItemNode(myProject, entity.descriptor.name, virtualFile, arrayListOf())
                     }
-                    item.entityReferences.add(entity.toReference())
+                    item.entityPointers.add(entity.toReference())
                   }
                 }
                 return Result.Stop
@@ -54,7 +54,7 @@ class ReferenceItemNode(
     project: Project,
     private val referenceName: String,
     virtualFile: VirtualFile,
-    override val entityReferences: ArrayList<ProjectModelEntityReference>
+    override val entityPointers: ArrayList<ProjectModelEntityReference>
 ) : UnityExplorerFileSystemNode(project, virtualFile, emptyList(), AncestorNodeType.References) {
 
     override fun isAlwaysLeaf() = true
@@ -69,11 +69,11 @@ class ReferenceItemNode(
     }
 
     override val entities: List<ProjectModelEntity>
-        get() = entityReferences.mapNotNull { it.getEntity(myProject) }
+        get() = entityPointers.mapNotNull { it.getEntity(myProject) }
     override val entity: ProjectModelEntity?
         get() = entityReference?.getEntity(myProject)
     override val entityReference: ProjectModelEntityReference?
-        get() = entityReferences.firstOrNull()
+        get() = entityPointers.firstOrNull()
 
     // Don't show references with weird file statuses. They are files, and some will be in ignored folders
     // (e.g. Library/PackageCache)
