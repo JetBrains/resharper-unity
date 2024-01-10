@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Retry failed Rider Tests">
+  <test group-by-instances="true" name="Rider(failed)">
+    <classes>
+      <!--REPLACE HERE-->
+    </classes>
+  </test> <!-- Rider(failed) -->
+</suite> <!-- Failed suite [Default Suite] -->
