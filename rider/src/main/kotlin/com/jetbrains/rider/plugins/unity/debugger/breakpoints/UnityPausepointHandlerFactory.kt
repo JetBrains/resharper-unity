@@ -9,9 +9,9 @@ import com.jetbrains.rider.debugger.DotNetBreakpointsManager
 import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.IDotNetSupportedBreakpointHandlerFactory
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityPausepointAdditionalAction
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.projectView.solution
@@ -84,8 +84,12 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
 
     private fun doRegisterBreakpoint(breakpoint: XLineBreakpoint<*>) {
         if (!registeredBreakpoints.contains(breakpoint)) {
+            var userData = breakpoint.getUserData(DotNetBreakpointsManager.AdditionalActionsKey)
+            if(userData == null)
+                userData = ArrayList()
 
-            breakpoint.putUserData(DotNetBreakpointsManager.AdditionalActionsKey, UnityPausepointAdditionalAction())
+            userData.add(UnityPausepointAdditionalAction())
+            breakpoint.putUserData(DotNetBreakpointsManager.AdditionalActionsKey, userData)
             // Not safe to call multiple times, make sure we only register each breakpoint once
             debugProcess.breakpointsManager.registerLineBreakpoint(breakpoint)
             registeredBreakpoints.add(breakpoint)
