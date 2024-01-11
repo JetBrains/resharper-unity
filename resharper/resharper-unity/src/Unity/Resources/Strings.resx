@@ -968,6 +968,9 @@
     <data name="TypeParameterMustBeUnmanagedIsNotMessage" xml:space="preserve">
         <value>Type parameter must be unmanaged, '{0}' is not</value>
     </data>
+    <data name="UnitySerializedField_PresentableName_Text" xml:space="preserve">
+        <value>Unity serialized field</value>
+    </data>
     <data name="Unity_Internal_DumpDuplicateTypeNames_Text" xml:space="preserve">
         <value>Dump Duplicate Type Names</value>
         <comment>Don't localize</comment>

@@ -364,6 +364,7 @@
     public static string TypeDetector_GetActions_Generate_Unity_event_functions => ResourceManager.GetString("TypeDetector_GetActions_Generate_Unity_event_functions");
     public static string TypeofIsProhibitedInBurst => ResourceManager.GetString("TypeofIsProhibitedInBurst");
     public static string TypeParameterMustBeUnmanagedIsNotMessage => ResourceManager.GetString("TypeParameterMustBeUnmanagedIsNotMessage");
+    public static string UnitySerializedField_PresentableName_Text => ResourceManager.GetString("UnitySerializedField_PresentableName_Text");
     public static string Unity_Internal_DumpDuplicateTypeNames_Text => ResourceManager.GetString("Unity_Internal_DumpDuplicateTypeNames_Text");
     public static string Unity_Internal_DumpSpellCheckWordLists_Text => ResourceManager.GetString("Unity_Internal_DumpSpellCheckWordLists_Text");
     public static string Unity_Internal_SerializeReferencesDump_Text => ResourceManager.GetString("Unity_Internal_SerializeReferencesDump_Text");

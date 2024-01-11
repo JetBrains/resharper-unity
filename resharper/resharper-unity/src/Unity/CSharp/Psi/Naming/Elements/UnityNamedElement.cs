@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
@@ -15,16 +16,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
     public class UnityNamedElement : ElementKindOfElementType
     {
         [UsedImplicitly] public static readonly IElementKind SERIALISED_FIELD =
-            new UnityNamedElement("UNITY_SERIALISED_FIELD", "Unity serialized field", IsSerialisedField, new NamingRule
+            new UnityNamedElement("UNITY_SERIALISED_FIELD", typeof(Strings), nameof(Strings.UnitySerializedField_PresentableName_Text), IsSerialisedField, new NamingRule
             {
                 NamingStyleKind = NamingStyleKinds.aaBb
             });
 
         private readonly NamingRule myNamingRule;
 
+        [Obsolete("Consider to use overload with resourceType and resourceName instead of presentableName.")]
         protected UnityNamedElement(string name, string presentableName, Func<IDeclaredElement, bool> isApplicable,
                         NamingRule namingRule)
             : base(name, presentableName, isApplicable, modifier:RoslynNamingSymbolModifier.UntranslatableToRoslyn)
+        {
+            myNamingRule = namingRule;
+        }
+        
+        protected UnityNamedElement(string name, Type resourceType, string resourceName, Func<IDeclaredElement, bool> isApplicable, NamingRule namingRule)
+            : base(name, resourceType, resourceName, isApplicable, modifier:RoslynNamingSymbolModifier.UntranslatableToRoslyn)
         {
             myNamingRule = namingRule;
         }
