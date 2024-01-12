@@ -69,7 +69,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
     }
 
     @AfterMethod
-    fun checkSwea() {
+    open fun checkSwea() {
         checkSweaInSolution()
     }
 

@@ -1,0 +1,6 @@
+--> ResetTransformSystem.cs:26(523,612) // transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity};
+ResetTransformJob.Execute() in , Assembly-CSharp.dll
+    +__TypeHandle = ResetTransformJob.InternalCompilerQueryAndHandleData.TypeHandle: null
+    +speed = RotationSpeed: null
+    +transform = Position=float3(0f, 0f, -1.89f) Rotation=quaternion(0f, 0f, 0f, 1f) Scale=1: LocalTransform
+
