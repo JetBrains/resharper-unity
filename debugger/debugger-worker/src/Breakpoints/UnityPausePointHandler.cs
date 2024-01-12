@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Plugins.Unity.Resources;
 using JetBrains.Lifetimes;
@@ -35,6 +36,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
         {
             myLogger = logger;
             mySession = session;
+            // while (!System.Diagnostics.Debugger.IsAttached)
+            // {
+            //     Thread.Sleep(100);
+            // }
 
             if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {
@@ -49,9 +54,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
                     myAssemblyAbsolutePath = string.Empty;
                     myLogger.Error($"UnityBundles don't contain required one '{UnityPausePointHelper.AssemblyName}'");
                 }
+                
+                myEvaluationTimeout = unityOptions.ForcedTimeoutForAdvanceUnityEvaluation;
             }
-
-            myEvaluationTimeout = unityOptions.ForcedTimeoutForAdvanceUnityEvaluation;
+            
             myKnownTypes = knownTypes;
         }
 
