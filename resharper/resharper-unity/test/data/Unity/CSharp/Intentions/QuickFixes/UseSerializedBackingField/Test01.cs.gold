@@ -4,8 +4,8 @@ public class Foo : MonoBehaviour
 {
   [SerializeField] private int myProp;
 
-  public int Prop
+  public int Prop{caret}
   {
-    get { return {selstart}myProp{selend}; }
+    get { return myProp; }
   }
 }
