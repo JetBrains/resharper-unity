@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ui.unitTesting
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
 
 class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
-
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     @Nls
     private fun getLauncherDescription(currentPreference: UnitTestLaunchPreference?): String {
         val preferenceNotNull = currentPreference ?: return UseNUnitLauncherAction.UseNUnitLauncherActionText
@@ -30,7 +31,7 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
             init {
               templatePresentation.isPopupGroup = true
             }
-
+            override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
             override fun update(e: AnActionEvent) {
                 val project = e.project ?: return
 

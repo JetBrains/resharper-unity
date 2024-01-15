@@ -6,6 +6,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "usbmuxd", "usbmuxd\usbmuxd.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "texture-debugger", "texture-debugger\texture-debugger.csproj", "{AABD4DE6-025A-44F4-B99B-B24870616237}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pausepoint-helper", "pausepoint-helper\pausepoint-helper.csproj", "{D58A76F9-5B41-46AE-92A4-47F57CB7D3A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,5 +22,9 @@ Global
 		{AABD4DE6-025A-44F4-B99B-B24870616237}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AABD4DE6-025A-44F4-B99B-B24870616237}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AABD4DE6-025A-44F4-B99B-B24870616237}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D58A76F9-5B41-46AE-92A4-47F57CB7D3A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D58A76F9-5B41-46AE-92A4-47F57CB7D3A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D58A76F9-5B41-46AE-92A4-47F57CB7D3A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D58A76F9-5B41-46AE-92A4-47F57CB7D3A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

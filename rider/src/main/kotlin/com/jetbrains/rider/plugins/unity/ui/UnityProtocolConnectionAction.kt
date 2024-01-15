@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ui
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.util.NlsActions
@@ -9,9 +10,8 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 
 class UnityProtocolConnectionAction : AnAction() {
-    override fun actionPerformed(p0: AnActionEvent) {
-
-    }
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+    override fun actionPerformed(p0: AnActionEvent) {}
 
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabled = false

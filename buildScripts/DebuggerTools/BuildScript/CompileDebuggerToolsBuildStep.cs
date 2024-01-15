@@ -48,6 +48,7 @@ public class CompileDebuggerToolsBuildStep
 
             var iosOutputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "ios-list-usb-devices" / "bin" / "Release" / "net7.0";
             var textureUtilsOutputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "texture-debugger" / "bin" / "Release" / "net472";
+            var pausePointUtilsOutputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "pausepoint-helper" / "bin" / "Release" / "net472";
         
             // TODO sign artifacts
             
@@ -59,6 +60,9 @@ public class CompileDebuggerToolsBuildStep
 
                 new(subplatform.Name, ImmutableFileItem.CreateFromDisk(textureUtilsOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.dll")),
                 new(subplatform.Name, ImmutableFileItem.CreateFromDisk(textureUtilsOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.pdb")),
+
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(pausePointUtilsOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.dll")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(pausePointUtilsOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.pdb")),
             };
         }
 

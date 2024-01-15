@@ -5,7 +5,6 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import org.jetbrains.annotations.Nls
 
 object UnityPausepointConstants {
-    const val pauseEditorCommand = "(UnityEditor.EditorApplication.isPaused = true) ? \"Unity pausepoint hit. Pausing Unity editor at the end of frame\" : \"Unable to pause Unity editor\""
     @get:ActionText
     val convertToPausepointActionText = UnityBundle.message("convert.to.unity.pausepoint.action.text")
     @Nls(capitalization = Nls.Capitalization.Sentence)

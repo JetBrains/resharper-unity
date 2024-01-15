@@ -35,4 +35,12 @@
     <data name="UnityTextureDubuggingCannotParseTextureInfo" xml:space="preserve">
         <value>Internal exception occurred, cannot parse texture information</value>
     </data>
+    
+    <!-- Unity pause point -->
+    <data name="UnityPausePointHit" xml:space="preserve">
+        <value>Unity pausepoint hit. Pausing Unity editor at the end of frame</value>
+    </data>
+    <data name="UnityPausePointExceptionOccured" xml:space="preserve">
+        <value>UUnable to pause Unity editor. Exception occured: ''{0}''</value>
+    </data>
 </root>

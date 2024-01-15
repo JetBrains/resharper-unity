@@ -37,6 +37,7 @@ object UnityLogPanelToolbarBuilder {
         fun createType(type: LogEventType) = object : ToggleAction(UnityBundle.message("show.hide", getLocalizedName(type)), "", type.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.typeFilters.getShouldBeShown(type)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
+            override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
             override fun update(e: AnActionEvent) {
                 if (isSelected(e))
@@ -50,6 +51,7 @@ object UnityLogPanelToolbarBuilder {
         fun createMode(mode: LogEventMode) = object : ToggleAction(UnityBundle.message("action.show.hide.mode.text", mode), "", mode.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.modeFilters.getShouldBeShown(mode)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
+            override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
             override fun update(e: AnActionEvent) {
                 if (isSelected(e))
@@ -65,6 +67,7 @@ object UnityLogPanelToolbarBuilder {
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.mergeSimilarItems.set(value)
             }
+            override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         }
 
         fun autoscroll() = object : ToggleAction(UnityBundle.message("action.autoscroll.text"), "", AllIcons.RunConfigurations.Scroll_down) {
@@ -73,6 +76,7 @@ object UnityLogPanelToolbarBuilder {
                 model.autoscroll.set(value)
                 model.events.onAutoscrollChanged.fire(value)
             }
+            override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         }
 
         fun createBeforePlay() = object : ToggleAction(UnityBundle.message("action.messages.before.last.play.in.unity.text"), "", UnityIcons.LogView.FilterBeforePlay) {
@@ -80,6 +84,7 @@ object UnityLogPanelToolbarBuilder {
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforePlay(value)
             }
+            override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         }
 
         fun createBeforeInit() = object : ToggleAction(UnityBundle.message("action.messages.before.last.domain.reload.text"), "", UnityIcons.LogView.FilterBeforeRefresh) {
@@ -87,6 +92,7 @@ object UnityLogPanelToolbarBuilder {
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforeLastBuild(value)
             }
+            override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         }
 
         val actionGroup = DefaultActionGroup().apply {

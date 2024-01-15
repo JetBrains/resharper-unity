@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.notification.*
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -16,6 +17,8 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction() {
         const val actionId = "RiderUnityOpenEditorLogAction"
         private val logger = Logger.getInstance(RiderUnityOpenEditorLogAction::class.java)
     }
+
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
@@ -50,6 +53,8 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
         const val actionId = "RiderUnityOpenPlayerLogAction"
         private val logger = Logger.getInstance(RiderUnityOpenPlayerLogAction::class.java)
     }
+
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
