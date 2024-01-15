@@ -220,6 +220,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
             myShellLocks.AssertReadAccessAllowed();
             expected = false;
             if (element is not IMethod method) return 0;
+            var type = method.ContainingType;
+            if (type is not IClass classType) return 0;
+            if (!classType.DerivesFromMonoBehaviour()) return 0;
             if (myEventNameToFiles[method.ShortName].Any())
                 expected = true;
             return 0; // todo: need a fast way to get real count
