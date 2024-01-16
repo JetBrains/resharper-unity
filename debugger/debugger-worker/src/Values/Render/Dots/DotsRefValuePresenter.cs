@@ -29,8 +29,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.Dots
         public static readonly HashSet<string> SupportedInternalRefTypes = new(new []
         {
             "Unity.Entities.InternalCompilerInterface+UncheckedRefRO`1",
-            "Unity.Entities.InternalCompilerInterface+UncheckedRefRW`1"
-        }); 
+            "Unity.Entities.InternalCompilerInterface+UncheckedRefRW`1",
+
+            //"com.unity.entities": "1.0.16"
+            "Unity.Entities.Internal.InternalCompilerInterface+UncheckedRefRO`1",
+            "Unity.Entities.Internal.InternalCompilerInterface+UncheckedRefRW`1",
+        });
     }
     
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
