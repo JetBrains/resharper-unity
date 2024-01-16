@@ -47,6 +47,19 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
     }
 
     @Test
+    fun checkRefPresentationInDOTSCode() {
+        attachDebuggerToUnityEditorAndPlay(
+            {
+                toggleBreakpoint("ResetTransformSystem.cs", 26)
+            },
+            {
+                waitForPause()
+                dumpFullCurrentData(2)
+                resumeSession()
+            }, testGoldFile)
+    }
+
+    @Test
     fun checkUnityPausePoint() {
         attachDebuggerToUnityEditorAndPlay(
             test = {
