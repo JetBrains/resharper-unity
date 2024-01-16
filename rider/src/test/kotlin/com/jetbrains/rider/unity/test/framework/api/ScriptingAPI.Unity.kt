@@ -186,7 +186,7 @@ private fun startUnity(args: MutableList<String>,
                        useRiderTestPath: Boolean,
                        batchMode: Boolean,
                        generateSolution: Boolean = false): ProcessHandle {
-    args.withDebugCodeOptimization().addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests"))
+    args.withDebugCodeOptimization().addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "--burst-disable-compilation"))
     if (batchMode) {
         args.add("-batchMode")
     }
