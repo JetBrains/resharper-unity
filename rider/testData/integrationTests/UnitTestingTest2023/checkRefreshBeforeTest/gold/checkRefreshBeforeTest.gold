@@ -1,6 +1,0 @@
--ROOT
- -Tests
-  -Tests
-   -NewTestScript
-    NewTestScriptSimplePasses2
-    NewTestScriptWithEnumeratorPasses
