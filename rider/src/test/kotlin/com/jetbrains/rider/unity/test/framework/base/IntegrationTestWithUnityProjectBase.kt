@@ -19,6 +19,8 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
     private lateinit var unityProjectPath: File
     protected abstract val unityMajorVersion: UnityVersion
     private val unityExecutable: File by lazy { getUnityExecutableInstallationPath(unityMajorVersion) }
+    protected val unityGoldFile: File
+        get() = File(testClassDataDirectory.parent, testMethod.name)
 
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,
@@ -46,9 +48,11 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
                     return !unityProcessHandle.isAlive && slnFiles != null && slnFiles.isNotEmpty()
                 }
             }.assertCompleted("Sln/csproj structure has not been created by Unity in the batch mode")
-        } finally {
+        }
+        finally {
             if (unityProcessHandle.isAlive) {
-                frameworkLogger.info("Killing Unity process which did not generate csproj structure in ${timeoutMinutes.toMinutes()} minutes")
+                frameworkLogger.info(
+                    "Killing Unity process which did not generate csproj structure in ${timeoutMinutes.toMinutes()} minutes")
                 unityProcessHandle.destroyForcibly()
             }
         }

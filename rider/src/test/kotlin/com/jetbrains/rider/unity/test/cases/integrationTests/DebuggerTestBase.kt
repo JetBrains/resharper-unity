@@ -33,8 +33,6 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
         get() = super.testClassDataDirectory.parentFile.combine(DebuggerTestBase::class.simpleName!!)
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testStorage.testMethod.name).combine("source")
-    private val debugUnityGoldFile: File
-        get() = File(testClassDataDirectory.parent, testMethod.name)
 
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)
@@ -60,7 +58,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
                 waitForPause()
                 dumpFullCurrentData()
                 resumeSession()
-            }, getUnityDependentGoldFile(unityMajorVersion, debugUnityGoldFile))
+            }, getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
     }
 
     @Test
@@ -101,7 +99,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
                 }
                 finally {
                 }
-            }, goldFile = getUnityDependentGoldFile(unityMajorVersion, debugUnityGoldFile))
+            }, goldFile = getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
     }
 
     @Test
@@ -126,7 +124,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
                 waitForPause()
                 dumpFullCurrentData()
                 resumeSession()
-            }, getUnityDependentGoldFile(unityMajorVersion, debugUnityGoldFile))
+            }, getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
     }
 
     @Test(description = "RIDER-23087", enabled = false)
@@ -152,7 +150,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
                 waitForPause()
                 printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
                 dumpFullCurrentData()
-            }, getUnityDependentGoldFile(unityMajorVersion, debugUnityGoldFile))
+            }, getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
     }
 
     @AfterMethod(alwaysRun = true)
