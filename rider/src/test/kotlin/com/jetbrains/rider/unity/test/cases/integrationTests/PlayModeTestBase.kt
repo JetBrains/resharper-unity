@@ -8,9 +8,12 @@ import io.qameta.allure.Description
 import org.testng.annotations.Test
 import java.io.File
 import com.jetbrains.rider.test.framework.combine
+import com.jetbrains.rider.unity.test.framework.UnityVersion
 
-abstract class PlayModeTestBase : IntegrationTestWithUnityProjectBase() {
+abstract class PlayModeTestBase(private val unityVersion: UnityVersion) : IntegrationTestWithUnityProjectBase() {
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
+    override val unityMajorVersion = this.unityVersion
+
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(PlayModeTestBase::class.simpleName!!)
     override val testCaseSourceDirectory: File

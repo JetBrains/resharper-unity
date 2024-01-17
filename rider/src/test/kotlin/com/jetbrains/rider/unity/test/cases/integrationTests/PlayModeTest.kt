@@ -13,6 +13,8 @@ import io.qameta.allure.SeverityLevel
 @Feature("PlayMode Action for Unity")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class PlayModeTest2023 : PlayModeTestBase() {
-    override val unityMajorVersion = UnityVersion.V2023
+class PlayModeTest {
+    class TestUnity2020 : PlayModeTestBase(UnityVersion.V2020) {}
+    class TestUnity2022 : PlayModeTestBase(UnityVersion.V2022) {}
+    class TestUnity2023 : PlayModeTestBase(UnityVersion.V2023) {}
 }
