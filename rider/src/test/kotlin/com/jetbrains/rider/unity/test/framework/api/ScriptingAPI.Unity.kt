@@ -18,6 +18,7 @@ import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rdclient.testFramework.getGoldFile
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
@@ -186,7 +187,8 @@ private fun startUnity(args: MutableList<String>,
                        useRiderTestPath: Boolean,
                        batchMode: Boolean,
                        generateSolution: Boolean = false): ProcessHandle {
-    args.withDebugCodeOptimization().addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "--burst-disable-compilation"))
+    args.withDebugCodeOptimization().addAll(
+        arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "--burst-disable-compilation"))
     if (batchMode) {
         args.add("-batchMode")
     }
@@ -286,7 +288,8 @@ fun BaseTestWithSolutionBase.startUnity(executable: String,
                                         batchMode: Boolean,
                                         generateSolution: Boolean = false): ProcessHandle {
     val args = mutableListOf(executable).withProjectPath(projectPath)
-    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode, generateSolution)
+    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode,
+                      generateSolution)
 }
 
 fun BaseTestWithSolution.startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
@@ -606,6 +609,32 @@ fun IntegrationTestWithFrontendBackendModel.preferPlayModeInTests() =
 private fun IntegrationTestWithFrontendBackendModel.selectUnitTestLaunchPreference(preference: UnitTestLaunchPreference) {
     frameworkLogger.info("Selecting unit test launch preference '$preference'")
     frontendBackendModel.unitTestPreference.set(preference)
+}
+
+//endregion
+
+//region for Unity versions gold file
+
+fun getGoldFileUnityDependentSuffix(unityVersion: UnityVersion): String {
+    return when (unityVersion) {
+        UnityVersion.V2020 -> "_V2020"
+        else -> ""
+    }
+}
+
+fun getUnityDependentGoldFile(unityVersion: UnityVersion, testFile: File): File {
+    val suffixesList = listOf(getGoldFileOsDependentSuffix() + getGoldFileArchDependentSuffix(),
+                              getGoldFileOsDependentSuffix(),
+                              getGoldFileArchDependentSuffix(),
+                              getGoldFileUnityDependentSuffix(unityVersion))
+    suffixesList.forEach { suffix ->
+        val goldFileWithSuffix = File(testFile.path + "/gold/" +
+                                      testFile.name + suffix + ".gold")
+        if (goldFileWithSuffix.getGoldFile().exists()) {
+            return goldFileWithSuffix
+        }
+    }
+    return testFile
 }
 
 //endregion

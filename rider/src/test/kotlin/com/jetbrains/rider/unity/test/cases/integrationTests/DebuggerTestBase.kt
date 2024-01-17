@@ -17,7 +17,6 @@ import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import io.qameta.allure.Description
 import kotlinx.coroutines.launch
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
@@ -25,15 +24,17 @@ import java.io.File
 import kotlin.test.assertNotNull
 import kotlin.test.fail
 
-abstract class DebuggerTestBase : IntegrationTestWithUnityProjectBase() {
+abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : IntegrationTestWithUnityProjectBase() {
 
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
-    override val unityMajorVersion = UnityVersion.V2022
+    override val unityMajorVersion = this.unityVersion
 
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(DebuggerTestBase::class.simpleName!!)
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testStorage.testMethod.name).combine("source")
+    private val debugUnityGoldFile: File
+        get() = File(testClassDataDirectory.parent, testMethod.name)
 
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)
@@ -59,7 +60,7 @@ abstract class DebuggerTestBase : IntegrationTestWithUnityProjectBase() {
                 waitForPause()
                 dumpFullCurrentData()
                 resumeSession()
-            }, testGoldFile)
+            }, getUnityDependentGoldFile(unityMajorVersion, debugUnityGoldFile))
     }
 
     @Test
@@ -100,7 +101,7 @@ abstract class DebuggerTestBase : IntegrationTestWithUnityProjectBase() {
                 }
                 finally {
                 }
-            }, goldFile = testGoldFile)
+            }, goldFile = getUnityDependentGoldFile(unityMajorVersion, debugUnityGoldFile))
     }
 
     @Test
@@ -125,7 +126,7 @@ abstract class DebuggerTestBase : IntegrationTestWithUnityProjectBase() {
                 waitForPause()
                 dumpFullCurrentData()
                 resumeSession()
-            }, testGoldFile)
+            }, getUnityDependentGoldFile(unityMajorVersion, debugUnityGoldFile))
     }
 
     @Test(description = "RIDER-23087", enabled = false)
@@ -151,7 +152,7 @@ abstract class DebuggerTestBase : IntegrationTestWithUnityProjectBase() {
                 waitForPause()
                 printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
                 dumpFullCurrentData()
-            }, testGoldFile)
+            }, getUnityDependentGoldFile(unityMajorVersion, debugUnityGoldFile))
     }
 
     @AfterMethod(alwaysRun = true)

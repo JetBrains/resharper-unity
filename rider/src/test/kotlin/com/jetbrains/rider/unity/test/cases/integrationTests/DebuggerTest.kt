@@ -10,9 +10,14 @@ import io.qameta.allure.Severity
 import io.qameta.allure.SeverityLevel
 
 @Epic(Subsystem.UNITY_DEBUG)
-@Feature("Debug Unity2022")
+@Feature("Debug Unity2020")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DebuggerTest2022 : DebuggerTestBase() {
-    override val unityMajorVersion = UnityVersion.V2022
+class DebuggerTest {
+    class TestUnity2020 : DebuggerTestBase(UnityVersion.V2020) {}
+    class TestUnity2022 : DebuggerTestBase(UnityVersion.V2022) {}
+    class TestUnity2023 : DebuggerTestBase(UnityVersion.V2023) {}
+
 }
+
+
