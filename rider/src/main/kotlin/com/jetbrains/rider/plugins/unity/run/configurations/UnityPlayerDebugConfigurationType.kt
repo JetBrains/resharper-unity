@@ -9,26 +9,24 @@ import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAc
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.startUnderBackgroundProgressAsync
-import com.intellij.openapi.rd.util.toPromise
+import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.ComponentPredicate
 import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.run.*
+import com.jetbrains.rider.run.RiderRunBundle
 import com.jetbrains.rider.run.configurations.AsyncRunConfiguration
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteForm
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import icons.UnityIcons
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jetbrains.concurrency.Promise
-import org.jetbrains.concurrency.resolvedPromise
 import javax.swing.JComponent
 import javax.swing.JLabel
 
 class UnityPlayerDebugConfigurationType : ConfigurationTypeBase(
-    id,
+    ID,
     UnityBundle.message("configuration.type.name.attach.to.unity.player"),
     UnityBundle.message("configuration.type.description.attach.to.unity.player.and.debug"),
     UnityIcons.RunConfigurations.AttachToPlayer
@@ -41,7 +39,7 @@ class UnityPlayerDebugConfigurationType : ConfigurationTypeBase(
     }
 
     companion object {
-        const val id = "UnityPlayer"
+        const val ID = "UnityPlayer"
     }
 }
 
@@ -139,7 +137,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
     // I don't know why RunConfigurationBase has this as nullable
     override fun getState(): UnityPlayerDebugConfigurationOptions = options as UnityPlayerDebugConfigurationOptions
 
-    override fun getStateAsync(executor: Executor, environment: ExecutionEnvironment): Promise<RunProfileState> {
+    override suspend fun getRunProfileStateAsync(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
         if (executor.id != DefaultDebugExecutor.EXECUTOR_ID) {
             @Suppress("HardCodedStringLiteral")
             throw CantRunException("Unexpected executor ID: ${executor.id}")
@@ -147,15 +145,23 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
         }
 
         return when (UnityProcess.typeFromId(state.playerId!!)) {
-            UnityIosUsbProcess.TYPE -> getIosUsbStateAsync(environment)
+            UnityIosUsbProcess.TYPE -> getIosUsbState(environment)
             UnityAndroidAdbProcess.TYPE -> getAndroidAdbStateAsync(environment)
             UnityLocalUwpPlayer.TYPE -> getLocalUwpStateAsync(environment)
-            UnityCustomPlayer.TYPE -> getCustomPlayerStateAsync(environment)
+            UnityCustomPlayer.TYPE -> getCustomPlayerState(environment)
             UnityEditor.TYPE -> getEditorStateAsync(environment)
             UnityEditorHelper.TYPE -> getEditorHelperStateAsync(environment)
             UnityVirtualPlayer.TYPE -> getVirtualPlayerStateAsync(environment)
             else -> getRemotePlayerStateAsync(environment)
         }
+    }
+
+    @Suppress("UsagesOfObsoleteApi")
+    @Deprecated("Please, override 'getRunProfileStateAsync' instead")
+    override fun getStateAsync(executor: Executor, environment: ExecutionEnvironment): Promise<RunProfileState> {
+        @Suppress("DEPRECATION")
+        throw UnsupportedOperationException(
+            RiderRunBundle.message("obsolete.synchronous.api.is.used.message", UnityPlayerDebugConfiguration::getStateAsync.name))
     }
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment) =
@@ -172,35 +178,27 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
 
     override fun hideDisabledExecutorButtons() = true
 
-    private fun getIosUsbStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+    private fun getIosUsbState(environment: ExecutionEnvironment): RunProfileState {
         // There is nothing to refresh as we use hardcoded forwarded port details. We can't even tell if the player is
         // running, only if the device is connected or not. It's not worth checking this now - we'll just try and attach
         // the debugger to the player and let it fail at that point.
-        return resolvedPromise(
-            UnityAttachIosUsbProfileState(
+        return UnityAttachIosUsbProfileState(
                 project,
                 getRemoteConfiguration(),
                 environment,
                 name,
                 state.deviceId!!
             )
-        )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun getAndroidAdbStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+    private suspend fun getAndroidAdbStateAsync(environment: ExecutionEnvironment): RunProfileState {
         // Get a list of all running players on the given Android device. If found, connect, else throw an exception
-        return UnityProjectLifetimeService.getLifetime(project).startUnderBackgroundProgressAsync(
-            UnityBundle.message("debugging.refreshing.player.list"),
-            canBeCancelled = false,
-            isIndeterminate = true,
-            project = environment.project
-        ) {
+        return withBackgroundProgress(environment.project, UnityBundle.message("debugging.refreshing.player.list"), false) {
             val players = AndroidDeviceListener().getPlayersForDevice(environment.project, state.deviceId!!)
 
             // Try to find the expected package on the current device. We use the UID which is a unique user ID that is assigned when the
             // package is installed. If the package has been reinstalled (uninstalled + reinstalled, not just redeployed) it will have a new
-            // UID. Try again using the package name, if available. If it it's not available now, it wouldn't be available when the run
+            // UID. Try again using the package name, if available. If it is not available now, it wouldn't be available when the run
             // config was created, so we'll match on null.
             val player = players.filterIsInstance<UnityAndroidAdbProcess>().firstOrNull {
                 it.deviceId == state.deviceId && it.packageUid == state.androidPackageUid
@@ -212,7 +210,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 state.host = player.host
                 state.port = player.port
 
-                return@startUnderBackgroundProgressAsync UnityAttachAndroidAdbProfileState(
+                return@withBackgroundProgress UnityAttachAndroidAdbProfileState(
                     project,
                     getRemoteConfiguration(),
                     environment,
@@ -225,10 +223,10 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 players.forEach { logger.info(it.dump()) }
                 throw CantRunException(UnityBundle.message("debugging.cannot.find.android.player"))
             }
-        }.toPromise()
+        }
     }
 
-    private fun getLocalUwpStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+    private suspend fun getLocalUwpStateAsync(environment: ExecutionEnvironment): RunProfileState {
         // Refresh the details from the UDP broadcast, and use the UWP specific RunProfileState
         return refreshFromUdpPlayer(environment) {
             UnityAttachLocalUwpProfileState(
@@ -240,18 +238,12 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
         }
     }
 
-    private fun getCustomPlayerStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+    private fun getCustomPlayerState(environment: ExecutionEnvironment): RunProfileState {
         // The user entered these details. There's nothing to refresh, so just try to connect
-        return resolvedPromise(
-            UnityAttachProfileState(
-                getRemoteConfiguration(),
-                environment,
-                name
-            )
-        )
+        return UnityAttachProfileState(getRemoteConfiguration(), environment, name)
     }
 
-    private fun getEditorStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+    private suspend fun getEditorStateAsync(environment: ExecutionEnvironment): RunProfileState {
         // Refresh the port from the process list
         return getLocalProcessStateAsync(environment, "debugging.cannot.find.editor") { processes ->
             processes.filterIsInstance<UnityEditor>().firstOrNull {
@@ -270,7 +262,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
         }
     }
 
-    private fun getEditorHelperStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+    private suspend fun getEditorHelperStateAsync(environment: ExecutionEnvironment): RunProfileState {
         // Refresh the port from the process list
         return getLocalProcessStateAsync(environment, "debugging.cannot.find.editor.helper") { processes ->
             processes.filterIsInstance<UnityEditorHelper>().firstOrNull {
@@ -286,7 +278,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
         }
     }
 
-    private fun getVirtualPlayerStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+    private suspend fun getVirtualPlayerStateAsync(environment: ExecutionEnvironment): RunProfileState {
         // Refresh the port from the process list
         return getLocalProcessStateAsync(environment, "debugging.cannot.find.virtual.player") { processes ->
             processes.filterIsInstance<UnityVirtualPlayer>().firstOrNull {
@@ -300,17 +292,11 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun getLocalProcessStateAsync(environment: ExecutionEnvironment,
+    private suspend fun getLocalProcessStateAsync(environment: ExecutionEnvironment,
                                           errorMessage: String,
-                                          processFinder: (List<UnityProcess>) -> UnityLocalProcess?): Promise<RunProfileState> {
+                                          processFinder: (List<UnityProcess>) -> UnityLocalProcess?): RunProfileState {
         // Refresh the port from the process list
-        return UnityProjectLifetimeService.getLifetime(project).startUnderBackgroundProgressAsync(
-            UnityBundle.message("debugging.refreshing.player.list"),
-            canBeCancelled = false,
-            isIndeterminate = true,
-            project = environment.project
-        ) {
+        return withBackgroundProgress(environment.project, UnityBundle.message("debugging.refreshing.player.list"), false) {
             val processes = UnityEditorListener().getEditorProcesses(environment.project)
             val process = processFinder(processes)
             if (process != null) {
@@ -318,7 +304,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 state.port = process.port
                 state.pid = process.pid
 
-                return@startUnderBackgroundProgressAsync UnityAttachProfileState(
+                return@withBackgroundProgress UnityAttachProfileState(
                     getRemoteConfiguration(),
                     environment,
                     name,
@@ -330,10 +316,10 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 processes.forEach { logger.info(it.dump()) }
                 throw CantRunException(UnityBundle.message(errorMessage))
             }
-        }.toPromise()
+        }
     }
 
-    private fun getRemotePlayerStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+    private suspend fun getRemotePlayerStateAsync(environment: ExecutionEnvironment): RunProfileState {
         return refreshFromUdpPlayer(environment) {
             UnityAttachProfileState(
                 getRemoteConfiguration(),
@@ -343,16 +329,9 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun refreshFromUdpPlayer(environment: ExecutionEnvironment, factory: () -> UnityAttachProfileState): Promise<RunProfileState> {
+    private suspend fun refreshFromUdpPlayer(environment: ExecutionEnvironment, factory: () -> UnityAttachProfileState): RunProfileState {
         // Refresh state from the UDP broadcast
-        return UnityProjectLifetimeService.getLifetime(project).startUnderBackgroundProgressAsync(
-            UnityBundle.message("debugging.refreshing.player.list"),
-            canBeCancelled = false,
-            isIndeterminate = true,
-            project = environment.project
-        ) {
-
+        return withBackgroundProgress(environment.project, UnityBundle.message("debugging.refreshing.player.list"), false) {
             val candidates = mutableSetOf<String>()
 
             // Get the player. We're only interested in a player that matches the ID (e.g. 'OSXPlayer(1,Matts-macbook)')
@@ -366,14 +345,14 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 state.host = player.host
                 state.port = player.port
 
-                return@startUnderBackgroundProgressAsync factory()
+                return@withBackgroundProgress factory()
             }
             else {
                 logger.warn("Cannot find UDP player ${state.playerId} in ${candidates.size} candidates")
                 candidates.forEach { logger.info(it) }
                 throw CantRunException(UnityBundle.message("debugging.cannot.find.udp.player"))
             }
-        }.toPromise()
+        }
     }
 
     private fun getRemoteConfiguration() = object : RemoteConfiguration {
