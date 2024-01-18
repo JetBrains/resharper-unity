@@ -18,5 +18,3 @@ class DebuggerTest {
     class TestUnity2022 : DebuggerTestBase(UnityVersion.V2022) {}
     class TestUnity2023 : DebuggerTestBase(UnityVersion.V2023) {}
 }
-
-

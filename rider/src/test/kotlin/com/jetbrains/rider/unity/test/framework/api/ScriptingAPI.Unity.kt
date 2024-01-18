@@ -628,8 +628,12 @@ fun getUnityDependentGoldFile(unityVersion: UnityVersion, testFile: File): File 
                               getGoldFileArchDependentSuffix(),
                               getGoldFileUnityDependentSuffix(unityVersion))
     suffixesList.forEach { suffix ->
-        val goldFileWithSuffix = File(testFile.path + "/gold/" +
-                                      testFile.name + suffix + ".gold")
+        val goldFileWithSuffix = testFile
+            .toPath()
+            .resolve("gold")
+            .resolve("${testFile.name}$suffix.gold")
+            .toFile()
+
         if (goldFileWithSuffix.getGoldFile().exists()) {
             return goldFileWithSuffix
         }

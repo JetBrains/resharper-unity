@@ -58,7 +58,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
                 waitForPause()
                 dumpFullCurrentData()
                 resumeSession()
-            }, getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
+            }, testGoldFile)
     }
 
     @Test
@@ -99,7 +99,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
                 }
                 finally {
                 }
-            }, goldFile = getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
+            }, goldFile = testGoldFile)
     }
 
     @Test
@@ -124,7 +124,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
                 waitForPause()
                 dumpFullCurrentData()
                 resumeSession()
-            }, getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
+            }, testGoldFile)
     }
 
     @Test(description = "RIDER-23087", enabled = false)
@@ -150,7 +150,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
                 waitForPause()
                 printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
                 dumpFullCurrentData()
-            }, getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
+            }, testGoldFile)
     }
 
     @AfterMethod(alwaysRun = true)

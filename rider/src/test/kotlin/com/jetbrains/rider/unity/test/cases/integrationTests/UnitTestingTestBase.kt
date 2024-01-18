@@ -51,7 +51,7 @@ abstract class UnitTestingTestBase(private val unityVersion: UnityVersion) : Int
                 RiderUnitTestScriptingFacade.defaultTimeout,
                 5
             )
-            it.compareSessionTreeWithGold(session, getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
+            it.compareSessionTreeWithGold(session, testGoldFile)
         }
     }
 
@@ -87,7 +87,7 @@ abstract class UnitTestingTestBase(private val unityVersion: UnityVersion) : Int
                     RiderUnitTestScriptingFacade.defaultTimeout,
                     5
                 )
-                it.compareSessionTreeWithGold(session2, getUnityDependentGoldFile(unityMajorVersion, unityGoldFile))
+                it.compareSessionTreeWithGold(session2, testGoldFile)
             }
         }
     }

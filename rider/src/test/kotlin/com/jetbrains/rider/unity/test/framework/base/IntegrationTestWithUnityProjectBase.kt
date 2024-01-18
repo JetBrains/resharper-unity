@@ -5,6 +5,7 @@ import com.intellij.util.WaitFor
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.getUnityExecutableInstallationPath
 import com.jetbrains.rider.unity.test.framework.api.startUnity
 import org.testng.annotations.BeforeMethod
@@ -19,8 +20,9 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
     private lateinit var unityProjectPath: File
     protected abstract val unityMajorVersion: UnityVersion
     private val unityExecutable: File by lazy { getUnityExecutableInstallationPath(unityMajorVersion) }
-    protected val unityGoldFile: File
-        get() = File(testClassDataDirectory.parent, testMethod.name)
+    private val unityGoldFile : File by lazy {getUnityDependentGoldFile(unityMajorVersion, File(testClassDataDirectory.parent, testMethod.name))}
+    override val testGoldFile: File
+        get() = unityGoldFile.takeIf { it.exists() } ?: super.testGoldFile
 
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,
