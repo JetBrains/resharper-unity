@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.client.ClientProjectSession
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
@@ -11,6 +12,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 import java.nio.file.Path
 import java.nio.file.Paths
 
+@Service(Service.Level.PROJECT)
 class UnityInstallationFinder {
 
     companion object {

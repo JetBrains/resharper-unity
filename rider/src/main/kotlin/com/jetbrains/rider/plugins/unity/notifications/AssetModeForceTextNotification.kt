@@ -5,6 +5,7 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.client.ClientProjectSession
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.LifetimedService
@@ -15,6 +16,7 @@ import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 
+@Service(Service.Level.PROJECT)
 class AssetModeForceTextNotification(private val project: Project): LifetimedService() {
 
     companion object {

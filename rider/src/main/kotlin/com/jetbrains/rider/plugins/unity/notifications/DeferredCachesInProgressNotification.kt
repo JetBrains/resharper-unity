@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.notifications
 
 import com.intellij.openapi.client.ClientProjectSession
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.ex.StatusBarEx
@@ -14,6 +15,7 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 
 
+@Service(Service.Level.PROJECT)
 class DeferredCachesInProgressNotification : LifetimedService() {
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {

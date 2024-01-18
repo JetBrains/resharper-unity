@@ -4,6 +4,7 @@ import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.UnknownConfigurationType
 import com.intellij.openapi.client.ClientProjectSession
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -24,6 +25,7 @@ import com.jetbrains.rider.projectView.solutionDirectory
 import java.io.File
 import java.nio.file.Paths
 
+@Service(Service.Level.PROJECT)
 class DefaultRunConfigurationGenerator : LifetimedService() {
 
     companion object {

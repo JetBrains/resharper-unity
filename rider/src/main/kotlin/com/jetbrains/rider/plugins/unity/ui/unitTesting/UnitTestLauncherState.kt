@@ -13,6 +13,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
 import org.jdom.Element
 
+@Service(Service.Level.PROJECT)
 @State(name = "UnityUnitTestConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class UnitTestLauncherState : PersistentStateComponent<Element> {
 

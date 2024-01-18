@@ -3,6 +3,7 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.client.ClientProjectSession
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -29,6 +30,7 @@ import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.workspaceModel.getOrCreateRiderModuleEntity
 import java.nio.file.Paths
 
+@Service(Service.Level.PROJECT)
 class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedService() {
 
     companion object {

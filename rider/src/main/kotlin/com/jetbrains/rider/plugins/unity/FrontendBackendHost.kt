@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.client.ClientProjectSession
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
@@ -31,6 +32,7 @@ import java.awt.Frame
 import java.io.File
 import kotlin.math.max
 
+@Service(Service.Level.PROJECT)
 class FrontendBackendHost(project: Project) : LifetimedService() {
     val model = project.solution.frontendBackendModel
 

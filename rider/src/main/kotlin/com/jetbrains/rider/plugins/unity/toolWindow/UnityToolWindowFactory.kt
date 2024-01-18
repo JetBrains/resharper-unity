@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.ide.impl.ContentManagerWatcher
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
@@ -15,6 +16,7 @@ import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import icons.UnityIcons
 
 //there's an API for registering tool windows in the IJ Platform
+@Service(Service.Level.PROJECT)
 class UnityToolWindowFactory(private val project: Project) : LifetimedService() {
 
     companion object {

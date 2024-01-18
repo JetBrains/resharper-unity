@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.reactive.Property
 import org.jdom.Element
 
+@Service(Service.Level.PROJECT)
 @State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class UnityUIManager : PersistentStateComponent<Element> {
 

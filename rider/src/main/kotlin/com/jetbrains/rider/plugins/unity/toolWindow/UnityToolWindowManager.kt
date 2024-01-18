@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.openapi.client.ClientProjectSession
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -9,6 +10,7 @@ import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 
+@Service(Service.Level.PROJECT)
 class UnityToolWindowManager : LifetimedService() {
     companion object {
         private val myLogger = Logger.getInstance(UnityToolWindowManager::class.java)

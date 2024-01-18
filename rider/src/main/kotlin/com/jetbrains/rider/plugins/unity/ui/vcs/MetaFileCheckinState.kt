@@ -1,13 +1,11 @@
 package com.jetbrains.rider.plugins.unity.ui.vcs
 
-import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.StoragePathMacros
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.util.idea.getService
 import org.jdom.Element
 
+@Service(Service.Level.PROJECT)
 @State(name = "MetaFilesCheckinStateConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class MetaFilesCheckinState(val project: Project) : PersistentStateComponent<Element> {
 
