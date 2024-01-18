@@ -79,7 +79,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
         "Assets/SampleScript.cs") { false }
 
     @Test(dataProvider = "assetSettings")
-    @Mute("RIDER-96147", specificParameters = ["Properties"])
+    @Mute("RIDER-96147", specificParameters = ["Properties", "NoProperties"])
     @TestEnvironment(solution = "RiderSample")
     @Description("Unity property code vision test with yaml off and typing")
     fun propertyCodeVisionWithTypingYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
@@ -98,6 +98,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     // I am not sure, how implement counter without estimated `+` sign
     // Tests for fixing current behaviour only
+    @Mute("RIDER-96147", specificParameters = ["NoProperties"])
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     @Description("Unity prefab modification code vision test")
@@ -125,13 +126,14 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     @Description("Unity prefab modification code vision test")
-    @Mute("RIDER-96147", specificParameters = ["Properties"])
+    @Mute("RIDER-96147", specificParameters = ["Properties", "NoProperties"])
     fun prefabModifications04(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script4.cs") {
         true
     }
 
     @Test(dataProvider = "assetSettings")
+    @Mute("RIDER-96147", specificParameters = ["NoProperties", "Properties"])
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     @Description("Unity prefab modification code vision test")
     fun prefabModifications05(caseName: String, showProperties: String) = doUnityTest("True",

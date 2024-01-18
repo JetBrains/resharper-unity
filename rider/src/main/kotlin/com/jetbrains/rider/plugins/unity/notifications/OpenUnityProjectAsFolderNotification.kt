@@ -107,84 +107,87 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                     }
                 }
                 else if (solutionDescription is RdVirtualSolution) { // opened as folder
-                    val hasUnityFileStructure = UnityProjectDiscoverer.hasUnityFileStructure(project.projectDir)
-                    if (!(hasUnityFileStructure
-                          || UnityProjectDiscoverer.searchUpForFolderWithUnityFileStructure(project.projectDir).first))
-                        return@whenTrue
+                    it.launchNonUrgentBackground {
+                        val hasUnityFileStructure = UnityProjectDiscoverer.hasUnityFileStructure(project.projectDir)
+                        if (!(hasUnityFileStructure
+                              || UnityProjectDiscoverer.searchUpForFolderWithUnityFileStructure(project.projectDir).first))
+                            return@launchNonUrgentBackground
 
+                        @Nls(capitalization = Nls.Capitalization.Sentence)
+                        val adviceText = UnityBundle.message(
+                            "advice.pleas.close.and.reopen.through.the.unity.editor.or.by.opening.a.sln.file")
 
-                    @Nls(capitalization = Nls.Capitalization.Sentence)
-                    val adviceText = UnityBundle.message("advice.pleas.close.and.reopen.through.the.unity.editor.or.by.opening.a.sln.file")
+                        @Nls(capitalization = Nls.Capitalization.Sentence)
+                        val mainText =
+                            if (solutionDescription.projectFilePaths.isEmpty())
+                                UnityBundle.message("features.are.not.available.when.the.project.is.opened.as.a.folder")
+                            else
+                                UnityBundle.message("specific.features.are.not.available.when.only.single.project.opened")
 
-                    @Nls(capitalization = Nls.Capitalization.Sentence)
-                    val mainText =
-                        if (solutionDescription.projectFilePaths.isEmpty())
-                            UnityBundle.message("features.are.not.available.when.the.project.is.opened.as.a.folder")
-                        else
-                            UnityBundle.message("specific.features.are.not.available.when.only.single.project.opened")
-
-                    // todo: hasPackage is unreliable, when PackageManager is still in progress
-                    // Revisit this after PackageManager is moved to backend
-                    // MTE: There is an inherent race condition here. Packages can be updated at any time, so we can't
-                    // be sure that PackageManager is fully loaded at this time.
-                    @NlsSafe
-                    val contentWoSolution =
-                        if (!hasUnityFileStructure || // means searchUpForFolderWithUnityFileStructure is true
-                            (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
-                            && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider"))
-                        ) {
-                            """$mainText       
+                        // todo: hasPackage is unreliable, when PackageManager is still in progress
+                        // Revisit this after PackageManager is moved to backend
+                        // MTE: There is an inherent race condition here. Packages can be updated at any time, so we can't
+                        // be sure that PackageManager is fully loaded at this time.
+                        @NlsSafe
+                        val contentWoSolution =
+                            if (!hasUnityFileStructure || // means searchUpForFolderWithUnityFileStructure is true
+                                (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
+                                 && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider"))
+                            ) {
+                                """$mainText       
             <ul style="margin-left:10px">
               <li>$adviceText</li>
               <li>$content</li>
             </ul>
             """
-                        }
-                        else {
-                            "$mainText $adviceText"
-                        }
+                            }
+                            else {
+                                "$mainText $adviceText"
+                            }
 
-                    val notification = Notification(notificationGroupId.displayId,
-                                                    UnityBundle.message("notification.title.this.looks.like.unity.project"),
-                                                    contentWoSolution, NotificationType.WARNING)
+                        val notification = Notification(notificationGroupId.displayId,
+                                                        UnityBundle.message("notification.title.this.looks.like.unity.project"),
+                                                        contentWoSolution, NotificationType.WARNING)
 
-                    notification.addAction(object : NotificationAction(
-                        UnityBundle.message("close.solution")) {
-                        override fun actionPerformed(e: AnActionEvent, notification: Notification) {
-                            ProjectManagerEx.getInstanceEx().closeAndDispose(project)
-                            WelcomeFrame.showIfNoProjectOpened()
-                        }
-                    })
-
-                    val baseDir = project.solutionDirectory.toVirtualFile(false) ?: error("Virtual file not found for solution directory: ${project.solutionDirectory}")
-                    val solutionFile = baseDir.findChild(baseDir.name + ".sln")
-                    if (solutionFile != null && solutionFile.isFile) {
                         notification.addAction(object : NotificationAction(
-                            UnityBundle.message("notification.content.reopen.as.unity.project")) {
-                            override fun actionPerformed(e: AnActionEvent, n: Notification) {
-                                // SolutionManager doesn't close the current project if focusOpenInNewFrame is set to true,
-                                // and if it's set to false, we get prompted if we want to open in new or same frame. We
-                                // don't care - we want to close this project, so new frame or reusing means nothing
-                                e.project?.let { ProjectManagerEx.getInstanceEx().closeAndDispose(it) }
-                                Lifetime.Eternal.launchBackground {
-                                    val newProject = SolutionManager.openExistingSolution(null, true, solutionFile, true, true)
-                                                     ?: return@launchBackground
-
-                                    // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected
-                                    // solution view pane, which will be file system. A Unity generated solution will use the
-                                    // same settings folder, so will read the last selected solution view pane and fail to show
-                                    // the Unity explorer view. We'll override that saved value here, and make Unity Explorer
-                                    // the currently selected value. See RIDER-17865
-                                    EdtInvocationManager.getInstance().invokeLater {
-                                        val projectView = ProjectView.getInstance(newProject)
-                                        projectView.changeView(UnityExplorer.ID)
-                                    }
-                                }
+                            UnityBundle.message("close.solution")) {
+                            override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                                ProjectManagerEx.getInstanceEx().closeAndDispose(project)
+                                WelcomeFrame.showIfNoProjectOpened()
                             }
                         })
-                    }
 
-                    Notifications.Bus.notify(notification, project)
+                        val baseDir = project.solutionDirectory.toVirtualFile(false) ?: error(
+                            "Virtual file not found for solution directory: ${project.solutionDirectory}")
+                        val solutionFile = baseDir.findChild(baseDir.name + ".sln")
+                        if (solutionFile != null && solutionFile.isFile) {
+                            notification.addAction(object : NotificationAction(
+                                UnityBundle.message("notification.content.reopen.as.unity.project")) {
+                                override fun actionPerformed(e: AnActionEvent, n: Notification) {
+                                    // SolutionManager doesn't close the current project if focusOpenInNewFrame is set to true,
+                                    // and if it's set to false, we get prompted if we want to open in new or same frame. We
+                                    // don't care - we want to close this project, so new frame or reusing means nothing
+                                    e.project?.let { ProjectManagerEx.getInstanceEx().closeAndDispose(it) }
+                                    Lifetime.Eternal.launchBackground {
+                                        val newProject = SolutionManager.openExistingSolution(null, true, solutionFile, true, true)
+                                                         ?: return@launchBackground
+
+                                        // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected
+                                        // solution view pane, which will be file system. A Unity generated solution will use the
+                                        // same settings folder, so will read the last selected solution view pane and fail to show
+                                        // the Unity explorer view. We'll override that saved value here, and make Unity Explorer
+                                        // the currently selected value. See RIDER-17865
+                                        EdtInvocationManager.getInstance().invokeLater {
+                                            val projectView = ProjectView.getInstance(newProject)
+                                            projectView.changeView(UnityExplorer.ID)
+                                        }
+                                    }
+                                }
+                            })
+                        }
+
+                        withUiContext { Notifications.Bus.notify(notification, project) }
+                    }
                 }
             }
         }

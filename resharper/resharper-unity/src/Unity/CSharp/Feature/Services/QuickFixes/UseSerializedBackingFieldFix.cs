@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Errors;
+using JetBrains.ReSharper.Feature.Services.BulbActions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [MutuallyExclusiveAction(typeof(AutoPropertyToSerializedBackingFieldAction))]
     [QuickFix]
-    public class UseSerializedBackingFieldFix : QuickFixBase
+    public class UseSerializedBackingFieldFix : ModernQuickFixBase
     {
         [CanBeNull] private readonly IPropertyDeclaration myPropertyDeclaration;
 
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return AutoPropertyToSerializedBackingFieldAction.IsAvailable(myPropertyDeclaration);
         }
 
-        protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+        protected override IBulbActionCommand ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             if (myPropertyDeclaration == null) return null;
             return AutoPropertyToSerializedBackingFieldAction.Execute(myPropertyDeclaration, solution,

@@ -1,7 +1,7 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.BulbActions;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Util;
@@ -12,15 +12,14 @@ using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.TextControl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID, 
+    [ContextAction(Group = UnityContextActions.GroupID,
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AutoPropertyToSerializedBackingFieldAction_Name), DescriptionResourceName = nameof(Strings.AutoPropertyToSerializedBackingFieldAction_Description),
         Priority = 2)]
-    public class AutoPropertyToSerializedBackingFieldAction : ContextActionBase
+    public class AutoPropertyToSerializedBackingFieldAction : ModernContextActionBase
     {
         private readonly ICSharpContextActionDataProvider myDataProvider;
 
@@ -44,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             return IsAvailable(propertyDeclaration);
         }
 
-        protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+        protected override IBulbActionCommand ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             var propertyDeclaration = myDataProvider.GetSelectedElement<IPropertyDeclaration>();
             return Execute(propertyDeclaration, myDataProvider.Solution, myDataProvider.ElementFactory);
@@ -68,7 +67,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             return false;
         }
 
-        public static Action<ITextControl> Execute([CanBeNull] IPropertyDeclaration propertyDeclaration, ISolution solution, CSharpElementFactory elementFactory)
+        [CanBeNull]
+        public static IBulbActionCommand Execute([CanBeNull] IPropertyDeclaration propertyDeclaration, ISolution solution, CSharpElementFactory elementFactory)
         {
             if (propertyDeclaration == null)
                 return null;
