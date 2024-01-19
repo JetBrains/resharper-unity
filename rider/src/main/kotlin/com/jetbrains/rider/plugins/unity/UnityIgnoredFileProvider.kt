@@ -20,7 +20,7 @@ class UnityIgnoredFileProvider : IgnoredFileProvider {
         )
     }
     override fun isIgnoredFile(project: Project, filePath: FilePath): Boolean {
-        if (!UnityProjectDiscoverer.getInstance(project).isUnityProject)
+        if (!project.isUnityProject.getCompletedOr(false))
             return false
 
         val solDir = project.solutionDirectory

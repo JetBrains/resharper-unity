@@ -12,6 +12,9 @@ import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.platform.workspace.storage.impl.url.toVirtualFileUrl
 import com.intellij.platform.workspace.storage.url.VirtualFileUrl
+import com.intellij.util.concurrency.annotations.RequiresEdt
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
@@ -19,7 +22,8 @@ import com.jetbrains.rider.workspaceModel.getOrCreateRiderModuleEntity
 
 class UnityWorkspaceModelUpdaterInitializer : ProjectActivity {
     override suspend fun execute(project: Project) {
-        if (!project.isDisposed && project.isUnityProject()) {
+        val isUnityProject = UnityProjectDiscoverer.getInstance(project).isUnityProject.await()
+        if (isUnityProject) {
             withUiContext { UnityWorkspaceModelUpdater.getInstance(project).rebuildModel() }
         }
     }
@@ -31,10 +35,10 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         fun getInstance(project: Project):UnityWorkspaceModelUpdater =  project.service()
     }
 
+    @RequiresEdt
     @Suppress("UnstableApiUsage")
     fun rebuildModel() {
-        application.assertIsDispatchThread()
-        if (!project.isUnityProject()) return
+        if (!project.isUnityProject.getCompletedOr(false)) return
 
         val builder = MutableEntityStorage.create()
 

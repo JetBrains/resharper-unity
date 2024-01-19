@@ -11,6 +11,7 @@ import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent
 import com.intellij.util.PairConsumer
 import com.jetbrains.rd.framework.impl.RpcTimeouts
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
@@ -35,7 +36,7 @@ private class UnresolvedMergeCheckHandler(
     private val settings = UnsavedCheckinState.getService(project)
 
     override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent? {
-        if (!project.isUnityProject())
+        if (!project.isUnityProject.getCompletedOr(false))
             return null
 
         return BooleanCommitOption(
@@ -48,7 +49,7 @@ private class UnresolvedMergeCheckHandler(
         executor: CommitExecutor?,
         additionalDataConsumer: PairConsumer<Any, Any>
     ): ReturnResult {
-        if (settings.checkUnsavedState && project.isUnityProject()) {
+        if (settings.checkUnsavedState && project.isUnityProject.getCompletedOr(false)) {
             var providerResult = false
             try {
                 providerResult = project.solution.frontendBackendModel.hasUnsavedState

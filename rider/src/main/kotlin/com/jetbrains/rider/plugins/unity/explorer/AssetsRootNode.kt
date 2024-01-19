@@ -4,10 +4,9 @@ import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.ui.SimpleTextAttributes
 import com.intellij.platform.backend.workspace.WorkspaceModel
+import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.model.RdSolutionDescriptor
 import com.jetbrains.rider.model.RdSolutionState
 import com.jetbrains.rider.plugins.unity.UnityBundle

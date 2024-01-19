@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml
 
 import com.intellij.ide.highlighter.XmlLikeFileType
-import com.intellij.openapi.util.NlsContexts.Label
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import icons.UnityIcons
 

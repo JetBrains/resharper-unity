@@ -5,13 +5,13 @@ import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.UnknownConfigurationType
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.Logger
-import com.jetbrains.rd.platform.util.idea.LifetimedService
+import com.intellij.openapi.diagnostic.thisLogger
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -26,7 +26,7 @@ import java.io.File
 import java.nio.file.Paths
 
 @Service(Service.Level.PROJECT)
-class DefaultRunConfigurationGenerator : LifetimedService() {
+class DefaultRunConfigurationGenerator {
 
     companion object {
         val ATTACH_CONFIGURATION_NAME = UnityBundle.message("attach.to.unity.editor")
@@ -37,8 +37,6 @@ class DefaultRunConfigurationGenerator : LifetimedService() {
     }
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
-        private val logger = Logger.getInstance(DefaultRunConfigurationGenerator::class.java)
-
         override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.hasUnityReference.whenTrue(lifetime) { lt ->
                 val runManager = RunManager.getInstance(session.project)
@@ -71,7 +69,8 @@ class DefaultRunConfigurationGenerator : LifetimedService() {
                     }
                 }
 
-                if (session.project.isUnityProject() && !runManager.allSettings.any { it.type is UnityEditorDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
+                if (session.project.isUnityProject.getCompletedOr(false)
+                    && !runManager.allSettings.any { it.type is UnityEditorDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
                     createAttachToUnityEditorConfiguration(session.project, ATTACH_AND_PLAY_CONFIGURATION_NAME, true)
                 }
 
@@ -94,7 +93,7 @@ class DefaultRunConfigurationGenerator : LifetimedService() {
                                 .withTestPlatform().withDebugCodeOptimization().toProgramParameters(),
                             runManager)
                     } else
-                        logger.trace("exePath: $exePath is not a file.")
+                        thisLogger().trace("exePath: $exePath is not a file.")
                 }
 
                 session.project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(lt) {

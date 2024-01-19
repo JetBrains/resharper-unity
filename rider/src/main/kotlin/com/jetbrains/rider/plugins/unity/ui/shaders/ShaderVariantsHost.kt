@@ -11,9 +11,10 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.put
 import com.jetbrains.rdclient.editors.FrontendTextControlHostListener
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetManager
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderVariantExtension
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.projectView.solution
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -26,7 +27,7 @@ class ShaderVariantsHost : ProjectActivity, FrontendTextControlHostListener {
                                        editor: Editor) {
             val project = editor.project ?: return
             if (ShaderVariantsUtils.isValidContext(editor)) {
-                val model = FrontendBackendHost.getInstance(project).model
+                val model = project.solution.frontendBackendModel
                 model.shaderVariantExtensions.put(lifetime, textControlId, RdShaderVariantExtension())
             }
         }
@@ -34,8 +35,7 @@ class ShaderVariantsHost : ProjectActivity, FrontendTextControlHostListener {
 
     override suspend fun execute(project: Project) {
         val lifetime = UnityProjectLifetimeService.getLifetime(project)
-        val frontendBackendHost = FrontendBackendHost.getInstance(project)
-        val model = frontendBackendHost.model
+        val model = project.solution.frontendBackendModel
         withContext(Dispatchers.EDT) {
             model.backendSettings.previewShaderVariantsSupport.advise(lifetime) {
                 RiderResolveContextWidgetManager.invalidateWidgets(project)

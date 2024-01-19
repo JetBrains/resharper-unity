@@ -15,6 +15,7 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.xml.XmlFile
 import com.intellij.xml.XmlSchemaProvider
 import com.jetbrains.rdclient.util.idea.toVirtualFile
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.solutionDirectory
 
@@ -23,7 +24,7 @@ class UxmlSchemaProvider: XmlSchemaProvider(), DumbAware {
 
     override fun isAvailable(file: XmlFile): Boolean {
         // Add schemas for any XML file type in a Unity project. This means schemas will resolve inside the .xsd files too
-        return file.project.isUnityProject()
+        return file.project.isUnityProject.getCompletedOr(false)
     }
 
     override fun getSchema(url: String, module: Module?, baseFile: PsiFile): XmlFile? {

@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.ui.SearchTextField
 import com.jetbrains.rider.ui.RiderUI
-import java.awt.Font
 import java.awt.event.KeyEvent
 
 class LogSmartSearchField : SearchTextField(false) {

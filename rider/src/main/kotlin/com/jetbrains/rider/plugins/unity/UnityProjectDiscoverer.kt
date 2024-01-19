@@ -1,47 +1,46 @@
 package com.jetbrains.rider.plugins.unity
 
+import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.ide.model.RdExistingSolution
-import com.jetbrains.rd.platform.util.idea.LifetimedService
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rd.protocol.SolutionExtListener
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.adviseUntil
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.projectDir
-import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.unity.UnityDetector
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 
 class UnityDetectorImpl(private val project: Project) : UnityDetector {
-    override fun isUnitySolution(): Boolean
-    {
-        return UnityProjectDiscoverer.getInstance(project).isUnityProject
-    }
+
+    override val isUnitySolution: CompletableDeferred<Boolean>
+        get() = UnityProjectDiscoverer.getInstance(project).isUnityProject
 }
 
 @Service(Service.Level.PROJECT)
-class UnityProjectDiscoverer(private val project: Project) : LifetimedService() {
-    // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
-    val isUnityProjectFolder = hasUnityFileStructure(project)
+class UnityProjectDiscoverer {
 
     // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
-    val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project)
+    val isUnityProject = CompletableDeferred<Boolean>()
 
-    // Note that this will only return a sensible value once the solution + backend have finished loading
-    val isUnityClassLibraryProject: Boolean?
-        get() {
-            val hasReference = project.solution.frontendBackendModel.hasUnityReference.valueOrNull ?: return null
-            return hasReference && isCorrectlyLoadedSolution(project)
-        }
+    // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
+    val isUnityProjectFolder = CompletableDeferred<Boolean>()
+    val hasUnityReference = CompletableDeferred<Boolean>()
 
     companion object {
         fun getInstance(project: Project): UnityProjectDiscoverer = project.service()
 
-        fun hasUnityFileStructure(project: Project): Boolean {
+        private fun hasUnityFileStructure(project: Project): Boolean {
             // projectDir will fail with the default project
-            return !project.isDefault && hasUnityFileStructure(project.projectDir)
+            return !project.isDefault && UnityProjectDiscoverer.hasUnityFileStructure(project.projectDir)
         }
 
         fun hasUnityFileStructure(projectDir: VirtualFile): Boolean {
@@ -63,13 +62,14 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
             }
         }
 
-        fun searchUpForFolderWithUnityFileStructure(file: VirtualFile, maxSteps:Int = 10): Pair<Boolean, VirtualFile?> {
+        fun searchUpForFolderWithUnityFileStructure(file: VirtualFile, maxSteps: Int = 10): Pair<Boolean, VirtualFile?> {
             var dir: VirtualFile? = file
             repeat(maxSteps) {
                 if (dir == null) return@repeat
 
-                dir?.let{
-                    if ((it.name == "Assets" || it.name == "Packages") && hasUnityFileStructure(it.parent)) {
+                dir?.let {
+                    if ((it.name == "Assets" || it.name == "Packages") && hasUnityFileStructure(
+                            it.parent)) {
                         return Pair(true, it.parent)
                     }
                     dir = it.parent
@@ -79,18 +79,44 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
         }
     }
 
-    // When Unity has generated sln, Library folder was also created. Lets' be more strict and check it.
-    private fun hasLibraryFolder(project: Project): Boolean {
-        val projectDir = project.projectDir
-        return projectDir.findChild("Library")?.isDirectory != false
+    class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
+            model.hasUnityReference.adviseUntil(lifetime) {
+                getInstance(session.project).hasUnityReference.complete(it)
+                it
+            }
+        }
     }
 
-    // Returns false when opening a Unity project as a plain folder
-    private fun isCorrectlyLoadedSolution(project: Project): Boolean {
-        return project.solutionDescription is RdExistingSolution
+    class UnityProjectDiscovererProjectActivity: ProjectActivity {
+        override suspend fun execute(project: Project) {
+            val hasUnityFileStructure = hasUnityFileStructure(project)
+            val discoverer = getInstance(project)
+            discoverer.isUnityProjectFolder.complete(hasUnityFileStructure)
+            discoverer.isUnityProject.complete(hasUnityFileStructure && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project))
+        }
+
+        // When Unity has generated sln, Library folder was also created. Lets' be more strict and check it.
+        private fun hasLibraryFolder(project: Project): Boolean {
+            val projectDir = project.projectDir
+            return projectDir.findChild("Library")?.isDirectory != false
+        }
+
+        // Returns false when opening a Unity project as a plain folder
+        private fun isCorrectlyLoadedSolution(project: Project): Boolean {
+            return project.solutionDescription is RdExistingSolution
+        }
     }
 }
 
-fun Project.isUnityClassLibraryProject() = UnityProjectDiscoverer.getInstance(this).isUnityClassLibraryProject
-fun Project.isUnityProject()= UnityProjectDiscoverer.getInstance(this).isUnityProject
-fun Project.isUnityProjectFolder()= UnityProjectDiscoverer.getInstance(this).isUnityProjectFolder
+val Project.hasUnityReference: Deferred<Boolean>
+    get() = UnityProjectDiscoverer.getInstance(this).hasUnityReference
+val Project.isUnityProject: Deferred<Boolean>
+    get() = UnityProjectDiscoverer.getInstance(this).isUnityProject
+val Project.isUnityProjectFolder: Deferred<Boolean>
+    get() = UnityProjectDiscoverer.getInstance(this).isUnityProjectFolder
+
+fun Deferred<Boolean>?.getCompletedOr(defaultValue: Boolean): Boolean {
+    if (this == null) return false
+    return if (this.isCompleted) this.getCompleted() else defaultValue
+}

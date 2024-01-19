@@ -6,10 +6,11 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityAndroidAdbStartInfo
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import java.nio.file.Path
 import kotlin.io.path.isDirectory
@@ -26,8 +27,8 @@ class UnityAttachAndroidAdbProfileState(private val project: Project,
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
 
-        val host = FrontendBackendHost.getInstance(project)
-        var sdkRoot = host.model.getAndroidSdkRoot.startSuspending(lifetime, Unit)?.let { Path.of(it) }
+        val model = project.solution.frontendBackendModel
+        var sdkRoot = model.getAndroidSdkRoot.startSuspending(lifetime, Unit)?.let { Path.of(it) }
         if (sdkRoot == null || !sdkRoot.isDirectory()) {
            sdkRoot = UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("AndroidPlayer")
         }

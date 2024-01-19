@@ -14,7 +14,7 @@ class UnityFileDocumentManagerListener : FileDocumentManagerListener {
     // RIDER-62051 Save-file-when-switching-application-and-different-monitors
     override fun beforeAllDocumentsSaving() {
         val projectManager = serviceIfCreated<ProjectManager>() ?: return
-        val openedUnityProjects = projectManager.openProjects.filter { !it.isDisposed && it.isUnityProjectFolder() }.toList()
+        val openedUnityProjects = projectManager.openProjects.filter { !it.isDisposed && it.isUnityProjectFolder.getCompletedOr(false) }.toList()
         for (project in openedUnityProjects)
             application.invokeLater {
                 val isActive = project.protocolHostIfExists?.protocol?.rdShellModel?.isApplicationActive?.valueOrNull

@@ -12,13 +12,9 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
-import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.isUnityClassLibraryProject
-import com.jetbrains.rider.plugins.unity.isUnityProject
-import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
+import com.jetbrains.rider.plugins.unity.*
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
@@ -82,7 +78,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                                                                               finder.getApplicationVersion()), environment) { _, _, _ ->
                     run {
                         if (executorId == "dotTrace Profiler") {
-                            project.solution.frontendBackendModel.startProfiling.start(project.lifetime, play)
+                            project.solution.frontendBackendModel.startProfiling.start(UnityProjectLifetimeService.getLifetime(project), play)
                         }
                     }
                 }
@@ -131,8 +127,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             // we're not inside a Unity project folder, then we can't automatically attach, so throw an error and show the
             // dialog
 
-            val isClassLibraryProject = project.isUnityClassLibraryProject()
-            if (!project.isUnityProjectFolder() && (isClassLibraryProject == null || isClassLibraryProject)) {
+            if (!project.isUnityProjectFolder.getCompletedOr(false)) {
                 throw RuntimeConfigurationError(
                     UnityBundle.message("dialog.message.unable.to.automatically.discover.correct.unity.editor.to.debug"))
             }
@@ -188,7 +183,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
         // If we're a generated project, or a class library project that lives in the root of a Unity project alongside
         // a generated project, we can use the project dir as the expected project name.
-        if (project.isUnityProject()) {
+        if (project.isUnityProject.getCompletedOr(false)) {
             val expectedProjectName = project.solutionDirectory.name
             val entry = map.entries.firstOrNull { expectedProjectName.equals(it.value.projectName, true) }
             if (entry != null) {

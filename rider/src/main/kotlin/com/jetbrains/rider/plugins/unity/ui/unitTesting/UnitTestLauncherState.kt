@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.ui.unitTesting
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
@@ -37,7 +36,7 @@ class UnitTestLauncherState : PersistentStateComponent<Element> {
 
             // initial value, when empty
             if (getInstance(session.project).currentTestLauncherProperty.value == null){
-                val nestedLifetime = session.project.lifetime.createNested()
+                val nestedLifetime = lifetime.createNested()
                 model.unityEditorConnected.whenTrue(nestedLifetime) {
                     if (getInstance(session.project).currentTestLauncherProperty.value == null){
                         getInstance(session.project).currentTestLauncherProperty.set(UnitTestLaunchPreference.Both)

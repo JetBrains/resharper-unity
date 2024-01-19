@@ -5,7 +5,8 @@ import com.intellij.openapi.application.ex.ApplicationInfoEx
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.actions.RiderTechnicalSupportEntry
 import com.jetbrains.rider.actions.RiderTechnicalSupportInfoProvider
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.projectView.solution
 
 class UnityVersionRiderTechnicalSupportInfoProvider : RiderTechnicalSupportInfoProvider {
 
@@ -21,8 +22,7 @@ class UnityVersionRiderTechnicalSupportInfoProvider : RiderTechnicalSupportInfoP
         if (project.isDisposed)
             return ""
 
-        val unityHost = FrontendBackendHost.getInstance(project)
-
-        return unityHost.model.unityApplicationData.valueOrNull?.applicationVersion ?: ""
+        val model = project.solution.frontendBackendModel
+        return model.unityApplicationData.valueOrNull?.applicationVersion ?: ""
     }
 }

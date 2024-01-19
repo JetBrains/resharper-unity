@@ -5,9 +5,8 @@ import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.rd.util.withBackgroundContext
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
@@ -16,6 +15,7 @@ import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
 import com.jetbrains.rider.projectView.solution
@@ -31,7 +31,6 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                                       executionEnvironment: ExecutionEnvironment)
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, "Unity Editor", true) {
 
-    private val logger = Logger.getInstance(UnityAttachToEditorProfileState::class.java)
     private val project = executionEnvironment.project
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
@@ -39,7 +38,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
         // on the background thread
         return withBackgroundContext(lifetime) {
             if (!remoteConfiguration.updatePidAndPort()) {
-                logger.trace("Have not found Unity, would start a new Unity Editor instead.")
+                thisLogger().trace("Have not found Unity, would start a new Unity Editor instead.")
                 exeDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
             }
             else {
@@ -61,7 +60,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                 if (event == AddRemove.Add) {
                     debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
                         if (it == DebuggerInitializingState.Initialized) {
-                            logger.info("Pass value to backend, which will push Unity to enter play mode.")
+                            thisLogger().info("Pass value to backend, which will push Unity to enter play mode.")
                             var prevState = false
                             lt.bracketIfAlive(opening = {
                                 // pass value to backend, which will push Unity to enter play mode.
@@ -72,7 +71,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                                 // we want to wait for the connection, wait for the value from Unity and only then set our value
                                 val project = executionEnvironment.project
                                 val model = project.solution.frontendBackendModel
-                                model.playControlsInitialized.adviseUntil(project.lifetime){ initialized ->
+                                model.playControlsInitialized.adviseUntil(UnityProjectLifetimeService.getLifetime(project)){ initialized ->
                                     if (!initialized)
                                         return@adviseUntil false
                                     model.playControls.play.set(prevState)

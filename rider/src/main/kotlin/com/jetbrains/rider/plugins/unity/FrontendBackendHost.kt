@@ -12,7 +12,6 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
 import com.jetbrains.rd.framework.impl.RdTask
-import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
@@ -33,9 +32,7 @@ import java.io.File
 import kotlin.math.max
 
 @Service(Service.Level.PROJECT)
-class FrontendBackendHost(project: Project) : LifetimedService() {
-    val model = project.solution.frontendBackendModel
-
+class FrontendBackendHost {
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         private fun activateRider(project: Project) {
             ProjectUtil.focusProjectWindow(project, true)

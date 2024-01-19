@@ -7,19 +7,15 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
-import com.intellij.openapi.rd.util.lifetime
 import com.intellij.ui.awt.RelativePoint
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.AutoShaderContextData
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.SelectShaderContextDataInteraction
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.*
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
+import com.jetbrains.rider.projectView.solution
 import icons.UnityIcons
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +40,7 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
         }
         isVisible = false
 
-        currentContextData.advise(project.lifetime) {
+        currentContextData.advise(UnityProjectLifetimeService.getLifetime(project)) {
             if (it == null) {
                 label.text = UnityUIBundle.message("auto")
                 toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
@@ -68,8 +64,8 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
             val id = editor.document.getFirstDocumentId(project) ?: return@launch
             val activity = ShaderVariantEventLogger.logShowShaderContextsPopupStarted(project)
             try {
-                val host = FrontendBackendHost.getInstance(project)
-                val interaction = host.model.createSelectShaderContextInteraction.startSuspending(widgetLifetime, id)
+                val model = project.solution.frontendBackendModel
+                val interaction = model.createSelectShaderContextInteraction.startSuspending(widgetLifetime, id)
                 val actions = createActions(interaction)
                 val group = DefaultActionGroup().apply {
                     addAll(actions)

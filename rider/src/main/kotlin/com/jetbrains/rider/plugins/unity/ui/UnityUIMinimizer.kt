@@ -1,14 +1,13 @@
 package com.jetbrains.rider.plugins.unity.ui
 
-import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.startOnUiAsync
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.application
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 
 class UnityUIMinimizer : ProjectActivity {
     companion object {
@@ -47,13 +46,15 @@ class UnityUIMinimizer : ProjectActivity {
     }
 
     override suspend fun execute(project: Project) {
-        withContext(Dispatchers.EDT) {
-            if (project.isDisposed) return@withContext
+        val isUnityProject = UnityProjectDiscoverer.getInstance(project).isUnityProject.await()
+        if (!isUnityProject) return
+        val lifetime = UnityProjectLifetimeService.getLifetime(project)
+        lifetime.startOnUiAsync {
+            if (project.isDisposed) return@startOnUiAsync
+
             val unityUIManager = UnityUIManager.getInstance(project)
-            if (UnityProjectDiscoverer.getInstance(project).isUnityProject) {
-                if (unityUIManager.hasMinimizedUi.value == null || unityUIManager.hasMinimizedUi.hasTrueValue())
-                    ensureMinimizedUI(project)
-            }
+            if (unityUIManager.hasMinimizedUi.value == null || unityUIManager.hasMinimizedUi.hasTrueValue())
+                ensureMinimizedUI(project)
         }
     }
 }

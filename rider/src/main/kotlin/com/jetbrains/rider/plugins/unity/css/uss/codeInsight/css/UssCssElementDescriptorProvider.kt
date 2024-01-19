@@ -11,7 +11,6 @@ import com.intellij.psi.css.descriptor.CssFunctionDescriptor
 import com.intellij.psi.css.descriptor.CssPseudoSelectorDescriptor
 import com.intellij.psi.css.descriptor.value.CssValueDescriptor
 import com.intellij.psi.css.impl.descriptor.value.CssValueValidatorImpl
-import com.intellij.psi.css.impl.util.scheme.CssElementDescriptorFactory2
 import com.intellij.psi.css.impl.util.scheme.CssElementDescriptorProviderImpl
 import com.intellij.psi.css.impl.util.table.CssDescriptorsUtil.filterDescriptorsByContext
 import com.intellij.psi.util.PsiTreeUtil

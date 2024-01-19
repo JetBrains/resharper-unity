@@ -17,11 +17,11 @@ import com.jetbrains.rider.cpp.fileType.HlslSourceFileType
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetManager
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetProvider
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,7 +34,7 @@ class ShaderWidgetProvider : RiderResolveContextWidgetProvider, ProjectActivity 
                                editor: Editor): RiderResolveContextWidget? =
         if (isUnityHlslFile(project, editor)) {
             ShaderWidget(project, editor).apply {
-                val model = FrontendBackendHost.getInstance(project).model
+                val model = project.solution.frontendBackendModel
                 setData(model.shaderContexts[textControlId.documentId])
             }
         } else null
@@ -48,15 +48,14 @@ class ShaderWidgetProvider : RiderResolveContextWidgetProvider, ProjectActivity 
         if (isUnityHlslFile(project, editor)) widget else null
 
     private fun isUnityHlslFile(project: Project, editor: Editor) =
-        UnityProjectDiscoverer.getInstance(project).isUnityProject
-        && editor.virtualFile.fileType.let { it === HlslHeaderFileType || it === HlslSourceFileType }
+        project.isUnityProject.getCompletedOr(false) && editor.virtualFile.fileType.let { it === HlslHeaderFileType || it === HlslSourceFileType }
 
     override suspend fun execute(project: Project) {
         withContext(Dispatchers.EDT) {
             val lifetime = UnityProjectLifetimeService.getLifetime(project)
             project.solution.isLoaded.whenTrue(lifetime) {
-                if (project.isUnityProject()) {
-                    val model = FrontendBackendHost.getInstance(project).model
+                if (project.isUnityProject.getCompletedOr(false)) {
+                    val model = project.solution.frontendBackendModel
                     adviseModel(lifetime, model, project)
                 }
             }

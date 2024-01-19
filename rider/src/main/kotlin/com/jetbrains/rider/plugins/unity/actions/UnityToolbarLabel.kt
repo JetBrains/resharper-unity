@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ToolbarLabelAction
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.ui.UnityUIManager
 import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
@@ -15,7 +16,7 @@ class UnityToolbarLabel : ToolbarLabelAction() {
             e.presentation.isVisible = false
             return
         }
-        if (!project.isUnityProject()) {
+        if (!project.isUnityProject.getCompletedOr(false)) {
             e.presentation.isVisible = false
             return
         }

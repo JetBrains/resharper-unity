@@ -15,6 +15,7 @@ import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PairConsumer
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solutionDirectory
@@ -46,7 +47,7 @@ private class MetaFilesCheckHandler(
     private val project = panel.project
     private val settings = MetaFilesCheckinState.getService(project)
     override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent? {
-        if (!project.isUnityProject())
+        if (!project.isUnityProject.getCompletedOr(false))
             return null
 
         return BooleanCommitOption(
@@ -59,7 +60,7 @@ private class MetaFilesCheckHandler(
         executor: CommitExecutor?,
         additionalDataConsumer: PairConsumer<Any, Any>
     ): ReturnResult {
-        if (settings.checkMetaFiles && project.isUnityProject()) {
+        if (settings.checkMetaFiles && project.isUnityProject.getCompletedOr(false)) {
             val changes = panel.selectedChanges
             if (changes.any()) {
                 val emptyFolders = changes.filter {

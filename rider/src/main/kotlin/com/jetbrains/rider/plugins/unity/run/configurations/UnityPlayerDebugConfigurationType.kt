@@ -13,9 +13,9 @@ import com.intellij.openapi.rd.util.startUnderBackgroundProgressAsync
 import com.intellij.openapi.rd.util.toPromise
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.ComponentPredicate
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.run.*
 import com.jetbrains.rider.run.configurations.AsyncRunConfiguration
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteForm
@@ -190,7 +190,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun getAndroidAdbStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
         // Get a list of all running players on the given Android device. If found, connect, else throw an exception
-        return environment.project.lifetime.startUnderBackgroundProgressAsync(
+        return UnityProjectLifetimeService.getLifetime(project).startUnderBackgroundProgressAsync(
             UnityBundle.message("debugging.refreshing.player.list"),
             canBeCancelled = false,
             isIndeterminate = true,
@@ -305,7 +305,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                                           errorMessage: String,
                                           processFinder: (List<UnityProcess>) -> UnityLocalProcess?): Promise<RunProfileState> {
         // Refresh the port from the process list
-        return environment.project.lifetime.startUnderBackgroundProgressAsync(
+        return UnityProjectLifetimeService.getLifetime(project).startUnderBackgroundProgressAsync(
             UnityBundle.message("debugging.refreshing.player.list"),
             canBeCancelled = false,
             isIndeterminate = true,
@@ -346,7 +346,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun refreshFromUdpPlayer(environment: ExecutionEnvironment, factory: () -> UnityAttachProfileState): Promise<RunProfileState> {
         // Refresh state from the UDP broadcast
-        return environment.project.lifetime.startUnderBackgroundProgressAsync(
+        return UnityProjectLifetimeService.getLifetime(project).startUnderBackgroundProgressAsync(
             UnityBundle.message("debugging.refreshing.player.list"),
             canBeCancelled = false,
             isIndeterminate = true,

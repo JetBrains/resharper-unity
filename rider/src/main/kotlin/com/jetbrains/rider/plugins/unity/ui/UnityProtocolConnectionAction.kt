@@ -3,11 +3,13 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsActions
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.projectView.solution
 
 class UnityProtocolConnectionAction : AnAction() {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
@@ -17,15 +19,14 @@ class UnityProtocolConnectionAction : AnAction() {
         e.presentation.isEnabled = false
 
         val project = e.project ?: return
-        val host = FrontendBackendHost.getInstance(project)
-
-        e.presentation.text = getTooltipText(host)
+        e.presentation.text = getTooltipText(project)
 
     }
 
     @NlsActions.ActionText
-    fun getTooltipText(host: FrontendBackendHost): String {
-        return when (host.model.unityEditorState.valueOrDefault(UnityEditorState.Disconnected)) {
+    fun getTooltipText(project: Project): String {
+        val model = project.solution.frontendBackendModel
+        return when (model.unityEditorState.valueOrDefault(UnityEditorState.Disconnected)) {
             UnityEditorState.Disconnected -> UnityBundle.message("action.not.connected.to.unity.editor.text")
             else -> UnityBundle.message("action.connected.to.unity.editor.text")
         }

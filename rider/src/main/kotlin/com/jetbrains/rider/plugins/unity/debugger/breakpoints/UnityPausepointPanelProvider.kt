@@ -4,15 +4,16 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.HyperlinkLabel
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.breakpoints.ui.XBreakpointCustomPropertiesPanel
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.IDotNetLineBreakpointCustomPanelsProvider
+import com.jetbrains.rider.plugins.unity.getCompletedOr
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import javax.swing.JComponent
 import javax.swing.event.HyperlinkListener
 
 class UnityPausepointPanelProvider : IDotNetLineBreakpointCustomPanelsProvider {
     override fun getCustomBreakpointPanel(project: Project): XBreakpointCustomPropertiesPanel<XLineBreakpoint<DotNetLineBreakpointProperties>>? {
-        if (!UnityProjectDiscoverer.getInstance(project).isUnityProject)
+        if (!project.isUnityProject.getCompletedOr(false))
             return null
         return UnityPausepointPanel(project)
     }

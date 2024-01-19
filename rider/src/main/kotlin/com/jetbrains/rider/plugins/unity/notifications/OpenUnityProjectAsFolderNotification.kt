@@ -14,19 +14,17 @@ import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.vfs.isFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
-import com.intellij.util.ui.EdtInvocationManager
 import com.intellij.platform.backend.workspace.WorkspaceModel
+import com.intellij.util.ui.EdtInvocationManager
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.model.RdUnloadProjectDescriptor
 import com.jetbrains.rider.model.RdUnloadProjectState
-import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.*
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
@@ -70,10 +68,11 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
     }
 
     override suspend fun execute(project: Project) {
+        val lifetime = UnityProjectLifetimeService.getLifetime(project)
         withContext(Dispatchers.EDT) {
             if (project.isDisposed || project.isDefault) return@withContext
 
-            project.solution.isLoaded.whenTrue(project.lifetime) {
+            project.solution.isLoaded.whenTrue(lifetime) {
                 val model = project.solution.frontendBackendModel
                 val solutionDescription = project.solutionDescription
                 val title = UnityBundle.message("notification.title.advanced.unity.integration.unavailable")
@@ -83,10 +82,10 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                     "notification.content.make.sure.jetbrains.rider.editor.installed.in.unity.s.package.manager.rider.set.as.external.editor",
                     marketingVersion)
                 if (solutionDescription is RdExistingSolution) { // proper solution
-                    if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
-                        return@whenTrue
-
                     it.launchNonUrgentBackground {
+                        if (!project.isUnityProject.getCompletedOr(false))
+                            return@launchNonUrgentBackground
+
                         // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
                         // We check that Library/EditorInstance.json is present, but protocol connection was not initialized
                         // also check that all projects are loaded fine
@@ -108,8 +107,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                 }
                 else if (solutionDescription is RdVirtualSolution) { // opened as folder
                     it.launchNonUrgentBackground {
-                        val hasUnityFileStructure = UnityProjectDiscoverer.hasUnityFileStructure(project.projectDir)
-                        if (!(hasUnityFileStructure
+                        if (!(project.isUnityProjectFolder.getCompletedOr(false)
                               || UnityProjectDiscoverer.searchUpForFolderWithUnityFileStructure(project.projectDir).first))
                             return@launchNonUrgentBackground
 
@@ -130,7 +128,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                         // be sure that PackageManager is fully loaded at this time.
                         @NlsSafe
                         val contentWoSolution =
-                            if (!hasUnityFileStructure || // means searchUpForFolderWithUnityFileStructure is true
+                            if (!project.isUnityProjectFolder.getCompletedOr(false) || // means searchUpForFolderWithUnityFileStructure is true
                                 (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
                                  && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider"))
                             ) {

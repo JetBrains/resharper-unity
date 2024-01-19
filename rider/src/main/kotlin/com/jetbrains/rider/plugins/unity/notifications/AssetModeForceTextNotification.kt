@@ -8,8 +8,6 @@ import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.platform.util.idea.LifetimedService
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
@@ -17,7 +15,7 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 
 @Service(Service.Level.PROJECT)
-class AssetModeForceTextNotification(private val project: Project): LifetimedService() {
+class AssetModeForceTextNotification(private val project: Project) {
 
     companion object {
         private const val settingName = "do_not_show_unity_asset_mode_notification"
@@ -27,7 +25,7 @@ class AssetModeForceTextNotification(private val project: Project): LifetimedSer
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
-            model.notifyAssetModeForceText.adviseNotNullOnce(session.project.lifetime) {
+            model.notifyAssetModeForceText.adviseNotNullOnce(lifetime) {
                 getInstance(session.project).showNotificationIfNeeded()
             }
         }

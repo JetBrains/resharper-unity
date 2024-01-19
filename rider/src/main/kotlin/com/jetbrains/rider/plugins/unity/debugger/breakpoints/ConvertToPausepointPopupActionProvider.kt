@@ -7,10 +7,11 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 import com.jetbrains.rider.debugger.breakpoint.IDotNetLineBreakpointPopupActionsProvider
+import com.jetbrains.rider.plugins.unity.actions.isUnityProject
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 
 class ConvertToPausepointPopupActionProvider : IDotNetLineBreakpointPopupActionsProvider {
     override fun getCustomPopupMenuActions(breakpoint: XLineBreakpoint<*>, session: XDebugSession?): List<AnAction> {
@@ -23,7 +24,7 @@ class ConvertToPausepointPopupActionProvider : IDotNetLineBreakpointPopupActions
     private class ConvertToPausepointAction(private val breakpoint: XLineBreakpoint<*>): DumbAwareAction(UnityPausepointConstants.convertToPausepointActionText) {
         override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         override fun update(e: AnActionEvent) {
-            e.presentation.isVisible = e.project?.let { UnityProjectDiscoverer.getInstance(it).isUnityProject } == true
+            e.presentation.isVisible = e.isUnityProject.getCompletedOr(false)
         }
 
         override fun actionPerformed(e: AnActionEvent) {

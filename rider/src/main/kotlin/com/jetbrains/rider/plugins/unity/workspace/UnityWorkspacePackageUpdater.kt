@@ -14,7 +14,6 @@ import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.backend.workspace.toVirtualFileUrl
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.util.application
-import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
@@ -29,7 +28,7 @@ import com.jetbrains.rider.workspaceModel.getOrCreateRiderModuleEntity
 import java.nio.file.Paths
 
 @Service(Service.Level.PROJECT)
-class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedService() {
+class UnityWorkspacePackageUpdater(private val project: Project) {
 
     companion object {
         private val logger = Logger.getInstance(UnityWorkspacePackageUpdater::class.java)

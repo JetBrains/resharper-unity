@@ -8,16 +8,15 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.status.StatusBarUtil
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
-import com.jetbrains.rd.platform.util.idea.LifetimedService
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import icons.UnityIcons
 
 //there's an API for registering tool windows in the IJ Platform
 @Service(Service.Level.PROJECT)
-class UnityToolWindowFactory(private val project: Project) : LifetimedService() {
+class UnityToolWindowFactory(private val project: Project) {
 
     companion object {
         const val TOOL_WINDOW_ID = "Unity"
@@ -65,8 +64,8 @@ class UnityToolWindowFactory(private val project: Project) : LifetimedService() 
         // Required for hiding window without content
         ContentManagerWatcher(toolWindow, contentManager)
 
-        val logModel = UnityLogPanelModel(project.lifetime, project, toolWindow)
-        val logView = UnityLogPanelView(project.lifetime, project, logModel, toolWindow)
+        val logModel = UnityLogPanelModel(UnityProjectLifetimeService.getLifetime(project), project, toolWindow)
+        val logView = UnityLogPanelView(UnityProjectLifetimeService.getLifetime(project), project, logModel, toolWindow)
         val toolWindowContent = contentManager.factory.createContent(null, UnityBundle.message("tab.title.log"), true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel

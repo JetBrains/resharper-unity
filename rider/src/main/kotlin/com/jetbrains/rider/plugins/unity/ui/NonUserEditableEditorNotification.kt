@@ -7,8 +7,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.util.ui.UIUtil
-import com.intellij.openapi.rd.util.lifetime
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -20,7 +21,7 @@ import javax.swing.JComponent
 class NonUserEditableEditorNotification : EditorNotificationProvider, DumbAware {
 
     override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?>? {
-        if (project.isUnityProject() && isNonEditableUnityFile(file)) {
+        if (project.isUnityProject.getCompletedOr(false) && isNonEditableUnityFile(file)) {
             return Function {
                 EditorNotificationPanel().also { panel ->
                     panel.text = UnityUIBundle.message("label.this.file.internal.to.unity.should.not.be.edited.manually")
@@ -44,7 +45,7 @@ class NonUserEditableEditorNotification : EditorNotificationProvider, DumbAware 
         link.isVisible = project.isConnectedToEditor()
 
         // TODO: Wrong lifetime
-        model.unityEditorConnected.advise(project.lifetime) { link.isVisible = it }
+        model.unityEditorConnected.advise(UnityProjectLifetimeService.getLifetime(project)) { link.isVisible = it }
     }
 }
 

@@ -8,7 +8,6 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
-import com.intellij.openapi.rd.util.lifetime
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.vfs.*
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
@@ -17,7 +16,8 @@ import com.intellij.util.PathUtil
 import com.intellij.util.application
 import com.jetbrains.rd.platform.util.getLogger
 import com.jetbrains.rd.util.addUnique
-import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater
 import com.jetbrains.rider.projectView.VfsBackendRequester
 import org.jetbrains.annotations.Nls
@@ -30,7 +30,8 @@ import kotlin.io.path.name
 
 class MetaTrackerInitializer : ProjectActivity {
     override suspend fun execute(project: Project) {
-        if (project.isUnityProjectFolder()){
+        if (UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder.await())
+        {
             MetaTracker.getInstance().register(project)
         }
     }
@@ -47,8 +48,9 @@ class MetaTracker : VfsBackendRequester {
     }
 
     fun register(project: Project) {
-        project.lifetime.bracketIfAlive({ synchronized(lock) { projects.add(project) } },
-                                        { synchronized(lock) { projects.remove(project) } })
+        val lifetime = UnityProjectLifetimeService.getLifetime(project)
+        lifetime.bracketIfAlive({ synchronized(lock) { projects.add(project) } },
+                                { synchronized(lock) { projects.remove(project) } })
     }
 
     private val actionsPerProject = mutableMapOf<Project, MetaActionList>()
@@ -129,7 +131,7 @@ class MetaTracker : VfsBackendRequester {
         var actions = actionsPerProject[project]
         if (actions == null) {
             actions = MetaActionList(project)
-            actionsPerProject.addUnique(project.lifetime, project, actions)
+            actionsPerProject.addUnique(UnityProjectLifetimeService.getLifetime(project), project, actions)
         }
         return actions
     }
@@ -195,7 +197,7 @@ class MetaTracker : VfsBackendRequester {
     private class MetaActionList(project: Project) {
 
         init {
-            val connection = project.messageBus.connect(project.lifetime.createNestedDisposable())
+            val connection = project.messageBus.connect(UnityProjectLifetimeService.getLifetime(project).createNestedDisposable())
             connection.subscribe(CommandListener.TOPIC, object : CommandListener {
                 override fun beforeCommandFinished(event: CommandEvent) {
                     // apply all changes from Map<Runnable, List<Path>> and add our changes to meta files

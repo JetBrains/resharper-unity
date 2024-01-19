@@ -22,7 +22,6 @@ import com.jetbrains.rd.util.AtomicReference
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.printlnError
 import com.jetbrains.rd.util.reactive.valueOrThrow
-import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.debugger.DotNetStackFrame
 import com.jetbrains.rider.debugger.IDotNetValue
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
@@ -47,7 +46,6 @@ import java.awt.event.MouseEvent
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.awt.image.ColorModel
-import java.io.File
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.SwingConstants

@@ -16,13 +16,14 @@ import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
 import com.intellij.util.application
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.*
 import com.jetbrains.rider.document.getFirstEditor
 import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
+import com.jetbrains.rider.plugins.unity.getCompletedOr
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.ScriptCompilationDuringPlay
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -85,10 +86,10 @@ class UnityAutoSaveConfigureNotification : ProjectActivity {
     }
 
     override suspend fun execute(project: Project) {
-        val lifetimeDefinition = project.lifetime.createNested()
+        val lifetimeDefinition = UnityProjectLifetimeService.getLifetime(project).createNested()
         withContext(Dispatchers.EDT) {
-            project.solution.isLoaded.whenTrue(project.lifetime) {
-                if (!propertiesComponent.getBoolean(settingName) && UnityProjectDiscoverer.getInstance(project).isUnityProject) {
+            project.solution.isLoaded.whenTrue(lifetimeDefinition) {
+                if (!propertiesComponent.getBoolean(settingName) && project.isUnityProject.getCompletedOr(false)) {
 
                     val eventMulticaster = EditorFactory.getInstance().eventMulticaster
                     val generalSettings = GeneralSettings.getInstance()

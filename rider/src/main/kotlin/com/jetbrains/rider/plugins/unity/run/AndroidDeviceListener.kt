@@ -9,9 +9,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.launchBackground
 import com.jetbrains.rd.platform.diagnostics.doActivity
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.projectView.solution
 import java.io.File
 import java.nio.file.Path
 import kotlin.concurrent.timer
@@ -52,8 +53,8 @@ class AndroidDeviceListener() {
 
     private suspend fun getAdbPath(project: Project, lifetime: Lifetime): File? {
         try {
-            val host = FrontendBackendHost.getInstance(project)
-            val sdkRoot = host.model.getAndroidSdkRoot.startSuspending(lifetime, Unit)?.let { Path.of(it) }
+            val model = project.solution.frontendBackendModel
+            val sdkRoot = model.getAndroidSdkRoot.startSuspending(lifetime, Unit)?.let { Path.of(it) }
                 ?.takeIf { it.isDirectory() } ?: run {
                 logger.trace("No Android SDK root from model. Trying to find manually")
                 UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()

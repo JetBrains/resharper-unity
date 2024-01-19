@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
-import com.intellij.internal.statistic.IdeActivityDefinition
 import com.intellij.internal.statistic.StructuredIdeActivity
 import com.intellij.internal.statistic.eventLog.EventLogGroup
 import com.intellij.internal.statistic.eventLog.events.EventFields

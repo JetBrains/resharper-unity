@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.run.attach
 
 import com.intellij.xdebugger.impl.ui.attach.dialog.AttachDialogProcessItem
 import com.intellij.xdebugger.impl.ui.attach.dialog.extensions.XAttachDialogItemPresentationProvider
-import com.jetbrains.rider.plugins.unity.run.toUnityProcess
 
 class UnityLocalAttachDialogItemPresentationProvider : XAttachDialogItemPresentationProvider {
     override fun isApplicableFor(item: AttachDialogProcessItem) = item.debuggers.any { it is UnityLocalAttachDebugger }

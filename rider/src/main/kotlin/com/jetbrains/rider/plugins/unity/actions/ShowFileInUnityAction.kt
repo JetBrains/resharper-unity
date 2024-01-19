@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -27,7 +28,7 @@ open class ShowFileInUnityAction : DumbAwareAction() {
         // see `com.intellij.ide.actions.RevealFileAction.update`
         // Cleanup context menu on selection (IDEA-245559)
         val editor = e.getData(CommonDataKeys.EDITOR)
-        e.presentation.isEnabledAndVisible = project.isUnityProject() && getFile(e) != null &&
+        e.presentation.isEnabledAndVisible = project.isUnityProject.getCompletedOr(false) && getFile(e) != null &&
                 (!ActionPlaces.isPopupPlace(e.place) || editor == null || !editor.selectionModel.hasSelection())
 
         e.presentation.isEnabled = project.isConnectedToEditor()

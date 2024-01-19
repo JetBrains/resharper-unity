@@ -3,10 +3,9 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.getCompletedOr
+import com.jetbrains.rider.plugins.unity.hasUnityReference
 import com.jetbrains.rider.plugins.unity.ui.UnityImportantActions
-import com.jetbrains.rider.projectView.solution
 
 // need to specify separate classes for each ActionGroup, otherwise RIDER-85088 happens
 class UnityToolbarActionsGroup : UnityToolbarActionsGroupBase() {}
@@ -25,7 +24,7 @@ open class UnityToolbarActionsGroupBase : DefaultActionGroup() {
             return
         }
 
-        e.presentation.isVisible = (project.solution.frontendBackendModel.hasUnityReference.valueOrDefault(false)
+        e.presentation.isVisible = (project.hasUnityReference.getCompletedOr(false)
                 || UnityImportantActions.isVisible(e))
     }
 }

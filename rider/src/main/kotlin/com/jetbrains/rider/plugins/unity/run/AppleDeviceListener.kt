@@ -9,10 +9,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.AssemblyExecutionContext
-import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import java.io.File
 import java.io.PrintWriter
 import java.nio.file.Path
 import java.util.regex.Pattern

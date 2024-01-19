@@ -12,6 +12,7 @@ import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.ExperimentalUI
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginActionsBundle
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
@@ -68,7 +69,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
         return false
     }
 
-    override fun isInitiallyVisible() = project.isUnityProject()
+    override fun isInitiallyVisible() = project.isUnityProject.getCompletedOr(false)
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)

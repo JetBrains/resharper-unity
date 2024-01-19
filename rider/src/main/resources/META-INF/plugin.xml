@@ -29,6 +29,7 @@
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdaterInitializer"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer$UnityProjectDiscovererProjectActivity"/>
 
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
 
@@ -50,6 +51,8 @@
                             listener="com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState$ProtocolListener"/>
     <rd.solutionExtListener endpoint="IDE Frontend"
                             listener="com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder$ProtocolListener"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer$ProtocolListener"/>
 
     <fileDocumentManagerListener implementation="com.jetbrains.rider.plugins.unity.UnityFileDocumentManagerListener"/>
 

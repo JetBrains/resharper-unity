@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -54,7 +55,7 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
         e.presentation.text = getLauncherDescription(currentPreference)
 
         e.presentation.description = getLauncherDescription(currentPreference)
-        e.presentation.isEnabledAndVisible = project.isUnityProject()
+        e.presentation.isEnabledAndVisible = project.isUnityProject.getCompletedOr(false)
 
         super.update(e)
     }

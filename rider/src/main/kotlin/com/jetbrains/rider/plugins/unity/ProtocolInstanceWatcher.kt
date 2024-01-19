@@ -4,7 +4,6 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.application
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.model.RdDelta
@@ -28,8 +27,9 @@ import kotlin.io.path.isDirectory
 class ProtocolInstanceWatcher : ProjectActivity {
     override suspend fun execute(project: Project) {
         withContext(Dispatchers.EDT) {
-            project.solution.isLoaded.whenTrue(project.lifetime) {
-                if (project.isUnityProject()) {
+            val lifetime = UnityProjectLifetimeService.getLifetime(project)
+            project.solution.isLoaded.whenTrue(lifetime) { lt ->
+                if (project.isUnityProject.getCompletedOr(false)) {
                     thread(name = "ProtocolInstanceWatcher") {
                         val watchService: WatchService = FileSystems.getDefault().newWatchService()
                         val libraryPath = project.solutionDirectory.resolve("Library").toPath()
@@ -39,7 +39,7 @@ class ProtocolInstanceWatcher : ProjectActivity {
 
                         libraryPath.register(watchService, ENTRY_CREATE, ENTRY_MODIFY)
 
-                        it.onTerminationIfAlive {
+                        lt.onTerminationIfAlive {
                             watchService.close() // releases watchService.take()
                         }
 
@@ -47,7 +47,7 @@ class ProtocolInstanceWatcher : ProjectActivity {
                         val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
                         var key: WatchKey
                         try {
-                            while (watchService.take().also { key = it } != null && it.isAlive) {
+                            while (watchService.take().also { watchKey -> key = watchKey } != null && lt.isAlive) {
                                 for (event in key.pollEvents()) {
                                     val context = event.context() ?: continue
                                     if (context.toString() == watchedFileName) {
@@ -61,7 +61,6 @@ class ProtocolInstanceWatcher : ProjectActivity {
                         }
                         catch (_: ClosedWatchServiceException) {
                         } // this is expected on `watchService.close()`
-
                     }
                 }
             }

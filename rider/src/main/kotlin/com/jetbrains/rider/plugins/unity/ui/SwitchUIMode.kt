@@ -3,7 +3,8 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
-import com.jetbrains.rider.plugins.unity.isUnityProject
+import com.jetbrains.rider.plugins.unity.actions.isUnityProject
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 
 class SwitchUIMode : ToggleAction() {
     override fun getActionUpdateThread(): ActionUpdateThread {
@@ -25,7 +26,7 @@ class SwitchUIMode : ToggleAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = e.project?.isUnityProject() == true
+        e.presentation.isEnabled = e.isUnityProject.getCompletedOr(false)
         super.update(e)
     }
 }

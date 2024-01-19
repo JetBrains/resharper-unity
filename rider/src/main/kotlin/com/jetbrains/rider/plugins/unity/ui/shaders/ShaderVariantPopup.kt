@@ -23,15 +23,12 @@ import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rdclient.document.getFirstDocumentId
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.common.ui.ToggleButtonModel
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.CreateShaderVariantInteractionArgs
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteraction
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.*
+import com.jetbrains.rider.projectView.solution
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,7 +54,7 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
         fun show(lifetime: Lifetime, project: Project, editor: Editor, showAt: RelativePoint) {
             UnityProjectLifetimeService.getScope(project).launch(Dispatchers.EDT, CoroutineStart.UNDISPATCHED) {
                 val id = editor.document.getFirstDocumentId(project) ?: return@launch
-                val model = FrontendBackendHost.getInstance(project).model
+                val model = project.solution.frontendBackendModel
                 val activity = ShaderVariantEventLogger.logShowShaderVariantPopupStarted(project)
                 try {
                     val args = CreateShaderVariantInteractionArgs(id, editor.caretModel.offset)

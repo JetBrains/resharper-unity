@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.backend.workspace.WorkspaceModel
+import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.ProjectElementView
 import com.jetbrains.rider.projectView.ProjectEntityView
@@ -13,7 +14,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
     // this is called for rename, we should filter .Player projects and return node itself
     override fun getBestProjectModelElement(targetLocation: VirtualFile): ProjectElementView? {
-        if (!project.isUnityProject())
+        if (!project.isUnityProject.getCompletedOr(false))
             return null
 
         val workspaceModel = WorkspaceModel.getInstance(project)
@@ -28,7 +29,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun getBestParentProjectModelNode(targetLocation: VirtualFile): ProjectModelEntity? {
-        if (!project.isUnityProject())
+        if (!project.isUnityProject.getCompletedOr(false))
             return null
         if (targetLocation.isDirectory) // RIDER-64427 "New in This Directory" doesn't work
             return recursiveSearch(targetLocation) ?: super.getBestParentProjectModelNode(targetLocation)
@@ -36,7 +37,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun filterProjectModelNodesBeforeOperation(entities: List<ProjectModelEntity>): List<ProjectModelEntity> {
-        if (!project.isUnityProject())
+        if (!project.isUnityProject.getCompletedOr(false))
             return entities
 
         return filterOutItemsFromNonPrimaryProjects(entities)
@@ -115,7 +116,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun shouldShowSolutionConfigurationsGotIt(): Boolean {
-        if (project.isUnityProject()) return false
+        if (project.isUnityProject.getCompletedOr(false)) return false
         return true
     }
 }
