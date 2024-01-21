@@ -45,6 +45,7 @@ import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.frameworkLogger
+import com.jetbrains.rider.test.framework.getFileWithNameSuffix
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.utils.NullPrintStream
@@ -623,21 +624,13 @@ fun getGoldFileUnityDependentSuffix(unityVersion: UnityVersion): String {
 }
 
 fun getUnityDependentGoldFile(unityVersion: UnityVersion, testFile: File): File {
-    val suffixesList = listOf(getGoldFileOsDependentSuffix() + getGoldFileArchDependentSuffix(),
-                              getGoldFileOsDependentSuffix(),
-                              getGoldFileArchDependentSuffix(),
-                              getGoldFileUnityDependentSuffix(unityVersion))
-    suffixesList.forEach { suffix ->
-        val goldFileWithSuffix = testFile
-            .toPath()
-            .resolve("gold")
-            .resolve("${testFile.name}$suffix.gold")
-            .toFile()
+    val suffix = getGoldFileUnityDependentSuffix(unityVersion)
+    val goldFileWithSuffix = testFile.getFileWithNameSuffix(suffix)
 
-        if (goldFileWithSuffix.getGoldFile().exists()) {
-            return goldFileWithSuffix
-        }
+    if (goldFileWithSuffix.getGoldFile().exists()) {
+        return goldFileWithSuffix
     }
+
     return testFile
 }
 

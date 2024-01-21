@@ -20,9 +20,13 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
     private lateinit var unityProjectPath: File
     protected abstract val unityMajorVersion: UnityVersion
     private val unityExecutable: File by lazy { getUnityExecutableInstallationPath(unityMajorVersion) }
-    private val unityGoldFile : File by lazy {getUnityDependentGoldFile(unityMajorVersion, File(testClassDataDirectory.parent, testMethod.name))}
+
     override val testGoldFile: File
-        get() = unityGoldFile.takeIf { it.exists() } ?: super.testGoldFile
+        get() = getUnityDependentGoldFile(unityMajorVersion, super.testGoldFile).takeIf { it.exists() }
+                ?: getUnityDependentGoldFile(
+                    unityMajorVersion,
+                    File(super.testGoldFile.path.replace(this::class.simpleName.toString(), ""))
+                )
 
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,

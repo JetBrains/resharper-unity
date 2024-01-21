@@ -25,7 +25,7 @@ abstract class UnitTestingTestBase(private val unityVersion: UnityVersion) : Int
     override val unityMajorVersion = this.unityVersion
 
     override val testClassDataDirectory: File
-        get() = super.testClassDataDirectory.parentFile.combine(DebuggerTestBase::class.simpleName!!)
+        get() = super.testClassDataDirectory.parentFile.combine(UnitTestingTestBase::class.simpleName!!)
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testStorage.testMethod.name).combine("source")
 
