@@ -9,6 +9,7 @@ using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Feature.Services.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
@@ -31,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         public FrontendBackendHost(Lifetime lifetime, ISolution solution, IShellLocks shellLocks, ILogger logger,
                                    PackageManager packageManager,
                                    DeferredCacheController deferredCacheController,
+                                   UnityTechnologyDescriptionCollector technologyDescriptionCollector,
                                    bool isInTests = false)
         {
             mySolution = solution;
@@ -41,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
             // This will throw in tests, as GetProtocolSolution will return null
             var model = solution.GetProtocolSolution().GetFrontendBackendModel();
-            AdviseModel(lifetime, model, packageManager, deferredCacheController, shellLocks);
+            AdviseModel(lifetime, model, technologyDescriptionCollector, packageManager, deferredCacheController, shellLocks);
             Model = model;
         }
 
@@ -61,14 +63,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         }
 
         private void AdviseModel(Lifetime lifetime,
-                                        FrontendBackendModel frontendBackendModel,
-                                        PackageManager packageManager,
-                                        DeferredCacheController deferredCacheController,
-                                        IThreading shellLocks)
+            FrontendBackendModel frontendBackendModel,
+            UnityTechnologyDescriptionCollector technologyDescriptionCollector,
+            PackageManager packageManager,
+            DeferredCacheController deferredCacheController,
+            IThreading shellLocks)
         {
+            AdviseTechnologies(lifetime, frontendBackendModel, technologyDescriptionCollector);
             AdvisePackages(lifetime, frontendBackendModel, packageManager);
             AdviseIntegrationTestHelpers(lifetime, frontendBackendModel, deferredCacheController, shellLocks);
             frontendBackendModel.GetScriptingBackend.Set((_, _) => ProjectSettingsAsset.GetScriptingBackend(mySolution, myLogger));
+        }
+
+        private void AdviseTechnologies(Lifetime lifetime, FrontendBackendModel frontendBackendModel,
+            UnityTechnologyDescriptionCollector technologyDescriptionCollector)
+        {
+            technologyDescriptionCollector.DiscoveredTechnologies.Advise(lifetime, v =>
+            {
+                if ((v.IsAdd || v.IsUpdate) && v.NewValue)
+                {
+                    frontendBackendModel.DiscoveredTechnologies[v.Key] = true;
+                }
+                else
+                {
+                    frontendBackendModel.DiscoveredTechnologies.Remove(v.Key);
+                }
+            });
         }
 
         private static void AdvisePackages(Lifetime lifetime,

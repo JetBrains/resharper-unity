@@ -19,9 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
         private readonly List<IUnityTechnologyDescription> myDescriptions;
 
 
-        public IReadOnlyDictionary<string, bool> DiscoveredTechnologies => myDiscoveredTechnologies;
+        public IViewableMap<string, bool> DiscoveredTechnologies => myDiscoveredTechnologies;
 
-        private Dictionary<string, bool> myDiscoveredTechnologies = new Dictionary<string, bool>();
+        private ViewableMap<string, bool> myDiscoveredTechnologies = new ViewableMap<string, bool>();
 
         private ViewableProperty<bool> myProjectsProcessed = new ViewableProperty<bool>(false);
         private ViewableProperty<bool> myPackagesProcessed = new ViewableProperty<bool>(false);
@@ -123,7 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
 
                     using (ReadLockCookie.Create())
                     {
-                        var projects = solution.GetTopLevelProjects();
+                        var projects = solution.GetAllProjects();
                         try
                         {
                             foreach (var project in projects)

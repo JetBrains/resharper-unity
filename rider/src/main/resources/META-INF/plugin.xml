@@ -204,6 +204,7 @@
 
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantEventLogger"/>
 
+    <rider.completion.csharpIdentifierPartHelper implementation="com.jetbrains.rider.plugins.unity.csharp.completion.OdinLayoutAttributeCSharpIdentifierPartHelper"/>
   </extensions>
 
   <applicationListeners>
