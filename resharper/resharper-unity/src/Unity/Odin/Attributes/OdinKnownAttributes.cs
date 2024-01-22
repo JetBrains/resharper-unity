@@ -23,6 +23,9 @@ public class OdinKnownAttributes
 
     // Asset attributes
     public static readonly IClrTypeName AssetListAttribute = new ClrTypeName("Sirenix.OdinInspector.AssetListAttribute");
+    public static readonly IClrTypeName AssetSelectorAttribute = new ClrTypeName("Sirenix.OdinInspector.AssetSelectorAttribute");
+    public static readonly IClrTypeName FilePathAttribute = new ClrTypeName("Sirenix.OdinInspector.FilePathAttribute");
+    public static readonly IClrTypeName FolderPathAttribute = new ClrTypeName("Sirenix.OdinInspector.FolderPathAttribute");
 
     
     
