@@ -19,41 +19,56 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 {
     public class UnityColorHighlighterProcess : CSharpIncrementalDaemonStageProcessBase
     {
-        public UnityColorHighlighterProcess(IDaemonProcess process, IContextBoundSettingsStore settingsStore,
+        private readonly IEnumerable<IUnityColorReferenceProvider> myProviders;
+
+        public UnityColorHighlighterProcess(IEnumerable<IUnityColorReferenceProvider> providers, IDaemonProcess process, IContextBoundSettingsStore settingsStore,
                                             ICSharpFile file)
             : base(process, settingsStore, file)
         {
+            myProviders = providers;
         }
 
         public override void VisitNode(ITreeNode element, IHighlightingConsumer consumer)
         {
             if (element is ITokenNode tokenNode && tokenNode.GetTokenType().IsWhitespace) return;
 
-            var colorInfo = CreateColorHighlightingInfo(element);
+            var colorInfo = CreateColorHighlightingInfo(element, myProviders);
             if (colorInfo != null)
                 consumer.AddHighlighting(colorInfo.Highlighting, colorInfo.Range);
         }
 
-        private HighlightingInfo? CreateColorHighlightingInfo(ITreeNode element)
+        private HighlightingInfo? CreateColorHighlightingInfo(ITreeNode element, IEnumerable<IUnityColorReferenceProvider> providers)
         {
-            var colorReference = GetColorReference(element);
+            var colorReference = GetColorReference(element, providers);
             var range = colorReference?.ColorConstantRange;
             return range?.IsValid() == true
                 ? new HighlightingInfo(range.Value, new ColorHintHighlighting(colorReference))
                 : null;
         }
 
-        private static IColorReference? GetColorReference(ITreeNode element)
+        private static IColorReference? GetColorReference(ITreeNode element, IEnumerable<IUnityColorReferenceProvider> providers)
         {
             if (element is IObjectCreationExpression constructorExpression)
                 return ReferenceFromConstructor(constructorExpression);
 
             var referenceExpression = element as IReferenceExpression;
-            if (referenceExpression?.QualifierExpression is not IReferenceExpression qualifier)
-                return null;
+            if (referenceExpression?.QualifierExpression is IReferenceExpression qualifier)
+            {
+                var result = ReferenceFromInvocation(qualifier, referenceExpression)
+                    ?? ReferenceFromProperty(qualifier, referenceExpression);
+                
+                if (result != null)
+                    return result;
+            }
 
-            return ReferenceFromInvocation(qualifier, referenceExpression)
-                   ?? ReferenceFromProperty(qualifier, referenceExpression);
+            foreach (var provider in providers)
+            {
+                var result = provider.GetColorReference(element);
+                if (result != null)
+                    return result;
+            }
+            
+            return null;
         }
 
         private static IColorReference? ReferenceFromConstructor(IObjectCreationExpression constructorExpression)
@@ -193,6 +208,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             float min, float max)
         {
             var expression = GetNamedArgument(arguments, parameterName)?.Expression;
+            return ArgumentAsFloatConstant(min, max, expression);
+        }
+
+        public static float? ArgumentAsFloatConstant(float min, float max, IExpression? expression)
+        {
             if (expression == null) return null;
 
             double? value = null;

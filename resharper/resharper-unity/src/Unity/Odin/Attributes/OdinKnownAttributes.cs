@@ -27,7 +27,9 @@ public class OdinKnownAttributes
     public static readonly IClrTypeName FilePathAttribute = new ClrTypeName("Sirenix.OdinInspector.FilePathAttribute");
     public static readonly IClrTypeName FolderPathAttribute = new ClrTypeName("Sirenix.OdinInspector.FolderPathAttribute");
 
-    
+    // Color
+    public static readonly IClrTypeName GUIColorAttribute = new ClrTypeName("Sirenix.OdinInspector.GUIColorAttribute");
+
     
     
     public static readonly HashSet<IClrTypeName> LayoutAttributes = new()
