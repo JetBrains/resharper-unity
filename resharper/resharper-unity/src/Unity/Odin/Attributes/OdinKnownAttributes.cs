@@ -30,7 +30,15 @@ public class OdinKnownAttributes
     // Color
     public static readonly IClrTypeName GUIColorAttribute = new ClrTypeName("Sirenix.OdinInspector.GUIColorAttribute");
 
+    // Code Annotations
     
+    public static readonly IClrTypeName MinValueAttribute = new ClrTypeName("Sirenix.OdinInspector.MinValueAttribute");
+    public static readonly IClrTypeName MaxValueAttribute = new ClrTypeName("Sirenix.OdinInspector.MaxValueAttribute");
+    public static readonly IClrTypeName MinMaxSliderAttribute = new ClrTypeName("Sirenix.OdinInspector.MinMaxSliderAttribute");
+    public static readonly IClrTypeName ProgressBarAttribute = new ClrTypeName("Sirenix.OdinInspector.ProgressBarAttribute");
+    public static readonly IClrTypeName PropertyRangeAttribute = new ClrTypeName("Sirenix.OdinInspector.PropertyRangeAttribute");
+    public static readonly IClrTypeName WrapAttribute = new ClrTypeName("Sirenix.OdinInspector.WrapAttribute");
+
     
     public static readonly HashSet<IClrTypeName> LayoutAttributes = new()
     {

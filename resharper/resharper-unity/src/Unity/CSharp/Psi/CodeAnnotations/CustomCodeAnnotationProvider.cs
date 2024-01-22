@@ -33,16 +33,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
         private readonly KnownTypesCache myKnownTypesCache;
         private readonly UnityApi myUnityApi;
+        private readonly IEnumerable<IUnityRangeAttributeProvider> myUnityRangeAttributeProviders;
 
         private readonly DirectMappedCache<ITypeElement, bool> myCompiledElementsCache = new(10);
         private readonly DirectMappedCache<ITypeElement, bool> mySourceElementsCache = new(10);
 
         public CustomCodeAnnotationProvider(ExternalAnnotationsModuleFactory externalAnnotationsModuleFactory,
-            IPredefinedTypeCache predefinedTypeCache, KnownTypesCache knownTypesCache, UnityApi unityApi)
+            IPredefinedTypeCache predefinedTypeCache, KnownTypesCache knownTypesCache, UnityApi unityApi,
+            IEnumerable<IUnityRangeAttributeProvider> unityRangeAttributeProviders)
         {
             myPredefinedTypeCache = predefinedTypeCache;
             myKnownTypesCache = knownTypesCache;
             myUnityApi = unityApi;
+            myUnityRangeAttributeProviders = unityRangeAttributeProviders;
             myExternalAnnotationsModuleFactory = externalAnnotationsModuleFactory;
         }
 
@@ -54,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         {
             if (GetCoroutineMustUseReturnValueAttribute(element, out var collection)) return collection;
             if (GetPublicAPIImplicitlyUsedAttribute(element, existingAttributes, out collection)) return collection;
-            if (GetValueRangeAttribute(element,existingAttributes, out collection)) return collection;
+            if (GetValueRangeAttribute(element, existingAttributes, out collection)) return collection;
 
             return EmptyList<IAttributeInstance>.Instance;
         }
@@ -169,37 +172,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
                 return false;
             }
 
-            foreach (var attributeInstance in attributeInstanceCollection.GetAllOwnAttributes().Where(t => t.GetClrName().Equals(KnownTypes.RangeAttribute)))
+            foreach (var attributeInstance in attributeInstanceCollection.GetAllOwnAttributes())
             {
-                // Values are floats, but applied to an integer field. Convert to integer values
-                var unityFrom = attributeInstance.PositionParameter(0);
-                var unityTo = attributeInstance.PositionParameter(1);
-
-                if (!unityFrom.ConstantValue.IsFloat() || !unityTo.ConstantValue.IsFloat())
-                    continue;
-
-                // The check above means this is not null. We take the floor, because that's how Unity works.
-                // E.g. Unity's Inspector treats [Range(1.7f, 10.9f)] as between 1 and 10 inclusive
-                var from = Convert.ToInt64(Math.Floor(unityFrom.ConstantValue.FloatValue));
-                var to = Convert.ToInt64(Math.Floor(unityTo.ConstantValue.FloatValue));
-
-                collection = CreateRangeAttributeInstance(element, from, to);
-                return true;
-            }
-
-            foreach (var attributeInstance in attributeInstanceCollection.GetAllOwnAttributes().Where(t => t.GetClrName().Equals(KnownTypes.MinAttribute)))
-            {
-                var unityMinValue = attributeInstance.PositionParameter(0);
-
-                if (!unityMinValue.ConstantValue.IsFloat())
-                    continue;
-
-                // Even though the constructor for ValueRange takes long, it only works with int.MaxValue
-                var min = Convert.ToInt64(Math.Floor(unityMinValue.ConstantValue.FloatValue));
-                var max = int.MaxValue;
-
-                collection = CreateRangeAttributeInstance(element, min, max);
-                return true;
+                foreach (var unityRangeAttributeProvider in myUnityRangeAttributeProviders)
+                {
+                    if (unityRangeAttributeProvider.IsApplicable(attributeInstance))
+                    {
+                        var from = unityRangeAttributeProvider.GetMinValue(attributeInstance);
+                        var to = unityRangeAttributeProvider.GetMaxValue(attributeInstance);
+                        
+                        collection = CreateRangeAttributeInstance(element, from, to);
+                        return true;
+                    }
+                }
             }
 
             return false;
