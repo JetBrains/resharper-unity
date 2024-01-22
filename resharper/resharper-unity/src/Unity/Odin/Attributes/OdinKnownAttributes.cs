@@ -41,6 +41,48 @@ public class OdinKnownAttributes
     public static readonly IClrTypeName PropertyRangeAttribute = new ClrTypeName("Sirenix.OdinInspector.PropertyRangeAttribute");
     public static readonly IClrTypeName WrapAttribute = new ClrTypeName("Sirenix.OdinInspector.WrapAttribute");
 
+    // Members completion without $
+    public static readonly IClrTypeName CustomValueDrawerAttribute = new ClrTypeName("Sirenix.OdinInspector.CustomValueDrawerAttribute");
+    public static readonly IClrTypeName TypeFilterAttribute = new ClrTypeName("Sirenix.OdinInspector.TypeFilterAttribute");
+    public static readonly IClrTypeName ValidateInputAttribute = new ClrTypeName("Sirenix.OdinInspector.ValidateInputAttribute");
+    public static readonly IClrTypeName ValueDropdownAttribute = new ClrTypeName("Sirenix.OdinInspector.ValueDropdownAttribute");
+    public static readonly IClrTypeName InlineButtonAttribute = new ClrTypeName("Sirenix.OdinInspector.InlineButtonAttribute");
+    public static readonly IClrTypeName OnInspectorGUIAttribute = new ClrTypeName("Sirenix.OdinInspector.OnInspectorGUIAttribute");
+    public static readonly IClrTypeName OnValueChangedAttribute = new ClrTypeName("Sirenix.OdinInspector.OnValueChangedAttribute");
+    
+    // first argument
+    public static readonly IClrTypeName DisableIfAttribute = new ClrTypeName("Sirenix.OdinInspector.DisableIfAttribute");
+    public static readonly IClrTypeName EnableIfAttribute = new ClrTypeName("Sirenix.OdinInspector.EnableIfAttribute");
+    public static readonly IClrTypeName HideIfAttribute = new ClrTypeName("Sirenix.OdinInspector.HideIfAttribute");
+    public static readonly IClrTypeName ShowIfAttribute = new ClrTypeName("Sirenix.OdinInspector.ShowIfAttribute");
+    
+    // second argument
+    public static readonly IClrTypeName CustomContextMenuAttribute = new ClrTypeName("Sirenix.OdinInspector.CustomContextMenuAttribute");
+    
+    // first & second
+    public static readonly IClrTypeName OnCollectionChangedAttribute = new ClrTypeName("Sirenix.OdinInspector.OnCollectionChangedAttribute");
+
+    
+    public static readonly HashSet<IClrTypeName> AttributesWithMemberCompletion = new()
+    {
+        CustomValueDrawerAttribute,
+        TypeFilterAttribute,
+        ValidateInputAttribute,
+        ValueDropdownAttribute,
+        InlineButtonAttribute,
+        OnInspectorGUIAttribute,
+        OnValueChangedAttribute,
+        
+        DisableIfAttribute,
+        EnableIfAttribute,
+        HideIfAttribute,
+        ShowIfAttribute,
+        
+        CustomContextMenuAttribute,
+        
+        OnCollectionChangedAttribute,
+    };
+    
     
     public static readonly HashSet<IClrTypeName> LayoutAttributes = new()
     {
