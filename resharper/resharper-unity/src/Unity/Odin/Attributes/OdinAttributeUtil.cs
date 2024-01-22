@@ -22,19 +22,10 @@ public class OdinAttributeUtil
         {
             foreach (var attributeInstance in member.GetAttributeInstances(true))
             {
-                if (!OdinKnownAttributes.LayoutAttributes.TryGetValue(attributeInstance.GetClrName(), out var parameterName))
+                var group = GetGroupPath(attributeInstance);
+                if (group == null)
                     continue;
-                
-                var group = GetAttributeValue(attributeInstance, parameterName);
 
-                if (attributeInstance.GetClrName().Equals(OdinKnownAttributes.TabGroupAttribute))
-                {
-                    if (group == null)
-                        group = "_DefaultTabGroup";
-
-                    group = $"{group}/{GetAttributeValue(attributeInstance, "tab") ?? ""}";
-                }
-                
                 result.Add(new OdinGroupInfo(group, member, attributeInstance));
             }
         }
@@ -42,6 +33,24 @@ public class OdinAttributeUtil
         return result;
     }
 
+    public static string? GetGroupPath(IAttributeInstance attributeInstance)
+    {
+        if (!OdinKnownAttributes.LayoutAttributes.TryGetValue(attributeInstance.GetClrName(), out var parameterName))
+            return null;
+                
+        var group = GetAttributeValue(attributeInstance, parameterName);
+
+        if (attributeInstance.GetClrName().Equals(OdinKnownAttributes.TabGroupAttribute))
+        {
+            if (group == null)
+                group = "_DefaultTabGroup";
+
+            group = $"{group}/{GetAttributeValue(attributeInstance, "tab") ?? ""}";
+        }
+
+        return group;
+    }
+    
     public struct OdinGroupInfo
     {
         public string GroupPath { get; }

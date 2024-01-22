@@ -217,8 +217,19 @@
         <Title resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings" />
         <Description resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings" />
       </Tag>
-      
-      
+
+      <Tag externalName="OdinUnknownGroupingPathWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="Odin_UnknownGroupingPathTitle" resourceType="Strings" />
+        <Description resourceName="Odin_UnknownGroupingPathDescription" resourceType="Strings" />
+      </Tag>
+      <Tag externalName="OdinMemberPresentInMultipleGroupsWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="Odin_MemberPresentInMultipleGroupsTitle" resourceType="Strings" />
+        <Description resourceName="Odin_MemberPresentInMultipleGroupsDescription" resourceType="Strings" />
+      </Tag>
+      <Tag externalName="OdinMemberWrongGroupingAttributeWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="Odin_MemberWrongGroupingAttributeTitle" resourceType="Strings" />
+        <Description resourceName="Odin_MemberWrongGroupingAttributeDescription" resourceType="Strings" />
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -664,5 +675,32 @@
     <Range>FieldDeclaration.TypeUsage.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
- 
+
+  <Warning name="OdinUnknownGroupingPath" configurableSeverity="Odin.OdinUnknownGroupingPath">
+    <Parameter type="DocumentRange" name="range" />
+    <Parameter type="string" name="groupPath" />
+    <Message resourceName="Odin_UnknownGroupingPathMessage" resourceType="Strings">
+      <Argument>groupPath</Argument>
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="OdinMemberPresentInMultipleGroups" configurableSeverity="Odin.OdinMemberPresentInMultipleGroups">
+    <Parameter type="DocumentRange" name="range" />
+    <Message resourceName="Odin_MemberPresentInMultipleGroupsMessage" resourceType="Strings" />
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="OdinMemberWrongGroupingAttribute" configurableSeverity="Odin.OdinMemberWrongGroupingAttribute">
+    <Parameter type="DocumentRange" name="range" />
+    <Parameter type="string" name="groupPath" />
+    <Message resourceName="Odin_MemberWrongGroupingAttributeMessage" resourceType="Strings">
+      <Argument>groupPath</Argument>
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+  
 </Errors>

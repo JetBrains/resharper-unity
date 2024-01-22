@@ -1636,4 +1636,31 @@ a plugin to be installed to a project.</value>
     <data name="UnityFixFloatingPointComparison_Text" xml:space="preserve">
         <value>Fix comparison with Mathf.Approximately</value>
     </data>
+    <data name="Odin_UnknownGroupingPathMessage" xml:space="preserve">
+        <value>Group path '{0}' is not defined</value>
+    </data>
+    <data name="Odin_UnknownGroupingPathTitle" xml:space="preserve">
+        <value>Group path is not defined</value>
+    </data>
+    <data name="Odin_UnknownGroupingPathDescription" xml:space="preserve">
+        <value>Using of undefined group will lead to runtime error during Odin's layout. </value>
+    </data>
+    <data name="Odin_MemberPresentInMultipleGroupsTitle" xml:space="preserve">
+        <value>Member is presented in multiple groups</value>
+    </data>
+    <data name="Odin_MemberPresentInMultipleGroupsMessage" xml:space="preserve">
+        <value>Member is presented in multiple groups</value>
+    </data>
+    <data name="Odin_MemberPresentInMultipleGroupsDescription" xml:space="preserve">
+        <value>Member is presented in multiple groups. It would be added to several UI group simultaneously</value>
+    </data>
+    <data name="Odin_MemberWrongGroupingAttributeMessage" xml:space="preserve">
+        <value>Different type of group attributes should not share the same path. Expected '{0}' attribute</value>
+    </data>
+    <data name="Odin_MemberWrongGroupingAttributeTitle" xml:space="preserve">
+        <value>Incorrect Odin's group attribute type</value>
+    </data>
+    <data name="Odin_MemberWrongGroupingAttributeDescription" xml:space="preserve">
+        <value>Different type of group attributes should not share the same path</value>
+    </data>
 </root>

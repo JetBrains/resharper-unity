@@ -580,5 +580,14 @@
     public static string EvaluatesParentTypeName_Text => ResourceManager.GetString("EvaluatesParentTypeName_Text");
     public static string EvaluatesBakerParentTypeName_Text => ResourceManager.GetString("EvaluatesBakerParentTypeName_Text");
     public static string UnityFixFloatingPointComparison_Text => ResourceManager.GetString("UnityFixFloatingPointComparison_Text");
+    public static string Odin_UnknownGroupingPathMessage => ResourceManager.GetString("Odin_UnknownGroupingPathMessage");
+    public static string Odin_UnknownGroupingPathTitle => ResourceManager.GetString("Odin_UnknownGroupingPathTitle");
+    public static string Odin_UnknownGroupingPathDescription => ResourceManager.GetString("Odin_UnknownGroupingPathDescription");
+    public static string Odin_MemberPresentInMultipleGroupsTitle => ResourceManager.GetString("Odin_MemberPresentInMultipleGroupsTitle");
+    public static string Odin_MemberPresentInMultipleGroupsMessage => ResourceManager.GetString("Odin_MemberPresentInMultipleGroupsMessage");
+    public static string Odin_MemberPresentInMultipleGroupsDescription => ResourceManager.GetString("Odin_MemberPresentInMultipleGroupsDescription");
+    public static string Odin_MemberWrongGroupingAttributeMessage => ResourceManager.GetString("Odin_MemberWrongGroupingAttributeMessage");
+    public static string Odin_MemberWrongGroupingAttributeTitle => ResourceManager.GetString("Odin_MemberWrongGroupingAttributeTitle");
+    public static string Odin_MemberWrongGroupingAttributeDescription => ResourceManager.GetString("Odin_MemberWrongGroupingAttributeDescription");
   }
 }
