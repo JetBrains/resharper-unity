@@ -5,6 +5,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Errors;
+using JetBrains.ReSharper.Feature.Services.BulbActions;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
@@ -57,7 +58,7 @@ public class UnityFixFloatingPointComparingQuickFix : FixFloatingPointComparingF
     }
 
 
-    protected override Action<ITextControl> GenerateComparisonCode(ISolution solution, CSharpElementFactory factory,
+    protected override IBulbActionCommand GenerateComparisonCode(ISolution solution, CSharpElementFactory factory,
         bool isEqualityCheck)
     {
         var symbolCache = solution.GetPsiServices().Symbols;
