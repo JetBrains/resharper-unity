@@ -694,10 +694,11 @@
   </Warning>
 
   <Warning name="OdinMemberWrongGroupingAttribute" configurableSeverity="Odin.OdinMemberWrongGroupingAttribute">
+    <Parameter type="IAttribute" name="attribute" />
     <Parameter type="DocumentRange" name="range" />
-    <Parameter type="string" name="groupPath" />
+    <Parameter type="string" name="expectShortName" />
     <Message resourceName="Odin_MemberWrongGroupingAttributeMessage" resourceType="Strings">
-      <Argument>groupPath</Argument>
+      <Argument>expectShortName</Argument>
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />

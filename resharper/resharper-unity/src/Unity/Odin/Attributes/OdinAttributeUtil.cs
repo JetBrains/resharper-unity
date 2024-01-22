@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
 
@@ -22,46 +21,44 @@ public class OdinAttributeUtil
         {
             foreach (var attributeInstance in member.GetAttributeInstances(true))
             {
-                var group = GetGroupPath(attributeInstance);
-                if (group == null)
+                if (!OdinKnownAttributes.LayoutAttributes.TryGetValue(attributeInstance.GetClrName(), out var parameterName))
                     continue;
 
-                result.Add(new OdinGroupInfo(group, member, attributeInstance));
+                var basePath = GetBaseGroupPath(attributeInstance);
+                if (basePath == null)
+                    continue;
+                
+                var majorPath = GetMajorGroupPath(attributeInstance);
+                if (majorPath != null)
+                {
+                    result.Add(new OdinGroupInfo(majorPath, member, attributeInstance, true));
+                    result.Add(new OdinGroupInfo(basePath, member, attributeInstance, false));
+
+                }
+                else
+                {
+                    result.Add(new OdinGroupInfo(basePath, member, attributeInstance, true));
+                }
             }
         }
 
         return result;
     }
 
-    public static string? GetGroupPath(IAttributeInstance attributeInstance)
-    {
-        if (!OdinKnownAttributes.LayoutAttributes.TryGetValue(attributeInstance.GetClrName(), out var parameterName))
-            return null;
-                
-        var group = GetAttributeValue(attributeInstance, parameterName);
-
-        if (attributeInstance.GetClrName().Equals(OdinKnownAttributes.TabGroupAttribute))
-        {
-            if (group == null)
-                group = "_DefaultTabGroup";
-
-            group = $"{group}/{GetAttributeValue(attributeInstance, "tab") ?? ""}";
-        }
-
-        return group;
-    }
-    
     public struct OdinGroupInfo
     {
         public string GroupPath { get; }
         public ITypeMember Member { get; }
         public IAttributeInstance AttributeInstance { get; }
+        
+        public bool IsMajorGroup { get; }
 
-        public OdinGroupInfo(string groupPath, ITypeMember member, IAttributeInstance attributeInstance)
+        public OdinGroupInfo(string groupPath, ITypeMember member, IAttributeInstance attributeInstance, bool isMajorGroup)
         {
             GroupPath = groupPath;
             Member = member;
             AttributeInstance = attributeInstance;
+            IsMajorGroup = isMajorGroup;
         }
     }
     
@@ -96,5 +93,33 @@ public class OdinAttributeUtil
         }
 
         return null;
+    }
+
+    public static string? GetBaseGroupPath(IAttributeInstance attributeInstance)
+    {
+        if (!OdinKnownAttributes.LayoutAttributes.TryGetValue(attributeInstance.GetClrName(), out var parameterName))
+            return null;
+        
+        var result = GetAttributeValue(attributeInstance, parameterName);
+        if (result == null && attributeInstance.GetClrName().Equals(OdinKnownAttributes.TabGroupAttribute))
+        {
+            return "_DefaultTabGroup";
+        }
+
+        return result;
+    }
+
+    public static string? GetMajorGroupPath(IAttributeInstance attributeInstance)
+    {
+        var basePath = GetBaseGroupPath(attributeInstance);
+        if (basePath == null)
+            return null;
+        
+        if (attributeInstance.GetClrName().Equals(OdinKnownAttributes.TabGroupAttribute))
+        {
+            return $"{basePath}/{GetAttributeValue(attributeInstance, "tab") ?? ""}";
+        }
+
+        return basePath;
     }
 }

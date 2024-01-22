@@ -12,7 +12,6 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Resolve.Managed;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
@@ -50,16 +49,13 @@ public class OdinGroupingAttributesAnalyzer : UnityElementProblemAnalyzer<IClass
             return;
 
         var existingGroup = new Dictionary<string, IClrTypeName>();
-        var memberToGroup = new Dictionary<ITypeMember, string>();
         var trie = new QualifiedNamesTrie<string>(false, '/');
         
         var grouping = OdinAttributeUtil.CollectGroupInfo(classType);
 
-        var membersWithSeveralGroups = new LocalHashSet<ITypeMember>();
         var membersWithDefinedGroupWithDifferentAttribute = new LocalHashSet<ITypeMember>();
         foreach (var info in grouping)
         {
-            
             trie.Add(info.GroupPath, info.GroupPath);
 
             var clrName = info.AttributeInstance.GetClrName();
@@ -74,39 +70,35 @@ public class OdinGroupingAttributesAnalyzer : UnityElementProblemAnalyzer<IClass
             {
                 existingGroup[info.GroupPath] = clrName;
             }
-
-            if (memberToGroup.TryGetValue(info.Member, out var groupName))
-            {
-                if (!groupName.Equals(info.GroupPath))
-                {
-                    membersWithSeveralGroups.Add(info.Member);
-                }
-            }
-            else
-            {
-                memberToGroup[info.Member] = info.GroupPath;
-            }
         }
 
         foreach (var member in element.ClassMemberDeclarations)
         {
-            var groupPath = memberToGroup.GetValueSafe(member.DeclaredElement);
-            if (groupPath == null)
-                continue;
+            var declaredElement = member.DeclaredElement;
 
-            var sections = groupPath.Split('/');
-            var currentSection = new StringBuilder(sections.Length);
-            foreach (var section in sections)
+            var localList = new LocalList<string>();
+
+            foreach (var memberAttribute in member.Attributes)
             {
-                currentSection.Append(section);
-                var sectionToTest = currentSection.ToString();
-                if (trie.Find(sectionToTest) == null)
+                var memberAttributeInstance = memberAttribute.GetAttributeInstance();
+                if (!OdinKnownAttributes.LayoutAttributes.TryGetValue(memberAttributeInstance.GetClrName(), out var parameterName))
+                    continue;
+                
+                var groupPath = OdinAttributeUtil.GetMajorGroupPath(memberAttributeInstance);
+                if (groupPath == null)
+                    continue;
+
+                localList.Add(groupPath);
+                
+                var sections = groupPath.Split('/');
+                var currentSection = new StringBuilder(sections.Length);
+                foreach (var section in sections)
                 {
-                    var attribute = GetAttributeByGroupingPath(member, groupPath).FirstOrDefault();
-                    if (attribute != null)
+                    currentSection.Append(section);
+                    var sectionToTest = currentSection.ToString();
+                    if (trie.Find(sectionToTest) == null)
                     {
-                        var parameterName = OdinKnownAttributes.LayoutAttributes[attribute.GetAttributeInstance().GetClrName()];
-                        var argument = attribute.Arguments.FirstOrDefault(t => parameterName.Equals(t.MatchingParameter?.Element.ShortName));
+                        var argument = memberAttribute.Arguments.FirstOrDefault(t => parameterName.Equals(t.MatchingParameter?.Element.ShortName));
 
                         if (argument != null)
                         {
@@ -120,54 +112,48 @@ public class OdinGroupingAttributesAnalyzer : UnityElementProblemAnalyzer<IClass
                                 consumer.AddHighlighting(new OdinUnknownGroupingPathWarning(highlightingOffset, sectionToTest));
                             }
                         }
+                        break;
                     }
-                    break;
+                    currentSection.Append('/');
                 }
-                currentSection.Append('/');
-            }
-         
-
-            var declaredElement = member.DeclaredElement;
-            if (membersWithSeveralGroups.Contains(declaredElement))
-            {
-                consumer.AddHighlighting(new OdinMemberPresentInMultipleGroupsWarning(member.GetNameDocumentRange()));
-            }
-
-            if (membersWithDefinedGroupWithDifferentAttribute.Contains(declaredElement))
-            {
-                var expectedAttributeName = existingGroup[groupPath];
                 
-                var attribute = GetAttributeByGroupingPath(member, groupPath).FirstOrDefault(t => !t.GetAttributeInstance().GetClrName().Equals(expectedAttributeName));
-                if (attribute != null)
+                if (membersWithDefinedGroupWithDifferentAttribute.Contains(declaredElement))
                 {
-                    consumer.AddHighlighting(new OdinMemberWrongGroupingAttributeWarning(attribute.Name.GetDocumentRange(), expectedAttributeName.ShortName.RemoveEnd("Attribute")));
+                    var expectedAttributeName = existingGroup[groupPath];
+                    consumer.AddHighlighting(new OdinMemberWrongGroupingAttributeWarning(memberAttribute, memberAttribute.Name.GetDocumentRange(), expectedAttributeName.ShortName.RemoveEnd("Attribute")));
+                }
+            }
+
+            if (localList.Count > 0)
+            {
+                var groupsToVerify = localList.ReadOnlyList().OrderBy().ToList();
+                for (int i = 0; i < groupsToVerify.Count - 1; i++)
+                {
+                    if (!groupsToVerify[i + 1].StartsWith(groupsToVerify[i]))
+                    {
+                        // Show error in case:
+                        // [BoxGroup("A/B")]
+                        // [BoxGroup("A/C")]
+                        // int x;
+                        // Do not show error in case:
+                        // [BoxGroup("A")]
+                        // [BoxGroup("A/B")]
+                        // [BoxGroup("A/B/C")]
+                        // int x;
+                        consumer.AddHighlighting(new OdinMemberPresentInMultipleGroupsWarning(member.GetNameDocumentRange()));
+                        break;
+                    }
                 }
             }
         }
-    }
-
-    private IEnumerable<IAttribute> GetAttributeByGroupingPath(IClassMemberDeclaration classMemberDeclaration, string groupPath)
-    {
-        var result = new List<IAttribute>();
-        foreach (var attribute in classMemberDeclaration.Attributes)
-        {
-            var path = OdinAttributeUtil.GetGroupPath(attribute.GetAttributeInstance());
-            if (groupPath.Equals(path))
-                result.Add(attribute);
-        }
-
-        return result;
     }
 
     private bool HasOdinAttribute(IClassMemberDeclaration member)
     {
         foreach (var attribute in member.Attributes)
         {
-            var type = attribute.TypeReference?.Resolve().DeclaredElement as ITypeElement;
-            if (type == null)
-                continue;
-            
-            if (OdinKnownAttributes.LayoutAttributes.TryGetValue(type.GetClrName(), out _))
+            var type = attribute.GetAttributeInstance().GetClrName();
+            if (OdinKnownAttributes.LayoutAttributes.TryGetValue(type, out _))
                 return true;
         }
         return false;

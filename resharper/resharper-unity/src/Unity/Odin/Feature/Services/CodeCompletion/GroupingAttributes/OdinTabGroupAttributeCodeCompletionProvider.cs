@@ -82,7 +82,7 @@ public class OdinTabGroupAttributeCodeCompletionProvider  : CSharpItemsProviderB
             return false;
         
         var groups = OdinAttributeUtil.CollectGroupInfo(classLikeDeclaredElement).Where(t =>
-            Equals(t.AttributeInstance.GetClrName(), OdinKnownAttributes.TabGroupAttribute)).ToList();
+            Equals(t.AttributeInstance.GetClrName(), OdinKnownAttributes.TabGroupAttribute) && t.IsMajorGroup).ToList();
         
         var currentMembers = CSharpTypeMemberDeclarationNavigator.GetByAttribute(attribute).Select(t => t.DeclaredElement).ToHashSet();
         if (currentMembers.Count == 0)

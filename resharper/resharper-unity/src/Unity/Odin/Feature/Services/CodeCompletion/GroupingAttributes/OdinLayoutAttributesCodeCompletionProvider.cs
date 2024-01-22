@@ -86,7 +86,7 @@ public class OdinLayoutAttributesCodeCompletionProvider  : CSharpItemsProviderBa
             return false;
 
         var currentMembers = CSharpTypeMemberDeclarationNavigator.GetByAttribute(attribute).Select(t => t.DeclaredElement).ToHashSet();
-        var groups = OdinAttributeUtil.CollectGroupInfo(classLikeDeclaredElement);
+        var groups = OdinAttributeUtil.CollectGroupInfo(classLikeDeclaredElement).Where(t => t.IsMajorGroup).ToList();
 
         var resultGroups = new HashSet<string>(groups.Count);
         foreach (var group in groups)

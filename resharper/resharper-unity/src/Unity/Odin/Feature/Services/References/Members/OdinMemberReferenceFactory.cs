@@ -55,10 +55,13 @@ public class OdinMemberReferenceFactory : IReferenceFactory
 
         if (stringValue.Length == 0 || stringValue[0] != '@')
         {
-            if (OdinKnownAttributes.AttributesWithMemberCompletion.Contains(clrName))
+            if (OdinKnownAttributes.AttributesWithMemberCompletion.TryGetValue(clrName, out var possibleNames))
             {
-                references.Add(new OdinRegularMemberReference(attribute.GetContainingTypeElement(), expression,
+                if (possibleNames.Contains(argument.MatchingParameter?.Element.ShortName))
+                {
+                    references.Add(new OdinRegularMemberReference(attribute.GetContainingTypeElement(), expression,
                     stringValue, 1, 1 + stringValue.Length));
+                }
             }
         }
 

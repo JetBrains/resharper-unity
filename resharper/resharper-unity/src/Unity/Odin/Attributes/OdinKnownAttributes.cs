@@ -63,24 +63,24 @@ public class OdinKnownAttributes
     public static readonly IClrTypeName OnCollectionChangedAttribute = new ClrTypeName("Sirenix.OdinInspector.OnCollectionChangedAttribute");
 
     
-    public static readonly HashSet<IClrTypeName> AttributesWithMemberCompletion = new()
+    public static readonly Dictionary<IClrTypeName, string[]> AttributesWithMemberCompletion = new()
     {
-        CustomValueDrawerAttribute,
-        TypeFilterAttribute,
-        ValidateInputAttribute,
-        ValueDropdownAttribute,
-        InlineButtonAttribute,
-        OnInspectorGUIAttribute,
-        OnValueChangedAttribute,
+        {CustomValueDrawerAttribute, new [] {"action"} },
+        {TypeFilterAttribute, new [] {"filterGetter"} },
+        {ValidateInputAttribute, new [] {"condition"} },
+        {ValueDropdownAttribute, new [] {"valuesGetter"} },
+        {InlineButtonAttribute, new [] {"action"} },
+        {OnInspectorGUIAttribute, new [] {"action"} },
+        {OnValueChangedAttribute, new [] {"action"} },
         
-        DisableIfAttribute,
-        EnableIfAttribute,
-        HideIfAttribute,
-        ShowIfAttribute,
+        {DisableIfAttribute, new [] {"condition"} },
+        {EnableIfAttribute, new [] {"condition"} },
+        {HideIfAttribute, new [] {"condition"} },
+        {ShowIfAttribute, new [] {"condition"} },
         
-        CustomContextMenuAttribute,
+        {CustomContextMenuAttribute, new [] {"action"} },
         
-        OnCollectionChangedAttribute,
+        {OnCollectionChangedAttribute, new [] {"before", "after"} },
     };
     
     

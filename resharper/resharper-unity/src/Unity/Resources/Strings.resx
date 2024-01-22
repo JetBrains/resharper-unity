@@ -1663,4 +1663,7 @@ a plugin to be installed to a project.</value>
     <data name="Odin_MemberWrongGroupingAttributeDescription" xml:space="preserve">
         <value>Different type of group attributes should not share the same path</value>
     </data>
+    <data name="OdinReplaceAttributeQuickFix" xml:space="preserve">
+        <value>Change to '{0}' attribute</value>
+    </data>
 </root>
