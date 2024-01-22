@@ -18,7 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                 {
                     case IMethod method when unityApi.IsEventFunction(method):
                         return "event function";
-                    case IField field when unityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField:
+                    case IField field when unityApi.IsSerialisedField(field).HasFlag(SerializedFieldStatus.OdinSerializedField):
+                        return "odin serialised field";
+                    case IField field when unityApi.IsSerialisedField(field).HasFlag(SerializedFieldStatus.SerializedField):
                         return "serialised field";
                 }
             }

@@ -77,13 +77,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.SerializationAt
             foreach (var declaration in AttributesOwnerDeclarationNavigator.GetByAttribute(attribute))
             {
                 if (declaration.DeclaredElement is IField field
-                    && myUnityApi.IsSerialisedField(field, false) == SerializedFieldStatus.Unknown //if we don't have info on the local state
-                    && myUnityApi.IsSerialisedField(field) == SerializedFieldStatus.NonSerializedField
+                    && myUnityApi.IsSerialisedField(field, false).HasFlag(SerializedFieldStatus.Unknown) //if we don't have info on the local state
+                    && myUnityApi.IsSerialisedField(field).HasFlag(SerializedFieldStatus.NonSerializedField)
 
                     || (declaration.DeclaredElement is IProperty property
                         && attribute.Target == AttributeTarget.Field
-                        && myUnityApi.IsSerialisedAutoProperty(property, false) == SerializedFieldStatus.Unknown
-                        && myUnityApi.IsSerialisedAutoProperty(property, true) == SerializedFieldStatus.NonSerializedField)
+                        && myUnityApi.IsSerialisedAutoProperty(property, false).HasFlag(SerializedFieldStatus.Unknown)
+                        && myUnityApi.IsSerialisedAutoProperty(property, true).HasFlag(SerializedFieldStatus.NonSerializedField))
                     )
                 {
                     //TODO - only for previously unknown types

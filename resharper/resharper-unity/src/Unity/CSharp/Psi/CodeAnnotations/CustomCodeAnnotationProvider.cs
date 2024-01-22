@@ -157,7 +157,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
             if (!(element is IField field) || !element.IsFromUnityProject()) return false;
 
-            if (myUnityApi.IsSerialisedField(field) == SerializedFieldStatus.NonSerializedField)
+            if (myUnityApi.IsSerialisedField(field).HasFlag(SerializedFieldStatus.NonSerializedField))
                 return false;
 
             // Integer value analysis only works on integers, but it will make use of annotations applied to values that

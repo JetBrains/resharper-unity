@@ -590,5 +590,6 @@
     public static string Odin_MemberWrongGroupingAttributeTitle => ResourceManager.GetString("Odin_MemberWrongGroupingAttributeTitle");
     public static string Odin_MemberWrongGroupingAttributeDescription => ResourceManager.GetString("Odin_MemberWrongGroupingAttributeDescription");
     public static string OdinReplaceAttributeQuickFix => ResourceManager.GetString("OdinReplaceAttributeQuickFix");
+    public static string Odin_FieldDetector_AddDeclarationHighlighting_Tooltip => ResourceManager.GetString("Odin_FieldDetector_AddDeclarationHighlighting_Tooltip");
   }
 }

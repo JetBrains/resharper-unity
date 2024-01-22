@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
     {
         private readonly ISolution mySolution;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
-        private readonly FeaturesStartupMonitor myMonitor;
+        private readonly IFeaturesStartupMonitor myMonitor;
         private readonly ILogger myLogger;
         private readonly IShellLocks myShellLocks;
 
@@ -65,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
         private readonly EventId3<Status, bool, bool> myEnterPlayModeOptionsEvent;
         private readonly UnityExternalFilesPsiModule myUnityModule;
 
-        public UnityProjectInformationUsageCollector(ISolution solution, UnitySolutionTracker unitySolutionTracker, FeaturesStartupMonitor monitor, FeatureUsageLogger featureUsageLogger, ILogger logger, IShellLocks shellLocks)
+        public UnityProjectInformationUsageCollector(ISolution solution, UnitySolutionTracker unitySolutionTracker, IFeaturesStartupMonitor monitor, FeatureUsageLogger featureUsageLogger, ILogger logger, IShellLocks shellLocks)
         {
             mySolution = solution;
             myUnitySolutionTracker = unitySolutionTracker;

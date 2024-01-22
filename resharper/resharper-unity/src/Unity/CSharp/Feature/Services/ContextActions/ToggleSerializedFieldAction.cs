@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return EmptyList<IntentionAction>.Enumerable;
 
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
-            var isSerialized = unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement) == SerializedFieldStatus.SerializedField;
+            var isSerialized = unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement).HasFlag(SerializedFieldStatus.UnitySerializedField);
 
             if (multipleFieldDeclaration.Declarators.Count == 1)
             {
@@ -83,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var unityType = unityApi.IsFieldTypeSerializable(fieldDeclaration.DeclaredElement,
                 hasSerializeReference: false, useSwea: true);
             
-            return unityType == SerializedFieldStatus.SerializedField;
+            return unityType.HasFlag(SerializedFieldStatus.UnitySerializedField);
         }
 
         private class ToggleSerializedFieldAll : BulbActionBase

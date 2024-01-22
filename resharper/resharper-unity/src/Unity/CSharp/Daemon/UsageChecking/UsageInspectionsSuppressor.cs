@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                                      @struct.IsDotsImplicitlyUsedType() :
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
-                case ITypeElement typeElement when unityApi.IsSerializableTypeDeclaration(typeElement) == SerializedFieldStatus.SerializedField:
+                case ITypeElement typeElement when unityApi.IsSerializableTypeDeclaration(typeElement).HasFlag(SerializedFieldStatus.SerializedField):
                     // TODO: We should only really mark it as in use if it's actually used somewhere
                     // That is, it should be used as a field in a Unity type, or another serializable type
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
@@ -102,14 +102,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     }
                     break;
 
-                case IField field when unityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField:
+                case IField field when unityApi.IsSerialisedField(field).HasFlag(SerializedFieldStatus.SerializedField):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
 
                 case IProperty property when IsEventHandler(unityApi, property.Setter) ||
                                              IsImplicitlyUsedInterfaceProperty(property) ||
                                              IsAnimationEvent(solution, property) ||
-                                             unityApi.IsSerialisedAutoProperty(property, useSwea:true) == SerializedFieldStatus.SerializedField:
+                                             unityApi.IsSerialisedAutoProperty(property, useSwea:true).HasFlag(SerializedFieldStatus.SerializedField):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
 

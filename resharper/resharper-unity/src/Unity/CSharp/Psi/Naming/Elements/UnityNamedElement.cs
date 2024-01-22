@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Naming.Elements;
 using JetBrains.ReSharper.Psi.Naming.Settings;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
 {
@@ -52,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
 
             var solution = declaredElement.GetSolution();
             var unityApi = solution.GetComponent<UnityApi>();
-            return unityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField;
+            return unityApi.IsSerialisedField(field).Has(SerializedFieldStatus.UnitySerializedField);
         }
     }
 }

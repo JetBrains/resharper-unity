@@ -37,29 +37,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
             var declaredElement = cSharpDeclaration.DeclaredElement;
 
-            var isSerializedField = false;
+            SerializedFieldStatus isSerializedField = SerializedFieldStatus.Unknown;
             ITypeElement containingType = null;
 
             switch (declaredElement)
             {
-                case IField field when
-                    myUnityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField:
-                    isSerializedField = true;
+                case IField field:
+                    isSerializedField = myUnityApi.IsSerialisedField(field);
                     containingType = field.ContainingType;
                     break;
-                case IProperty property when myUnityApi.IsSerialisedAutoProperty(property, useSwea: true) == SerializedFieldStatus.SerializedField:
-                    isSerializedField = true;
+                case IProperty property:
+                    isSerializedField = myUnityApi.IsSerialisedAutoProperty(property, useSwea: true);
                     containingType = property.ContainingType;
                     break;
             }
 
-            if (!isSerializedField) 
+            if (isSerializedField.HasFlag(SerializedFieldStatus.Unknown) || isSerializedField.HasFlag(SerializedFieldStatus.NonSerializedField)) 
                 return false;
             
             var displayText = Strings.FieldDetector_AddDeclarationHighlighting_Serializable;
             
             if (containingType.DerivesFromMonoBehaviour() || containingType.DerivesFromScriptableObject())
             {
+                if (isSerializedField.HasFlag(SerializedFieldStatus.OdinSerializedField))
+                {
+                    AddOdinHighlighting(consumer, cSharpDeclaration, displayText, Strings.Odin_FieldDetector_AddDeclarationHighlighting_Tooltip, context);
+                    return true;
+                }
+                
                 AddMonoBehaviourHighlighting(consumer, cSharpDeclaration, displayText, Strings.FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector, context);
                 return true;
             }
@@ -69,10 +74,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
         }
 
+        protected virtual void AddOdinHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string displayText, string tooltip, IReadOnlyCallGraphContext context)
+        {
+            consumer.AddImplicitConfigurableHighlighting(element);
+            
+            if (!IconProviderUtil.ShouldShowGutterMarkIcon(SettingsStore.BoundSettingsStore))
+                return;
+            
+            // TODO odin gutter mark info
+            consumer.AddHighlighting(new UnityOdinGutterMarkInfo(element, tooltip));
+        }
+
         protected virtual void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
             IReadOnlyCallGraphContext context)
         {
-            AddHighlighting(consumer, element, text, tooltip, context);
+            consumer.AddImplicitConfigurableHighlighting(element);
+            
+            if (!IconProviderUtil.ShouldShowGutterMarkIcon(SettingsStore.BoundSettingsStore))
+                return;
+            
+            consumer.AddHighlighting(new UnityGutterMarkInfo(element, tooltip));
         }
 
         protected virtual void AddSerializableHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,

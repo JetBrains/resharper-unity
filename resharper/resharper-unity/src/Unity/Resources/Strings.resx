@@ -1666,4 +1666,7 @@ a plugin to be installed to a project.</value>
     <data name="OdinReplaceAttributeQuickFix" xml:space="preserve">
         <value>Change to '{0}' attribute</value>
     </data>
+    <data name="Odin_FieldDetector_AddDeclarationHighlighting_Tooltip" xml:space="preserve">
+        <value>This field is serialized by Odin</value>
+    </data>
 </root>

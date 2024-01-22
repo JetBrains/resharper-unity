@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
 
             if (selectedFieldDeclaration == null || multipleFieldDeclaration == null ||
-                unityApi.IsSerialisedField(selectedFieldDeclaration.DeclaredElement) == SerializedFieldStatus.NonSerializedField)
+                unityApi.IsSerialisedField(selectedFieldDeclaration.DeclaredElement).HasFlag(SerializedFieldStatus.NonSerializedField))
             {
                 return EmptyList<IntentionAction>.Enumerable;
             }
@@ -101,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
             var fieldDeclaration = myDataProvider.GetSelectedElement<IFieldDeclaration>();
-            if (fieldDeclaration == null || unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement) == SerializedFieldStatus.NonSerializedField)
+            if (fieldDeclaration == null || unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement).HasFlag(SerializedFieldStatus.NonSerializedField))
                 return false;
 
             var existingAttribute = fieldDeclaration.GetAttribute(AttributeTypeName);

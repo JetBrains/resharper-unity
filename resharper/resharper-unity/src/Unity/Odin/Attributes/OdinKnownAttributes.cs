@@ -4,7 +4,7 @@ using JetBrains.Metadata.Reader.Impl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
 
-public class OdinKnownAttributes
+public static class OdinKnownAttributes
 {
     public static readonly string OdinNamespace = "Sirenix.OdinInspector";
     
@@ -61,6 +61,9 @@ public class OdinKnownAttributes
     
     // first & second
     public static readonly IClrTypeName OnCollectionChangedAttribute = new ClrTypeName("Sirenix.OdinInspector.OnCollectionChangedAttribute");
+
+    // serialization
+    public static readonly IClrTypeName OdinSerializeAttribute = new ClrTypeName("Sirenix.Serialization.OdinSerializeAttribute");
 
     
     public static readonly Dictionary<IClrTypeName, string[]> AttributesWithMemberCompletion = new()

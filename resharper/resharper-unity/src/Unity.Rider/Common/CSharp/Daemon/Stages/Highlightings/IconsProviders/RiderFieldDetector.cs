@@ -1,4 +1,5 @@
 using JetBrains.Application.Settings;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.DeferredCaches;
@@ -17,6 +18,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Platform.Icons;
+using JetBrains.Util;
 using Strings = JetBrains.ReSharper.Plugins.Unity.Rider.Resources.Strings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Highlightings.IconsProviders
@@ -50,6 +52,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
             myAssetSerializationMode = assetSerializationMode;
         }
 
+        protected override void AddOdinHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
+            string text,
+            string tooltip, IReadOnlyCallGraphContext context)
+        {
+            if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myFieldUsageProvider.ProviderId,
+                    () => { base.AddOdinHighlighting(consumer, element, text, tooltip, context); }, out var useFallback))
+            {
+                if (!useFallback)
+                {
+                    consumer.AddImplicitConfigurableHighlighting(element);
+                }
+                
+                myFieldUsageProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
+                    tooltip, text, myIconHost.Transform(InsightUnityIcons.InsightOdin.Id), EmptyList<BulbMenuItem>.Instance, 
+                    RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
+            }
+        }
+
+        
         protected override void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
                                                              string text,
                                                              string tooltip, IReadOnlyCallGraphContext context)

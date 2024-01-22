@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
 
             var field = fields[0];
-            if (Api.IsSerialisedField(field.DeclaredElement as IField) == SerializedFieldStatus.NonSerializedField)
+            if (Api.IsSerialisedField(field.DeclaredElement as IField).HasFlag(SerializedFieldStatus.NonSerializedField))
             {
                 consumer.AddHighlighting(new RedundantFormerlySerializedAsAttributeWarning(attribute));
                 return;

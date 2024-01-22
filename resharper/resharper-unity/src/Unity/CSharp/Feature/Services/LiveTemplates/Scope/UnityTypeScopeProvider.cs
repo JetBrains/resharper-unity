@@ -54,8 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                 yield return new MustBeInUnityType();
                 yield return new MustBeInUnitySerializableType();
             }
-            else if (unityApi.IsSerializableTypeDeclaration(typeDeclaration?.DeclaredElement) ==
-                     SerializedFieldStatus.SerializedField)
+            else if (unityApi.IsSerializableTypeDeclaration(typeDeclaration?.DeclaredElement).HasFlag(
+                     SerializedFieldStatus.UnitySerializedField))
                 yield return new MustBeInUnitySerializableType();
         }
     }

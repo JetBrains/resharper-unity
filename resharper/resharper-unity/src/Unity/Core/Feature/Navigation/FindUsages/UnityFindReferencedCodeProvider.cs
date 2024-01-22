@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Navigation.FindUsages
                 if (api != null)
                 {
                     if (declaredElement is IMethod method && api.IsEventFunction(method)
-                        || declaredElement is IField field && api.IsSerialisedField(field) == SerializedFieldStatus.SerializedField
+                        || declaredElement is IField field && api.IsSerialisedField(field).HasFlag(SerializedFieldStatus.SerializedField)
                         || declaredElement is ITypeElement type && api.IsUnityType(type))
                     {
                         return string.Format(Strings.UnityFindUsagesProvider_GetNotFoundMessage_SearchRequestLocalizedTitle_are_only_implicit_, request.Title);

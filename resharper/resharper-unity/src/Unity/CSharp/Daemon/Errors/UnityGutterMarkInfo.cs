@@ -29,4 +29,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors
 
         public string AttributeId => UnityHighlightingAttributeIds.UNITY_PERFORMANCE_CRITICAL_GUTTER_ICON_ATTRIBUTE;
     }
+    
+    public partial class UnityOdinGutterMarkInfo : ICustomAttributeIdHighlighting
+    {
+        public IEnumerable<BulbMenuItem> Actions { get; }
+
+        public UnityOdinGutterMarkInfo(IEnumerable<BulbMenuItem> actions, IDeclaration declaration, string text) : this(declaration, text)
+        {
+            Actions = actions;
+        }
+
+        public string AttributeId => UnityHighlightingAttributeIds.UNITY_ODIN_GUTTER_ICON_ATTRIBUTE;
+    }
 }

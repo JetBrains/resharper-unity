@@ -153,20 +153,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 visitedNodes ??= new HashSet<ElementId>();
 
                 if (info.SerializeReferenceHolders.Count > 0)
-                    return SerializedFieldStatus.SerializedField;
+                    return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField | SerializedFieldStatus.SerializedReferenceSerializedField;
 
                 visitedNodes.Add(elementId);
 
                 foreach (var (id, _) in info.SuperClasses)
                 {
-                    if (IsTypeSerializable(id, useSwea, visitedNodes) == SerializedFieldStatus.SerializedField)
-                        return SerializedFieldStatus.SerializedField;
+                    if (IsTypeSerializable(id, useSwea, visitedNodes).HasFlag(SerializedFieldStatus.SerializedField))
+                        return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField | SerializedFieldStatus.SerializedReferenceSerializedField;
                 }
 
                 foreach (var (id, _) in info.Inheritors)
                 {
-                    if (IsTypeSerializable(id, useSwea, visitedNodes) == SerializedFieldStatus.SerializedField)
-                        return SerializedFieldStatus.SerializedField;
+                    if (IsTypeSerializable(id, useSwea, visitedNodes).HasFlag(SerializedFieldStatus.SerializedField))
+                        return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField | SerializedFieldStatus.SerializedReferenceSerializedField;
                 }
 
                 return SerializedFieldStatus.NonSerializedField;

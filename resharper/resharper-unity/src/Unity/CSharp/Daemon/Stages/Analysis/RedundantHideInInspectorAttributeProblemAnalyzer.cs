@@ -30,10 +30,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 // We must explicitly check the declaration kind, and for properties, the attribute target, as the
                 // attribute can technically be applied to all attribute targets. We have a separate analysis for this.
                 if ((declaration.DeclaredElement is IField field
-                     && Api.IsSerialisedField(field) == SerializedFieldStatus.NonSerializedField)
+                     && Api.IsSerialisedField(field).HasFlag(SerializedFieldStatus.NonSerializedField))
                     || (declaration.DeclaredElement is IProperty property
                         && attribute.Target == AttributeTarget.Field
-                        && Api.IsSerialisedAutoProperty(property, true) == SerializedFieldStatus.NonSerializedField))
+                        && Api.IsSerialisedAutoProperty(property, true).HasFlag(SerializedFieldStatus.NonSerializedField)))
                 {
                     consumer.AddHighlighting(new RedundantHideInInspectorAttributeWarning(attribute));
                     return;

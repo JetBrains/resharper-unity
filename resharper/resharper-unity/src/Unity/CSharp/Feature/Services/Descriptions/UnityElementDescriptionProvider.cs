@@ -114,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
         [CanBeNull]
         private RichTextBlock GetSerialisedFieldDescription(IField field)
         {
-            if (myUnityApi.IsSerialisedField(field) == SerializedFieldStatus.NonSerializedField) return null;
+            if (myUnityApi.IsSerialisedField(field).HasFlag(SerializedFieldStatus.NonSerializedField)) return null;
 
             foreach (var attribute in field.GetAttributeInstances(KnownTypes.TooltipAttribute, AttributesSource.Self))
             {

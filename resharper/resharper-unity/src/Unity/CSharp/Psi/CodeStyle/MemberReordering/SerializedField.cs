@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReorderin
                 foreach (var multipleDeclarationMember in multipleFieldDeclaration.DeclaratorsEnumerable)
                 {
                     if (multipleDeclarationMember is IFieldDeclaration field &&
-                        unityApi.IsSerialisedField(field.DeclaredElement) == SerializedFieldStatus.SerializedField)
+                        unityApi.IsSerialisedField(field.DeclaredElement).HasFlag(SerializedFieldStatus.SerializedField))
                     {
                         return true;
                     }
@@ -28,8 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReorderin
             if (node is IFieldDeclaration fieldDeclaration)
             {
                 var unityApi = node.GetSolution().GetComponent<UnityApi>();
-                return unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement) ==
-                       SerializedFieldStatus.SerializedField;
+                return unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement).HasFlag(SerializedFieldStatus.SerializedField);
             }
 
             return false;

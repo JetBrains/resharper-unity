@@ -154,5 +154,220 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
 			}
 		}
 		#endregion
+        
+        #region InsightOdin
+
+        /// <summary>
+        ///	<para>
+        ///		<para>InsightOdin Themed Icon generated identifiers:</para>
+        ///		<para>— <see cref="InsightOdin"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
+        ///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
+        ///		<para>
+        ///			<code>
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                                 
+        ///</code>
+        ///		</para>
+        ///	</para>
+        ///</summary>
+        ///<remarks>
+        ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
+        ///</remarks>
+        ///<example>
+        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:SalyvuvThemedIconsThemedIcons+InsightOdin}" /&gt;        &lt;!-- XAML --&gt;</code>
+        ///</example>
+        ///<example>
+        ///	<code>[Item(Name="Sample", Icon=typeof(SalyvuvThemedIconsThemedIcons.InsightOdin))]        // C# Type attribute</code>
+        ///</example>
+        ///<example>
+        ///	<code>IconId iconid = SalyvuvThemedIconsThemedIcons.InsightOdin.Id;        // IconId identifier object</code>
+        ///</example>
+        ///<example>
+        ///	<code>themediconmanager.GetIcon&lt;SalyvuvThemedIconsThemedIcons.InsightOdin&gt;()        // Icon image for rendering</code>
+        ///</example>
+        [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
+        public sealed class InsightOdin : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
+        {
+
+            /// <inheritdoc cref="InsightOdin">identifier class</inheritdoc>
+            public static global::JetBrains.UI.Icons.IconId Id =
+                new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(InsightOdin));
+
+            /// <summary>Loads the image for Themed Icon InsightOdin theme aspect Color.</summary>
+            public global::JetBrains.Util.Icons.TiImage Load_Color()
+            {
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(
+                    "<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+                    "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M4.27,9.07L3.2" +
+                    ",9.07L6.02,4.1800000000000006L8.27,8.07L10,8.07L6.67,2.3C6.54,2.07,6.29,1.92,6.0" +
+                    "2,1.92C5.7499999999999991,1.92,5.5,2.06,5.3699999999999992,2.3L1.25,9.44C1.18607" +
+                    "59521198276,9.5546395021991355,1.1525139403759597,9.6837426216860454,1.152513940" +
+                    "3759597,9.815C1.1525139403759597,9.9462573783139536,1.1860759521198276,10.075360" +
+                    "497800864,1.2499999999999998,10.19C1.38,10.42,1.63,10.57,1.9,10.57L3.41,10.57L4." +
+                    "28,9.07ZM4.27,9.07\' fill=\'#9AA7B0\'/><path d=\'M12.02,11.57L10.29,11.57L10.8299999" +
+                    "99999998,12.5L5.18,12.5L7.43,8.61L6.56,7.1099999999999994L3.2299999999999995,12." +
+                    "87C3.0999999999999996,13.1,3.0999999999999996,13.389999999999999,3.2299999999999" +
+                    "995,13.62C3.3599999999999994,13.85,3.6099999999999994,14,3.8799999999999994,14L1" +
+                    "2.129999999999999,14C12.399999999999999,14,12.649999999999999,13.86,12.78,13.62C" +
+                    "12.91,13.379999999999999,12.91,13.1,12.78,12.87L12.03,11.569999999999999ZM12.02," +
+                    "11.57\' fill=\'#9AA7B0\'/><path d=\'M14.75,9.45L10.629999999999999,2.309999999999999" +
+                    "6C10.36,1.8499999999999996,9.6,1.8499999999999996,9.3299999999999983,2.309999999" +
+                    "9999996L8.5799999999999983,3.6099999999999994L9.4499999999999975,5.1099999999999" +
+                    "994L9.9899999999999984,4.18L12.809999999999999,9.07L8.32,9.07L7.45,10.57L14.11,1" +
+                    "0.57C14.379999999999999,10.57,14.629999999999999,10.43,14.76,10.200000000000001C" +
+                    "14.89,9.9700000000000024,14.89,9.6800000000000015,14.76,9.4500000000000011ZM14.7" +
+                    "5,9.45\' fill=\'#9AA7B0\'/></g></svg>");
+            }
+
+            /// <summary>Loads the image for Themed Icon InsightOdin theme aspect Gray.</summary>
+            public global::JetBrains.Util.Icons.TiImage Load_Gray()
+            {
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(
+                    "<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+                    "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M4.27,9.07L3.2" +
+                    ",9.07L6.02,4.1800000000000006L8.27,8.07L10,8.07L6.67,2.3C6.54,2.07,6.29,1.92,6.0" +
+                    "2,1.92C5.7499999999999991,1.92,5.5,2.06,5.3699999999999992,2.3L1.25,9.44C1.18607" +
+                    "59521198276,9.5546395021991355,1.1525139403759597,9.6837426216860454,1.152513940" +
+                    "3759597,9.815C1.1525139403759597,9.9462573783139536,1.1860759521198276,10.075360" +
+                    "497800864,1.2499999999999998,10.19C1.38,10.42,1.63,10.57,1.9,10.57L3.41,10.57L4." +
+                    "28,9.07ZM4.27,9.07\' fill=\'#9AA7B0\'/><path d=\'M12.02,11.57L10.29,11.57L10.8299999" +
+                    "99999998,12.5L5.18,12.5L7.43,8.61L6.56,7.1099999999999994L3.2299999999999995,12." +
+                    "87C3.0999999999999996,13.1,3.0999999999999996,13.389999999999999,3.2299999999999" +
+                    "995,13.62C3.3599999999999994,13.85,3.6099999999999994,14,3.8799999999999994,14L1" +
+                    "2.129999999999999,14C12.399999999999999,14,12.649999999999999,13.86,12.78,13.62C" +
+                    "12.91,13.379999999999999,12.91,13.1,12.78,12.87L12.03,11.569999999999999ZM12.02," +
+                    "11.57\' fill=\'#9AA7B0\'/><path d=\'M14.75,9.45L10.629999999999999,2.309999999999999" +
+                    "6C10.36,1.8499999999999996,9.6,1.8499999999999996,9.3299999999999983,2.309999999" +
+                    "9999996L8.5799999999999983,3.6099999999999994L9.4499999999999975,5.1099999999999" +
+                    "994L9.9899999999999984,4.18L12.809999999999999,9.07L8.32,9.07L7.45,10.57L14.11,1" +
+                    "0.57C14.379999999999999,10.57,14.629999999999999,10.43,14.76,10.200000000000001C" +
+                    "14.89,9.9700000000000024,14.89,9.6800000000000015,14.76,9.4500000000000011ZM14.7" +
+                    "5,9.45\' fill=\'#9AA7B0\'/></g></svg>");
+            }
+
+            /// <summary>Loads the image for Themed Icon InsightOdin theme aspect GrayDark.</summary>
+            public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
+            {
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(
+                    "<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+                    "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M4.27,9.07L3.2" +
+                    ",9.07L6.02,4.1800000000000006L8.27,8.07L10,8.07L6.67,2.3C6.54,2.07,6.29,1.92,6.0" +
+                    "2,1.92C5.7499999999999991,1.92,5.5,2.06,5.3699999999999992,2.3L1.25,9.44C1.18607" +
+                    "59521198276,9.5546395021991355,1.1525139403759597,9.6837426216860454,1.152513940" +
+                    "3759597,9.815C1.1525139403759597,9.9462573783139536,1.1860759521198276,10.075360" +
+                    "497800864,1.2499999999999998,10.19C1.38,10.42,1.63,10.57,1.9,10.57L3.41,10.57L4." +
+                    "28,9.07ZM4.27,9.07\' fill=\'#9AA7B0\'/><path d=\'M12.02,11.57L10.29,11.57L10.8299999" +
+                    "99999998,12.5L5.18,12.5L7.43,8.61L6.56,7.1099999999999994L3.2299999999999995,12." +
+                    "87C3.0999999999999996,13.1,3.0999999999999996,13.389999999999999,3.2299999999999" +
+                    "995,13.62C3.3599999999999994,13.85,3.6099999999999994,14,3.8799999999999994,14L1" +
+                    "2.129999999999999,14C12.399999999999999,14,12.649999999999999,13.86,12.78,13.62C" +
+                    "12.91,13.379999999999999,12.91,13.1,12.78,12.87L12.03,11.569999999999999ZM12.02," +
+                    "11.57\' fill=\'#9AA7B0\'/><path d=\'M14.75,9.45L10.629999999999999,2.309999999999999" +
+                    "6C10.36,1.8499999999999996,9.6,1.8499999999999996,9.3299999999999983,2.309999999" +
+                    "9999996L8.5799999999999983,3.6099999999999994L9.4499999999999975,5.1099999999999" +
+                    "994L9.9899999999999984,4.18L12.809999999999999,9.07L8.32,9.07L7.45,10.57L14.11,1" +
+                    "0.57C14.379999999999999,10.57,14.629999999999999,10.43,14.76,10.200000000000001C" +
+                    "14.89,9.9700000000000024,14.89,9.6800000000000015,14.76,9.4500000000000011ZM14.7" +
+                    "5,9.45\' fill=\'#9AA7B0\'/></g></svg>");
+            }
+
+            /// <summary>Loads the image for Themed Icon InsightOdin theme aspect RiderDark.</summary>
+            public global::JetBrains.Util.Icons.TiImage Load_RiderDark()
+            {
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(
+                    "<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+                    "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M4.27,9.07L3.2" +
+                    ",9.07L6.02,4.1800000000000006L8.27,8.07L10,8.07L6.67,2.3C6.54,2.07,6.29,1.92,6.0" +
+                    "2,1.92C5.7499999999999991,1.92,5.5,2.06,5.3699999999999992,2.3L1.25,9.44C1.18607" +
+                    "59521198276,9.5546395021991355,1.1525139403759597,9.6837426216860454,1.152513940" +
+                    "3759597,9.815C1.1525139403759597,9.9462573783139536,1.1860759521198276,10.075360" +
+                    "497800864,1.2499999999999998,10.19C1.38,10.42,1.63,10.57,1.9,10.57L3.41,10.57L4." +
+                    "28,9.07ZM4.27,9.07\' fill=\'#9AA7B0\'/><path d=\'M12.02,11.57L10.29,11.57L10.8299999" +
+                    "99999998,12.5L5.18,12.5L7.43,8.61L6.56,7.1099999999999994L3.2299999999999995,12." +
+                    "87C3.0999999999999996,13.1,3.0999999999999996,13.389999999999999,3.2299999999999" +
+                    "995,13.62C3.3599999999999994,13.85,3.6099999999999994,14,3.8799999999999994,14L1" +
+                    "2.129999999999999,14C12.399999999999999,14,12.649999999999999,13.86,12.78,13.62C" +
+                    "12.91,13.379999999999999,12.91,13.1,12.78,12.87L12.03,11.569999999999999ZM12.02," +
+                    "11.57\' fill=\'#9AA7B0\'/><path d=\'M14.75,9.45L10.629999999999999,2.309999999999999" +
+                    "6C10.36,1.8499999999999996,9.6,1.8499999999999996,9.3299999999999983,2.309999999" +
+                    "9999996L8.5799999999999983,3.6099999999999994L9.4499999999999975,5.1099999999999" +
+                    "994L9.9899999999999984,4.18L12.809999999999999,9.07L8.32,9.07L7.45,10.57L14.11,1" +
+                    "0.57C14.379999999999999,10.57,14.629999999999999,10.43,14.76,10.200000000000001C" +
+                    "14.89,9.9700000000000024,14.89,9.6800000000000015,14.76,9.4500000000000011ZM14.7" +
+                    "5,9.45\' fill=\'#9AA7B0\'/></g></svg>");
+            }
+
+            /// <summary>Loads the image for Themed Icon InsightOdin theme aspect RiderLight.</summary>
+            public global::JetBrains.Util.Icons.TiImage Load_RiderLight()
+            {
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(
+                    "<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+                    "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M4.27,9.07L3.2" +
+                    ",9.07L6.02,4.1800000000000006L8.27,8.07L10,8.07L6.67,2.3C6.54,2.07,6.29,1.92,6.0" +
+                    "2,1.92C5.7499999999999991,1.92,5.5,2.06,5.3699999999999992,2.3L1.25,9.44C1.18607" +
+                    "59521198276,9.5546395021991355,1.1525139403759597,9.6837426216860454,1.152513940" +
+                    "3759597,9.815C1.1525139403759597,9.9462573783139536,1.1860759521198276,10.075360" +
+                    "497800864,1.2499999999999998,10.19C1.38,10.42,1.63,10.57,1.9,10.57L3.41,10.57L4." +
+                    "28,9.07ZM4.27,9.07\' fill=\'#9AA7B0\'/><path d=\'M12.02,11.57L10.29,11.57L10.8299999" +
+                    "99999998,12.5L5.18,12.5L7.43,8.61L6.56,7.1099999999999994L3.2299999999999995,12." +
+                    "87C3.0999999999999996,13.1,3.0999999999999996,13.389999999999999,3.2299999999999" +
+                    "995,13.62C3.3599999999999994,13.85,3.6099999999999994,14,3.8799999999999994,14L1" +
+                    "2.129999999999999,14C12.399999999999999,14,12.649999999999999,13.86,12.78,13.62C" +
+                    "12.91,13.379999999999999,12.91,13.1,12.78,12.87L12.03,11.569999999999999ZM12.02," +
+                    "11.57\' fill=\'#9AA7B0\'/><path d=\'M14.75,9.45L10.629999999999999,2.309999999999999" +
+                    "6C10.36,1.8499999999999996,9.6,1.8499999999999996,9.3299999999999983,2.309999999" +
+                    "9999996L8.5799999999999983,3.6099999999999994L9.4499999999999975,5.1099999999999" +
+                    "994L9.9899999999999984,4.18L12.809999999999999,9.07L8.32,9.07L7.45,10.57L14.11,1" +
+                    "0.57C14.379999999999999,10.57,14.629999999999999,10.43,14.76,10.200000000000001C" +
+                    "14.89,9.9700000000000024,14.89,9.6800000000000015,14.76,9.4500000000000011ZM14.7" +
+                    "5,9.45\' fill=\'#9AA7B0\'/></g></svg>");
+            }
+
+            /// <summary>Returns the set of theme images for Themed Icon InsightOdin.</summary>
+            public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[]
+                GetThemeImages()
+            {
+                return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[]
+                {
+                    new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage(
+                        "Color",
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(
+                            this.Load_Color)),
+                    new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage(
+                        "Gray",
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(
+                            this.Load_Gray)),
+                    new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage(
+                        "GrayDark",
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(
+                            this.Load_GrayDark)),
+                    new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage(
+                        "RiderDark",
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(
+                            this.Load_RiderDark)),
+                    new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage(
+                        "RiderLight",
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(
+                            this.Load_RiderLight))
+                };
+            }
+        }
+
+        #endregion
+
     }
 }

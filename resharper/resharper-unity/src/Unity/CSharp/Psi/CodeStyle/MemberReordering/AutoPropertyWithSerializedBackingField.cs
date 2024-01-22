@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi.CSharp.Impl.CodeStyle.MemberReordering;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReordering
 {
@@ -15,8 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReorderin
             if (node is not IPropertyDeclaration propertyDeclaration) return false;
 
             var unityApi = node.GetSolution().GetComponent<UnityApi>();
-            return unityApi.IsSerialisedAutoProperty(propertyDeclaration.DeclaredElement, false) ==
-                   SerializedFieldStatus.SerializedField;
+            return unityApi.IsSerialisedAutoProperty(propertyDeclaration.DeclaredElement, false).HasFlag(SerializedFieldStatus.SerializedField);
         }
 
         public int? Compare(INodeConstraint? other) => other == null || other == Unconstrained.Instance ? -1 : null;

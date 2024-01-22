@@ -22,6 +22,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         EffectType = EffectType.GUTTER_MARK,
         GutterMarkType = typeof(UnityHotGutterMark),
         Layer = HighlighterLayer.SYNTAX + 1)]
+    [RegisterHighlighter(UNITY_ODIN_GUTTER_ICON_ATTRIBUTE,
+        EffectType = EffectType.GUTTER_MARK,
+        GutterMarkType = typeof(UnityOdinGutterMark),
+        Layer = HighlighterLayer.SYNTAX + 1)]
     [RegisterHighlighter(UNITY_IMPLICITLY_USED_IDENTIFIER_ATTRIBUTE,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
@@ -36,6 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         // Not text based highlighters, so don't appear in the settings page
         public const string UNITY_GUTTER_ICON_ATTRIBUTE = "Unity Gutter Icon";
         public const string UNITY_PERFORMANCE_CRITICAL_GUTTER_ICON_ATTRIBUTE = "Unity Performance Critical Icon Gutter Icon";
+        public const string UNITY_ODIN_GUTTER_ICON_ATTRIBUTE = "Unity Odin Gutter Icon";
 
         // All attributes should begin with "ReSharper Cg ". See CgHighlighterNamesProvider below
         public const string UNITY_IMPLICITLY_USED_IDENTIFIER_ATTRIBUTE = "ReSharper Unity Implicitly Used Identifier";

@@ -134,7 +134,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
 
     public class OdinUnityTechnologyDescription : IUnityTechnologyDescription
     {
-        public string Id => "Odin";
+        public static readonly string OdinId = "Odin";
+        public string Id => OdinId;
 
         public IEnumerable<string> GetPossiblePackageName()
         {

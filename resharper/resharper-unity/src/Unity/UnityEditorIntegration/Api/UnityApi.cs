@@ -6,8 +6,10 @@ using System.Diagnostics.CodeAnalysis;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference;
+using JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -16,11 +18,15 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
+    [Flags]
     public enum SerializedFieldStatus
     {
-        Unknown = 0,
-        NonSerializedField = 1,
-        SerializedField = 2
+        Unknown = 1,
+        NonSerializedField = 2,
+        SerializedField = 4,
+        OdinSerializedField = 8,
+        UnitySerializedField = 16,
+        SerializedReferenceSerializedField = 32,
     }
 
     [SolutionComponent]
@@ -49,15 +55,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         private readonly UnityTypesProvider myUnityTypesProvider;
         private readonly KnownTypesCache myKnownTypesCache;
         private readonly IUnitySerializedReferenceProvider mySerializedReferenceProvider;
+        private readonly UnityTechnologyDescriptionCollector myTechnologyDescriptionCollector;
 
         public UnityApi(UnityVersion unityVersion, UnityTypeCache unityTypeCache, UnityTypesProvider unityTypesProvider,
-            KnownTypesCache knownTypesCache, IUnitySerializedReferenceProvider serializedReferenceProvider)
+            KnownTypesCache knownTypesCache, IUnitySerializedReferenceProvider serializedReferenceProvider,
+            UnityTechnologyDescriptionCollector technologyDescriptionCollector)
         {
             myUnityVersion = unityVersion;
             myUnityTypeCache = unityTypeCache;
             myUnityTypesProvider = unityTypesProvider;
             myKnownTypesCache = knownTypesCache;
             mySerializedReferenceProvider = serializedReferenceProvider;
+            myTechnologyDescriptionCollector = technologyDescriptionCollector;
         }
 
         public bool IsUnityType([NotNullWhen(true)] ITypeElement? type) =>
@@ -83,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             bool hasSerializeReference = false)
         {
             if (IsSerializableTypeSimpleCheck(type, project, isTypeUsage, hasSerializeReference))
-                return SerializedFieldStatus.SerializedField;
+                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
 
             return mySerializedReferenceProvider.GetSerializableStatus(type, useSwea);
         }
@@ -141,6 +150,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         public SerializedFieldStatus IsSerialisedField(IField? field, bool useSwea = true)
         {
+            var status = IsSerialisedFieldByUnityRules(field, useSwea);
+            if (status.HasFlag(SerializedFieldStatus.NonSerializedField))
+            {
+                var odinStatus = IsSerialisedFieldByOdinRules(field);
+                if (odinStatus.HasFlag(SerializedFieldStatus.OdinSerializedField))
+                    return odinStatus;
+            }
+
+            return status;
+        }
+
+        private SerializedFieldStatus IsSerialisedFieldByOdinRules(IField? field)
+        {
+            if (!myTechnologyDescriptionCollector.DiscoveredTechnologies.ContainsKey(OdinUnityTechnologyDescription.OdinId))
+                return SerializedFieldStatus.NonSerializedField;
+
+            var containingType = field.ContainingType;
+
+            if (containingType.DerivesFrom(KnownTypes.OdinSerializedMonoBehaviour) || containingType.DerivesFrom(KnownTypes.OdinSerializedScriptableObject))
+            {
+                if (field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false))
+                {
+                    if (field.HasAttributeInstance(OdinKnownAttributes.OdinSerializeAttribute, AttributesSource.Self))
+                    {
+                        return SerializedFieldStatus.SerializedField | SerializedFieldStatus.OdinSerializedField;
+                    }
+                    return SerializedFieldStatus.NonSerializedField;
+                }
+
+                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.OdinSerializedField;
+            }
+            
+            return SerializedFieldStatus.Unknown;
+        }
+        
+        private SerializedFieldStatus IsSerialisedFieldByUnityRules(IField? field, bool useSwea = true)
+        {
             if (field == null || field.IsStatic || !field.IsField || field.IsReadonly)
                 return SerializedFieldStatus.NonSerializedField;
 
@@ -161,7 +207,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             if (!IsUnityType(containingType))
             {
                 var isSerializableTypeDeclaration = IsSerializableTypeDeclaration(containingType, useSwea);
-                if (isSerializableTypeDeclaration != SerializedFieldStatus.SerializedField)
+                if (!isSerializableTypeDeclaration.HasFlag(SerializedFieldStatus.UnitySerializedField))
                     return isSerializableTypeDeclaration;
             }
 
@@ -188,7 +234,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 && field.Type is IPointerType pointerType
                 && IsUnitySimplePredefined(pointerType.ElementType))
             {
-                return SerializedFieldStatus.SerializedField;
+                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
             }
 
             // We need the project to get the current Unity version. this is only called for type usage (e.g. field
@@ -216,7 +262,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 {
                     var substitutedType = substitution.Apply(typeParameter);
                     if (substitutedType.IsTypeParameterType())
-                        return SerializedFieldStatus.SerializedField;
+                        return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
                     return IsSimpleFieldTypeSerializable(substitutedType, project, hasSerializeReference, useSwea);
                 }
             }
@@ -235,19 +281,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 return SerializedFieldStatus.NonSerializedField;
 
             if (IsUnitySimplePredefined(type))
-                return SerializedFieldStatus.SerializedField;
+                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
 
             if (type.IsEnumType())
-                return SerializedFieldStatus.SerializedField;
+                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
 
             if (IsUnityBuiltinType(type))
-                return SerializedFieldStatus.SerializedField;
+                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
 
             if (type.GetTypeElement().DerivesFrom(KnownTypes.Object))
-                return SerializedFieldStatus.SerializedField;
+                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
 
             if (type.IsTypeParameterType())
-                return SerializedFieldStatus.SerializedField;
+                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
 
             return IsSerializableType(type.GetTypeElement(), project, true, useSwea, hasSerializeReference);
         }
@@ -277,7 +323,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 // if (IsSerializableTypeDeclaration(containingType, useSwea) != SerializedFieldStatus.SerializedField)//TODO != SerializedField, maybe is not the best solution
                 //     return SerializedFieldStatus.NonSerializedField;
                 var isSerializableTypeDeclaration = IsSerializableTypeDeclaration(containingType, useSwea);
-                if (isSerializableTypeDeclaration != SerializedFieldStatus.SerializedField)
+                if (!isSerializableTypeDeclaration.HasFlag(SerializedFieldStatus.UnitySerializedField))
                     return isSerializableTypeDeclaration;
             }
 
