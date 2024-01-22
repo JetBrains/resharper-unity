@@ -25,7 +25,7 @@ using JetBrains.TextControl;
 using JetBrains.UI.Icons;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services;
+namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeCompletion;
 
 [Language(typeof(CSharpLanguage))]
 public class OdinLayoutAttributesCodeCompletionProvider  : CSharpItemsProviderBase<CSharpCodeCompletionContext>

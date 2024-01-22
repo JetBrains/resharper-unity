@@ -1,4 +1,3 @@
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion;
@@ -10,10 +9,10 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services;
+namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeCompletion;
 
 [Language(typeof(CSharpLanguage))]
-public class OdinAssetPathAndFolderCodeCompletionProvider : AssetPathCompletionProviderBase
+public class OdinAssetListCodeCompletionProvider : AssetPathCompletionProviderBase
 {
     public override bool IsAvailableInCurrentContext(CSharpCodeCompletionContext context, ICSharpLiteralExpression literalExpression)
     {
@@ -32,20 +31,18 @@ public class OdinAssetPathAndFolderCodeCompletionProvider : AssetPathCompletionP
         if (type == null)
             return false;
 
-        var name = propertyAssignment.PropertyNameIdentifier.Name;
+        if (!type.GetClrName().Equals(OdinKnownAttributes.AssetListAttribute))
+            return false;
 
-        if (type.GetClrName().Equals(OdinKnownAttributes.AssetSelectorAttribute))
-        {
-            return name.Equals("Paths");
-        }
-        
-        
-        if (type.GetClrName().Equals(OdinKnownAttributes.FilePathAttribute) || 
-            type.GetClrName().Equals(OdinKnownAttributes.FolderPathAttribute))
-        {
-            return name.Equals("ParentFolder");
-        }
-        
-        return false;
+
+        var name = propertyAssignment.PropertyNameIdentifier.Name;
+        return name.Equals("Path");
+    }
+
+    protected override RelativePath CalculateSearchPath(CSharpCodeCompletionContext context, ICSharpLiteralExpression stringLiteral,
+        ITreeNode nodeInFile, out TextLookupRanges textLookupRanges)
+    {
+        return RelativePath.Parse(UnityYamlConstants.AssetsFolder)
+            .Combine(base.CalculateSearchPath(context, stringLiteral, nodeInFile, out textLookupRanges));
     }
 }
