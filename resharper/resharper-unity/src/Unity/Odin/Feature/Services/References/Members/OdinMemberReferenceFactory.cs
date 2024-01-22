@@ -53,11 +53,15 @@ public class OdinMemberReferenceFactory : IReferenceFactory
             references.Add(new OdinMemberReference(attribute.GetContainingTypeElement(), expression, name, startOffset, endOffset));
         }
 
-        if (OdinKnownAttributes.AttributesWithMemberCompletion.Contains(clrName))
+        if (stringValue.Length == 0 || stringValue[0] != '@')
         {
-            references.Add(new OdinRegularMemberReference(attribute.GetContainingTypeElement(), expression, stringValue, 1, 1 + stringValue.Length));
+            if (OdinKnownAttributes.AttributesWithMemberCompletion.Contains(clrName))
+            {
+                references.Add(new OdinRegularMemberReference(attribute.GetContainingTypeElement(), expression,
+                    stringValue, 1, 1 + stringValue.Length));
+            }
         }
-        
+
         var collection = new ReferenceCollection(references.ReadOnlyList());
         return ResolveUtil.ReferenceSetsAreEqual(collection, oldReferences) ? oldReferences : collection;
     }
