@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
@@ -24,7 +23,7 @@ using JetBrains.UsageStatistics.FUS.EventLog.Events;
 using JetBrains.UsageStatistics.FUS.EventLog.Fus;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Services.FeatureStatistics
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
 {
     [SolutionComponent]
     public class UnityProjectInformationUsageCollector : SolutionUsagesCollector

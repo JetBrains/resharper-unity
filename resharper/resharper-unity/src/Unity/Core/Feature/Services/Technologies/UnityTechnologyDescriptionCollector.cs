@@ -5,11 +5,10 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Resources.Shell;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Services.FeatureStatistics
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
 {
     [SolutionComponent]
     public class UnityTechnologyDescriptionCollector
@@ -30,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         public readonly ViewableProperty<bool> Ready = new ViewableProperty<bool>(false);
 
         public UnityTechnologyDescriptionCollector(Lifetime lifetime, ISolution solution, ISolutionLoadTasksScheduler tasksScheduler, 
-            UnitySolutionTracker solutionTracker, PackageManager packageManager, FrontendBackendHost frontendBackendHost)
+            UnitySolutionTracker solutionTracker, PackageManager packageManager)
         {
             myLifetime = lifetime;
             myTasksScheduler = tasksScheduler;
@@ -79,15 +78,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                 if (v)
                 {
                     Ready.Value = true;
-                    frontendBackendHost.Do(m =>
-                    {
-                        foreach (var (id, v) in myDiscoveredTechnologies)
-                        {
-                            m.DiscoveredTechnologies[id] = v;
-                        }
-                        
-                        m.IsTechnologyDiscoveringFinished.Value = true;
-                    });
                     return true;
                 }
 
