@@ -21,6 +21,11 @@ public class OdinKnownAttributes
     public static readonly IClrTypeName ShowIfGroupAttribute = new ClrTypeName("Sirenix.OdinInspector.ShowIfGroupAttribute");
 
 
+    // Asset attributes
+    public static readonly IClrTypeName AssetListAttribute = new ClrTypeName("Sirenix.OdinInspector.AssetListAttribute");
+
+    
+    
     
     public static readonly HashSet<IClrTypeName> LayoutAttributes = new()
     {

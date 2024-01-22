@@ -77,19 +77,9 @@ public class OdinLayoutAttributesCodeCompletionProvider  : CSharpItemsProviderBa
         if (literal == null)
             return false;
 
-        var name = argument.NameIdentifier?.Name;
+        var name = argument.MatchingParameter?.Element.ShortName;
         if (name == null)
-        {
-            var position = attribute.Arguments.IndexOf(argument);
-            var constructor = attribute.ConstructorReference.Resolve().DeclaredElement as IConstructor;
-            if (constructor == null)
-                return false;
-
-            if (position >= constructor.Parameters.Count)
-                return false;
-            
-            name = constructor.Parameters[position].ShortName;
-        }
+            return false;
 
         if (!OdinKnownAttributes.LayoutAttributesParameterKinds.TryGetValue((type.GetClrName(), name), out var kind))
             return false;
