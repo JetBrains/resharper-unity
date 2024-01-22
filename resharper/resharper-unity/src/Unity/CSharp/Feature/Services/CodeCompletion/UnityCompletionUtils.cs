@@ -100,10 +100,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         internal static ICSharpLiteralExpression? StringLiteral(this CSharpCodeCompletionContext context)
         {
-            return context.NodeInFile is ITokenNode { Parent: ICSharpLiteralExpression literalExpression } &&
-                   literalExpression.Literal.IsAnyStringLiteral()
-                ? literalExpression
-                : null;
+            if (context.NodeInFile is not ITokenNode { Parent: ICSharpLiteralExpression literalExpression })
+                return null;
+
+            if (!literalExpression.IsConstantValue())
+                return null;
+
+            if (!literalExpression.ConstantValue.IsString())
+                return null;
+
+            return literalExpression;
         }
     }
 }

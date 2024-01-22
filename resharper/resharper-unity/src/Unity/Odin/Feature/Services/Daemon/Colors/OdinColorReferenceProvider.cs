@@ -35,6 +35,8 @@ public class OdinColorReferenceProvider : IUnityColorReferenceProvider
             return null;
 
         var value = argument.Value;
+        if (value == null)
+            return null;
         if (!value.IsConstantValue())
             return null;
 

@@ -29,7 +29,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeCompletion.GroupingAttributes;
 
 [Language(typeof(CSharpLanguage))]
-public class OdinLayoutAttributesCodeCompletionProvider  : CSharpItemsProviderBase<CSharpCodeCompletionContext>
+public class OdinTabGroupAttributeCodeCompletionProvider  : CSharpItemsProviderBase<CSharpCodeCompletionContext>
 {
     protected override bool IsAvailable(CSharpCodeCompletionContext context)
     {
@@ -71,78 +71,51 @@ public class OdinLayoutAttributesCodeCompletionProvider  : CSharpItemsProviderBa
         if (type == null)
             return false;
 
-        if (!OdinKnownAttributes.LayoutAttributes.TryGetValue(type.GetClrName(), out var parameterName))
+        if (!type.GetClrName().Equals(OdinKnownAttributes.TabGroupAttribute))
             return false;
         
-        var literal = stringLiteral.ConstantValue.AsString();
-        if (literal == null)
-            return false;
-
         var name = argument.MatchingParameter?.Element.ShortName;
         if (name == null)
             return false;
 
-        if (!parameterName.Equals(name))
+        if (!"tab".Equals(name))
+            return false;
+        
+        var groups = OdinAttributeUtil.CollectGroupInfo(classLikeDeclaredElement).Where(t =>
+            Equals(t.AttributeInstance.GetClrName(), OdinKnownAttributes.TabGroupAttribute)).ToList();
+        
+        var currentMembers = CSharpTypeMemberDeclarationNavigator.GetByAttribute(attribute).Select(t => t.DeclaredElement).ToHashSet();
+        if (currentMembers.Count == 0)
             return false;
 
-        var currentMembers = CSharpTypeMemberDeclarationNavigator.GetByAttribute(attribute).Select(t => t.DeclaredElement).ToHashSet();
-        var groups = OdinAttributeUtil.CollectGroupInfo(classLikeDeclaredElement);
-
-        var resultGroups = new HashSet<string>(groups.Count);
+        var currentGroup = groups.First(t => Equals(t.Member, currentMembers.First())).GroupPath;
+        var sectionCount = currentGroup.Count(t => t == '/');
+        
+        var resultTabs = new HashSet<string>(groups.Count);
         foreach (var group in groups)
         {
             if (currentMembers.Contains(group.Member))
                 continue;
+            
+            if (!group.GroupPath.StartsWith(currentGroup))
+                continue;
 
-            resultGroups.Add(group.GroupPath);
+            var paths = group.GroupPath.Split('/');
+            if (paths.Length <= sectionCount)
+                continue;
+
+            resultTabs.Add(paths[sectionCount]);
         }
-
+        
         var hasResult = false;
-        foreach (var layoutName in resultGroups)
+        foreach (var layoutName in resultTabs)
         {
             var item = new StringLiteralItem(layoutName, context.CompletionRanges);
             collector.Add(item);
             hasResult = true;
         }
-
-        var lastSlashIndex = literal.LastIndexOf('/');
-        if (lastSlashIndex == -1)
-            lastSlashIndex = literal.Length;
-
-        var prefixLiteral = literal.Substring(0, lastSlashIndex);
         
-        var trie = new QualifiedNamesTrie<string>(false, '/');
-        
-        foreach (var layoutName in resultGroups)
-        {
-            var sections = layoutName.Split('/');
-            var sb = new StringBuilder(layoutName.Length);
-            foreach (var section in sections)
-            {
-                sb.Append(section);
-                trie.Add(sb.ToString(), sb.ToString());
-                sb.Append('/');
-            }
-        }
-        
-        var node = trie.FindTrieNode(prefixLiteral);
-        if (node == null)
-            return hasResult;
-        
-        foreach (var child in node.Children)
-        {
-            if (child.Data.IsEmpty() || child.Data.Equals("$"))
-                continue;
-        
-            if (resultGroups.Contains(child.Data))
-                continue;
-            
-            var item = new StringLiteralItem(child.Data, context.CompletionRanges);
-        
-            collector.Add(item);
-        }
-        
-        return true;
+        return hasResult;
     }
     
     private sealed class StringLiteralItem : TextLookupItemBase, IMLSortingAwareItem

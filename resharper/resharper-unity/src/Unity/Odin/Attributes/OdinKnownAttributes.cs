@@ -84,47 +84,23 @@ public class OdinKnownAttributes
     };
     
     
-    public static readonly HashSet<IClrTypeName> LayoutAttributes = new()
+    public static readonly Dictionary<IClrTypeName, string> LayoutAttributes = new()
     {
-        BoxGroupAttribute,
-        ButtonGroupAttribute,
-        HorizontalGroupAttribute,
-        ResponsiveButtonGroupAttribute,
-        VerticalGroupAttribute,
-        FoldoutGroupAttribute,
+        {BoxGroupAttribute, "group"},
+        {ButtonGroupAttribute, "group"},
+        {HorizontalGroupAttribute, "group"},
+        {ResponsiveButtonGroupAttribute, "group"},
+        {VerticalGroupAttribute, "groupId"},
+        {FoldoutGroupAttribute, "groupName"},
         
-        TabGroupAttribute,
-        TabGroupAttribute,
+        {TabGroupAttribute, "group"},
         
-        ToggleGroupAttribute,
-        TitleGroupAttribute,
-    };
-    
-    public static readonly Dictionary<(IClrTypeName clrName, string parameterName), LayoutParameterKind> LayoutAttributesParameterKinds = new()
-    {
-        {(BoxGroupAttribute, "group"), LayoutParameterKind.Group},
-        {(ButtonGroupAttribute, "group"), LayoutParameterKind.Group},
-        {(HorizontalGroupAttribute, "group"), LayoutParameterKind.Group},
-        {(ResponsiveButtonGroupAttribute, "group"), LayoutParameterKind.Group},
-        {(VerticalGroupAttribute, "groupId"), LayoutParameterKind.Group},
-        {(FoldoutGroupAttribute, "groupName"), LayoutParameterKind.Group},
-
-        {(TabGroupAttribute, "group"), LayoutParameterKind.Group},
-        {(TabGroupAttribute, "tab"), LayoutParameterKind.Tab},
-
-        {(ToggleGroupAttribute, "toggleMemberName"), LayoutParameterKind.Group},
+        {ToggleGroupAttribute, "toggleMemberName"},
+        {TitleGroupAttribute, "title"},
         
-        {(TitleGroupAttribute, "title"), LayoutParameterKind.Group},
-        
-        {(HideIfGroupAttribute, "path"), LayoutParameterKind.Group},
-        {(ShowIfGroupAttribute, "condition"), LayoutParameterKind.Group},
+        {HideIfGroupAttribute, "path"},
+        {ShowIfGroupAttribute, "condition"},
 
     };
-    
-    public enum LayoutParameterKind
-    {
-        Group,
-        Tab
-    }
 }
 
