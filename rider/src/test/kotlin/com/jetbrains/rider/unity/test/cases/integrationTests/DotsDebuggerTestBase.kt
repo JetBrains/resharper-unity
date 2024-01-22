@@ -22,12 +22,13 @@ import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 
-abstract class DotsDebuggerTestBase : IntegrationTestWithUnityProjectBase() {
+abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : IntegrationTestWithUnityProjectBase() {
 
     override fun getSolutionDirectoryName() = "UnityDotsDebug/Project"
+    override val unityMajorVersion = this.unityVersion
 
     override val testClassDataDirectory: File
-        get() = super.testClassDataDirectory.parentFile.combine(DebuggerTestBase::class.simpleName!!)
+        get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTestBase::class.simpleName!!)
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testStorage.testMethod.name).combine("source")
 
@@ -83,6 +84,5 @@ abstract class DotsDebuggerTestBase : IntegrationTestWithUnityProjectBase() {
 @Feature("Debug Unity2022")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DotsDebuggerTest2022 : DotsDebuggerTestBase() {
-    override val unityMajorVersion = UnityVersion.V2022
+class DotsDebuggerTest2022 : DotsDebuggerTestBase(UnityVersion.V2022) {
 }
