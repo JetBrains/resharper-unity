@@ -618,7 +618,8 @@ private fun IntegrationTestWithFrontendBackendModel.selectUnitTestLaunchPreferen
 
 fun getGoldFileUnityDependentSuffix(unityVersion: UnityVersion): String {
     return when (unityVersion) {
-        UnityVersion.V2020 -> "_V${unityVersion.version}"
+        //We can use it if we have different gold files for different Unity versions, now it's not needed
+        //UnityVersion.V2020 -> "_V${unityVersion.version}"
         else -> ""
     }
 }
