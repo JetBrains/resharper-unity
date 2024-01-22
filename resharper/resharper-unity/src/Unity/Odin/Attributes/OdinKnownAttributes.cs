@@ -6,6 +6,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
 
 public class OdinKnownAttributes
 {
+    public static readonly string OdinNamespace = "Sirenix.OdinInspector";
+    
     public static readonly IClrTypeName BoxGroupAttribute = new ClrTypeName("Sirenix.OdinInspector.BoxGroupAttribute");
     public static readonly IClrTypeName ButtonGroupAttribute = new ClrTypeName("Sirenix.OdinInspector.ButtonGroupAttribute");
     public static readonly IClrTypeName FoldoutGroupAttribute = new ClrTypeName("Sirenix.OdinInspector.FoldoutGroupAttribute");

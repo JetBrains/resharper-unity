@@ -207,7 +207,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         {
             var elementId = myProvider.GetElementId(type);
             if (elementId == null)
-                return SerializedFieldStatus.Unknown; //can't get information about the type
+                return SerializedFieldStatus.NonSerializedField; //can't get information about the type, multidimensional array handles here too (TODO? why?)
 
             lock (myLockObject)
                 return myIndex.IsTypeSerializable(elementId.Value, useSwea);

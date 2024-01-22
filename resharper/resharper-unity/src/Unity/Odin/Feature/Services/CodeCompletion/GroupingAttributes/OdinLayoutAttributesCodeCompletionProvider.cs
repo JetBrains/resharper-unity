@@ -114,7 +114,7 @@ public class OdinLayoutAttributesCodeCompletionProvider  : CSharpItemsProviderBa
         var insertRange = new DocumentRange(stringLiteral.GetDocumentStartOffset() + 1 + lastSectionStartIndex + 1, stringLiteral.GetDocumentEndOffset() - 1);
         foreach (var child in node.Children)
         {
-            if (child.Data.IsEmpty())
+            if (child.Data.IsEmpty() || child.Data.Equals("$"))
                 continue;
          
             collector.Add(new StringLiteralItem(child.Data, new TextLookupRanges(insertRange, insertRange)));
