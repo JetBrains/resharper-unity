@@ -52,7 +52,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState: UnityExe
         }
     }
 
-    override fun execute(executor: Executor,
+    override suspend fun execute(executor: Executor,
                          runner: ProgramRunner<*>,
                          workerProcessHandler: DebuggerWorkerProcessHandler,
                          lifetime: Lifetime): ExecutionResult {

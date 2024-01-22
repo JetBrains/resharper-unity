@@ -59,7 +59,7 @@ class UnityExeDebugProfileState(private val exeConfiguration: UnityExeConfigurat
         return runCmd
     }
 
-    override fun execute(executor: Executor,
+    override suspend fun execute(executor: Executor,
                          runner: ProgramRunner<*>,
                          workerProcessHandler: DebuggerWorkerProcessHandler,
                          lifetime: Lifetime): ExecutionResult {
@@ -69,8 +69,7 @@ class UnityExeDebugProfileState(private val exeConfiguration: UnityExeConfigurat
                              "--debugger-agent=transport=dt_socket,address=127.0.0.1:${remoteConfiguration.port},server=n,suspend=y")
             .withParentEnvironmentType(if (exeConfiguration.parameters.isPassParentEnvs) {
                 GeneralCommandLine.ParentEnvironmentType.CONSOLE
-            }
-                                       else {
+            } else {
                 GeneralCommandLine.ParentEnvironmentType.NONE
             })
             .withExePath(exeConfiguration.parameters.exePath)
