@@ -133,11 +133,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="mscorlib" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Odin\Feature\Services\CodeCompletion\Expressions\" />
-    <Folder Include="Odin\Feature\Services\Daemon\References\" />
-    <Folder Include="Odin\Feature\Services\References\Expressions\" />
-  </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
   <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />
   <Import Project="Sdk.targets" Sdk="JetBrains.Toolset.MainSolution.Sdk" Version="20200625.1.1.2" Condition="$(InternalBuild)" />
