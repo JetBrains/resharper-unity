@@ -175,9 +175,6 @@
     <rider.debug.breakpoint.handler.factory implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointHandlerFactory" />
     <rider.breakpoint.customPopupActionsProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.ConvertToPausepointPopupActionProvider" />
 
-    <!-- Android support -->
-    <rider.android.project.validator implementation="com.jetbrains.rider.plugins.unity.android.UnityCustomAndroidProjectValidator"/>
-
     <!-- Logging and feedback -->
     <rd.platform.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
     <feedbackDescriptionProvider implementation="com.jetbrains.rider.plugins.unity.UnityFeedbackDescriptionProvider" />
