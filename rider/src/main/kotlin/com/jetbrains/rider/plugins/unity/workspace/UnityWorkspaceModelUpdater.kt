@@ -9,11 +9,9 @@ import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.application
 import com.intellij.platform.backend.workspace.WorkspaceModel
-import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.platform.workspace.storage.impl.url.toVirtualFileUrl
 import com.intellij.platform.workspace.storage.url.VirtualFileUrl
-import com.intellij.platform.workspace.storage.url.VirtualFileUrlManager
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
@@ -40,7 +38,8 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
 
         val builder = MutableEntityStorage.create()
 
-        val virtualFileUrlManager = VirtualFileUrlManager.getInstance(project)
+        val workspaceModel = WorkspaceModel.getInstance(project)
+        val virtualFileUrlManager = workspaceModel.getVirtualFileUrlManager()
         val packagesModuleEntity = builder.getOrCreateRiderModuleEntity()
 
         // TODO: WORKSPACEMODEL
@@ -65,8 +64,8 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
             RiderUnityEntitySource)
 
         application.runWriteAction {
-            WorkspaceModel.getInstance(project).updateProjectModel("Unity: update workspace model") {
-                x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder)
+            workspaceModel.updateProjectModel("Unity: update workspace model") { x ->
+                x.replaceBySource({ it is RiderUnityEntitySource }, builder)
             }
         }
     }

@@ -13,9 +13,7 @@ import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.backend.workspace.toVirtualFileUrl
 import com.intellij.platform.workspace.storage.MutableEntityStorage
-import com.intellij.platform.workspace.storage.url.VirtualFileUrlManager
 import com.intellij.util.application
-import com.intellij.workspaceModel.ide.getInstance
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -92,7 +90,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
 
         val contentRootEntity = if (packageFolder != null && unityPackage.source != UnityPackageSource.Unknown) {
             entityStorage.addContentRootEntity(
-                packageFolder.toVirtualFileUrl(VirtualFileUrlManager.getInstance(project)),
+                packageFolder.toVirtualFileUrl(WorkspaceModel.getInstance(project).getVirtualFileUrlManager()),
                 listOf(),
                 UNITY_EXCLUDED_PATTERNS,
                 entityStorage.getOrCreateRiderModuleEntity(),
