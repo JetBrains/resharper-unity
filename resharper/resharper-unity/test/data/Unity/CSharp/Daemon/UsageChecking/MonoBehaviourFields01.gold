@@ -60,13 +60,13 @@ public abstract class Track
 }
 
 ---------------------------------------------------------
-(0): ReSharper Dead Code: Serialised field 'implicitlyAssignedField' is assigned but its value is never used
-(1): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField1' is assigned but its value is never used
-(2): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField2' is assigned but its value is never used
-(3): ReSharper Warning [CS0414]: Serialised field 'implicitlyAssignedPrivateField' is assigned but its value is never used
-(4): ReSharper Warning [CS0414]: Serialised field 'implicitlyAssignedPrviateField2' is assigned but its value is never used
-(5): ReSharper Dead Code: Serialised field 'implicitlyAssignedList' is assigned but its value is never used
-(6): ReSharper Warning [CS0414]: Serialised field 'implicityAssignedAbstractField' is assigned but its value is never used
+(0): ReSharper Dead Code: Serialised field 'implicitlyAssignedField' is never used
+(1): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField1' is never used
+(2): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField2' is never used
+(3): ReSharper Warning [CS0169]: Serialised field 'implicitlyAssignedPrivateField' is never used
+(4): ReSharper Warning [CS0169]: Serialised field 'implicitlyAssignedPrviateField2' is never used
+(5): ReSharper Dead Code: Serialised field 'implicitlyAssignedList' is never used
+(6): ReSharper Warning [CS0169]: Serialised field 'implicityAssignedAbstractField' is never used
 (7): ReSharper Warning [CS0169]: Field 'myUnusedAbstractField' is never used
 (8): ReSharper Dead Code: Field 'UnusedAction' is never used
 (9): ReSharper Dead Code: Constant 'UnusedConst' is never used
@@ -85,11 +85,11 @@ public abstract class Track
 (22): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (23): ReSharper Warning [CS0169]: Field 'ourUnusedPrivateStaticField' is never used
 (24): ReSharper Dead Code: Field 'UnusedDictionary' is never used
-(25): ReSharper Dead Code: Serialised field 'possiblySerialisedField' is assigned but its value is never used
-(26): ReSharper Warning [CS0414]: Serialised field 'possiblySerialisedField2' is assigned but its value is never used
-(27): ReSharper Dead Code: Serialised field 'possiblySerialisedArray' is assigned but its value is never used
-(28): ReSharper Warning [CS0414]: Serialised field 'possiblySerialisedArray2' is assigned but its value is never used
-(29): ReSharper Dead Code: Serialised field 'possiblySerialisedList' is assigned but its value is never used
-(30): ReSharper Warning [CS0414]: Serialised field 'possiblySerialisedList2' is assigned but its value is never used
-(31): ReSharper Dead Code: Serialised field 'name' is assigned but its value is never used
+(25): ReSharper Dead Code: Serialised field 'possiblySerialisedField' is never used
+(26): ReSharper Warning [CS0169]: Serialised field 'possiblySerialisedField2' is never used
+(27): ReSharper Dead Code: Serialised field 'possiblySerialisedArray' is never used
+(28): ReSharper Warning [CS0169]: Serialised field 'possiblySerialisedArray2' is never used
+(29): ReSharper Dead Code: Serialised field 'possiblySerialisedList' is never used
+(30): ReSharper Warning [CS0169]: Serialised field 'possiblySerialisedList2' is never used
+(31): ReSharper Dead Code: Serialised field 'name' is never used
 

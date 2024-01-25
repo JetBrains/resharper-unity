@@ -88,10 +88,10 @@ public class |NotSerializable|(38)
 }
 
 ---------------------------------------------------------
-(0): ReSharper Dead Code: Serialised field 'implicitlyAssignedField' is assigned but its value is never used
-(1): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField1' is assigned but its value is never used
-(2): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField2' is assigned but its value is never used
-(3): ReSharper Warning [CS0414]: Serialised field 'implicitlyAssignedPrivateField' is assigned but its value is never used
+(0): ReSharper Dead Code: Serialised field 'implicitlyAssignedField' is never used
+(1): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField1' is never used
+(2): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField2' is never used
+(3): ReSharper Warning [CS0169]: Serialised field 'implicitlyAssignedPrivateField' is never used
 (4): ReSharper Dead Code: Constant 'UnusedConst' is never used
 (5): ReSharper Dead Code: Constant 'UnusedPrivateConst' is never used
 (6): ReSharper Dead Code: Redundant 'SerializeField' attribute
@@ -107,10 +107,10 @@ public class |NotSerializable|(38)
 (16): ReSharper Dead Code: Field 'UnusedStaticField' is never used
 (17): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (18): ReSharper Warning [CS0169]: Field 'ourUnusedPrivateStaticField' is never used
-(19): ReSharper Dead Code: Serialised field 'implicitlyAssignedField' is assigned but its value is never used
-(20): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField1' is assigned but its value is never used
-(21): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField2' is assigned but its value is never used
-(22): ReSharper Warning [CS0414]: Serialised field 'implicitlyAssignedPrivateField' is assigned but its value is never used
+(19): ReSharper Dead Code: Serialised field 'implicitlyAssignedField' is never used
+(20): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField1' is never used
+(21): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField2' is never used
+(22): ReSharper Warning [CS0169]: Serialised field 'implicitlyAssignedPrivateField' is never used
 (23): ReSharper Dead Code: Constant 'UnusedConst' is never used
 (24): ReSharper Dead Code: Constant 'UnusedPrivateConst' is never used
 (25): ReSharper Dead Code: Redundant 'SerializeField' attribute
