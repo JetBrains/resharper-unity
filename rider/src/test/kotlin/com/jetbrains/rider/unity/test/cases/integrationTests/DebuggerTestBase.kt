@@ -1,5 +1,6 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
+import com.intellij.openapi.components.ComponentManagerEx
 import com.intellij.openapi.rd.util.lifetime
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
@@ -84,7 +85,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
 
                     val lifetime = this.project.lifetime
                     var textureInfo: UnityTextureInfo? = null
-                    val job = project.coroutineScope.launch {
+                    val job = (project as ComponentManagerEx).getCoroutineScope().launch {
                         textureInfo = UnityTextureCustomComponentEvaluator.getUnityTextureInfo(stackFrame, value.objectProxy.id, lifetime,
                                                                                                10000, null) {
                             fail(it)
