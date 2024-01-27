@@ -7,7 +7,6 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
 {
     [TestUnity]
-    [IncludeMsCorLib]
     public class UnityEventFunctionReferenceTest : ReferenceTestBase
     {
         protected override string RelativeTestDataPath => @"CSharp\Resolve";
@@ -33,7 +32,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
     }
 
     [TestUnity]
-    [IncludeMsCorLib]
     public class UnityEventFunctionCompletionTest : CodeCompletionTestBase
     {
         protected override string RelativeTestDataPath => @"CSharp\Resolve\CodeCompletion";

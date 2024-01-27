@@ -7,7 +7,6 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
 {
     [TestUnity(UnityVersion.Unity55, IncludeNetworking = true)]
-    [IncludeMsCorLib]
     public class SyncVarHookReferenceTest : ReferenceTestBase
     {
         protected override string RelativeTestDataPath => @"CSharp\Resolve\SyncVarHook";
@@ -22,7 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
     }
 
     [TestUnity(UnityVersion.Unity55, IncludeNetworking = true)]
-    [IncludeMsCorLib]
     public class SyncVarHookCompletionTest : CodeCompletionTestBase
     {
         protected override string RelativeTestDataPath => @"CSharp\Resolve\SyncVarHook\CodeCompletion";
