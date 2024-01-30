@@ -31,10 +31,11 @@ class UnityAttachIosUsbProfileState(private val project: Project, private val re
         }
 
         return UnityIosUsbStartInfo(iosSupportPath.toString(),
-                                    deviceId,
-                                    remoteConfiguration.address,
-                                    remoteConfiguration.port,
-                                    false,
-                                    getUnityBundlesList())
+            deviceId,
+            remoteConfiguration.address,
+            remoteConfiguration.port,
+            false,
+            getUnityBundlesList(),
+            getUnityPackagesList(project))
     }
 }
