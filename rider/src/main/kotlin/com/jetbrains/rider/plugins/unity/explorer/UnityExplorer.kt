@@ -5,9 +5,11 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.icons.AllIcons
 import com.intellij.ide.SelectInContext
 import com.intellij.ide.projectView.ProjectView
+import com.intellij.ide.projectView.impl.ProjectViewImpl
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.ExperimentalUI
@@ -20,6 +22,14 @@ import com.jetbrains.rider.projectView.views.actions.SolutionViewToggleAction
 import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
 import icons.UnityIcons
 import org.jdom.Element
+
+class UnityExplorerProjectActivity: ProjectActivity{
+    override suspend fun execute(project: Project) {
+        val newVal = project.isUnityProject.await()
+        if (newVal)
+            (ProjectView.getInstance(project) as ProjectViewImpl).reloadPanes()
+    }
+}
 
 class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRootNode(project)) {
 

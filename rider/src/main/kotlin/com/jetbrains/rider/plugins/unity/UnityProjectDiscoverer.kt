@@ -4,6 +4,7 @@ import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.startBackgroundAsync
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -35,13 +36,11 @@ class UnityProjectDiscoverer(val project: Project) {
 
     init {
         // we can't change this to ProjectActivity because all of them are executes synchronously in tests
-        // todo: Temporary restore sync behaviour, until there is an async version of AbstractProjectViewPane.isInitiallyVisible
-        // RIDER-105138 Unity Explorer isn't available in the Unity project
-        // UnityProjectLifetimeService.getLifetime(project).startBackgroundAsync {
+        UnityProjectLifetimeService.getLifetime(project).startBackgroundAsync {
             val hasUnityFileStructure = hasUnityFileStructure(project)
             isUnityProjectFolder.complete(hasUnityFileStructure)
             isUnityProject.complete(hasUnityFileStructure && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project))
-        //}
+        }
     }
 
     // When Unity has generated sln, Library folder was also created. Lets' be more strict and check it.
