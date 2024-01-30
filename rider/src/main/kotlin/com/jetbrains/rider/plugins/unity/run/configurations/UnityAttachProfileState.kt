@@ -44,17 +44,15 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
 
         val frontendBackendModel = executionEnvironment.project.solution.frontendBackendModel
         frontendBackendModel.backendSettings.enableDebuggerExtensions.flowInto(debuggerWorkerLifetime,
-                                                                               protocolModel.unityDebuggerWorkerModel.showCustomRenderers)
+            protocolModel.unityDebuggerWorkerModel.showCustomRenderers)
         frontendBackendModel.backendSettings.ignoreBreakOnUnhandledExceptionsForIl2Cpp.flowInto(debuggerWorkerLifetime,
-                                                                                                protocolModel.unityDebuggerWorkerModel.ignoreBreakOnUnhandledExceptionsForIl2Cpp)
+            protocolModel.unityDebuggerWorkerModel.ignoreBreakOnUnhandledExceptionsForIl2Cpp)
         frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.flowInto(debuggerWorkerLifetime,
-                                                                                             protocolModel.unityDebuggerWorkerModel.forcedTimeoutForAdvanceUnityEvaluation)
+            protocolModel.unityDebuggerWorkerModel.forcedTimeoutForAdvanceUnityEvaluation)
 
         return super.createDebuggerWorker(workerCmd, protocolModel, protocolServerPort, projectLifetime).apply {
             addProcessListener(object : ProcessAdapter() {
-                override fun processTerminated(event: ProcessEvent) {
-                    debuggerWorkerLifetime.terminate()
-                }
+                override fun processTerminated(event: ProcessEvent) { debuggerWorkerLifetime.terminate() }
             })
         }
     }
@@ -70,8 +68,9 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
         return UnityStartInfo(remoteConfiguration.address,
-                              remoteConfiguration.port,
-                              remoteConfiguration.listenPortForConnections,
-                              getUnityBundlesList())
+            remoteConfiguration.port,
+            remoteConfiguration.listenPortForConnections,
+            getUnityBundlesList(),
+            getUnityPackagesList(executionEnvironment.project))
     }
 }

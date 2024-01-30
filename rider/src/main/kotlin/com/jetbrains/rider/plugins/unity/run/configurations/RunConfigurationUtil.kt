@@ -8,10 +8,12 @@ import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.execution.ui.RunConfigurationStartHistory
 import com.intellij.openapi.project.Project
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityBundleInfo
 import com.jetbrains.rider.plugins.unity.run.*
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
+import com.jetbrains.rider.plugins.unity.workspace.getPackages
 
 /**
  * Returns true if any "Attach to Unity Editor" or "Attach to Unity Editor & Play" run configuration is running
@@ -170,4 +172,9 @@ fun getUnityBundlesList(): List<UnityBundleInfo> {
 
     return listOf(UnityBundleInfo(pausePointAssemblyName, pauseBreakpointBundle.absolutePath),
                   UnityBundleInfo(textureHelperAssemblyName, textureHelperBundle.absolutePath))
+}
+
+fun getUnityPackagesList(project: Project): List<String>{
+    val allPackages = WorkspaceModel.getInstance(project).getPackages()
+    return allPackages.map { it.packageId }
 }

@@ -21,6 +21,7 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         field("monoPort", int)
         field("listenForConnections", bool)
         field("bundles", immutableList(unityBundleInfo))
+        field("packages", immutableList(string))
     }
 
     // Default start info. Performs the same as MonoAttachStartInfo but allows overriding some options for IL2CPP
