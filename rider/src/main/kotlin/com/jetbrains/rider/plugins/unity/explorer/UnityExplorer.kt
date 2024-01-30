@@ -13,6 +13,7 @@ import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.ExperimentalUI
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscovererState
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginActionsBundle
 import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
@@ -79,7 +80,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
         return false
     }
 
-    override fun isInitiallyVisible() = project.isUnityProject.getCompletedOr(false)
+    override fun isInitiallyVisible() = project.isUnityProject.getCompletedOr(UnityProjectDiscovererState.getInstance(project).isUnityProjectState)
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)

@@ -1,8 +1,7 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.client.ClientProjectSession
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.service
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.startBackgroundAsync
 import com.intellij.openapi.vfs.VirtualFile
@@ -39,7 +38,11 @@ class UnityProjectDiscoverer(val project: Project) {
         UnityProjectLifetimeService.getLifetime(project).startBackgroundAsync {
             val hasUnityFileStructure = hasUnityFileStructure(project)
             isUnityProjectFolder.complete(hasUnityFileStructure)
-            isUnityProject.complete(hasUnityFileStructure && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project))
+            UnityProjectDiscovererState.getInstance(project).isUnityProjectFolderState = hasUnityFileStructure
+
+            val isUnityProjectVal = hasUnityFileStructure && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project)
+            isUnityProject.complete(isUnityProjectVal)
+            UnityProjectDiscovererState.getInstance(project).isUnityProjectState = isUnityProjectVal
         }
     }
 
@@ -102,6 +105,7 @@ class UnityProjectDiscoverer(val project: Project) {
         override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.hasUnityReference.adviseUntil(lifetime) {
                 getInstance(session.project).hasUnityReference.complete(it)
+                UnityProjectDiscovererState.getInstance(session.project).hasUnityReferenceState = it
                 it
             }
         }
@@ -118,4 +122,30 @@ val Project.isUnityProjectFolder: Deferred<Boolean>
 fun Deferred<Boolean>?.getCompletedOr(defaultValue: Boolean): Boolean {
     if (this == null) return false
     return if (this.isCompleted) this.getCompleted() else defaultValue
+}
+
+@Service(Service.Level.PROJECT)
+@State(name = "UnityProjectDiscoverer", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
+internal class UnityProjectDiscovererState : SimplePersistentStateComponent<UnityProjectDiscovererState.State>(State()) {
+    companion object {
+        fun getInstance(project: Project): UnityProjectDiscovererState = project.service()
+    }
+
+    class State : BaseState() {
+        var isUnityProject by property(false)
+        var isUnityProjectFolder by property(false)
+        var hasUnityReference by property(false)
+    }
+
+    var isUnityProjectState: Boolean
+        get() = state.isUnityProject
+        set(value) { state.isUnityProject = value }
+
+    var isUnityProjectFolderState: Boolean
+        get() = state.isUnityProjectFolder
+        set(value) { state.isUnityProjectFolder = value }
+
+    var hasUnityReferenceState: Boolean
+        get() = state.hasUnityReference
+        set(value) { state.hasUnityReference = value }
 }
