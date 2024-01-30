@@ -4,7 +4,6 @@ import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.startBackgroundAsync
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -25,15 +24,24 @@ class UnityDetectorImpl(private val project: Project) : UnityDetector {
 
 @Service(Service.Level.PROJECT)
 class UnityProjectDiscoverer(val project: Project) {
+    // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
+    // lives in the same folder as generated unity project (not the same as a class library project, which could live
+    // anywhere)
+    val isUnityProject = CompletableDeferred<Boolean>()
+
+    // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
+    val isUnityProjectFolder = CompletableDeferred<Boolean>()
+    val hasUnityReference = CompletableDeferred<Boolean>()
 
     init {
         // we can't change this to ProjectActivity because all of them are executes synchronously in tests
-        UnityProjectLifetimeService.getLifetime(project).startBackgroundAsync {
+        // todo: Temporary restore sync behaviour, until there is an async version of AbstractProjectViewPane.isInitiallyVisible
+        // RIDER-105138 Unity Explorer isn't available in the Unity project
+        // UnityProjectLifetimeService.getLifetime(project).startBackgroundAsync {
             val hasUnityFileStructure = hasUnityFileStructure(project)
-            val discoverer = getInstance(project)
-            discoverer.isUnityProjectFolder.complete(hasUnityFileStructure)
-            discoverer.isUnityProject.complete(hasUnityFileStructure && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project))
-        }
+            isUnityProjectFolder.complete(hasUnityFileStructure)
+            isUnityProject.complete(hasUnityFileStructure && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project))
+        //}
     }
 
     // When Unity has generated sln, Library folder was also created. Lets' be more strict and check it.
@@ -46,15 +54,6 @@ class UnityProjectDiscoverer(val project: Project) {
     private fun isCorrectlyLoadedSolution(project: Project): Boolean {
         return project.solutionDescription is RdExistingSolution
     }
-
-    // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
-    // lives in the same folder as generated unity project (not the same as a class library project, which could live
-    // anywhere)
-    val isUnityProject = CompletableDeferred<Boolean>()
-
-    // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
-    val isUnityProjectFolder = CompletableDeferred<Boolean>()
-    val hasUnityReference = CompletableDeferred<Boolean>()
 
     companion object {
         fun getInstance(project: Project): UnityProjectDiscoverer = project.service()
