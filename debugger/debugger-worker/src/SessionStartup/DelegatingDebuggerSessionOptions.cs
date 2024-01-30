@@ -40,6 +40,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         public HotReloadInfo HotReload => DebuggerSessionOptionsImplementation.HotReload;
         public bool DisableRuntimeLoadTimeout => DebuggerSessionOptionsImplementation.DisableRuntimeLoadTimeout;
         public bool DisableSteppingHandlers => DebuggerSessionOptionsImplementation.DisableSteppingHandlers;
+        public IViewableProperty<bool> ShowElapsedTimeBetweenDebuggerStops => DebuggerSessionOptionsImplementation.ShowElapsedTimeBetweenDebuggerStops;
         public bool TrackHandledExceptionsInAsyncCode => DebuggerSessionOptionsImplementation.TrackHandledExceptionsInAsyncCode;
     }
 }
