@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
@@ -16,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.YamlTestComponents
   // resharper-yaml doesn't register any file types, not even .yaml, because there are no user facing features for yaml
   // for ReSharper, and because Rider has yaml support in the frontend. We also need to register some Unity file types
   // to be sure we can handle Unity specific yaml files.
-  [ShellComponent]
+  [ShellComponent(Instantiation.DemandAnyThreadSafe)]
   public class UnityTestsSpecificYamlFileExtensionMapping : FileTypeDefinitionExtensionMapping
   {
     private static readonly string[] ourFileExtensions =
