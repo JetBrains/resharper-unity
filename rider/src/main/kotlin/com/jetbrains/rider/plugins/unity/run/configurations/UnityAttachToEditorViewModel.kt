@@ -35,17 +35,19 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
             val editors = getEditorProcessInfos(processList)
 
             application.invokeLater({
-                editorProcesses.addAll(editors)
-                editorInstanceJsonStatus.set(editorInstanceJson.validateStatus(processList))
-                pid.value = if (editorInstanceJsonStatus.value != EditorInstanceJsonStatus.Valid && editors.count() == 1) {
-                    editors[0].pid
-                } else if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
-                    editorInstanceJson.contents?.process_id
-                } else {
-                    // If we're a class library project in the same folder as a Unity project, we can still guess the name
-                    editors.firstOrNull { project.solutionDirectory.name.equals(it.projectName, true) }?.pid
-                }
-            }, ModalityState.any())
+                                        editorProcesses.addAll(editors)
+                                        editorInstanceJsonStatus.set(editorInstanceJson.validateStatus(processList))
+                                        pid.value = if (editorInstanceJsonStatus.value != EditorInstanceJsonStatus.Valid && editors.count() == 1) {
+                                            editors[0].pid
+                                        }
+                                        else if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
+                                            editorInstanceJson.contents?.process_id
+                                        }
+                                        else {
+                                            // If we're a class library project in the same folder as a Unity project, we can still guess the name
+                                            editors.firstOrNull { project.solutionDirectory.name.equals(it.projectName, true) }?.pid
+                                        }
+                                    }, ModalityState.any())
         }
     }
 

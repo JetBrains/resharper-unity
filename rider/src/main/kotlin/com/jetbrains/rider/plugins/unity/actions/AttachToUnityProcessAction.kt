@@ -6,7 +6,7 @@ import com.jetbrains.rider.plugins.unity.run.UnityProcessPickerDialog
 
 class AttachToUnityProcessAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project?: return
+        val project = e.project ?: return
 
         val dialog = UnityProcessPickerDialog(project)
         dialog.show()

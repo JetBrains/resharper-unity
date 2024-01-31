@@ -12,7 +12,7 @@ class UxmlIconProvider : IconProvider(), DumbAware {
 
     companion object {
         // Don't forget to update UxmlProjectFileType list on the backend
-        val extensions: List<String> = arrayListOf( "uxml")
+        val extensions: List<String> = arrayListOf("uxml")
     }
 
     override fun getIcon(element: PsiElement, @Iconable.IconFlags flags: Int): Icon? {

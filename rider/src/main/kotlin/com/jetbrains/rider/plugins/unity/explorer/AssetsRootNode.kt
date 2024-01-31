@@ -31,7 +31,7 @@ class AssetsRootNode(project: Project, virtualFile: VirtualFile)
 
         val solutionEntity = WorkspaceModel.getInstance(myProject).getSolutionEntity() ?: return
         val descriptor = solutionEntity.descriptor as? RdSolutionDescriptor ?: return
-        val projectsCount =  WorkspaceProjectsCount.getInstance(project).get(solutionEntity)
+        val projectsCount = WorkspaceProjectsCount.getInstance(project).get(solutionEntity)
 
         if (isSolutionOrProjectsSync()) {
             presentation.presentSyncNode()

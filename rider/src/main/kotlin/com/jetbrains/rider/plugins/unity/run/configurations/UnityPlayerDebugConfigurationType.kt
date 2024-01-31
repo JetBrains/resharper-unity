@@ -53,7 +53,7 @@ class UnityAttachToPlayerFactory(type: ConfigurationType) : UnityConfigurationFa
     override fun getOptionsClass() = UnityPlayerDebugConfigurationOptions::class.java
 }
 
-class UnityPlayerDebugConfigurationOptions: RunConfigurationOptions() {
+class UnityPlayerDebugConfigurationOptions : RunConfigurationOptions() {
 
     /**
      * A string to identify a player type on a particular host
@@ -159,7 +159,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
     }
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment) =
-      throw UnsupportedOperationException("Synchronous call to getState is not supported")
+        throw UnsupportedOperationException("Synchronous call to getState is not supported")
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
         val type = UnityProcess.typeFromId(state.playerId!!)
@@ -283,8 +283,8 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 // a small but unlikely chance that this will return a helper for the wrong project
                 it.roleName == state.roleName && it.projectName == state.projectName
             }
-    }
         }
+    }
 
     private fun getVirtualPlayerStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
         // Refresh the port from the process list
@@ -409,16 +409,23 @@ private class UnityPlayerSettingsEditor : SettingsEditor<UnityPlayerDebugConfigu
         row(UnityBundle.message("run.configuration.player.label.id")) { id = this.label("").component }
         row(UnityBundle.message("run.configuration.player.label.address")) { address = label("").component }
         // Only available in 2019.3 and above. Not applicable to iOS or Android ADB
-        row(UnityBundle.message("run.configuration.player.label.project")) { projectName = label("").component }.visibleIf(HasNonEmptyText(projectName))
-        row(UnityBundle.message("run.configuration.player.label.role")) { roleName = label("").component }.visibleIf(HasNonEmptyText(roleName))
-        row(UnityBundle.message("run.configuration.player.label.virtualPlayerName")) { virtualPlayerName = label("").component }.visibleIf(HasNonEmptyText(virtualPlayerName))
-        row(UnityBundle.message("run.configuration.player.label.virtualPlayerId")) { virtualPlayerId = label("").component }.visibleIf(HasNonEmptyText(virtualPlayerId))
+        row(UnityBundle.message("run.configuration.player.label.project")) { projectName = label("").component }.visibleIf(
+            HasNonEmptyText(projectName))
+        row(UnityBundle.message("run.configuration.player.label.role")) { roleName = label("").component }.visibleIf(
+            HasNonEmptyText(roleName))
+        row(UnityBundle.message("run.configuration.player.label.virtualPlayerName")) { virtualPlayerName = label("").component }.visibleIf(
+            HasNonEmptyText(virtualPlayerName))
+        row(UnityBundle.message("run.configuration.player.label.virtualPlayerId")) { virtualPlayerId = label("").component }.visibleIf(
+            HasNonEmptyText(virtualPlayerId))
         // if Android/iOS
-        row(UnityBundle.message("run.configuration.player.label.deviceId")) { deviceId = label("").component }.visibleIf(HasNonEmptyText(deviceId))
+        row(UnityBundle.message("run.configuration.player.label.deviceId")) { deviceId = label("").component }.visibleIf(
+            HasNonEmptyText(deviceId))
         // Device name?
-        row(UnityBundle.message("run.configuration.player.label.deviceName")) { deviceName = label("").component }.visibleIf(HasNonEmptyText(deviceName))
+        row(UnityBundle.message("run.configuration.player.label.deviceName")) { deviceName = label("").component }.visibleIf(
+            HasNonEmptyText(deviceName))
         // if Android/UWP. Might be null on Android if we've not been able to collect it
-        row(UnityBundle.message("run.configuration.player.label.packageName")) { packageName = label("").component }.visibleIf(HasNonEmptyText(packageName))
+        row(UnityBundle.message("run.configuration.player.label.packageName")) { packageName = label("").component }.visibleIf(
+            HasNonEmptyText(packageName))
 
         // It might be nice to show a list of current players, like in the "Attach to Unity Process" dialog, highlighting this player
     }

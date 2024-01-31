@@ -11,7 +11,7 @@ object UnityPluginEnvironment {
      * environment. In case file is located under DotFiles directory, it should
      * be provided as a prefix.
      */
-    fun getBundledFile(fileName: String, vararg prefixes: String) : File {
+    fun getBundledFile(fileName: String, vararg prefixes: String): File {
         val prefixPath = prefixes.joinToString(separator = File.separator)
         val fullFileName = if (prefixes.isNotEmpty()) "$prefixPath${File.separator}$fileName" else fileName
 

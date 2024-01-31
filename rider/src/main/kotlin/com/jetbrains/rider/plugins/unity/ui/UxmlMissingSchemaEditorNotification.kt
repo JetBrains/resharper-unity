@@ -16,7 +16,6 @@ import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -32,7 +31,7 @@ import javax.swing.JComponent
 import kotlin.io.path.isDirectory
 import kotlin.io.path.notExists
 
-class UxmlMissingSchemaEditorNotification: EditorNotificationProvider {
+class UxmlMissingSchemaEditorNotification : EditorNotificationProvider {
 
     companion object {
         private const val DO_NOT_SHOW_VERSION_KEY = "unity.uxml.unsupported.version.do.not.show"
@@ -41,7 +40,7 @@ class UxmlMissingSchemaEditorNotification: EditorNotificationProvider {
     override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?>? {
         // We might be called before we have the connection to the Unity editor (via the backend). In which case, we'll
         // show the "Please start Unity message"
-        if (!project.isUnityProject.getCompletedOr(false) || !isUxmlFile(file)) return null
+        if (!project.isUnityProject.value || !isUxmlFile(file)) return null
 
         // Wait until the solution has finished loading before showing the notification panel. If we show it
         // while it's opening, we'll incorrectly show the "please start Unity" message because the protocols
@@ -89,7 +88,8 @@ class UxmlMissingSchemaEditorNotification: EditorNotificationProvider {
                         link = panel.createActionLabel(UnityUIBundle.message("link.label.generate.schema")) {
                             generateSchema(project, panel, link)
                         }
-                    } else {
+                    }
+                    else {
                         var link: HyperlinkLabel? = null
                         link = panel.createActionLabel(UnityUIBundle.message("link.label.start.unity.generate.schema")) {
                             @Suppress("DialogTitleCapitalization")
@@ -128,7 +128,8 @@ class UxmlMissingSchemaEditorNotification: EditorNotificationProvider {
                 // trackable dependency for the cached schema value.
                 VfsUtil.markDirtyAndRefresh(false, true, true, project.projectDir)
                 DaemonCodeAnalyzer.getInstance(project).restart()
-            } else {
+            }
+            else {
                 // This is either an exception in UxmlSchemaGenerator, an exception in the protocol, or we're unable to
                 // find the UxmlSchemaGenerator class via reflection.
                 panel.text(UnityUIBundle.message("label.unable.to.generate.schema.please.check.unity.console.for.errors"))

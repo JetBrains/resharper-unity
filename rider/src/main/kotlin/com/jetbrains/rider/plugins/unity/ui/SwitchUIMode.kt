@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.jetbrains.rider.plugins.unity.actions.isUnityProject
-import com.jetbrains.rider.plugins.unity.getCompletedOr
+import com.jetbrains.rider.plugins.unity.actions.valueOrDefault
 
 class SwitchUIMode : ToggleAction() {
     override fun getActionUpdateThread(): ActionUpdateThread {
@@ -19,14 +19,14 @@ class SwitchUIMode : ToggleAction() {
 
     override fun setSelected(e: AnActionEvent, value: Boolean) {
         val project = e.project ?: return
-        if(value)
+        if (value)
             UnityUIMinimizer.recoverFullUI(project)
         else
             UnityUIMinimizer.ensureMinimizedUI(project)
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = e.isUnityProject.getCompletedOr(false)
+        e.presentation.isEnabled = e.isUnityProject.valueOrDefault
         super.update(e)
     }
 }

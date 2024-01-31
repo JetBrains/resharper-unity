@@ -40,7 +40,9 @@ import java.awt.event.ItemEvent
 import java.awt.font.TextAttribute
 import javax.swing.*
 
-class ShaderVariantPopup(private val project: Project, private val interaction: ShaderVariantInteraction, @Nls val contextName: String) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
+class ShaderVariantPopup(private val project: Project,
+                         private val interaction: ShaderVariantInteraction,
+                         @Nls val contextName: String) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
     companion object {
         val ENABLED_SEPARATOR_FOREGROUND: Color = JBColor.namedColor("Group.separatorColor", JBColor(Gray.xCD, Gray.x51))
 
@@ -66,7 +68,8 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
                     activity?.finished {
                         listOf(ShaderVariantEventLogger.DEFINE_COUNT with interaction.availableKeywords)
                     }
-                } catch (e: Throwable) {
+                }
+                catch (e: Throwable) {
                     activity?.finished {
                         listOf(ShaderVariantEventLogger.DEFINE_COUNT with -1)
                     }
@@ -115,7 +118,7 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
                 add(SeparatorComponent(ENABLED_SEPARATOR_FOREGROUND, SeparatorOrientation.HORIZONTAL).apply {
                     setVGap(JBUI.CurrentTheme.List.buttonSeparatorInset())
                 })
-                
+
                 add(JBLabel(UnityBundle.message("shaderVariant.popup.keywords.label", contextName)).apply {
                     isEnabled = false
                     font = boldFont
@@ -128,22 +131,23 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
         add(otherEnabledKeywordsLabel.apply {
             isEnabled = false
         })
-        
+
         val horizontalContainer = JBPanel<JBPanel<*>>(HorizontalLayout(5))
 
-        horizontalContainer.add(LinkLabel<ActionGroup>(UnityBundle.message("shaderVariant.popup.reset.link.text"), AllIcons.Actions.InlayDropTriangle).apply {
-            horizontalTextPosition = SwingConstants.LEFT
-            setListener({ linkLabel, group ->
-                            val popup = ActionManager.getInstance().createActionPopupMenu("ShaderVariantWidget", group)
-                            JBPopupMenu.showBelow(linkLabel, popup.component)
-                        }, ResetActionGroup(this@ShaderVariantPopup))
-        }, HorizontalLayout.LEFT)
+        horizontalContainer.add(
+            LinkLabel<ActionGroup>(UnityBundle.message("shaderVariant.popup.reset.link.text"), AllIcons.Actions.InlayDropTriangle).apply {
+                horizontalTextPosition = SwingConstants.LEFT
+                setListener({ linkLabel, group ->
+                                val popup = ActionManager.getInstance().createActionPopupMenu("ShaderVariantWidget", group)
+                                JBPopupMenu.showBelow(linkLabel, popup.component)
+                            }, ResetActionGroup(this@ShaderVariantPopup))
+            }, HorizontalLayout.LEFT)
 
         horizontalContainer.add(ActionLink(UnityBundle.message("shaderVariant.popup.learnMore")) {
             BrowserUtil.open("https://jb.gg/wacf2b")
             ShaderVariantEventLogger.logLearnMore(project)
         }, HorizontalLayout.RIGHT)
-        
+
         add(horizontalContainer)
     }
 
@@ -247,14 +251,12 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
         }
     }
 
-    private fun initBuiltinDefineSymbols()
-    {
+    private fun initBuiltinDefineSymbols() {
         builtinDefineSymbolsComponent.isEnabled = false
         updateBuiltinDefineSymbols()
     }
 
-    private fun updateBuiltinDefineSymbols()
-    {
+    private fun updateBuiltinDefineSymbols() {
         builtinDefineSymbolsComponent.clear()
 
         val shaderApiDefineSymbol = (shaderApiComponent.selectedItem as ShaderApiEntry).defineSymbol
@@ -292,7 +294,8 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
             if (enabledKeywords.contains(keyword.name)) {
                 ++ownEnabledKeywordsCount
                 keyword.state = ShaderKeywordState.SUPPRESSED
-            } else {
+            }
+            else {
                 keyword.state = ShaderKeywordState.DISABLED
             }
         }
@@ -339,7 +342,8 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
 
         override fun update(e: AnActionEvent) {
             e.presentation.isEnabled = shaderVariantPopup.ownEnabledKeywordsCount > 0
-            e.presentation.text = UnityBundle.message("shaderVariant.popup.reset.for.context.text", shaderVariantPopup.contextName, shaderVariantPopup.ownEnabledKeywordsCount)
+            e.presentation.text = UnityBundle.message("shaderVariant.popup.reset.for.context.text", shaderVariantPopup.contextName,
+                                                      shaderVariantPopup.ownEnabledKeywordsCount)
         }
 
         override fun actionPerformed(e: AnActionEvent) {
@@ -357,7 +361,8 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
 
         override fun update(e: AnActionEvent) {
             e.presentation.isEnabled = shaderVariantPopup.enabledKeywords.size > 0
-            e.presentation.text = UnityBundle.message("shaderVariant.popup.reset.in.all.contexts.text", shaderVariantPopup.enabledKeywords.size)
+            e.presentation.text = UnityBundle.message("shaderVariant.popup.reset.in.all.contexts.text",
+                                                      shaderVariantPopup.enabledKeywords.size)
         }
 
         override fun actionPerformed(e: AnActionEvent) {
@@ -370,7 +375,8 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
     }
 
     private class ResetActionGroup(shaderVariantPopup: ShaderVariantPopup) : ActionGroup() {
-        private val actions = arrayOf<AnAction>(ResetCurrentContextKeywords(shaderVariantPopup), ResetAllContextsKeywords(shaderVariantPopup))
+        private val actions = arrayOf<AnAction>(ResetCurrentContextKeywords(shaderVariantPopup),
+                                                ResetAllContextsKeywords(shaderVariantPopup))
 
         override fun getChildren(e: AnActionEvent?): Array<AnAction> = actions
     }
@@ -379,12 +385,15 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
         companion object {
             val all = sequenceOf(
                 ShaderApiEntry(RdShaderApi.D3D11, UnityBundle.message("shaderVariant.popup.shaderApi.entries.d3d11"), "SHADER_API_D3D11"),
-                ShaderApiEntry(RdShaderApi.Vulkan, UnityBundle.message("shaderVariant.popup.shaderApi.entries.vulkan"), "SHADER_API_VULKAN"),
+                ShaderApiEntry(RdShaderApi.Vulkan, UnityBundle.message("shaderVariant.popup.shaderApi.entries.vulkan"),
+                               "SHADER_API_VULKAN"),
                 ShaderApiEntry(RdShaderApi.Metal, UnityBundle.message("shaderVariant.popup.shaderApi.entries.metal"), "SHADER_API_METAL"),
-                ShaderApiEntry(RdShaderApi.GlCore, UnityBundle.message("shaderVariant.popup.shaderApi.entries.glcore"), "SHADER_API_GLCORE"),
+                ShaderApiEntry(RdShaderApi.GlCore, UnityBundle.message("shaderVariant.popup.shaderApi.entries.glcore"),
+                               "SHADER_API_GLCORE"),
                 ShaderApiEntry(RdShaderApi.GlEs, UnityBundle.message("shaderVariant.popup.shaderApi.entries.gles"), "SHADER_API_GLES"),
                 ShaderApiEntry(RdShaderApi.GlEs3, UnityBundle.message("shaderVariant.popup.shaderApi.entries.gles3"), "SHADER_API_GLES3"),
-                ShaderApiEntry(RdShaderApi.D3D11L9X, UnityBundle.message("shaderVariant.popup.shaderApi.entries.d3d11l9x"), "SHADER_API_D3D11_9X"),
+                ShaderApiEntry(RdShaderApi.D3D11L9X, UnityBundle.message("shaderVariant.popup.shaderApi.entries.d3d11l9x"),
+                               "SHADER_API_D3D11_9X"),
             ).map { it.value to it }.toMap()
         }
 
@@ -394,8 +403,10 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
     private data class PlatformEntry(val value: RdShaderPlatform, @Nls val name: String, @NlsSafe val defineSymbol: String) {
         companion object {
             val all = sequenceOf(
-                PlatformEntry(RdShaderPlatform.Desktop, UnityBundle.message("shaderVariant.popup.shaderPlatform.entries.desktop"), "SHADER_API_DESKTOP"),
-                PlatformEntry(RdShaderPlatform.Mobile, UnityBundle.message("shaderVariant.popup.shaderPlatform.entries.mobile"), "SHADER_API_MOBILE")
+                PlatformEntry(RdShaderPlatform.Desktop, UnityBundle.message("shaderVariant.popup.shaderPlatform.entries.desktop"),
+                              "SHADER_API_DESKTOP"),
+                PlatformEntry(RdShaderPlatform.Mobile, UnityBundle.message("shaderVariant.popup.shaderPlatform.entries.mobile"),
+                              "SHADER_API_MOBILE")
             ).map { it.value to it }.toMap()
         }
 

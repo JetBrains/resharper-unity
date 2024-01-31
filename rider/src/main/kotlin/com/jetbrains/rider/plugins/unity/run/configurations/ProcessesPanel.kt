@@ -107,13 +107,13 @@ class ProcessesPanel : PanelWithButtons() {
         }
 
         return ToolbarDecorator.createDecorator(table!!)
-                .addExtraAction(object: AnAction(UnityBundle.message("button.refresh"), null, AllIcons.Actions.Refresh){
-                    override fun actionPerformed(p0: AnActionEvent) {
-                        vm.refreshProcessList()
-                        updateSelection(table!!)
-                    }
-                })
-                .createPanel()
+            .addExtraAction(object : AnAction(UnityBundle.message("button.refresh"), null, AllIcons.Actions.Refresh) {
+                override fun actionPerformed(p0: AnActionEvent) {
+                    vm.refreshProcessList()
+                    updateSelection(table!!)
+                }
+            })
+            .createPanel()
     }
 
     private fun updateSelection(table: JBTable) {

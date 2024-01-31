@@ -84,7 +84,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
         }
     }
 
-    private fun addPackage(unityPackage: UnityPackage, packageFolder: VirtualFile?,  entityStorage: MutableEntityStorage) {
+    private fun addPackage(unityPackage: UnityPackage, packageFolder: VirtualFile?, entityStorage: MutableEntityStorage) {
         logger.trace("Adding Unity package: ${unityPackage.id}")
 
         val contentRootEntity = if (packageFolder != null && unityPackage.source != UnityPackageSource.Unknown) {
@@ -95,7 +95,8 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
                 entityStorage.getOrCreateRiderModuleEntity(),
                 RiderUnityPackageEntitySource
             )
-        } else null
+        }
+        else null
 
         val entity = UnityPackageEntity(unityPackage, RiderUnityPackageEntitySource) {
             this.descriptor = unityPackage
@@ -121,7 +122,8 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
             val entityStorage = initialEntityStorage
             if (entityStorage != null) {
                 action.invoke(entityStorage)
-            } else {
+            }
+            else {
                 WorkspaceModel.getInstance(project).updateProjectModel("Unity: update packages", action)
             }
         }

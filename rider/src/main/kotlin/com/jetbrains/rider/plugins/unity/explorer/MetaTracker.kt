@@ -16,6 +16,7 @@ import com.intellij.util.PathUtil
 import com.intellij.util.application
 import com.jetbrains.rd.platform.util.getLogger
 import com.jetbrains.rd.util.addUnique
+import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater
@@ -30,9 +31,10 @@ import kotlin.io.path.name
 
 class MetaTrackerInitializer : ProjectActivity {
     override suspend fun execute(project: Project) {
-        if (UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder.await())
-        {
-            MetaTracker.getInstance().register(project)
+        val lifetime = UnityProjectLifetimeService.getLifetime(project)
+        UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder.adviseUntil(lifetime) {
+            if (it) MetaTracker.getInstance().register(project)
+            it
         }
     }
 }
@@ -42,6 +44,7 @@ class MetaTracker : VfsBackendRequester {
 
     private val lock = Object()
     private var projects = mutableSetOf<Project>()
+
     companion object {
         fun getInstance() = service<MetaTracker>()
         private val logger = getLogger<MetaTracker>()
@@ -57,7 +60,9 @@ class MetaTracker : VfsBackendRequester {
 
     fun onEvent(events: MutableList<out VFileEvent>) {
 
-        val unityProjects = synchronized(lock) { mutableListOf<Project>().also { it.addAll(projects) } }.filter { !isUndoRedoInProgress(it) && !it.isDisposed }.toList()
+        val unityProjects = synchronized(lock) { mutableListOf<Project>().also { it.addAll(projects) } }.filter {
+            !isUndoRedoInProgress(it) && !it.isDisposed
+        }.toList()
 
         for (event in events) {
             if (!isValidEvent(event)) continue
@@ -172,7 +177,7 @@ class MetaTracker : VfsBackendRequester {
 
     private fun getMetaFileName(fileName: String) = "$fileName.meta"
 
-    private fun shouldCreateMetaFile(project: Project, assetFile: VirtualFile?, parent: VirtualFile):Boolean {
+    private fun shouldCreateMetaFile(project: Project, assetFile: VirtualFile?, parent: VirtualFile): Boolean {
         // avoid adding a meta file for:
         // a hidden Asset (like `Documentation~`), but not its children
         // if parent folder (except SourceRoots) doesn't have meta file, this would cover children of the HiddenAssetFolder, see RIDER-93037
@@ -277,7 +282,7 @@ class MetaTracker : VfsBackendRequester {
     }
 }
 
-class MetaTrackerListener: BulkFileListener {
+class MetaTrackerListener : BulkFileListener {
     override fun after(events: MutableList<out VFileEvent>) {
         MetaTracker.getInstance().onEvent(events)
     }

@@ -23,7 +23,7 @@ class UnityUIMinimizer : ProjectActivity {
                 val toolWindowManager = ToolWindowManager.getInstance(project)
 
                 val nuget = toolWindowManager.getToolWindow("NuGet")
-                    ?: return@doWhenFocusSettlesDown
+                            ?: return@doWhenFocusSettlesDown
                 nuget.isShowStripeButton = false
             }
         }
@@ -39,22 +39,28 @@ class UnityUIMinimizer : ProjectActivity {
             IdeFocusManager.getInstance(project).doWhenFocusSettlesDown {
                 val toolWindowManager = ToolWindowManager.getInstance(project)
                 val toolWindow = toolWindowManager.getToolWindow("NuGet")
-                    ?: return@doWhenFocusSettlesDown
+                                 ?: return@doWhenFocusSettlesDown
                 toolWindow.isShowStripeButton = true
             }
         }
     }
 
     override suspend fun execute(project: Project) {
-        val isUnityProject = UnityProjectDiscoverer.getInstance(project).isUnityProject.await()
-        if (!isUnityProject) return
         val lifetime = UnityProjectLifetimeService.getLifetime(project)
-        lifetime.startOnUiAsync {
-            if (project.isDisposed) return@startOnUiAsync
+        val unityUIManager = UnityUIManager.getInstance(project)
 
-            val unityUIManager = UnityUIManager.getInstance(project)
-            if (unityUIManager.hasMinimizedUi.value == null || unityUIManager.hasMinimizedUi.hasTrueValue())
-                ensureMinimizedUI(project)
+        UnityProjectDiscoverer.getInstance(project).isUnityProject.advise(lifetime) {
+            lifetime.startOnUiAsync {
+                if (it) {
+                    if (project.isDisposed) return@startOnUiAsync
+                    if (unityUIManager.hasMinimizedUi.value == null || unityUIManager.hasMinimizedUi.hasTrueValue())
+                        ensureMinimizedUI(project)
+                }
+                else {
+                    if (project.isDisposed) return@startOnUiAsync
+                    recoverFullUI(project)
+                }
+            }
         }
     }
 }

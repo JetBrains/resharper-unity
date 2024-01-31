@@ -10,7 +10,7 @@ class UnityPluginShowSettingsAction : DumbAwareAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project?: return
+        val project = e.project ?: return
         ShowSettingsUtil.getInstance().showSettingsDialog(project, UnityPluginActionsBundle.message("configurable.name.unity.engine"))
     }
 }

@@ -63,7 +63,7 @@ class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyLis
         if (node.stackTrace == "") {
             val regex = Regex("""(?<path>^.*(?=\())\((?<line>\d+(?=,)),(?<col>\d+(?=\)))""")
             val match = regex.find(node.message)
-            var col =0
+            var col = 0
             if (match != null) {
                 col = match.groups["col"]?.value?.toInt()?.minus(1) ?: 0
             }

@@ -65,7 +65,7 @@ object UnityRunUtil {
                 || canonicalName.equals("unity", true)
                 || canonicalName.equals("Unity Editor", true)
                 || canonicalName.equals("Unity_s.debug", true)
-                )
+               )
     }
 
     fun isValidUnityEditorProcess(pid: Int, processList: Array<out ProcessInfo>): Boolean {
@@ -123,7 +123,8 @@ object UnityRunUtil {
         val editorInstanceJson = EditorInstanceJson.getInstance(project)
         return if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid && editorInstanceJson.contents?.process_id == processInfo.pid) {
             project.name
-        } else null
+        }
+        else null
     }
 
     private fun parseProcessInfoFromCommandLine(processInfo: ProcessInfo, canonicalProjectName: String?): UnityLocalProcessExtraDetails {
@@ -187,14 +188,14 @@ object UnityRunUtil {
 
     private fun tokenizeCommandLine(processInfo: ProcessInfo): List<String> {
         return tokenizeQuotedCommandLine(processInfo)
-            ?: tokenizeUnquotedCommandLine(processInfo)
+               ?: tokenizeUnquotedCommandLine(processInfo)
     }
 
     private fun tokenizeQuotedCommandLine(processInfo: ProcessInfo): List<String>? {
         return getQuotedCommandLine(processInfo)?.let {
             val tokens = mutableListOf<String>()
             val tokenizer = CommandLineTokenizer(it)
-            while(tokenizer.hasMoreTokens())
+            while (tokenizer.hasMoreTokens())
                 tokens.add(tokenizer.nextToken())
             tokens
         }
@@ -251,7 +252,8 @@ object UnityRunUtil {
                         }
                         return@joinToString s
                     }
-                } catch (t: Throwable) {
+                }
+                catch (t: Throwable) {
                     logger.warn("Error while quoting command line: ${processInfo.commandLine}", t)
                 }
                 return null
@@ -268,7 +270,8 @@ object UnityRunUtil {
         return Paths.get(path).fileName.toString()
     }
 
-    private fun fillProjectNamesFromWorkingDirectory(processList: List<ProcessInfo>, projectNames: MutableMap<Int, UnityLocalProcessExtraDetails>) {
+    private fun fillProjectNamesFromWorkingDirectory(processList: List<ProcessInfo>,
+                                                     projectNames: MutableMap<Int, UnityLocalProcessExtraDetails>) {
         // Windows requires reading process memory. Unix is so much nicer.
         if (SystemInfo.isWindows) return
 

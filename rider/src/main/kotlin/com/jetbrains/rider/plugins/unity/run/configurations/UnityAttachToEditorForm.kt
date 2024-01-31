@@ -34,7 +34,7 @@ class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) {
                 commentRow = row {
                     label("").customize(UnscaledGaps.Companion.EMPTY)
                         .comment(UnityBundle.message(
-                        "comment.label.text.editorinstance.json.file.required.to.automatically.configure.run.configuration"))
+                            "comment.label.text.editorinstance.json.file.required.to.automatically.configure.run.configuration"))
                 }
             }
 
@@ -51,11 +51,14 @@ class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) {
 
         viewModel.editorInstanceJsonStatus.advise(viewModel.lifetime) {
             editorInstanceJsonError.set(when (it) {
-                                                EditorInstanceJsonStatus.Error -> UnityBundle.message("error.text.error.reading.library.editorinstance.json")
-                                                EditorInstanceJsonStatus.Missing -> UnityBundle.message("error.text.cannot.read.library.editorinstance.json.file.is.missing")
-                                                EditorInstanceJsonStatus.Outdated -> UnityBundle.message("error.text.outdated.process.id.from.library.editorinstance.json")
-                                                else -> ""
-                                            })
+                                            EditorInstanceJsonStatus.Error -> UnityBundle.message(
+                                                "error.text.error.reading.library.editorinstance.json")
+                                            EditorInstanceJsonStatus.Missing -> UnityBundle.message(
+                                                "error.text.cannot.read.library.editorinstance.json.file.is.missing")
+                                            EditorInstanceJsonStatus.Outdated -> UnityBundle.message(
+                                                "error.text.outdated.process.id.from.library.editorinstance.json")
+                                            else -> ""
+                                        })
 
             commentRow.visible(it != EditorInstanceJsonStatus.Valid)
             usingProcessRow.visible(it == EditorInstanceJsonStatus.Valid)
@@ -68,9 +71,8 @@ class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) {
             val value = it?.toString()
             if (value == null)
                 processIdInfo.set("")
-            else
-            {
-                processIdInfo.set( UnityBundle.message("using.process.id.0.from.library.editorinstance.json", value))
+            else {
+                processIdInfo.set(UnityBundle.message("using.process.id.0.from.library.editorinstance.json", value))
             }
         }
     }

@@ -24,13 +24,15 @@ class UssFileReferenceSet(element: PsiElement,
                        false,
                        suitableFileTypes) {
 
-    class UssFileTypeCompletionFilter(private val myElement: PsiElement, private val isFont: Boolean, private val fileTypes: Array<FileType>) : Condition<PsiFileSystemItem> {
+    class UssFileTypeCompletionFilter(private val myElement: PsiElement,
+                                      private val isFont: Boolean,
+                                      private val fileTypes: Array<FileType>) : Condition<PsiFileSystemItem> {
         override fun value(item: PsiFileSystemItem?): Boolean {
             if (item == null) return false
 
-            if (item.parent?.virtualFile == item.project.projectDir.findChild("Packages")){
+            if (item.parent?.virtualFile == item.project.projectDir.findChild("Packages")) {
                 val allPackages = WorkspaceModel.getInstance(item.project).getPackages()
-                return allPackages.map{it.packageId}.contains(item.name)
+                return allPackages.map { it.packageId }.contains(item.name)
             }
 
             if (item.isDirectory()) {
@@ -73,7 +75,7 @@ class UssFileReferenceSet(element: PsiElement,
     private var prevReferenceText: String? = null
     override fun createFileReference(range: TextRange?, index: Int, text: String?): FileReference? {
 
-        if (index == 0){
+        if (index == 0) {
             prevReferenceText = text
         }
 

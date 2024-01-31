@@ -17,10 +17,11 @@ import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 
 class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewUpdater(project) {
 
-    private var cachePane : UnityExplorer? = null
-    private val pane get() = cachePane ?: UnityExplorer.tryGetInstance(project).apply {
-        cachePane = this
-    }
+    private var cachePane: UnityExplorer? = null
+    private val pane
+        get() = cachePane ?: UnityExplorer.tryGetInstance(project).apply {
+            cachePane = this
+        }
 
     init {
         val listener = object : WorkspaceModelChangeListener {

@@ -14,7 +14,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
-import com.jetbrains.rider.plugins.unity.*
+import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
+import com.jetbrains.rider.plugins.unity.isUnityProject
+import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
@@ -32,9 +35,9 @@ import org.jdom.Element
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: ConfigurationFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
-    RunConfigurationWithSuppressedDefaultRunAction,
-    RemoteConfiguration,
-    WithoutOwnBeforeRunSteps {
+      RunConfigurationWithSuppressedDefaultRunAction,
+      RemoteConfiguration,
+      WithoutOwnBeforeRunSteps {
 
     // TEMP, will be removed in 19.2
     companion object {
@@ -43,10 +46,17 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
     // TODO: We don't serialise these properties, but the base classes does serialise its own "address" and "port"
-    @Transient override var port: Int = -1
-    @Transient override var address: String = "127.0.0.1"
-    @Transient var pid: Int? = null
-    @Transient override var listenPortForConnections: Boolean = false
+    @Transient
+    override var port: Int = -1
+
+    @Transient
+    override var address: String = "127.0.0.1"
+
+    @Transient
+    var pid: Int? = null
+
+    @Transient
+    override var listenPortForConnections: Boolean = false
 
     override fun clone(): RunConfiguration {
         val configuration = super.clone() as UnityAttachToEditorRunConfiguration
@@ -69,7 +79,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                 }
 
                 // when the process is disconnected, we would not be able to call startProfiling anyway
-                val processId = if (project.solution.frontendBackendModel.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Disconnected)
+                val processId = if (project.solution.frontendBackendModel.unityEditorState.valueOrDefault(
+                        UnityEditorState.Disconnected) != UnityEditorState.Disconnected)
                     project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId ?: pid
                 else null
 
@@ -78,7 +89,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                                                                               finder.getApplicationVersion()), environment) { _, _, _ ->
                     run {
                         if (executorId == "dotTrace Profiler") {
-                            project.solution.frontendBackendModel.startProfiling.start(UnityProjectLifetimeService.getLifetime(project), play)
+                            project.solution.frontendBackendModel.startProfiling.start(UnityProjectLifetimeService.getLifetime(project),
+                                                                                       play)
                         }
                     }
                 }
@@ -90,14 +102,16 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID) {
             val params = ExeConfigurationParameters(
                 exePath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString(),
-                programParameters = mutableListOf<String>().withProjectPath(project).withDebugCodeOptimization().withRiderPath().toProgramParameters(),
+                programParameters = mutableListOf<String>().withProjectPath(
+                    project).withDebugCodeOptimization().withRiderPath().toProgramParameters(),
                 workingDirectory = project.solutionDirectory.canonicalPath,
                 envs = hashMapOf(),
                 isPassParentEnvs = true,
                 useExternalConsole = false
             )
             val exeConfiguration = UnityExeConfiguration(name, project,
-                ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java).factory, params)
+                                                         ConfigurationTypeUtil.findConfigurationType(
+                                                             UnityExeConfigurationType::class.java).factory, params)
             return UnityAttachToEditorProfileState(
                 UnityExeDebugProfileState(exeConfiguration, this, environment), this, environment)
         }
@@ -127,7 +141,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             // we're not inside a Unity project folder, then we can't automatically attach, so throw an error and show the
             // dialog
 
-            if (!project.isUnityProjectFolder.getCompletedOr(false)) {
+            if (!project.isUnityProjectFolder.value) {
                 throw RuntimeConfigurationError(
                     UnityBundle.message("dialog.message.unable.to.automatically.discover.correct.unity.editor.to.debug"))
             }
@@ -135,7 +149,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         super.checkRunnerSettings(runner, runnerSettings, configurationPerRunnerSettings)
     }
 
-    fun updatePidAndPort() : Boolean {
+    fun updatePidAndPort(): Boolean {
 
         val processList = OSProcessUtil.getProcessList()
 
@@ -145,15 +159,15 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             // Try to reuse the previously attached process ID, if it's still valid. If we don't have a previous pid, or
             // the process is no longer valid, try to find the best match, via EditorInstance.json or project name.
             pid = checkValidEditorProcess(pid, processList)
-                ?: findUnityEditorProcessFromEditorInstanceJson(processList)
-                ?: findUnityEditorProcessFromProjectName(processList)
+                  ?: findUnityEditorProcessFromEditorInstanceJson(processList)
+                  ?: findUnityEditorProcessFromProjectName(processList)
             if (pid == null) {
                 return false
             }
             port = convertPidToDebuggerPort(pid!!)
             return true
         }
-        catch(t: Throwable) {
+        catch (t: Throwable) {
             pid = null
             throw t
         }
@@ -183,7 +197,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
         // If we're a generated project, or a class library project that lives in the root of a Unity project alongside
         // a generated project, we can use the project dir as the expected project name.
-        if (project.isUnityProject.getCompletedOr(false)) {
+        if (project.isUnityProject.value) {
             val expectedProjectName = project.solutionDirectory.name
             val entry = map.entries.firstOrNull { expectedProjectName.equals(it.value.projectName, true) }
             if (entry != null) {

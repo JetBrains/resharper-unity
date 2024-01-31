@@ -22,7 +22,6 @@ import com.jetbrains.rd.util.reactive.*
 import com.jetbrains.rider.document.getFirstEditor
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.ScriptCompilationDuringPlay
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
@@ -89,7 +88,7 @@ class UnityAutoSaveConfigureNotification : ProjectActivity {
         val lifetimeDefinition = UnityProjectLifetimeService.getLifetime(project).createNested()
         withContext(Dispatchers.EDT) {
             project.solution.isLoaded.whenTrue(lifetimeDefinition) {
-                if (!propertiesComponent.getBoolean(settingName) && project.isUnityProject.getCompletedOr(false)) {
+                if (!propertiesComponent.getBoolean(settingName) && project.isUnityProject.value) {
 
                     val eventMulticaster = EditorFactory.getInstance().eventMulticaster
                     val generalSettings = GeneralSettings.getInstance()

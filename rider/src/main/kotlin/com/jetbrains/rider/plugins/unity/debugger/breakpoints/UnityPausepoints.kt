@@ -24,7 +24,10 @@ import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 import java.awt.Point
 
-fun convertToPausepoint(project: Project, breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>, providedEditor: Editor? = null, providedIconRenderer: GutterIconRenderer? = null) {
+fun convertToPausepoint(project: Project,
+                        breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>,
+                        providedEditor: Editor? = null,
+                        providedIconRenderer: GutterIconRenderer? = null) {
     UIUtil.invokeLaterIfNeeded {
         application.runWriteAction {
             val balloonLocation = tryGetIconRendererLocation(project, providedEditor, breakpoint, providedIconRenderer)
@@ -36,7 +39,8 @@ fun convertToPausepoint(project: Project, breakpoint: XLineBreakpoint<DotNetLine
             breakpointManager.removeBreakpoint(breakpoint)
 
             val unityPausepointType = XDebuggerUtil.getInstance().findBreakpointType(UnityPausepointBreakpointType::class.java)
-            val newBreakpoint = breakpointManager.addLineBreakpoint(unityPausepointType, breakpoint.fileUrl, breakpoint.line, breakpoint.properties).apply {
+            val newBreakpoint = breakpointManager.addLineBreakpoint(unityPausepointType, breakpoint.fileUrl, breakpoint.line,
+                                                                    breakpoint.properties).apply {
                 this.suspendPolicy = SuspendPolicy.NONE
 
                 // Copy over condition + dependent breakpoint details. Hit count is automatically copied from properties
@@ -52,7 +56,10 @@ fun convertToPausepoint(project: Project, breakpoint: XLineBreakpoint<DotNetLine
     }
 }
 
-fun convertToLineBreakpoint(project: Project, breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>, providedEditor: Editor? = null, providedIconRenderer: GutterIconRenderer? = null) {
+fun convertToLineBreakpoint(project: Project,
+                            breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>,
+                            providedEditor: Editor? = null,
+                            providedIconRenderer: GutterIconRenderer? = null) {
     UIUtil.invokeLaterIfNeeded {
         application.runWriteAction {
             val balloonLocation = tryGetIconRendererLocation(project, providedEditor, breakpoint, providedIconRenderer)
@@ -64,7 +71,8 @@ fun convertToLineBreakpoint(project: Project, breakpoint: XLineBreakpoint<DotNet
             breakpointManager.removeBreakpoint(breakpoint)
 
             val dotnetLineBreakpointType = XDebuggerUtil.getInstance().findBreakpointType(DotNetLineBreakpointType::class.java)
-            val newBreakpoint = breakpointManager.addLineBreakpoint(dotnetLineBreakpointType, breakpoint.fileUrl, breakpoint.line, breakpoint.properties).apply {
+            val newBreakpoint = breakpointManager.addLineBreakpoint(dotnetLineBreakpointType, breakpoint.fileUrl, breakpoint.line,
+                                                                    breakpoint.properties).apply {
                 // Copy over condition + dependent breakpoint details. Hit count is automatically copied from properties
                 this.conditionExpression = breakpoint.conditionExpression
 
@@ -78,7 +86,10 @@ fun convertToLineBreakpoint(project: Project, breakpoint: XLineBreakpoint<DotNet
     }
 }
 
-fun tryGetIconRendererLocation(project: Project, providedEditor: Editor?, breakpoint: XLineBreakpoint<*>, providedIconRenderer: GutterIconRenderer?): Point? {
+fun tryGetIconRendererLocation(project: Project,
+                               providedEditor: Editor?,
+                               breakpoint: XLineBreakpoint<*>,
+                               providedIconRenderer: GutterIconRenderer?): Point? {
     val editor = tryGetEditor(project, providedEditor) ?: return null
     val renderer = tryGetGutterIconRenderer(breakpoint, providedIconRenderer) ?: return null
 

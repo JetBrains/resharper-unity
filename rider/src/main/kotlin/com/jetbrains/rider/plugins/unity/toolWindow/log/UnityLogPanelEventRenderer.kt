@@ -17,14 +17,18 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>(), List
     private val countLabel = JLabel()
     private val view = JPanel(MigLayout("ins 0, fillx, gap 0, novisualpadding"))
 
-    init{
+    init {
         view.add(this, "wmin 0, pushx")
         countLabel.foreground = Color.GRAY
 
         view.add(countLabel, "east") //, gapbefore ${JBUI.scale(20)}, gapafter ${JBUI.scale(10)}
     }
 
-    override fun getListCellRendererComponent(list: JList<out LogPanelItem>, item: LogPanelItem, index: Int, selected: Boolean, hasFocus: Boolean): Component {
+    override fun getListCellRendererComponent(list: JList<out LogPanelItem>,
+                                              item: LogPanelItem,
+                                              index: Int,
+                                              selected: Boolean,
+                                              hasFocus: Boolean): Component {
         this.clear()
         this.font = list.font
         this.mySelected = selected
@@ -33,7 +37,8 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>(), List
         val bg =
             if (UIUtil.isUnderWin10LookAndFeel()) {
                 if (selected) list.selectionBackground else list.background
-            } else {
+            }
+            else {
                 if (selected) list.selectionBackground else null
             }
         this.background = bg
@@ -43,7 +48,7 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>(), List
         this.setPaintFocusBorder(hasFocus)
         this.customizeCellRenderer(list, item, index, selected, hasFocus)
 
-        if (item.count>1)
+        if (item.count > 1)
             countLabel.text = " ×${item.count} "
         else
             countLabel.text = ""
@@ -53,7 +58,11 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>(), List
 
     private val tokenizer: UnityLogTokenizer = UnityLogTokenizer()
 
-    override fun customizeCellRenderer(list: JList<out LogPanelItem>, event: LogPanelItem?, index: Int, selected: Boolean, hasFocus: Boolean) {
+    override fun customizeCellRenderer(list: JList<out LogPanelItem>,
+                                       event: LogPanelItem?,
+                                       index: Int,
+                                       selected: Boolean,
+                                       hasFocus: Boolean) {
         if (event != null) {
             icon = RowIcon(event.type.getIcon(), event.mode.getIcon())
             val tokens = tokenizer.tokenize(event.shortPresentation)
@@ -77,7 +86,7 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>(), List
                         else
                             SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, token.color)
                     }
-                    else if(token.color != null) {
+                    else if (token.color != null) {
                         style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, token.color)
                     }
 

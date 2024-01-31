@@ -27,7 +27,7 @@ import java.nio.file.Paths
 import kotlin.io.path.exists
 import kotlin.io.path.readBytes
 
-class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
+class UnityYamlAutomaticExternalMergeTool : AutomaticExternalMergeTool {
     companion object {
         private val myLogger = Logger.getInstance(UnityYamlAutomaticExternalMergeTool::class.java)
     }
@@ -51,35 +51,42 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             val mergeParametersFromBackend = project.solution.frontendBackendModel.backendSettings.mergeParameters.valueOrThrow
             val mergeParameters = if (mergeParametersFromBackend.contains(" -p ")) {
                 "$mergeParametersFromBackend $premergedBase $premergedRight"
-            } else {
+            }
+            else {
                 mergeParametersFromBackend
             }
 
             myLogger.info("PreMerge with $mergeExePath $mergeParameters")
             val externalTool = ExternalDiffSettings.ExternalTool(programPath = mergeExePath, argumentPattern = mergeParameters,
-                isMergeTrustExitCode = isMergeTrustExitCode, groupName = ExternalDiffSettings.ExternalToolGroup.MERGE_TOOL
+                                                                 isMergeTrustExitCode = isMergeTrustExitCode,
+                                                                 groupName = ExternalDiffSettings.ExternalToolGroup.MERGE_TOOL
             )
             if (!tryExecuteMerge(project, externalTool, request as ThreesideMergeRequest)) {
                 if (premergedBase.exists() && premergedRight.exists()) {
                     myLogger.info("PreMerge partially successful. Call ShowMergeBuiltin on pre-merged.")
                     val output: VirtualFile = (request.outputContent as FileContent).file
                     val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
-                    val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, request.title, request.contentTitles)
+                    val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, request.title,
+                                                                                        request.contentTitles)
                     MergeCallback.retarget(request, preMerged)
 
                     DiffManagerEx.getInstance().showMergeBuiltin(project, preMerged)
-                } else {
+                }
+                else {
                     myLogger.info("PreMerge unsuccessful. Call ShowMergeBuiltin.")
                     DiffManagerEx.getInstance().showMergeBuiltin(project, request)
                 }
             }
-        } finally {
+        }
+        finally {
             if (premergedBase.exists()) premergedBase.delete()
             if (premergedRight.exists()) premergedRight.delete()
         }
     }
 
-    private fun tryExecuteMerge(project: Project?, externalMergeTool: ExternalDiffSettings.ExternalTool, request: ThreesideMergeRequest): Boolean {
+    private fun tryExecuteMerge(project: Project?,
+                                externalMergeTool: ExternalDiffSettings.ExternalTool,
+                                request: ThreesideMergeRequest): Boolean {
         // see reference impl "com.intellij.diff.tools.external.ExternalDiffToolUtil#executeMerge"
         request.onAssigned(true)
         try {
@@ -90,10 +97,12 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             }
 
             return false
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             myLogger.error("UnityYamlMerge failed.", e)
             return false
-        } finally {
+        }
+        finally {
             request.onAssigned(false)
         }
     }
@@ -119,6 +128,6 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
 
     private fun canProcessOutputContent(content: DiffContent): Boolean {
         return content is FileContent && content.file.isInLocalFileSystem
-            && content.file.fileType == UnityYamlFileType
+               && content.file.fileType == UnityYamlFileType
     }
 }

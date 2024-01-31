@@ -21,32 +21,39 @@ internal class TextureDebuggerCollector : CounterUsagesCollector() {
         val STAGE_CLASS = EventFields.Enum<StageType>("stage")
         val TIME_SINCE_START = EventFields.Long("time_since_start")
         val EXECUTION_RESULT_TYPE: EnumEventField<ExecutionResult> = EventFields.Enum("finish_type", ExecutionResult::class.java)
-        val TEXTURE_DEBUGGING_ACTIVITY: IdeActivityDefinition = GROUP.registerIdeActivity(null, emptyArray(), arrayOf(EXECUTION_RESULT_TYPE))
-        val TEXTURE_DEBUGGING_STAGE: VarargEventId = TEXTURE_DEBUGGING_ACTIVITY.registerStage("stage", arrayOf(STAGE_CLASS, TIME_SINCE_START, TEXTURE_WIDTH, TEXTURE_HEIGHT))
+        val TEXTURE_DEBUGGING_ACTIVITY: IdeActivityDefinition = GROUP.registerIdeActivity(null, emptyArray(),
+                                                                                          arrayOf(EXECUTION_RESULT_TYPE))
+        val TEXTURE_DEBUGGING_STAGE: VarargEventId = TEXTURE_DEBUGGING_ACTIVITY.registerStage("stage",
+                                                                                              arrayOf(STAGE_CLASS, TIME_SINCE_START,
+                                                                                                      TEXTURE_WIDTH, TEXTURE_HEIGHT))
 
         fun registerStageStarted(activityAtomicReference: AtomicReference<StructuredIdeActivity?>, stage: StageType,
                                  textureInfo: UnityTextureInfo? = null) {
 
             val activity = activityAtomicReference.get()
-            if(textureInfo == null)
-                activity?.stageStarted(TEXTURE_DEBUGGING_STAGE) { listOf(
-                    STAGE_CLASS.with(stage),
-                    TIME_SINCE_START.with(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - activity.startedTimestamp))
-                )}
+            if (textureInfo == null)
+                activity?.stageStarted(TEXTURE_DEBUGGING_STAGE) {
+                    listOf(
+                        STAGE_CLASS.with(stage),
+                        TIME_SINCE_START.with(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - activity.startedTimestamp))
+                    )
+                }
             else
-                activity?.stageStarted(TEXTURE_DEBUGGING_STAGE) { listOf(
-                    STAGE_CLASS.with(stage),
-                    TIME_SINCE_START.with(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - activity.startedTimestamp)),
-                    TEXTURE_WIDTH.with(textureInfo.width),
-                    TEXTURE_HEIGHT.with(textureInfo.height)
-                )}
+                activity?.stageStarted(TEXTURE_DEBUGGING_STAGE) {
+                    listOf(
+                        STAGE_CLASS.with(stage),
+                        TIME_SINCE_START.with(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - activity.startedTimestamp)),
+                        TEXTURE_WIDTH.with(textureInfo.width),
+                        TEXTURE_HEIGHT.with(textureInfo.height)
+                    )
+                }
         }
 
-        fun createTextureDebuggingActivity(project: Project?):AtomicReference<StructuredIdeActivity?> {
+        fun createTextureDebuggingActivity(project: Project?): AtomicReference<StructuredIdeActivity?> {
             return AtomicReference(TEXTURE_DEBUGGING_ACTIVITY.started(project))
         }
 
-        fun finishActivity(activityAtomicReference:  AtomicReference<StructuredIdeActivity?>, finishType: ExecutionResult) {
+        fun finishActivity(activityAtomicReference: AtomicReference<StructuredIdeActivity?>, finishType: ExecutionResult) {
             val activity = activityAtomicReference.getAndSet(null)
             activity?.finished { listOf(EXECUTION_RESULT_TYPE.with(finishType)) }
         }

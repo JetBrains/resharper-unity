@@ -30,7 +30,7 @@ class UnityAttachAndroidAdbProfileState(private val project: Project,
         val model = project.solution.frontendBackendModel
         var sdkRoot = model.getAndroidSdkRoot.startSuspending(lifetime, Unit)?.let { Path.of(it) }
         if (sdkRoot == null || !sdkRoot.isDirectory()) {
-           sdkRoot = UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("AndroidPlayer")
+            sdkRoot = UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("AndroidPlayer")
         }
 
         if (sdkRoot?.isDirectory() == false) {

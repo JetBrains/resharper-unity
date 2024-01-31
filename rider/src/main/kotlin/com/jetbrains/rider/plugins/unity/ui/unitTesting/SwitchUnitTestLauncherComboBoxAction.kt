@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -15,6 +14,7 @@ import javax.swing.JComponent
 
 class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
     @Nls
     private fun getLauncherDescription(currentPreference: UnitTestLaunchPreference?): String {
         val preferenceNotNull = currentPreference ?: return UseNUnitLauncherAction.UseNUnitLauncherActionText
@@ -28,10 +28,12 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
     }
 
     override fun createPopupActionGroup(p0: JComponent?): DefaultActionGroup {
-        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseUnityBothLauncherAction(), UseNUnitLauncherAction()) {
+        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseUnityBothLauncherAction(),
+                                           UseNUnitLauncherAction()) {
             init {
-              templatePresentation.isPopupGroup = true
+                templatePresentation.isPopupGroup = true
             }
+
             override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
             override fun update(e: AnActionEvent) {
                 val project = e.project ?: return
@@ -55,7 +57,7 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
         e.presentation.text = getLauncherDescription(currentPreference)
 
         e.presentation.description = getLauncherDescription(currentPreference)
-        e.presentation.isEnabledAndVisible = project.isUnityProject.getCompletedOr(false)
+        e.presentation.isEnabledAndVisible = project.isUnityProject.value
 
         super.update(e)
     }

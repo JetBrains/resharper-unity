@@ -41,7 +41,8 @@ class UnityToolWindowFactory(private val project: Project) {
     // TODO: Use ToolWindowFactory and toolWindow extension points
     @Suppress("DEPRECATION")
     private fun create(): UnityToolWindowContext {
-        val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project, true, false)
+        val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project,
+                                                                                   true, false)
 
         val contentManager = toolWindow.contentManager
         contentManager.addContentManagerListener(object : ContentManagerListener {

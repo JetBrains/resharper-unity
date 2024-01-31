@@ -16,7 +16,8 @@ import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileSt
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.projectView.solution
 
-class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBreakpointHandler<XLineBreakpoint<DotNetLineBreakpointProperties>>(UnityPausepointBreakpointType::class.java) {
+class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBreakpointHandler<XLineBreakpoint<DotNetLineBreakpointProperties>>(
+    UnityPausepointBreakpointType::class.java) {
 
     private val unityModel = debugProcess.project.solution.frontendBackendModel
     private val registeredBreakpoints = mutableSetOf<XBreakpoint<*>>()
@@ -57,7 +58,8 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
     private fun advisePlayModeChanges() {
         // Advise the changes, not the value. We don't want to do anything on the current value
         unityModel.playControls.play.change.advise(debugProcess.sessionLifetime) { playMode ->
-            XDebuggerManager.getInstance(debugProcess.project).breakpointManager.getBreakpoints(UnityPausepointBreakpointType::class.java).forEach { breakpoint ->
+            XDebuggerManager.getInstance(debugProcess.project).breakpointManager.getBreakpoints(
+                UnityPausepointBreakpointType::class.java).forEach { breakpoint ->
                 // We're obviously connected
                 if (playMode) {
                     if (breakpoint.isEnabled) {
@@ -75,7 +77,7 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
     private fun isSupportedSession(): Boolean {
         val runProfile = debugProcess.session.runProfile
         return runProfile is UnityAttachToEditorRunConfiguration
-            || (runProfile is UnityAttachProfileState && runProfile.isEditor)
+               || (runProfile is UnityAttachProfileState && runProfile.isEditor)
     }
 
     private fun isInPlayMode(): Boolean {
@@ -85,7 +87,7 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
     private fun doRegisterBreakpoint(breakpoint: XLineBreakpoint<*>) {
         if (!registeredBreakpoints.contains(breakpoint)) {
             var userData = breakpoint.getUserData(DotNetBreakpointsManager.AdditionalActionsKey)
-            if(userData == null)
+            if (userData == null)
                 userData = ArrayList()
 
             userData.add(UnityPausepointAdditionalAction())

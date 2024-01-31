@@ -4,7 +4,7 @@ import com.intellij.openapi.fileTypes.LanguageFileType
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import icons.UnityIcons
 
-object UssFileType: LanguageFileType(UssLanguage) {
+object UssFileType : LanguageFileType(UssLanguage) {
     override fun getIcon() = UnityIcons.FileTypes.Uss
     override fun getName() = "USS"
     override fun getDefaultExtension() = "uss"

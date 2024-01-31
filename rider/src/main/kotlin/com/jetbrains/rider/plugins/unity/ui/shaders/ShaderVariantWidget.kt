@@ -16,7 +16,8 @@ import java.awt.Point
 import java.net.URL
 
 
-class ShaderVariantWidget(project: Project, editor: Editor, shaderVariant: RdShaderVariantExtension) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
+class ShaderVariantWidget(project: Project, editor: Editor, shaderVariant: RdShaderVariantExtension) : AbstractShaderWidget(project,
+                                                                                                                            editor), RiderResolveContextWidget, Disposable {
     private val lifetime = createLifetime()
 
     init {
@@ -24,7 +25,8 @@ class ShaderVariantWidget(project: Project, editor: Editor, shaderVariant: RdSha
 
         shaderVariant.info.advise(lifetime) { info ->
             label.text = when {
-                info.suppressedCount > 0 -> UnityBundle.message("shaderVariant.widget.text.with.suppressed", info.enabledCount, info.suppressedCount, info.availableCount)
+                info.suppressedCount > 0 -> UnityBundle.message("shaderVariant.widget.text.with.suppressed", info.enabledCount,
+                                                                info.suppressedCount, info.availableCount)
                 else -> UnityBundle.message("shaderVariant.widget.text", info.enabledCount, info.availableCount)
             }
         }

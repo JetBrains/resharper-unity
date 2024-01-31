@@ -5,16 +5,17 @@ package com.jetbrains.rider.plugins.unity.workspace
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.withUiContext
+import com.intellij.openapi.rd.util.startOnUiAsync
 import com.intellij.openapi.startup.ProjectActivity
-import com.intellij.util.application
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.platform.workspace.storage.impl.url.toVirtualFileUrl
 import com.intellij.platform.workspace.storage.url.VirtualFileUrl
+import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
+import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
-import com.jetbrains.rider.plugins.unity.getCompletedOr
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
@@ -22,9 +23,15 @@ import com.jetbrains.rider.workspaceModel.getOrCreateRiderModuleEntity
 
 class UnityWorkspaceModelUpdaterInitializer : ProjectActivity {
     override suspend fun execute(project: Project) {
-        val isUnityProject = UnityProjectDiscoverer.getInstance(project).isUnityProject.await()
-        if (isUnityProject) {
-            withUiContext { UnityWorkspaceModelUpdater.getInstance(project).rebuildModel() }
+
+        val lifetime = UnityProjectLifetimeService.getLifetime(project)
+        UnityProjectDiscoverer.getInstance(project).isUnityProject.adviseUntil(lifetime) {
+            if (it) {
+                lifetime.startOnUiAsync {
+                    UnityWorkspaceModelUpdater.getInstance(project).rebuildModel()
+                }
+            }
+            it
         }
     }
 }
@@ -32,13 +39,13 @@ class UnityWorkspaceModelUpdaterInitializer : ProjectActivity {
 @Service(Service.Level.PROJECT)
 class UnityWorkspaceModelUpdater(private val project: Project) {
     companion object {
-        fun getInstance(project: Project):UnityWorkspaceModelUpdater =  project.service()
+        fun getInstance(project: Project): UnityWorkspaceModelUpdater = project.service()
     }
 
     @RequiresEdt
     @Suppress("UnstableApiUsage")
     fun rebuildModel() {
-        if (!project.isUnityProject.getCompletedOr(false)) return
+        if (!project.isUnityProject.value) return
 
         val builder = MutableEntityStorage.create()
 

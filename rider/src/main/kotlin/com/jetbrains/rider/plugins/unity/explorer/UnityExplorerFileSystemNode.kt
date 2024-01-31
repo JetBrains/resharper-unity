@@ -84,7 +84,7 @@ open class UnityExplorerFileSystemNode(project: Project,
             .getProjectModelEntities(file, myProject)
             .toList()
 
-    public override fun hasProblemFileBeneath() : Boolean {
+    public override fun hasProblemFileBeneath(): Boolean {
         return Registry.`is`("projectView.showHierarchyErrors") && entities.any {
             WorkspaceEntityErrorsSupport.getInstance(myProject).hasErrors(it)
         }
@@ -108,7 +108,8 @@ open class UnityExplorerFileSystemNode(project: Project,
         if (ignored || descendentOf == AncestorNodeType.IgnoredFolder) {
             // TODO: Consider wording
             // We can usually still search for a file that is not indexed. An ignored file is completely excluded
-            presentation.addText(UnityPluginExplorerBundle.message("label.ignored.no.index", SolutionViewPaneBase.TextSeparator), SimpleTextAttributes.GRAYED_ATTRIBUTES)
+            presentation.addText(UnityPluginExplorerBundle.message("label.ignored.no.index", SolutionViewPaneBase.TextSeparator),
+                                 SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
 
         // Add additional info for directories
@@ -124,14 +125,17 @@ open class UnityExplorerFileSystemNode(project: Project,
                 tooltip += virtualFile.name + "<br/>"
             }
             presentation.tooltip = tooltip +
-                if (virtualFile.isDirectory) UnityPluginExplorerBundle.message("tooltip.this.folder.not.imported.into.asset.database") else
-                    UnityPluginExplorerBundle.message("tooltip.this.file.not.imported.into.asset.database")
+                                   if (virtualFile.isDirectory) UnityPluginExplorerBundle.message(
+                                       "tooltip.this.folder.not.imported.into.asset.database")
+                                   else
+                                       UnityPluginExplorerBundle.message("tooltip.this.file.not.imported.into.asset.database")
         }
 
         if (ignored) {
             val tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
             presentation.tooltip = tooltip + if (virtualFile.isDirectory)
-                UnityPluginExplorerBundle.message("tooltip.this.folder.matches.ignored.file.folders.pattern") else
+                UnityPluginExplorerBundle.message("tooltip.this.folder.matches.ignored.file.folders.pattern")
+            else
                 UnityPluginExplorerBundle.message("tooltip.this.file.matches.ignored.file.folders.pattern")
         }
     }
@@ -150,12 +154,11 @@ open class UnityExplorerFileSystemNode(project: Project,
         but it can also be used for distributing code, too (e.g. `Samples~`). This code will not be treated as assets
         by Unity, but will still be added to the generated .csproj files to allow for use as e.g. command line tools
     */
-    private fun isFolderEndingWithTilde(file: VirtualFile)
-        = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.endsWith("~")
+    private fun isFolderEndingWithTilde(file: VirtualFile) = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.endsWith(
+        "~")
 
     // Ignored by IDE
-    private fun isIgnoredFolder(file: VirtualFile)
-        = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
+    private fun isIgnoredFolder(file: VirtualFile) = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
 
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = entities   // One node for each project that this directory is part of
@@ -172,7 +175,9 @@ open class UnityExplorerFileSystemNode(project: Project,
                 description += ", …"
                 presentation.tooltip = UnityPluginExplorerBundle.message("tooltip.contains.files.from.multiple.projects") + "<br/>" +
                                        projectNames.take(maxProjectsInTooltip).joinToString("<br/>") +
-                                       if (projectNames.count() > maxProjectsInTooltip) "<br/>" + UnityPluginExplorerBundle.message("tooltip.and.count.others", projectNames.count() - maxProjectsInTooltip) else ""
+                                       if (projectNames.count() > maxProjectsInTooltip) "<br/>" + UnityPluginExplorerBundle.message(
+                                           "tooltip.and.count.others", projectNames.count() - maxProjectsInTooltip)
+                                       else ""
             }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
@@ -185,51 +190,51 @@ open class UnityExplorerFileSystemNode(project: Project,
         return it.name.replace(UnityExplorer.DefaultProjectPrefixRegex, "")
     }
 
-  private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {
-    if (descendentOf == AncestorNodeType.FileSystem) {
-      return null
-    }
-
-    if (entity.isProject())
-      return null
-
-    val projectEntity = entity.containingProjectEntity() ?: return null
-
-    // Show the project on the owner of the assembly definition file
-    val dir = entity.url?.virtualFile
-    if (dir != null && hasAssemblyDefinitionFile(dir)) {
-      return projectEntity
-    }
-
-    // Hide the project if we're under an assembly definition - the first .asmdef we meet is the root of this project
-    if (isUnderAssemblyDefinition()) {
-      return null
-    }
-
-    // These special folders aren't used in Packages
-    if (descendentOf == AncestorNodeType.Assets) {
-
-      // This won't work if the projects are renamed by some kind of Unity plugin
-      // If the project is -Editor, hide if this node is under the Editor folder
-      // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
-      // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
-      //   Plugins, Standard Assets, Pro Standard Assets
-      if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
-        return null
-      }
-      if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
-        return null
-      }
-      if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
-        val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
-        if (editor != null && isUnderFirstpassFolder(editor)) {
-          return null
+    private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {
+        if (descendentOf == AncestorNodeType.FileSystem) {
+            return null
         }
-      }
-    }
 
-    return projectEntity
-  }
+        if (entity.isProject())
+            return null
+
+        val projectEntity = entity.containingProjectEntity() ?: return null
+
+        // Show the project on the owner of the assembly definition file
+        val dir = entity.url?.virtualFile
+        if (dir != null && hasAssemblyDefinitionFile(dir)) {
+            return projectEntity
+        }
+
+        // Hide the project if we're under an assembly definition - the first .asmdef we meet is the root of this project
+        if (isUnderAssemblyDefinition()) {
+            return null
+        }
+
+        // These special folders aren't used in Packages
+        if (descendentOf == AncestorNodeType.Assets) {
+
+            // This won't work if the projects are renamed by some kind of Unity plugin
+            // If the project is -Editor, hide if this node is under the Editor folder
+            // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
+            // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
+            //   Plugins, Standard Assets, Pro Standard Assets
+            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
+                return null
+            }
+            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
+                return null
+            }
+            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
+                val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
+                if (editor != null && isUnderFirstpassFolder(editor)) {
+                    return null
+                }
+            }
+        }
+
+        return projectEntity
+    }
 
     private fun forEachAncestor(root: FileSystemNodeBase?, action: FileSystemNodeBase.() -> Boolean): FileSystemNodeBase? {
         var node: FileSystemNodeBase? = root
@@ -254,8 +259,8 @@ open class UnityExplorerFileSystemNode(project: Project,
     private fun isUnderFirstpassFolder(root: FileSystemNodeBase? = null): Boolean {
         return forEachAncestor(root ?: this.parent as? FileSystemNodeBase?) {
             this.name.equals("Plugins", true)
-                    || this.name.equals("Standard Assets", true)
-                    || this.name.equals("Pro Standard Assets", true)
+            || this.name.equals("Standard Assets", true)
+            || this.name.equals("Pro Standard Assets", true)
         } != null
     }
 
@@ -320,9 +325,11 @@ open class UnityExplorerFileSystemNode(project: Project,
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
         val desc = if (isIgnoredFolder(virtualFile) || (!virtualFile.isDirectory && isIgnoredFolder(virtualFile.parent))) {
             AncestorNodeType.IgnoredFolder
-        } else if (isHiddenAsset(virtualFile)) {
+        }
+        else if (isHiddenAsset(virtualFile)) {
             AncestorNodeType.HiddenAsset
-        } else {
+        }
+        else {
             descendentOf
         }
         return UnityExplorerFileSystemNode(myProject, virtualFile, nestedFiles, desc)
@@ -362,7 +369,8 @@ open class UnityExplorerFileSystemNode(project: Project,
         // so it can propagate changes from descendants. Make sure that we always show NOT_CHANGED for readonly packages
         return if (isDescendantOfReadOnlyPackage(this) && status == FileStatus.NOT_CHANGED) {
             status?.color
-        } else {
+        }
+        else {
             super.getFileStatusColor(status)
         }
     }

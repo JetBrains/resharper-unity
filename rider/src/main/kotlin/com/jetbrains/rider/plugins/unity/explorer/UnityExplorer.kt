@@ -9,13 +9,13 @@ import com.intellij.ide.projectView.impl.ProjectViewImpl
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.lifetime
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.ExperimentalUI
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscovererState
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginActionsBundle
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
@@ -24,11 +24,11 @@ import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
 import icons.UnityIcons
 import org.jdom.Element
 
-class UnityExplorerProjectActivity: ProjectActivity{
+class UnityExplorerProjectActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
-        val newVal = project.isUnityProject.await()
-        if (newVal)
+        project.isUnityProject.adviseNotNull(project.lifetime) {
             (ProjectView.getInstance(project) as ProjectViewImpl).reloadPanes()
+        }
     }
 }
 
@@ -36,7 +36,8 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
 
     companion object {
         const val ID = "UnityExplorer"
-        @NlsSafe const val Title = "Unity"
+        @NlsSafe
+        const val Title = "Unity"
         const val Weight = 1
         const val ShowProjectNamesOption = "show-project-names"
         const val ShowTildeFoldersOption = "show-tilde-folders"
@@ -80,7 +81,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
         return false
     }
 
-    override fun isInitiallyVisible() = project.isUnityProject.getCompletedOr(UnityProjectDiscovererState.getInstance(project).isUnityProjectState)
+    override fun isInitiallyVisible() = project.isUnityProject.value
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
@@ -101,7 +102,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
     override fun getId() = ID
     override fun getWeight() = Weight
 
-    override fun createSelectInTarget() =  object : SolutionViewSelectInTargetBase(project) {
+    override fun createSelectInTarget() = object : SolutionViewSelectInTargetBase(project) {
 
         // We have to return true here, because a file might be from a local package, which could be almost anywhere on
         // the filesystem
@@ -125,7 +126,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
             AllIcons.Actions.ListFiles,
             { showProjectNames }, { showProjectNames = it }
         )).setAsSecondary(true)
-            actionGroup.addAction(SolutionViewToggleAction(
+        actionGroup.addAction(SolutionViewToggleAction(
             UnityPluginActionsBundle.message("action.show.tilde.folders.text"),
             null,
             AllIcons.Actions.ListFiles,

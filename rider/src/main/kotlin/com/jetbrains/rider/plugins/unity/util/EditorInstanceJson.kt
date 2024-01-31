@@ -58,8 +58,7 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
                     val contents = Gson().fromJson(it, EditorInstanceJsonContents::class.java)
                     if (contents != null)
                         EditorInstanceJson(EditorInstanceJsonStatus.Valid, contents)
-                    else
-                    {
+                    else {
                         logger.error("Error reading EditorInstance.json")
                         empty(EditorInstanceJsonStatus.Error)
                     }
@@ -80,10 +79,10 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
 
             var listener = project.getUserData(LISTENER_KEY)
             if (listener == null) {
-                listener = object: AsyncFileListener {
+                listener = object : AsyncFileListener {
                     override fun prepareChange(events: MutableList<out VFileEvent>): ChangeApplier? {
                         if (events.any { isEditorInstanceJson(it.path) }) {
-                            return object: ChangeApplier {
+                            return object : ChangeApplier {
                                 override fun afterVfsChange() = project.putUserData(INSTANCE_KEY, null)
                             }
                         }

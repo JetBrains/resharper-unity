@@ -10,12 +10,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.EditorNotifications
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import java.util.function.Function
 import javax.swing.JComponent
 
-class UssDisabledEditorNotification: EditorNotificationProvider {
+class UssDisabledEditorNotification : EditorNotificationProvider {
 
     companion object {
         private const val DO_NOT_SHOW_AGAIN_KEY = "unity.uss.css.plugin.disabled.do.not.show"
@@ -23,7 +22,7 @@ class UssDisabledEditorNotification: EditorNotificationProvider {
     }
 
     override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?>? {
-        if (project.isUnityProject.getCompletedOr(false) && isUssFileSafe(file) && PluginManagerCore.isDisabled(PluginId.getId(CSS_PLUGIN_ID))) {
+        if (project.isUnityProject.value && isUssFileSafe(file) && PluginManagerCore.isDisabled(PluginId.getId(CSS_PLUGIN_ID))) {
             if (PropertiesComponent.getInstance(project).getBoolean(DO_NOT_SHOW_AGAIN_KEY, false)) {
                 return null
             }

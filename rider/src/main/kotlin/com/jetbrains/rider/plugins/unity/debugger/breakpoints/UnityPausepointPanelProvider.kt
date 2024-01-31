@@ -6,14 +6,13 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.breakpoints.ui.XBreakpointCustomPropertiesPanel
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.IDotNetLineBreakpointCustomPanelsProvider
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import javax.swing.JComponent
 import javax.swing.event.HyperlinkListener
 
 class UnityPausepointPanelProvider : IDotNetLineBreakpointCustomPanelsProvider {
     override fun getCustomBreakpointPanel(project: Project): XBreakpointCustomPropertiesPanel<XLineBreakpoint<DotNetLineBreakpointProperties>>? {
-        if (!project.isUnityProject.getCompletedOr(false))
+        if (!project.isUnityProject.value)
             return null
         return UnityPausepointPanel(project)
     }
@@ -36,7 +35,8 @@ class UnityPausepointPanel(private val project: Project) : XBreakpointCustomProp
         val listener = HyperlinkListener {
             if (!isPausepoint) {
                 convertToPausepoint(project, breakpoint)
-            } else {
+            }
+            else {
                 convertToLineBreakpoint(project, breakpoint)
             }
         }

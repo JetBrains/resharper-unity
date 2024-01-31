@@ -18,7 +18,6 @@ import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidge
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetManager
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetProvider
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -37,7 +36,8 @@ class ShaderWidgetProvider : RiderResolveContextWidgetProvider, ProjectActivity 
                 val model = project.solution.frontendBackendModel
                 setData(model.shaderContexts[textControlId.documentId])
             }
-        } else null
+        }
+        else null
 
     override fun revalidateWidget(widget: RiderResolveContextWidget,
                                   disposable: Disposable,
@@ -48,13 +48,13 @@ class ShaderWidgetProvider : RiderResolveContextWidgetProvider, ProjectActivity 
         if (isUnityHlslFile(project, editor)) widget else null
 
     private fun isUnityHlslFile(project: Project, editor: Editor) =
-        project.isUnityProject.getCompletedOr(false) && editor.virtualFile.fileType.let { it === HlslHeaderFileType || it === HlslSourceFileType }
+        project.isUnityProject.value && editor.virtualFile.fileType.let { it === HlslHeaderFileType || it === HlslSourceFileType }
 
     override suspend fun execute(project: Project) {
         withContext(Dispatchers.EDT) {
             val lifetime = UnityProjectLifetimeService.getLifetime(project)
             project.solution.isLoaded.whenTrue(lifetime) {
-                if (project.isUnityProject.getCompletedOr(false)) {
+                if (project.isUnityProject.value) {
                     val model = project.solution.frontendBackendModel
                     adviseModel(lifetime, model, project)
                 }

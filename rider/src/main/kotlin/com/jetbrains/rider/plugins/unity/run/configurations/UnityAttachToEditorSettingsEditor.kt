@@ -7,7 +7,7 @@ import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 
 class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<UnityAttachToEditorRunConfiguration>(),
-        CheckableRunConfigurationEditor<UnityAttachToEditorRunConfiguration> {
+                                                            CheckableRunConfigurationEditor<UnityAttachToEditorRunConfiguration> {
 
     private val lifetimeDefinition: LifetimeDefinition = UnityProjectLifetimeService.getNestedLifetimeDefinition(project)
     private val viewModel: UnityAttachToEditorViewModel = UnityAttachToEditorViewModel(lifetimeDefinition.lifetime, project)

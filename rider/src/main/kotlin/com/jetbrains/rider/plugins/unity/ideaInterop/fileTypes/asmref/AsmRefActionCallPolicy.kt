@@ -8,9 +8,8 @@ import com.jetbrains.rider.actions.RiderActionSupportPolicy
 import com.jetbrains.rider.actions.RiderActions
 
 class AsmRefActionCallPolicy : RiderActionSupportPolicy() {
-    override fun getCallStrategy(psiElement: PsiElement, backendActionId: String): RiderActionCallStrategy  =
-        // Note that this is backend action ID, which means it's the R# action ID, which may or may not be the same as
-        // the IdeAction.
+    override fun getCallStrategy(psiElement: PsiElement, backendActionId: String): RiderActionCallStrategy =
+    // Note that this is backend action ID, which means it's the R# action ID, which may or may not be the same as the IdeAction.
         when (backendActionId) {
             "Rename",
             IdeActions.ACTION_FIND_USAGES,

@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.ui.UnityUIManager
 import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
@@ -46,6 +45,6 @@ class UnitySolutionExplorerCustomization(project: Project) : SolutionExplorerCus
 
     private fun isUnityGeneratedAndMinimizedUI(): Boolean {
         return UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue()
-               && project.isUnityProject.getCompletedOr(false)
+               && project.isUnityProject.value
     }
 }

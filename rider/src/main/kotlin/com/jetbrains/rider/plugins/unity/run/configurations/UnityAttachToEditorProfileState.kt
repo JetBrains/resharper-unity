@@ -26,7 +26,7 @@ import com.jetbrains.rider.run.WorkerRunInfo
  *
  * This will use the passed [UnityExeDebugProfileState] to start the Editor if it's not already running.
  */
-class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityExeDebugProfileState,
+class UnityAttachToEditorProfileState(private val exeDebugProfileState: UnityExeDebugProfileState,
                                       private val remoteConfiguration: UnityAttachToEditorRunConfiguration,
                                       executionEnvironment: ExecutionEnvironment)
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, "Unity Editor", true) {
@@ -52,7 +52,10 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
         }
     }
 
-    override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
+    override fun execute(executor: Executor,
+                         runner: ProgramRunner<*>,
+                         workerProcessHandler: DebuggerWorkerProcessHandler,
+                         lifetime: Lifetime): ExecutionResult {
         if (remoteConfiguration.play) {
             val lt = lifetime.createNested().lifetime
             val processTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
@@ -64,14 +67,15 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                             var prevState = false
                             lt.bracketIfAlive(opening = {
                                 // pass value to backend, which will push Unity to enter play mode.
-                                prevState = executionEnvironment.project.solution.frontendBackendModel.playControls.play.valueOrDefault(false)
+                                prevState = executionEnvironment.project.solution.frontendBackendModel.playControls.play.valueOrDefault(
+                                    false)
                                 executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(true)
                             }, terminationAction = {
                                 // if termination happens before the protocol connection is made, the value is lost
                                 // we want to wait for the connection, wait for the value from Unity and only then set our value
                                 val project = executionEnvironment.project
                                 val model = project.solution.frontendBackendModel
-                                model.playControlsInitialized.adviseUntil(UnityProjectLifetimeService.getLifetime(project)){ initialized ->
+                                model.playControlsInitialized.adviseUntil(UnityProjectLifetimeService.getLifetime(project)) { initialized ->
                                     if (!initialized)
                                         return@adviseUntil false
                                     model.playControls.play.set(prevState)

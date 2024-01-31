@@ -27,11 +27,11 @@ import java.awt.Point
 class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
     companion object {
         @Nls
-        private fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}"
+        private fun getContextPresentation(data: ShaderContextData) = "${data.name}:${data.startLine}"
     }
 
     private val widgetLifetime = this.createLifetime()
-    private val currentContextData : IProperty<ShaderContextData?> = Property(null)
+    private val currentContextData: IProperty<ShaderContextData?> = Property(null)
 
     init {
         label.apply {
@@ -44,7 +44,8 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
             if (it == null) {
                 label.text = UnityUIBundle.message("auto")
                 toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
-            } else {
+            }
+            else {
                 label.text = getContextPresentation(it)
                 toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
             }

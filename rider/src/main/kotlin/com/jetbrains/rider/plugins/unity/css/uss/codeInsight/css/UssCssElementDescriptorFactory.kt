@@ -9,9 +9,9 @@ import com.intellij.psi.css.impl.descriptor.value.CssValueDescriptorVisitorImpl
 import com.intellij.psi.css.impl.util.scheme.CssDescriptorsHolder
 import com.intellij.psi.css.impl.util.scheme.CssDescriptorsLoader
 import com.intellij.psi.css.impl.util.scheme.CssElementDescriptorFactory2
+import com.intellij.reference.SoftReference.dereference
 import java.lang.ref.Reference
 import java.lang.ref.SoftReference
-import com.intellij.reference.SoftReference.dereference
 
 @Service(Service.Level.APP)
 class UssCssElementDescriptorFactory {

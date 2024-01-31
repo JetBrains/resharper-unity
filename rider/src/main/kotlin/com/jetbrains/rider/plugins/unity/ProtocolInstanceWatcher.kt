@@ -29,7 +29,7 @@ class ProtocolInstanceWatcher : ProjectActivity {
         withContext(Dispatchers.EDT) {
             val lifetime = UnityProjectLifetimeService.getLifetime(project)
             project.solution.isLoaded.whenTrue(lifetime) { lt ->
-                if (project.isUnityProject.getCompletedOr(false)) {
+                if (project.isUnityProject.value) {
                     thread(name = "ProtocolInstanceWatcher") {
                         val watchService: WatchService = FileSystems.getDefault().newWatchService()
                         val libraryPath = project.solutionDirectory.resolve("Library").toPath()

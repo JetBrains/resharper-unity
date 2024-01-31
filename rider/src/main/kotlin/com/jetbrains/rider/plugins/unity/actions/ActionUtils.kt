@@ -2,28 +2,33 @@ package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.ui.ExperimentalUI
-import com.jetbrains.rider.plugins.unity.getCompletedOr
+import com.jetbrains.rd.framework.impl.RdProperty
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
-import kotlinx.coroutines.Deferred
 
 fun AnActionEvent.getFrontendBackendModel(): FrontendBackendModel? {
     val project = project ?: return null
     return project.solution.frontendBackendModel
 }
 
-val AnActionEvent.isUnityProject: Deferred<Boolean>?
+val AnActionEvent.isUnityProject: RdProperty<Boolean>?
     get() = project?.isUnityProject
 
-val AnActionEvent.isUnityProjectFolder: Deferred<Boolean>?
+val AnActionEvent.isUnityProjectFolder: RdProperty<Boolean>?
     get() = project?.isUnityProjectFolder
 
+val RdProperty<Boolean>?.valueOrDefault: Boolean
+    get() {
+        if (this == null) return false
+        return this.value
+    }
+
 fun AnActionEvent.handleUpdateForUnityConnection(update: ((FrontendBackendModel) -> Boolean)? = null) {
-    if (!isUnityProject.getCompletedOr(false) && !ExperimentalUI.isNewUI()) { // do not hide UnityActions in the toolbar for the new UI
+    if (!isUnityProject.valueOrDefault && !ExperimentalUI.isNewUI()) { // do not hide UnityActions in the toolbar for the new UI
         presentation.isVisible = false
         return
     }

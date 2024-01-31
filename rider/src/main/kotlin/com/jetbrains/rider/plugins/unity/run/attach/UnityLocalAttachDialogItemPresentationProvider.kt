@@ -11,10 +11,10 @@ class UnityLocalAttachDialogItemPresentationProvider : XAttachDialogItemPresenta
         item.dataHolder.getUserData(UnityLocalAttachProcessDebuggerProvider.PROCESS_INFO_KEY)?.let {
             it[item.processInfo.pid]?.let { details ->
                 return when {
-                    details.instanceId != null -> "${item.processInfo.executableDisplayName} ${details.instanceName ?: details.instanceId}"
-                    details.instanceName != null -> "${item.processInfo.executableDisplayName} ${details.instanceName}"
-                    else -> item.processInfo.executableDisplayName
-                } + if (details.projectName != null) " (${details.projectName})" else ""
+                           details.instanceId != null -> "${item.processInfo.executableDisplayName} ${details.instanceName ?: details.instanceId}"
+                           details.instanceName != null -> "${item.processInfo.executableDisplayName} ${details.instanceName}"
+                           else -> item.processInfo.executableDisplayName
+                       } + if (details.projectName != null) " (${details.projectName})" else ""
             }
         }
 

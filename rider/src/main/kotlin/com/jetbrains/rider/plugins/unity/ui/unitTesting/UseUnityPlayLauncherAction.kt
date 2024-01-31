@@ -9,7 +9,7 @@ import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solution
 
 class UseUnityPlayLauncherAction : DumbAwareAction(PlayModeDescription,
-    UnityUIBundle.message("action.run.with.unity.editor.in.play.mode.description"), null) {
+                                                   UnityUIBundle.message("action.run.with.unity.editor.in.play.mode.description"), null) {
     companion object {
         val PlayModeDescription = UnityUIBundle.message("action.run.with.unity.editor.in.play.mode.text")
     }

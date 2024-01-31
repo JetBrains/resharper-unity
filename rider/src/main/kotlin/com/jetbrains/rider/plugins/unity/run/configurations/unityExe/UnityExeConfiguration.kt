@@ -36,7 +36,10 @@ class UnityExeConfiguration(name: String,
         val executorId = executor.id
 
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID)
-            return resolvedPromise(UnityExeDebugProfileState(this, DotNetRemoteConfiguration(project, ConfigurationTypeUtil.findConfigurationType(MonoRemoteConfigType::class.java).factory, name), environment))
+            return resolvedPromise(UnityExeDebugProfileState(this, DotNetRemoteConfiguration(project,
+                                                                                             ConfigurationTypeUtil.findConfigurationType(
+                                                                                                 MonoRemoteConfigType::class.java).factory,
+                                                                                             name), environment))
 
         return super.getStateAsync(executor, environment)
     }

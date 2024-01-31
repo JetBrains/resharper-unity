@@ -11,11 +11,11 @@ class UssFileElementType : IStubFileElementType<PsiFileStub<PsiFile>>("USS_FILE"
         return super.getStubVersion() + CssFileElementType.BASE_VERSION
     }
 
-  override fun getExternalId(): String {
+    override fun getExternalId(): String {
         return "uss.file"
     }
 
-  companion object {
-    val USS_FILE: IFileElementType = UssFileElementType()
+    companion object {
+        val USS_FILE: IFileElementType = UssFileElementType()
     }
 }

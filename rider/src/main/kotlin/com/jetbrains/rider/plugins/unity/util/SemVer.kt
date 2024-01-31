@@ -8,7 +8,8 @@ data class SemVer(val major: Int, val minor: Int, val patch: Int, val prerelease
     companion object {
         fun parse(version: String): SemVer? {
             // This isn't exactly strict, but will match a well formed version
-            val pattern = Regex("""(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:-(?<prerelease>[0-9A-Za-z\-]+(?:\.([0-9A-Za-z\-])+)*)(?:\+(?<build>[0-9A-Za-z\-.]+))?)?""")
+            val pattern = Regex(
+                """(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:-(?<prerelease>[0-9A-Za-z\-]+(?:\.([0-9A-Za-z\-])+)*)(?:\+(?<build>[0-9A-Za-z\-.]+))?)?""")
             val match = pattern.matchEntire(version)
             return match?.let {
                 val major = it.groups["major"]?.value?.toInt() ?: 0

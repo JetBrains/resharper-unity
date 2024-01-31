@@ -45,7 +45,8 @@ class UnityDebuggableProcessListener(project: Project, lifetime: Lifetime,
                     onProcessAdded(player)
                 }
             }
-        } catch (e: Throwable) {
+        }
+        catch (e: Throwable) {
             logger.error(e)
         }
     }

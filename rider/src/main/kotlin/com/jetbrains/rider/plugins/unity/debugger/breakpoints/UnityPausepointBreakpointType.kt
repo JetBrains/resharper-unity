@@ -20,6 +20,7 @@ import javax.swing.Icon
 class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
     companion object {
         const val Id = "UnityPausepointType"
+
         @Nls
         val Title = UnityBundle.message("breakpoint.type.unity.pausepoints")
     }
@@ -35,6 +36,7 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
     override fun getMutedDisabledIcon(): Icon = UnityIcons.Debugger.Db_muted_disabled_pausepoint
     override fun getMutedEnabledIcon(): Icon = UnityIcons.Debugger.Db_muted_pausepoint
     override fun getSuspendNoneIcon(): Icon = UnityIcons.Debugger.Db_no_suspend_pausepoint
+
     // Temporary is remove-once-hit
     override fun getTemporaryIcon(): Icon = UnityIcons.Debugger.Db_set_pausepoint
     override fun getVerifiedIcon() = UnityIcons.Debugger.Db_verified_pausepoint
@@ -49,7 +51,8 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
 
     override fun getVisibleStandardPanels(): EnumSet<StandardPanels> = EnumSet.of(StandardPanels.DEPENDENCY)
 
-    override fun getAdditionalPopupMenuActions(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>, currentSession: XDebugSession?): MutableList<out AnAction> {
+    override fun getAdditionalPopupMenuActions(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>,
+                                               currentSession: XDebugSession?): MutableList<out AnAction> {
         val action = DumbAwareAction.create(UnityPausepointConstants.convertToLineBreakpointActionText) {
             val dataContext = it.dataContext
             val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return@create

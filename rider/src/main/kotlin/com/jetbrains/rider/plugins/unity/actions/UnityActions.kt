@@ -11,7 +11,7 @@ import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
 
 class PlayInUnityAction : ToggleAction(), DumbAware {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
-    override fun isSelected(e: AnActionEvent):Boolean {
+    override fun isSelected(e: AnActionEvent): Boolean {
         val model = e.getFrontendBackendModel() ?: return false
         return model.playControls.play.valueOrDefault(false)
     }
@@ -39,7 +39,7 @@ class PlayInUnityAction : ToggleAction(), DumbAware {
 
 class PauseInUnityAction : ToggleAction(), DumbAware {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
-    override fun isSelected(e: AnActionEvent):Boolean {
+    override fun isSelected(e: AnActionEvent): Boolean {
         val model = e.getFrontendBackendModel() ?: return false
         return model.playControls.pause.valueOrDefault(false)
     }

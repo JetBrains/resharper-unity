@@ -15,6 +15,7 @@ object UnityLocalAttachProcessPresentationGroup : XAttachProcessPresentationGrou
 
     override fun getItemDisplayText(project: Project, process: ProcessInfo, userData: UserDataHolder): String {
         val displayNames = userData.getUserData(UnityLocalAttachProcessDebuggerProvider.PROCESS_INFO_KEY)?.get(process.pid)
+
         @NlsSafe
         val projectName = if (displayNames?.projectName != null) " (${displayNames.projectName})" else ""
         val roleName = if (displayNames?.instanceName != null) " ${displayNames.instanceName}" else ""

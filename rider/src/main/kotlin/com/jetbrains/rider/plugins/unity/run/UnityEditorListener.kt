@@ -17,7 +17,10 @@ class UnityEditorListener {
     private val editorProcesses = mutableMapOf<Int, UnityLocalProcess>()
 
     // Invoked on UI thread
-    fun startListening(project: Project, lifetime: Lifetime, onEditorAdded: (UnityProcess) -> Unit, onEditorRemoved: (UnityProcess) -> Unit) {
+    fun startListening(project: Project,
+                       lifetime: Lifetime,
+                       onEditorAdded: (UnityProcess) -> Unit,
+                       onEditorRemoved: (UnityProcess) -> Unit) {
         val refreshTimer = kotlin.concurrent.timer("Listen for Unity Editor processes", true, 0L, refreshPeriod) {
             refreshUnityEditorProcesses(project, onEditorAdded, onEditorRemoved)
         }

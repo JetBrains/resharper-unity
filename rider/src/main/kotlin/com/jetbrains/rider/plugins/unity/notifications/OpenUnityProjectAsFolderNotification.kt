@@ -83,7 +83,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                     marketingVersion)
                 if (solutionDescription is RdExistingSolution) { // proper solution
                     it.launchNonUrgentBackground {
-                        if (!project.isUnityProject.getCompletedOr(false))
+                        if (!project.isUnityProject.value)
                             return@launchNonUrgentBackground
 
                         // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
@@ -107,7 +107,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                 }
                 else if (solutionDescription is RdVirtualSolution) { // opened as folder
                     it.launchNonUrgentBackground {
-                        if (!(project.isUnityProjectFolder.getCompletedOr(false)
+                        if (!(project.isUnityProjectFolder.value
                               || UnityProjectDiscoverer.searchUpForFolderWithUnityFileStructure(project.projectDir).first))
                             return@launchNonUrgentBackground
 
@@ -128,7 +128,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                         // be sure that PackageManager is fully loaded at this time.
                         @NlsSafe
                         val contentWoSolution =
-                            if (!project.isUnityProjectFolder.getCompletedOr(false) || // means searchUpForFolderWithUnityFileStructure is true
+                            if (!project.isUnityProjectFolder.value || // means searchUpForFolderWithUnityFileStructure is true
                                 (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
                                  && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider"))
                             ) {

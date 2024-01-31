@@ -15,7 +15,10 @@ class UnityLocalAttachProcessDebuggerProvider : XAttachDebuggerProvider {
         val PROCESS_INFO_KEY: Key<MutableMap<Int, UnityLocalProcessExtraDetails>> = Key("UnityProcess::Info")
     }
 
-    override fun getAvailableDebuggers(project: Project, host: XAttachHost, process: ProcessInfo, userData: UserDataHolder): MutableList<XAttachDebugger> {
+    override fun getAvailableDebuggers(project: Project,
+                                       host: XAttachHost,
+                                       process: ProcessInfo,
+                                       userData: UserDataHolder): MutableList<XAttachDebugger> {
         if (UnityRunUtil.isUnityEditorProcess(process)) {
 
             // Fetch the project + role names while we're not on the EDT, and cache so we can use it in the presenter

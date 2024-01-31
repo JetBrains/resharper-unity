@@ -10,7 +10,9 @@ class UssFilePrefixReference(private val el: PsiElement, val range: TextRange) :
     override fun handleElementRename(newElementName: String) = element
     override fun bindToElement(element: PsiElement) = element
     override fun getElement(): PsiElement = el
-    override fun resolve(): PsiElement { return element }
+    override fun resolve(): PsiElement {
+        return element
+    }
 
     override fun getCanonicalText(): String = element.text
 
@@ -23,7 +25,7 @@ class UssFilePrefixReference(private val el: PsiElement, val range: TextRange) :
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        return arrayOf(object : ResolveResult{
+        return arrayOf(object : ResolveResult {
             override fun getElement(): PsiElement {
                 return el
             }

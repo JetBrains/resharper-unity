@@ -102,7 +102,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             }
         }.installOn(this)
 
-        logModel.events.onAutoscrollChanged.advise(lifetime){
+        logModel.events.onAutoscrollChanged.advise(lifetime) {
             if (it) {
                 ensureIndexIsVisible(itemsCount - 1)
             }
@@ -138,7 +138,8 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                 eventList.selectedIndex = 0
                 IdeFocusManager.getInstance(project).requestFocus(eventList, false)
                 true
-            } else
+            }
+            else
                 false
         }
 
@@ -203,7 +204,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
         }
-        else if (logModel.autoscroll.value){
+        else if (logModel.autoscroll.value) {
             eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
         }
     }
@@ -228,17 +229,20 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                     .groupBy {
                         LogItem(it.type, it.mode, it.message, it.stackTrace)
                     }
-                    .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.count()) }
+                    .mapValues {
+                        LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.count())
+                    }
                     .values.toList()
                 refreshList(list)
-            } else {
+            }
+            else {
                 val list = items.map {
                     LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace, 1)
                 }
                 refreshList(list)
             }
         }
-        logModel.onFirstRemoved.advise(lifetime) {removeFirstFromList() }
+        logModel.onFirstRemoved.advise(lifetime) { removeFirstFromList() }
 
         if (toolWindow is ToolWindowEx) {
             toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {

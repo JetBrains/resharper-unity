@@ -6,7 +6,7 @@ import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeCon
 import com.jetbrains.rider.run.configurations.RiderNewRunConfigurationTreeGroupingProvider
 import icons.UnityIcons
 
-class UnityNewRunConfigurationTreeGroupingProvider: RiderNewRunConfigurationTreeGroupingProvider {
+class UnityNewRunConfigurationTreeGroupingProvider : RiderNewRunConfigurationTreeGroupingProvider {
     override fun getGroups(project: Project): List<RiderNewRunConfigurationTreeGroupingProvider.Group> {
         return listOf(RiderNewRunConfigurationTreeGroupingProvider.Group(
             UnityIcons.Icons.UnityLogo, "Unity",

@@ -26,7 +26,7 @@ object UnityLogPanelToolbarBuilder {
 
     fun createLeftToolbar(model: UnityLogPanelModel): JPanel {
 
-        fun getLocalizedName(eventType: LogEventType):String {
+        fun getLocalizedName(eventType: LogEventType): String {
             return when (eventType) {
                 LogEventType.Error -> UnityBundle.message("logEventType.errors")
                 LogEventType.Warning -> UnityBundle.message("logEventType.warning")
@@ -34,7 +34,8 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createType(type: LogEventType) = object : ToggleAction(UnityBundle.message("show.hide", getLocalizedName(type)), "", type.getIcon()) {
+        fun createType(type: LogEventType) = object : ToggleAction(UnityBundle.message("show.hide", getLocalizedName(type)), "",
+                                                                   type.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.typeFilters.getShouldBeShown(type)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
             override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
@@ -48,7 +49,8 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createMode(mode: LogEventMode) = object : ToggleAction(UnityBundle.message("action.show.hide.mode.text", mode), "", mode.getIcon()) {
+        fun createMode(mode: LogEventMode) = object : ToggleAction(UnityBundle.message("action.show.hide.mode.text", mode), "",
+                                                                   mode.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.modeFilters.getShouldBeShown(mode)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
             override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
@@ -62,36 +64,44 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun collapseAll() = object : ToggleAction(UnityBundle.message("action.collapse.similar.items.text"), "", AllIcons.Actions.Collapseall) {
+        fun collapseAll() = object : ToggleAction(UnityBundle.message("action.collapse.similar.items.text"), "",
+                                                  AllIcons.Actions.Collapseall) {
             override fun isSelected(e: AnActionEvent) = model.mergeSimilarItems.value
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.mergeSimilarItems.set(value)
             }
+
             override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         }
 
-        fun autoscroll() = object : ToggleAction(UnityBundle.message("action.autoscroll.text"), "", AllIcons.RunConfigurations.Scroll_down) {
+        fun autoscroll() = object : ToggleAction(UnityBundle.message("action.autoscroll.text"), "",
+                                                 AllIcons.RunConfigurations.Scroll_down) {
             override fun isSelected(e: AnActionEvent) = model.autoscroll.value
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.autoscroll.set(value)
                 model.events.onAutoscrollChanged.fire(value)
             }
+
             override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         }
 
-        fun createBeforePlay() = object : ToggleAction(UnityBundle.message("action.messages.before.last.play.in.unity.text"), "", UnityIcons.LogView.FilterBeforePlay) {
+        fun createBeforePlay() = object : ToggleAction(UnityBundle.message("action.messages.before.last.play.in.unity.text"), "",
+                                                       UnityIcons.LogView.FilterBeforePlay) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforePlay()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforePlay(value)
             }
+
             override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         }
 
-        fun createBeforeInit() = object : ToggleAction(UnityBundle.message("action.messages.before.last.domain.reload.text"), "", UnityIcons.LogView.FilterBeforeRefresh) {
+        fun createBeforeInit() = object : ToggleAction(UnityBundle.message("action.messages.before.last.domain.reload.text"), "",
+                                                       UnityIcons.LogView.FilterBeforeRefresh) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforeInit()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforeLastBuild(value)
             }
+
             override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         }
 

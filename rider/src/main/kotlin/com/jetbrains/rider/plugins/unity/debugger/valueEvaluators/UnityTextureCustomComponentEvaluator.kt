@@ -105,9 +105,9 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
         private val LOG = thisLogger()
 
         private suspend fun getAdditionalAction(stackFrame: DotNetStackFrame,
-                                        dotNetValueId: Int,
-                                        lifetime: Lifetime,
-                                        onErrorCallback: (String) -> Unit): UnityTextureAdditionalAction? {
+                                                dotNetValueId: Int,
+                                                lifetime: Lifetime,
+                                                onErrorCallback: (String) -> Unit): UnityTextureAdditionalAction? {
 
             val additionalActions: List<ObjectAdditionalAction>
             try {
@@ -158,13 +158,13 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
                 return null
             }
 
-            if(stagedActivity != null)
+            if (stagedActivity != null)
                 TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.TEXTURE_PIXELS_REQUEST)
 
             val unityTextureAdditionalActionResult = unityTextureAdditionalActionResult(unityTextureAdditionalAction, lifetime,
                                                                                         timeoutForAdvanceUnityEvaluation, errorCallback)
 
-            if(unityTextureAdditionalActionResult == null) {
+            if (unityTextureAdditionalActionResult == null) {
                 errorCallback("unityTextureAdditionalActionResult == null")
                 return null
             }
@@ -218,7 +218,8 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             }
 
             UnityPluginScopeService.getScope().launch {
-                when (val unityTextureInfo = getUnityTextureInfo(stackFrame, dotNetValue.objectProxy.id, lifetime, timeoutForAdvanceUnityEvaluation, stagedActivity, ::errorCallback)) {
+                when (val unityTextureInfo = getUnityTextureInfo(stackFrame, dotNetValue.objectProxy.id, lifetime,
+                                                                 timeoutForAdvanceUnityEvaluation, stagedActivity, ::errorCallback)) {
                     null -> errorCallback("textureInfo is null")
                     else -> {
                         TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.PREPARE_TEXTURE_PIXELS_TO_SHOW,
@@ -251,8 +252,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
                     add(texturePanel)
                 }
             }
-            catch (t: Throwable)
-            {
+            catch (t: Throwable) {
                 showErrorMessage(
                     jbLoadingPanel,
                     parentPanel,

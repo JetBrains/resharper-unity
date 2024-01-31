@@ -8,11 +8,11 @@ import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solution
 
 class UseNUnitLauncherAction : DumbAwareAction(UseNUnitLauncherActionText,
-    UnityUIBundle.message("action.run.with.nunit.launcher.description"), null) {
+                                               UnityUIBundle.message("action.run.with.nunit.launcher.description"), null) {
     companion object {
         val UseNUnitLauncherActionText = UnityUIBundle.message("action.run.with.nunit.launcher.text")
     }
-    
+
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         project.solution.frontendBackendModel.unitTestPreference.value = UnitTestLaunchPreference.NUnit

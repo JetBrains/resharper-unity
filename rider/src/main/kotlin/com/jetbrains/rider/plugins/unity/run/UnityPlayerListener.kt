@@ -135,7 +135,8 @@ class UnityPlayerListener {
                     channel.configureBlocking(false)
                     channel.join(playerMulticastGroup, networkInterface)
                     channel.register(selector, SelectionKey.OP_READ)
-                } catch (e: Exception) {
+                }
+                catch (e: Exception) {
                     logger.warn(e.message)
                 }
             }
@@ -148,7 +149,8 @@ class UnityPlayerListener {
                         // Close the channel. This will cancel the selection key and removes multicast group membership.
                         // It doesn't close the socket, as there are still selector registrations active
                         it.channel().close()
-                    } catch (e: Throwable) {
+                    }
+                    catch (e: Throwable) {
                         logger.warn(e)
                     }
                 }
@@ -192,7 +194,8 @@ class UnityPlayerListener {
                     UnityRemotePlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName)
                 }
             }
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             logger.warn(e)
         }
         return null
@@ -201,10 +204,12 @@ class UnityPlayerListener {
     // https://stackoverflow.com/questions/2406341/how-to-check-if-an-ip-address-is-the-local-host-on-a-multi-homed-system
     private fun isLocalAddress(addr: InetAddress): Boolean {
         // Check if the address is a valid special local or loop back
-        return if (addr.isAnyLocalAddress || addr.isLoopbackAddress) true else try {
+        return if (addr.isAnyLocalAddress || addr.isLoopbackAddress) true
+        else try {
             // Check if the address is defined on any interface
             NetworkInterface.getByInetAddress(addr) != null
-        } catch (e: SocketException) {
+        }
+        catch (e: SocketException) {
             false
         }
     }
@@ -257,7 +262,8 @@ class UnityPlayerListener {
                         }
 
                         unityPlayerDescriptorsHeartbeats[descriptor] = defaultHeartbeat
-                    } catch (e: Exception) {
+                    }
+                    catch (e: Exception) {
                         logger.warn(e)
                     }
                 }

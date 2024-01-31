@@ -19,8 +19,9 @@ class UnityIgnoredFileProvider : IgnoredFileProvider {
             "pdb.meta"
         )
     }
+
     override fun isIgnoredFile(project: Project, filePath: FilePath): Boolean {
-        if (!project.isUnityProject.getCompletedOr(false))
+        if (!project.isUnityProject.value)
             return false
 
         val solDir = project.solutionDirectory
@@ -47,9 +48,9 @@ class UnityIgnoredFileProvider : IgnoredFileProvider {
         if (name == "sysinfo.txt" || name == "crashlytics-build.properties")
             return true
 
-       for (ext in ignoredExtensions)
-           if (name.endsWith(ext))
-               return true
+        for (ext in ignoredExtensions)
+            if (name.endsWith(ext))
+                return true
 
         for (ignoredFolder in ignoredFolders)
             if (VfsUtil.isAncestor(ignoredFolder, filePath.ioFile, false))
@@ -59,11 +60,12 @@ class UnityIgnoredFileProvider : IgnoredFileProvider {
     }
 
 
-    private fun getPluginPath(file : File) : File {
+    private fun getPluginPath(file: File): File {
         return file.resolve("Plugins/Editor/Jetbrains")
     }
+
     override fun getIgnoredGroupDescription(): String {
-       return UnityBundle.message("text.unity.ignored.files")
+        return UnityBundle.message("text.unity.ignored.files")
     }
 
     override fun getIgnoredFiles(project: Project): MutableSet<IgnoredFileDescriptor> {

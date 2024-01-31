@@ -11,17 +11,17 @@ fun convertPidToDebuggerPort(port: Long): Int {
     return (port % 1000).toInt() + 56000
 }
 
-fun addPlayModeArguments(args : MutableList<String>) {
+fun addPlayModeArguments(args: MutableList<String>) {
     args.add("-executeMethod")
     args.add("JetBrains.Rider.Unity.Editor.StartUpMethodExecutor.EnterPlayMode")
 }
 
-fun getUnityArgs(project: Project):MutableList<String> {
+fun getUnityArgs(project: Project): MutableList<String> {
     val executable = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString()
     return mutableListOf(executable)
 }
 
-fun MutableList<String>.withRiderPath() : MutableList<String> {
+fun MutableList<String>.withRiderPath(): MutableList<String> {
     val riderPath = Restarter.getIdeStarter()?.toFile()?.canonicalPath
     if (riderPath != null) {
         this.addAll(mutableListOf("-riderPath", riderPath))
@@ -32,17 +32,17 @@ fun MutableList<String>.withRiderPath() : MutableList<String> {
 /**
  * Undocumented commandline argument, which forces Unity to enable `Debug Code Optimization`, even if it has `Release Code Optimization` in its settings.
  */
-fun MutableList<String>.withDebugCodeOptimization() : MutableList<String> {
+fun MutableList<String>.withDebugCodeOptimization(): MutableList<String> {
     this.add("-debugCodeOptimization")
     return this
 }
 
-fun MutableList<String>.withProjectPath(project: Project) : MutableList<String> {
+fun MutableList<String>.withProjectPath(project: Project): MutableList<String> {
     this.addAll(mutableListOf("-projectPath", project.solutionDirectory.canonicalPath))
     return this
 }
 
-fun MutableList<String>.withProjectPath(projectPath: String) : MutableList<String> {
+fun MutableList<String>.withProjectPath(projectPath: String): MutableList<String> {
     this.addAll(mutableListOf("-projectPath", projectPath))
     return this
 }
@@ -62,11 +62,11 @@ fun MutableList<String>.withTestResults(): MutableList<String> {
     return this
 }
 
-fun MutableList<String>.withTestPlatform() : MutableList<String> {
+fun MutableList<String>.withTestPlatform(): MutableList<String> {
     this.addAll(listOf("-testPlatform", "EditMode"))
     return this
 }
 
-fun MutableList<String>.toProgramParameters() : String {
+fun MutableList<String>.toProgramParameters(): String {
     return ParametersListUtil.join(this)
 }

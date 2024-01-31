@@ -24,9 +24,8 @@ class DumpUnityExplorerAction : DumpAction("Dump Unity Explorer") {
             writer.appendLine(m.value.toString())
             if (m.children.any()) {
                 if (m is AbstractTreeNode<*>)
-                    dumpReq(m,indent + 1, writer)
-                else
-                {
+                    dumpReq(m, indent + 1, writer)
+                else {
                     writer.appendLine(" unexpected node: $m")
                 }
             }

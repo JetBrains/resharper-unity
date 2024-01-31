@@ -19,7 +19,10 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.run.IDebuggerOutputListener
 
-class UnityDebuggerOutputListener(val project: Project, private val host: String, private val targetName: String, private val isEditor: Boolean)
+class UnityDebuggerOutputListener(val project: Project,
+                                  private val host: String,
+                                  private val targetName: String,
+                                  private val isEditor: Boolean)
     : IDebuggerOutputListener {
 
     override fun onOutputMessageAvailable(message: OutputMessageWithSubject) {
@@ -27,24 +30,28 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
             var text = UnityBundle.message("notification.content.unable.to.connect.to", targetName)
 
             val unityVersion: String? = UnityInstallationFinder.getInstance(project).getApplicationVersion(2)
-            var url:String? = null
+            var url: String? = null
             text += if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2018.2") >= 0) {
                 url = "https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html"
                 if (isEditor)
                     UnityBundle.message("notification.content.please.follow.href.debugging.in.editor.documentation")
                 else
                     UnityBundle.message("notification.content.please.follow.href.debugging.in.player.documentation")
-            } else {
+            }
+            else {
                 if (isEditor) {
-                    UnityBundle.message("notification.content.please.ensure.editor.attaching.enabled.in.unity.s.external.tools.settings.page")
-                } else {
-                    UnityBundle.message("notification.content.please.ensure.that.player.has.script.debugging.enabled.that.host.reachable", host)
+                    UnityBundle.message(
+                        "notification.content.please.ensure.editor.attaching.enabled.in.unity.s.external.tools.settings.page")
+                }
+                else {
+                    UnityBundle.message("notification.content.please.ensure.that.player.has.script.debugging.enabled.that.host.reachable",
+                                        host)
                 }
             }
 
             val debugNotification = XDebuggerManagerImpl.getNotificationGroup().createNotification(text, NotificationType.ERROR)
 
-            if (url != null){
+            if (url != null) {
                 debugNotification.addAction(object : NotificationAction(
                     UnityBundle.message("open.documentation")) {
                     override fun actionPerformed(e: AnActionEvent, notification: Notification) {

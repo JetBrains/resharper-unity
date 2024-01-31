@@ -25,8 +25,13 @@ class UnityCachesFinder {
             val registryHost = try {
                 URL(registry).host
             }
-            catch(throwable: Throwable) {
-                val reg = if (registry.isNotEmpty()) { registry } else { defaultRegistry }
+            catch (throwable: Throwable) {
+                val reg = if (registry.isNotEmpty()) {
+                    registry
+                }
+                else {
+                    defaultRegistry
+                }
                 logger.error("Error parsing registry as URL. Falling back to $reg", throwable)
                 reg
             }
@@ -35,23 +40,25 @@ class UnityCachesFinder {
         }
 
         private fun findPackagesCacheRoot() = System.getenv("UPM_CACHE_PATH")?.let { Paths.get(it) }
-            ?: when {
-                SystemInfo.isWindows -> Paths.get(System.getenv("LOCALAPPDATA")).resolve("Unity/cache/packages")
-                SystemInfo.isMac -> Paths.get(SystemProperties.getUserHome()).resolve("Library/Unity/cache/packages")
-                SystemInfo.isLinux -> {
-                    val configRoot = System.getenv("XDG_CONFIG_HOME")?.let { Paths.get(it) }
-                        ?: Paths.get(SystemProperties.getUserHome()).resolve(".config")
-                    configRoot.resolve("unity3d/cache/packages")
-                }
-                else -> null
-            }
+                                              ?: when {
+                                                  SystemInfo.isWindows -> Paths.get(System.getenv("LOCALAPPDATA")).resolve(
+                                                      "Unity/cache/packages")
+                                                  SystemInfo.isMac -> Paths.get(SystemProperties.getUserHome()).resolve(
+                                                      "Library/Unity/cache/packages")
+                                                  SystemInfo.isLinux -> {
+                                                      val configRoot = System.getenv("XDG_CONFIG_HOME")?.let { Paths.get(it) }
+                                                                       ?: Paths.get(SystemProperties.getUserHome()).resolve(".config")
+                                                      configRoot.resolve("unity3d/cache/packages")
+                                                  }
+                                                  else -> null
+                                              }
 
         private fun findPackagesCache(cacheRoot: Path, registry: String): VirtualFile? {
             // Path#resolve can throw if the user entered a weird registry value that isn't a proper path
             return try {
                 VfsUtil.findFile(cacheRoot.resolve(registry), true)
             }
-            catch(throwable: Throwable) {
+            catch (throwable: Throwable) {
                 if (throwable !is ControlFlowException)
                     logger.error("Error looking for registry cache location: $cacheRoot/$registry", throwable)
                 null

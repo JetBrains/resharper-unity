@@ -36,8 +36,7 @@ class ShaderContextPopup(group: ActionGroup, dataContext: DataContext, currentCo
             currentContextMode.value?.startLine == it.data.startLine)
             return@Condition true
         return@Condition false
-    }, null)
-{
+    }, null) {
     init {
         setSpeedSearchAlwaysShown()
         title.setButtonComponent(InplaceButton(IconButton(UnityBundle.message("tooltip.help"), AllIcons.Actions.Help)) {
@@ -73,7 +72,9 @@ class ShaderContextPopup(group: ActionGroup, dataContext: DataContext, currentCo
             return layoutComponent(textPanel)
         }
 
-        override fun customizeComponent(list: JList<out PopupFactoryImpl.ActionItem>?, value: PopupFactoryImpl.ActionItem?, isSelected: Boolean) {
+        override fun customizeComponent(list: JList<out PopupFactoryImpl.ActionItem>?,
+                                        value: PopupFactoryImpl.ActionItem?,
+                                        isSelected: Boolean) {
             super.customizeComponent(list, value, isSelected)
             myTextLabel.icon = UnityIcons.FileTypes.ShaderLab
 
@@ -81,7 +82,8 @@ class ShaderContextPopup(group: ActionGroup, dataContext: DataContext, currentCo
             if (action is ShaderContextSwitchAction) {
                 myInfoLabel!!.text = action.data.folder
                 myPosLabel!!.text = ":" + action.data.startLine
-            } else {
+            }
+            else {
                 myInfoLabel!!.text = ""
                 myPosLabel!!.text = ""
             }

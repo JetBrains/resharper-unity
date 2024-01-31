@@ -9,7 +9,7 @@ import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solution
 
 class UseUnityBothLauncherAction : DumbAwareAction(BothModeText,
-    UnityUIBundle.message("action.run.with.unity.editor.description"), null) {
+                                                   UnityUIBundle.message("action.run.with.unity.editor.description"), null) {
     companion object {
         val BothModeText = UnityUIBundle.message("action.run.with.unity.editor.text")
     }

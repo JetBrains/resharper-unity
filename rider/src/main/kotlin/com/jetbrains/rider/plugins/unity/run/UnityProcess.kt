@@ -90,7 +90,11 @@ class UnityEditorHelper(executableName: String, @NlsSafe val roleName: String, p
  * The details about the players are stored in the main project's `Library/VP/PlayerData.json`, including display names, identifiers, and
  * tags. We don't read this file as we can get all the information we need from the command line of the virtual player's editor.
  */
-class UnityVirtualPlayer(executableName: String, @NlsSafe val playerName: String, val virtualPlayerId: String, pid: Int, projectName: String?) :
+class UnityVirtualPlayer(executableName: String,
+                         @NlsSafe val playerName: String,
+                         val virtualPlayerId: String,
+                         pid: Int,
+                         projectName: String?) :
     UnityLocalProcess("$TYPE($virtualPlayerId)", executableName, pid, projectName) {
     companion object {
         const val TYPE = "VirtualPlayer"

@@ -20,7 +20,8 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
     private val lock = Object()
     val maxItemsCount = 10000
 
-    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelModel->onChanged", 250, true, toolWindow.component).setRestartTimerOnAdd(false)
+    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelModel->onChanged", 250, true,
+                                                        toolWindow.component).setRestartTimerOnAdd(false)
     private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->onChanged") {
         override fun run() {
             if (toolWindow.isVisible)
@@ -83,7 +84,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
     inner class TextFilter {
         private var searchTerm = ""
 
-        fun getShouldBeShown(text: String):Boolean {
+        fun getShouldBeShown(text: String): Boolean {
             return text.contains(searchTerm, true)
         }
 
@@ -99,14 +100,16 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
         private var showBeforePlay = true
         private var showBeforeInit = true
 
-        fun getShouldBeShown(time: Long):Boolean {
+        fun getShouldBeShown(time: Long): Boolean {
             return (showBeforeInit || time > project.solution.frontendBackendModel.consoleLogging.lastInitTime.valueOrDefault(0))
-                && (showBeforePlay || time > project.solution.frontendBackendModel.consoleLogging.lastPlayTime.valueOrDefault(0))
+                   && (showBeforePlay || time > project.solution.frontendBackendModel.consoleLogging.lastPlayTime.valueOrDefault(0))
         }
-        fun getShouldBeShownBeforeInit():Boolean {
+
+        fun getShouldBeShownBeforeInit(): Boolean {
             return showBeforeInit
         }
-        fun getShouldBeShownBeforePlay():Boolean {
+
+        fun getShouldBeShownBeforePlay(): Boolean {
             return showBeforePlay
         }
 
@@ -114,6 +117,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
             synchronized(lock) { showBeforePlay = value }
             onChanged.fire()
         }
+
         fun setShowBeforeLastBuild(value: Boolean) {
             synchronized(lock) { showBeforeInit = value }
             onChanged.fire()
@@ -134,8 +138,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
 
         fun addEvent(event: LogEvent) {
             synchronized(lock) {
-                if (allEvents.count() > maxItemsCount)
-                {
+                if (allEvents.count() > maxItemsCount) {
                     allEvents.removeFirst()
                     if (isVisibleEvent(event))
                         queueUpdate()
@@ -152,12 +155,11 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
         val onAutoscrollChanged = Signal<Boolean>()
     }
 
-    private fun isVisibleEvent(event: LogEvent):Boolean
-    {
+    private fun isVisibleEvent(event: LogEvent): Boolean {
         return typeFilters.getShouldBeShown(event.type)
-            && modeFilters.getShouldBeShown(event.mode)
-            && textFilter.getShouldBeShown(event.message)
-            && timeFilters.getShouldBeShown(event.time)
+               && modeFilters.getShouldBeShown(event.mode)
+               && textFilter.getShouldBeShown(event.message)
+               && timeFilters.getShouldBeShown(event.time)
     }
 
     private fun getVisibleEvents(): List<LogEvent> {
@@ -181,7 +183,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
 
     fun queueUpdate() = mergingUpdateQueue.queue(mergingUpdateQueueAction)
 
-    var selectedItem : LogPanelItem? = null
+    var selectedItem: LogPanelItem? = null
 
     init {
         typeFilters.onChanged.advise(lifetime) { queueUpdate() }
@@ -190,9 +192,10 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
         timeFilters.onChanged.advise(lifetime) { queueUpdate() }
         events.onChanged.advise(lifetime) { queueUpdate() }
         mergeSimilarItems.advise(lifetime) { queueUpdate() }
-        project.solution.frontendBackendModel.consoleLogging.lastInitTime.advise(lifetime){ queueUpdate() }
-        project.solution.frontendBackendModel.consoleLogging.lastPlayTime.advise(lifetime){ queueUpdate() }
-        project.messageBus.connect(toolWindow.contentManager).subscribe(ToolWindowManagerListener.TOPIC, createToolWindowManagerListener(toolWindow.id))
+        project.solution.frontendBackendModel.consoleLogging.lastInitTime.advise(lifetime) { queueUpdate() }
+        project.solution.frontendBackendModel.consoleLogging.lastPlayTime.advise(lifetime) { queueUpdate() }
+        project.messageBus.connect(toolWindow.contentManager).subscribe(ToolWindowManagerListener.TOPIC,
+                                                                        createToolWindowManagerListener(toolWindow.id))
     }
 
     private fun createToolWindowManagerListener(toolWindowId: String): ToolWindowManagerListener {

@@ -98,7 +98,7 @@ class AppleDeviceListener(project: Project,
         try {
             thread.join(threadTimeout)
         }
-        catch(e: Throwable) {
+        catch (e: Throwable) {
             logger.error(e)
         }
 

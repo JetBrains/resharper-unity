@@ -1,6 +1,9 @@
 package com.jetbrains.rider.plugins.unity.actions
 
-import com.intellij.notification.*
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
@@ -23,16 +26,13 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val path = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.editorLogPath
-        if (path!=null)
-        {
+        if (path != null) {
             val vf = VfsUtil.findFileByIoFile(File(path), true)
-            if (vf!=null)
-            {
+            if (vf != null) {
                 val descriptor = OpenFileDescriptor(project, vf)
                 FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
             }
-            else
-            {
+            else {
                 val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity project open")
                 val title = UnityPluginActionsBundle.message("notification.title.could.not.open.unity.editor.log")
                 val message = UnityPluginActionsBundle.message("notification.content.not.present", path)
@@ -40,8 +40,7 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction() {
                 Notifications.Bus.notify(notification, project)
             }
         }
-        else
-        {
+        else {
             logger.error("Could not open Unity Editor Log, path was null")
         }
     }
@@ -59,16 +58,13 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val path = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.playerLogPath
-        if (path!=null)
-        {
+        if (path != null) {
             val vf = VfsUtil.findFileByIoFile(File(path), true)
-            if (vf!=null)
-            {
+            if (vf != null) {
                 val descriptor = OpenFileDescriptor(project, vf)
                 FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
             }
-            else
-            {
+            else {
                 val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity log open")
                 val title = UnityPluginActionsBundle.message("notification.title.could.not.open.unity.player.log")
                 val message = UnityPluginActionsBundle.message("notification.content.not.present", path)
@@ -76,8 +72,7 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
                 Notifications.Bus.notify(notification, project)
             }
         }
-        else
-        {
+        else {
             logger.error("Could not open Unity Player Log, path was null")
         }
     }

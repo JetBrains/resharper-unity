@@ -6,7 +6,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityEditor
 import com.jetbrains.rider.plugins.unity.run.configurations.isAttachedToUnityEditor
 
-class AttachUnityEditorAction: DumbAwareAction() {
+class AttachUnityEditorAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         attachToUnityEditor(project)

@@ -5,6 +5,7 @@ import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.startBackgroundAsync
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rd.framework.impl.RdProperty
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -13,12 +14,10 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.unity.UnityDetector
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Deferred
 
 class UnityDetectorImpl(private val project: Project) : UnityDetector {
 
-    override val isUnitySolution: CompletableDeferred<Boolean>
+    override val isUnitySolution: RdProperty<Boolean>
         get() = UnityProjectDiscoverer.getInstance(project).isUnityProject
 }
 
@@ -27,21 +26,21 @@ class UnityProjectDiscoverer(val project: Project) {
     // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
-    val isUnityProject = CompletableDeferred<Boolean>()
+    val isUnityProject = RdProperty(UnityProjectDiscovererState.getInstance(project).isUnityProjectState)
 
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
-    val isUnityProjectFolder = CompletableDeferred<Boolean>()
-    val hasUnityReference = CompletableDeferred<Boolean>()
+    val isUnityProjectFolder = RdProperty(UnityProjectDiscovererState.getInstance(project).isUnityProjectFolderState)
+    val hasUnityReference = RdProperty(UnityProjectDiscovererState.getInstance(project).hasUnityReferenceState)
 
     init {
         // we can't change this to ProjectActivity because all of them are executes synchronously in tests
         UnityProjectLifetimeService.getLifetime(project).startBackgroundAsync {
             val hasUnityFileStructure = hasUnityFileStructure(project)
-            isUnityProjectFolder.complete(hasUnityFileStructure)
+            isUnityProjectFolder.set(hasUnityFileStructure)
             UnityProjectDiscovererState.getInstance(project).isUnityProjectFolderState = hasUnityFileStructure
 
             val isUnityProjectVal = hasUnityFileStructure && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project)
-            isUnityProject.complete(isUnityProjectVal)
+            isUnityProject.set(isUnityProjectVal)
             UnityProjectDiscovererState.getInstance(project).isUnityProjectState = isUnityProjectVal
         }
     }
@@ -104,7 +103,7 @@ class UnityProjectDiscoverer(val project: Project) {
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.hasUnityReference.adviseUntil(lifetime) {
-                getInstance(session.project).hasUnityReference.complete(it)
+                getInstance(session.project).hasUnityReference.set(it)
                 UnityProjectDiscovererState.getInstance(session.project).hasUnityReferenceState = it
                 it
             }
@@ -112,17 +111,12 @@ class UnityProjectDiscoverer(val project: Project) {
     }
 }
 
-val Project.hasUnityReference: Deferred<Boolean>
+val Project.hasUnityReference: RdProperty<Boolean>
     get() = UnityProjectDiscoverer.getInstance(this).hasUnityReference
-val Project.isUnityProject: Deferred<Boolean>
+val Project.isUnityProject: RdProperty<Boolean>
     get() = UnityProjectDiscoverer.getInstance(this).isUnityProject
-val Project.isUnityProjectFolder: Deferred<Boolean>
+val Project.isUnityProjectFolder: RdProperty<Boolean>
     get() = UnityProjectDiscoverer.getInstance(this).isUnityProjectFolder
-
-fun Deferred<Boolean>?.getCompletedOr(defaultValue: Boolean): Boolean {
-    if (this == null) return false
-    return if (this.isCompleted) this.getCompleted() else defaultValue
-}
 
 @Service(Service.Level.PROJECT)
 @State(name = "UnityProjectDiscoverer", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
@@ -139,13 +133,19 @@ internal class UnityProjectDiscovererState : SimplePersistentStateComponent<Unit
 
     var isUnityProjectState: Boolean
         get() = state.isUnityProject
-        set(value) { state.isUnityProject = value }
+        set(value) {
+            state.isUnityProject = value
+        }
 
     var isUnityProjectFolderState: Boolean
         get() = state.isUnityProjectFolder
-        set(value) { state.isUnityProjectFolder = value }
+        set(value) {
+            state.isUnityProjectFolder = value
+        }
 
     var hasUnityReferenceState: Boolean
         get() = state.hasUnityReference
-        set(value) { state.hasUnityReference = value }
+        set(value) {
+            state.hasUnityReference = value
+        }
 }

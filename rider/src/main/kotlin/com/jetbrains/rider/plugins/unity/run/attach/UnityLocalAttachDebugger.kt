@@ -4,8 +4,9 @@ import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.project.Project
 import com.intellij.xdebugger.attach.XLocalAttachDebugger
 import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.run.*
+import com.jetbrains.rider.plugins.unity.run.UnityLocalProcessExtraDetails
 import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
+import com.jetbrains.rider.plugins.unity.run.toUnityProcess
 
 class UnityLocalAttachDebugger(private val unityProcessInfo: UnityLocalProcessExtraDetails?) : XLocalAttachDebugger {
     override fun getDebuggerDisplayName() = UnityBundle.message("unity.debugger")

@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.jetbrains.rider.plugins.unity.actions.isUnityProject
-import com.jetbrains.rider.plugins.unity.getCompletedOr
+import com.jetbrains.rider.plugins.unity.actions.valueOrDefault
 
 class UnityPlayButtonsAction : ToggleAction() {
     override fun getActionUpdateThread(): ActionUpdateThread {
@@ -24,7 +24,7 @@ class UnityPlayButtonsAction : ToggleAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = e.isUnityProject.getCompletedOr(false)
+        e.presentation.isEnabled = e.isUnityProject.valueOrDefault
         super.update(e)
     }
 }

@@ -38,20 +38,22 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
         private val LEARN_MORE = GROUP.registerEvent("clicked_learn_more")
 
 
-        fun logShowShaderVariantPopupStarted(project: Project) : StructuredIdeActivity? {
+        fun logShowShaderVariantPopupStarted(project: Project): StructuredIdeActivity? {
             try {
                 return SHOW_SHADER_VARIANT_POPUP_ACTIVITY.started(project)
-            } catch (e: Throwable) {
+            }
+            catch (e: Throwable) {
                 thisLogger().error(e)
                 return null
             }
         }
 
 
-        fun logShowShaderContextsPopupStarted(project: Project) : StructuredIdeActivity? {
+        fun logShowShaderContextsPopupStarted(project: Project): StructuredIdeActivity? {
             try {
                 return SHOW_SHADER_CONTEXT_POPUP_ACTIVITY.started(project)
-            } catch (e: Throwable) {
+            }
+            catch (e: Throwable) {
                 thisLogger().error(e)
                 return null
             }

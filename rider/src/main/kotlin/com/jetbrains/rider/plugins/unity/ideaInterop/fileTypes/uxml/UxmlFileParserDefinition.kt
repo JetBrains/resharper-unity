@@ -4,7 +4,7 @@ import com.intellij.lang.xml.XMLParserDefinition
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.tree.IFileElementType
 
-class UxmlFileParserDefinition: XMLParserDefinition() {
+class UxmlFileParserDefinition : XMLParserDefinition() {
     companion object {
         val UXML_FILE = IFileElementType("UXML_FILE", UxmlLanguage)
     }

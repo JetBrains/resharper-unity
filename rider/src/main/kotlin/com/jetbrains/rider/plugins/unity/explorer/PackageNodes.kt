@@ -114,7 +114,7 @@ class PackageNode(project: Project, packageFolder: VirtualFile, private val pack
     }
 
     @NlsSafe
-    private fun getTooltipForPackageEntity(packageEntity: UnityPackageEntity):String {
+    private fun getTooltipForPackageEntity(packageEntity: UnityPackageEntity): String {
         return when (packageEntity.source) {
             UnityPackageSource.Embedded -> if (virtualFile.name != name) UnityPluginExplorerBundle.message("folder.name", "<br/><br/>", virtualFile.name) else ""
             UnityPackageSource.Local -> UnityPluginExplorerBundle.message("folder.location","<br/><br/>", virtualFile.path)

@@ -35,7 +35,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         val CUSTOM_PLAYER_PROJECT = UnityBundle.message("project.name.custom")
     }
 
-    private class UnityProcessTreeNode(val process: UnityProcess, val debuggerAttached: Boolean): DefaultMutableTreeNode()
+    private class UnityProcessTreeNode(val process: UnityProcess, val debuggerAttached: Boolean) : DefaultMutableTreeNode()
 
     private val treeModel = DefaultTreeModel(DefaultMutableTreeNode())
     private val treeModelLock = Object()
@@ -45,7 +45,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     init {
         title = UnityBundle.message("dialog.title.searching")
 
-        tree = object: Tree() {
+        tree = object : Tree() {
             // The default JBViewport implementation to get the size of the Scrollable uses the height of the first
             // getVisibleRowCount rows if they exist, or getVisibleRowCount * height of the first row otherwise.
             // Unfortunately, our first row always has a separator, which forces the dialog to resize when adding a node
@@ -77,8 +77,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             registerKeyboardAction(okAction, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED)
 
-            TreeSpeedSearch.installOn(this, true) {
-                path -> path.lastPathComponent?.toString()
+            TreeSpeedSearch.installOn(this, true) { path ->
+                path.lastPathComponent?.toString()
             }.apply { comparator = SpeedSearchComparator(false) }
 
             emptyText.text = UnityBundle.message("dialog.progress.searching")
@@ -88,7 +88,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             setPaintBusy(true)
         }
 
-        object: DoubleClickListener() {
+        object : DoubleClickListener() {
             override fun onDoubleClick(event: MouseEvent): Boolean {
                 if (!tree.isSelectionEmpty) {
                     doOKAction()
@@ -103,7 +103,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 button(UnityBundle.message("button.add.player.address.manually"), actionListener = { enterCustomIp() })
             }
             row {
-                comment(UnityBundle.message("please.ensure.both.the.development.build.and.script.debugging.options.are.checked.in.unity.build.settings.dialog"))
+                comment(UnityBundle.message(
+                    "please.ensure.both.the.development.build.and.script.debugging.options.are.checked.in.unity.build.settings.dialog"))
             }
         }
 
@@ -136,8 +137,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     override fun show() {
         Lifetime.using { lifetime ->
             UnityDebuggableProcessListener(project, lifetime,
-                { UIUtil.invokeLaterIfNeeded { addProcess(it) } },
-                { UIUtil.invokeLaterIfNeeded { removeProcess(it) } }
+                                           { UIUtil.invokeLaterIfNeeded { addProcess(it) } },
+                                           { UIUtil.invokeLaterIfNeeded { removeProcess(it) } }
             )
             super.show()
         }
@@ -331,7 +332,13 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     // * ErrorLabel (myTextLabel) - appears to be a text label for accessibility
     // The root myRendererComponent is drawn in the correct selected/unselected tree background
     private class GroupedProcessTreeCellRenderer : GroupedElementsRenderer.Tree() {
-        override fun getTreeCellRendererComponent(tree: JTree, value: Any?, selected: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): Component {
+        override fun getTreeCellRendererComponent(tree: JTree,
+                                                  value: Any?,
+                                                  selected: Boolean,
+                                                  expanded: Boolean,
+                                                  leaf: Boolean,
+                                                  row: Int,
+                                                  hasFocus: Boolean): Component {
 
             val itemComponent = itemComponent as SimpleColoredComponent
             itemComponent.clear()
@@ -340,7 +347,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val unityProcess = node.process
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
-            val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess || unityProcess is UnityAndroidAdbProcess) USB_DEVICES else UNKNOWN_PROJECT
+            val projectName = unityProcess.projectName
+                              ?: if (unityProcess is UnityIosUsbProcess || unityProcess is UnityAndroidAdbProcess) USB_DEVICES else UNKNOWN_PROJECT
             val hasSeparator = !isChildProcess(node) && (isFirstItem(node) || getPreviousSiblingProjectName(node) != projectName)
 
             // Set up visibility and selected status. This does not (re)set the selected status of the returned
@@ -356,21 +364,26 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }
             append(itemComponent, displayName, attributes, selected, focused, true)
             if (node.debuggerAttached) {
-                append(itemComponent, UnityBundle.message("appended.debugger.attached"), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES, selected, focused)
+                append(itemComponent, UnityBundle.message("appended.debugger.attached"), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES,
+                       selected, focused)
             }
             if (!unityProcess.debuggingEnabled) {
-                append(itemComponent, UnityBundle.message("appended.script.debugging.disabled"), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES, selected, focused)
+                append(itemComponent, UnityBundle.message("appended.script.debugging.disabled"),
+                       SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES, selected, focused)
             }
             if (unityProcess !is UnityIosUsbProcess) {
                 // Don't show the hardcoded host and port for iOS devices.
                 // Arguably, we could do the same for Android, as they're not correct until the port has been forwarded.
-                append(itemComponent, " ${unityProcess.host}:${unityProcess.port}", SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
+                append(itemComponent, " ${unityProcess.host}:${unityProcess.port}", SimpleTextAttributes.GRAYED_ATTRIBUTES, selected,
+                       focused)
             }
             if (unityProcess is UnityLocalProcess) {
-                append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid.toString()), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
+                append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid.toString()),
+                       SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
             if (unityProcess is UnityAndroidAdbProcess && unityProcess.packageName != null) {
-                append(itemComponent, UnityBundle.message("appended.android.package", unityProcess.packageName), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
+                append(itemComponent, UnityBundle.message("appended.android.package", unityProcess.packageName),
+                       SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
 
             SpeedSearchUtil.applySpeedSearchHighlighting(tree, itemComponent, true, selected)
@@ -381,7 +394,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         override fun createSeparator(): SeparatorWithText {
             // The separator is not painted opaque by default, so includes the item's background, which looks bad when
             // the item is selected - as though the separator was selected, too
-            return object: SeparatorWithText() {
+            return object : SeparatorWithText() {
                 override fun paint(g: Graphics?) {
                     g?.color = background
                     g?.fillRect(0, 0, width, height)
@@ -416,10 +429,16 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
          * When the item is selected, then we use the tree's default selection foreground.
          * It guaranties readability of the selected text in any LAF.
          */
-        private fun append(component: SimpleColoredComponent, @Nls fragment: String, attributes: SimpleTextAttributes, isSelected: Boolean, isFocused: Boolean, isMainText: Boolean = false) {
+        private fun append(component: SimpleColoredComponent,
+                           @Nls fragment: String,
+                           attributes: SimpleTextAttributes,
+                           isSelected: Boolean,
+                           isFocused: Boolean,
+                           isMainText: Boolean = false) {
             if (isSelected && isFocused) {
                 component.append(fragment, SimpleTextAttributes(attributes.style, UIUtil.getTreeSelectionForeground(true)), isMainText)
-            } else {
+            }
+            else {
                 component.append(fragment, attributes, isMainText)
             }
         }

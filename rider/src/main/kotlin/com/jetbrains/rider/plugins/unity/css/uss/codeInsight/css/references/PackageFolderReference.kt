@@ -13,7 +13,7 @@ class PackageFolderReference(private var set: UssFileReferenceSet,
                              index: Int,
                              text: String?,
                              private var packageFolder: VirtualFile?,
-                             private var completionVariants: Array<String>) : FileReference(set, range, index, text ) {
+                             private var completionVariants: Array<String>) : FileReference(set, range, index, text) {
     override fun isSoft(): Boolean {
         return false
     }
@@ -26,7 +26,7 @@ class PackageFolderReference(private var set: UssFileReferenceSet,
     //}
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        if (packageFolder != null){
+        if (packageFolder != null) {
             val manager = PsiManagerImpl.getInstance(set.element.project) as PsiManagerImpl
             return arrayOf(PsiElementResolveResult(PsiDirectoryImpl(manager, packageFolder!!)))
         }

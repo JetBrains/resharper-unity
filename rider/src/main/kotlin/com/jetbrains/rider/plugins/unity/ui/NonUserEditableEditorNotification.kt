@@ -9,7 +9,6 @@ import com.intellij.ui.EditorNotificationProvider
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -21,7 +20,7 @@ import javax.swing.JComponent
 class NonUserEditableEditorNotification : EditorNotificationProvider, DumbAware {
 
     override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?>? {
-        if (project.isUnityProject.getCompletedOr(false) && isNonEditableUnityFile(file)) {
+        if (project.isUnityProject.value && isNonEditableUnityFile(file)) {
             return Function {
                 EditorNotificationPanel().also { panel ->
                     panel.text = UnityUIBundle.message("label.this.file.internal.to.unity.should.not.be.edited.manually")

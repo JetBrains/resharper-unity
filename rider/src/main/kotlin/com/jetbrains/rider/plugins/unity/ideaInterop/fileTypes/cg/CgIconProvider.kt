@@ -12,7 +12,7 @@ class CgIconProvider : IconProvider(), DumbAware {
 
     companion object {
         // Don't forget to update CgProjectFileType list on the backend
-        val extensions: List<String> = arrayListOf( "glsl", "glslinc")
+        val extensions: List<String> = arrayListOf("glsl", "glslinc")
     }
 
     override fun getIcon(element: PsiElement, @Iconable.IconFlags flags: Int): Icon? {

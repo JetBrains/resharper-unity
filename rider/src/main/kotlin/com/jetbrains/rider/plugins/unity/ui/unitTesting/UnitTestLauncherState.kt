@@ -24,7 +24,7 @@ class UnitTestLauncherState : PersistentStateComponent<Element> {
         private const val PlayMode = "PlayMode"
         private const val Both = "Both"
 
-        fun getInstance(project: Project): UnitTestLauncherState =  project.service()
+        fun getInstance(project: Project): UnitTestLauncherState = project.service()
     }
 
     val currentTestLauncherProperty: Property<UnitTestLaunchPreference?> = Property(null) // null means undef
@@ -35,10 +35,10 @@ class UnitTestLauncherState : PersistentStateComponent<Element> {
             model.unitTestPreference.flowInto(lifetime, getInstance(session.project).currentTestLauncherProperty)
 
             // initial value, when empty
-            if (getInstance(session.project).currentTestLauncherProperty.value == null){
+            if (getInstance(session.project).currentTestLauncherProperty.value == null) {
                 val nestedLifetime = lifetime.createNested()
                 model.unityEditorConnected.whenTrue(nestedLifetime) {
-                    if (getInstance(session.project).currentTestLauncherProperty.value == null){
+                    if (getInstance(session.project).currentTestLauncherProperty.value == null) {
                         getInstance(session.project).currentTestLauncherProperty.set(UnitTestLaunchPreference.Both)
                     }
                     nestedLifetime.terminate()

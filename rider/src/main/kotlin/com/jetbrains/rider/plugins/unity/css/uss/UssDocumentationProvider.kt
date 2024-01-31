@@ -48,7 +48,8 @@ class UssDocumentationProvider : DocumentationProvider {
             }
             return if (doc.isNotEmpty()) {
                 MdnDocumentationUtil.buildDoc(presentableName, doc, null)
-            } else latestDescriptor.getDocumentationString(documentationElement)
+            }
+            else latestDescriptor.getDocumentationString(documentationElement)
         }
         val descriptorProvider = CssDescriptorsUtil.findDescriptorProvider(context)
         return descriptorProvider?.generateDocForSelector(descriptorText, context)

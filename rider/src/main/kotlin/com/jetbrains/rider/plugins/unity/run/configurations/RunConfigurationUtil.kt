@@ -34,11 +34,11 @@ fun isAttachedToUnityEditor(project: Project): Boolean {
  */
 fun attachToUnityEditor(project: Project) {
     val configurationSettings = getUnityEditorRunConfiguration(project)
-        ?: createAttachToUnityEditorConfiguration(
-            project,
-            DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME,
-            false
-        )
+                                ?: createAttachToUnityEditorConfiguration(
+                                    project,
+                                    DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME,
+                                    false
+                                )
 
     startDebugRunConfiguration(project, configurationSettings)
 }
@@ -61,7 +61,7 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
     val runManager = RunManager.getInstance(project)
     var configurationSettings = runManager.allSettings.firstOrNull {
         (it.configuration as? UnityPlayerDebugConfiguration)?.state?.playerId == process.id
-            && (it.configuration as? UnityPlayerDebugConfiguration)?.state?.playerInstanceId == process.playerInstanceId
+        && (it.configuration as? UnityPlayerDebugConfiguration)?.state?.playerInstanceId == process.playerInstanceId
     }
 
     if (configurationSettings == null) {

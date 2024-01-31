@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.backend.workspace.WorkspaceModel
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.ProjectElementView
 import com.jetbrains.rider.projectView.ProjectEntityView
@@ -14,7 +13,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
     // this is called for rename, we should filter .Player projects and return node itself
     override fun getBestProjectModelElement(targetLocation: VirtualFile): ProjectElementView? {
-        if (!project.isUnityProject.getCompletedOr(false))
+        if (!project.isUnityProject.value)
             return null
 
         val workspaceModel = WorkspaceModel.getInstance(project)
@@ -29,7 +28,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun getBestParentProjectModelNode(targetLocation: VirtualFile): ProjectModelEntity? {
-        if (!project.isUnityProject.getCompletedOr(false))
+        if (!project.isUnityProject.value)
             return null
         if (targetLocation.isDirectory) // RIDER-64427 "New in This Directory" doesn't work
             return recursiveSearch(targetLocation) ?: super.getBestParentProjectModelNode(targetLocation)
@@ -37,7 +36,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun filterProjectModelNodesBeforeOperation(entities: List<ProjectModelEntity>): List<ProjectModelEntity> {
-        if (!project.isUnityProject.getCompletedOr(false))
+        if (!project.isUnityProject.value)
             return entities
 
         return filterOutItemsFromNonPrimaryProjects(entities)
@@ -47,7 +46,8 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         if (targetLocation == null) // may happen for packages outside of solution folder
             return null
 
-        val items = filterOutItemsFromNonPrimaryProjects(WorkspaceModel.getInstance(project).getProjectModelEntities(targetLocation, project))
+        val items = filterOutItemsFromNonPrimaryProjects(
+            WorkspaceModel.getInstance(project).getProjectModelEntities(targetLocation, project))
 
         // when to stop going up
         // !isProjectFolder may happen for Local and Registry packages
@@ -84,7 +84,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     // RIDER-74815 Avoid adding Unity Hidden Assets to csproj
-    private fun isHiddenFolder(targetLocation: VirtualFile):Boolean{
+    private fun isHiddenFolder(targetLocation: VirtualFile): Boolean {
         val name = targetLocation.name
         if (name.endsWith("~") || name.startsWith("."))
             return true
@@ -116,7 +116,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun shouldShowSolutionConfigurationsGotIt(): Boolean {
-        if (project.isUnityProject.getCompletedOr(false)) return false
+        if (project.isUnityProject.value) return false
         return true
     }
 }

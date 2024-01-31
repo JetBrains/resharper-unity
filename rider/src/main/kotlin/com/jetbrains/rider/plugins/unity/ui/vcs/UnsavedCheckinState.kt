@@ -22,7 +22,7 @@ class UnsavedCheckinState(val project: Project) : PersistentStateComponent<Eleme
         return element
     }
 
-    override fun loadState(element: Element)  {
+    override fun loadState(element: Element) {
         val attributeValue = element.getAttributeBooleanValue(attributeName)
         checkUnsavedState = attributeValue
     }

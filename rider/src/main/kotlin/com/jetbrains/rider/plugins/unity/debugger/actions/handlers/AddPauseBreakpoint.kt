@@ -15,8 +15,8 @@ import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
 import com.intellij.xdebugger.impl.XSourcePositionImpl
 import com.jetbrains.rider.plugins.unity.actions.isUnityProjectFolder
+import com.jetbrains.rider.plugins.unity.actions.valueOrDefault
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 
 class AddPauseBreakpoint : DumbAwareAction() {
 
@@ -38,7 +38,7 @@ class AddPauseBreakpoint : DumbAwareAction() {
 
     override fun update(e: AnActionEvent) {
         val isUnityProject = e.isUnityProjectFolder
-        e.presentation.setEnabledAndVisible(isUnityProject.getCompletedOr(false) && isNewUI() && getLineBreakpointPosition(e) != null)
+        e.presentation.setEnabledAndVisible(isUnityProject.valueOrDefault && isNewUI() && getLineBreakpointPosition(e) != null)
     }
 
     override fun getActionUpdateThread(): ActionUpdateThread {

@@ -12,7 +12,7 @@ class UnityUIManager : PersistentStateComponent<Element> {
     companion object {
         const val hasMinimizedUiAttribute = "hasMinimizedUI"
         const val hasHiddenPlayButtonsAttribute = "hasHiddenPlayButtons"
-        fun getInstance(project: Project): UnityUIManager =  project.service()
+        fun getInstance(project: Project): UnityUIManager = project.service()
     }
 
     val hasMinimizedUi: Property<Boolean?> = Property(null) //null means undefined, default value
@@ -44,6 +44,6 @@ class UnityUIManager : PersistentStateComponent<Element> {
     }
 }
 
-fun Property<Boolean?>.hasTrueValue() : Boolean {
+fun Property<Boolean?>.hasTrueValue(): Boolean {
     return this.value != null && this.value!!
 }

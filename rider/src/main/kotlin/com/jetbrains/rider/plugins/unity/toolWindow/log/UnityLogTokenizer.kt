@@ -7,22 +7,22 @@ import java.util.*
 class UnityLogTokenizer {
 
     private val validTokens = mapOf("<b>" to UnityLogTokenType.Bold,
-        "</b>" to UnityLogTokenType.BoldEnd,
-        "<i>" to UnityLogTokenType.Italic,
-        "</i>" to UnityLogTokenType.ItalicEnd,
-        "<color=*>" to UnityLogTokenType.Color,
-        "</color>" to UnityLogTokenType.ColorEnd,
-        "<size=*>" to UnityLogTokenType.Size,
-        "</size>" to UnityLogTokenType.SizeEnd,
-        "<material=*>" to UnityLogTokenType.Material,
-        "</material>" to UnityLogTokenType.MaterialEnd,
-        "<quad=*>" to UnityLogTokenType.Quad)
+                                    "</b>" to UnityLogTokenType.BoldEnd,
+                                    "<i>" to UnityLogTokenType.Italic,
+                                    "</i>" to UnityLogTokenType.ItalicEnd,
+                                    "<color=*>" to UnityLogTokenType.Color,
+                                    "</color>" to UnityLogTokenType.ColorEnd,
+                                    "<size=*>" to UnityLogTokenType.Size,
+                                    "</size>" to UnityLogTokenType.SizeEnd,
+                                    "<material=*>" to UnityLogTokenType.Material,
+                                    "</material>" to UnityLogTokenType.MaterialEnd,
+                                    "<quad=*>" to UnityLogTokenType.Quad)
 
     private val startToEndMapping = mapOf(UnityLogTokenType.Bold to UnityLogTokenType.BoldEnd,
-        UnityLogTokenType.Italic to UnityLogTokenType.ItalicEnd,
-        UnityLogTokenType.Color to UnityLogTokenType.ColorEnd,
-        UnityLogTokenType.Size to UnityLogTokenType.SizeEnd,
-        UnityLogTokenType.Material to UnityLogTokenType.MaterialEnd)
+                                          UnityLogTokenType.Italic to UnityLogTokenType.ItalicEnd,
+                                          UnityLogTokenType.Color to UnityLogTokenType.ColorEnd,
+                                          UnityLogTokenType.Size to UnityLogTokenType.SizeEnd,
+                                          UnityLogTokenType.Material to UnityLogTokenType.MaterialEnd)
 
     fun tokenize(fullString: String): List<Token> {
         val tokens: MutableList<Token> = mutableListOf()
@@ -100,7 +100,7 @@ class UnityLogTokenizer {
     private fun colorizeTokens(i: Int,
                                tokens: MutableList<Token>,
                                token: Token) {
-        for (x in i+1 until tokens.count()) {
+        for (x in i + 1 until tokens.count()) {
             if (tokens[x].type == UnityLogTokenType.Color && !tokens[x].used) {
                 colorizeTokens(x, tokens, tokens[x])
             }
@@ -119,15 +119,19 @@ class UnityLogTokenizer {
         }
     }
 
-    private fun addTokens(i: Int, lastTokenIndex: Int, tokens: MutableList<Token>, fullString: String, tokenString: String, type: UnityLogTokenType) {
+    private fun addTokens(i: Int,
+                          lastTokenIndex: Int,
+                          tokens: MutableList<Token>,
+                          fullString: String,
+                          tokenString: String,
+                          type: UnityLogTokenType) {
         if (i > lastTokenIndex)
             tokens.add(Token(fullString.substring(lastTokenIndex, i), UnityLogTokenType.String))
         tokens.add(Token(tokenString, type))
     }
 
-    private fun getTokenValue(tokenString: String) : String
-    {
-        if(!tokenString.contains('='))
+    private fun getTokenValue(tokenString: String): String {
+        if (!tokenString.contains('='))
             return ""
 
         val cleanedToken = tokenString.replace(">", "")
@@ -144,10 +148,12 @@ class UnityLogTokenizer {
             if (expectedChar == '*') {
                 if (currentChar == expectedToken[expectedTokenIndex + 1].lowercaseChar()) {
                     expectedTokenIndex++
-                } else {
+                }
+                else {
                     continue
                 }
-            } else if (currentChar != expectedChar) {
+            }
+            else if (currentChar != expectedChar) {
                 return -1
             }
 
@@ -192,7 +198,8 @@ class UnityLogTokenizer {
                     else -> null
                 }
             }
-        } catch (t: Throwable) {
+        }
+        catch (t: Throwable) {
             return null
         }
     }

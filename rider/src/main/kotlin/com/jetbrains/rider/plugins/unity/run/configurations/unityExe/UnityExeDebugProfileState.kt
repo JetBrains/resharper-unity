@@ -38,7 +38,7 @@ import com.jetbrains.rider.util.NetUtils
 /**
  * [RunProfileState] to launch a Unity executable (player or editor) and attach the debugger
  */
-class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfiguration,
+class UnityExeDebugProfileState(private val exeConfiguration: UnityExeConfiguration,
                                 private val remoteConfiguration: RemoteConfiguration,
                                 executionEnvironment: ExecutionEnvironment,
                                 isEditor: Boolean = false)
@@ -59,13 +59,18 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
         return runCmd
     }
 
-    override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
+    override fun execute(executor: Executor,
+                         runner: ProgramRunner<*>,
+                         workerProcessHandler: DebuggerWorkerProcessHandler,
+                         lifetime: Lifetime): ExecutionResult {
         val runCommandLine = createEmptyConsoleCommandLine(exeConfiguration.parameters.useExternalConsole)
             .withEnvironment(exeConfiguration.parameters.envs)
-            .withEnvironment("MONO_ARGUMENTS", "--debugger-agent=transport=dt_socket,address=127.0.0.1:${remoteConfiguration.port},server=n,suspend=y")
+            .withEnvironment("MONO_ARGUMENTS",
+                             "--debugger-agent=transport=dt_socket,address=127.0.0.1:${remoteConfiguration.port},server=n,suspend=y")
             .withParentEnvironmentType(if (exeConfiguration.parameters.isPassParentEnvs) {
                 GeneralCommandLine.ParentEnvironmentType.CONSOLE
-            } else {
+            }
+                                       else {
                 GeneralCommandLine.ParentEnvironmentType.NONE
             })
             .withExePath(exeConfiguration.parameters.exePath)
@@ -81,8 +86,7 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
             val frontendBackendModel = executionEnvironment.project.solution.frontendBackendModel
             val res = frontendBackendModel.getScriptingBackend.start(lifetime, Unit)
             res.result.adviseNotNullOnce(lifetime) {
-                if (it is RdTaskResult.Fault)
-                {
+                if (it is RdTaskResult.Fault) {
                     logger.warn("getScriptingBackend failed with ${it.error}")
                     return@adviseNotNullOnce
                 }
@@ -125,7 +129,10 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
                     }
 
                     override fun processTerminated(processEvent: ProcessEvent) {
-                        monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(output = UnityBundle.message("process.0.terminated.with.exit.code.1", commandLineString, processEvent.exitCode.toString()) + "\r\n", type = OutputType.Warning, subject = OutputSubject.Default))
+                        monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(
+                            output = UnityBundle.message("process.0.terminated.with.exit.code.1", commandLineString,
+                                                         processEvent.exitCode.toString()) + "\r\n", type = OutputType.Warning,
+                            subject = OutputSubject.Default))
                     }
 
                     override fun startNotified(processEvent: ProcessEvent) {

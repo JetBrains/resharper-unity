@@ -15,7 +15,6 @@ import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PairConsumer
-import com.jetbrains.rider.plugins.unity.getCompletedOr
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solutionDirectory
@@ -47,7 +46,7 @@ private class MetaFilesCheckHandler(
     private val project = panel.project
     private val settings = MetaFilesCheckinState.getService(project)
     override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent? {
-        if (!project.isUnityProject.getCompletedOr(false))
+        if (!project.isUnityProject.value)
             return null
 
         return BooleanCommitOption(
@@ -60,29 +59,30 @@ private class MetaFilesCheckHandler(
         executor: CommitExecutor?,
         additionalDataConsumer: PairConsumer<Any, Any>
     ): ReturnResult {
-        if (settings.checkMetaFiles && project.isUnityProject.getCompletedOr(false)) {
+        if (settings.checkMetaFiles && project.isUnityProject.value) {
             val changes = panel.selectedChanges
             if (changes.any()) {
                 val emptyFolders = changes.filter {
                     val virtualFile = it.virtualFile ?: return@filter false
                     if (!(it.fileStatus == FileStatus.ADDED
-                            && isMetaFile(it.virtualFile))) return@filter false
+                          && isMetaFile(it.virtualFile))) return@filter false
                     val folder = virtualFile.parent.findChild(virtualFile.nameWithoutExtension) ?: return@filter false
                     if (!folder.isDirectory) return@filter false
                     return@filter !folder.children.any()
                 }
 
-                if (emptyFolders.any()){
+                if (emptyFolders.any()) {
                     logger.info("check.redundant.meta.files")
                     val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity commit failure")
                     val title = UnityUIBundle.message("commit.failed.with.error")
                     val message =
                         UnityUIBundle.message("notification.content.empty.folders.so.meta.files.should.not.be.committed",
-                            emptyFolders.take(3).joinToString(separator = ", ") {
-                                project.solutionDirectory.toPath().relativize(it.virtualFile!!.toNioPath()).pathString
-                            } + if (emptyFolders.count() > 3) ", …" else {
-                                ""
-                            })
+                                              emptyFolders.take(3).joinToString(separator = ", ") {
+                                                  project.solutionDirectory.toPath().relativize(it.virtualFile!!.toNioPath()).pathString
+                                              } + if (emptyFolders.count() > 3) ", …"
+                                              else {
+                                                  ""
+                                              })
                     val notification = Notification(groupId.displayId, title, message, NotificationType.ERROR)
                     Notifications.Bus.notify(notification, project)
 

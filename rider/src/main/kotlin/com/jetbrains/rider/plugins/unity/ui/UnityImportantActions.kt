@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.ex.TooltipDescriptionProvider
 import com.intellij.openapi.project.DumbAware
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.actions.isUnityProjectFolder
-import com.jetbrains.rider.plugins.unity.getCompletedOr
+import com.jetbrains.rider.plugins.unity.actions.valueOrDefault
 import com.jetbrains.rider.plugins.unity.hasUnityReference
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -35,13 +35,14 @@ class UnityImportantActions : DefaultActionGroup(), DumbAware, TooltipDescriptio
                     e.presentation.description = null
                 }
             }
-        } else {
+        }
+        else {
             e.presentation.isVisible = false
         }
     }
 
-    companion object{
-        fun isVisible(e: AnActionEvent) = e.isUnityProjectFolder.getCompletedOr(false)
+    companion object {
+        fun isVisible(e: AnActionEvent) = e.isUnityProjectFolder.valueOrDefault
     }
 }
 
@@ -49,11 +50,12 @@ class UnityDllImportantActions : DefaultActionGroup(), DumbAware {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     override fun update(e: AnActionEvent) {
         val project = e.project ?: return
-        if (project.hasUnityReference.getCompletedOr(false) && !UnityImportantActions.isVisible(e)
+        if (project.hasUnityReference.value && !UnityImportantActions.isVisible(e)
         ) {
             e.presentation.isVisible = true
             e.presentation.icon = UnityIcons.Toolbar.Toolbar
-        } else {
+        }
+        else {
             e.presentation.isVisible = false
         }
     }

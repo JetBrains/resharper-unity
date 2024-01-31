@@ -21,15 +21,17 @@ import com.jetbrains.rider.plugins.unity.util.withRiderPath
 import com.jetbrains.rider.projectView.solution
 
 
-open class  StartUnityAction : DumbAwareAction() {
+open class StartUnityAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
         startUnity(project)
     }
+
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     override fun update(e: AnActionEvent) {
         val model = e.project?.solution?.frontendBackendModel
+
         @NlsSafe
         val version = model?.unityApplicationData?.valueOrNull?.applicationVersion
 
@@ -45,13 +47,17 @@ open class  StartUnityAction : DumbAwareAction() {
         fun startUnity(project: Project) {
             val runManager = RunManager.getInstance(project)
             val settings =
-                runManager.findConfigurationByTypeAndName(UnityExeConfigurationType.id, DefaultRunConfigurationGenerator.RUN_DEBUG_START_UNITY_CONFIGURATION_NAME)
+                runManager.findConfigurationByTypeAndName(UnityExeConfigurationType.id,
+                                                          DefaultRunConfigurationGenerator.RUN_DEBUG_START_UNITY_CONFIGURATION_NAME)
 
-            if (settings?.configuration != null && ExecutionTargetManager.getInstance(project).getTargetsFor(settings.configuration).isEmpty()){
-                ExecutionUtil.runConfiguration(settings, Executor.EXECUTOR_EXTENSION_NAME.extensionList.single {it is DefaultRunExecutor && it.id == DefaultRunExecutor.EXECUTOR_ID})
+            if (settings?.configuration != null && ExecutionTargetManager.getInstance(project).getTargetsFor(
+                    settings.configuration).isEmpty()) {
+                ExecutionUtil.runConfiguration(settings,
+                                               Executor.EXECUTOR_EXTENSION_NAME.extensionList.single { it is DefaultRunExecutor && it.id == DefaultRunExecutor.EXECUTOR_ID })
             }
             else {
-                logger.warn("UnityExeConfiguration ${DefaultRunConfigurationGenerator.RUN_DEBUG_START_UNITY_CONFIGURATION_NAME} was not found.")
+                logger.warn(
+                    "UnityExeConfiguration ${DefaultRunConfigurationGenerator.RUN_DEBUG_START_UNITY_CONFIGURATION_NAME} was not found.")
                 val processBuilderArgs = getUnityArgs(project).withProjectPath(project).withRiderPath()
                 startUnity(processBuilderArgs)
             }

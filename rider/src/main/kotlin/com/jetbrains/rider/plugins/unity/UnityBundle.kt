@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
-class UnityBundle: DynamicBundle(BUNDLE) {
+class UnityBundle : DynamicBundle(BUNDLE) {
     companion object {
         @NonNls
         private const val BUNDLE = "messages.UnityBundle"

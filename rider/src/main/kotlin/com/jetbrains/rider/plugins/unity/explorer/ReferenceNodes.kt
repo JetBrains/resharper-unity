@@ -27,15 +27,15 @@ class ReferenceRootNode(project: Project) : AbstractTreeNode<Any>(project, key) 
         val visitor = object : ProjectModelEntityVisitor() {
             override fun visitReference(entity: ProjectModelEntity): Result {
                 if (entity.isAssemblyReference()) {
-                  val virtualFile = entity.url?.virtualFile
-                  if (virtualFile != null) {
-                    val itemLocation = entity.descriptor.location
-                    val itemKey = if (itemLocation is RdCustomLocation) itemLocation.customLocation else itemLocation.toString()
-                    val item = referenceNames.getOrCreate(itemKey) {
-                      ReferenceItemNode(myProject, entity.descriptor.name, virtualFile, arrayListOf())
+                    val virtualFile = entity.url?.virtualFile
+                    if (virtualFile != null) {
+                        val itemLocation = entity.descriptor.location
+                        val itemKey = if (itemLocation is RdCustomLocation) itemLocation.customLocation else itemLocation.toString()
+                        val item = referenceNames.getOrCreate(itemKey) {
+                            ReferenceItemNode(myProject, entity.descriptor.name, virtualFile, arrayListOf())
+                        }
+                        item.entityPointers.add(entity.toReference())
                     }
-                    item.entityPointers.add(entity.toReference())
-                  }
                 }
                 return Result.Stop
             }

@@ -20,7 +20,7 @@ class ShaderLabStyleSettingsProvider : RiderLanguageCodeStyleSettingsProvider() 
 
     override fun getLanguage(): Language = ShaderLabLanguage
 
-    override fun getPagesId(): Map<String, @NlsContexts.TabTitle String>{
+    override fun getPagesId(): Map<String, @NlsContexts.TabTitle String> {
         return mapOf(
             "ShaderLabFormattingStylePage" to RiderSettingsBundle.message("configurable.codestyle.title.formattingStyle"))
     }

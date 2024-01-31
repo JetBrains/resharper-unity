@@ -9,7 +9,7 @@ import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solution
 
 class UseUnityEditLauncherAction : DumbAwareAction(EditModeText,
-    UnityUIBundle.message("action.run.with.unity.editor.in.edit.mode.description"), null) {
+                                                   UnityUIBundle.message("action.run.with.unity.editor.in.edit.mode.description"), null) {
     companion object {
         val EditModeText = UnityUIBundle.message("action.run.with.unity.editor.in.edit.mode.text")
     }

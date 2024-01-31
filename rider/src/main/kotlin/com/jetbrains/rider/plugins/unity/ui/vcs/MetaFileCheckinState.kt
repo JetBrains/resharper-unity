@@ -22,7 +22,7 @@ class MetaFilesCheckinState(val project: Project) : PersistentStateComponent<Ele
         return element
     }
 
-    override fun loadState(element: Element)  {
+    override fun loadState(element: Element) {
         val attributeValue = element.getAttributeBooleanValue(attributeName)
         checkMetaFiles = attributeValue
     }
