@@ -23,7 +23,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ConvertXmlDocToTooltipAttributeAction_Name), 
         DescriptionResourceName = nameof(Strings.ConvertXmlDocToTooltipAttributeAction_Description)
         )]

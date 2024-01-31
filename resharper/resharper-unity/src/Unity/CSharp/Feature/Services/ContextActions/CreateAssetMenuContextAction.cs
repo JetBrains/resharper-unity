@@ -22,7 +22,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.CreateAssetMenuContextAction_Name), 
         DescriptionResourceName = nameof(Strings.CreateAssetMenuContextAction_Description))]
     public class CreateAssetMenuContextAction : IContextAction

@@ -28,7 +28,7 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings),
         NameResourceName = nameof(Strings.UnityDots_AddFieldToExistingBakerAndAuthoring_Description),
         DescriptionResourceName = nameof(Strings.UnityDots_AddFieldToExistingBakerAndAuthoring_Description))]

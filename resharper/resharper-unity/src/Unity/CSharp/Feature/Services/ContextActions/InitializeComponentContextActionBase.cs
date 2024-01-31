@@ -24,7 +24,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.InitializeFieldComponentContextAction_Name), 
         DescriptionResourceName = nameof(Strings.InitializeFieldComponentContextAction_Description))]
     public class InitializeFieldComponentContextAction : InitializeComponentContextActionBase<IFieldDeclaration>
@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         }
     }
 
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.InitializePropertyComponentContextAction_Name), 
         DescriptionResourceName = nameof(Strings.InitializePropertyComponentContextAction_Description))]
     public class InitializePropertyComponentContextAction : InitializeComponentContextActionBase<IPropertyDeclaration>

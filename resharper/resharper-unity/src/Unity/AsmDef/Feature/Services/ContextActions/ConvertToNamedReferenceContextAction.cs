@@ -19,7 +19,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActions
 {
     [ContextAction(
-        Group = "Unity", ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ConvertToNamedAssemblyDefinitionReference_Name), DescriptionResourceName = nameof(Strings.ConvertToNamedAssemblyDefinitionReference_Description))]
+        GroupType = typeof(UnityContextActions), ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ConvertToNamedAssemblyDefinitionReference_Name), DescriptionResourceName = nameof(Strings.ConvertToNamedAssemblyDefinitionReference_Description))]
     public class ConvertToNamedReferenceContextAction : ScopedContextActionBase<IJsonNewLiteralExpression>
     {
         private readonly IJsonNewContextActionDataProvider myDataProvider;

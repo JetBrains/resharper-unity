@@ -17,7 +17,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.UnityDots_GenerateBakerAndComponent_Name), 
         DescriptionResourceName = nameof(Strings.UnityDots_GenerateBakerAndComponent_Description))]
     public class GenerateBakerAndComponentAction : IContextAction

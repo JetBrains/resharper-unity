@@ -16,7 +16,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddPerformanceAnalysisDisableComment
 {
     [ContextAction(
-        Group = UnityContextActions.GroupID,
+        GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AddPerformanceAnalysisDisableCommentContextAction_Name), 
         DescriptionResourceName = nameof(Strings.AddPerformanceAnalysisDisableCommentContextAction_Name),
         Disabled = false,

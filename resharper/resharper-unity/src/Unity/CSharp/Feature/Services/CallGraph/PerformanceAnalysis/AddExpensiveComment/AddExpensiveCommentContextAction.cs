@@ -16,7 +16,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment
 {
     [ContextAction(
-        Group = UnityContextActions.GroupID,
+        GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AddExpensiveCommentContextAction_Name), DescriptionResourceName = nameof(Strings.AddExpensiveCommentContextAction_Name),
         Disabled = false,
         AllowedInNonUserFiles = false,

@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ToggleHideInInspectorAttributeAction_Name), 
         DescriptionResourceName = nameof(Strings.ToggleHideInInspectorAttributeAction_Description))]
     public class ToggleHideInInspectorAttributeAction : AddInspectorAttributeAction

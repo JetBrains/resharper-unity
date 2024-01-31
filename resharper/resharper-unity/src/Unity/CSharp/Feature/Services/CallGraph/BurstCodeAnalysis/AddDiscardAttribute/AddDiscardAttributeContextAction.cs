@@ -14,7 +14,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
     [ContextAction(
-        Group = UnityContextActions.GroupID,
+        GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AddDiscardAttributeContextAction_Name), DescriptionResourceName = nameof(Strings.AddDiscardAttributeContextAction_Name),
         Disabled = false,
         AllowedInNonUserFiles = false,

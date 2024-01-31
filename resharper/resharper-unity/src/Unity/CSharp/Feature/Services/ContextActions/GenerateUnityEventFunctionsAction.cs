@@ -18,7 +18,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.GenerateUnityEventFunctionsAction_Name), 
         DescriptionResourceName = nameof(Strings.GenerateUnityEventFunctionsAction_Description))]
     public class GenerateUnityEventFunctionsAction : IContextAction

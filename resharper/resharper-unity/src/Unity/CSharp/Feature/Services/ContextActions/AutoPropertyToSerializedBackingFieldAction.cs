@@ -16,7 +16,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AutoPropertyToSerializedBackingFieldAction_Name), DescriptionResourceName = nameof(Strings.AutoPropertyToSerializedBackingFieldAction_Description),
         Priority = 2)]
     public class AutoPropertyToSerializedBackingFieldAction : ModernContextActionBase

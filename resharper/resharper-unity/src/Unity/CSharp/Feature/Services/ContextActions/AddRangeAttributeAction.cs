@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
+    [ContextAction(GroupType = typeof(CSharpUnityContextActions),
         ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AddRangeAttributeAction_Name), 
         DescriptionResourceName = nameof(Strings.AddRangeAttributeAction_Description)
         )]
