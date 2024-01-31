@@ -6,7 +6,6 @@ import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
 import com.jetbrains.rider.test.allure.Subsystem
-import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
@@ -37,12 +36,23 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
     fun checkBreakpointInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleBreakpoint("ResetTransformSystem.cs", 26)
+                toggleBreakpoint("ResetTransformSystem.cs", 24) //set new breakpoint
             },
             {
+                dumpProfile.customRegexToMask["<id>"] = Regex("\\((\\d+:\\d+)\\)")
+                dumpProfile.customRegexToMask["<float_value>"] = Regex("-?\\d+\\.*\\d*f")
+                dumpProfile.customRegexToMask["<ResetTransformSystemBase_LambdaJob_Job>"] = Regex("ResetTransformSystemBase_.*_Job")
+
+                waitForPause()
+                dumpFullCurrentData()
+                toggleBreakpoint("ResetTransformSystem.cs", 24) //disable breakpoint
+                resumeSession()
+
+                toggleBreakpoint("ResetTransformSystem.cs", 34)//set new breakpoint
                 waitForPause()
                 dumpFullCurrentData()
                 resumeSession()
+
             }, testGoldFile)
     }
 
@@ -50,11 +60,21 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
     fun checkRefPresentationInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleBreakpoint("ResetTransformSystem.cs", 26)
+                toggleBreakpoint("ResetTransformSystem.cs", 24) //set new breakpoint
             },
             {
+                dumpProfile.customRegexToMask["<id>"] = Regex("\\((\\d+:\\d+)\\)") //Hides Entity's id
+                dumpProfile.customRegexToMask["<float_value>"] = Regex("-?\\d+\\.*\\d*f")
+                dumpProfile.customRegexToMask["<ResetTransformSystemBase_LambdaJob_Job>"] = Regex("ResetTransformSystemBase_.*_Job")
+
                 waitForPause()
-                dumpFullCurrentData(2)
+                dumpFullCurrentData(1)
+                toggleBreakpoint("ResetTransformSystem.cs", 24) //disable breakpoint
+                resumeSession()
+
+                toggleBreakpoint("ResetTransformSystem.cs", 34)//set new breakpoint
+                waitForPause()
+                dumpFullCurrentData(1)
                 resumeSession()
             }, testGoldFile)
     }
@@ -64,7 +84,7 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
         attachDebuggerToUnityEditorAndPlay(
             test = {
                 waitForUnityEditorPlayMode()
-                toggleUnityPausepoint(project, "ResetTransformSystem.cs", 26)
+                toggleUnityPausepoint(project, "ResetTransformSystem.cs", 24)
                 waitForUnityEditorPauseMode()
                 removeAllUnityPausepoints()
                 unpause()
@@ -95,11 +115,11 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
 }
 
 @Epic(Subsystem.UNITY_DEBUG)
-@Feature("Debug Unity2022")
+@Feature("Debug Unity Dots")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DotsDebuggerTest2022 : DotsDebuggerTestBase(UnityVersion.V2022) {
-    init {
-      addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
-    }
+class DotsDebuggerTest {
+    class TestUnity2020 : DotsDebuggerTestBase(UnityVersion.V2020) {}
+    class TestUnity2022 : DotsDebuggerTestBase(UnityVersion.V2022) {}
+    class TestUnity2023 : DotsDebuggerTestBase(UnityVersion.V2023) {}
 }
