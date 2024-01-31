@@ -139,7 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
                                                           List<string> elementGuids)
                 : base(treeNode, referenceSearcherParameters, resultConsumer, elements, elementNames, null)
             {
-                myStringSearchers = elementGuids.Select(g => new StringSearcher(g, false));
+                myStringSearchers = elementGuids.Select(g => StringSearcher.Create(g, false));
             }
 
             protected override bool PreFilterReference(IReference reference) => reference is AsmDefNameReference &&

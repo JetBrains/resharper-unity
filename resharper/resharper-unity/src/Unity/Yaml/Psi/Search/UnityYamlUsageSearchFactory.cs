@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An
-        // ISearchGuru implementation can narrow the search domain further (e.g. checking for files that contain ALL of
+        // ISearchFilter implementation can narrow the search domain further (e.g. checking for files that contain ALL of
         // the terms). Method references require the element short name, while class references require the class's
         // file's asset guid
         public override IEnumerable<string> GetAllPossibleWordsInFile(IDeclaredElement element)

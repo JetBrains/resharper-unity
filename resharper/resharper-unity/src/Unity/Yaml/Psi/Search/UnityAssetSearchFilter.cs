@@ -15,8 +15,8 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
-    [SearchGuru(SearchGuruPerformanceEnum.FastFilterOutByIndex)]
-    public class UnityYamlSearchGuru : ISearchGuru
+    [PsiComponent]
+    public class UnityYamlSearchFilter : ISearchFilter
     {
         [NotNull, ItemNotNull] private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         private readonly AnimImplicitUsagesContainer myAnimImplicitUsagesContainer;
         private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
 
-        public UnityYamlSearchGuru(UnityApi unityApi,
+        public UnityYamlSearchFilter(UnityApi unityApi,
                                    [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
                                    UnityEventsElementContainer unityEventsElementContainer,
                                    AnimExplicitUsagesContainer animExplicitUsagesContainer,
@@ -38,17 +38,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             myInspectorValuesContainer = container;
         }
 
-        // Allows us to filter the words that are collected from IDomainSpecificSearchFactory.GetAllPossibleWordsInFile
-        // This is an ANY search
-        public IEnumerable<string> BuzzWordFilter(IDeclaredElement searchFor, IEnumerable<string> containsWords) =>
-            containsWords;
+        public SearchFilterKind Kind => SearchFilterKind.Cache;
 
         public bool IsAvailable(SearchPattern pattern) => (pattern & SearchPattern.FIND_USAGES) != 0;
 
         // Return a context object for the item being searched for, or null if the element isn't interesting.
         // CanContainReferences isn't called if we return null. Do the work once here, then use it multiple times for
         // each file in CanContainReferences
-        public object GetElementId(IDeclaredElement element)
+        public object TryGetKey(IDeclaredElement element)
         {
             if (!UnityYamlUsageSearchFactory.IsInterestingElement(element))
                 return null;
@@ -83,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     break;
             }
 
-            return new UnityYamlSearchGuruId(set);
+            return new UnityYamlSearchFilterKey(set);
         }
 
         private void AddFilesWithPossibleScriptUsages([NotNull] IClass scriptClass,
@@ -106,18 +103,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             if (sourceFile.IsYamlDataFile())
             {
                 // We know the file matches ANY of the search terms, see if it also matches ALL of the search terms
-                return ((UnityYamlSearchGuruId) elementId).Files.Contains(sourceFile);
+                return ((UnityYamlSearchFilterKey) elementId).Files.Contains(sourceFile);
             }
 
             // Not a YAML file, don't exclude it
             return true;
         }
 
-        private class UnityYamlSearchGuruId
+        private class UnityYamlSearchFilterKey
         {
             public JetHashSet<IPsiSourceFile> Files { get; }
 
-            public UnityYamlSearchGuruId(JetHashSet<IPsiSourceFile> files)
+            public UnityYamlSearchFilterKey(JetHashSet<IPsiSourceFile> files)
             {
                 Files = files;
             }
