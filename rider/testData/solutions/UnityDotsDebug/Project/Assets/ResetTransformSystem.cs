@@ -1,28 +1,36 @@
 using Unity.Burst;
+using Unity.Burst.Intrinsics;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+
 public partial struct ResetTransformSystem : ISystem
 {
     [BurstCompile]
-    public void OnCreate(ref SystemState state)
-    {
-    }
-
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        var job = new ResetTransformJob();
-        job.Schedule();
+        var resetTransformJobEntity = new ResetTransformJobEntity();
+        resetTransformJobEntity.Schedule();
+    }
+}
+public partial class ResetTransformSystemBase : SystemBase
+{
+    protected override void OnUpdate()
+    {
+        Entities.ForEach((ref LocalTransform transform, in RotationSpeed speed) =>
+        {
+            transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
+        }).ScheduleParallel();
     }
 }
 
 [BurstCompile]
-partial struct ResetTransformJob : IJobEntity
+partial struct ResetTransformJobEntity : IJobEntity
 {
     void Execute(ref LocalTransform transform, in RotationSpeed speed)
     {
-        transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity};
+        transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
     }
 }

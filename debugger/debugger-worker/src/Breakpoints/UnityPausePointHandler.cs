@@ -36,10 +36,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
         {
             myLogger = logger;
             mySession = session;
-            // while (!System.Diagnostics.Debugger.IsAttached)
-            // {
-            //     Thread.Sleep(100);
-            // }
 
             if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {

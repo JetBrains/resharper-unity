@@ -95,11 +95,23 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
 }
 
 @Epic(Subsystem.UNITY_DEBUG)
-@Feature("Debug Unity2022")
+@Feature("Debug Unity Dots")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DotsDebuggerTest2022 : DotsDebuggerTestBase(UnityVersion.V2022) {
-    init {
-      addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+class DotsDebuggerTest {
+    class TestUnity2020 : DotsDebuggerTestBase(UnityVersion.V2020) {
+        init {
+            addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+        }
+    }
+    class TestUnity2022 : DotsDebuggerTestBase(UnityVersion.V2022) {
+        init {
+            addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+        }
+    }
+    class TestUnity2023 : DotsDebuggerTestBase(UnityVersion.V2023) {
+        init {
+            addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+        }
     }
 }
