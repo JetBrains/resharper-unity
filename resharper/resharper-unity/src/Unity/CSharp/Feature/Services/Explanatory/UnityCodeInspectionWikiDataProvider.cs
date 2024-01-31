@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Explanatory;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityCodeInspectionWikiDataProvider : ICodeInspectionWikiDataProvider
     {
         private const string WikiRoot = "https://github.com/JetBrains/resharper-unity/wiki/";
