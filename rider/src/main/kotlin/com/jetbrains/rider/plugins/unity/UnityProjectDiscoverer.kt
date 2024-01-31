@@ -1,5 +1,7 @@
 package com.jetbrains.rider.plugins.unity
 
+import com.intellij.ide.projectView.ProjectView
+import com.intellij.ide.projectView.impl.ProjectViewImpl
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
@@ -40,7 +42,14 @@ class UnityProjectDiscoverer(val project: Project) {
             UnityProjectDiscovererState.getInstance(project).isUnityProjectFolderState = hasUnityFileStructure
 
             val isUnityProjectVal = hasUnityFileStructure && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project)
+
+            val oldVal = isUnityProject.value // old val is the one from the settings
             isUnityProject.set(isUnityProjectVal)
+
+            // this only happens for the first opening of a Unity project, later the cached value is the same as evaluated one
+            if (oldVal != isUnityProjectVal) {
+                (ProjectView.getInstance(project) as ProjectViewImpl).reloadPanes()
+            }
             UnityProjectDiscovererState.getInstance(project).isUnityProjectState = isUnityProjectVal
         }
     }
