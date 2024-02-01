@@ -48,8 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
                         if (pf == null) continue;
                         if (!pf.Location.Name.EndsWith(".cs")) continue;
 
-                        var process = new TestHighlightingDumper(file, writer,
-                            DaemonStagesManager.GetInstance(Solution).AllRegisteredStages,
+                        var process = new TestHighlightingDumper(
+                            file, writer,
                             (highlighting, psiSourceFile, settingsStore) =>
                             {
                                 if (highlighting is IHighlightingTestBehaviour { IsSuppressed: true }) return false;
@@ -59,6 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
                                 return severity != Severity.INFO || attribute.OverlapResolve != OverlapResolveKind.NONE;
                             },
                             CSharpLanguage.Instance);
+
                         process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
                         process.DoHighlighting(DaemonProcessKind.GLOBAL_WARNINGS);
                         process.Dump();

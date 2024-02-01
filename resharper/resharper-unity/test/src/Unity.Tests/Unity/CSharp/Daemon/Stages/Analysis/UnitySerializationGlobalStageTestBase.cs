@@ -41,9 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
                     foreach (var file in files)
                         if (IsTestFile(file))
                         {
-                            var process = new TestHighlightingDumperWithOverridenStages(file, writer,
-                                stages: null, HighlightingPredicate,
-                                CSharpLanguage.Instance);
+                            var process = new TestHighlightingDumperWithOverridenStages(
+                                file, writer, HighlightingPredicate, CSharpLanguage.Instance);
                             process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
                             process.DoHighlighting(DaemonProcessKind.GLOBAL_WARNINGS);
                             process.Dump();
