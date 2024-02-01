@@ -6,12 +6,11 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
-import com.jetbrains.rider.unity.test.framework.api.IntegrationTestWithFrontendBackendModel
-import com.jetbrains.rider.unity.test.framework.api.activateRiderFrontendTest
-import com.jetbrains.rider.unity.test.framework.api.allowUnityPathVfsRootAccess
-import com.jetbrains.rider.unity.test.framework.api.createLibraryFolderIfNotExist
+import com.jetbrains.rider.unity.test.framework.api.*
 import org.testng.annotations.AfterMethod
+import org.testng.annotations.AfterSuite
 import org.testng.annotations.BeforeMethod
+import org.testng.annotations.BeforeSuite
 import java.io.File
 
 abstract class IntegrationTestWithSolutionBase : BaseTestWithSolution(), IntegrationTestWithFrontendBackendModel {
@@ -26,6 +25,16 @@ abstract class IntegrationTestWithSolutionBase : BaseTestWithSolution(), Integra
         lifetimeDefinition = LifetimeDefinition()
         allowUnityPathVfsRootAccess(lifetimeDefinition)
         createLibraryFolderIfNotExist(tempDir)
+    }
+
+    @BeforeSuite(alwaysRun = true)
+    fun cleanUpUnityProcessesBefore() {
+        killHangingUnityProcesses()
+    }
+
+    @AfterSuite(alwaysRun = true)
+    fun cleanUpUnityProcessesAfter() {
+        killHangingUnityProcesses()
     }
 
     @AfterMethod(alwaysRun = true)

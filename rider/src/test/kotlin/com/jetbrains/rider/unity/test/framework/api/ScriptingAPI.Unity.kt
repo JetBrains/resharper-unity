@@ -315,6 +315,20 @@ fun killUnity(processHandle: ProcessHandle) {
 
 fun killUnity(project: Project) = killUnity(getUnityProcessHandle(project))
 
+/**
+ * Kills hanging Unity processes.
+ *
+ * This method searches for hanging Unity processes on the system and terminates them.
+ * It uses the `killSuspiciousProcesses` method to find and terminate the processes.
+ * The condition for identifying a hanging Unity process is that its command line string contains "Unity*/
+fun killHangingUnityProcesses() {
+    killSuspiciousProcesses("to cleanup hanging Unity processes") { processInfo ->
+        ((SystemInfo.isUnix && processInfo.commandLine.contains("Unity/Hub/Editor"))
+         || (SystemInfo.isWindows && processInfo.commandLine.contains("Unity\\Hub\\Editor")))
+        && !processInfo.commandLine.contains("Licensing")
+    }
+}
+
 fun BaseTestWithSolution.withUnityProcess(
     withCoverage: Boolean = false,
     resetEditorPrefs: Boolean = false,
