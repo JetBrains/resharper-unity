@@ -6,6 +6,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.scriptingApi.killHangingUnityProcesses
 import com.jetbrains.rider.unity.test.framework.api.*
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.AfterSuite
