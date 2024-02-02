@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "com.unity.ext.nunit": {
+      "version": "1.0.6",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ide.rider": {
+      "version": "https://github.com/van800/com.unity.ide.rider.git?path=/Packages/com.unity.ide.rider#3.0.27",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.ext.nunit": "1.0.6"
+      },
+      "hash": "dc949bb44ff1eb4642e3cd3abcc8b44cff8fceb5"
+    }
+  }
+}
