@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
@@ -12,7 +13,7 @@ using JetBrains.ReSharper.Psi.Search;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
 {
-    [PsiSharedComponent]
+    [PsiSharedComponent(InstantiationEx.DemandAnyThreadNotSafeBecauseOfSettingsStore)]
     public class UnityDotsSearchFactory : DomainSpecificSearcherFactoryBase
     {
         private readonly IContextBoundSettingsStore mySettingsStore;

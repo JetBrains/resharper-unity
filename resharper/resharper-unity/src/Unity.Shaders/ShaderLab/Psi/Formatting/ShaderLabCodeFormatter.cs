@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
@@ -17,7 +18,7 @@ using JetBrains.Util.Text;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 {
-  [Language(typeof(ShaderLabLanguage))]
+  [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfCalculatedSettingsSchema)]
   public class ShaderLabCodeFormatter : CodeFormatterBase<ShaderLabFormatSettingsKey>
   {
     private readonly ShaderLabFormattingInfoProvider myShaderLabFormattingInfo;

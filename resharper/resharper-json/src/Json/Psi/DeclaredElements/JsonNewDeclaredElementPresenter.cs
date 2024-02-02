@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.UI.RichText;
@@ -7,7 +6,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements
 {
-    [PsiSharedComponent(Instantiation.DemandAnyThreadSafe)]
+    [PsiSharedComponent]
     public class JsonNewDeclaredElementPresenter : IDeclaredElementPresenter
     {
         public static JsonNewDeclaredElementPresenter Instance => PsiShared.GetComponent<JsonNewDeclaredElementPresenter>();

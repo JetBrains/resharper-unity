@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Editor;
@@ -11,7 +12,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.SelectEmbracingConstruct
 {
-    [Language(typeof(ShaderLabLanguage))]
+    [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfSettingsStore)]
     public class ShaderLabSelectEmbracingConstructProvider : ISelectEmbracingConstructProvider
     {
         private readonly ISettingsStore mySettingsStore;

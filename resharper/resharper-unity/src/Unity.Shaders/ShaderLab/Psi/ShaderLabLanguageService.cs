@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
@@ -16,7 +17,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
 {
-    [Language(typeof(ShaderLabLanguage))]
+    [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfCalculatedSettingsSchema)]
     public class ShaderLabLanguageService : LanguageService
     {
         private readonly CommonIdentifierIntern myCommonIdentifierIntern;

@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Calculated.Interface;
 using JetBrains.Application.Threading;
@@ -17,7 +18,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting
 {
-    [Language(typeof(CSharpLanguage))]
+    [Language(typeof(CSharpLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfSettingsStore)]
     public class UnityCSharpFormatterInfoProvider : CSharpFormatterInfoProviderPart
     {
         public const int UnityPriority = 1_000_000;

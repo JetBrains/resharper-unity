@@ -1,5 +1,6 @@
 #nullable enable
 
+using JetBrains.Application.Parts;
 using JetBrains.DocumentModel;
 using JetBrains.IDE.UI;
 using JetBrains.ReSharper.Feature.Services.Breadcrumbs;
@@ -16,7 +17,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Breadcrumbs
 {
-    [Language(typeof(ShaderLabLanguage))]
+    [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfSettingsStore)]
     public class ShaderLabBreadcrumbsProvider : StructuralDeclarationBreadcrumbsProviderBase
     {
         public ShaderLabBreadcrumbsProvider(IIconHost iconHost, PsiIconManager iconManager) : base(iconHost, iconManager) { }

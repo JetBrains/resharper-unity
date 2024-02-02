@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -9,7 +10,7 @@ using JetBrains.ReSharper.Psi.Xml.Parsing;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi
 {
-    [Language(typeof(UxmlLanguage))]
+    [Language(typeof(UxmlLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfCalculatedSettingsSchema)]
     internal class UxmlLanguageService : XmlLanguageService
     {
         public UxmlLanguageService(XmlLanguage languageType, IConstantValueService constantValueService,
