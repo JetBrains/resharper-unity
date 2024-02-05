@@ -43,7 +43,6 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     }
 
     @Test
-    @Mute("RIDER-100349", platforms = [PlatformType.WINDOWS_ALL])
     @Description("Check external Editor in Unity")
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
         executeIntegrationTestMethod("DumpExternalEditor")
