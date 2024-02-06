@@ -1,12 +1,13 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import io.qameta.allure.*
 
-@Epic(Subsystem.UNITY_UNIT_TESTING)
+@Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
 @Feature("Unit Testing in Unity solution with started Unity2022")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])

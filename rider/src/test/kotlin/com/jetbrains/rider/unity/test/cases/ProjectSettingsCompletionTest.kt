@@ -7,16 +7,15 @@ import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.inTests.TestHost
 import com.jetbrains.rider.protocol.protocolHost
-import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
-import io.qameta.allure.Description
-import io.qameta.allure.Epic
-import io.qameta.allure.Feature
 import io.qameta.allure.Severity
 import io.qameta.allure.SeverityLevel
 import org.testng.annotations.AfterMethod
@@ -24,7 +23,7 @@ import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 
-@Epic(Subsystem.UNITY_COMPLETION)
+@Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity project settings completion")
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
@@ -53,8 +52,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Psi.Caches",
             "JetBrains.ReSharper.Psi.Files")
 
-    @Test
-    @Description("Test scene primitive completion")
+    @Test(description="Test scene primitive completion")
     fun testScene_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             typeWithLatency("\"")
@@ -70,8 +68,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test
-    @Description("Test Animator state primitive completion")
+    @Test(description="Test Animator state primitive completion")
     fun testAnimatorState_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "AnimatorStateCompletionTest.cs") {
             typeWithLatency("\"")
@@ -80,8 +77,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test
-    @Description("Test Input primitive completion")
+    @Test(description="Test Input primitive completion")
     fun testInput_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "InputCompletionTest.cs") {
             typeWithLatency("\"")
@@ -109,8 +105,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         "\"PostProcessing\"",
         "\"TransparentFX\"")
 
-    @Test
-    @Description("Test Layer primitive completion")
+    @Test(description="Test Layer primitive completion")
     fun testLayer_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -123,8 +118,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test
-    @Description("Test Layer primitive completion with turned off Yaml")
+    @Test(description="Test Layer primitive completion with turned off Yaml")
     fun testLayer_PrimitiveCompletion_YamlOff() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -132,9 +126,8 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test
+    @Test(description = "Test Layer completion after modification")
     @Mute("RIDER-84785")
-    @Description("Test Layer completion after modification")
     fun testLayer_CompletionAfterModification() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")

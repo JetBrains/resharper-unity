@@ -4,7 +4,6 @@ import com.jetbrains.rider.test.scriptingApi.rebuildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.replaceFileContent
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import io.qameta.allure.Description
 import org.testng.annotations.Test
 import java.io.File
 import com.jetbrains.rider.test.framework.combine
@@ -19,8 +18,7 @@ abstract class PlayModeTestBase(private val unityVersion: UnityVersion) : Integr
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testStorage.testMethod.name)
 
-    @Test
-    @Description("Check play, pause, step, unpause, stop actions for Unity")
+    @Test(description="Check play, pause, step, unpause, stop actions for Unity")
     fun checkPlayingPauseModesAndSteps() {
         play()
         pause()
@@ -29,8 +27,7 @@ abstract class PlayModeTestBase(private val unityVersion: UnityVersion) : Integr
         stopPlaying()
     }
 
-    @Test()
-    @Description("Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process")
+    @Test(description="Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process")
     fun checkAttachDebuggerToUnityEditor() {
         attachDebuggerToUnityEditor({},
             {
@@ -42,8 +39,7 @@ abstract class PlayModeTestBase(private val unityVersion: UnityVersion) : Integr
             })
     }
 
-    @Test()
-    @Description("Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process and Play")
+    @Test(description="Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process and Play")
     fun checkAttachDebuggerToUnityEditorAndPlay() {
         attachDebuggerToUnityEditorAndPlay({},
             {
@@ -55,8 +51,7 @@ abstract class PlayModeTestBase(private val unityVersion: UnityVersion) : Integr
             })
     }
 
-    @Test()
-    @Description("Check start, update, quit logs")
+    @Test(description="Check start, update, quit logs")
     fun checkPlayModeLogs() {
         replaceFileContent(project, "NewBehaviourScript.cs",)
         rebuildSolutionWithReSharperBuild()

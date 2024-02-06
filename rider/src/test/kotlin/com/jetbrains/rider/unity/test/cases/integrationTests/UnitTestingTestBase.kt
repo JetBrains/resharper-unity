@@ -1,7 +1,9 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.jetbrains.rdclient.testFramework.waitForDaemon
-import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.annotations.Feature
+import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
@@ -16,13 +18,12 @@ import io.qameta.allure.*
 import org.testng.annotations.Test
 import java.io.File
 
-@Epic(Subsystem.UNITY_UNIT_TESTING)
+@Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
 @Feature("Unit Testing in Unity solution with started Unity2020")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 abstract class UnitTestingTestBase(private val unityVersion: UnityVersion) : IntegrationTestWithUnityProjectBase() {
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
-    override val unityMajorVersion = this.unityVersion
 
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(UnitTestingTestBase::class.simpleName!!)
@@ -39,8 +40,7 @@ abstract class UnitTestingTestBase(private val unityVersion: UnityVersion) : Int
         }
     }
 
-    @Test
-    @Description("Check run all tests from project with Unity2020")
+    @Test(description="Check run all tests from project with Unity2020")
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
             it.waitForDiscovering()
@@ -56,8 +56,7 @@ abstract class UnitTestingTestBase(private val unityVersion: UnityVersion) : Int
     }
 
     //@Mute("RIDER-95762")
-    @Test(description = "RIDER-54359")
-    @Description("Check refresh assets before Test")
+    @Test(description = "RIDER-54359. Check refresh assets before Test")
     fun checkRefreshBeforeTest() {
         val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
         withOpenedEditor(project, file.absolutePath) { // the nature of exploration for Unity requires file to be opened

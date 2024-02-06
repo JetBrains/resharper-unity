@@ -10,8 +10,10 @@ import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
@@ -25,7 +27,7 @@ import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.time.Duration
 
-@Epic(Subsystem.UNITY_COMPLETION)
+@Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity DOTS Autocompletion")
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_7)
@@ -52,8 +54,7 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
             *LogTraceScenarios.Roslyn.categories.toTypedArray())
 
     @Mute("RIDER-95438")
-    @Test
-    @Description("DOTS Source GenCompletion")
+    @Test(description="DOTS Source GenCompletion")
     fun test_DotsSourceGenCompletion() {
         waitForRoslynReady()
         buildSolutionWithReSharperBuild()

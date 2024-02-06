@@ -1,6 +1,8 @@
 package com.jetbrains.rider.unity.test.cases.documentModel
 
-import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.annotations.Feature
+import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.scriptingApi.checkCrumbs
 import com.jetbrains.rider.test.scriptingApi.setCaretToPosition
@@ -9,14 +11,13 @@ import io.qameta.allure.*
 import org.testng.annotations.Test
 
 @Test
-@Epic(Subsystem.UNITY_SHADERS)
+@Subsystem(SubsystemConstants.UNITY_SHADERS)
 @Feature("Breadcrumbs in Shader files")
 @Severity(SeverityLevel.NORMAL)
 class BreadcrumbsTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName() = "SimpleUnityProjectWithShaders"
 
-    @Test
-    @Description("Test Breadcrumbs in .shader files")
+    @Test(description="Test Breadcrumbs in .shader files")
     fun simpleCheck() {
         withOpenedEditor(project, "Assets/Shaders/MyShader.shader") {
             setCaretToPosition(12, 20)

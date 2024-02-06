@@ -1,14 +1,14 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.withDcFacade
-import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
-import io.qameta.allure.*
 import org.testng.annotations.Test
 import java.io.File
 
-@Epic(Subsystem.UNITY_UNIT_TESTING)
+@Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
 @Feature("DotCover in Unity")
 @Severity(SeverityLevel.CRITICAL)
 class DotCoverTest : IntegrationTestWithGeneratedSolutionBase() {
@@ -27,8 +27,7 @@ class DotCoverTest : IntegrationTestWithGeneratedSolutionBase() {
         }
     }
 
-    @Test(enabled = false) // Disabled until merge changes in "Start Unity with Coverage" action
-    @Description("Check coverage of all tests from Unity solution")
+    @Test(description = "Check coverage of all tests from Unity solution", enabled = false) // Disabled until merge changes in "Start Unity with Coverage" action
     fun checkCoverAllTestsFromSolution() {
         buildSolutionWithReSharperBuild()
         withDcFacade(project) { ut, dc ->

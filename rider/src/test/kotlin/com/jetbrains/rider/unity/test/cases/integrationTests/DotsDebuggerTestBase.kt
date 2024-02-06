@@ -5,19 +5,14 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
-import com.jetbrains.rider.test.allure.Subsystem
-import com.jetbrains.rider.test.annotations.Mute
-import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import io.qameta.allure.Epic
-import io.qameta.allure.Feature
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -111,7 +106,7 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
     }
 }
 
-@Epic(Subsystem.UNITY_DEBUG)
+@Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Dots")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])

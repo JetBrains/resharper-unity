@@ -4,8 +4,10 @@ import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.enums.PlatformType
@@ -19,7 +21,7 @@ import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
-@Epic(Subsystem.UNITY_PLUGIN)
+@Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity Class Library template")
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(platform = [PlatformType.MAC_OS_ALL, PlatformType.WINDOWS_ALL]) // requires mono
@@ -30,8 +32,7 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         get() = File(testCaseGoldDirectory, "${testMethod.name}_opened")
 
     @Mute("RIDER-98881")
-    @Test
-    @Description("Test Unity Class Library template")
+    @Test(description="Test Unity Class Library template")
     fun testUnityClassLibraryTemplate() {
         val params = OpenSolutionParams()
         params.restoreNuGetPackages = true //it's always true in getAndOpenSolution
