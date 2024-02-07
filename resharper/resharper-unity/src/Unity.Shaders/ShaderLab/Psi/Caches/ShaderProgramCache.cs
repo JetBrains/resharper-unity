@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -308,8 +309,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         private struct ShaderProgramInfoData
         {
             private readonly IReadOnlyDictionary<string, PragmaCommand> myPragmas;
-            private StringSplitter<CharPredicates.IsWhitespacePredicate> myContentSplitter;
+            private StringSplitter<SkipWhitespaceOrComment> myContentSplitter;
             private int myPragmaContentStartOffset;
+            private static readonly Regex ourBackslashMergerRegex = new("\\\\\\s*\n", RegexOptions.Compiled);
             
             public bool IsSurface = false;
             public int ShaderTarget = HlslConstants.SHADER_TARGET_25;
@@ -332,15 +334,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                     {
                         lexer.Advance();
                         
-                        var pragmaContent = lexer.GetTokenText();
+                        var pragmaContent = MergeBackslashSeparatedLines(lexer.GetTokenText());
                         myPragmaContentStartOffset = lexer.TokenStart;
-                        myContentSplitter = StringSplitter.ByWhitespace(pragmaContent);
+                        myContentSplitter = new(pragmaContent, new SkipWhitespaceOrComment());
                         if (myContentSplitter.TryGetNextSliceAsString(out var pragmaType)) 
                             ReadPragmaCommand(pragmaType);
                     }
                     lexer.Advance();
                 }
             }
+
+            private string MergeBackslashSeparatedLines(string content) => ourBackslashMergerRegex.Replace(content, "");
 
             private void ReadPragmaCommand(string pragmaType)
             {
@@ -417,6 +421,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 
                 shaderFeature = default;
                 return false;
+            }
+            
+            private struct SkipWhitespaceOrComment : IValueFunction<StringSlice, int, int>
+            {
+                public int Invoke(StringSlice input, int position)
+                {
+                    var length = input.Length;
+                    do
+                    {
+                        var ch = input[position];
+                        if (ch == '/')
+                        {
+                            var nextPosition = position + 1;
+                            if (nextPosition >= length)
+                                return position;
+                            
+                            var nextCh = input[nextPosition];
+                            if (nextCh == '/')
+                                return length;
+                            if (nextCh != '*')
+                                return position;
+                            position = input.IndexOf("*/", nextPosition + 1) is var index && index >= 0 ? index + 2 : length;
+                        }
+                        else if (char.IsWhiteSpace(ch))
+                            ++position;
+                        else
+                            return position;
+                    } while (position < length);
+
+                    return length;
+                }
             }
         }
         #endregion

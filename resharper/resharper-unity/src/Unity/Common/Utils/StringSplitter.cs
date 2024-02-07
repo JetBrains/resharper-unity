@@ -5,22 +5,41 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Common.Utils
 {
-    public static class StringSplitter
+    public readonly struct CharPredicateSkipper<T>(T predicate) : IValueFunction<StringSlice, int, int>
+        where T : IValueFunction<char, bool>
     {
-        public static StringSplitter<CharPredicates.IsWhitespacePredicate> ByWhitespace(StringSlice input) => new(input, new CharPredicates.IsWhitespacePredicate());
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int Invoke(StringSlice slice, int position)
+        {
+            do
+            {
+                if (!predicate.Invoke(slice[position]))
+                    return position;
+                ++position;
+            } while (position < slice.Length);
+
+            return position;
+        }
     }
     
-    public struct StringSplitter<TSeparatorPredicate> where TSeparatorPredicate : struct, IValueFunction<char, bool>
+    public static class StringSplitter
+    {
+        public static StringSplitter<CharPredicateSkipper<CharPredicates.IsWhitespacePredicate>> ByWhitespace(StringSlice input) => ByPredicate(input, new CharPredicates.IsWhitespacePredicate());
+
+        public static StringSplitter<CharPredicateSkipper<T>> ByPredicate<T>(StringSlice input, T predicate) where T : IValueFunction<char, bool> => new(input, new CharPredicateSkipper<T>(predicate));
+    }
+    
+    public struct StringSplitter<TSeparatorSkipper> where TSeparatorSkipper : struct, IValueFunction<StringSlice, int, int>
     {
         private readonly StringSlice myInput;
-        private TSeparatorPredicate mySeparatorPredicate;
+        private TSeparatorSkipper mySeparatorSkipper;
         private int myPosition;
-
-        public StringSplitter(StringSlice input, TSeparatorPredicate separatorPredicate)
+        
+        public StringSplitter(StringSlice input, TSeparatorSkipper separatorSkipper)
         {
             myInput = input;
-            mySeparatorPredicate = separatorPredicate;
-            myPosition = 0;
+            mySeparatorSkipper = separatorSkipper;
+            myPosition = myInput.Length > 0 ? mySeparatorSkipper.Invoke(myInput, 0) : 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -31,36 +50,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Utils
 
         public bool TryGetNextSlice(out StringSlice nextSlice, out int startPosition)
         {
-            startPosition = -1;
-            if (myPosition < myInput.Length)
+            var length = myInput.Length;
+            startPosition = myPosition;
+            if (startPosition >= length)
             {
-                do
-                {
-                    var isSeparator = mySeparatorPredicate.Invoke(myInput[myPosition]);
-                    if (isSeparator)
-                    {
-                        if (startPosition >= 0)
-                        {
-                            nextSlice = myInput.Substring(startPosition, myPosition - startPosition);
-                            ++myPosition;
-                            return true;
-                        }
-                    }
-                    else if (startPosition < 0)
-                        startPosition = myPosition;
-
-                    ++myPosition;
-                } while (myPosition < myInput.Length);
-
-                if (startPosition >= 0)
-                {
-                    nextSlice = myInput.Substring(startPosition, myPosition - startPosition);
-                    return true;
-                }
+                nextSlice = StringSlice.Empty;
+                return false;
             }
 
-            nextSlice = StringSlice.Empty;
-            return false;
+            var endPosition = ++myPosition;
+            while (endPosition < length)
+            {
+                myPosition = mySeparatorSkipper.Invoke(myInput, endPosition);
+                if (myPosition != endPosition)
+                    break;
+
+                endPosition = ++myPosition;
+            }
+
+            nextSlice = myInput.Substring(startPosition, endPosition - startPosition);
+            return true;
         }
     }
 }

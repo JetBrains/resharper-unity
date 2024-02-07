@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Common.Utils
         [TestCase(" a b ", new[] { "a", "b" })]
         [TestCase(" a   b ", new[] { "a", "b" })]
         [TestCase(" a\tb\tc", new[] { "a", "b", "c" })]
+        [TestCase("foo bar", new[] { "foo", "bar" })]
         public void TestSplitByWhitespace(string input, string[] slices)
         {
             var splitter = StringSplitter.ByWhitespace(input);

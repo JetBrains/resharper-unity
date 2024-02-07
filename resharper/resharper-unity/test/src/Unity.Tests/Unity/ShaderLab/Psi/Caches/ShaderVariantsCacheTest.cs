@@ -22,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Caches
         protected override string RelativeTestDataPath => @"ShaderLab\Psi\Caches\ShaderVariants";
 
         [TestCase("AllDirectives")]
+        [TestCase("DirectivesWithComments")]
         public void TestCacheItem(string testName) => DoOneTest(testName);
         
         protected override void DoTest(Lifetime lifetime, IProject testProject)
