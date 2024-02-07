@@ -24,6 +24,7 @@ import java.io.File
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 abstract class UnitTestingTestBase(private val unityVersion: UnityVersion) : IntegrationTestWithUnityProjectBase() {
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
+    override val unityMajorVersion = this.unityVersion
 
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(UnitTestingTestBase::class.simpleName!!)
