@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.Cpp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Semantic;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
@@ -153,8 +154,8 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
             var items = new LocalList<(CppIdentifierTokenNode Keyword, bool Enabled)>();
             for (var node = nameNode.GetNextMeaningfulSibling(); node != null && node.NodeType != CppTokenNodeTypes.END_OF_DIRECTIVE_CONTENT; node = node.GetNextMeaningfulSibling())
             {
-                if (node is not CppIdentifierTokenNode { Name: var keyword } identifier) continue;
-                var enabled = myEnabledKeywords.Contains(keyword);
+                if (node is not CppIdentifierTokenNode { Name: var shaderKeyword } identifier) continue;
+                var enabled = myEnabledKeywords.Contains(shaderKeyword);
                 items.Add((identifier, enabled));
                 if (enabled && enabledKeyword == null)
                     enabledKeyword = identifier;
@@ -167,7 +168,7 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
             IHighlighting highlighting;
             if (enabledKeyword == null && (items.Count > 1 || !info.HasDisabledVariantForSingleKeyword))
             {
-                highlighting = new ImplicitlyEnabledShaderKeywordHighlight(items[0].Keyword);
+                highlighting = new ImplicitlyEnabledShaderKeywordHighlight(items[0].Keyword.Name, items[0].Keyword);
                 consumer.ConsumeHighlighting(new HighlightingInfo(highlighting.CalculateRange(), highlighting));
                 ++index;
             }
@@ -176,16 +177,29 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
             for (; index < items.Count; ++index)
             {
                 var item = items[index];
+                var keyword = item.Keyword.Name;
                 if (item.Enabled)
                 {
-                    highlighting = ReferenceEquals(item.Keyword, enabledKeyword) ? new EnabledShaderKeywordHighlight(item.Keyword) : new SuppressedShaderKeywordHighlight(item.Keyword, suppressors.MoveOrCopyToImmutableArray());
-                    suppressors.Add(item.Keyword.Name);
+                    highlighting = ReferenceEquals(item.Keyword, enabledKeyword) ? new EnabledShaderKeywordHighlight(keyword, item.Keyword) : new SuppressedShaderKeywordHighlight(keyword, item.Keyword, suppressors.MoveOrCopyToImmutableArray());
+                    suppressors.Add(keyword);
                 }
                 else
-                    highlighting = new DisabledShaderKeywordHighlight(item.Keyword);
+                    highlighting = new DisabledShaderKeywordHighlight(keyword, item.Keyword);
                 consumer.ConsumeHighlighting(new HighlightingInfo(highlighting.CalculateRange(), highlighting));
             }
         }
+    }
+
+    private bool TryGetShaderFeatures(string symbol, out string keyword, out OneToListMap<string, ShaderFeature>.ValueCollection features)
+    {
+        keyword = symbol;
+        features = myShaderProgramInfo.GetShaderFeatures(symbol);
+        if (features is { Count: 0 } && symbol.EndsWith(ShaderKeywordConventions.DECLARED_KEYWORD_SUFFIX))
+        {
+            keyword = symbol[^ShaderKeywordConventions.DECLARED_KEYWORD_SUFFIX.Length..];
+            features = myShaderProgramInfo.GetShaderFeatures(symbol);
+        }
+        return features.Count > 0;
     }
 
     private void VisitMacroReference(MacroReference macroReference, IHighlightingConsumer consumer)
@@ -193,25 +207,36 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
         if (macroReference.GetReferencedSymbol() is { Substitution: "1", HasParameters: false } symbol
             && !symbol.Location.ContainingFile.IsValid())
         {
-            if (myShaderProgramInfo.HasKeyword(symbol.Name))
-                Consume(consumer, myEnabledKeywords.Contains(symbol.Name) ? new EnabledShaderKeywordHighlight(macroReference) : new ImplicitlyEnabledShaderKeywordHighlight(macroReference));
-            else if (ShaderDefineSymbolsRecognizer.Recognize(symbol.Name) is {} descriptor)
-                Consume(consumer, !descriptor.IsDefaultSymbol(symbol.Name) ? new EnabledShaderKeywordHighlight(macroReference) : new ImplicitlyEnabledShaderKeywordHighlight(macroReference));
+            var symbolName = symbol.Name;
+            bool isExplicit;
+            if (TryGetShaderFeatures(symbolName, out var shaderKeyword, out _))
+            {
+                symbolName = shaderKeyword;
+                isExplicit = myEnabledKeywords.Contains(shaderKeyword);                
+            }
+            else if (ShaderDefineSymbolsRecognizer.Recognize(symbolName) is { } descriptor)
+            {
+                isExplicit = !descriptor.IsDefaultSymbol(symbolName);
+            }
+            else
+                return;
+
+            ShaderKeywordHighlight highlight = isExplicit ? new EnabledShaderKeywordHighlight(symbolName, macroReference) : new ImplicitlyEnabledShaderKeywordHighlight(symbolName, macroReference);
+            Consume(consumer, highlight);
         }
     }
 
     private void VisitIdentifier(CppIdentifierTokenNode identifierNode, IHighlightingConsumer consumer)
     {
-        var symbol = identifierNode.Name;
-        if (myShaderProgramInfo.GetShaderFeatures(symbol) is { Count: > 0 } features)
-            Consume(consumer, GetKeywordIdentifierHighlighting(identifierNode, features));
-        else if (ShaderDefineSymbolsRecognizer.Recognize(symbol) is {} descriptor)
-            ConsumeShaderDefineSymbolIdentifier(identifierNode, descriptor, consumer);
+        var symbolName = identifierNode.Name;
+        if (TryGetShaderFeatures(symbolName, out var shaderKeyword, out var features))
+            Consume(consumer, GetKeywordIdentifierHighlighting(shaderKeyword, identifierNode, features));
+        else if (ShaderDefineSymbolsRecognizer.Recognize(symbolName) is {} descriptor)
+            ConsumeShaderDefineSymbolIdentifier(symbolName, identifierNode, descriptor, consumer);
     }
 
-    private void ConsumeShaderDefineSymbolIdentifier(CppIdentifierTokenNode identifierNode, IShaderDefineSymbolDescriptor descriptor, IHighlightingConsumer consumer)
+    private void ConsumeShaderDefineSymbolIdentifier(string symbol, CppIdentifierTokenNode identifierNode, IShaderDefineSymbolDescriptor descriptor, IHighlightingConsumer consumer)
     {
-        var symbol = identifierNode.Name;
         var isEnabled = descriptor switch
         {
             ShaderApiDefineSymbolDescriptor shaderApiDescriptor => shaderApiDescriptor.GetValue(symbol) == myShaderApi,
@@ -219,16 +244,15 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
             _ => false
         };
         if (!isEnabled)
-            Consume(consumer, new DisabledShaderKeywordHighlight(identifierNode));
+            Consume(consumer, new DisabledShaderKeywordHighlight(symbol, identifierNode));
         else if (descriptor.IsDefaultSymbol(symbol))
-            Consume(consumer, new ImplicitlyEnabledShaderKeywordHighlight(identifierNode));
+            Consume(consumer, new ImplicitlyEnabledShaderKeywordHighlight(symbol, identifierNode));
         else
-            Consume(consumer, new EnabledShaderKeywordHighlight(identifierNode));
+            Consume(consumer, new EnabledShaderKeywordHighlight(symbol, identifierNode));
     }
 
-    private IHighlighting GetKeywordIdentifierHighlighting(CppIdentifierTokenNode identifierNode, OneToListMap<string, ShaderFeature>.ValueCollection features)
-    {
-        var keyword = identifierNode.Name;
+    private IHighlighting GetKeywordIdentifierHighlighting(string keyword, CppIdentifierTokenNode identifierNode, OneToListMap<string, ShaderFeature>.ValueCollection features)
+    {        
         if (myEnabledKeywords.Contains(keyword))
         {
             var suppressors = ImmutableArray.CreateBuilder<string>();
@@ -240,7 +264,7 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
                     if (entry.Keyword == keyword)
                     {
                         if (!suppressedInFeature)
-                            return new EnabledShaderKeywordHighlight(identifierNode);
+                            return new EnabledShaderKeywordHighlight(keyword, identifierNode);
                         break;
                     }
                     if (myEnabledKeywords.Contains(entry.Keyword))
@@ -251,7 +275,7 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
                 }
             }
             
-            return new SuppressedShaderKeywordHighlight(identifierNode, suppressors.MoveOrCopyToImmutableArray());
+            return new SuppressedShaderKeywordHighlight(keyword, identifierNode, suppressors.MoveOrCopyToImmutableArray());
         }
 
         foreach (var feature in features)
@@ -268,11 +292,11 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
                     }
                 }
                 if (!otherKeywordEnabled)
-                    return new ImplicitlyEnabledShaderKeywordHighlight(identifierNode);
+                    return new ImplicitlyEnabledShaderKeywordHighlight(keyword, identifierNode);
             }
         }
 
-        return new DisabledShaderKeywordHighlight(identifierNode);
+        return new DisabledShaderKeywordHighlight(keyword, identifierNode);
     }
 
     private void Consume(IHighlightingConsumer consumer, IHighlighting highlighting) => consumer.ConsumeHighlighting(new HighlightingInfo(highlighting.CalculateRange(), highlighting));

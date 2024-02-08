@@ -13,7 +13,7 @@ public class SuppressedShaderKeywordHighlight : ShaderKeywordHighlight
     
     public ImmutableArray<string> Suppressors { get; }
 
-    public SuppressedShaderKeywordHighlight(CppIdentifierTokenNode shaderKeywordNode, ImmutableArray<string> suppressors) : base(shaderKeywordNode)
+    public SuppressedShaderKeywordHighlight(string keyword, CppIdentifierTokenNode shaderKeywordNode, ImmutableArray<string> suppressors) : base(keyword, shaderKeywordNode)
     {
         Suppressors = suppressors;
         SuppressorsString = !suppressors.IsEmpty ? string.Join(", ", suppressors) : null;

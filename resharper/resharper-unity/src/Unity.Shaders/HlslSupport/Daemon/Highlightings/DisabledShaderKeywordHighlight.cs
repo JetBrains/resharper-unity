@@ -8,5 +8,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlight
 [StaticSeverityHighlighting(Severity.INFO, typeof(ShaderKeywordsHighlightingId), OverlapResolve = OverlapResolveKind.NONE, AttributeId = ShaderLabHighlightingAttributeIds.DISABLED_SHADER_KEYWORD)]
 public class DisabledShaderKeywordHighlight : ShaderKeywordHighlight
 {
-    public DisabledShaderKeywordHighlight(CppIdentifierTokenNode shaderKeywordNode) : base(shaderKeywordNode) { }
+    public DisabledShaderKeywordHighlight(string keyword, CppIdentifierTokenNode shaderKeywordNode) : base(keyword, shaderKeywordNode) { }
 }

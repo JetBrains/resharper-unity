@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Semantic;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
@@ -13,6 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 public class ShaderVariantMacrosProvider : IUnityHlslCustomMacrosProvider
 {
     private readonly ShaderVariantsManager myShaderVariantsManager;
+    // TODO: Unity team will add _DECLARED_KEYWORD suffix for every shader keyword symbol in feature releases, need to decide based on Unity version if we need to add extra define symbols 
+    private readonly bool myAddDeclaredKeywordsSymbols = false;
 
     public ShaderVariantMacrosProvider(ShaderVariantsManager shaderVariantsManager)
     {
@@ -31,6 +34,8 @@ public class ShaderVariantMacrosProvider : IUnityHlslCustomMacrosProvider
                     // TODO: can't use real location, because symbol not registered in symbol table. Have to support symbols from shader features in C++ engine.  
                     var symbolLocation = new CppSymbolLocation(CppFileLocation.EMPTY, new CppComplexOffset(entry.TextRange.StartOffset));
                     yield return new CppPPDefineSymbol(entry.Keyword, null, false, "1", symbolLocation);
+                    if (myAddDeclaredKeywordsSymbols)
+                        yield return new CppPPDefineSymbol(entry.Keyword + ShaderKeywordConventions.DECLARED_KEYWORD_SUFFIX, null, false, "1", symbolLocation);
                 }
             }
         }
