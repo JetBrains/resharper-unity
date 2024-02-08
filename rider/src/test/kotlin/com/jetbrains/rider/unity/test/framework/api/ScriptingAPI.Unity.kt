@@ -2,6 +2,7 @@ package com.jetbrains.rider.unity.test.framework.api
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.components.ComponentManagerEx
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.rd.util.lifetime
@@ -20,6 +21,7 @@ import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.testFramework.getGoldFile
 import com.jetbrains.rdclient.util.idea.callSynchronously
+import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
@@ -32,23 +34,25 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
+import com.jetbrains.rider.plugins.unity.run.UnityProcess
+import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.getUnityArgs
 import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
-import com.jetbrains.rider.test.framework.TeamCityHelper
-import com.jetbrains.rider.test.framework.combine
-import com.jetbrains.rider.test.framework.frameworkLogger
-import com.jetbrains.rider.test.framework.getFileWithNameSuffix
+import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.utils.NullPrintStream
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.PrintStream
 import java.nio.file.Files
@@ -468,9 +472,64 @@ fun IntegrationTestWithFrontendBackendModel.restart() {
     play()
 }
 
+
 //endregion
 
 //region RunDebug
+
+fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
+    playerFile: File,
+    test: DebugTestExecutionContext.() -> Unit,
+    goldFile: File? = null){
+
+    assert(playerFile.exists())
+    var startGameExecutable: Process? = null
+
+    try {
+        startGameExecutable = startGameExecutable(playerFile)
+        assertNotNull(startGameExecutable)
+
+        val unityProcessDeferred = waitGameProcess(project.lifetime) {
+            it.projectName == project.solutionName
+        }
+
+        var unityProcess: UnityProcess? = null
+        val job = (project as ComponentManagerEx).getCoroutineScope().launch {
+            unityProcess = unityProcessDeferred.await()
+        }
+
+        pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
+            job.isCompleted
+        }
+
+        assertNotNull(unityProcess)
+        attachToUnityProcess(project, unityProcess!!)
+
+        val session = waitForNotNull(UnityPlayerDebuggerTestBase.collectTimeout, "Debugger session wasn't started") {
+            XDebuggerManager.getInstance(project).debugSessions.firstOrNull()
+        }
+
+        assertNotNull(session)
+
+        if (goldFile != null) {
+            executeWithGold(goldFile) {
+                val context = DebugTestExecutionContext(it, session)
+                context.test()
+                flushQueues()
+                session.stop()
+            }
+        }
+        else
+        {
+            val context = DebugTestExecutionContext(NullPrintStream, session)
+            context.test()
+        }
+    }
+    finally {
+        if(startGameExecutable != null && startGameExecutable.isAlive)
+            startGameExecutable.destroyProcess(Duration.ofSeconds(3))
+    }
+}
 
 fun waitForUnityRunConfigurations(project: Project) {
     val runManager = RunManager.getInstance(project)
@@ -609,7 +668,8 @@ fun getGoldFileUnityDependentSuffix(unityVersion: UnityVersion): String {
 
 fun getUnityDependentGoldFile(unityVersion: UnityVersion, testFile: File): File {
     val suffix = getGoldFileUnityDependentSuffix(unityVersion)
-    val goldFileWithSuffix = testFile.getFileWithNameSuffix(suffix).getGoldFile()
+    val fileWithNameSuffix = testFile.getFileWithNameSuffix(suffix)
+    val goldFileWithSuffix = fileWithNameSuffix.getGoldFile()
 
     if (goldFileWithSuffix.exists()) {
         return goldFileWithSuffix

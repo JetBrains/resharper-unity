@@ -17,7 +17,7 @@ import java.time.Duration
  * IntegrationTestWithGeneratedSolutionBase always opens Rider first and expect sln files to exist in the test-data
  */
 abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGeneratedSolutionBase() {
-    private lateinit var unityProjectPath: File
+    protected lateinit var unityProjectPath: File
     protected abstract val unityMajorVersion: UnityVersion
     private val unityExecutable: File by lazy { getUnityExecutableInstallationPath(unityMajorVersion) }
 
@@ -28,7 +28,7 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
                     File(super.testGoldFile.path.replace(this::class.simpleName.toString(), ""))
                 )
 
-    private fun putUnityProjectToTempTestDir(
+    protected fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,
         filter: ((File) -> Boolean)? = null
     ): File {
@@ -67,6 +67,11 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
         unityProjectPath = putUnityProjectToTempTestDir(getSolutionDirectoryName(), null)
+        runUnityToGenerateSolution()
+        super.setUpTestCaseSolution()
+    }
+
+     open fun runUnityToGenerateSolution() {
         val unityProcessHandle = startUnity(
             executable = unityExecutable.canonicalPath,
             projectPath = unityProjectPath.canonicalPath,
@@ -81,7 +86,6 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
         frameworkLogger.info("Unity Editor has been started, waiting for sln/csproj structure to be generated")
         waitForSlnGeneratedByUnity(unityProcessHandle, unityProjectPath.canonicalPath)
         frameworkLogger.info("Sln/csproj structure has been created, opening project in Rider")
-        super.setUpTestCaseSolution()
     }
 
     @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
