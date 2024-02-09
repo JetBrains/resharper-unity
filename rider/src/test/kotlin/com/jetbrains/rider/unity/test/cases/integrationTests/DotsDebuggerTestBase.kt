@@ -6,6 +6,7 @@ import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
 import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
@@ -85,4 +86,7 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTest2022 : DotsDebuggerTestBase(UnityVersion.V2022) {
+    init {
+      addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+    }
 }

@@ -56,6 +56,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     fun propertyCodeVision(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
+    @Mute("RIDER-96147", specificParameters = ["NoProperties"])
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "RiderSample")
     @Description("Unity property code vision test with typing")
