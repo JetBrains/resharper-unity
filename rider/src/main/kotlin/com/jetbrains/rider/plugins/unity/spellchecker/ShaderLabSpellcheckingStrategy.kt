@@ -1,0 +1,6 @@
+package com.jetbrains.rider.plugins.unity.spellchecker
+
+import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabLanguage
+import com.jetbrains.rider.spellChecker.BackendLanguageSpellcheckingStrategy
+
+class ShaderLabSpellcheckingStrategy : BackendLanguageSpellcheckingStrategy(ShaderLabLanguage)

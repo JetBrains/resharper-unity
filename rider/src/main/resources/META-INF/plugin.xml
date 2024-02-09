@@ -93,6 +93,7 @@
     <backend.typedHandler language="ShaderLab" implementationClass="com.jetbrains.rider.cpp.fileType.CppTypedHandler"/>
     <langCodeStyleSettingsProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.settings.ShaderLabStyleSettingsProvider"/>
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.breadcrumbs.ShaderLabBreadcrumbsInfoProvider"/>
+    <spellchecker.support language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.spellchecker.ShaderLabSpellcheckingStrategy" />
 
     <fileType name="HLSL" extensions="cg;cginc;hlslinc;compute" />
 
@@ -143,6 +144,9 @@
     <backend.actions.support language="UXML" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlIconProvider" />
     <completion.contributor language="UXML" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
+    <spellchecker.support language="XML" order="first" implementationClass="com.jetbrains.rider.plugins.unity.spellchecker.UxmlSpellcheckingStrategy" />
+    <intentionsOrderProvider language="UXML" implementationClass="com.jetbrains.rider.spellChecker.BackendLanguageIntentionsOrderProvider"/>
+    <lang.inspectionSuppressor language="UXML" order="first" implementationClass="com.jetbrains.rider.inspections.suppression.BackendXmlInspectionSuppressor"/>
 
     <!-- JSON support -->
     <fileType name="JSON" extensions="inputactions"/>
