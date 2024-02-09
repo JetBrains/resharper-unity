@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupI
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.ExpectedTypes;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Impl.CodeStyle;
@@ -27,7 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
             var treeNode = context.UnterminatedContext.TreeNode;
             if (treeNode is not { Parent: UnexpectedTokenErrorElement { ExpectedTokenTypes: { } expectedNodeTypes } errorElement })
                 return EmptyList<KeywordCompletionResult>.Instance;
-            
+
+            var basicContext = context.BasicContext;
+            var braceStyle = (myCodeFormatter.GetFormatterSettings(basicContext.Solution, basicContext.SourceFile) as ShaderLabFormatSettingsKey)?.BraceStyle ?? BraceFormatStyle.NEXT_LINE;
             var isFirstOnLine = treeNode.IsFirstOnLine(myCodeFormatter);
             var result = new LocalList<KeywordCompletionResult>();
             foreach (var it in expectedNodeTypes)
@@ -38,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
                 // only offer ShaderLab command keywords if they are first on line, they are still valid for parser, but looks bad for code style
                 // exclusion for ITexturePropertyValue block to let it one-line
                 if (isFirstOnLine || errorElement.Parent is ITexturePropertyValue || !keywordType.IsCommandKeyword())
-                    result.Add(CreateKeywordCompletionResult(tt, keywordType));
+                    result.Add(CreateKeywordCompletionResult(tt, keywordType, braceStyle));
             }
             return result.ReadOnlyList();
         }
@@ -47,20 +50,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
         {
             var psiIconManager = context.BasicContext.PsiIconManager;
             var keywordsCollector = new KeywordsCollector(collector, psiIconManager.KeywordIcon, (ulong)(ShaderLabLookupItemRelevance.Keywords | ShaderLabLookupItemRelevance.LiveTemplates));
-            
+
+            context.BasicContext.SourceFile.GetFormatterSettings();
             var keywords = GetKeywords(context);
             foreach (var keyword in keywords)
                 keywordsCollector.Add(keyword.Token, context.CompletionRanges, keyword.TailType);
         }
 
-        private KeywordCompletionResult CreateKeywordCompletionResult(IShaderLabTokenNodeType nodeType, ShaderLabKeywordType keywordType)
+        private KeywordCompletionResult CreateKeywordCompletionResult(IShaderLabTokenNodeType nodeType, ShaderLabKeywordType keywordType, BraceFormatStyle braceStyle)
         {
             var tailType = keywordType switch
             {
                 ShaderLabKeywordType.RegularCommand => ShaderLabTailType.Space,
                 ShaderLabKeywordType.BlockCommand when nodeType == ShaderLabTokenType.SET_TEXTURE_KEYWORD => ShaderLabTailType.Brackets,
                 ShaderLabKeywordType.BlockCommand when nodeType == ShaderLabTokenType.SHADER_KEYWORD => ShaderLabTailType.Space,
-                ShaderLabKeywordType.BlockCommand => ShaderLabTailType.Braces,
+                ShaderLabKeywordType.BlockCommand when braceStyle != BraceFormatStyle.END_OF_LINE_NO_SPACE => ShaderLabTailType.Braces,
+                ShaderLabKeywordType.BlockCommand => ShaderLabTailType.BracesNoSpace,
                 _ => TailType.None
             };
             return new KeywordCompletionResult(nodeType, tailType);

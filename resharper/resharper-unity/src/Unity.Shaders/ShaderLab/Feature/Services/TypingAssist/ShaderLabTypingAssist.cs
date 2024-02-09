@@ -103,15 +103,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
                     var offset = textControl.Caret.Offset();
                     if (offset == 0)
                         return false;
+                    
+                    var rangeStart = offset;
+                    // Remove whitespaces after end of preceding non-whitespace token
+                    if (MoveToClosestTokenNodeTypeSkippingWhitespaces(cachingLexer, -1) is { IsWhitespace: false })
+                        rangeStart = cachingLexer.TokenEnd;
+                    cachingLexer.Advance();
 
-                    var range = TextRange.FromLength(offset, 0);
-                    while (cachingLexer.TokenType is { IsWhitespace: true } && cachingLexer.TokenType != ShaderLabTokenType.NEW_LINE)
+                    while (cachingLexer.TokenType is { IsWhitespace: true } && cachingLexer.TokenType != ShaderLabTokenType.NEW_LINE) 
                         cachingLexer.Advance();
-                    
+                    var rangeEnd = cachingLexer.TokenStart;
+
+                    var isStartOfBlock = cachingLexer.TokenType == ShaderLabTokenType.LBRACE;
                     var isEndOfBlock = cachingLexer.TokenType == ShaderLabTokenType.RBRACE;
-                    if (isEndOfBlock)
-                        range = range.SetEndTo(cachingLexer.TokenStart);
-                    
                     if (!cachingLexer.FindTokenAt(offset - 1))
                         return false;
                     
@@ -122,7 +126,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
                     // should only append block indent if '{' is a first indentation reference, if there preceding shader command then just use same indentation.
                     // If next token is end of block then it also shouldn't be indented inside of block 
                     var stoppedAtStartOfBlock = cachingLexer.TokenType == ShaderLabTokenType.LBRACE;
-                    var shouldAppendBlockIndent = stoppedAtStartOfBlock;
                     var document = textControl.Document;
                     // e.g  
                     //Shader "Custom/Test2_hlsl" {
@@ -131,25 +134,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
                     //<caret>{
 
                     //<caret>    {
-                    var sb = new StringBuilder("\n");
                     if (!TryGetLineIndent(cachingLexer, document, out var lineIndent))
                         return false;
+                    var formattingService = GetFormatSettingsService(textControl);
+                    var braceStyle = (formattingService as ShaderLabFormatSettingsKey)?.BraceStyle ?? BraceFormatStyle.NEXT_LINE;
+                    var shouldBeShifted = braceStyle is BraceFormatStyle.NEXT_LINE_SHIFTED or BraceFormatStyle.NEXT_LINE_SHIFTED_2;
+                    var shouldAppendBlockIndent = isStartOfBlock && shouldBeShifted || stoppedAtStartOfBlock && braceStyle != BraceFormatStyle.NEXT_LINE_SHIFTED;
                     var indent = lineIndent;
                     if (shouldAppendBlockIndent)
-                        indent += GetFormatSettingsService(textControl).GetIndentStr();
-                    // if Enter pressed inside of empty braces on same line and these are not on own line yet then insert line before opening brace
+                        indent += formattingService.GetIndentStr();
                     string? prologIndent = null;
                     // if Enter pressed before end of block then we want to insert extra empty line inside of the block
                     string? epilogueIndent = null;
                     if (isEndOfBlock && (stoppedAtStartOfBlock || MoveLexerToIdentReference(cachingLexer, false) && TryGetLineIndent(cachingLexer, document, out lineIndent)))
                     {
                         epilogueIndent = lineIndent;
-                        sb.Append("\n");
-                        sb.Append(lineIndent);
-                        if (GetClosestTokenNodeTypeSkippingWhitespaces(cachingLexer, 1) == ShaderLabTokenType.RBRACE
+                        // if Enter pressed inside of empty braces on same line and these are not on own line yet then insert line before opening brace for next line brace style
+                        if (braceStyle is BraceFormatStyle.NEXT_LINE or BraceFormatStyle.NEXT_LINE_SHIFTED or BraceFormatStyle.NEXT_LINE_SHIFTED_2
+                            && GetClosestTokenNodeTypeSkippingWhitespaces(cachingLexer, 1) == ShaderLabTokenType.RBRACE
                             && MoveToClosestTokenNodeTypeSkippingWhitespaces(cachingLexer, -1) is { IsWhitespace: false })
                         {
-                            range = range.SetStartTo(cachingLexer.TokenEnd);
+                            rangeStart = cachingLexer.TokenEnd;
+                            if (shouldBeShifted)
+                            {
+                                var indentStr = formattingService.GetIndentStr();
+                                indent += indentStr;
+                                epilogueIndent += indentStr;
+                            }
                             prologIndent = epilogueIndent;
                         }
                     }
@@ -164,8 +175,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
                         var caretOffset = sb.Length;
                         if (epilogueIndent != null)
                             sb.Append(newLine).Append(epilogueIndent);
-                        document.DeleteText(range);
-                        document.InsertText(range.StartOffset, sb.ToString());
+                        var range = new TextRange(rangeStart, rangeEnd);
+                        document.ReplaceText(range, sb.ToString());
                         textControl.Caret.MoveTo(range.StartDocOffset() + caretOffset, CaretVisualPlacement.DontScrollIfVisible);
                     });
                     return true;

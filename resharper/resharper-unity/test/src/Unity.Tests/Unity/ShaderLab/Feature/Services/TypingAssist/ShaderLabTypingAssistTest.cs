@@ -28,6 +28,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Typ
         [Test] public void SmartEnter11() { DoNamedTest(); }
         [Test] public void SmartEnter12() { DoNamedTest(); }
         [Test] public void SmartEnter13() { DoNamedTest(); }
+        [Test] public void SmartEnter14() { DoNamedTest(); }
+        [Test] public void SmartEnter15() { DoNamedTest(); }
+        [Test] public void SmartEnter16() { DoNamedTest(); }
+        [Test] public void SmartEnter17() { DoNamedTest(); }
+        [Test] public void SmartEnter18() { DoNamedTest(); }
+        [Test] public void SmartEnter19() { DoNamedTest(); }
         [Test] public void SmartEnterHlsl01() { DoNamedTest(); }
         [Test] public void SmartEnterHlsl02() { DoNamedTest(); }
         [Test] public void SmartEnterHlsl03() { DoNamedTest(); }
