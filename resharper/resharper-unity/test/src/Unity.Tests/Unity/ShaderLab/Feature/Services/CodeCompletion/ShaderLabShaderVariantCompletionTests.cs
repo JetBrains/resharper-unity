@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("ShaderVariant05.shader")]
         [TestCase("ShaderVariant06.shader")]
         [TestCase("ShaderVariant07.shader")]
+        [TestCase("ShaderVariant08.shader")]
         public void Test(string name) => DoTestSolution(name);
 
         protected override Func<ILookupItem, bool> ItemSelector { get; } = item => item is LookupItem lookupItem && lookupItem.Presentation.Image == PsiSymbolsThemedIcons.Macro.Id && !lookupItem.ItemInfo.Text.StartsWith("__");

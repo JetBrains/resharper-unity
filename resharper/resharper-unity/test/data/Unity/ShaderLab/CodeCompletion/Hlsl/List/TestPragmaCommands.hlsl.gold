@@ -1,4 +1,4 @@
-# 55 ITEMS #
+# 67 ITEMS #
 
 + def
 disable_fastmath
@@ -29,6 +29,12 @@ multi_compile_hull
 multi_compile_instancing
 multi_compile_lightpass
 multi_compile_local
+multi_compile_local_domain
+multi_compile_local_fragment
+multi_compile_local_geometry
+multi_compile_local_hull
+multi_compile_local_raytracing
+multi_compile_local_vertex
 multi_compile_particles
 multi_compile_prepassfinal
 multi_compile_raytracing
@@ -47,6 +53,12 @@ shader_feature_fragment
 shader_feature_geometry
 shader_feature_hull
 shader_feature_local
+shader_feature_local_domain
+shader_feature_local_fragment
+shader_feature_local_geometry
+shader_feature_local_hull
+shader_feature_local_raytracing
+shader_feature_local_vertex
 shader_feature_raytracing
 shader_feature_vertex
 skip_optimizations
@@ -56,7 +68,7 @@ target
 vertex
 warning
 # AUTOMATIC #
-# 55 ITEMS #
+# 67 ITEMS #
 
 + def
 disable_fastmath
@@ -87,6 +99,12 @@ multi_compile_hull
 multi_compile_instancing
 multi_compile_lightpass
 multi_compile_local
+multi_compile_local_domain
+multi_compile_local_fragment
+multi_compile_local_geometry
+multi_compile_local_hull
+multi_compile_local_raytracing
+multi_compile_local_vertex
 multi_compile_particles
 multi_compile_prepassfinal
 multi_compile_raytracing
@@ -105,6 +123,12 @@ shader_feature_fragment
 shader_feature_geometry
 shader_feature_hull
 shader_feature_local
+shader_feature_local_domain
+shader_feature_local_fragment
+shader_feature_local_geometry
+shader_feature_local_hull
+shader_feature_local_raytracing
+shader_feature_local_vertex
 shader_feature_raytracing
 shader_feature_vertex
 skip_optimizations

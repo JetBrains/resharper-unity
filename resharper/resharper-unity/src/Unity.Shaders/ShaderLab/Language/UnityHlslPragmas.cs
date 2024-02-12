@@ -37,8 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language
                     .Append(SkipOptimizations).Append(DisableFastmath), PragmaCommandEx.CreateArrayWithFlags(PragmaCommandFlags.HasRequiredSpec,
                     "target", "hardware_tier_variants", "skip_variants", "instancing_options"))
                 .Append(DynamicBranch).Append(DynamicBranchLocal)
-                .Append(MultiCompile).Append(MultiCompileLocal).Concat(WithStageSuffixes(MultiCompile))
-                .Append(ShaderFeature).Append(ShaderFeatureLocal).Concat(WithStageSuffixes(ShaderFeature))
+                .Append(MultiCompile).Append(MultiCompileLocal).Concat(WithStageSuffixes(MultiCompile)).Concat(WithStageSuffixes(MultiCompileLocal))
+                .Append(ShaderFeature).Append(ShaderFeatureLocal).Concat(WithStageSuffixes(ShaderFeature)).Concat(WithStageSuffixes(ShaderFeatureLocal))
                 .Append(new ShaderLabPragmaCommand("geometry", PragmaCommandFlags.HasRequiredSpec | PragmaCommandFlags.HasFunctionReference, new ShaderLabPragmaInfo { ImpliesShaderTarget = HlslConstants.SHADER_TARGET_40 }))
                 .Append(new ShaderLabPragmaCommand("hull", PragmaCommandFlags.HasRequiredSpec | PragmaCommandFlags.HasFunctionReference, new ShaderLabPragmaInfo { ImpliesShaderTarget = HlslConstants.SHADER_TARGET_46 }))
                 .Append(new ShaderLabPragmaCommand("domain", PragmaCommandFlags.HasRequiredSpec | PragmaCommandFlags.HasFunctionReference, new ShaderLabPragmaInfo { ImpliesShaderTarget = HlslConstants.SHADER_TARGET_46 }))
