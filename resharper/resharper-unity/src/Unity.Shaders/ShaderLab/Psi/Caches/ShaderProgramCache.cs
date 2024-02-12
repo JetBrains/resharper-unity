@@ -398,7 +398,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 
             private bool TryReadShaderFeature(ShaderLabPragmaInfo pragmaInfo, out ShaderFeature shaderFeature)
             {
-                if (pragmaInfo.DeclaresKeywords)
+                if (pragmaInfo.ShaderFeatureType is ShaderFeatureType.KeywordList or ShaderFeatureType.KeywordListWithDisabledVariantForSingleKeyword)
                 {
                     var allowDisableAllKeywords = false;
                     var entries = ImmutableArray.CreateBuilder<ShaderFeature.Entry>();
@@ -413,7 +413,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                     if (entries.Count > 0)
                     {
                         if (!allowDisableAllKeywords)
-                            allowDisableAllKeywords = entries.Count == 1 && pragmaInfo.HasDisabledVariantForSingleKeyword;
+                            allowDisableAllKeywords = entries.Count == 1 && pragmaInfo.ShaderFeatureType == ShaderFeatureType.KeywordListWithDisabledVariantForSingleKeyword;
                         shaderFeature = new ShaderFeature(entries.MoveOrCopyToImmutableArray(), allowDisableAllKeywords);
                         return true;
                     }   

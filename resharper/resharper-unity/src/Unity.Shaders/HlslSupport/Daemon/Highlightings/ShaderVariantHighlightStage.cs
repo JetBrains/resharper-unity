@@ -148,7 +148,7 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
     {
         if (directive.PragmaNameNode is CppIdentifierTokenNode nameNode
             && myPragmas.TryGetValue(nameNode.Name, out var pragmaCommand)
-            && pragmaCommand is ShaderLabPragmaCommand { Info: { DeclaresKeywords: true } info })
+            && pragmaCommand is ShaderLabPragmaCommand { Info: { ShaderFeatureType: ShaderFeatureType.KeywordList or ShaderFeatureType.KeywordListWithDisabledVariantForSingleKeyword } info })
         {
             CppIdentifierTokenNode? enabledKeyword = null;
             var items = new LocalList<(CppIdentifierTokenNode Keyword, bool Enabled)>();
@@ -166,7 +166,7 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
 
             var index = 0;
             IHighlighting highlighting;
-            if (enabledKeyword == null && (items.Count > 1 || !info.HasDisabledVariantForSingleKeyword))
+            if (enabledKeyword == null && (items.Count > 1 || info.ShaderFeatureType != ShaderFeatureType.KeywordListWithDisabledVariantForSingleKeyword))
             {
                 highlighting = new ImplicitlyEnabledShaderKeywordHighlight(items[0].Keyword.Name, items[0].Keyword);
                 consumer.ConsumeHighlighting(new HighlightingInfo(highlighting.CalculateRange(), highlighting));

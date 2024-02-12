@@ -10,11 +10,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language
 {
     public sealed class UnityHlslPragmas : CppPragmas
     {
-        public static readonly ShaderLabPragmaCommand MultiCompile = new("multi_compile", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true });
+        public static readonly ShaderLabPragmaCommand MultiCompile = new("multi_compile", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { ShaderFeatureType = ShaderFeatureType.KeywordList });
         public static readonly PragmaCommand MultiCompileLocal = MultiCompile.WithSuffix("_local");
-        public static readonly ShaderLabPragmaCommand ShaderFeature = new("shader_feature", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true, HasDisabledVariantForSingleKeyword = true });
+        public static readonly ShaderLabPragmaCommand ShaderFeature = new("shader_feature", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { ShaderFeatureType = ShaderFeatureType.KeywordListWithDisabledVariantForSingleKeyword });
         public static readonly PragmaCommand ShaderFeatureLocal = ShaderFeature.WithSuffix("_local");
-        public static readonly ShaderLabPragmaCommand DynamicBranch = new("dynamic_branch", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true });
+        public static readonly ShaderLabPragmaCommand DynamicBranch = new("dynamic_branch", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { ShaderFeatureType = ShaderFeatureType.KeywordList });
         public static readonly PragmaCommand DynamicBranchLocal = DynamicBranch.WithSuffix("_local");
         public static readonly PragmaCommand EnableD3D11DebugSymbols = new("enable_d3d11_debug_symbols", PragmaCommandFlags.None);
         public static readonly PragmaCommand OnlyRenderers = new("only_renderers", PragmaCommandFlags.HasRequiredSpec);
@@ -25,17 +25,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language
         public static readonly PragmaCommand HlslccBytecodeDisassembly = new("hlslcc_bytecode_disassembly", PragmaCommandFlags.None);
 
         private static readonly ImmutableArray<PragmaCommand> ourUnityCommands = ImmutableArray.CreateRange(
-            Enumerable.Concat(PragmaCommandEx.CreateArrayWithFlags(PragmaCommandFlags.None,
-                        "editor_sync_compilation", "enable_cbuffer",
-                        "mutli_compile_fwdbase", "multi_compile_fwdbasealpha", "multi_compile_fwdadd",
-                        "multi_compile_fwdadd_fullshadows", "multi_compile_lightpass", "multi_compile_shadowcaster",
-                        "multi_compile_shadowcollector", "multi_compile_prepassfinal", "multi_compile_particles",
-                        "multi_compile_fog", "multi_compile_instancing"
-                    )
-                    .Append(EnableD3D11DebugSymbols).Append(HlslccBytecodeDisassembly)
-                    .Append(OnlyRenderers).Append(ExcludeRenderers).Append(Require)
-                    .Append(SkipOptimizations).Append(DisableFastmath), PragmaCommandEx.CreateArrayWithFlags(PragmaCommandFlags.HasRequiredSpec,
-                    "target", "hardware_tier_variants", "skip_variants", "instancing_options"))
+            PragmaCommandEx.CreateArrayWithFlags(PragmaCommandFlags.None, "editor_sync_compilation", "enable_cbuffer")
+                .Append(new ShaderLabPragmaCommand("mutli_compile_fwdbase", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSet("DIRECTIONAL", "LIGHTMAP_ON", "DIRLIGHTMAP_COMBINED", "DYNAMICLIGHTMAP_ON", "SHADOWS_SCREEN", "SHADOWS_SHADOWMASK", "LIGHTMAP_SHADOW_MIXING", "LIGHTPROBE_SH")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_fwdbasealpha", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSet("DIRECTIONAL", "LIGHTMAP_ON", "DIRLIGHTMAP_COMBINED", "DYNAMICLIGHTMAP_ON", "LIGHTMAP_SHADOW_MIXING", "VERTEXLIGHT_ON", "LIGHTPROBE_SH")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_fwdadd", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSet("POINT", "DIRECTIONAL", "SPOT", "POINT_COOKIE", "DIRECTIONAL_COOKIE")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_fwdadd_fullshadows", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSet("POINT", "DIRECTIONAL", "SPOT", "POINT_COOKIE", "DIRECTIONAL_COOKIE", "SHADOWS_DEPTH", "SHADOWS_SCREEN", "SHADOWS_CUBE", "SHADOWS_SOFT", "SHADOWS_SHADOWMASK", "LIGHTMAP_SHADOW_MIXING")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_lightpass", PragmaCommandFlags.None, 
+                    ShaderLabPragmaInfo.ForImplicitKeywordSet("POINT", "DIRECTIONAL", "SPOT", "POINT_COOKIE", "DIRECTIONAL_COOKIE", "SHADOWS_DEPTH", "SHADOWS_SCREEN", "SHADOWS_CUBE", "SHADOWS_SOFT", "SHADOWS_SHADOWMASK", "LIGHTMAP_SHADOW_MIXING")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_shadowcaster", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSet("SHADOWS_DEPTH", "SHADOWS_CUBE")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_shadowcollector", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSetWithDisabledVariant("SHADOWS_SPLIT_SPHERES", "SHADOWS_SINGLE_CASCADE")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_prepassfinal", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSetWithDisabledVariant("LIGHTMAP_ON", "DIRLIGHTMAP_COMBINED", "DYNAMICLIGHTMAP_ON", "UNITY_HDR_ON", "SHADOWS_SHADOWMASK", "LIGHTPROBE_SH")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_particles", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSetWithDisabledVariant("SOFTPARTICLES_ON")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_fog", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSetWithDisabledVariant("FOG_LINEAR", "FOG_EXP", "FOG_EXP2")))
+                .Append(new ShaderLabPragmaCommand("multi_compile_instancing", PragmaCommandFlags.None,
+                    ShaderLabPragmaInfo.ForImplicitKeywordSetWithDisabledVariant("INSTANCING_ON", "PROCEDURAL_ON")))
+                .Append(EnableD3D11DebugSymbols).Append(HlslccBytecodeDisassembly)
+                .Append(OnlyRenderers).Append(ExcludeRenderers).Append(Require)
+                .Append(SkipOptimizations).Append(DisableFastmath)
+                .Concat(PragmaCommandEx.CreateArrayWithFlags(PragmaCommandFlags.HasRequiredSpec, "target", "hardware_tier_variants", "skip_variants", "instancing_options"))
                 .Append(DynamicBranch).Append(DynamicBranchLocal)
                 .Append(MultiCompile).Append(MultiCompileLocal).Concat(WithStageSuffixes(MultiCompile)).Concat(WithStageSuffixes(MultiCompileLocal))
                 .Append(ShaderFeature).Append(ShaderFeatureLocal).Concat(WithStageSuffixes(ShaderFeature)).Concat(WithStageSuffixes(ShaderFeatureLocal))
