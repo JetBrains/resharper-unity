@@ -10,7 +10,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Shaders</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Shaders</RootNamespace>
-    <LangVersion>11</LangVersion>
+    <LangVersion>12</LangVersion>
     <!-- We still have lots of obsolete warnings from ParserGen, and disabling obsolete warnings totally is too broad -->
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
