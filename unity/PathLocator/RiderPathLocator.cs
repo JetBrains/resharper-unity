@@ -60,7 +60,7 @@ namespace JetBrains.Rider.PathLocator
     private RiderInfo[] CollectAllRiderPathsLinux()
     {
       var installInfos = new List<RiderInfo>();
-      var appsPath = GetAppsRootPathInToolbox();
+      var appsPath = GetAppsInstallLocation();
 
       installInfos.AddRange(CollectToolbox20Linux(appsPath, "*rider*", "bin/rider.sh"));
       installInfos.AddRange(CollectToolbox20Linux(appsPath, "*fleet*", "bin/Fleet"));
@@ -123,7 +123,7 @@ namespace JetBrains.Rider.PathLocator
       installInfos.AddRange(CollectFromApplications("*Rider*.app"));
       installInfos.AddRange(CollectFromApplications("*Fleet*.app"));
 
-      var appsPath = GetAppsRootPathInToolbox();
+      var appsPath = GetAppsInstallLocation();
       var riderRootPath = Path.Combine(appsPath, "Rider");
       installInfos.AddRange(CollectPathsFromToolbox(riderRootPath, "", "Rider*.app", true)
         .Select(a => new RiderInfo(this, a, true)));
@@ -165,7 +165,7 @@ namespace JetBrains.Rider.PathLocator
     {
       var installInfos = new List<RiderInfo>();
 
-      var appsPath = GetAppsRootPathInToolbox();
+      var appsPath = GetAppsInstallLocation();
       var riderRootPath = Path.Combine(appsPath, "Rider");
       installInfos.AddRange(CollectPathsFromToolbox(riderRootPath, "bin", "rider64.exe", false).ToList()
         .Select(a => new RiderInfo(this, a, true)).ToList());
@@ -199,9 +199,18 @@ namespace JetBrains.Rider.PathLocator
       }
     }
 
-    private string GetAppsRootPathInToolbox()
+    private string GetAppsInstallLocation()
     {
       var toolboxPath = GetToolboxPath();
+      var settingsJson = Path.Combine(toolboxPath, ".settings.json");
+
+      if (File.Exists(settingsJson))
+      {
+        var path = SettingsJson.GetInstallLocationFromJson(RiderLocatorEnvironment, File.ReadAllText(settingsJson));
+        if (!string.IsNullOrEmpty(path))
+          return path;
+      }
+      
       return Path.Combine(toolboxPath, "apps");
     }
 
@@ -240,15 +249,6 @@ namespace JetBrains.Rider.PathLocator
       }
 
       var toolboxPath = Path.Combine(localAppData, @"JetBrains/Toolbox");
-      var settingsJson = Path.Combine(toolboxPath, ".settings.json");
-
-      if (File.Exists(settingsJson))
-      {
-        var path = SettingsJson.GetInstallLocationFromJson(RiderLocatorEnvironment, File.ReadAllText(settingsJson));
-        if (!string.IsNullOrEmpty(path))
-          toolboxPath = path;
-      }
-
       return toolboxPath;
     }
 
@@ -306,7 +306,7 @@ namespace JetBrains.Rider.PathLocator
     [UsedImplicitly] // Rider package
     public bool GetIsToolbox(string path)
     {
-      return Path.GetFullPath(path).StartsWith(Path.GetFullPath(GetAppsRootPathInToolbox()));
+      return Path.GetFullPath(path).StartsWith(Path.GetFullPath(GetAppsInstallLocation()));
     }
 
     private string GetRelativePathToBuildTxt()
