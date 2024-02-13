@@ -30,7 +30,7 @@ public class OdinGroupingAttributesAnalyzer : UnityElementProblemAnalyzer<IClass
 
     protected override void Analyze(IClassLikeDeclaration element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-        if (!myTechnologyCollector.DiscoveredTechnologies.ContainsKey("Odin"))
+        if (!OdinAttributeUtil.HasOdinSupport(myTechnologyCollector))
             return;
 
         var classType = element.DeclaredElement;

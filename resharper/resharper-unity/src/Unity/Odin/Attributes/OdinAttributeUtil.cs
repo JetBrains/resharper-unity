@@ -1,19 +1,13 @@
 #nullable enable
 using System.Collections.Generic;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
 
 public class OdinAttributeUtil
 {
-    public static bool IsLayoutAttribute(ITypeElement? typeElement)
-    {
-        if (typeElement == null)
-            return false;
-        
-        return OdinKnownAttributes.LayoutAttributes.ContainsKey(typeElement.GetClrName());
-    }
-
     public static List<OdinGroupInfo> CollectGroupInfo(ITypeElement typeElement)
     {
         var result = new List<OdinGroupInfo>();
@@ -121,5 +115,15 @@ public class OdinAttributeUtil
         }
 
         return basePath;
+    }
+
+    public static bool HasOdinSupport(ISolution solution)
+    {
+        return HasOdinSupport(solution.GetComponent<UnityTechnologyDescriptionCollector>());
+    }
+    
+    public static bool HasOdinSupport(UnityTechnologyDescriptionCollector technologyDescriptionCollector)
+    {
+        return technologyDescriptionCollector.DiscoveredTechnologies.ContainsKey(OdinUnityTechnologyDescription.OdinId);
     }
 }

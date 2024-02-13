@@ -5,6 +5,7 @@ using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors;
 using JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
@@ -25,8 +26,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.Daemon.Colors;
 [SolutionComponent]
 public class OdinColorReferenceProvider : IUnityColorReferenceProvider
 {
+    private readonly UnityTechnologyDescriptionCollector myDescriptionCollector;
+
+    public OdinColorReferenceProvider(UnityTechnologyDescriptionCollector descriptionCollector)
+    {
+        myDescriptionCollector = descriptionCollector;
+    }
+    
     public IColorReference? GetColorReference(ITreeNode element)
     {
+        if (!OdinAttributeUtil.HasOdinSupport(myDescriptionCollector))
+            return null;
+           
         if (element is not ICSharpArgument argument)
             return null;
 

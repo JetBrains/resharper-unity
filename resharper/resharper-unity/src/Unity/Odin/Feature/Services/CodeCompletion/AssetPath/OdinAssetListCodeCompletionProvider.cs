@@ -16,6 +16,10 @@ public class OdinAssetListCodeCompletionProvider : AssetPathCompletionProviderBa
 {
     public override bool IsAvailableInCurrentContext(CSharpCodeCompletionContext context, ICSharpLiteralExpression literalExpression)
     {
+        var solution = context.NodeInFile.GetSolution();
+        if (!OdinAttributeUtil.HasOdinSupport(solution))
+            return false;
+        
         var nodeInFile = context.NodeInFile;
 
         var propertyAssignment = nodeInFile.GetContainingNode<IPropertyAssignment>();

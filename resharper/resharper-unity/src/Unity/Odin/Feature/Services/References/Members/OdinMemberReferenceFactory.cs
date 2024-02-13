@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
 using JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -11,8 +12,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.References.Mem
 
 public class OdinMemberReferenceFactory : IReferenceFactory
 {
+    private readonly UnityTechnologyDescriptionCollector myCollector;
+
+    public OdinMemberReferenceFactory(UnityTechnologyDescriptionCollector collector)
+    {
+        myCollector = collector;
+    }
+
     public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
     {
+        if (!OdinAttributeUtil.HasOdinSupport(myCollector))
+            return ReferenceCollection.Empty;
+        
         if (element is not ICSharpLiteralExpression expression)
             return ReferenceCollection.Empty;
 
@@ -88,6 +99,9 @@ public class OdinMemberReferenceFactory : IReferenceFactory
 
     public bool HasReference(ITreeNode element, IReferenceNameContainer names)
     {
+        if (!OdinAttributeUtil.HasOdinSupport(myCollector))
+            return false;
+        
         if (element is not ICSharpLiteralExpression expression)
             return false;
 

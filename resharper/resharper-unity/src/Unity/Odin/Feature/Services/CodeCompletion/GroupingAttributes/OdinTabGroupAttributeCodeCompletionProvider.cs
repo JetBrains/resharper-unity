@@ -33,6 +33,10 @@ public class OdinTabGroupAttributeCodeCompletionProvider  : CSharpItemsProviderB
 {
     protected override bool IsAvailable(CSharpCodeCompletionContext context)
     {
+        var solution = context.NodeInFile.GetSolution();
+        if (!OdinAttributeUtil.HasOdinSupport(solution))
+            return false;
+        
         var stringLiteral = context.StringLiteral();
         if (stringLiteral == null)
             return false;

@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeCompletion;
 
@@ -12,6 +13,10 @@ public class OdinAssetPathAndFolderCodeCompletionProvider : AssetPathCompletionP
 {
     public override bool IsAvailableInCurrentContext(CSharpCodeCompletionContext context, ICSharpLiteralExpression literalExpression)
     {
+        var solution = context.NodeInFile.GetSolution();
+        if (!OdinAttributeUtil.HasOdinSupport(solution))
+            return false;
+        
         var nodeInFile = context.NodeInFile;
 
         var propertyAssignment = nodeInFile.GetContainingNode<IPropertyAssignment>();

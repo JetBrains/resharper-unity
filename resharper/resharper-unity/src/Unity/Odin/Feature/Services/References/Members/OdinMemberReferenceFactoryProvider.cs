@@ -1,4 +1,5 @@
 using JetBrains.DataFlow;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -11,8 +12,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.References.Mem
 [ReferenceProviderFactory]
 public class OdinMemberReferenceFactoryProvider : IReferenceProviderFactory
 {
-    public OdinMemberReferenceFactoryProvider()
+    private readonly UnityTechnologyDescriptionCollector myCollector;
+
+    public OdinMemberReferenceFactoryProvider(UnityTechnologyDescriptionCollector collector)
     {
+        myCollector = collector;
         Changed = new Signal<IReferenceProviderFactory>(GetType().FullName!);
     }
 
@@ -23,7 +27,7 @@ public class OdinMemberReferenceFactoryProvider : IReferenceProviderFactory
             return null;
 
         if (sourceFile.PrimaryPsiLanguage.Is<CSharpLanguage>())
-            return new OdinMemberReferenceFactory();
+            return new OdinMemberReferenceFactory(myCollector);
 
         return null;
     }

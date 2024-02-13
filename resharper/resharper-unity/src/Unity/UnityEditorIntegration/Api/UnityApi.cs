@@ -163,7 +163,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         private SerializedFieldStatus IsSerialisedFieldByOdinRules(IField? field)
         {
-            if (!myTechnologyDescriptionCollector.DiscoveredTechnologies.ContainsKey(OdinUnityTechnologyDescription.OdinId))
+            if (field == null)
+                return SerializedFieldStatus.NonSerializedField;
+            
+            if (!OdinAttributeUtil.HasOdinSupport(myTechnologyDescriptionCollector))
                 return SerializedFieldStatus.NonSerializedField;
 
             var containingType = field.ContainingType;
