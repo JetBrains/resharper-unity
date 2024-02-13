@@ -14,16 +14,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.BuildScript
   public class CopyUnityAnnotations
   {
     [BuildStep]
-    public static SubplatformFileForPackaging[] Run(AllAssembliesOnEverything allass, ProductHomeDirArtifact homedir)
+    public static SubplatformFileForPackagingFast[] Run(AllAssembliesOnEverything allass, ProductHomeDirArtifact homedir)
     {
       if (allass.FindSubplatformByClass<CopyUnityAnnotations>() is SubplatformOnSources subplatform)
       {
         FileSystemPath dirAnnotations = homedir.ProductHomeDir / subplatform.Name.RelativePath / "annotations";
         return dirAnnotations.GetChildFiles().SelectMany(CopyFileToOutputRequest).ToArray();
 
-        IEnumerable<SubplatformFileForPackaging> CopyFileToOutputRequest(FileSystemPath path)
+        IEnumerable<SubplatformFileForPackagingFast> CopyFileToOutputRequest(FileSystemPath path)
         {
-          yield return new SubplatformFileForPackaging(
+          yield return new SubplatformFileForPackagingFast(
             subplatform.Name,
             ImmutableFileItem.CreateFromDisk(path).WithRelativePath((RelativePath)"Extensions" / "com.intellij.resharper.unity" / "annotations" / path.Name));
 
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.BuildScript
           // in ApplicationPackagesFiles 
           if (!TeamCityProperties.GetIsRunningInTeamCity())
           {
-              yield return new SubplatformFileForPackaging(
+              yield return new SubplatformFileForPackagingFast(
                   subplatform.Name,
                   ImmutableFileItem.CreateFromDisk(path).WithRelativePath((RelativePath)"Extensions" /
                                                                           "JetBrains.Plugins.ReSharperUnity.resharper.resharper-unity.src.Unity" /
@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.BuildScript
         }
       }
 
-      return Array.Empty<SubplatformFileForPackaging>();
+      return Array.Empty<SubplatformFileForPackagingFast>();
     }
   }
 }
