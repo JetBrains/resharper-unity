@@ -13,7 +13,66 @@
   <member name="P:UnityEngine.Object.name">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
   </member>
-
+  <member name="M:UnityEngine.Awaitable.FromAsyncOperation(UnityEngine.AsyncOperation,System.Threading.CancellationToken)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
+    <parameter name="op">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEngine.Awaitable.NextFrameAsync(System.Threading.CancellationToken)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Awaitable.WaitForSecondsAsync(System.Single,System.Threading.CancellationToken)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Awaitable.FixedUpdateAsync(System.Threading.CancellationToken)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Awaitable.EndOfFrameAsync(System.Threading.CancellationToken)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
+  </member>
+  <member name="P:UnityEngine.Awaitable.AwaitableAsyncMethodBuilder.Task">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
+  </member>
+  <member name="P:UnityEngine.Awaitable.AwaitableAsyncMethodBuilder`1.Task">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(System.Int32,UnityEngine.SceneManagement.LoadSceneMode)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(System.Int32)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(System.Int32,UnityEngine.SceneManagement.LoadSceneParameters)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(System.String,UnityEngine.SceneManagement.LoadSceneMode)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(System.String)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(System.String,UnityEngine.SceneManagement.LoadSceneParameters)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(System.Int32)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(System.String)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(UnityEngine.SceneManagement.Scene)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(System.Int32,UnityEngine.SceneManagement.UnloadSceneOptions)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(System.String,UnityEngine.SceneManagement.UnloadSceneOptions)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(UnityEngine.SceneManagement.Scene,UnityEngine.SceneManagement.UnloadSceneOptions)">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor"/>
+  </member>
 
   <!-- UnityEngine.Object -->
   <!-- Tell R#'s analysis engine to ignore our custom equality members. See RSRP-468462 -->
