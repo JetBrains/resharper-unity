@@ -168,6 +168,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         // Odin
         public static readonly IClrTypeName OdinSerializedMonoBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedMonoBehaviour");
         public static readonly IClrTypeName OdinSerializedScriptableObject = new ClrTypeName("Sirenix.OdinInspector.SerializedMonoBehaviour");
+        public static readonly IClrTypeName OdinSerializedBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedBehaviour");
+        public static readonly IClrTypeName OdinSerializedComponent = new ClrTypeName("Sirenix.OdinInspector.SerializedComponent");
+        public static readonly IClrTypeName OdinSerializedStateMachineBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedStateMachineBehaviour");
+        public static readonly IClrTypeName OdinSerializedUnityObject= new ClrTypeName("Sirenix.OdinInspector.SerializedUnityObject");
 
         
         //Obsolete types
