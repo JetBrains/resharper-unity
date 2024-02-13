@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     public class UnityOdinGutterMark : AbstractUnityGutterMark
     {
         public UnityOdinGutterMark()
-            : base(UnityGutterIcons.UnityLogo.Id)
+            : base(UnityGutterIcons.Odin.Id)
         {
         }
     }

@@ -81,7 +81,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (!IconProviderUtil.ShouldShowGutterMarkIcon(SettingsStore.BoundSettingsStore))
                 return;
             
-            // TODO odin gutter mark info
             consumer.AddHighlighting(new UnityOdinGutterMarkInfo(element, tooltip));
         }
 

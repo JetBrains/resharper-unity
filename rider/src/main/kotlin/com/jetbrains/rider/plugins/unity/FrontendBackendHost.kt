@@ -15,6 +15,7 @@ import com.jetbrains.rd.framework.impl.RdTask
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
+import com.jetbrains.rd.util.reactive.ViewableMap
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
@@ -32,7 +33,9 @@ import java.io.File
 import kotlin.math.max
 
 @Service(Service.Level.PROJECT)
-class FrontendBackendHost {
+class FrontendBackendHost() {
+    val technologies = ViewableMap<String, Boolean>()
+
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         private fun activateRider(project: Project) {
             ProjectUtil.focusProjectWindow(project, true)
@@ -98,6 +101,14 @@ class FrontendBackendHost {
                 }
 
                 true
+            }
+
+            model.discoveredTechnologies.adviseAddRemove(lifetime) { type, key, value ->
+                val manager = getInstance(session.project)
+                when (type) {
+                    AddRemove.Add -> manager.technologies[key] = value
+                    AddRemove.Remove -> manager.technologies.remove(key)
+                }
             }
         }
     }

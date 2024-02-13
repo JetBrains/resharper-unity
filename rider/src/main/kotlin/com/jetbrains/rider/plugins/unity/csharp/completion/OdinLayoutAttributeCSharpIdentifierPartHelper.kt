@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.csharp.completion
 
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.jetbrains.rider.ideaInterop.fileTypes.csharp.completion.CSharpIdentifierPartHelper
 import com.jetbrains.rider.languages.fileTypes.csharp.kotoparser.parser.CsAttributeDeclarationNode
@@ -23,13 +24,19 @@ class OdinLayoutAttributeCSharpIdentifierPartHelper : CSharpIdentifierPartHelper
         "HideIfGroup",
         "ShowIfGroup",
         )
+
+    private fun hasOdinPackage(project: Project): Boolean {
+        val host = FrontendBackendHost.getInstance(project)
+
+        return host.technologies.contains("Odin")
+    }
+
     override fun isApplicable(file: PsiElement, offset: Int): Boolean {
 
         if (!file.project.isUnityProject())
             return false
 
-        val host = FrontendBackendHost.getInstance(file.project)
-        if (!host.model.discoveredTechnologies.contains("Odin"))
+        if (!hasOdinPackage(file.project))
             return false
 
         val element = file.findElementAt(offset)?.parent
