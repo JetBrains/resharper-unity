@@ -12,5 +12,6 @@ public class Test : MonoBehaviour
         name = this.gameObject?.name;
         name = transform?.name;
         name = this.transform?.name;
+        name = GameObject.Find("Something")?.name;
     }
 }
