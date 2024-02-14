@@ -21,13 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             if (!expression.HasConditionalAccessSign)
                 return;
-            if (!(expression.ConditionalQualifier is IReferenceExpression qualifier))
-                return;
-            var resolve = qualifier.Reference.Resolve();
-            if (resolve.ResolveErrorType != ResolveErrorType.OK)
+
+            if (expression.ConditionalQualifier is not { } qualifier)
                 return;
 
-            if (!qualifier.Type().GetTypeElement().DerivesFrom(KnownTypes.Object))
+            var type = qualifier.Type();
+            if (type.IsUnknown || !type.GetTypeElement().DerivesFrom(KnownTypes.Object))
                 return;
 
             consumer.AddHighlighting(new UnityObjectNullPropagationWarning(expression));
