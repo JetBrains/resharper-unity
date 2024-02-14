@@ -1,17 +1,20 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     public static class UnityTypeUtils
     {
-        [NotNull]
-        public static IEnumerable<UnityType> GetBaseUnityTypes([CanBeNull] ITypeElement type,
+        public static bool IsUnityObject(IType type) => !type.IsUnknown && type.GetTypeElement() is { } typeElement && typeElement.DerivesFrom(KnownTypes.Object);
+
+        public static IEnumerable<UnityType> GetBaseUnityTypes(ITypeElement? type,
             UnityVersion unityVersion, UnityTypesProvider unityTypes, KnownTypesCache knownTypesCache)
         {
             if (type?.Module is IProjectPsiModule projectPsiModule)
@@ -23,8 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             return EmptyArray<UnityType>.Instance;
         }
 
-        [NotNull]
-        public static IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type, Version unityVersion,
+        public static IEnumerable<UnityType> GetBaseUnityTypes(ITypeElement type, Version unityVersion,
             UnityTypesProvider unityTypes, KnownTypesCache knownTypesCache)
         {
             unityVersion = unityTypes.Types.NormaliseSupportedVersion(unityVersion);
