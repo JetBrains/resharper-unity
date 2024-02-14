@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
@@ -17,7 +18,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 {
-    [GeneratorElementProvider(GeneratorUnityKinds.UnityEventFunctions, typeof(CSharpLanguage))]
+    [GeneratorElementProvider(GeneratorUnityKinds.UnityEventFunctions, typeof(CSharpLanguage), Instantiation.DemandAnyThread /* TODO check possibility to mark this class and dependencies as DemandAnyThreadSafe */)]
     public class GenerateUnityEventFunctionsProvider : GeneratorProviderBase<CSharpGeneratorContext>
     {
         private readonly UnityApi myUnityApi;
