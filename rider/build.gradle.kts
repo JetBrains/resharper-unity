@@ -110,12 +110,6 @@ val listIosUsbDevicesFiles = files(
 )
 
 val unityEditorDllFiles = files(
-    "../unity/build/EditorPlugin.SinceUnity.4.7/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll",
-    "../unity/build/EditorPlugin.SinceUnity.4.7/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb",
-    "../unity/build/EditorPlugin.SinceUnity.5.6/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll",
-    "../unity/build/EditorPlugin.SinceUnity.5.6/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb",
-    "../unity/build/EditorPlugin.SinceUnity.2017.3/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll",
-    "../unity/build/EditorPlugin.SinceUnity.2017.3/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb",
     "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/netstandard2.0/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
     "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/netstandard2.0/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
 )
