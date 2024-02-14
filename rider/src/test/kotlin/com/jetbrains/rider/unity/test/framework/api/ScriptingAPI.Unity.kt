@@ -49,6 +49,7 @@ import com.jetbrains.rider.test.framework.getFileWithNameSuffix
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.utils.NullPrintStream
+import org.jetbrains.annotations.ApiStatus
 import java.io.File
 import java.io.PrintStream
 import java.nio.file.Files
@@ -331,12 +332,21 @@ fun BaseTestWithSolution.withUnityProcess(
     }
 }
 
+/**
+ * RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
+ *
+ * Remove those calls, they are not needed anymore
+ */
+@ApiStatus.Obsolete
 fun installPlugin(project: Project) {
     val unityVersion: String? = UnityInstallationFinder.getInstance(project).getApplicationVersion(2)
     if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2019.2") >= 0) {
         frameworkLogger.info("Unity version $unityVersion, no need to install EditorPlugin.")
         return
     }
+
+    frameworkLogger.error("Please remove/rewrite all tests for Unity versions earlier then 2019.2")
+
     frameworkLogger.info("Trying to install editor plugin")
     project.solution.frontendBackendModel.installEditorPlugin.fire(Unit)
 
@@ -346,6 +356,10 @@ fun installPlugin(project: Project) {
     frameworkLogger.info("Editor plugin was installed")
 }
 
+/**
+ * RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
+ */
+@ApiStatus.Obsolete
 fun BaseTestWithSolution.installPlugin() = installPlugin(project)
 
 fun BaseTestWithSolution.executeScript(file: String) {
