@@ -563,6 +563,12 @@
     <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" xml:space="preserve">
         <value>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
+    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2" xml:space="preserve">
+        <value>'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    </data>
+    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2" xml:space="preserve">
+        <value>'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    </data>
     <data name="OrderOfMultiplicationOperationsIsInefficient" xml:space="preserve">
         <value>Order of multiplication operations is inefficient</value>
     </data>
@@ -800,6 +806,12 @@
     </data>
     <data name="TheNullPropagatingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" xml:space="preserve">
         <value>The null propagating operator does not call the custom equality operators defined on 'UnityEngine.Object',
+          which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
+          comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
+          for a standard (and quicker) CLR null check.</value>
+    </data>
+    <data name="TheIsOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" xml:space="preserve">
+        <value>The `is` operator does not call the custom equality operators defined on 'UnityEngine.Object',
           which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
           comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>

@@ -149,6 +149,11 @@
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
         <Description resourceName="TheNullPropagatingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
       </Tag>
+      <Tag externalName="UnityObjectLifetimeCheckBypassedByIsOperatorWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2" resourceType="Strings" />
+        <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
+        <Description resourceName="TheIsOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
+      </Tag>
       <Tag externalName="UnresolvedComponentOrScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title resourceName="CannotResolveComponentOrScriptableObject" resourceType="Strings" />
         <Description resourceName="TheClassReferredToInTheCallToGetComponentAddComponentOrScriptableObjectCreateInstanceCannotBeFoundInTheCurrentProjectOrReferencedAssembliesTheCallIsLikelyToFailAtRuntimeAndReturnNull" resourceType="Strings" />
@@ -613,6 +618,13 @@
   <Warning name="UnityObjectNullPropagation" configurableSeverity="Unity.NoNullPropagation">
     <Parameter type="IConditionalAccessExpression" name="expression" />
     <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" resourceType="Strings" />
+    <Range>Expression.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="UnityObjectLifetimeCheckBypassedByIsOperator" configurableSeverity="Unity.NoLifetimeCheckBypassedByIsOperator">
+    <Parameter type="IIsExpression" name="expression" />
+    <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2" resourceType="Strings" />
     <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
