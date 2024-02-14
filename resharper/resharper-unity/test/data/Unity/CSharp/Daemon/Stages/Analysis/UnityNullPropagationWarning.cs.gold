@@ -4,15 +4,15 @@ public class Test : MonoBehaviour
 {
     public void Method(GameObject go, Component c, Transform t, Object o)
     {
-        var name = |o?.name|(0);
-        name = |go?.name|(1);
-        name = |c?.name|(2);
-        name = |t?.name|(3);
-        name = |gameObject?.name|(4);
-        name = |this.gameObject?.name|(5);
-        name = |transform?.name|(6);
-        name = |this.transform?.name|(7);
-        name = |GameObject.Find("Something")?.name|(8);
+        var name = o|?|(0).name;
+        name = go|?|(1).name;
+        name = c|?|(2).name;
+        name = t|?|(3).name;
+        name = gameObject|?|(4).name;
+        name = this.gameObject|?|(5).name;
+        name = transform|?|(6).name;
+        name = this.transform|?|(7).name;
+        name = GameObject.Find("Something")|?|(8).name;
     }
 }
 
