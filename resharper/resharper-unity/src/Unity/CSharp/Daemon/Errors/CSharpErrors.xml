@@ -604,28 +604,28 @@
   <Warning name="UnityObjectDoubleQuestionAssignment" configurableSeverity="Unity.NoAssignmentNullCoalescing">
     <Parameter type="IAssignmentExpression" name="expression" />
     <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" resourceType="Strings" />
-    <Range>Expression.GetHighlightingRange()</Range>
+    <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
     <Parameter type="INullCoalescingExpression" name="expression" />
     <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" resourceType="Strings" />
-    <Range>Expression.GetHighlightingRange()</Range>
+    <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnityObjectNullPropagation" configurableSeverity="Unity.NoNullPropagation">
     <Parameter type="IConditionalAccessExpression" name="expression" />
     <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" resourceType="Strings" />
-    <Range>Expression.GetHighlightingRange()</Range>
+    <Range>Expression.ConditionalAccessSign.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnityObjectLifetimeCheckBypassedByIsOperator" configurableSeverity="Unity.NoLifetimeCheckBypassedByIsOperator">
     <Parameter type="IIsExpression" name="expression" />
     <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2" resourceType="Strings" />
-    <Range>Expression.GetHighlightingRange()</Range>
+    <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 

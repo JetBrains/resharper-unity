@@ -5,15 +5,15 @@ public class Test : MonoBehaviour
     public void Method(GameObject go, Component c, Transform t, Object o)
     {
         var go2 = go;
-        |o ??= null|(0);
-        |c ??= null|(1);
-        |go ??= gameObject|(2);
-        |go ??= this.gameObject|(3);
-        |t ??= null|(4);
-        |t ??= transform|(5);
-        |t ??= this.transform|(6);
-        |go ??= null|(7);
-        |o ??= go2|(8);
+        o |??=|(0) null;
+        c |??=|(1) null;
+        go |??=|(2) gameObject;
+        go |??=|(3) this.gameObject;
+        t |??=|(4) null;
+        t |??=|(5) transform;
+        t |??=|(6) this.transform;
+        go |??=|(7) null;
+        o |??=|(8) go2;
     }
 }
 
