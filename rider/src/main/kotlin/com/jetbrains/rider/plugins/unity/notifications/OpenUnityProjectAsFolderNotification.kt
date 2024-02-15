@@ -1,6 +1,8 @@
 package com.jetbrains.rider.plugins.unity.notifications
 
+import com.intellij.ide.BrowserUtil
 import com.intellij.ide.projectView.ProjectView
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationInfo
@@ -47,6 +49,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
 
     companion object {
         private const val GROUP_ID = "Unity project open"
+        private const val settingName = "do_not_show_unity_editor_plugin_out_of_support_notification"
     }
 
     private fun hasUnloadedProjects(project: Project): Boolean {
@@ -78,13 +81,34 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                 val title = UnityBundle.message("notification.title.advanced.unity.integration.unavailable")
                 val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup(GROUP_ID)
                 val marketingVersion = ApplicationInfo.getInstance().fullVersion
-                var content = UnityBundle.message(
+                val content = UnityBundle.message(
                     "notification.content.make.sure.jetbrains.rider.editor.installed.in.unity.s.package.manager.rider.set.as.external.editor",
                     marketingVersion)
                 if (solutionDescription is RdExistingSolution) { // proper solution
                     it.launchNonUrgentBackground {
                         if (!project.isUnityProject.value)
                             return@launchNonUrgentBackground
+
+                        // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
+                        if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage()) {
+                            val outOfSupportContent = UnityBundle.message("unity.version.out.of.support.notification.message", "2019.2")
+                            val notification = Notification(notificationGroupId.displayId, title, outOfSupportContent, NotificationType.WARNING)
+                            notification.addAction(object : NotificationAction(
+                                UnityBundle.message("read.more")) {
+                                override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                                    val url = "https://youtrack.jetbrains.com/issue/RIDER-105806"
+                                    BrowserUtil.browse(url)
+                                }
+                            })
+                            notification.addAction(object : NotificationAction(
+                                UnityBundle.message("link.label.do.not.show.again")) {
+                                override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                                    PropertiesComponent.getInstance(project).setValue(settingName, true)
+                                }
+                            })
+                            Notifications.Bus.notify(notification, project)
+                            return@launchNonUrgentBackground
+                        }
 
                         // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
                         // We check that Library/EditorInstance.json is present, but protocol connection was not initialized
@@ -93,9 +117,6 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                             && !model.unityEditorConnected.valueOrDefault(false)
                             && !hasUnloadedProjects(project)
                         ) {
-                            if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
-                                content = UnityBundle.message(
-                                    "notification.content.make.sure.rider.set.as.external.editor.in.unity.preferences", marketingVersion)
                             val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
                             notification.setSuggestionType(true) // such a Notification would be removed from the NotificationToolWindow, fixes RIDER-98129 Notification "Advanced integration" behaviour
                             withUiContext { ->
