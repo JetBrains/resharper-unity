@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly JetHashSet<JetSemanticVersion> myNotificationShown;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private string packageId = PackageCompatibilityValidator.RiderPackageId;
-        private JetSemanticVersion leastRiderPackageVersion = new(3, 0, 16);
+        private JetSemanticVersion leastRiderPackageVersion = new(3, 0, 27);
 
         public RiderPackageUpdateAvailabilityChecker(
             Lifetime lifetime,
@@ -161,7 +161,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                             { 
                                                 model.OpenFileLineCol.Start(notificationLifetime.Lifetime, new RdOpenFileArgs(file.FullPath, 1, 0));
                                                 notificationLifetime.Terminate();
-                                            };
+                                            }
                                         }),
                                         new UserNotificationCommand(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution, () =>
                                         {
