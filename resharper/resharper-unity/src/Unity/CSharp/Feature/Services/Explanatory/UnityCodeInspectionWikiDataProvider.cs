@@ -66,6 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
                 { RedundantSerializeFieldAttributeWarning.HIGHLIGHTING_ID, WikiRoot + "Redundant-SerializeField-attribute" },
                 { UnityObjectNullCoalescingWarning.HIGHLIGHTING_ID, WikiRoot + "Possible-unintended-bypass-of-lifetime-check-of-underlying-Unity-engine-object" },
                 { UnityObjectNullPropagationWarning.HIGHLIGHTING_ID, WikiRoot + "Possible-unintended-bypass-of-lifetime-check-of-underlying-Unity-engine-object" },
+                { UnityObjectLifetimeCheckViaNullEqualityWarning.HIGHLIGHTING_ID, WikiRoot + "Possible-unintended-lifetime-check-of-underlying-Unity-engine-object" },
 
 
                 // *****************************************************************************************************

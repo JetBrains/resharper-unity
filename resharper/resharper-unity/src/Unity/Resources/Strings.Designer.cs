@@ -582,6 +582,10 @@
     public static string EvaluatesParentTypeName_Text => ResourceManager.GetString("EvaluatesParentTypeName_Text");
     public static string EvaluatesBakerParentTypeName_Text => ResourceManager.GetString("EvaluatesBakerParentTypeName_Text");
     public static string UnityFixFloatingPointComparison_Text => ResourceManager.GetString("UnityFixFloatingPointComparison_Text");
+    public static string UnityObjectPossiblyUnintendedLifetimeCheck => ResourceManager.GetString("UnityObjectPossiblyUnintendedLifetimeCheck");
+    public static string UnityObjectLifetimeCheckViaNullEqualityWarning_Title => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityWarning_Title");
+    public static string UnityObjectLifetimeCheckViaNullEqualityWarning_Description => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityWarning_Description");
+    public static string UnityObjectLifetimeCheckViaNullEqualityWarning_Message => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityWarning_Message");
     public static string Odin_UnknownGroupingPathMessage => ResourceManager.GetString("Odin_UnknownGroupingPathMessage");
     public static string Odin_UnknownGroupingPathTitle => ResourceManager.GetString("Odin_UnknownGroupingPathTitle");
     public static string Odin_UnknownGroupingPathDescription => ResourceManager.GetString("Odin_UnknownGroupingPathDescription");
