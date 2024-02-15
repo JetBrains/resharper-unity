@@ -1648,6 +1648,20 @@ a plugin to be installed to a project.</value>
     <data name="UnityFixFloatingPointComparison_Text" xml:space="preserve">
         <value>Fix comparison with Mathf.Approximately</value>
     </data>
+    <data name="UnityObjectPossiblyUnintendedLifetimeCheck" xml:space="preserve">
+        <value>Possible unintended lifetime check of underlying Unity engine object</value>
+    </data>
+    <data name="UnityObjectLifetimeCheckViaNullEqualityWarning_Title" xml:space="preserve">
+        <value>'==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object</value>
+    </data>
+    <data name="UnityObjectLifetimeCheckViaNullEqualityWarning_Description" xml:space="preserve">
+        <value>The `==` operator calls the custom equality operators defined on 'UnityEngine.Object',
+          which will check to see if the underlying Unity engine object has been destroyed. Prefer implicit bool comparison if the lifetime check is intended, or explicitly use `is` operator or 'object.ReferenceEquals()'
+          for a standard (and quicker) CLR null check.</value>
+    </data>
+    <data name="UnityObjectLifetimeCheckViaNullEqualityWarning_Message" xml:space="preserve">
+        <value>'==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object</value>
+    </data>
     <data name="Odin_UnknownGroupingPathMessage" xml:space="preserve">
         <value>Group path '{0}' is not defined</value>
     </data>

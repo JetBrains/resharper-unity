@@ -16,6 +16,7 @@
   <StaticSeverityGroups>
     <Group name="Unity Errors" key="UnityErrors" />
     <Group name="Unity Warnings" key="UnityWarnings" />
+    <Group name="Unity Suggestions" key="UnitySuggestions" />
   </StaticSeverityGroups>
   
   <!-- Register the configurable severities
@@ -153,6 +154,11 @@
         <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2" resourceType="Strings" />
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
         <Description resourceName="TheIsOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
+      </Tag>
+      <Tag externalName="UnityObjectLifetimeCheckViaNullEqualityWarning.HIGHLIGHTING_ID" default="SUGGESTION">
+        <Title resourceName="UnityObjectLifetimeCheckViaNullEqualityWarning_Title" resourceType="Strings" />
+        <CompoundItemName resourceName="UnityObjectPossiblyUnintendedLifetimeCheck" resourceType="Strings" />
+        <Description resourceName="UnityObjectLifetimeCheckViaNullEqualityWarning_Description" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnresolvedComponentOrScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title resourceName="CannotResolveComponentOrScriptableObject" resourceType="Strings" />
@@ -627,6 +633,13 @@
     <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2" resourceType="Strings" />
     <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="UnityObjectLifetimeCheckViaNullEquality" configurableSeverity="Unity.NoLifetimeCheckViaNullEquality" staticGroup="UnitySuggestions">
+    <Parameter type="IEqualityExpression" name="expression" />
+    <Message resourceName="UnityObjectLifetimeCheckViaNullEqualityWarning_Message" resourceType="Strings" />
+    <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="UnresolvedComponentOrScriptableObject" configurableSeverity="Unity.UnresolvedComponentOrScriptableObject">
