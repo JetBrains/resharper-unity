@@ -1,6 +1,7 @@
 #nullable enable
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -18,6 +19,11 @@ public class UnityObjectLifetimeCheckViaNullEqualityAnalyzer(UnityApi unityApi) 
             return;
         if (left.IsNullLiteral() && UnityTypeUtils.IsUnityObject(right.Type())
             || right.IsNullLiteral() && UnityTypeUtils.IsUnityObject(left.Type()))
-            consumer.AddHighlighting(new UnityObjectLifetimeCheckViaNullEqualityWarning(expression));
+        {
+            IHighlighting highlighting = Api.HasNullabilityAttributeOnImplicitBoolOperator.Value 
+                ? new UnityObjectLifetimeCheckViaNullEqualityWarning(expression)
+                : new UnityObjectLifetimeCheckViaNullEqualityHintHighlighting(expression);
+            consumer.AddHighlighting(highlighting);
+        }
     }
 }

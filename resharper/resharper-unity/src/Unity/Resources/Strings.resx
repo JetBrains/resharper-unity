@@ -1662,6 +1662,15 @@ a plugin to be installed to a project.</value>
     <data name="UnityObjectLifetimeCheckViaNullEqualityWarning_Message" xml:space="preserve">
         <value>'==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object</value>
     </data>
+    <data name="UnityObjectLifetimeCheckViaNullEqualityHint_ContextMenu_Title">
+        <value>Unity Lifetime Check Hints</value>
+    </data>
+    <data name="UnityObjectLifetimeCheckViaNullEqualityHint_Tooltip">
+        <value>Implicit check for Unity object lifetime.</value>
+    </data>
+    <data name="UnityObjectLifetimeCheckViaNullEqualityHint_Description">
+        <value>Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.</value>
+    </data>
     <data name="Odin_UnknownGroupingPathMessage" xml:space="preserve">
         <value>Group path '{0}' is not defined</value>
     </data>

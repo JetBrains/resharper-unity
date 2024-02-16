@@ -1,0 +1,33 @@
+﻿using UnityEngine;
+
+public class Test : MonoBehaviour
+{
+    public void Method(GameObject go, Component c, Transform t, Object o)
+    {
+        if (go |==|(0) null) return;
+        if (c |==|(1) null) return;
+        if (t |==|(2) null) return;
+        if (o |==|(3) null) return;
+        if (go |!=|(4) null) return;
+        if (c |!=|(5) null) return;
+        if (t |!=|(6) null) return;
+        if (o |!=|(7) null) return;
+        if (null |!=|(8) o) return;
+        if (null |==|(9) go) return;
+        if (this |==|(10) null) return;
+        if (o != go) return;
+        if (o == t) return;
+    }
+}
+---------------------------------------------------------
+(0): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(1): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(2): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(3): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(4): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(5): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(6): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(7): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(8): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(9): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
+(10): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Unity engine performs lifetime check on an instance of type deriving from 'UnityEngine.Object' in addition to standard (and quicker) CRL `null` reference check. You may use implicit bool conversion to clarify your intention or `is` operator/'object.ReferenceEquals' if you aren't aware if the object destroyed or not.
