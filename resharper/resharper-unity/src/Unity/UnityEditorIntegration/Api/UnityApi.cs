@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
@@ -56,6 +57,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         private readonly KnownTypesCache myKnownTypesCache;
         private readonly IUnitySerializedReferenceProvider mySerializedReferenceProvider;
         private readonly UnityTechnologyDescriptionCollector myTechnologyDescriptionCollector;
+
+        /// <summary>
+        /// Flow analysis for nullable references in C# not aware about Unity lifetime checks with implicit bool operator.
+        /// There an attribute [NotNullWhen(true)] which may be used to inform Roslyn analyzer about semantic of the operator,
+        /// but it doesn't present in Unity at least until 2023.2.9f. If we know what this attribute is present we may use advanced suggestions
+        /// like recommend to use `if (a)` instead of `if (a != null)` for more clear intention, otherwise `if (a) a.Something()` will complain about possible null reference access.  
+        /// </summary>
+        public readonly IViewableProperty<bool> HasNullabilityAttributeOnImplicitBoolOperator = new ViewableProperty<bool>(false);   
 
         public UnityApi(UnityVersion unityVersion, UnityTypeCache unityTypeCache, UnityTypesProvider unityTypesProvider,
             KnownTypesCache knownTypesCache, IUnitySerializedReferenceProvider serializedReferenceProvider,
