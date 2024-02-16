@@ -89,8 +89,9 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
 
                         // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage()) {
+                            val outOfSupportTitle = UnityBundle.message("notification.title.out.of.support.unity.version.integration")
                             val outOfSupportContent = UnityBundle.message("unity.version.out.of.support.notification.message", "2019.2")
-                            val notification = Notification(notificationGroupId.displayId, title, outOfSupportContent, NotificationType.WARNING)
+                            val notification = Notification(notificationGroupId.displayId, outOfSupportTitle, outOfSupportContent, NotificationType.WARNING)
                             notification.addAction(object : NotificationAction(
                                 UnityBundle.message("read.more")) {
                                 override fun actionPerformed(e: AnActionEvent, notification: Notification) {
