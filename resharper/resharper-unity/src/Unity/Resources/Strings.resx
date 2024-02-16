@@ -1660,25 +1660,25 @@ a plugin to be installed to a project.</value>
         <value>Group path is not defined</value>
     </data>
     <data name="Odin_UnknownGroupingPathDescription" xml:space="preserve">
-        <value>Using of undefined group will lead to runtime error during Odin's layout. </value>
+        <value>Using an undefined group will lead to a runtime error</value>
     </data>
     <data name="Odin_MemberPresentInMultipleGroupsTitle" xml:space="preserve">
-        <value>Member is presented in multiple groups</value>
+        <value>Member appears in multiple UI groups simultaneously</value>
     </data>
     <data name="Odin_MemberPresentInMultipleGroupsMessage" xml:space="preserve">
-        <value>Member is presented in multiple groups</value>
+        <value>The member appears in multiple UI groups simultaneously</value>
     </data>
     <data name="Odin_MemberPresentInMultipleGroupsDescription" xml:space="preserve">
-        <value>Member is presented in multiple groups. It would be added to several UI group simultaneously</value>
+        <value>Member is included in multiple UI groups and will be displayed multiple times in the UI</value>
     </data>
     <data name="Odin_MemberWrongGroupingAttributeMessage" xml:space="preserve">
-        <value>Different type of group attributes should not share the same path. Expected '{0}' attribute</value>
+        <value>Different types of group attributes should not share the same path. '{0}' attribute is expected.</value>
     </data>
     <data name="Odin_MemberWrongGroupingAttributeTitle" xml:space="preserve">
         <value>Incorrect Odin's group attribute type</value>
     </data>
     <data name="Odin_MemberWrongGroupingAttributeDescription" xml:space="preserve">
-        <value>Different type of group attributes should not share the same path</value>
+        <value>Different types of group attributes should not share the same path</value>
     </data>
     <data name="OdinReplaceAttributeQuickFix" xml:space="preserve">
         <value>Change to '{0}' attribute</value>
