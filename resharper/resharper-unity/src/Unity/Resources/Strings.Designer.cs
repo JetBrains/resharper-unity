@@ -586,6 +586,9 @@
     public static string UnityObjectLifetimeCheckViaNullEqualityWarning_Title => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityWarning_Title");
     public static string UnityObjectLifetimeCheckViaNullEqualityWarning_Description => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityWarning_Description");
     public static string UnityObjectLifetimeCheckViaNullEqualityWarning_Message => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityWarning_Message");
+    public static string UnityObjectLifetimeCheckViaNullEqualityHint_ContextMenu_Title => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityHint_ContextMenu_Title");
+    public static string UnityObjectLifetimeCheckViaNullEqualityHint_Tooltip => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityHint_Tooltip");
+    public static string UnityObjectLifetimeCheckViaNullEqualityHint_Description => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityHint_Description");
     public static string Odin_UnknownGroupingPathMessage => ResourceManager.GetString("Odin_UnknownGroupingPathMessage");
     public static string Odin_UnknownGroupingPathTitle => ResourceManager.GetString("Odin_UnknownGroupingPathTitle");
     public static string Odin_UnknownGroupingPathDescription => ResourceManager.GetString("Odin_UnknownGroupingPathDescription");
