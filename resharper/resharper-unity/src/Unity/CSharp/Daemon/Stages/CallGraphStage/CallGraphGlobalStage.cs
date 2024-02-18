@@ -6,7 +6,10 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
-    [DaemonStage(GlobalAnalysisStage = true, OverridenStages = new[] {typeof(CallGraphLocalStage)})]
+    [DaemonStage(
+        GlobalAnalysisStage = true,
+        StagesBefore = [typeof(SolutionAnalysisFileStructureCollectorStage)],
+        OverridenStages = [typeof(CallGraphLocalStage)])]
     public class CallGraphGlobalStage : CallGraphAbstractStage
     {
         public CallGraphGlobalStage(CallGraphSwaExtensionProvider swaExtensionProvider, IEnumerable<ICallGraphContextProvider> contextProviders, IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers, ILogger logger)
