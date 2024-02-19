@@ -16,7 +16,9 @@ public class Test : MonoBehaviour
 ------------------------------------------------
 0: Implicit check for Unity object lifetime.
 QUICKFIXES:
-Convert to check via implicit bool conversion
+Convert to Unity object lifetime check
+Bypass Unity object lifetime check
 1: Implicit check for Unity object lifetime.
 QUICKFIXES:
-Convert to check via implicit bool conversion
+Convert to Unity object lifetime check
+Bypass Unity object lifetime check

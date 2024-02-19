@@ -1,4 +1,4 @@
-using JetBrains.DocumentModel;
+﻿using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
@@ -24,7 +24,7 @@ public class UnityObjectLifetimeCheckViaNullEqualityHintHighlighting(IEqualityEx
 
     public IEqualityExpression Expression => expression;
     public IconId Icon => PsiSymbolsThemedIcons.InterceptedCall.Id;
-    public /*Localized*/ string ToolTip => Strings.UnityObjectLifetimeCheckViaNullEqualityHint_Tooltip;
+    public /*Localized*/ string ToolTip => Strings.UnityObjectLifetimeCheckViaNullEqualityHint_Description;
     public /*Localized*/ string ErrorStripeToolTip => ToolTip;
     public bool IsValid() => expression.IsValid();
     public DocumentRange CalculateRange() => expression.OperatorSign.GetHighlightingRange();
