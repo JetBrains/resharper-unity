@@ -24,9 +24,9 @@ abstract class UnityPlayerDebuggerTestBase(unityVersion: UnityVersion, buildName
     override fun getSolutionDirectoryName() = "UnityPlayerProjects/SimpleUnityGame"
 
     private fun getExecutionFileName() = if (SystemInfo.isMac)
-        "Project.app"
+        "SimpleUnityGame.app"
     else if (SystemInfo.isWindows)
-        "Project.exe"
+        "SimpleUnityGame.exe"
     else null
 
     @Test
@@ -60,7 +60,7 @@ abstract class UnityPlayerDebuggerTestBase(unityVersion: UnityVersion, buildName
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnityPlayerDebuggerTest {
     class TestUnity2020 : UnityPlayerDebuggerTestBase(UnityVersion.V2020, mapOf(
-        winOS to "UnityPlayerDebuggerTest_StandaloneWindows64_2022.3.17f1_24-Feb-09.zip",
-        macOS to "UnityPlayerDebuggerTest_StandaloneOSX_2022.3.17f1_24-Feb-09.zip"))
+        winOS to "UnityPlayerDebuggerTest_StandaloneWindows64_2022.3.17f1_2024-Feb-19.zip",
+        macOS to "UnityPlayerDebuggerTest_StandaloneOSX_2022.3.17f1_2024-Feb-19.zip"))
 }
 

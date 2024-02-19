@@ -7,6 +7,7 @@ public class UpdateBreakpointScript : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.F))
         {
+            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             Debug.Log("F");
         }
     }

@@ -27,8 +27,9 @@ namespace Editor
 
         private static void RunLocalDebugBuild(BuildTarget buildTarget)
         {
-            var folderName = $"UnityPlayerDebuggerTest_{buildTarget}_{Application.unityVersion}_{DateTime.Now:yy-MMM-dd}";
-            Build(buildTarget, false, true, $"{folderName}/Project.exe");
+            var projectName = Application.productName;
+            var folderName = $"UnityPlayerDebuggerTest_{buildTarget}_{Application.unityVersion}_{DateTime.Now:yyyy-MMM-dd}";
+            Build(buildTarget, false, true, $"{folderName}/{projectName}.exe");
         }
 
         public static void RunBuild()
