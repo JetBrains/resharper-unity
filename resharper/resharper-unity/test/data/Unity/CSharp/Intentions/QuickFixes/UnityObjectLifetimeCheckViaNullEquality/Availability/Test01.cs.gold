@@ -1,0 +1,22 @@
+using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test : MonoBehaviour
+{
+  public void Test(GameObject a, GameObject b)
+  {
+    if(a |==|(0) null) //Must be 2 quickfixes available
+      Debug.Log("Equals");
+    
+    if(b |!=|(1) null) //Must be 2 quickfixes available
+      Debug.Log("Not Equals");
+  }
+}
+
+------------------------------------------------
+0: Implicit check for Unity object lifetime.
+QUICKFIXES:
+Convert to check via implicit bool conversion
+1: Implicit check for Unity object lifetime.
+QUICKFIXES:
+Convert to check via implicit bool conversion
