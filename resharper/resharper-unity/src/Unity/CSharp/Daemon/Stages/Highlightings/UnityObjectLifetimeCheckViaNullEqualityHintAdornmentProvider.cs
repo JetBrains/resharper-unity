@@ -34,7 +34,7 @@ public class UnityObjectLifetimeCheckViaNullEqualityHintAdornmentProvider : IHig
     class DataModel(AdornmentData data, IEqualityExpression expression) : IAdornmentDataModel
     {
         public AdornmentData Data => data;
-        public IPresentableItem ContextMenuTitle { get; } = new PresentableItem(FeaturesIntellisenseThemedIcons.ParameterInfoPage.Id, Strings.UnityObjectLifetimeCheckViaNullEqualityHint_ContextMenu_Title);
+        public IPresentableItem? ContextMenuTitle => null;
         public IEnumerable<BulbMenuItem> ContextMenuItems => EmptyList<BulbMenuItem>.Enumerable;
 
         public void ExecuteNavigation(PopupWindowContextSource? popupWindowContextSource)

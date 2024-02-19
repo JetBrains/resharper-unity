@@ -7,9 +7,9 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Common.Feature.Services.QuickFixes;
 
-class SimplePsiTransactionBulbAction(string text, Func<ISolution, IProgressIndicator, Action<ITextControl>?> action) : BulbActionBase
+class SimplePsiTransactionBulbAction(/*Localized*/ string text, Func<ISolution, IProgressIndicator, Action<ITextControl>?> action) : BulbActionBase
 {
-    public override string Text => text;
+    public override /*Localized*/ string Text => text;
 
     protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress) => action(solution, progress);
 }

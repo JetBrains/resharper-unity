@@ -20,14 +20,14 @@ public class Test : MonoBehaviour
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(1): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(2): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(3): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(4): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(5): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(6): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(7): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(8): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(9): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
-(10): ReSharper Suggestion: '==' on a type deriving from 'UnityEngine.Object' performs the lifetime check on the underlying Unity engine object
+(0): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(1): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(2): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(3): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(4): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(5): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(6): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(7): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(8): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(9): ReSharper Suggestion: Implicit check for Unity object lifetime.
+(10): ReSharper Suggestion: Implicit check for Unity object lifetime.
