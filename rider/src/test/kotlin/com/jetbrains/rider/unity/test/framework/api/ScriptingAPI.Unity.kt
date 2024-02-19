@@ -10,6 +10,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.WaitFor
 import com.intellij.util.text.VersionComparatorUtil
+import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
@@ -480,22 +481,21 @@ fun IntegrationTestWithFrontendBackendModel.restart() {
 fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
     playerFile: File,
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null){
+    goldFile: File? = null) {
 
     assert(playerFile.exists())
     var startGameExecutable: Process? = null
+    var session: XDebugSession? = null
 
     try {
         startGameExecutable = startGameExecutable(playerFile)
         assertNotNull(startGameExecutable)
 
-        val unityProcessDeferred = waitGameProcess(project.lifetime) {
-            it.projectName == project.solutionName
-        }
-
         var unityProcess: UnityProcess? = null
         val job = (project as ComponentManagerEx).getCoroutineScope().launch {
-            unityProcess = unityProcessDeferred.await()
+            unityProcess = discoverDebuggableUnityProcess(project.lifetime) {
+                it.projectName == project.solutionName
+            }
         }
 
         pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
@@ -505,7 +505,7 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
         assertNotNull(unityProcess)
         attachToUnityProcess(project, unityProcess!!)
 
-        val session = waitForNotNull(UnityPlayerDebuggerTestBase.collectTimeout, "Debugger session wasn't started") {
+        session = waitForNotNull(UnityPlayerDebuggerTestBase.collectTimeout, "Debugger session wasn't started") {
             XDebuggerManager.getInstance(project).debugSessions.firstOrNull()
         }
 
@@ -516,17 +516,21 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
                 val context = DebugTestExecutionContext(it, session)
                 context.test()
                 flushQueues()
-                session.stop()
             }
         }
-        else
-        {
+        else {
             val context = DebugTestExecutionContext(NullPrintStream, session)
             context.test()
         }
     }
+    catch (e: Throwable) {
+        logger.error(e)
+    }
     finally {
-        if(startGameExecutable != null && startGameExecutable.isAlive)
+        assertNotNull(session)
+        session.stop()
+
+        if (startGameExecutable != null && startGameExecutable.isAlive)
             startGameExecutable.destroyProcess(Duration.ofSeconds(3))
     }
 }

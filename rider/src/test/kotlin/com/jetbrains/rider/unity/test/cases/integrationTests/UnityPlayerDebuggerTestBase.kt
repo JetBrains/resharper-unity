@@ -18,10 +18,10 @@ import java.time.Duration
 import kotlin.test.assertNotNull
 
 
-abstract class UnityPlayerDebuggerTestBase(unityVersion: UnityVersion, private val buildNames: Map<String, String>)
+abstract class UnityPlayerDebuggerTestBase(unityVersion: UnityVersion, buildNames: Map<String, String>)
     : UnityPlayerTestBase(unityVersion, buildNames) {
 
-    override fun getSolutionDirectoryName() = "UnityPlayerDebug/Project"
+    override fun getSolutionDirectoryName() = "UnityPlayerProjects/SimpleUnityGame"
 
     private fun getExecutionFileName() = if (SystemInfo.isMac)
         "Project.app"

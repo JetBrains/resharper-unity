@@ -39,9 +39,9 @@ abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
         get() = project.solution.frontendBackendModel
 
     protected fun getGameFileName(): String? {
-        if(SystemInfo.isMac)
+        if (SystemInfo.isMac)
             return buildNames[UnityPlayerDebuggerTestBase.macOS]
-        if(SystemInfo.isWindows)
+        if (SystemInfo.isWindows)
             return buildNames[UnityPlayerDebuggerTestBase.winOS]
         return null
     }
@@ -51,8 +51,8 @@ abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
         get() {
             return getUnityDependentGoldFile(unityMajorVersion, super.testGoldFile).takeIf { it.exists() }
                    ?: getUnityDependentGoldFile(
-                     unityMajorVersion,
-                     File(super.testGoldFile.path.replace(this::class.simpleName.toString(), ""))
+                       unityMajorVersion,
+                       File(super.testGoldFile.path.replace(this::class.simpleName.toString(), ""))
                    )
         }
 
@@ -64,7 +64,7 @@ abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
         val workDirectory = File(tempTestDirectory, solutionName)
         val sourceDirectory = File(solutionSourceRootDirectory, solutionDirectoryName)
         // Copy solution from sources
-      FileUtil.copyDir(sourceDirectory, workDirectory, filter)
+        FileUtil.copyDir(sourceDirectory, workDirectory, filter)
         workDirectory.isDirectory.shouldBeTrue("Expected '${workDirectory.absolutePath}' to be a directory")
 
         return workDirectory
@@ -72,15 +72,15 @@ abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
 
     override fun preprocessTempDirectory(tempDir: File) {
         lifetimeDefinition = LifetimeDefinition()
-      allowUnityPathVfsRootAccess(lifetimeDefinition)
-      createLibraryFolderIfNotExist(tempDir)
+        allowUnityPathVfsRootAccess(lifetimeDefinition)
+        createLibraryFolderIfNotExist(tempDir)
     }
 
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
         unityProjectPath = putUnityProjectToTempTestDir(getSolutionDirectoryName(), null)
         super.setUpTestCaseSolution()
-      prepareAssemblies(project, activeSolutionDirectory)
+        prepareAssemblies(project, activeSolutionDirectory)
         downloadGameFiles(project, activeSolutionDirectory)
     }
 
@@ -105,11 +105,13 @@ abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
             val target = activeSolutionDirectory.combine(file.name)
             file.copyRecursively(target, true)
         }
-      refreshFileSystem(project)
+        refreshFileSystem(project)
     }
 
-    fun waitGameProcess(lifetime: Lifetime, filter: (UnityProcess) -> Boolean): CompletableDeferred<UnityProcess> {
+    suspend fun discoverDebuggableUnityProcess(lifetime: Lifetime, filter: (UnityProcess) -> Boolean): UnityProcess {
         val result = CompletableDeferred<UnityProcess>()
+        lifetime.onTermination { result.cancel() }
+
         logger.info("Starting UnityPlayerListener")
         try {
 
@@ -128,7 +130,7 @@ abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
             result.completeExceptionally(exception)
         }
 
-        return result
+        return result.await()
     }
 
     fun startGameExecutable(file: File): Process? {
