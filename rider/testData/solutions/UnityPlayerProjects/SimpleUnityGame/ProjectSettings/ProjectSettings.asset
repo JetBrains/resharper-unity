@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Project
+  productName: SimpleUnityGame
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -159,7 +159,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Standalone: com.DefaultCompany.Project
+    Standalone: com.DefaultCompany.SimpleUnityGame
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -676,14 +676,14 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: DotsSimpleProject
+  metroPackageName: SimpleUnityGame
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: DotsSimpleProject
+  metroApplicationDescription: SimpleUnityGame
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -755,7 +755,7 @@ PlayerSettings:
   cloudProjectId: b7fb528d-d709-4e48-bcc9-3e627143c0b8
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: DotsSimpleProject
+  projectName: SimpleUnityGame
   organizationId: george_l_jb
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
