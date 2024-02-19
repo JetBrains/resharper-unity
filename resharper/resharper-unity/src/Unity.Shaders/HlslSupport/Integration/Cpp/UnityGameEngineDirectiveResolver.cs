@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         
         public IEnumerable<CppIncludePath> ProvideIncludePaths(in ICppFileReference reference)
         {
-            var qualifier = reference.GetQualifierReference();
+            var qualifier = reference.ParentReference;
             if (qualifier == null || qualifier.GetName() != "Packages")
                 return Enumerable.Empty<CppIncludePath>();
 
