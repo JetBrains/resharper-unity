@@ -9,6 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Feature.Services.QuickFixes;
 
 public static class SimpleBulbItems
 {
-    public static IntentionAction ReplaceCSharpExpression<T>(T expression, string text, Func<CSharpElementFactory, T, ICSharpExpression> replaceExpressionFactory) where T : ICSharpExpression => 
+    public static IntentionAction ReplaceCSharpExpression<T>(T expression, /*Localized*/ string text, Func<CSharpElementFactory, T, ICSharpExpression> replaceExpressionFactory) where T : ICSharpExpression => 
         new SimpleReplaceCSharpExpressionBulbAction<T>(expression, text, replaceExpressionFactory).ToQuickFixIntention();
 }

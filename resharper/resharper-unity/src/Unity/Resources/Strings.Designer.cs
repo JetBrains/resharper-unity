@@ -128,6 +128,7 @@
     public static string ComparisonTonullIsExpensiveMessage => ResourceManager.GetString("ComparisonTonullIsExpensiveMessage");
     public static string ConvertCoalescingToConditionalQuickFix_Text_Convert_to_conditional_expression => ResourceManager.GetString("ConvertCoalescingToConditionalQuickFix_Text_Convert_to_conditional_expression");
     public static string ConvertFromCoroutineBulbAction_Text_To_standard_event_function => ResourceManager.GetString("ConvertFromCoroutineBulbAction_Text_To_standard_event_function");
+    public static string ConvertToUnityObjectLifetimeCheck_Text => ResourceManager.GetString("ConvertToUnityObjectLifetimeCheck_Text");
     public static string ConvertToCompareTagQuickFix_Text_Convert_to__CompareTag_ => ResourceManager.GetString("ConvertToCompareTagQuickFix_Text_Convert_to__CompareTag_");
     public static string ConvertToCoroutineBulbAction_Text_To_coroutine => ResourceManager.GetString("ConvertToCoroutineBulbAction_Text_To_coroutine");
     public static string ConvertToGameObjectAddComponentQuickFix_Text_Convert_to__GameObject_AddComponent__0_____ => ResourceManager.GetString("ConvertToGameObjectAddComponentQuickFix_Text_Convert_to__GameObject_AddComponent__0_____");
@@ -135,6 +136,7 @@
     public static string ConvertToNamedAssemblyDefinitionReference_Description => ResourceManager.GetString("ConvertToNamedAssemblyDefinitionReference_Description");
     public static string ConvertToNamedAssemblyDefinitionReference_Name => ResourceManager.GetString("ConvertToNamedAssemblyDefinitionReference_Name");
     public static string ConvertToNamedReferenceContextAction_Text_To_named_reference => ResourceManager.GetString("ConvertToNamedReferenceContextAction_Text_To_named_reference");
+    public static string BypassUnityLifetimeCheck_Text => ResourceManager.GetString("BypassUnityLifetimeCheck_Text");
     public static string ConvertToScriptableObjectCreateInstanceQuickFix_Text_Convert_to__ScriptableObject_CreateInstance__0_____ => ResourceManager.GetString("ConvertToScriptableObjectCreateInstanceQuickFix_Text_Convert_to__ScriptableObject_CreateInstance__0_____");
     public static string ConvertXmlDocToTooltipAttributeAction_Description => ResourceManager.GetString("ConvertXmlDocToTooltipAttributeAction_Description");
     public static string ConvertXmlDocToTooltipAttributeAction_Name => ResourceManager.GetString("ConvertXmlDocToTooltipAttributeAction_Name");
@@ -228,12 +230,6 @@
     public static string MoveFromLoopAction_Text_Move_outside_of_loop => ResourceManager.GetString("MoveFromLoopAction_Text_Move_outside_of_loop");
     public static string MultidimensionalArrayElementAccessIsConvertedToAMethodCallItIsMoreEfficientToUseAJaggedOrOneDimensionalArray => ResourceManager.GetString("MultidimensionalArrayElementAccessIsConvertedToAMethodCallItIsMoreEfficientToUseAJaggedOrOneDimensionalArray");
     public static string MultiplicationOrderQuickFix_Text_Reorder_multiplication => ResourceManager.GetString("MultiplicationOrderQuickFix_Text_Reorder_multiplication");
-    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject");
-    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6 => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6");
-    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage");
-    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1 => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1");
-    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2 => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2");
-    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2 => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2");
     public static string OrderOfMultiplicationOperationsIsInefficient => ResourceManager.GetString("OrderOfMultiplicationOperationsIsInefficient");
     public static string OrderOfMultiplicationOperationsIsInefficientMessage => ResourceManager.GetString("OrderOfMultiplicationOperationsIsInefficientMessage");
     public static string PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed => ResourceManager.GetString("PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed");
@@ -587,8 +583,6 @@
     public static string UnityObjectLifetimeCheckViaNullEqualityWarning_Title => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityWarning_Title");
     public static string UnityObjectLifetimeCheckViaNullEqualityWarning_Description => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityWarning_Description");
     public static string UnityObjectLifetimeCheckViaNullEqualityWarning_Message => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityWarning_Message");
-    public static string UnityObjectLifetimeCheckViaNullEqualityHint_ContextMenu_Title => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityHint_ContextMenu_Title");
-    public static string UnityObjectLifetimeCheckViaNullEqualityHint_Tooltip => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityHint_Tooltip");
     public static string UnityObjectLifetimeCheckViaNullEqualityHint_Description => ResourceManager.GetString("UnityObjectLifetimeCheckViaNullEqualityHint_Description");
     public static string Odin_UnknownGroupingPathMessage => ResourceManager.GetString("Odin_UnknownGroupingPathMessage");
     public static string Odin_UnknownGroupingPathTitle => ResourceManager.GetString("Odin_UnknownGroupingPathTitle");

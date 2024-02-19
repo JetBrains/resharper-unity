@@ -9,9 +9,9 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Common.Feature.Services.QuickFixes;
 
-public class SimpleReplaceCSharpExpressionBulbAction<T>(T expression, string text, Func<CSharpElementFactory, T, ICSharpExpression> replaceExpressionFactory) : BulbActionBase where T : ICSharpExpression
+public class SimpleReplaceCSharpExpressionBulbAction<T>(T expression, /*Localized*/ string text, Func<CSharpElementFactory, T, ICSharpExpression> replaceExpressionFactory) : BulbActionBase where T : ICSharpExpression
 {
-    public override string Text => text;
+    public override /*Localized*/ string Text => text;
     protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
     {
         var factory = CSharpElementFactory.GetInstance(expression);
