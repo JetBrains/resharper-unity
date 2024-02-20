@@ -1,2 +1,0 @@
-{caret}#pragma
-float foo;

@@ -1,2 +1,0 @@
-// commment
-identifier

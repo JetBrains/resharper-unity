@@ -1,5 +1,0 @@
-{caret}
-void foo(){
-	{
-	}
-}

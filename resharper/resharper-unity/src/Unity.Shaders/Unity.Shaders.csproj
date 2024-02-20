@@ -15,32 +15,6 @@
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->
-  <ItemGroup Label="Cg">
-    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-      <_Parameter1>JetBrains_ApiVerification</_Parameter1>
-      <_Parameter2>disabled</_Parameter2>
-    </AssemblyAttribute>
-    <PsiLanguageNames Include="Cg">
-      <Visible>False</Visible>
-    </PsiLanguageNames>
-    <CsLex Include="Cg\Psi\Parsing\Cg.lex" References="Cg\Psi\Parsing\Chars.lex" />
-    <TokenGenerator Include="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
-      <OutputFile>Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
-    </TokenGenerator>
-    <Compile Update="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
-      <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
-    </Compile>
-    <ParserGen Include="Cg\Psi\Parsing\Cg.psi" />
-    <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Errors</Namespace>
-      <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
-      <Mode>ERRORS</Mode>
-    </ErrorsGen>
-    <Compile Update="Cg\Daemon\Errors\CgErrors.Generated.cs">
-      <DependentUpon>CgErrors.xml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <!-- ********** -->
   <ItemGroup Label="ShaderLab">
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
