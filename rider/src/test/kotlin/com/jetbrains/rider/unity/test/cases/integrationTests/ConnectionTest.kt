@@ -4,7 +4,6 @@ import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.allure.Subsystem
-import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold
@@ -20,21 +19,19 @@ import org.testng.annotations.Test
 class ConnectionTest : IntegrationTestWithSolutionBase() {
     override fun getSolutionDirectoryName(): String = "SimpleUnityProjectWithoutPlugin"
 
-    @Test
+    @Test(enabled = false) // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
     @Description("Check connection with Unity after Unity start")
     fun installAndCheckConnectionAfterUnityStart() {
         withUnityProcess {
             waitFirstScriptCompilation(project)
-            installPlugin()
             waitConnectionToUnityEditor(project)
             checkSweaInSolution()
         }
     }
 
-    @Test
+    @Test(enabled = false) // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
     @Description("Check connection with Unity before Unity start")
     fun installAndCheckConnectionBeforeUnityStart() {
-        installPlugin()
         withUnityProcess {
             waitFirstScriptCompilation(project)
             waitConnectionToUnityEditor(project)
@@ -42,7 +39,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test
+    @Test(enabled = false) // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
     @Description("Check external Editor in Unity")
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
         executeIntegrationTestMethod("DumpExternalEditor")
@@ -53,7 +50,6 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
 
     private fun checkExternalEditor(resetEditorPrefs: Boolean, execute: () -> Unit) {
-        installPlugin()
         withUnityProcess(resetEditorPrefs = resetEditorPrefs, useRiderTestPath = true) {
             waitFirstScriptCompilation(project)
             waitConnectionToUnityEditor(project)
@@ -74,16 +70,15 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test
+    @Test(enabled = false) // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
     @Description("Check Unity Log")
     fun checkLogWithExecutingMethod() = checkLog { executeIntegrationTestMethod("WriteToLog") }
 
-    @Test
+    @Test(enabled = false) // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
     @Description("Check Unity Log with Unity vodel refresh")
     fun checkLogWithUnityModelRefresh() = checkLog { executeScript("WriteToLog.cs") }
 
     private fun checkLog(execute: () -> Unit) {
-        installPlugin()
         withUnityProcess {
             waitFirstScriptCompilation(project)
             waitConnectionToUnityEditor(project)
@@ -102,7 +97,6 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     @Test(description = "RIDER-52498",enabled = false)
     @Description("Check debugger start after attach debugger")
     fun checkDebuggerStartsAfterAttachDebugger() {
-        installPlugin()
         try {
 //            startUnity(false, false, false ,true)
 //            waitFirstScriptCompilation(project)

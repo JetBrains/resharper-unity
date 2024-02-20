@@ -65,7 +65,6 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
                 oldSolutionDirectory.deleteRecursively()
             }
             myProject = prepareAndOpenSolution(solution, openSolutionParams)
-            installPlugin(project)
             activateRiderFrontendTest()
         }
 

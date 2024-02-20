@@ -32,7 +32,6 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
 
     @BeforeMethod
     open fun startUnityProcessAndWait() {
-        installPlugin()
         val unityTestEnvironment = testMethod.unityEnvironment
         unityProcessHandle = when {
             unityTestEnvironment != null ->

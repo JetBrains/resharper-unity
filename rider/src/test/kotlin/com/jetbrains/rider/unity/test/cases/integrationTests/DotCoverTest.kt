@@ -1,14 +1,10 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.jetbrains.rider.test.allure.Subsystem
-import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.withDcFacade
-import io.qameta.allure.Description
-import io.qameta.allure.Epic
-import io.qameta.allure.Feature
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
+import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
+import io.qameta.allure.*
 import org.testng.annotations.Test
 import java.io.File
 
