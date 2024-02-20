@@ -140,7 +140,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                         // for local or git packages version would not get parsed
                         Assertion.Assert(!(package.Source == PackageSource.Registry && !isCurrentVersionParsed), "JetSemanticVersion.TryParse returned false for package version {0}, package Id: {1}", packageStringCurrentVersion, package.Id);
                         
-                        if (isCurrentVersionParsed && package.Source == PackageSource.Registry && currentPackageVersion < packageVersion)
+                        // RSRP-496055 JetSemanticVersion equality problem
+                        if (isCurrentVersionParsed && package.Source == PackageSource.Registry && (currentPackageVersion != packageVersion && currentPackageVersion < packageVersion))
                         {
                             myNotificationShown.Add(packageVersion);
                             myLogger.Info($"{packageId} {packageStringCurrentVersion} is older then expected.");

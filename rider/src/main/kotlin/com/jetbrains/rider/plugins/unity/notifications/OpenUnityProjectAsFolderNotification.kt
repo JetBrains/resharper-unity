@@ -20,6 +20,8 @@ import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.SequentialLifetimes
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.util.idea.toVirtualFile
@@ -27,6 +29,7 @@ import com.jetbrains.rider.model.RdUnloadProjectDescriptor
 import com.jetbrains.rider.model.RdUnloadProjectState
 import com.jetbrains.rider.plugins.unity.*
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -87,26 +90,37 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                         if (!project.isUnityProject.value)
                             return@launchNonUrgentBackground
 
-                        // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-                        if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage()) {
-                            val outOfSupportTitle = UnityBundle.message("notification.title.out.of.support.unity.version.integration")
-                            val outOfSupportContent = UnityBundle.message("unity.version.out.of.support.notification.message", "2019.2")
-                            val notification = Notification(notificationGroupId.displayId, outOfSupportTitle, outOfSupportContent, NotificationType.WARNING)
-                            notification.addAction(object : NotificationAction(
-                                UnityBundle.message("read.more")) {
-                                override fun actionPerformed(e: AnActionEvent, notification: Notification) {
-                                    val url = "https://youtrack.jetbrains.com/issue/RIDER-105806"
-                                    BrowserUtil.browse(url)
+                        if (!PropertiesComponent.getInstance(project).getBoolean(settingName)) {
+                            val nestedLifetimeDef = lt.createNested()
+                            val sequentialLifetimes = SequentialLifetimes(nestedLifetimeDef)
+                            // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
+                            UnityInstallationFinder.getInstance(project).requiresRiderPackage.adviseNotNull(nestedLifetimeDef) {
+                                val notificationLifetime = sequentialLifetimes.next().lifetime
+                                if (it) return@adviseNotNull
+                                val outOfSupportTitle = UnityBundle.message("notification.title.out.of.support.unity.version.integration")
+                                val outOfSupportContent = UnityBundle.message("unity.version.out.of.support.notification.message", "2019.2")
+                                val notification = Notification(notificationGroupId.displayId, outOfSupportTitle, outOfSupportContent,
+                                                                NotificationType.WARNING)
+                                notification.setSuggestionType(true) // such a Notification would be removed from the NotificationToolWindow
+                                notification.addAction(object : NotificationAction(
+                                    UnityBundle.message("read.more")) {
+                                    override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                                        val url = "https://youtrack.jetbrains.com/issue/RIDER-105806"
+                                        BrowserUtil.browse(url)
+                                    }
+                                })
+                                notification.addAction(object : NotificationAction(
+                                    UnityBundle.message("link.label.do.not.show.again")) {
+                                    override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                                        PropertiesComponent.getInstance(project).setValue(settingName, true)
+                                        nestedLifetimeDef.terminate()
+                                    }
+                                })
+                                notificationLifetime.startOnUiAsync {
+                                    Notifications.Bus.notify(notification, project)
+                                    notificationLifetime.onTermination { notification.expire() }
                                 }
-                            })
-                            notification.addAction(object : NotificationAction(
-                                UnityBundle.message("link.label.do.not.show.again")) {
-                                override fun actionPerformed(e: AnActionEvent, notification: Notification) {
-                                    PropertiesComponent.getInstance(project).setValue(settingName, true)
-                                }
-                            })
-                            Notifications.Bus.notify(notification, project)
-                            return@launchNonUrgentBackground
+                            }
                         }
 
                         // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
@@ -115,13 +129,13 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                         if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid
                             && !model.unityEditorConnected.valueOrDefault(false)
                             && !hasUnloadedProjects(project)
+                            && UnityInstallationFinder.getInstance(project).requiresRiderPackage.hasTrueValue()
                         ) {
                             val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
-                            notification.setSuggestionType(true) // such a Notification would be removed from the NotificationToolWindow, fixes RIDER-98129 Notification "Advanced integration" behaviour
-                            withUiContext { ->
-                                Notifications.Bus.notify(notification, project)
-                                model.unityEditorConnected.whenTrue(lt) { notification.expire() }
-                            }
+                            notification.setSuggestionType(
+                                true) // such a Notification would be removed from the NotificationToolWindow, fixes RIDER-98129 Notification "Advanced integration" behaviour
+                            Notifications.Bus.notify(notification, project)
+                            model.unityEditorConnected.whenTrue(lt) { notification.expire() }
                         }
                     }
                 }
@@ -149,7 +163,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                         @NlsSafe
                         val contentWoSolution =
                             if (!project.isUnityProjectFolder.value || // means searchUpForFolderWithUnityFileStructure is true
-                                (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
+                                (UnityInstallationFinder.getInstance(project).requiresRiderPackage.hasTrueValue()
                                  && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider"))
                             ) {
                                 """$mainText       

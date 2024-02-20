@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
     [ShellComponent]
     public class UnityRiderUnitTestCoverageAvailabilityChecker : IRiderUnitTestCoverageAvailabilityChecker, IHideImplementation<DefaultRiderUnitTestCoverageAvailabilityChecker>
     {
-        private static readonly Version ourMinSupportedUnityVersion = new(2018, 3);
+        private static readonly Version ourMinSupportedUnityVersion = new(2019, 2);
 
         // this method should be very fast as it gets called a lot
         public HostProviderAvailability GetAvailability(IUnitTestElement element)
