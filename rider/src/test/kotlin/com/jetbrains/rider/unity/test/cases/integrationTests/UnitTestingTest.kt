@@ -1,16 +1,13 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.jetbrains.rider.test.allure.Subsystem
-import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
-import com.jetbrains.rider.unity.test.framework.api.preferStandaloneNUnitLauncherInTests
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.scriptingApi.*
-import io.qameta.allure.Description
-import io.qameta.allure.Epic
-import io.qameta.allure.Feature
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
+import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
+import com.jetbrains.rider.test.scriptingApi.withUtFacade
+import com.jetbrains.rider.unity.test.framework.api.preferStandaloneNUnitLauncherInTests
+import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
+import io.qameta.allure.*
 import org.testng.annotations.Test
 import java.io.File
 
@@ -31,7 +28,7 @@ class UnitTestingTest : IntegrationTestWithGeneratedSolutionBase() {
         }
     }
 
-    @Test
+    @Test(enabled = false) // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
     @Description("Check run all tests from solution")
     fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
 
@@ -46,7 +43,7 @@ class UnitTestingTest : IntegrationTestWithGeneratedSolutionBase() {
         testWithAllTestsInSolution(5)
     }
 
-    @Test
+    @Test(enabled = false) // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
     @Description("Check run all tests from project")
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
