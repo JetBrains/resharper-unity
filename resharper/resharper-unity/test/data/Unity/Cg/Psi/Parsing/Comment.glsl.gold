@@ -1,4 +1,0 @@
-Language: PsiLanguageType:CG
-ICgFile
-  CgSingleLineCommentNode(type:SINGLE_LINE_COMMENT, text://foo)
-

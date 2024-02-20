@@ -1,3 +1,0 @@
-struct foo{
-    float bar;
-}

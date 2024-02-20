@@ -22,15 +22,6 @@
     <data name="CannotResolveSymbolMessage" xml:space="preserve">
         <value>Cannot resolve symbol '{0}'</value>
     </data>
-    <data name="CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type" xml:space="preserve">
-        <value>built-in type</value>
-    </data>
-    <data name="CgLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Cg" xml:space="preserve">
-        <value>File's primary language is not Cg</value>
-    </data>
-    <data name="CgSyntaxHighlightingProcess_VisitSemanticNode_Semantic__packoffset_or_register_expected" xml:space="preserve">
-        <value>Semantic, packoffset, or register expected</value>
-    </data>
     <data name="CommentsBlockComment_RiderPresentableName" xml:space="preserve">
         <value>Comments//Block comment</value>
     </data>

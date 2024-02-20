@@ -95,17 +95,7 @@
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.breadcrumbs.ShaderLabBreadcrumbsInfoProvider"/>
     <spellchecker.support language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.spellchecker.ShaderLabSpellcheckingStrategy" />
 
-    <fileType name="HLSL" extensions="cg;cginc;hlslinc;compute" />
-
-    <!-- Cg support -->
-    <!-- Don't forget to update CgProjectFileType list on the backend -->
-    <fileType name="Cg" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgFileType" language="Cg" extensions="glsl;glslinc"/>
-    <lang.parserDefinition language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgParserDefinition" />
-    <lang.syntaxHighlighterFactory language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgSyntaxHighlighterProvider" />
-    <backend.markup.adapterFactory language="Cg" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
-    <backend.actions.support language="Cg" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
-    <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgIconProvider" />
-    <completion.contributor language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
+    <fileType name="HLSL" extensions="cg;cginc;hlslinc;compute;glsl;glslinc" />
 
     <!-- asmdef + asmref support. Note the shared JSON registrations -->
     <fileType name="AsmDef" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileType" language="JSON" extensions="asmdef"/>
