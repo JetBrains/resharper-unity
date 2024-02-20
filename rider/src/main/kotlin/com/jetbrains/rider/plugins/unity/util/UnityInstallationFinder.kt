@@ -7,6 +7,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.flowInto
 import com.jetbrains.rider.plugins.unity.model.UnityApplicationData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import java.nio.file.Path
@@ -26,19 +28,10 @@ class UnityInstallationFinder {
     }
 
     private var unityApplicationData: UnityApplicationData? = null
-    private var requiresRiderPackage = false
+    var requiresRiderPackage = Property<Boolean?>(null)
 
     fun getBuiltInPackagesRoot(): Path? {
         return getApplicationContentsPath()?.resolve("Resources/PackageManager/BuiltInPackages")
-    }
-
-    fun getPackageManagerDefaultManifest(): Path? {
-        return getApplicationContentsPath()?.resolve("Resources/PackageManager/Editor/manifest.json")
-    }
-
-    fun getDocumentationRoot(): Path? {
-        // On Mac, /Unity.app/Contents/Documentation is actually a link to /Documentation, at the same level as the app
-        return getApplicationContentsPath()?.resolve("Documentation/en")
     }
 
     // The same as EditorApplication.applicationContentsPath
@@ -113,16 +106,12 @@ class UnityInstallationFinder {
 
     private fun tryGetApplicationVersionFromProtocol() = unityApplicationData?.applicationVersion
 
-    fun requiresRiderPackage() = requiresRiderPackage
-
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.unityApplicationData.advise(lifetime) {
                 getInstance(session.project).unityApplicationData = it
             }
-            model.requiresRiderPackage.advise(lifetime) {
-                getInstance(session.project).requiresRiderPackage = it
-            }
+            model.requiresRiderPackage.flowInto(lifetime, getInstance(session.project).requiresRiderPackage)
         }
     }
 }
