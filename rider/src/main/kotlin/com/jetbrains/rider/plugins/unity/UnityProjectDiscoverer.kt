@@ -6,12 +6,14 @@ import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.startBackgroundAsync
+import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.framework.impl.RdProperty
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseUntil
+import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solutionDescription
@@ -36,7 +38,8 @@ class UnityProjectDiscoverer(val project: Project) {
 
     init {
         // we can't change this to ProjectActivity because all of them are executes synchronously in tests
-        UnityProjectLifetimeService.getLifetime(project).startBackgroundAsync {
+        val lifetime = UnityProjectLifetimeService.getLifetime(project)
+        lifetime.startBackgroundAsync {
             val hasUnityFileStructure = hasUnityFileStructure(project)
             isUnityProjectFolder.set(hasUnityFileStructure)
             UnityProjectDiscovererState.getInstance(project).isUnityProjectFolderState = hasUnityFileStructure
@@ -48,7 +51,11 @@ class UnityProjectDiscoverer(val project: Project) {
 
             // this only happens for the first opening of a Unity project, later the cached value is the same as evaluated one
             if (oldVal != isUnityProjectVal) {
-                (ProjectView.getInstance(project) as ProjectViewImpl).reloadPanes()
+                val projectView = (ProjectView.getInstance(project) as ProjectViewImpl)
+                withUiContext {
+                    projectView.reloadPanes()
+                    if (isUnityProjectVal) projectView.changeView(UnityExplorer.ID)
+                }
             }
             UnityProjectDiscovererState.getInstance(project).isUnityProjectState = isUnityProjectVal
         }
@@ -70,7 +77,7 @@ class UnityProjectDiscoverer(val project: Project) {
 
         private fun hasUnityFileStructure(project: Project): Boolean {
             // projectDir will fail with the default project
-            return !project.isDefault && UnityProjectDiscoverer.hasUnityFileStructure(project.projectDir)
+            return !project.isDefault && hasUnityFileStructure(project.projectDir)
         }
 
         fun hasUnityFileStructure(projectDir: VirtualFile): Boolean {
