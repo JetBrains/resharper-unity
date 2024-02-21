@@ -6,8 +6,8 @@
         <PackageLock Include="JetBrains.Annotations" Version="2023.3.0" />
         <PackageLock Include="JetBrains.Build.Platform.DistributedCache" Version="1.0.20230909.199" />
         <PackageLock Include="JetBrains.HabitatDetector" Version="1.2.0" IsDevelopmentDependency="True" />
-        <PackageLock Include="JetBrains.Lifetimes" Version="2024.1.0-pre1" />
-        <PackageLock Include="JetBrains.RdFramework" Version="2024.1.0-pre1" />
+        <PackageLock Include="JetBrains.Lifetimes" Version="2024.1.0" />
+        <PackageLock Include="JetBrains.RdFramework" Version="2024.1.0" />
         <PackageLock Include="JetBrains.ReSharper.TestRunner.Abstractions" Version="2.14.1" />
         <PackageLock Include="JetBrains.Vestris.ResourceLib" Version="1.4.20210120.2" />
         <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
