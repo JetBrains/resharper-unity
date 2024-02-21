@@ -68,7 +68,7 @@
         <Title resourceName="IncorrectMethodSignature" resourceType="Strings" />
         <Description resourceName="MethodDoesNotMatchExpectedSignature" resourceType="Strings" />
       </Tag>
-      <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID" default="WARNING">
+      <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID" default="DO_NOT_SHOW">
         <Title resourceName="RepeatedAccessOfPropertyOnBuiltInComponentIsInefficient" resourceType="Strings" />
         <Description resourceName="SomeUnityObjectPropertiesResultInNativeMethodsCallsAndRepeatedlyAccessingThePropertyIsInefficientIntroduceAVariableToLocallyCacheThePropertyValue" resourceType="Strings" />
       </Tag>
