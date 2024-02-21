@@ -367,6 +367,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     case IConditionalTernaryExpression _:
                     case ILoopStatement _:
                     case ISwitchSection _:
+                    case ISwitchExpression _:
                         return false;
                     default:
                         return true;
@@ -406,6 +407,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     case ISwitchSection switchSection:
                         InvalidateAll();
                         switchSection.ProcessDescendants(this);
+                        InvalidateAll();
+                        break;
+                    case IConditionalTernaryExpression ternaryExpression:
+                        InvalidateAll();
+                        break;
+                    case ISwitchExpression switchExpression:
                         InvalidateAll();
                         break;
                     case ISwitchCaseLabel _:
