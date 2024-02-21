@@ -8,13 +8,25 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
+## 2023.3.3
+* Released: [2023-03-03](https://blog.jetbrains.com/dotnet/2024/01/22/2023-3-3-rsrp-rd/)
+* Rider Build: 233.14105.60
+* No ReSharper release
+* [No changes](https://github.com/JetBrains/resharper-unity/compare/net233-rtm-2023.3.2...net233-rtm-2023.3.3)
+
+
+
 ## 2023.3.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net233-rtm-2023.3.0-rtm-2023.3.1...net233)
+* Released: [2023-12-20](https://blog.jetbrains.com/dotnet/2023/12/20/resharper-and-rider-2023-3-2-bug-fix/)
+* Rider Build: 233.13135.100
+* ReSharper Build: 2023.3.2.100
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net233-rtm-2023.3.0-rtm-2023.3.1...net233-rtm-2023.3.2)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net233-rtm-2023.3.2)
 
 ### Changed
 
-- Type conversion hint settings are no longer overridden for Unity projects ([RiDER-90596](https://youtrack.jetbrains.com/issue/RIDER-90596))
-- Navigation to external source settings are now only overridden in Rider, so navigation to packages matches browsing through Unity Explorer ([RIDER-90596](https://youtrack.jetbrains.com/issue/RIDER-90596)9
+- Type conversion hint settings are no longer overridden for Unity projects ([RIDER-90596](https://youtrack.jetbrains.com/issue/RIDER-90596))
+- Navigation to external source settings are now only overridden in Rider, so navigation to packages matches browsing through Unity Explorer ([RIDER-90596](https://youtrack.jetbrains.com/issue/RIDER-90596))
 
 ### Fixed
 
