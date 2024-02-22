@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.ide.projectView.ProjectView
-import com.intellij.ide.projectView.impl.ProjectViewImpl
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
@@ -48,16 +47,22 @@ class UnityProjectDiscoverer(val project: Project) {
 
             val oldVal = isUnityProject.value // old val is the one from the settings
             isUnityProject.set(isUnityProjectVal)
+            UnityProjectDiscovererState.getInstance(project).isUnityProjectState = isUnityProjectVal
 
             // this only happens for the first opening of a Unity project, later the cached value is the same as evaluated one
             if (oldVal != isUnityProjectVal) {
-                val projectView = (ProjectView.getInstance(project) as ProjectViewImpl)
+                val projectView = ProjectView.getInstance(project)
                 withUiContext {
-                    projectView.reloadPanes()
-                    if (isUnityProjectVal) projectView.changeView(UnityExplorer.ID)
+                    val pane = projectView.getProjectViewPaneById(UnityExplorer.ID)
+                    if (isUnityProjectVal) {
+                        if (pane == null) projectView.addProjectPane(UnityExplorer(project))
+                        projectView.changeView(UnityExplorer.ID)
+                    }
+                    else if (pane != null) {
+                        projectView.removeProjectPane(pane)
+                    }
                 }
             }
-            UnityProjectDiscovererState.getInstance(project).isUnityProjectState = isUnityProjectVal
         }
     }
 
