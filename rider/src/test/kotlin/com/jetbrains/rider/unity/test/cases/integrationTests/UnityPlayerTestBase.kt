@@ -133,11 +133,11 @@ abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
         return result.await()
     }
 
-    fun startGameExecutable(file: File): Process? {
+    fun startGameExecutable(file: File, logPath: File): Process? {
         assert(file.exists())
         try {
             logger.info("Starting game process:$file")
-            val process: Process? = ProcessBuilder(mutableListOf(file.path, "-batchmode")).start()
+            val process: Process? = ProcessBuilder(mutableListOf(file.path, "-logfile", logPath.toString(), "-batchMode")).start()
             if (process != null) {
                 logger.info("Game process started:${process.info()}")
                 return process

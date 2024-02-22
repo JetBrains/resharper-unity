@@ -488,7 +488,7 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
     var session: XDebugSession? = null
 
     try {
-        val pair = startUnityStandaloneProject(playerFile)
+        val pair = startUnityStandaloneProject(playerFile, testMethod.logDirectory.resolve("UnityPlayer.log"))
         val unityProcess: UnityProcess? = pair.first
         startGameExecutable = pair.second
 
@@ -525,10 +525,10 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
     }
 }
 
-private fun UnityPlayerDebuggerTestBase.startUnityStandaloneProject(playerFile: File)
+private fun UnityPlayerDebuggerTestBase.startUnityStandaloneProject(playerFile: File, logPath: File)
     : Pair<UnityProcess?, Process?> {
 
-    val startGameExecutable = startGameExecutable(playerFile)
+    val startGameExecutable = startGameExecutable(playerFile, logPath)
     assertNotNull(startGameExecutable)
 
     var unityProcess: UnityProcess? = null
