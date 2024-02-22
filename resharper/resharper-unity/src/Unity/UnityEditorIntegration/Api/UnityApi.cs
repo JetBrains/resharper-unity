@@ -103,6 +103,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             if (IsSerializableTypeSimpleCheck(type, project, isTypeUsage, hasSerializeReference))
                 return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
 
+            if (hasSerializeReference)
+                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField | SerializedFieldStatus.SerializedReferenceSerializedField;
+            
             return mySerializedReferenceProvider.GetSerializableStatus(type, useSwea);
         }
 
