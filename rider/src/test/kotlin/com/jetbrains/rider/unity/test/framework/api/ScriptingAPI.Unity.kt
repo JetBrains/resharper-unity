@@ -488,22 +488,12 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
     var session: XDebugSession? = null
 
     try {
-        startGameExecutable = startGameExecutable(playerFile)
-        assertNotNull(startGameExecutable)
-
-        var unityProcess: UnityProcess? = null
-        val job = (project as ComponentManagerEx).getCoroutineScope().launch {
-            unityProcess = discoverDebuggableUnityProcess(project.lifetime) {
-                it.projectName == project.solutionName
-            }
-        }
-
-        pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
-            job.isCompleted
-        }
+        val pair = startUnityStandaloneProject(playerFile)
+        val unityProcess: UnityProcess? = pair.first
+        startGameExecutable = pair.second
 
         assertNotNull(unityProcess)
-        attachToUnityProcess(project, unityProcess!!)
+        attachToUnityProcess(project, unityProcess)
 
         session = waitForNotNull(UnityPlayerDebuggerTestBase.collectTimeout, "Debugger session wasn't started") {
             XDebuggerManager.getInstance(project).debugSessions.firstOrNull()
@@ -528,11 +518,31 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
     }
     finally {
         assertNotNull(session)
-        session.stop()
+        shutdownDebuggerSession(session, true)
 
         if (startGameExecutable != null && startGameExecutable.isAlive)
             startGameExecutable.destroyProcess(Duration.ofSeconds(3))
     }
+}
+
+private fun UnityPlayerDebuggerTestBase.startUnityStandaloneProject(playerFile: File)
+    : Pair<UnityProcess?, Process?> {
+
+    val startGameExecutable = startGameExecutable(playerFile)
+    assertNotNull(startGameExecutable)
+
+    var unityProcess: UnityProcess? = null
+    val job = (project as ComponentManagerEx).getCoroutineScope().launch {
+        unityProcess = discoverDebuggableUnityProcess(project.lifetime) {
+            it.projectName == project.solutionName
+        }
+    }
+
+    pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
+        job.isCompleted
+    }
+
+    return Pair(unityProcess, startGameExecutable)
 }
 
 fun waitForUnityRunConfigurations(project: Project) {

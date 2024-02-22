@@ -41,8 +41,24 @@ abstract class UnityPlayerDebuggerTestBase(unityVersion: UnityVersion, buildName
 
         runUnityPlayerAndAttachDebugger(gameFullPath, {
             toggleBreakpoint(project, "UpdateBreakpointScript.cs", 8)
+            /*
+            This is a workaround due to an existing constraint in our Debugger:
+            We cannot execute dumpFullCurrentData() immediately after we got FIRST pause event.
+            Instead, we need to allow for the first break event to be triggered and then canceled.
+            For extra details, check SoftRuntimeEventsManager located at:
+            Debugger\Libs\Mono.Debugging.Soft\RuntimeEvents\SoftRuntimeEventsManager.cs:209
+            ``` // fix RIDER-54774 (hack #1)```
+
+            And Debugger\Libs\Mono.Debugging.Soft\RuntimeEvents\SoftRuntimeEventsManager.cs:166
+            ``` // counter hack for hack #1 ```
+            */
+            waitForPause()
+            resumeSession()
+
+            // And now we can run dumpFullCurrentData()
             waitForPause()
             dumpFullCurrentData()
+            toggleBreakpoint(project, "UpdateBreakpointScript.cs", 8)
             resumeSession()
         }, testGoldFile)
     }
@@ -60,7 +76,7 @@ abstract class UnityPlayerDebuggerTestBase(unityVersion: UnityVersion, buildName
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnityPlayerDebuggerTest {
     class TestUnity2020 : UnityPlayerDebuggerTestBase(UnityVersion.V2020, mapOf(
-        winOS to "UnityPlayerDebuggerTest_StandaloneWindows64_2022.3.17f1_2024-Feb-19.zip",
-        macOS to "UnityPlayerDebuggerTest_StandaloneOSX_2022.3.17f1_2024-Feb-19.zip"))
+        winOS to "UnityPlayerDebuggerTest_StandaloneWindows64_2022.3.17f1_2024-Feb-20.zip",
+        macOS to "UnityPlayerDebuggerTest_StandaloneOSX_2022.3.17f1_2024-Feb-20.zip"))
 }
 
