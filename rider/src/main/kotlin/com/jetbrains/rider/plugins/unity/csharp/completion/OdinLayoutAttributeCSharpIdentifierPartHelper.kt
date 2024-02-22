@@ -26,10 +26,9 @@ class OdinLayoutAttributeCSharpIdentifierPartHelper : CSharpIdentifierPartHelper
         )
 
     private fun hasOdinPackage(project: Project): Boolean {
-        return false;
-        //val host = FrontendBackendHost.getInstance(project)
-        //
-        //return host.technologies.contains("Odin")
+        val host = FrontendBackendHost.getInstance(project)
+
+        return host.technologies.contains("Odin")
     }
 
     override fun isApplicable(file: PsiElement, offset: Int): Boolean {

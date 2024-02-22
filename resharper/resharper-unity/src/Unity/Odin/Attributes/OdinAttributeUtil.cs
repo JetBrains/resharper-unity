@@ -124,7 +124,6 @@ public class OdinAttributeUtil
     
     public static bool HasOdinSupport(UnityTechnologyDescriptionCollector technologyDescriptionCollector)
     {
-        return false;
-        //return technologyDescriptionCollector.DiscoveredTechnologies.ContainsKey(OdinUnityTechnologyDescription.OdinId);
+        return technologyDescriptionCollector.DiscoveredTechnologies.ContainsKey(OdinUnityTechnologyDescription.OdinId);
     }
 }
