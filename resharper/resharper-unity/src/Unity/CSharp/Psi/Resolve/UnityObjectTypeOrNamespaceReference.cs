@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             if (myQualifier == null && myIsFinalPart)
             {
                 var name = GetName();
-                var symbolScope = mySymbolCache.GetSymbolScope(LibrarySymbolScope.FULL, true);
+                var symbolScope = mySymbolCache.GetSymbolScope(myOwner.GetPsiModule(), true, true);
                 var declaredElements = symbolScope.GetElementsByShortName(name);
                 var symbolTable = ResolveUtil.CreateSymbolTable(declaredElements, 0);
 
