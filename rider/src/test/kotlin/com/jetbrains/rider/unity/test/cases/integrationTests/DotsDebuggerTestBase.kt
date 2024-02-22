@@ -37,12 +37,21 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
     fun checkBreakpointInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleBreakpoint("ResetTransformSystem.cs", 26)
+                toggleBreakpoint("ResetTransformSystem.cs", 24) //set new breakpoint
             },
             {
+                setCustomRegextToMask()
+
+                waitForPause()
+                dumpFullCurrentData()
+                toggleBreakpoint("ResetTransformSystem.cs", 24) //disable breakpoint
+                resumeSession()
+
+                toggleBreakpoint("ResetTransformSystem.cs", 34)//set new breakpoint
                 waitForPause()
                 dumpFullCurrentData()
                 resumeSession()
+
             }, testGoldFile)
     }
 
@@ -50,13 +59,21 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
     fun checkRefPresentationInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleBreakpoint("ResetTransformSystem.cs", 26)
+                toggleBreakpoint("ResetTransformSystem.cs", 24) //set new breakpoint
             },
             {
+                setCustomRegextToMask()
+
                 waitForPause()
-                dumpFullCurrentData(2)
+                dumpFullCurrentData(1)
                 resumeSession()
             }, testGoldFile)
+    }
+
+    private fun DebugTestExecutionContext.setCustomRegextToMask() {
+        dumpProfile.customRegexToMask["<id>"] = Regex("\\((\\d+:\\d+)\\)")
+        dumpProfile.customRegexToMask["<float_value>"] = Regex("-?\\d+\\.*\\d*f")
+        dumpProfile.customRegexToMask["<ResetTransformSystemBase_LambdaJob_Job>"] = Regex("ResetTransformSystemBase_.*_Job")
     }
 
     @Test
