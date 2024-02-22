@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         RiderPresentableNameResourceType = typeof(Strings),
-        RiderPresentableNameResourceName = nameof(Strings.ActiveShaderKeyword_RiderPresentableName),
+        RiderPresentableNameResourceName = nameof(Strings.ImplicitlyEnabledShaderKeyword_RiderPresentableName),
         FallbackAttributeId = ENABLED_SHADER_KEYWORD,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
     )]
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         RiderPresentableNameResourceType = typeof(Strings),
-        RiderPresentableNameResourceName = nameof(Strings.ActiveShaderKeyword_RiderPresentableName),
+        RiderPresentableNameResourceName = nameof(Strings.EnabledShaderKeyword_RiderPresentableName),
         FallbackAttributeId = CppHighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
     )]
@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         RiderPresentableNameResourceType = typeof(Strings),
-        RiderPresentableNameResourceName = nameof(Strings.InactiveShaderKeyword_RiderPresentableName),
+        RiderPresentableNameResourceName = nameof(Strings.DisabledShaderKeyword_RiderPresentableName),
         FallbackAttributeId = IdeaHighlightingAttributeIds.NOT_USED_ELEMENT_ATTRIBUTES,
         ForegroundColor = "LightGray", 
         DarkForegroundColor = "DarkGray",
@@ -122,6 +122,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
 
     <ReSharper.ShaderLab_KEYWORD>CGINCLUDE</ReSharper.ShaderLab_KEYWORD><ReSharper.ShaderLab_INJECTED_LANGUAGE_FRAGMENT>
     <COMMENT>// ...</COMMENT>
+    <CPP_DIRECTIVE>#pragma</CPP_DIRECTIVE> shader_feature <ReSharper.ShaderLab_SUPPRESSED_SHADER_KEYWORD>RED</ReSharper.ShaderLab_SUPPRESSED_SHADER_KEYWORD> <ReSharper.ShaderLab_ENABLED_SHADER_KEYWORD>GREEN</ReSharper.ShaderLab_ENABLED_SHADER_KEYWORD> <ReSharper.ShaderLab_DISABLED_SHADER_KEYWORD>BLUE</ReSharper.ShaderLab_DISABLED_SHADER_KEYWORD>
+    <CPP_DIRECTIVE>#pragma</CPP_DIRECTIVE> multi_compile <ReSharper.ShaderLab_IMPLICITLY_ENABLED_SHADER_KEYWORD>HALF</ReSharper.ShaderLab_IMPLICITLY_ENABLED_SHADER_KEYWORD> <ReSharper.ShaderLab_DISABLED_SHADER_KEYWORD>FULL</ReSharper.ShaderLab_DISABLED_SHADER_KEYWORD>
+    
+    <CPP_TYPEDEF_IDENTIFIER>float3</CPP_TYPEDEF_IDENTIFIER> <CPP_GLOBAL_FUNCTION_IDENTIFIER>get_color</CPP_GLOBAL_FUNCTION_IDENTIFIER><CPP_PARENTHESES>()</CPP_PARENTHESES> <CPP_BRACES>{</CPP_BRACES>
+      <CPP_TYPEDEF_IDENTIFIER>float3</CPP_TYPEDEF_IDENTIFIER> <CPP_LOCAL_VARIABLE_IDENTIFIER>c</CPP_LOCAL_VARIABLE_IDENTIFIER>;
+<CPP_DIRECTIVE>#if</CPP_DIRECTIVE> defined<CPP_PARENTHESES>(</CPP_PARENTHESES><ReSharper.ShaderLab_SUPPRESSED_SHADER_KEYWORD>RED</ReSharper.ShaderLab_SUPPRESSED_SHADER_KEYWORD><CPP_PARENTHESES>)</CPP_PARENTHESES>
+      <CPP_PREPROCESSOR_INACTIVE_BRANCH>c = float3(1, 0, 0);</CPP_PREPROCESSOR_INACTIVE_BRANCH>
+<CPP_DIRECTIVE>#elif</CPP_DIRECTIVE> defined<CPP_PARENTHESES>(</CPP_PARENTHESES><ReSharper.ShaderLab_ENABLED_SHADER_KEYWORD>GREEN</ReSharper.ShaderLab_ENABLED_SHADER_KEYWORD><CPP_PARENTHESES>)</CPP_PARENTHESES>
+      <CPP_LOCAL_VARIABLE_IDENTIFIER>c</CPP_LOCAL_VARIABLE_IDENTIFIER> = <CPP_TYPEDEF_IDENTIFIER>float3</CPP_TYPEDEF_IDENTIFIER>(<CPP_FLOAT_LITERAL>0</CPP_FLOAT_LITERAL>, <CPP_FLOAT_LITERAL>1</CPP_FLOAT_LITERAL>, <CPP_FLOAT_LITERAL>0</CPP_FLOAT_LITERAL>);
+<CPP_DIRECTIVE>#elif</CPP_DIRECTIVE> defined<CPP_PARENTHESES>(</CPP_PARENTHESES><ReSharper.ShaderLab_DISABLED_SHADER_KEYWORD>BLUE</ReSharper.ShaderLab_DISABLED_SHADER_KEYWORD><CPP_PARENTHESES>)</CPP_PARENTHESES>
+      <CPP_PREPROCESSOR_INACTIVE_BRANCH>c = float3<CPP_PARENTHESES>(</CPP_PARENTHESES>0, 0, 1<CPP_PARENTHESES>)</CPP_PARENTHESES>;</CPP_PREPROCESSOR_INACTIVE_BRANCH>
+<CPP_DIRECTIVE>#endif</CPP_DIRECTIVE>
+<CPP_DIRECTIVE>#ifdef</CPP_DIRECTIVE> <ReSharper.ShaderLab_IMPLICITLY_ENABLED_SHADER_KEYWORD>HALF</ReSharper.ShaderLab_IMPLICITLY_ENABLED_SHADER_KEYWORD>
+      <CPP_LOCAL_VARIABLE_IDENTIFIER>c</CPP_LOCAL_VARIABLE_IDENTIFIER> = <CPP_LOCAL_VARIABLE_IDENTIFIER>c</CPP_LOCAL_VARIABLE_IDENTIFIER> * <CPP_FLOAT_LITERAL>0.5</CPP_FLOAT_LITERAL>;
+<CPP_DIRECTIVE>#endif</CPP_DIRECTIVE>
+      <CPP_KEYWORD>return</CPP_KEYWORD> <CPP_LOCAL_VARIABLE_IDENTIFIER>c</CPP_LOCAL_VARIABLE_IDENTIFIER>;
+    <CPP_BRACES>}</CPP_BRACES>
     </ReSharper.ShaderLab_INJECTED_LANGUAGE_FRAGMENT><ReSharper.ShaderLab_KEYWORD>ENDCG</ReSharper.ShaderLab_KEYWORD>
   }
 

@@ -161,14 +161,17 @@
     <data name="ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform" xml:space="preserve">
         <value>Shader Platform</value>
     </data>
-    <data name="ActiveShaderKeyword_RiderPresentableName" xml:space="preserve">
-        <value>Active Shader Keyword</value>
+    <data name="EnabledShaderKeyword_RiderPresentableName" xml:space="preserve">
+        <value>Shader Keywords//Enabled</value>
     </data>
-    <data name="InactiveShaderKeyword_RiderPresentableName" xml:space="preserve">
-        <value>Inactive Shader Keyword</value>
+    <data name="ImplicitlyEnabledShaderKeyword_RiderPresentableName" xml:space="preserve">
+        <value>Shader Keywords//Implicitly Enabled</value>
+    </data>
+    <data name="DisabledShaderKeyword_RiderPresentableName" xml:space="preserve">
+        <value>Shader Keywords//Disabled</value>
     </data>
     <data name="SuppressedShaderKeyword_RiderPresentableName" xml:space="preserve">
-        <value>Suppressed Shader Keyword</value>
+        <value>Shader Keywords//Suppressed</value>
     </data>
     <data name="EnableShaderKeyword_Enable_shader_keyword" xml:space="preserve">
         <value>Enable shader keyword</value>
