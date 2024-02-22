@@ -94,14 +94,14 @@
     <Command name="DEPENDENCY_KEYWORD" representation="Dependency" />
   </Commands>
 
-  <PropertyTypeKeywords NodeType="KeywordTokenNodeType">
+  <PropertyTypeKeywords NodeType="PropertyTypeTokenNodeType">
     <Keyword name="FLOAT_KEYWORD" representation="Float" />
     <Keyword name="INT_KEYWORD" representation="Int" />
     <Keyword name="INTEGER_KEYWORD" representation="Integer" />
     <Keyword name="VECTOR_KEYWORD" representation="Vector" />
   </PropertyTypeKeywords>
   
-  <TextureDimensionKeywords NodeType="KeywordTokenNodeType">
+  <TextureDimensionKeywords NodeType="TextureDimensionTokenNodeType">
     <Keyword name="ANY_KEYWORD" representation="Any" />
     <Keyword name="CUBE_KEYWORD" representation="Cube" />
     <Keyword name="CUBE_ARRAY_KEYWORD" representation="CubeArray" />
@@ -130,12 +130,12 @@
     <Command name="LOD_KEYWORD" representation="LOD" />
   </RenderStateCommands>
   
-  <CullOrientationKeywords NodeType="KeywordTokenNodeType">
+  <CullOrientationKeywords NodeType="CommandArgumentKeywordTokenNodeType">
     <Keyword name="BACK_KEYWORD" representation="Back" />
     <Keyword name="FRONT_KEYWORD" representation="Front" />
   </CullOrientationKeywords>
   
-  <BlendFactorKeywords NodeType="KeywordTokenNodeType">
+  <BlendFactorKeywords NodeType="CommandArgumentKeywordTokenNodeType">
     <Keyword name="SRC_COLOR_KEYWORD" representation="SrcColor" />
     <Keyword name="SRC_ALPHA_KEYWORD" representation="SrcAlpha" />
     <Keyword name="SRC_ALPHA_SATURATE_KEYWORD" representation="SrcAlphaSaturate" />
@@ -300,7 +300,7 @@
     <Keyword name="DECR_WRAP_KEYWORD" representation="DecrWrap" />
   </StencilOperationKeywords>
 
-  <BoolKeywords NodeType="KeywordTokenNodeType">
+  <BoolKeywords NodeType="CommandArgumentKeywordTokenNodeType">
     <Keyword name="TRUE_KEYWORD" representation="True" />
     <Keyword name="FALSE_KEYWORD" representation="False" />
     <Keyword name="ON_KEYWORD" representation="On" />

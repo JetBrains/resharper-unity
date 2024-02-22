@@ -5,7 +5,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
         Unknown,
         RegularCommand,
         BlockCommand,
-        PropertyType
+        PropertyType,
+        CommandArgument
     }
 
     public static class ShaderLabKeywordTypeEx

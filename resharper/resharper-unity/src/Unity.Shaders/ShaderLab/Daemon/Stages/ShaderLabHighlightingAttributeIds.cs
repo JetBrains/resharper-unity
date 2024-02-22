@@ -56,6 +56,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         RiderPresentableNameResourceName = nameof(Strings.CommentsBlockComment_RiderPresentableName),
         FallbackAttributeId = DefaultLanguageAttributeIds.BLOCK_COMMENT,
         Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(COMMAND,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.Command_RiderPresntableName),
+        FallbackAttributeId = KEYWORD,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(BLOCK_COMMAND,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.BlockCommand_RiderPresntableName),
+        FallbackAttributeId = COMMAND,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(COMMAND_ARGUMENT,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.CommandArgument_RiderPresntableName),
+        FallbackAttributeId = KEYWORD,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(PROPERTY_TYPE,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.PropertyType_RiderPresntableName),
+        FallbackAttributeId = KEYWORD,
+        Layer = HighlighterLayer.SYNTAX)]
     [RegisterHighlighter(IMPLICITLY_ENABLED_SHADER_KEYWORD,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
@@ -106,19 +134,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         public const string ENABLED_SHADER_KEYWORD = "ReSharper ShaderLab Enabled Shader Keyword";
         public const string SUPPRESSED_SHADER_KEYWORD = "ReSharper ShaderLab Suppressed Shader Keyword";
         public const string DISABLED_SHADER_KEYWORD = "ReSharper ShaderLab Disabled Shader Keyword";
+        public const string COMMAND = "ReSharper ShaderLab Command";
+        public const string BLOCK_COMMAND = "ReSharper ShaderLab Block Command";
+        public const string PROPERTY_TYPE = "ReSharper ShaderLab Property Type";
+        public const string COMMAND_ARGUMENT = "ReSharper ShaderLab Command Argument";
 
         public const string DEMO_TEXT =
 @"<ReSharper.ShaderLab_BLOCK_COMMENT>/* Sample shader */</ReSharper.ShaderLab_BLOCK_COMMENT>
-<ReSharper.ShaderLab_KEYWORD>Shader</ReSharper.ShaderLab_KEYWORD> <ReSharper.ShaderLab_STRING>""Custom/SampleShader""</ReSharper.ShaderLab_STRING> {
-  <ReSharper.ShaderLab_KEYWORD>Properties</ReSharper.ShaderLab_KEYWORD> {
-    _Color (<ReSharper.ShaderLab_STRING>""Color""</ReSharper.ShaderLab_STRING>, <ReSharper.ShaderLab_KEYWORD>Color</ReSharper.ShaderLab_KEYWORD>) = (<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>)
-    _MainTex (<ReSharper.ShaderLab_STRING>""Albedo (RGB)""</ReSharper.ShaderLab_STRING>, <ReSharper.ShaderLab_KEYWORD>2D</ReSharper.ShaderLab_KEYWORD>) = <ReSharper.ShaderLab_STRING>""white""</ReSharper.ShaderLab_STRING> {}
-    _Glossiness (<ReSharper.ShaderLab_STRING>""Smoothness""</ReSharper.ShaderLab_STRING>, <ReSharper.ShaderLab_KEYWORD>Range</ReSharper.ShaderLab_KEYWORD>(<ReSharper.ShaderLab_NUMBER>0</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>)) = <ReSharper.ShaderLab_NUMBER>0.5</ReSharper.ShaderLab_NUMBER>
-    _Metallic (<ReSharper.ShaderLab_STRING>""Metallic""</ReSharper.ShaderLab_STRING>, <ReSharper.ShaderLab_KEYWORD>Range</ReSharper.ShaderLab_KEYWORD>(<ReSharper.ShaderLab_NUMBER>0</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>)) = <ReSharper.ShaderLab_NUMBER>0.0</ReSharper.ShaderLab_NUMBER>
+<ReSharper.ShaderLab_BLOCK_COMMAND>Shader</ReSharper.ShaderLab_BLOCK_COMMAND> <ReSharper.ShaderLab_STRING>""Custom/SampleShader""</ReSharper.ShaderLab_STRING> {
+  <ReSharper.ShaderLab_BLOCK_COMMAND>Properties</ReSharper.ShaderLab_BLOCK_COMMAND> {
+    _Color (<ReSharper.ShaderLab_STRING>""Color""</ReSharper.ShaderLab_STRING>, <ReSharper.ShaderLab_PROPERTY_TYPE>Color</ReSharper.ShaderLab_PROPERTY_TYPE>) = (<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>)
+    _MainTex (<ReSharper.ShaderLab_STRING>""Albedo (RGB)""</ReSharper.ShaderLab_STRING>, <ReSharper.ShaderLab_PROPERTY_TYPE>2D</ReSharper.ShaderLab_PROPERTY_TYPE>) = <ReSharper.ShaderLab_STRING>""white""</ReSharper.ShaderLab_STRING> {}
+    _Glossiness (<ReSharper.ShaderLab_STRING>""Smoothness""</ReSharper.ShaderLab_STRING>, <ReSharper.ShaderLab_PROPERTY_TYPE>Range</ReSharper.ShaderLab_PROPERTY_TYPE>(<ReSharper.ShaderLab_NUMBER>0</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>)) = <ReSharper.ShaderLab_NUMBER>0.5</ReSharper.ShaderLab_NUMBER>
+    _Metallic (<ReSharper.ShaderLab_STRING>""Metallic""</ReSharper.ShaderLab_STRING>, <ReSharper.ShaderLab_PROPERTY_TYPE>Range</ReSharper.ShaderLab_PROPERTY_TYPE>(<ReSharper.ShaderLab_NUMBER>0</ReSharper.ShaderLab_NUMBER>,<ReSharper.ShaderLab_NUMBER>1</ReSharper.ShaderLab_NUMBER>)) = <ReSharper.ShaderLab_NUMBER>0.0</ReSharper.ShaderLab_NUMBER>
   }
-  <ReSharper.ShaderLab_KEYWORD>SubShader</ReSharper.ShaderLab_KEYWORD> {
-    <ReSharper.ShaderLab_KEYWORD>Tags</ReSharper.ShaderLab_KEYWORD> { <ReSharper.ShaderLab_STRING>""RenderType""</ReSharper.ShaderLab_STRING>=<ReSharper.ShaderLab_STRING>""Opaque""</ReSharper.ShaderLab_STRING> }
-    <ReSharper.ShaderLab_KEYWORD>LOD</ReSharper.ShaderLab_KEYWORD> <ReSharper.ShaderLab_NUMBER>200</ReSharper.ShaderLab_NUMBER>
+  <ReSharper.ShaderLab_BLOCK_COMMAND>SubShader</ReSharper.ShaderLab_BLOCK_COMMAND> {
+    <ReSharper.ShaderLab_BLOCK_COMMAND>Tags</ReSharper.ShaderLab_BLOCK_COMMAND> { <ReSharper.ShaderLab_STRING>""RenderType""</ReSharper.ShaderLab_STRING>=<ReSharper.ShaderLab_STRING>""Opaque""</ReSharper.ShaderLab_STRING> }
+    <ReSharper.ShaderLab_COMMAND>LOD</ReSharper.ShaderLab_COMMAND> <ReSharper.ShaderLab_NUMBER>200</ReSharper.ShaderLab_NUMBER>
+    <ReSharper.ShaderLab_COMMAND>Cull</ReSharper.ShaderLab_COMMAND> <ReSharper.ShaderLab_COMMAND_ARGUMENT>Front</ReSharper.ShaderLab_COMMAND_ARGUMENT>
 
     <ReSharper.ShaderLab_KEYWORD>CGINCLUDE</ReSharper.ShaderLab_KEYWORD><ReSharper.ShaderLab_INJECTED_LANGUAGE_FRAGMENT>
     <COMMENT>// ...</COMMENT>
@@ -143,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
   }
 
   <ReSharper.ShaderLab_LINE_COMMENT>// Use Diffuse as fallback</ReSharper.ShaderLab_LINE_COMMENT>
-  <ReSharper.ShaderLab_KEYWORD>FallBack</ReSharper.ShaderLab_KEYWORD> <ReSharper.ShaderLab_STRING>""Diffuse""</ReSharper.ShaderLab_STRING>
+  <ReSharper.ShaderLab_COMMAND>FallBack</ReSharper.ShaderLab_COMMAND> <ReSharper.ShaderLab_STRING>""Diffuse""</ReSharper.ShaderLab_STRING>
 }";
 
 #region Original code

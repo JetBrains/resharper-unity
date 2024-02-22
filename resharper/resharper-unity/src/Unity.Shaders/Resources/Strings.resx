@@ -116,6 +116,18 @@
     <data name="Keyword_RiderPresentableName" xml:space="preserve">
         <value>Keyword</value>
     </data>
+    <data name="Command_RiderPresntableName" xml:space="preserve">
+        <value>Commands//Command</value>
+    </data>
+    <data name="BlockCommand_RiderPresntableName" xml:space="preserve">
+        <value>Commands//Block Command</value>
+    </data>
+    <data name="CommandArgument_RiderPresntableName" xml:space="preserve">
+        <value>Commands//Special Argument</value>
+    </data>
+    <data name="PropertyType_RiderPresntableName" xml:space="preserve">
+        <value>Property Type</value>
+    </data>
     <data name="Number_RiderPresentableName" xml:space="preserve">
         <value>Number</value>
     </data>

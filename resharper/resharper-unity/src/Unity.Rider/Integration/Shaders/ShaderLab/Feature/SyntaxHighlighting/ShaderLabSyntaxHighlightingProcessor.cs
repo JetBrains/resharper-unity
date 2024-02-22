@@ -1,35 +1,54 @@
 using JetBrains.ReSharper.Daemon.Syntax;
 using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.ShaderLab.Feature.SyntaxHighlighting
 {
     internal class ShaderLabSyntaxHighlightingProcessor : SyntaxHighlightingProcessor
     {
-        public override string GetAttributeId(TokenNodeType tokenType)
+        private string GetAttributeId(ITreeNode treeNode, TokenNodeType tokenType)
         {
             if (tokenType == ShaderLabTokenType.CG_CONTENT)
                 return ShaderLabHighlightingAttributeIds.INJECTED_LANGUAGE_FRAGMENT;
+            if (tokenType is IShaderLabTokenNodeType shaderLabTokenNodeType)
+            {
+                switch (shaderLabTokenNodeType.GetKeywordType(treeNode))
+                {
+                    case ShaderLabKeywordType.BlockCommand:
+                        return ShaderLabHighlightingAttributeIds.BLOCK_COMMAND;
+                    case ShaderLabKeywordType.RegularCommand:
+                        return ShaderLabHighlightingAttributeIds.COMMAND;
+                    case ShaderLabKeywordType.PropertyType:
+                        return ShaderLabHighlightingAttributeIds.PROPERTY_TYPE;
+                    case ShaderLabKeywordType.CommandArgument:
+                        return ShaderLabHighlightingAttributeIds.COMMAND_ARGUMENT;
+                }
+            }
 
             return base.GetAttributeId(tokenType);
         }
-
-        protected override bool IsLineComment(TokenNodeType tokenType)
+        
+        public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer context)
         {
-            return tokenType == ShaderLabTokenType.END_OF_LINE_COMMENT;
+            if (element is not ITokenNode tokenNode) return;
+            var tokenNodeType = tokenNode.GetTokenType();
+            if (tokenNodeType.IsWhitespace) return;
+            var range = tokenNode.GetDocumentRange();
+            if (range.TextRange.IsEmpty) return;
+            var attributeId = GetAttributeId(element, tokenNodeType);
+            if (!string.IsNullOrEmpty(attributeId)) 
+                context.AddHighlighting(new ReSharperSyntaxHighlighting(attributeId, null, range));
         }
 
-        protected override bool IsBlockComment(TokenNodeType tokenType)
-        {
-            return tokenType == ShaderLabTokenType.MULTI_LINE_COMMENT;
-        }
+        protected override bool IsLineComment(TokenNodeType tokenType) => tokenType == ShaderLabTokenType.END_OF_LINE_COMMENT;
 
-        protected override bool IsNumber(TokenNodeType tokenType)
-        {
-            return tokenType == ShaderLabTokenType.NUMERIC_LITERAL || tokenType == ShaderLabTokenType.PP_DIGITS;
-        }
+        protected override bool IsBlockComment(TokenNodeType tokenType) => tokenType == ShaderLabTokenType.MULTI_LINE_COMMENT;
+
+        protected override bool IsNumber(TokenNodeType tokenType) => tokenType == ShaderLabTokenType.NUMERIC_LITERAL || tokenType == ShaderLabTokenType.PP_DIGITS;
 
         protected override bool IsKeyword(TokenNodeType tokenType)
         {

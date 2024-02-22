@@ -20,49 +20,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
         }
         
         /// <summary>Sub-class of keyword token types for ShaderLab command keywords.</summary>
-        private class CommandKeywordTokenNodeType : KeywordTokenNodeType
+        private class CommandKeywordTokenNodeType(string s, int index, string representation) : KeywordTokenNodeType(s, index, representation)
         {
-            public CommandKeywordTokenNodeType(string s, int index, string representation)
-                : base(s, index, representation)
-            {
-            }
-
             public override ShaderLabKeywordType GetKeywordType(CachingLexer lexer) => ShaderLabKeywordType.RegularCommand;
             public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => ShaderLabKeywordType.RegularCommand;
         }
         
         /// <summary>Sub-class of keyword token types for ShaderLab block command keywords.</summary>
-        private class BlockCommandKeywordTokenNodeType : CommandKeywordTokenNodeType
+        private class BlockCommandKeywordTokenNodeType(string s, int index, string representation) : CommandKeywordTokenNodeType(s, index, representation)
         {
-            public BlockCommandKeywordTokenNodeType(string s, int index, string representation) : base(s, index, representation)
-            {
-            }
-
             public override ShaderLabKeywordType GetKeywordType(CachingLexer lexer) => ShaderLabKeywordType.BlockCommand;
             public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => ShaderLabKeywordType.BlockCommand;
         }
         
-        private class PropertyAndCommandKeywordTokenNodeType : KeywordTokenNodeType
+        private class CommandArgumentKeywordTokenNodeType(string s, int index, string representation) : CommandKeywordTokenNodeType(s, index, representation)
         {
-            public PropertyAndCommandKeywordTokenNodeType(string s, int index, string representation) : base(s, index, representation)
+            public override ShaderLabKeywordType GetKeywordType(CachingLexer lexer) => ShaderLabKeywordType.CommandArgument;
+            public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => ShaderLabKeywordType.CommandArgument;
+        }
+
+        private class PropertyTypeTokenNodeType(string s, int index, string representation) : KeywordTokenNodeType(s, index, representation)
+        {
+            public override ShaderLabKeywordType GetKeywordType(CachingLexer lexer) => ShaderLabKeywordType.PropertyType;
+            public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => ShaderLabKeywordType.PropertyType;
+        }
+
+        private class TextureDimensionTokenNodeType(string s, int index, string representation) : KeywordTokenNodeType(s, index, representation)
+        {
+            public override ShaderLabKeywordType GetKeywordType(CachingLexer cachingLexer)
             {
+                Assertion.Assert(cachingLexer.TokenType == this);
+                return GetPreviousTokenType(cachingLexer) == COMMA ? ShaderLabKeywordType.PropertyType : ShaderLabKeywordType.Unknown;
             }
 
+            public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => placement.Parent is IPropertyType or IPropertyDeclaration ? ShaderLabKeywordType.PropertyType : ShaderLabKeywordType.Unknown;
+        }
+        
+        private class PropertyAndCommandKeywordTokenNodeType(string s, int index, string representation) : KeywordTokenNodeType(s, index, representation)
+        {
             public override ShaderLabKeywordType GetKeywordType(CachingLexer cachingLexer)
             {
                 Assertion.Assert(cachingLexer.TokenType == this);
                 return GetPreviousTokenType(cachingLexer) == COMMA ? ShaderLabKeywordType.PropertyType : ShaderLabKeywordType.RegularCommand;
             }
 
-            public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => placement.Parent is IPropertyDeclaration ? ShaderLabKeywordType.PropertyType : ShaderLabKeywordType.RegularCommand;
+            public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => placement.Parent is IPropertyType or IPropertyDeclaration ? ShaderLabKeywordType.PropertyType : ShaderLabKeywordType.RegularCommand;
         }
         
-        private class EmissionCommandKeywordTokenNodeType : KeywordTokenNodeType
+        private class EmissionCommandKeywordTokenNodeType(string s, int index, string representation) : KeywordTokenNodeType(s, index, representation)
         {
-            public EmissionCommandKeywordTokenNodeType(string s, int index, string representation) : base(s, index, representation)
-            {
-            }
-            
             public override ShaderLabKeywordType GetKeywordType(CachingLexer cachingLexer)
             {
                 Assertion.Assert(cachingLexer.TokenType == this);

@@ -83,6 +83,10 @@
     public static string InUnityShaderLabBlock_Presentation => ResourceManager.GetString("InUnityShaderLabBlock_Presentation");
     public static string BlockCommand_Text => ResourceManager.GetString("BlockCommand_Text");
     public static string Keyword_RiderPresentableName => ResourceManager.GetString("Keyword_RiderPresentableName");
+    public static string Command_RiderPresntableName => ResourceManager.GetString("Command_RiderPresntableName");
+    public static string BlockCommand_RiderPresntableName => ResourceManager.GetString("BlockCommand_RiderPresntableName");
+    public static string CommandArgument_RiderPresntableName => ResourceManager.GetString("CommandArgument_RiderPresntableName");
+    public static string PropertyType_RiderPresntableName => ResourceManager.GetString("PropertyType_RiderPresntableName");
     public static string Number_RiderPresentableName => ResourceManager.GetString("Number_RiderPresentableName");
     public static string FieldIdentifier_RiderPresentableName => ResourceManager.GetString("FieldIdentifier_RiderPresentableName");
     public static string FunctionIdentifier_RiderPresentableName => ResourceManager.GetString("FunctionIdentifier_RiderPresentableName");
