@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Json.Feature.Services.Daemon
 {
-    [DaemonStage]
+    [DaemonStage(StagesBefore = [typeof(GlobalFileStructureCollectorStage)])]
     public class JsonNewIdentifierHighlightingStage : JsonNewDaemonStageBase
     {
         private readonly ResolveHighlighterRegistrar myRegistrar;
