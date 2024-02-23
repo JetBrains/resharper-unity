@@ -8,12 +8,9 @@ import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.lifetime
-import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.ExperimentalUI
-import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginActionsBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
