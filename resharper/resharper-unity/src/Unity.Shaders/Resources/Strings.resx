@@ -125,8 +125,14 @@
     <data name="CommandArgument_RiderPresntableName" xml:space="preserve">
         <value>Commands//Special Argument</value>
     </data>
+    <data name="PropertyName_RiderPresntableName" xml:space="preserve">
+        <value>Properties//Name</value>
+    </data>
     <data name="PropertyType_RiderPresntableName" xml:space="preserve">
-        <value>Property Type</value>
+        <value>Properties//Type</value>
+    </data>
+    <data name="PropertyAttribute_RiderPresntableName" xml:space="preserve">
+        <value>Properties//Attribute</value>
     </data>
     <data name="Number_RiderPresentableName" xml:space="preserve">
         <value>Number</value>

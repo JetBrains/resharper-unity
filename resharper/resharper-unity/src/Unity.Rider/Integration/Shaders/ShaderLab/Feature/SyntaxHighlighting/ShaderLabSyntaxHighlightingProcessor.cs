@@ -3,6 +3,7 @@ using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -10,28 +11,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.ShaderLab.
 {
     internal class ShaderLabSyntaxHighlightingProcessor : SyntaxHighlightingProcessor
     {
-        private string GetAttributeId(ITreeNode treeNode, TokenNodeType tokenType)
-        {
-            if (tokenType == ShaderLabTokenType.CG_CONTENT)
-                return ShaderLabHighlightingAttributeIds.INJECTED_LANGUAGE_FRAGMENT;
-            if (tokenType is IShaderLabTokenNodeType shaderLabTokenNodeType)
+        private string GetAttributeId(ITreeNode treeNode, TokenNodeType tokenType) =>
+            tokenType switch
             {
-                switch (shaderLabTokenNodeType.GetKeywordType(treeNode))
+                _ when tokenType == ShaderLabTokenType.CG_CONTENT => ShaderLabHighlightingAttributeIds.INJECTED_LANGUAGE_FRAGMENT,
+                IShaderLabTokenNodeType { IsKeyword: true } shaderLabTokenNodeType => shaderLabTokenNodeType.GetKeywordType(treeNode) switch
                 {
-                    case ShaderLabKeywordType.BlockCommand:
-                        return ShaderLabHighlightingAttributeIds.BLOCK_COMMAND;
-                    case ShaderLabKeywordType.RegularCommand:
-                        return ShaderLabHighlightingAttributeIds.COMMAND;
-                    case ShaderLabKeywordType.PropertyType:
-                        return ShaderLabHighlightingAttributeIds.PROPERTY_TYPE;
-                    case ShaderLabKeywordType.CommandArgument:
-                        return ShaderLabHighlightingAttributeIds.COMMAND_ARGUMENT;
-                }
-            }
+                    ShaderLabKeywordType.BlockCommand => ShaderLabHighlightingAttributeIds.BLOCK_COMMAND,
+                    ShaderLabKeywordType.RegularCommand => ShaderLabHighlightingAttributeIds.COMMAND,
+                    ShaderLabKeywordType.PropertyType => ShaderLabHighlightingAttributeIds.PROPERTY_TYPE,
+                    ShaderLabKeywordType.CommandArgument => ShaderLabHighlightingAttributeIds.COMMAND_ARGUMENT,
+                    _ => ShaderLabHighlightingAttributeIds.KEYWORD
+                },
+                _ when tokenType == ShaderLabTokenType.IDENTIFIER && treeNode.Parent is IShaderLabIdentifier identifier => identifier.Parent switch
+                {
+                    IPropertyDeclaration or IReferenceName => ShaderLabHighlightingAttributeIds.PROPERTY_NAME,
+                    IAttribute => ShaderLabHighlightingAttributeIds.PROPERTY_ATTRIBUTE,
+                    _ => base.GetAttributeId(tokenType)
+                }, 
+                _ => base.GetAttributeId(tokenType)
+            };
 
-            return base.GetAttributeId(tokenType);
-        }
-        
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer context)
         {
             if (element is not ITokenNode tokenNode) return;
