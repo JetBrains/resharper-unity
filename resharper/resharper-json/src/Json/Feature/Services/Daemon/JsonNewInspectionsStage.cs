@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Json.Feature.Services.Daemon
 {
-    [DaemonStage]
+    [DaemonStage(StagesBefore = [typeof(GlobalFileStructureCollectorStage)])]
     public class JsonInspectionsStage : JsonNewDaemonStageBase
     {
         private readonly ElementProblemAnalyzerRegistrar myElementProblemAnalyzerRegistrar;
