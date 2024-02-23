@@ -1,4 +1,4 @@
-﻿# 314 ITEMS #
+﻿# 315 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -16,6 +16,7 @@ groupshared
 half
 inline
 int
+interface
 linear
 matrix
 namespace
@@ -315,7 +316,7 @@ SHADER_API_DESKTOP
 UNITY_VERSION
 tile_static
 # AUTOMATIC #
-# 314 ITEMS #
+# 315 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -333,6 +334,7 @@ groupshared
 half
 inline
 int
+interface
 linear
 matrix
 namespace

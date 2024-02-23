@@ -1,4 +1,4 @@
-﻿# 335 ITEMS #
+﻿# 336 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -16,6 +16,7 @@ groupshared
 half
 inline
 int
+interface
 linear
 matrix
 namespace
@@ -336,7 +337,7 @@ fixed4x3
 fixed4x4
 tile_static
 # AUTOMATIC #
-# 335 ITEMS #
+# 336 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -354,6 +355,7 @@ groupshared
 half
 inline
 int
+interface
 linear
 matrix
 namespace
