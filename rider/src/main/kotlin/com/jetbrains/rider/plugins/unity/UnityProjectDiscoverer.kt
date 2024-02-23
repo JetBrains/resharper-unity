@@ -16,6 +16,7 @@ import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solutionDescription
+import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerPane
 import com.jetbrains.rider.unity.UnityDetector
 
 class UnityDetectorImpl(private val project: Project) : UnityDetector {
@@ -53,13 +54,17 @@ class UnityProjectDiscoverer(val project: Project) {
             if (oldVal != isUnityProjectVal) {
                 val projectView = ProjectView.getInstance(project)
                 withUiContext {
-                    val pane = projectView.getProjectViewPaneById(UnityExplorer.ID)
-                    if (isUnityProjectVal) {
-                        if (pane == null) projectView.addProjectPane(UnityExplorer(project))
-                        projectView.changeView(UnityExplorer.ID)
-                    }
-                    else if (pane != null) {
-                        projectView.removeProjectPane(pane)
+                    val fileSystemPane = projectView.getProjectViewPaneById(FileSystemExplorerPane.ID)
+                    // if fileSystemPane is null, means that ProjectView is not yet initialized, so we can do nothing
+                    if (fileSystemPane !=  null) {
+                        val pane = projectView.getProjectViewPaneById(UnityExplorer.ID)
+                        if (isUnityProjectVal) {
+                            if (pane == null) projectView.addProjectPane(UnityExplorer(project))
+                            projectView.changeView(UnityExplorer.ID)
+                        }
+                        else if (pane != null) {
+                            projectView.removeProjectPane(pane)
+                        }
                     }
                 }
             }
