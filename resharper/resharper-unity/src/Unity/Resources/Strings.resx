@@ -799,7 +799,7 @@
           for a standard (and quicker) CLR null check.</value>
     </data>
     <data name="TheIsOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" xml:space="preserve">
-        <value>The `is` operator does not call the custom equality operators defined on 'UnityEngine.Object',
+        <value>The 'is' operator does not call the custom equality operators defined on 'UnityEngine.Object',
           which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
           comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
