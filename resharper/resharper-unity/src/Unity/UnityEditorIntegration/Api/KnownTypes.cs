@@ -164,16 +164,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         
         //  UnityEngine.UIElements
         public static readonly IClrTypeName UQueryExtensions = new ClrTypeName("UnityEngine.UIElements.UQueryExtensions");
-        
-        // Odin
-        public static readonly IClrTypeName OdinSerializedMonoBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedMonoBehaviour");
-        public static readonly IClrTypeName OdinSerializedScriptableObject = new ClrTypeName("Sirenix.OdinInspector.SerializedMonoBehaviour");
-        public static readonly IClrTypeName OdinSerializedBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedBehaviour");
-        public static readonly IClrTypeName OdinSerializedComponent = new ClrTypeName("Sirenix.OdinInspector.SerializedComponent");
-        public static readonly IClrTypeName OdinSerializedStateMachineBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedStateMachineBehaviour");
-        public static readonly IClrTypeName OdinSerializedUnityObject= new ClrTypeName("Sirenix.OdinInspector.SerializedUnityObject");
-
-        
+   
         //Obsolete types
         public static readonly ClrTypeName FixedString32 = new("Unity.Collections.FixedString32");
         public static readonly ClrTypeName FixedString64 = new("Unity.Collections.FixedString64");
