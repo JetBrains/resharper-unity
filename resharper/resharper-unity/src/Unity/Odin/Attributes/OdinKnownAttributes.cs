@@ -64,6 +64,13 @@ public static class OdinKnownAttributes
 
     // serialization
     public static readonly IClrTypeName OdinSerializeAttribute = new ClrTypeName("Sirenix.Serialization.OdinSerializeAttribute");
+ 
+    public static readonly IClrTypeName OdinSerializedMonoBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedMonoBehaviour");
+    public static readonly IClrTypeName OdinSerializedScriptableObject = new ClrTypeName("Sirenix.OdinInspector.SerializedScriptableObject");
+    public static readonly IClrTypeName OdinSerializedBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedBehaviour");
+    public static readonly IClrTypeName OdinSerializedComponent = new ClrTypeName("Sirenix.OdinInspector.SerializedComponent");
+    public static readonly IClrTypeName OdinSerializedStateMachineBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedStateMachineBehaviour");
+    public static readonly IClrTypeName OdinSerializedUnityObject= new ClrTypeName("Sirenix.OdinInspector.SerializedUnityObject");
 
     
     public static readonly Dictionary<IClrTypeName, string[]> AttributesWithMemberCompletion = new()

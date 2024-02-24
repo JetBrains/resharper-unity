@@ -174,12 +174,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
             var containingType = field.ContainingType;
 
-            if (containingType.DerivesFrom(KnownTypes.OdinSerializedMonoBehaviour)
-                || containingType.DerivesFrom(KnownTypes.OdinSerializedScriptableObject)
-                || containingType.DerivesFrom(KnownTypes.OdinSerializedBehaviour)
-                || containingType.DerivesFrom(KnownTypes.OdinSerializedComponent)
-                || containingType.DerivesFrom(KnownTypes.OdinSerializedStateMachineBehaviour)
-                || containingType.DerivesFrom(KnownTypes.OdinSerializedUnityObject))
+            if (containingType.DerivesFrom(OdinKnownAttributes.OdinSerializedMonoBehaviour)
+                || containingType.DerivesFrom(OdinKnownAttributes.OdinSerializedScriptableObject)
+                || containingType.DerivesFrom(OdinKnownAttributes.OdinSerializedBehaviour)
+                || containingType.DerivesFrom(OdinKnownAttributes.OdinSerializedComponent)
+                || containingType.DerivesFrom(OdinKnownAttributes.OdinSerializedStateMachineBehaviour)
+                || containingType.DerivesFrom(OdinKnownAttributes.OdinSerializedUnityObject))
             {
                 if (field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false))
                 {
