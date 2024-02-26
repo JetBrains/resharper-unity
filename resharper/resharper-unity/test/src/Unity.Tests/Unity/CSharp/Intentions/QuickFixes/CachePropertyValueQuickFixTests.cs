@@ -1,10 +1,14 @@
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
  {
      [TestUnity]
+     [TestCustomInspectionSeverity("Unity.InefficientPropertyAccess", Severity.WARNING)]
      public class CachePropertyValueQuickFixTests : QuickFixTestBase<CachePropertyValueQuickFix>
      {
          protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\CachePropertyValue";
