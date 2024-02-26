@@ -1,10 +1,12 @@
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 using Lifetime = JetBrains.Lifetimes.Lifetime;
 
@@ -27,12 +29,6 @@ public class UnityObjectLifetimeCheckViaNullEqualityQuickFixTests : QuickFixTest
 {
     protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityObjectLifetimeCheckViaNullEquality";
     protected override bool AllowHighlightingOverlap => true;
-    
-    protected override void DoTest(Lifetime lifetime)
-    {
-        using (UnityProjectCookie.RunUnitySolutionCookie(Solution))
-            base.DoTest(lifetime);
-    }
 
     [Test] public void Test01() { DoNamedTest(); }
     [Test] public void Test02() { DoNamedTest(); }
@@ -41,5 +37,17 @@ public class UnityObjectLifetimeCheckViaNullEqualityQuickFixTests : QuickFixTest
     [Test] public void Test05() { DoNamedTest(); }
     [Test] public void Test06() { DoNamedTest(); }
     [Test] public void Test07() { DoNamedTest(); }
-    [Test] public void Test08() { DoNamedTest(); }
+}
+
+[TestUnity]
+[TestSetting(typeof(UnitySettings), nameof(UnitySettings.ForceLifetimeChecks), true)]
+public class UnityObjectLifetimeCheckViaNullEqualityQuickFixWithBypassCheckTests : QuickFixTestBase<UnityObjectLifetimeCheckViaNullEqualityQuickFix>
+{
+    protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityObjectLifetimeCheckViaNullEquality";
+    protected override bool AllowHighlightingOverlap => true;
+    
+    [Test] public void TestWithBypassCheck01() { DoNamedTest(); }
+    [Test] public void TestWithBypassCheck02() { DoNamedTest(); }
+    [Test] public void TestWithBypassCheck03() { DoNamedTest(); }
+    [Test] public void TestWithBypassCheck04() { DoNamedTest(); }
 }

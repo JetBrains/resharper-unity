@@ -148,6 +148,8 @@
     public static string CreatingAManagedTypeIsNotSupported => ResourceManager.GetString("CreatingAManagedTypeIsNotSupported");
     public static string CurrentFileNameWithoutWhitespaceCharacters_Text => ResourceManager.GetString("CurrentFileNameWithoutWhitespaceCharacters_Text");
     public static string DebugLoggingFunctionsAcceptsOnlyStrings => ResourceManager.GetString("DebugLoggingFunctionsAcceptsOnlyStrings");
+    public static string UnityOptionsPage_AddCSharpSection_ForceUnityObjectLifetimeCheckWhenCheckedForNull => ResourceManager.GetString("UnityOptionsPage_AddCSharpSection_ForceUnityObjectLifetimeCheckWhenCheckedForNull");
+    public static string UnitySettings_t_ForceLifetimeChecks => ResourceManager.GetString("UnitySettings_t_ForceLifetimeChecks");
     public static string StringFormatFunctionsAcceptsOnlyStrings => ResourceManager.GetString("StringFormatFunctionsAcceptsOnlyStrings");
     public static string BurstStringFormatFunctionsInvalidArgumentType => ResourceManager.GetString("BurstStringFormatFunctionsInvalidArgumentType");
     public static string DisabledIndexingOfUnityAssets_Text => ResourceManager.GetString("DisabledIndexingOfUnityAssets_Text");
@@ -230,6 +232,12 @@
     public static string MoveFromLoopAction_Text_Move_outside_of_loop => ResourceManager.GetString("MoveFromLoopAction_Text_Move_outside_of_loop");
     public static string MultidimensionalArrayElementAccessIsConvertedToAMethodCallItIsMoreEfficientToUseAJaggedOrOneDimensionalArray => ResourceManager.GetString("MultidimensionalArrayElementAccessIsConvertedToAMethodCallItIsMoreEfficientToUseAJaggedOrOneDimensionalArray");
     public static string MultiplicationOrderQuickFix_Text_Reorder_multiplication => ResourceManager.GetString("MultiplicationOrderQuickFix_Text_Reorder_multiplication");
+    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject");
+    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6 => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6");
+    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage");
+    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1 => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1");
+    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2 => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2");
+    public static string OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2 => ResourceManager.GetString("OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2");
     public static string OrderOfMultiplicationOperationsIsInefficient => ResourceManager.GetString("OrderOfMultiplicationOperationsIsInefficient");
     public static string OrderOfMultiplicationOperationsIsInefficientMessage => ResourceManager.GetString("OrderOfMultiplicationOperationsIsInefficientMessage");
     public static string PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed => ResourceManager.GetString("PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed");

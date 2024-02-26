@@ -311,6 +311,12 @@
     <data name="DebugLoggingFunctionsAcceptsOnlyStrings" xml:space="preserve">
         <value>Debug logging functions only accept strings</value>
     </data>
+    <data name="UnityOptionsPage_AddCSharpSection_ForceUnityObjectLifetimeCheckWhenCheckedForNull" xml:space="preserve">
+        <value>Force Unity object lifetime-check when checked for null</value>
+    </data>
+    <data name="UnitySettings_t_ForceLifetimeChecks" xml:space="preserve">
+        <value>Force lifetime checks</value>
+    </data>
     <data name="StringFormatFunctionsAcceptsOnlyStrings" xml:space="preserve">
         <value>String.Format(format, ...) only accepts string literals and const strings</value>
     </data>
@@ -556,6 +562,24 @@
     </data>
     <data name="MultiplicationOrderQuickFix_Text_Reorder_multiplication" xml:space="preserve">
         <value>Reorder multiplication</value>
+    </data>
+    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject" xml:space="preserve">
+        <value>'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    </data>
+    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6" xml:space="preserve">
+        <value>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    </data>
+    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" xml:space="preserve">
+        <value>'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    </data>
+    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" xml:space="preserve">
+        <value>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    </data>
+    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2" xml:space="preserve">
+        <value>'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    </data>
+    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2" xml:space="preserve">
+        <value>'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
     <data name="OrderOfMultiplicationOperationsIsInefficient" xml:space="preserve">
         <value>Order of multiplication operations is inefficient</value>
