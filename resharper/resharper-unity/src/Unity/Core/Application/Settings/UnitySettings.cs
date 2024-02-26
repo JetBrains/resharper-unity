@@ -1,6 +1,6 @@
 using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Resources.Settings;
+using Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 {
@@ -67,6 +67,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Enables_showing_Unity_icon_for_Burst_compiled_code))]
         public bool EnableIconsForBurstCode;
+
+        [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_ForceLifetimeChecks))]
+        public bool ForceLifetimeChecks;
 
         // UX for performance critical analysis
         [SettingsEntry(PerformanceHighlightingMode.CurrentMethod, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Highlighting_mode_for_performance_critical_code))]

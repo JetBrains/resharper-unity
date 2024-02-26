@@ -1,0 +1,58 @@
+using UnityEngine;
+
+public class Test : MonoBehaviour
+{
+    public void Method(GameObject go, Component c, Transform t, Object o)
+    {
+        if (go |is|(0) null) return;
+        if (c |is|(1) null) return;
+        if (t |is|(2) null) return;
+        if (o |is|(3) null) return;
+        if (go |is|(4) not null) return;
+        if (c |is|(5) not null) return;
+        if (t |is|(6) not null) return;
+        if (o |is|(7) not null) return;
+        if (go |is|(8) {}) return;
+        if (c |is|(9) {}) return;
+        if (t |is|(10) {}) return;
+        if (o |is|(11) {}) return;
+        if (go |is|(12) not {}) return;
+        if (c |is|(13) not {}) return;
+        if (t |is|(14) not {}) return;
+        if (o |is|(15) not {}) return;
+        if (go |is|(16) {name: ""}) return;
+        if (c |is|(17) {name: ""}) return;
+        if (t |is|(18) {name: ""}) return;
+        if (o |is|(19) {name: ""}) return;
+        if (go |is|(20) not {name: ""}) return;
+        if (c |is|(21) not {name: ""}) return;
+        if (t |is|(22) not {name: ""}) return;
+        if (o |is|(23) not {name: ""}) return;
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(1): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(2): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(3): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(4): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(5): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(6): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(7): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(8): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(9): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(10): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(11): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(12): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(13): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(14): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(15): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(16): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(17): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(18): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(19): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(20): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(21): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(22): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(23): ReSharper Warning: 'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
