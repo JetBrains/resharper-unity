@@ -96,6 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddBurstAnalysisSubSection();
             AddNamingSubSection();
             AddDotsSubSection();
+            AddBoolOption((UnitySettings s) => s.ForceLifetimeChecks, true, false, Strings.UnityOptionsPage_AddCSharpSection_ForceUnityObjectLifetimeCheckWhenCheckedForNull);
         }
 
         private void AddRefactoringSection()
