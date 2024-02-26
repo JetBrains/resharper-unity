@@ -1121,6 +1121,24 @@
     <data name="UnityDots_GenerateRefAccessors_Generate_Setters" xml:space="preserve">
         <value>Generate Setters</value>
     </data>
+    <data name="UnityDots_GenerateComponentReference_Name" xml:space="preserve">
+        <value>Add ComponentData reference (DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateComponentReference_Description" xml:space="preserve">
+        <value>Add ComponentData reference (DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateComponentReference_Unity_Component_Fields_Title" xml:space="preserve">
+        <value>Add ComponentData reference(DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateComponentReference_Unity_Component_Fields_WindowTitle" xml:space="preserve">
+        <value>Available components (DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateComponentReference_Unity_Component_Fields_Description" xml:space="preserve">
+        <value>Select components</value>
+    </data>
+    <data name="UnityDots_GenerateComponentReference_Component_References" xml:space="preserve">
+        <value>Component References</value>
+    </data>
     <data name="UnityDots_InconsistentModifiersForDotsInheritor" xml:space="preserve">
         <value>{0}'s inheritor '{1}' must be '{2}{3}{4}'</value>
     </data>
