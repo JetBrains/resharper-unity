@@ -18,5 +18,18 @@ public class Test : MonoBehaviour
         obj = this.transform ?? null;
         obj = GameObject.Find("Something") ?? gameObject;
         obj = GameObject.Find("Something") ?? null;
+        obj = obj.Opt() ?? gameObject;
+        obj = GameObject.Find("Something").Opt() ?? null;
     }
+}
+
+public static class UnityObjectExtensions
+{
+    [return: JetBrains.Annotations.NotDestroyed]
+    public static Object Opt(this Object obj) => obj ? obj : null;
+}
+
+namespace JetBrains.Annotations
+{
+    public class NotDestroyedAttribute : System.Attribute { }
 }

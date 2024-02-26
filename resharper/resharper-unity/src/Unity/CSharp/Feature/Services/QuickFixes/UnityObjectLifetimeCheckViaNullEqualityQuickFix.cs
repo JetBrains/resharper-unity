@@ -33,7 +33,7 @@ public class UnityObjectLifetimeCheckViaNullEqualityQuickFix(IEqualityExpression
         yield return SimpleBulbItems.ReplaceCSharpExpression(equalityExpression, Strings.BypassUnityLifetimeCheck_Text, (factory, exp) =>
         {
             string template;
-            if (exp.GetLanguageVersion() >= CSharpLanguageLevel.CSharp70 && !exp.GetSolution().GetComponent<UnityCSharpAnalysisConfig>().ForceLifetimeChecks.Value)
+            if (exp.GetLanguageVersion() >= CSharpLanguageLevel.CSharp70 && !exp.GetSolution().GetComponent<UnityLifetimeChecksHelper>().ForceLifetimeChecks.Value)
                 template = exp.EqualityType == EqualityExpressionType.NE ? "$0 is not null" : "$0 is null";
             else
                 template = exp.EqualityType == EqualityExpressionType.NE ? "!ReferenceEquals($0, null)" : "ReferenceEquals($0, null)";
