@@ -7,6 +7,7 @@
   using JetBrains.Lifetimes;
   using JetBrains.Util;
   using JetBrains.Util.Logging;
+  using JetBrains.Application.I18n.Plurals;
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -48,6 +49,13 @@
         }
         return resourceManager.Value;
       }
+    }
+
+    public static string Choice(string format, params object[] args)
+    {
+        var formatter = ResourceManager.ChoiceFormatter;
+        if (formatter == null) return "???";
+        return string.Format(formatter, format, args);
     }
 
     public static string AccessingManagedMethodsIsNotSupported => ResourceManager.GetString("AccessingManagedMethodsIsNotSupported");
@@ -412,6 +420,12 @@
     public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle");
     public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description");
     public static string UnityDots_GenerateRefAccessors_Generate_Setters => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Generate_Setters");
+    public static string UnityDots_GenerateComponentReference_Name => ResourceManager.GetString("UnityDots_GenerateComponentReference_Name");
+    public static string UnityDots_GenerateComponentReference_Description => ResourceManager.GetString("UnityDots_GenerateComponentReference_Description");
+    public static string UnityDots_GenerateComponentReference_Unity_Component_Fields_Title => ResourceManager.GetString("UnityDots_GenerateComponentReference_Unity_Component_Fields_Title");
+    public static string UnityDots_GenerateComponentReference_Unity_Component_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateComponentReference_Unity_Component_Fields_WindowTitle");
+    public static string UnityDots_GenerateComponentReference_Unity_Component_Fields_Description => ResourceManager.GetString("UnityDots_GenerateComponentReference_Unity_Component_Fields_Description");
+    public static string UnityDots_GenerateComponentReference_Component_References => ResourceManager.GetString("UnityDots_GenerateComponentReference_Component_References");
     public static string UnityDots_InconsistentModifiersForDotsInheritor => ResourceManager.GetString("UnityDots_InconsistentModifiersForDotsInheritor");
     public static string UnityDots_MustBeStructForDotsInheritor => ResourceManager.GetString("UnityDots_MustBeStructForDotsInheritor");
     public static string UnityDots_AspectWrongFieldsType => ResourceManager.GetString("UnityDots_AspectWrongFieldsType");

@@ -1,6 +1,4 @@
 using JetBrains.Application.DataContext;
-using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate.Actions;
 using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
