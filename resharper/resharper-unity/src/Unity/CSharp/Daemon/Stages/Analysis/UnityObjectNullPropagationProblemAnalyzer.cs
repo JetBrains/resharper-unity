@@ -7,14 +7,14 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
-[ElementProblemAnalyzer(typeof(IConditionalAccessExpression), HighlightingTypes = new[] { typeof(UnityObjectNullPropagationWarning) })]
-public class UnityObjectNullPropagationProblemAnalyzer(UnityApi unityApi, UnityCSharpAnalysisConfig analysisConfig) : UnityElementProblemAnalyzer<IConditionalAccessExpression>(unityApi)
+[ElementProblemAnalyzer(typeof(IConditionalAccessExpression), HighlightingTypes = [typeof(UnityObjectNullPropagationWarning)])]
+public class UnityObjectNullPropagationProblemAnalyzer(UnityApi unityApi, UnityLifetimeChecksHelper helper) : UnityElementProblemAnalyzer<IConditionalAccessExpression>(unityApi)
 {
-    public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) => analysisConfig.ForceLifetimeChecks.Value && base.ShouldRun(file, data);
+    public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) => helper.ForceLifetimeChecks.Value && base.ShouldRun(file, data);
     
     protected override void Analyze(IConditionalAccessExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-        if (expression is { HasConditionalAccessSign: true, ConditionalQualifier: {} qualifier } && UnityTypeUtils.IsUnityObject(qualifier.Type()))
+        if (expression is { HasConditionalAccessSign: true, ConditionalQualifier: {} qualifier } && helper.CanBeDestroyed(qualifier))
             consumer.AddHighlighting(new UnityObjectNullPropagationWarning(expression));
     }
 }

@@ -8,13 +8,13 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
 [ElementProblemAnalyzer(typeof(IAssignmentExpression), HighlightingTypes = [typeof(UnityObjectDoubleQuestionAssignmentWarning)])]
-public class UnityObjectDoubleQuestionAssignmentProblemAnalyzer(UnityApi unityApi, UnityCSharpAnalysisConfig analysisConfig) : UnityElementProblemAnalyzer<IAssignmentExpression>(unityApi)
+public class UnityObjectDoubleQuestionAssignmentProblemAnalyzer(UnityApi unityApi, UnityLifetimeChecksHelper helper) : UnityElementProblemAnalyzer<IAssignmentExpression>(unityApi)
 {
-    public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) => analysisConfig.ForceLifetimeChecks.Value && base.ShouldRun(file, data);
+    public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) => helper.ForceLifetimeChecks.Value && base.ShouldRun(file, data);
 
     protected override void Analyze(IAssignmentExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-        if (expression is { AssignmentType: AssignmentType.DOUBLE_QUEST_EQ, Source: not null, Dest: { } dest } && UnityTypeUtils.IsUnityObject(dest.Type()))
+        if (expression is { AssignmentType: AssignmentType.DOUBLE_QUEST_EQ, Source: not null, Dest: { } dest } && helper.CanBeDestroyed(dest))
             consumer.AddHighlighting(new UnityObjectDoubleQuestionAssignmentWarning(expression));
     }
 }

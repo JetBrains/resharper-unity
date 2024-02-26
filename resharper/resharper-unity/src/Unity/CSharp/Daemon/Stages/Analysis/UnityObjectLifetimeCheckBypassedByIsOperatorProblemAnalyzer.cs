@@ -8,13 +8,13 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
 [ElementProblemAnalyzer(typeof(IIsExpression), HighlightingTypes = [typeof(UnityObjectLifetimeCheckBypassedByIsOperatorWarning)])]
-public class UnityObjectLifetimeCheckBypassedByIsOperatorProblemAnalyzer(UnityApi unityApi, UnityCSharpAnalysisConfig analysisConfig) : UnityElementProblemAnalyzer<IIsExpression>(unityApi)
+public class UnityObjectLifetimeCheckBypassedByIsOperatorProblemAnalyzer(UnityApi unityApi, UnityLifetimeChecksHelper helper) : UnityElementProblemAnalyzer<IIsExpression>(unityApi)
 {
-    public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) => analysisConfig.ForceLifetimeChecks.Value && base.ShouldRun(file, data);
+    public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) => helper.ForceLifetimeChecks.Value && base.ShouldRun(file, data);
     
     protected override void Analyze(IIsExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-        if (expression.Operand is { } operand && UnityTypeUtils.IsUnityObject(operand.Type()))
+        if (expression.Operand is { } operand && helper.CanBeDestroyed(operand))
             consumer.AddHighlighting(new UnityObjectLifetimeCheckBypassedByIsOperatorWarning(expression));
     }
 }

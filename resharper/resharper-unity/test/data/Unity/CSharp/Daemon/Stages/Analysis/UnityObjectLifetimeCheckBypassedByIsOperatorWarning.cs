@@ -28,5 +28,18 @@ public class Test : MonoBehaviour
         if (c is not {name: ""}) return;
         if (t is not {name: ""}) return;
         if (o is not {name: ""}) return;
+        if (o.Opt() is not {name: ""}) return;
+        if (go.Opt() is null) return;
     }
+}
+
+public static class UnityObjectExtensions
+{
+    [return: JetBrains.Annotations.NotDestroyed]
+    public static Object Opt(this Object obj) => obj ? obj : null;
+}
+
+namespace JetBrains.Annotations
+{
+    public class NotDestroyedAttribute : System.Attribute { }
 }
