@@ -104,6 +104,10 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
         logModel.events.onAutoscrollChanged.advise(lifetime) {
             if (it) {
+                // clear the selection when autoscroll is enabled
+                logModel.selectedItem = null
+                clearSelection()
+                // show the last item
                 ensureIndexIsVisible(itemsCount - 1)
             }
         }
@@ -202,6 +206,8 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         eventList.riderModel.addAll(0, newEvents)
 
         if (logModel.selectedItem != null) {
+            eventList.ensureIndexIsVisible(eventList.itemsCount - 1) // without this line, setSelectedValue would be ignored
+            // and the list would be scrolled down
             eventList.setSelectedValue(logModel.selectedItem, true)
         }
         else if (logModel.autoscroll.value) {
