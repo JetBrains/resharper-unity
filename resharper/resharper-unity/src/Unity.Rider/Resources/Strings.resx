@@ -22,6 +22,9 @@
     <data name="AdvancedUnityIntegrationIsUnavailable_Text" xml:space="preserve">
         <value>Advanced Unity integration is unavailable</value>
     </data>
+    <data name="ConfigureShaderVariantKeywords_Text" xml:space="preserve">
+        <value>Configure Shader Variant keywords</value>
+    </data>
     <data name="DoNotShowForThisSolution_Text" xml:space="preserve">
         <value>Do not show for this solution</value>
     </data>
@@ -100,6 +103,9 @@
     </data>
     <data name="TheUnityEditorPluginIsOutOfDateAndAutomatic_Text" xml:space="preserve">
         <value>The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.</value>
+    </data>
+    <data name="ThisBranchMayBeActiveInOneOfShaderVariants_Text" xml:space="preserve">
+        <value>This branch may be active in one of Shader Variants. Click to configure enabled keywords for the Shader Variant.</value>
     </data>
     <data name="UnityAssetsUsage_Text" xml:space="preserve">
         <value>Unity assets usage</value>
@@ -243,5 +249,11 @@
     </data>
     <data name="ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent" xml:space="preserve">
         <value>Unity Component</value>
+    </data>
+    <data name="ConfigureShaderVariantKeywordsQuickFix_Text" xml:space="preserve">
+        <value>Configure Shader Variant keywords</value>
+    </data>
+    <data name="InactiveShaderVariantBranch_Text" xml:space="preserve">
+        <value>Inactive Shader Variant branch</value>
     </data>
 </root>

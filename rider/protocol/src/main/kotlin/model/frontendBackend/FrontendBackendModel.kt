@@ -100,6 +100,27 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         })
     }
 
+    private val shaderVariantInteractionOrigin = enum {
+        +"Widget"
+        +"CodeVision"
+        +"QuickFix"
+    }
+
+    private val shaderVariantInteraction = classdef("shaderVariantInteraction") {
+        field("shaderFeatures", immutableList(immutableList(string)))
+        field("enabledKeywords", immutableList(string))
+        field("shaderApi", RdShaderApi)
+        field("shaderPlatform", RdShaderPlatform)
+        field("totalKeywordsCount", int)
+        field("totalEnabledKeywordsCount", int)
+        field("availableKeywords", int)
+        source("enableKeyword", string)
+        source("disableKeyword", string)
+        source("disableKeywords", immutableList(string))
+        source("setShaderApi", RdShaderApi)
+        source("setShaderPlatform", RdShaderPlatform)
+    }
+
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
@@ -153,20 +174,13 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         call("createShaderVariantInteraction", structdef("createShaderVariantInteractionArgs") {
             field("documentId", RdDocumentId)
             field("offset", int)
-        }, classdef("shaderVariantInteraction") {
-            field("shaderFeatures", immutableList(immutableList(string)))
-            field("enabledKeywords", immutableList(string))
-            field("shaderApi", RdShaderApi)
-            field("shaderPlatform", RdShaderPlatform)
-            field("totalKeywordsCount", int)
-            field("totalEnabledKeywordsCount", int)
-            field("availableKeywords", int)
-            source("enableKeyword", string)
-            source("disableKeyword", string)
-            source("disableKeywords", immutableList(string))
-            source("setShaderApi", RdShaderApi)
-            source("setShaderPlatform", RdShaderPlatform)
-        })
+        }, shaderVariantInteraction)
+        sink("showShaderVariantInteraction", structdef("showShaderVariantInteractionArgs") {
+            field("documentId", RdDocumentId)
+            field("offset", int)
+            field("origin", shaderVariantInteractionOrigin)
+            field("scopeKeywords", immutableList(string).nullable)
+        }).documentation = "Host initiated shader variant interaction"
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)
         // (These should probably be calls, rather than signal/source/sink, as they are RPC, and not events)

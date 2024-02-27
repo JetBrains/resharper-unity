@@ -108,6 +108,7 @@
     public static string ImplicitlyEnabledShaderKeyword_RiderPresentableName => ResourceManager.GetString("ImplicitlyEnabledShaderKeyword_RiderPresentableName");
     public static string DisabledShaderKeyword_RiderPresentableName => ResourceManager.GetString("DisabledShaderKeyword_RiderPresentableName");
     public static string SuppressedShaderKeyword_RiderPresentableName => ResourceManager.GetString("SuppressedShaderKeyword_RiderPresentableName");
+    public static string InactiveShaderVariant_RiderPresentableName => ResourceManager.GetString("InactiveShaderVariant_RiderPresentableName");
     public static string EnableShaderKeyword_Enable_shader_keyword => ResourceManager.GetString("EnableShaderKeyword_Enable_shader_keyword");
     public static string DisableShaderKeyword_Disable_shader_keyword => ResourceManager.GetString("DisableShaderKeyword_Disable_shader_keyword");
     public static string UnSuppressShaderKeyword_Disable_conflicting_shader_keyword => ResourceManager.GetString("UnSuppressShaderKeyword_Disable_conflicting_shader_keyword");

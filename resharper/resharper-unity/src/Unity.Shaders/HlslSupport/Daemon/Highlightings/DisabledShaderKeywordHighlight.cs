@@ -6,7 +6,5 @@ using JetBrains.ReSharper.Psi.Cpp.Parsing;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
 [StaticSeverityHighlighting(Severity.INFO, typeof(ShaderKeywordsHighlightingId), OverlapResolve = OverlapResolveKind.NONE, AttributeId = ShaderLabHighlightingAttributeIds.DISABLED_SHADER_KEYWORD)]
-public class DisabledShaderKeywordHighlight : ShaderKeywordHighlight
-{
-    public DisabledShaderKeywordHighlight(string keyword, CppIdentifierTokenNode shaderKeywordNode) : base(keyword, shaderKeywordNode) { }
-}
+public class DisabledShaderKeywordHighlight(string keyword, CppIdentifierTokenNode shaderKeywordNode)
+    : ShaderKeywordHighlight(keyword, shaderKeywordNode);
