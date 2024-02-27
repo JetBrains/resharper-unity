@@ -57,6 +57,7 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         property("showCustomRenderers", bool)
         property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
         property("forcedTimeoutForAdvanceUnityEvaluation", int)
+        property("breakpointTraceOutput", int)
     }
 
     //structure of this model must be the same as TexturePixelsInfo Plugins/ReSharperUnity/debugger/texture-debugger/TextureUtils.cs

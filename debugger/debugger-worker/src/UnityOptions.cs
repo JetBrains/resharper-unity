@@ -8,6 +8,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         bool ExtensionsEnabled { get; }
         bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp { get; }
         int ForcedTimeoutForAdvanceUnityEvaluation { get; }
+        int BreakpointTraceOutput { get; }
     }
 
     [DebuggerGlobalComponent]
@@ -27,5 +28,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         
         public int ForcedTimeoutForAdvanceUnityEvaluation =>
             myHost.Model.ForcedTimeoutForAdvanceUnityEvaluation.Value;
+
+        public int BreakpointTraceOutput => myHost.Model.BreakpointTraceOutput.Value;
     }
 }

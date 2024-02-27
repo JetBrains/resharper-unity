@@ -521,6 +521,10 @@
     public static string UnitySettings_t_If_this_option_is_enabled__UnityYamlMerge_would_be_used_to_merge_YAML_files_ => ResourceManager.GetString("UnitySettings_t_If_this_option_is_enabled__UnityYamlMerge_would_be_used_to_merge_YAML_files_");
     public static string UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players => ResourceManager.GetString("UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players");
     public static string UnitySettings_t_Timeout_for_Advance_Unity_Evaluation => ResourceManager.GetString("UnitySettings_t_Timeout_for_Advance_Unity_Evaluation");
+    public static string UnitySettings_t_Breakpoint_Trace_Output => ResourceManager.GetString("UnitySettings_t_Breakpoint_Trace_Output");
+    public static string UnitySettings_t_Breakpoint_Trace_Output__Both => ResourceManager.GetString("UnitySettings_t_Breakpoint_Trace_Output__Both");
+    public static string UnitySettings_t_Breakpoint_Trace_Output__Unity_Log => ResourceManager.GetString("UnitySettings_t_Breakpoint_Trace_Output__Unity_Log");
+    public static string UnitySettings_t_Breakpoint_Trace_Output__Debugger_Console => ResourceManager.GetString("UnitySettings_t_Breakpoint_Trace_Output__Debugger_Console");
     public static string UnitySettings_t_Merge_parameters => ResourceManager.GetString("UnitySettings_t_Merge_parameters");
     public static string UnitySettings_t_Prefab_cache => ResourceManager.GetString("UnitySettings_t_Prefab_cache");
     public static string UnitySettings_t_Should_yaml_heuristic_be_applied_ => ResourceManager.GetString("UnitySettings_t_Should_yaml_heuristic_be_applied_");
