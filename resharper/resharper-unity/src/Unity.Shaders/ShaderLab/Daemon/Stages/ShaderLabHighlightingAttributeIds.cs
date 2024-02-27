@@ -132,6 +132,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         FontStyle = FontStyle.Strikeout,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
     )]
+    [RegisterHighlighter(INACTIVE_SHADER_VARIANT_BRANCH,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.InactiveShaderVariant_RiderPresentableName),
+        FallbackAttributeId = CppHighlightingAttributeIds.CPP_PREPROCESSOR_INACTIVE_BRANCH_ATTRIBUTE,
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
+    )]
     public static class ShaderLabHighlightingAttributeIds
     {
         public const string GROUP_ID = "ReSharper ShaderLab Highlighters";
@@ -148,6 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         public const string ENABLED_SHADER_KEYWORD = "ReSharper ShaderLab Enabled Shader Keyword";
         public const string SUPPRESSED_SHADER_KEYWORD = "ReSharper ShaderLab Suppressed Shader Keyword";
         public const string DISABLED_SHADER_KEYWORD = "ReSharper ShaderLab Disabled Shader Keyword";
+        public const string INACTIVE_SHADER_VARIANT_BRANCH = "ReSharper ShaderLab Inactive Shader Variant Branch";
         public const string COMMAND = "ReSharper ShaderLab Command";
         public const string BLOCK_COMMAND = "ReSharper ShaderLab Block Command";
         public const string PROPERTY_NAME = "ReSharper ShaderLab Property Name";

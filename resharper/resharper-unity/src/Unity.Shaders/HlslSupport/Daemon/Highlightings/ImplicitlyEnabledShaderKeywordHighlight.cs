@@ -6,7 +6,5 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
 [StaticSeverityHighlighting(Severity.INFO, typeof(ShaderKeywordsHighlightingId), OverlapResolve = OverlapResolveKind.NONE, AttributeId = ShaderLabHighlightingAttributeIds.IMPLICITLY_ENABLED_SHADER_KEYWORD)]
-public class ImplicitlyEnabledShaderKeywordHighlight : ShaderKeywordHighlight
-{
-    public ImplicitlyEnabledShaderKeywordHighlight(string keyword, ITreeNode shaderKeywordNode) : base(keyword, shaderKeywordNode) { }
-}
+public class ImplicitlyEnabledShaderKeywordHighlight(string keyword, ITreeNode shaderKeywordNode)
+    : ShaderKeywordHighlight(keyword, shaderKeywordNode);

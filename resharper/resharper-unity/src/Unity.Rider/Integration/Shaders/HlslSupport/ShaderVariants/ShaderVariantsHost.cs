@@ -8,6 +8,7 @@ using JetBrains.Application.changes;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
+using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -16,6 +17,7 @@ using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.RdBackend.Common.Features.TextControls;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
@@ -33,16 +35,19 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderVariants;
 
 [SolutionComponent]
-public class ShaderVariantsHost : IChangeProvider
+public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider
 {
     private readonly ISolution mySolution;
+    private readonly CppExternalModule myCppExternalModule;
     private readonly ShaderProgramCache myShaderProgramCache;
     private readonly IDocumentHost myDocumentHost;
     private readonly ITextControlHost myTextControlHost;
     private readonly ShaderVariantsManager myShaderVariantsManager;
     private readonly IPsiModules myPsiModules;
+    private readonly DocumentManager myDocumentManager;
     private readonly ShaderContextCache myShaderContextCache;
     private readonly IPreferredRootFileProvider myPreferredPreferredRootFileProvider;
+    private readonly FrontendBackendHost? myFrontendBackendHost;
     private readonly ILogger myLogger;
     private readonly Dictionary<TextControlId, ShaderVariantRegistration> myActiveControls = new();
     private readonly Dictionary<TextControlId, LifetimeDefinition> myShaderVariantExtensionLifetimes = new();
@@ -59,8 +64,7 @@ public class ShaderVariantsHost : IChangeProvider
         ITextControlHost textControlHost,
         ShaderVariantsManager shaderVariantsManager,
         IPsiModules psiModules,
-        ShaderContextCache shaderContextCache,
-        FrontendBackendHost? frontendBackendHost = null)
+        ShaderContextCache shaderContextCache, CppExternalModule cppExternalModule, DocumentManager documentManager, FrontendBackendHost? frontendBackendHost = null)
     {
         mySolution = solution;
         myShaderProgramCache = shaderProgramCache;
@@ -69,10 +73,14 @@ public class ShaderVariantsHost : IChangeProvider
         myTextControlHost = textControlHost;
         myShaderVariantsManager = shaderVariantsManager;
         myPsiModules = psiModules;
+        myDocumentManager = documentManager;
         myShaderContextCache = shaderContextCache;
+        myCppExternalModule = cppExternalModule;
+        myDocumentManager = documentManager;
         myLogger = logger;
+        myFrontendBackendHost = frontendBackendHost;
 
-        frontendBackendHost?.Do(model =>
+        myFrontendBackendHost?.Do(model =>
         {
             model.CreateShaderVariantInteraction.SetAsync(HandleCreateShaderVariantInteraction);
             model.ShaderVariantExtensions.Advise(lifetime, mapEvent => OnShaderVariantExtensionsModified(lifetime, mapEvent));
@@ -171,7 +179,7 @@ public class ShaderVariantsHost : IChangeProvider
             List<List<string>> shaderFeatures = new();
             var enabledKeywords = myShaderVariantsManager.AllEnabledKeywords.ToList();
             var availableCount = 0;
-            if (myDocumentHost.TryGetDocument(args.DocumentId) is { } document && GetShaderProgramInfo(new DocumentOffset(document, args.Offset)) is {} shaderProgramInfo) 
+            if (myDocumentHost.TryGetDocument(args.DocumentId) is { } document && new DocumentOffset(document, args.Offset) is var documentOffset && GetShaderProgramInfo(documentOffset) is {} shaderProgramInfo) 
             {
                 foreach (var feature in shaderProgramInfo.ShaderFeatures)
                     shaderFeatures.Add(feature.Entries.Select(e => e.Keyword).ToList());
@@ -204,6 +212,15 @@ public class ShaderVariantsHost : IChangeProvider
         return null;
     }
 
+    public void ShowShaderVariantInteraction(DocumentOffset offset, ShaderVariantInteractionOrigin origin, IEnumerable<string>? scopeKeywords)
+    {
+        myFrontendBackendHost?.Do(model =>
+        {
+            if (myDocumentManager.TryGetProjectFile(offset.Document)?.GetDocumentIdAndModel() is { documentId: {} documentId })
+                model.ShowShaderVariantInteraction(new ShowShaderVariantInteractionArgs(documentId, offset.Offset, origin, scopeKeywords?.ToList()));
+        });
+    }
+
     public object? Execute(IChangeMap changeMap)
     {
         if (changeMap.GetChange<PsiModuleChange>(myPsiModules) is { } moduleChange && moduleChange.ModuleChanges.Any(x => x.Item is UnityShaderModule)) 
@@ -212,7 +229,7 @@ public class ShaderVariantsHost : IChangeProvider
         {
             foreach (var changedFile in cppChange.ChangedFiles)
             {
-                if (changedFile.GetDocument(mySolution) is not {} document) continue;
+                if (changedFile.GetDocument(mySolution, myCppExternalModule) is not {} document) continue;
                 foreach (var textControlId in myTextControlHost.GetTextControlIds(document))
                 {
                     if (myActiveControls.TryGetValue(textControlId, out var reg))

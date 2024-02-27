@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteractionOrigin
 
 class ShaderVariantEventLogger : CounterUsagesCollector() {
     companion object {
@@ -16,12 +17,14 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
         private val SHADER_PLATFORM = EventFields.Enum<RdShaderPlatform>("shader_platform")
         val CONTEXT_COUNT = EventFields.RoundedInt("context_count")
         val DEFINE_COUNT = EventFields.RoundedInt("define_count")
+        val ORIGIN = EventFields.Enum<ShaderVariantInteractionOrigin>("origin")
 
         @JvmField
         internal val GROUP = EventLogGroup("rider.unity.shaders.variants", 2)
 
         private val SHOW_SHADER_VARIANT_POPUP_ACTIVITY = GROUP.registerIdeActivity("show_variants", finishEventAdditionalFields = arrayOf(
-            DEFINE_COUNT
+            DEFINE_COUNT,
+            ORIGIN
         ))
 
         private val RESET_KEYWORDS = GROUP.registerEvent("reset")
@@ -36,11 +39,12 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
         ))
         private val SELECT_CONTEXT = GROUP.registerEvent("select_context")
         private val LEARN_MORE = GROUP.registerEvent("clicked_learn_more")
+        private val RESET_CONTEXT = GROUP.registerEvent("clicked_reset_context")
 
 
-        fun logShowShaderVariantPopupStarted(project: Project): StructuredIdeActivity? {
+        fun logShowShaderVariantPopupStarted(project: Project, origin: ShaderVariantInteractionOrigin): StructuredIdeActivity? {
             try {
-                return SHOW_SHADER_VARIANT_POPUP_ACTIVITY.started(project)
+                return SHOW_SHADER_VARIANT_POPUP_ACTIVITY.started(project) { listOf(ORIGIN.with(origin)) }
             }
             catch (e: Throwable) {
                 thisLogger().error(e)
@@ -86,6 +90,10 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
 
         fun logLearnMore(project: Project) {
             LEARN_MORE.log(project)
+        }
+
+        fun logResetContext(project: Project) {
+            RESET_CONTEXT.log(project)
         }
 
     }
