@@ -52,6 +52,7 @@
 
     public static string AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_ => ResourceManager.GetString("AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_");
     public static string AdvancedUnityIntegrationIsUnavailable_Text => ResourceManager.GetString("AdvancedUnityIntegrationIsUnavailable_Text");
+    public static string ConfigureShaderVariantKeywords_Text => ResourceManager.GetString("ConfigureShaderVariantKeywords_Text");
     public static string DoNotShowForThisSolution_Text => ResourceManager.GetString("DoNotShowForThisSolution_Text");
     public static string GeneratedFileNotification_GeneratedFileNotification_Edit_corresponding__asmdef_in_Unity => ResourceManager.GetString("GeneratedFileNotification_GeneratedFileNotification_Edit_corresponding__asmdef_in_Unity");
     public static string GeneratedFileNotification_GeneratedFileNotification_This_file_is_generated_by_Unity__Any_changes_made_will_be_lost_ => ResourceManager.GetString("GeneratedFileNotification_GeneratedFileNotification_This_file_is_generated_by_Unity__Any_changes_made_will_be_lost_");
@@ -77,6 +78,7 @@
     public static string RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results => ResourceManager.GetString("RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results");
     public static string SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings => ResourceManager.GetString("SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings");
     public static string TheUnityEditorPluginIsOutOfDateAndAutomatic_Text => ResourceManager.GetString("TheUnityEditorPluginIsOutOfDateAndAutomatic_Text");
+    public static string ThisBranchMayBeActiveInOneOfShaderVariants_Text => ResourceManager.GetString("ThisBranchMayBeActiveInOneOfShaderVariants_Text");
     public static string UnityAssetsUsage_Text => ResourceManager.GetString("UnityAssetsUsage_Text");
     public static string UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field");
     public static string UnityController_StartUnityInternal_Start_Unity_Editor => ResourceManager.GetString("UnityController_StartUnityInternal_Start_Unity_Editor");
@@ -124,5 +126,7 @@
     public static string AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent => ResourceManager.GetString("AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent");
     public static string GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject => ResourceManager.GetString("GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject");
     public static string ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent => ResourceManager.GetString("ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent");
+    public static string ConfigureShaderVariantKeywordsQuickFix_Text => ResourceManager.GetString("ConfigureShaderVariantKeywordsQuickFix_Text");
+    public static string InactiveShaderVariantBranch_Text => ResourceManager.GetString("InactiveShaderVariantBranch_Text");
   }
 }

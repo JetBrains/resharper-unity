@@ -5,21 +5,13 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
-public abstract class ShaderKeywordHighlight : IHighlighting
+public abstract class ShaderKeywordHighlight(string keyword, ITreeNode shaderKeywordNode) : IHighlighting
 {
-    private readonly ITreeNode myShaderKeywordNode;
-
-    protected ShaderKeywordHighlight(string keyword, ITreeNode shaderKeywordNode)
-    {
-        Keyword = keyword;
-        myShaderKeywordNode = shaderKeywordNode;
-    }
-    
-    public string Keyword { get; }
+    public string Keyword { get; } = keyword;
 
     public virtual /*Localized*/ string? ToolTip => null;
     public virtual /*Localized*/ string? ErrorStripeToolTip => null;
-    public bool IsValid() => myShaderKeywordNode.IsValid();
+    public bool IsValid() => shaderKeywordNode.IsValid();
 
-    public DocumentRange CalculateRange() => myShaderKeywordNode.GetHighlightingRange();
+    public DocumentRange CalculateRange() => shaderKeywordNode.GetHighlightingRange();
 }
