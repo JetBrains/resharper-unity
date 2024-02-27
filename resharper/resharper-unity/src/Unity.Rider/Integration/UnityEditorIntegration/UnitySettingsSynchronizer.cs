@@ -40,6 +40,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             BindSettingToProperty(lifetime, solution, host, boundStore,
                 (UnitySettings s) => s.ForcedTimeoutForAdvanceUnityEvaluation,
                 (model, args) => model.BackendSettings.ForcedTimeoutForAdvanceUnityEvaluation.Value = args.New);
+            BindSettingToProperty(lifetime, solution, host, boundStore,
+                (UnitySettings s) => s.BreakpointTraceOutput,
+                (model, args) => model.BackendSettings.BreakpointTraceOutput.Value = (int)args.New);
         }
 
         private static void BindSettingToProperty<TKeyClass, TEntryMemberType>(

@@ -1431,6 +1431,18 @@ a plugin to be installed to a project.</value>
     <data name="UnitySettings_t_Timeout_for_Advance_Unity_Evaluation" xml:space="preserve">
         <value>Timeout for advanced Unity evaluations, in milliseconds:</value>
     </data>
+    <data name="UnitySettings_t_Breakpoint_Trace_Output" xml:space="preserve">
+        <value>Breakpoint Trace message output:</value>
+    </data>
+    <data name="UnitySettings_t_Breakpoint_Trace_Output__Both" xml:space="preserve">
+        <value>Debugger console and Unity log</value>
+    </data>
+    <data name="UnitySettings_t_Breakpoint_Trace_Output__Unity_Log" xml:space="preserve">
+        <value>Unity log</value>
+    </data>
+    <data name="UnitySettings_t_Breakpoint_Trace_Output__Debugger_Console" xml:space="preserve">
+        <value>Debug output</value>
+    </data>
     <data name="UnitySettings_t_Merge_parameters" xml:space="preserve">
         <value>Merge parameters</value>
     </data>
