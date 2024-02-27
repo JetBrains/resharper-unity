@@ -8,7 +8,6 @@ import com.intellij.platform.workspace.jps.entities.ContentRootEntity
 import com.intellij.platform.workspace.storage.*
 import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
-import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.GeneratedCodeImplVersion
 import com.intellij.platform.workspace.storage.MutableEntityStorage
@@ -43,13 +42,19 @@ open class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData
   }
 
   override val descriptor: UnityPackage
-    get() = dataSource.descriptor
+    get() {
+      readField("descriptor")
+      return dataSource.descriptor
+    }
 
   override val contentRootEntity: ContentRootEntity?
     get() = snapshot.extractOneToOneChild(CONTENTROOTENTITY_CONNECTION_ID, this)
 
   override val entitySource: EntitySource
-    get() = dataSource.entitySource
+    get() {
+      readField("entitySource")
+      return dataSource.entitySource
+    }
 
   override fun connectionIdList(): List<ConnectionId> {
     return connections
@@ -144,7 +149,7 @@ open class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData
             value.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] = this
           }
           // else you're attaching a new entity to an existing entity that is not modifiable
-          _diff.addEntity(value)
+          _diff.addEntity(value as ModifiableWorkspaceEntityBase<WorkspaceEntity, *>)
         }
         if (_diff != null && (value !is ModifiableWorkspaceEntityBase<*, *> || value.diff != null)) {
           _diff.updateOneToOneChildOfParent(CONTENTROOTENTITY_CONNECTION_ID, this, value)
