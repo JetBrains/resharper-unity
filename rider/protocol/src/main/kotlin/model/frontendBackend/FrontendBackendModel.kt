@@ -147,6 +147,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
             property("enableDebuggerExtensions", bool)
             property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
             property("forcedTimeoutForAdvanceUnityEvaluation", int)
+            property("breakpointTraceOutput", int)
         })
 
         field("playControls", Library.PlayControls)

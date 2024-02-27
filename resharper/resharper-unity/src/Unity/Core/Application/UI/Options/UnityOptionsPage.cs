@@ -285,6 +285,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddIntOption((UnitySettings s) => s.ForcedTimeoutForAdvanceUnityEvaluation,
                 Strings.UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation);
             AddBetterCommentText(Strings.UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation_Comment);
+            
+            AddComboOption((UnitySettings s) => s.BreakpointTraceOutput,
+                Strings.UnitySettings_t_Breakpoint_Trace_Output, string.Empty, string.Empty,
+                new RadioOptionPoint(BreakpointTraceOutput.Both, Strings.UnitySettings_t_Breakpoint_Trace_Output__Both),
+                new RadioOptionPoint(BreakpointTraceOutput.UnityOutput, Strings.UnitySettings_t_Breakpoint_Trace_Output__Unity_Log),
+                new RadioOptionPoint(BreakpointTraceOutput.DebugConsole, Strings.UnitySettings_t_Breakpoint_Trace_Output__Debugger_Console)
+            );
         }
 
         private void AddInternalSection(RunsProducts.ProductConfigurations productConfigurations)
