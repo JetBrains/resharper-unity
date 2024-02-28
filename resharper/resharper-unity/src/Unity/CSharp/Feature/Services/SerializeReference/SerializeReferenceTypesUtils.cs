@@ -344,6 +344,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 isTypeParameterType, fieldName);
         }
 
+        // for some reason built-in IsValueType returns false
+        private static bool IsValueType(IMetadataTypeInfo metadataTypeInfo)
+        {
+            return metadataTypeInfo.FullyQualifiedName.Equals("System.ValueType");
+        }
 
         internal static ClassInfoAdapter ToAdapter(this IMetadataTypeInfo classType, IPsiAssemblyFile assemblyFile,
             IUnityElementIdProvider provider)
@@ -356,7 +361,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             var superClasses =
                 metadataSuperClassTypes
-                    .Where(t => t != null && !t.IsObject() && !t.Type.IsArray() && !t.Type.IsList())
+                    .Where(t => t != null && !t.IsObject() && !IsValueType(t.Type) && !t.Type.IsArray() && !t.Type.IsList())
                     .Select(t => provider.GetElementId(t!.Type, assemblyFile))
                     .Select(id => new KeyValuePair<ElementId, int>(id!.Value, 1));
 
@@ -433,7 +438,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             Assertion.Require(provider != null, "provider != null");
 
             var elementId = provider.GetElementId(typeElement);
-            var superTypes = typeElement.GetSuperTypes().Where(t => !t.IsObject()).ToList();
+            var superTypes = typeElement.GetSuperTypes().Where(t => !t.IsObject() && !t.IsSystemValueType()).ToList();
 
             var superClassesEnumerable = superTypes
                 .Select(i => i.GetTypeElement())
