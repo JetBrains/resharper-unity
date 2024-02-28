@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
     /// TODO: this is a hack until Platform refactoring for grouping multiple UI categories in single templates tab
-    [ComponentInstantiationRequirement(Instantiation.DemandAnyThreadSafe)] 
+    [DerivedComponentsInstantiationRequirement(InstantiationRequirement.DeadlockSafe)] 
     public interface IUnityAdditionalTemplateScopePointsProvider
     {
         public IEnumerable<ITemplateScopePoint> GetUnityScopePoints();
