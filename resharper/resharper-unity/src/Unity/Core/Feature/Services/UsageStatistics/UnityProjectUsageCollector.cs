@@ -26,35 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
         {
             myUnitySolutionTracker = unitySolutionTracker;
             myDescriptionCollector = descriptionCollector;
-            myGroup = new EventLogGroup("dotnet.unity.state", "Packages and Assets used by Unity users", 3, featureUsageLogger);
+            myGroup = new EventLogGroup("dotnet.unity.state", "Packages and Assets used by Unity users", 4, featureUsageLogger);
             myEvent = myGroup.RegisterEvent("unityTechnology", "Unity Technology", EventFields.String("id", "Name",
-                new[] { "HDRP", "CoreRP", "URP", "ECS", "InputSystem", "Burst", "Odin", "Photon", "Peek", "UniRx",
-                    "UniTask", 
-                    "TestFramework",
-                    "PythonScripting",
-                    "Addressables",
-                    "AndroidLogCat",
-                    "CodeCoverage",
-                    "UnityCollections",
-                    "EditorCoroutines",
-                    "EntitiesGraphics",
-                    "Localization",
-                    "Mathematics",
-                    "Transport",
-                    "UnityPhysics",
-                    "Havok",
-                    "MlAgents",
-                    "MultiplayerTools",
-                    "NetCode",
-                    "NetCodeGameObjects",
-                    "Serialization",
-                    "Logging",
-                    "MemoryProfiler",
-                    "ProfilerAnalyzer",
-                    "ProfilerCore",
-                    "Collab",
-                    "VisualScripting"
-                }), EventFields.Boolean("isDiscovered", "Is Discovered"));
+                myDescriptionCollector.GetIds()), EventFields.Boolean("isDiscovered", "Is Discovered"));
         }
         
         public override EventLogGroup GetGroup()

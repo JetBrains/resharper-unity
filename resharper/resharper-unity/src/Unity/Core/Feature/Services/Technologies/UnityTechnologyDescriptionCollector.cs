@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -13,11 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
     [SolutionComponent]
     public class UnityTechnologyDescriptionCollector
     {
-        private readonly Lifetime myLifetime;
         private readonly ISolutionLoadTasksScheduler myTasksScheduler;
         private readonly PackageManager myPackageManager;
         private readonly List<IUnityTechnologyDescription> myDescriptions;
-
 
         public IViewableMap<string, bool> DiscoveredTechnologies => myDiscoveredTechnologies;
 
@@ -31,7 +30,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
         public UnityTechnologyDescriptionCollector(Lifetime lifetime, ISolution solution, ISolutionLoadTasksScheduler tasksScheduler, 
             UnitySolutionTracker solutionTracker, PackageManager packageManager)
         {
-            myLifetime = lifetime;
             myTasksScheduler = tasksScheduler;
             myPackageManager = packageManager;
             myDescriptions = new List<IUnityTechnologyDescription>()
@@ -47,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
                 new PeekUnityTechnologyDescription(),
                 new UniRxUnityTechnologyDescription(),
                 new UniTaskUnityTechnologyDescription(),
+                new DOTweenTechnologyDescription(),
                 new UnityTestFrameworkDescription(),
                 new PythonScriptingUnityTechnologyDescription(),
                 new AddressablesUnityTechnologyDescription(),
@@ -71,6 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
                 new ProfilingCoreUnityTechnologyDescription(),
                 new CollabUnityTechnologyDescription(),
                 new VisualScriptingUnityTechnologyDescription(),
+                new HotReloadUnityTechnologyDescription()
             };
             
             myProjectsProcessed.Compose(lifetime, myPackagesProcessed, (a, b) => a && b).AdviseUntil(lifetime, v =>
@@ -200,6 +200,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
                     }
                 }
             }
+        }
+
+        public string[] GetIds()
+        {
+            return myDescriptions.Select(a => a.Id).ToArray();
         }
     }
 }
