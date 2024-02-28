@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -200,11 +199,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
                     }
                 }
             }
-        }
-
-        public string[] GetIds()
-        {
-            return myDescriptions.Select(a => a.Id).ToArray();
         }
     }
 }
