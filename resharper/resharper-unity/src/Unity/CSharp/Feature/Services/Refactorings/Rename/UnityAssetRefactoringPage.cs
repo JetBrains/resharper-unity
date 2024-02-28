@@ -6,7 +6,7 @@ using JetBrains.Rider.Model.UIAutomation;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
-    public class UnityEventTargetRefactoringPage : SingleBeRefactoringPage
+    public class UnityAssetRefactoringPage : SingleBeRefactoringPage
     {
         private readonly DeferredCacheController myDeferredCacheController;
 
@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         //
         // We can't tell the difference between plugin not connected and not installed. Can't risk overwriting unsaved
         // open scenes, so we always show a confirmation prompt
-        public UnityEventTargetRefactoringPage(Lifetime lifetime, DeferredCacheController deferredCacheController)
+        public UnityAssetRefactoringPage(Lifetime lifetime, DeferredCacheController deferredCacheController)
             : base(lifetime)
         {
             myDeferredCacheController = deferredCacheController;

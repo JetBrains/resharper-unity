@@ -11,16 +11,16 @@ using JetBrains.ReSharper.Psi;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
     [ShellFeaturePart]
-    public class UnityEventTargetAtomicRenameFactory : IAtomicRenameFactory
+    public class UnityAssetAtomicRenameFactory : IAtomicRenameFactory
     {
         public bool IsApplicable(IDeclaredElement declaredElement)
         {
             if (!declaredElement.IsFromUnityProject())
                 return false;
 
-            return IsPossibleEventHandler(declaredElement);
+            return IsPossibleEventHandler(declaredElement) || IsUsedAsArgumentTypeName(declaredElement);
         }
-
+        
         public RenameAvailabilityCheckResult CheckRenameAvailability(IDeclaredElement element)
         {
             return RenameAvailabilityCheckResult.CanBeRenamed;
@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         public IEnumerable<AtomicRenameBase> CreateAtomicRenames(IDeclaredElement declaredElement, string newName,
                                                                  bool doNotAddBindingConflicts)
         {
-            return new[] {new UnityEventTargetAtomicRename(declaredElement.GetSolution(), declaredElement, newName)};
+            return new[] {new UnityAssetAtomicRename(declaredElement.GetSolution(), declaredElement, newName)};
         }
 
         private static bool IsPossibleEventHandler(IDeclaredElement declaredElement)
@@ -63,5 +63,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                     return false;
             }
         }
+        
+        private bool IsUsedAsArgumentTypeName(IDeclaredElement declaredElement)
+        {
+            var script = declaredElement as IClass;
+            if (script == null)
+                return false;
+            
+            var solution = script.GetSolution();
+            var cacheController = solution.GetComponent<DeferredCacheController>();
+
+            if (cacheController.IsProcessingFiles())
+                return true;
+            
+            var methods = solution.GetComponent<UnityEventsElementContainer>();
+
+            return methods.GetScriptUsagesCount(script, out var _) > 0;
+        }
+
     }
 }

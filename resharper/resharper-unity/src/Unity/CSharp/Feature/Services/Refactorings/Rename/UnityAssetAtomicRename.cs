@@ -25,14 +25,14 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
-    public class UnityEventTargetAtomicRename : AtomicRenameBase
+    public class UnityAssetAtomicRename : AtomicRenameBase
     {
         private readonly ISolution mySolution;
         private readonly IDeclaredElementPointer<IDeclaredElement> myPointer;
-        private IList<UnityEventHandlerOccurrence> myElementsToRename;
+        private IList<IAssetOccurrenceWithTextOccurrence> myElementsToRename;
         private bool myIsProperty;
 
-        public UnityEventTargetAtomicRename(ISolution solution,
+        public UnityAssetAtomicRename(ISolution solution,
                                             IDeclaredElement declaredElement,
                                             string newName)
         {
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             OldName = declaredElement.ShortName;
             NewName = newName;
 
-            myElementsToRename = EmptyList<UnityEventHandlerOccurrence>.InstanceList;
+            myElementsToRename = EmptyList<IAssetOccurrenceWithTextOccurrence>.InstanceList;
         }
 
         public override void PrepareToRename(IRenameRefactoring executer,
@@ -64,33 +64,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             pi.Start(1);
 
             using var subProgress = pi.CreateSubProgress();
-            myElementsToRename = GetAssetOccurrence(de, subProgress)
-                .Select(t =>
-                    new UnityEventHandlerOccurrence(t.SourceFile, de.CreateElementPointer(), t.OwningElementLocation,
-                        t.AssetMethodUsages, t.IsPrefabModification)).ToList();
+            myElementsToRename = GetAssetOccurrence(de, subProgress);
         }
 
         public override IRefactoringPage CreateRenamesConfirmationPage(IRenameWorkflow renameWorkflow, IProgressIndicator pi)
         {
-            return new UnityEventTargetRefactoringPage(
+            return new UnityAssetRefactoringPage(
                 ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, mySolution.GetComponent<DeferredCacheController>());
         }
 
-        private List<UnityEventHandlerFindResult> GetAssetOccurrence(IDeclaredElement de, IProgressIndicator subProgress)
+        private List<IAssetOccurrenceWithTextOccurrence> GetAssetOccurrence(IDeclaredElement de, IProgressIndicator subProgress)
         {
             var finder = mySolution.GetPsiServices().AsyncFinder;
+            var occurrenceFactory = mySolution.GetComponent<OccurrenceFactory>();
             var module = mySolution.GetComponent<UnityExternalFilesModuleFactory>().PsiModule;
             var searchDomain = SearchDomainFactory.Instance.CreateSearchDomain(module);
-            var results = new List<UnityEventHandlerFindResult>();
+            var results = new List<IAssetOccurrenceWithTextOccurrence>();
 
             var elements = de is IProperty property ? new[] {de, property.Getter, property.Setter} : new[] {de};
 
             finder.Find(elements.Where(t => t != null).ToArray(), searchDomain, new FindResultConsumer(result =>
             {
-                if (result is UnityEventHandlerFindResult fr)
-                {
-                    results.Add(fr);
-                }
+                var occurence = occurrenceFactory.MakeOccurrence(result);
+                if (occurence is IAssetOccurrenceWithTextOccurrence assetOccurrenceWithTextOccurrence)
+                    results.Add(assetOccurrenceWithTextOccurrence);
                 return FindExecution.Continue;
             }), SearchPattern.FIND_USAGES, subProgress);
 
@@ -105,10 +102,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
             var workflow = (executer.Workflow as RenameWorkflowBase).NotNull("workflow != null");
 
-            var persistentIndexManager = mySolution.GetComponent<IPersistentIndexManager>();
             foreach (var textOccurrence in myElementsToRename)
             {
-                var sourceFile = persistentIndexManager[textOccurrence.MethodUsages.TextRangeOwner];
+                var sourceFile = textOccurrence.GetSourceFile();
                 if (sourceFile == null)
                     continue;
                 workflow.DataModel.AddExtraTextOccurrence(new AssetTextOccurrence(textOccurrence, sourceFile, OldName, NewName, myIsProperty));
@@ -128,13 +124,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         private class AssetTextOccurrence : ITextOccurrenceRenameMarker
         {
-            private readonly UnityEventHandlerOccurrence myAssetOccurrence;
+            private readonly IAssetOccurrenceWithTextOccurrence myAssetOccurrence;
             private readonly RangeMarker myRangeMarker;
 
-            public AssetTextOccurrence(UnityEventHandlerOccurrence assetOccurrence, IPsiSourceFile sourceFile,
+            public AssetTextOccurrence(IAssetOccurrenceWithTextOccurrence assetOccurrence, IPsiSourceFile sourceFile,
                 string oldName, string newName, bool isProperty)
             {
-                var curRange = assetOccurrence.MethodUsages.TextRangeOwnerPsiPersistentIndex;
+                var curRange = assetOccurrence.RenameTextRange;
 
                 myRangeMarker =  new RangeMarker(sourceFile.Document, isProperty ? new TextRange(curRange.StartOffset + 4, curRange.EndOffset) : curRange);
                 myAssetOccurrence = assetOccurrence;
@@ -156,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             public bool IsValid => myAssetOccurrence.IsValid;
 
             public OccurrencePresentationOptions PresentationOptions { get; set; }
-            public IDocument GetDocument() => myAssetOccurrence.SourceFile.Document;
+            public IDocument GetDocument() => myAssetOccurrence.GetSourceFile().Document;
 
             public string NewName { get; set; }
 

@@ -4,10 +4,11 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.UI.Icons;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
-    public class UnityEventHandlerOccurrence : UnityAssetOccurrence
+    public class UnityEventHandlerOccurrence : UnityAssetOccurrence, IAssetOccurrenceWithTextOccurrence
     {
         public readonly AssetMethodUsages MethodUsages;
 
@@ -31,5 +32,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
             return base.GetIcon();
         }
+
+        public IPsiSourceFile GetSourceFile()
+        {
+            return SourceFile;
+        }
+
+        public TextRange RenameTextRange => MethodUsages.TextRangeOwnerPsiPersistentIndex;
     }
 }
