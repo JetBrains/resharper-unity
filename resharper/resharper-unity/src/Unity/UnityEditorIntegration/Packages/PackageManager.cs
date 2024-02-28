@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Parts;
 using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.DataFlow;
@@ -52,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
     // 10. Refresh assets database/recompile
 #endregion
 
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.ContainerAsyncAnyThreadSafe)]
     public class PackageManager
     {
         private const string DefaultRegistryUrl = "https://packages.unity.com";

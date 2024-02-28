@@ -18,7 +18,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 {
-    [GeneratorElementProvider(GeneratorUnityKinds.UnityEventFunctions, typeof(CSharpLanguage), Instantiation.DemandAnyThread /* TODO check possibility to mark this class and dependencies as DemandAnyThreadSafe */)]
+    [GeneratorElementProvider(GeneratorUnityKinds.UnityEventFunctions, typeof(CSharpLanguage), Instantiation.DemandAnyThread /* not safe cause of UnityApi */)]
     public class GenerateUnityEventFunctionsProvider : GeneratorProviderBase<CSharpGeneratorContext>
     {
         private readonly UnityApi myUnityApi;

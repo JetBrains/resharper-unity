@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -8,7 +9,7 @@ using JetBrains.ReSharper.Psi.Modules;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class KnownTypesCache
     {
         private readonly ConcurrentDictionary<IClrTypeName, IDeclaredType> myTypes = new();

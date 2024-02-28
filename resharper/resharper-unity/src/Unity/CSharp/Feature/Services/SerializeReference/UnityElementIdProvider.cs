@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
     {
     }
 
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityElementIdProvider : IUnityElementIdProvider
     {
         ElementId? IUnityElementIdProvider.GetElementId(IDeclaredElement? element, ITypeElement? ownerType,

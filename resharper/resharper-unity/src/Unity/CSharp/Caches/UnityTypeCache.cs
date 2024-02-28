@@ -1,5 +1,6 @@
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -9,7 +10,7 @@ using JetBrains.Util.Caches;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityTypeCache : IInvalidatingCache
     {
         private readonly UnityVersion myUnityVersion;

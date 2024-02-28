@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
@@ -14,7 +15,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.ContainerAsyncAnyThreadSafe)]
     public class UnityProjectFileCacheProvider : IProjectFileDataProvider<UnityProjectDataCache>
     {
         private static readonly char[] ourSymbolSeparator = { ';', ',' };

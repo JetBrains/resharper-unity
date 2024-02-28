@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.HabitatDetector;
@@ -25,7 +26,7 @@ using Vestris.ResourceLib;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityVersion : IUnityReferenceChangeHandler, IUnityVersion
     {
         public const string VersionRegex = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";

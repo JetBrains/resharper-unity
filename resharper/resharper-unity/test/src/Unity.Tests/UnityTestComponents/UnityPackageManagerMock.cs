@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Parts;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -20,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
         }
     }
     
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.ContainerAsyncAnyThreadSafe)]
     public class UnityPackageManagerMock : PackageManager
     {
         private readonly HashSet<string> myInternalPackages = new();

@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -11,7 +12,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.ContainerAsyncAnyThreadSafe)]
     public class UnitySolutionTracker : IUnityReferenceChangeHandler
     {
         private readonly ISolution mySolution;

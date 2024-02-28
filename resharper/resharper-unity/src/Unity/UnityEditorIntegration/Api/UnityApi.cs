@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
@@ -30,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         SerializedReferenceSerializedField = 32,
     }
 
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread /* not safe cause of UnitySerializedReferenceProvider */)]
     public class UnityApi
     {
         // https://docs.unity3d.com/Documentation/Manual/script-Serialization.html
