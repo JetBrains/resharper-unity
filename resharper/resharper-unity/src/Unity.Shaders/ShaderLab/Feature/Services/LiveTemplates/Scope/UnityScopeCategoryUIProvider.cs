@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Application;
 using JetBrains.Application.I18n;
+using JetBrains.Application.Parts;
 using JetBrains.DataFlow;
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.Lifetimes;
@@ -19,7 +20,7 @@ using Strings = JetBrains.ReSharper.Plugins.Unity.Shaders.Resources.Strings;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.LiveTemplates.Scope
 {
     // TODO: remove when IUnityAdditionalTemplateScopePointsProvider replaces with Platform support for UI categories grouping (https://youtrack.jetbrains.com/issue/RIDER-95661/ShaderLab-Return-own-UI-category-for-Live-Templates-and-remove-hack-with-IUnityAdditionalTemplateScopePointsProvider)
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityAdditionalTemplateScopePointsProvider : IUnityAdditionalTemplateScopePointsProvider
     {
         private readonly UnityScopeCategoryUIProvider myProvider = new();
