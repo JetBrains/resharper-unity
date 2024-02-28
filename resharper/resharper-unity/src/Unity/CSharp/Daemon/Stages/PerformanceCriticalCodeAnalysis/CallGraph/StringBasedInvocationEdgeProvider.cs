@@ -1,4 +1,5 @@
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
@@ -7,7 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class StringBasedInvocationEdgeProvider : ICallGraphEdgeProvider
     {
         public void FindEdges(ITreeNode treeNode, IDeclaredElement caller, ICallGraphEdgeConsumer consumer)

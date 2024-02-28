@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
@@ -9,7 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
 {
     // Group usages of the name element by "Assembly definition reference"
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class AsmDefOccurrenceKindProvider : IOccurrenceKindProvider
     {
         public static readonly OccurrenceKind AssemblyDefinitionReference =

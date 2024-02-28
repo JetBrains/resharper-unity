@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Application.Changes;
+using JetBrains.Application.Parts;
 using JetBrains.DocumentModel;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
@@ -14,7 +15,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public partial class DotsElementsSuperTypeDeclaredInOtherPartSuppressorMock : DotsElementsSuperTypeDeclaredInOtherPartSuppressor
     {
         public override bool SuppressInspections(IDeclaredType superType, IClassLikeDeclaration declaration,

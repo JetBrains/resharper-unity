@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.OnlineHelp;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
@@ -13,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
     // Unity registry package have their api doc online like:
     // https://docs.unity3d.com/Packages/com.unity.mathematics@1.2/api/Unity.Mathematics.math.clamp.html
 
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityPackagesOnlineHelpProvider : CompiledElementOnlineHelpProvider
     {
         public override string GetPresentableName(IDeclaredElement element)

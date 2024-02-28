@@ -1,5 +1,6 @@
 #nullable enable
 
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.Xml;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi;
@@ -8,7 +9,7 @@ using JetBrains.ReSharper.Psi.Xml.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.CodeCompletion
 {
-    [IntellisensePart]
+    [IntellisensePart(Instantiation.DemandAnyThread)]
     public class UxmlCodeCompletionContextProvider : XmlCodeCompletionContextProvider
     {
         private readonly UxmlCodeCompletionManager myManager;

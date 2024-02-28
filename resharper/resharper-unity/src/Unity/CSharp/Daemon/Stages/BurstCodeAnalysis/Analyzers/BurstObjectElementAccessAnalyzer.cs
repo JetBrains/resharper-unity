@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -7,7 +8,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public sealed class BurstObjectElementAccessAnalyzer : BurstProblemAnalyzerBase<IElementAccessExpression>, IBurstBannedAnalyzer
     {
         protected override bool CheckAndAnalyze(IElementAccessExpression elementAccessExpression, IHighlightingConsumer consumer,

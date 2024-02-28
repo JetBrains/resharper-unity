@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -13,7 +14,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class MultiplicationOrderAnalyzer : PerformanceProblemAnalyzerBase<IMultiplicativeExpression>
     {
         private static readonly HashSet<IClrTypeName> ourKnownTypes = new HashSet<IClrTypeName>()

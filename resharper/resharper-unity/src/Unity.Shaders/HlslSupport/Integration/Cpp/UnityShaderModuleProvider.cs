@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.DocumentManagers;
 using JetBrains.Lifetimes;
@@ -120,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
     }
 
 
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityShaderPsiModuleProviderFilter : IProjectPsiModuleProviderFilter
     {
         public Tuple<IProjectPsiModuleHandler, IPsiModuleDecorator>? OverrideHandler(Lifetime lifetime, IProject project,

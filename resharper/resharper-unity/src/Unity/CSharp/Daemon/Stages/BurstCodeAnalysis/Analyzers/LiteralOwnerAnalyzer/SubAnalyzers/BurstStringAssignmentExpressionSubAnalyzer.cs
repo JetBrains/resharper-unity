@@ -1,10 +1,11 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.LiteralOwnerAnalyzer.SubAnalyzers
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class BurstStringAssignmentExpressionSubAnalyzer : BurstStringSubAnalyzerBase<IAssignmentExpression>
     {
         protected override IAssignmentExpression Navigate(ICSharpExpression expression)

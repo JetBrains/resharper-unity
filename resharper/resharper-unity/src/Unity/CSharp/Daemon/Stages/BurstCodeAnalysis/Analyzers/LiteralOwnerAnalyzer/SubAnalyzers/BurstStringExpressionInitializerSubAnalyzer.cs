@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -7,7 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.LiteralOwnerAnalyzer.SubAnalyzers
 {
     
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public sealed class BurstStringExpressionInitializerSubAnalyzer : BurstStringSubAnalyzerBase<IExpressionInitializer>
     {
         protected override IExpressionInitializer Navigate(ICSharpExpression expression)

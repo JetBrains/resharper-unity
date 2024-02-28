@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
@@ -9,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
 {
-    [SolutionFeaturePart]
+    [SolutionFeaturePart(Instantiation.DemandAnyThreadSafe)]
     public class AsmDefOccurrenceInformationProvider : IOccurrenceInformationProvider2
     {
         public IDeclaredElementEnvoy GetTypeMember(IOccurrence occurrence) => null;

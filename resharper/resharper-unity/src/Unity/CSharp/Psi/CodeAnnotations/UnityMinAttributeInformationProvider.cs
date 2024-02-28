@@ -1,11 +1,12 @@
 using System;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations;
 
-[SolutionComponent]
+[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
 public class UnityMinAttributeInformationProvider : IUnityRangeAttributeProvider
 {
     public bool IsApplicable(IAttributeInstance attributeInstance)

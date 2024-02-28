@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
@@ -12,7 +13,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Dots
 {
-    [DaemonStage(StagesBefore = new[] { typeof(CollectUsagesStage) }, StagesAfter = new[] { typeof(CSharpErrorStage) })]
+    [DaemonStage(Instantiation.DemandAnyThreadSafe, StagesBefore = new[] { typeof(CollectUsagesStage) }, StagesAfter = new[] { typeof(CSharpErrorStage) })]
     public class DotsFilesStage : CSharpDaemonStageBase
     {
         protected override bool IsSupported(IPsiSourceFile sourceFile)

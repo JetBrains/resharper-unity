@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.CSharp.FileLayout;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -11,7 +12,7 @@ using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class AdditionalFileLayoutPatternProvider : IAdditionalCSharpFileLayoutPatternProvider
     {
         public Patterns GetPattern(IContextBoundSettingsStore store, ICSharpTypeAndNamespaceHolderDeclaration declaration)

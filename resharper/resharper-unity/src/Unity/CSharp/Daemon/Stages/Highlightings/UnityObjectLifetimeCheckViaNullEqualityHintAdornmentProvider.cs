@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Controls.Utils;
 using JetBrains.Application.UI.PopupLayout;
@@ -13,7 +14,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 
-[SolutionComponent]
+[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
 public class UnityObjectLifetimeCheckViaNullEqualityHintAdornmentProvider : IHighlighterAdornmentProvider
 {
     public bool IsValid(IHighlighter highlighter) => highlighter.UserData is UnityObjectNullComparisonHintHighlighting hint && hint.IsValid();

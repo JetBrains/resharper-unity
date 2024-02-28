@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages.Analysis;
 using JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
@@ -6,7 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.Daemon;
 
-[SolutionComponent]
+[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
 public class OdinUseNameOfInspectionSuppressor : UseNameofExpressionAnalyzer.IUseNameOfInspectionSuppressor
 {
     public bool IsSuppressed(ICSharpLiteralExpression literalExpression)

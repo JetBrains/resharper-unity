@@ -1,4 +1,5 @@
 using System.Collections;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
@@ -11,7 +12,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 {
-    [DaemonStage(StagesBefore = new[] {typeof(IdentifierHighlightingStage)})]
+    [DaemonStage(Instantiation.DemandAnyThreadSafe, StagesBefore = new[] {typeof(IdentifierHighlightingStage)})]
     public class UnityColorHighlightingStage : CSharpDaemonStageBase
     {
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,

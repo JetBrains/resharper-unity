@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -6,7 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp.Impl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
 {
-    [PsiSharedComponent]
+    [PsiSharedComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityCSharpDeclaredElementPresenter : CSharpDeclaredElementPresenter
     {
         public override string GetEntityKind(IDeclaredElement declaredElement)

@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
@@ -12,7 +13,7 @@ using JetBrains.TextControl;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion
 {
     // This is to handle the "." in a fully qualified type name in e.g. GetComponent("UnityEngine.Grid")
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityObjectTypeReferenceAutomaticCompletionStrategy : IAutomaticCodeCompletionStrategy
     {
         public AutopopupType IsEnabledInSettings(IContextBoundSettingsStore settingsStore, ITextControl textControl)

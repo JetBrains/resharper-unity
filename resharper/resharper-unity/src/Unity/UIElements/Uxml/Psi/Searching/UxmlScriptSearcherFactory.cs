@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Searching
 {
-  [PsiComponent]
+  [PsiComponent(Instantiation.DemandAnyThreadSafe)]
   public class UxmlScriptSearcherFactory : DomainSpecificSearcherFactoryBase
   { 
     public override bool IsCompatibleWithLanguage(PsiLanguageType languageType)

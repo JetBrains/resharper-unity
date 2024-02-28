@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Tooltips;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
@@ -13,7 +14,7 @@ using JetBrains.TextControl.TextControlsManagement;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Services.Navigation
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class RiderUnityAssetOccurrenceNavigator : UnityAssetOccurrenceNavigator
     {
         public override bool Navigate(ISolution solution, IDeclaredElementPointer<IDeclaredElement> pointer, LocalReference location)

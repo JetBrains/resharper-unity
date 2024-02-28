@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.DocumentManagers;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
@@ -9,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
-    [SolutionFeaturePart]
+    [SolutionFeaturePart(Instantiation.DemandAnyThreadSafe)]
     public class UnityAssetOccurenceInfoProvider : IOccurrenceInformationProvider2
     {
         public IDeclaredElementEnvoy GetTypeMember(IOccurrence occurrence)

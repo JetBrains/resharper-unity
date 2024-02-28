@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
@@ -5,7 +6,7 @@ using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class AsmDefSpecificOccurrenceKindIconProvider : IOccurrenceKindIconProvider
     {
         public IconId GetImageId(OccurrenceKind occurrenceKind)

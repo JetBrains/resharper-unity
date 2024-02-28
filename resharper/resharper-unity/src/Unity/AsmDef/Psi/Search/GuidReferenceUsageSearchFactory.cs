@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
@@ -22,7 +23,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
 {
-    [PsiSharedComponent]
+    [PsiSharedComponent(Instantiation.DemandAnyThreadSafe)]
     public class GuidReferenceUsageSearchFactory : DomainSpecificSearcherFactoryBase
     {
         public override bool IsCompatibleWithLanguage(PsiLanguageType languageType) =>

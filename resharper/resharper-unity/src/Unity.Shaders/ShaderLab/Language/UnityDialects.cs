@@ -1,8 +1,9 @@
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 
-[ShellComponent]
+[ShellComponent(Instantiation.DemandAnyThreadSafe)]
 public sealed class UnityDialects
 {
     public UnityHlslDialect HlslDialect { get; } = new();

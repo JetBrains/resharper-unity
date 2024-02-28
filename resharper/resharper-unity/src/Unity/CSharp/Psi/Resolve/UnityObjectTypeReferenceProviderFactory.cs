@@ -1,5 +1,6 @@
 #nullable enable
 
+using JetBrains.Application.Parts;
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -10,7 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
-    [ReferenceProviderFactory]
+    [ReferenceProviderFactory(Instantiation.DemandAnyThreadSafe)]
     public class UnityObjectTypeReferenceProviderFactory : IReferenceProviderFactory
     {
         public UnityObjectTypeReferenceProviderFactory()

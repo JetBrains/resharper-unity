@@ -3,13 +3,14 @@ using System;
 using System.Text;
 using JetBrains.Application;
 using JetBrains.Application.I18n;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityDocumentation
     {
         private readonly CultureContextComponent myCultureContextComponent;

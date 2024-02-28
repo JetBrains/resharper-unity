@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
@@ -9,7 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityDotsScopeProvider : ScopeProvider
     {
         public UnityDotsScopeProvider()

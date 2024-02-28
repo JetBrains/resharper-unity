@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
@@ -5,7 +6,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeAnnotations;
 
-[SolutionComponent]
+[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
 public class OdinMinAttributeInformationProvider : IUnityRangeAttributeProvider
 {
     public bool IsApplicable(IAttributeInstance attributeInstance)

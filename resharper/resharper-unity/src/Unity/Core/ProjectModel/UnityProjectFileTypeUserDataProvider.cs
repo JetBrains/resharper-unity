@@ -1,5 +1,6 @@
 #nullable enable
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Common.ProjectModel;
@@ -9,7 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityProjectFileTypeUserDataProvider : IProjectFileTypeUserDataProvider
     {
         public void AddUserData(ReadonlyUserDataPerSubjectBuilder<ProjectFileType> builder)

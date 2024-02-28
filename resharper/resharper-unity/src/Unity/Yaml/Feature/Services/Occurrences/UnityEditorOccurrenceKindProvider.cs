@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
@@ -6,7 +7,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityEditorOccurrenceKindProvider : IOccurrenceKindProvider
     {
         public ICollection<OccurrenceKind> GetOccurrenceKinds(IOccurrence occurrence)

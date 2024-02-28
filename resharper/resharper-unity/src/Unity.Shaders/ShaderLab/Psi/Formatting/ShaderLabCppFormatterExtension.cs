@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Cpp.CodeStyle;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
@@ -16,7 +17,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 {
-  [ShellComponent]
+  [ShellComponent(Instantiation.DemandAnyThreadSafe)]
   public class ShaderLabCppFormatterExtension : ICppCodeFormatterExtension
   {
     public void AddRules(CppFormattingInfoProvider formattingInfoProvider)

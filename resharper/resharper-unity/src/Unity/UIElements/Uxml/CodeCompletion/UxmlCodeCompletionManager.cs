@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Settings;
@@ -9,7 +10,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.CodeCompletion
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThread)]
     public class UxmlCodeCompletionManager : LanguageSpecificCodeCompletionManager
     {
         public UxmlCodeCompletionManager(CodeCompletionSettingsService codeCompletionSettings)

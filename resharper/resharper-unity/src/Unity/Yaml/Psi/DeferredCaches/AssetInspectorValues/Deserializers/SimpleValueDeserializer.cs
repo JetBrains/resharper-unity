@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -8,7 +9,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Deserializers
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class SimpleValueDeserializer : AssetInspectorValueDeserializerBase
     {
         private const int MaxSize = 300;

@@ -1,11 +1,12 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.ContextHighlighters
 {
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global - derived in Rider
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShaderLabUsageContextHighlighterAvailability
     {
         // ReSharper disable once UnusedParameter.Global

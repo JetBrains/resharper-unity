@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
@@ -10,7 +11,7 @@ using JetBrains.ReSharper.Resources.Shell;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
 {
-    [PsiSharedComponent]
+    [PsiSharedComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShaderLabPsiSourceFilePropertiesProvider : IPsiSourceFilePropertiesProvider
     {
         public IPsiSourceFileProperties? GetPsiProperties(IPsiSourceFileProperties? prevProperties, IProject project,

@@ -1,13 +1,14 @@
 ﻿using System.IO;
 using System.Reflection;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityTemplatesDefaultSettings : IHaveDefaultSettingsStream
     {
         public Stream GetDefaultSettingsStream(Lifetime lifetime)

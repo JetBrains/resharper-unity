@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Descriptions;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
@@ -7,7 +8,7 @@ using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.QuickDoc
 {
-    [DeclaredElementDescriptionProvider]
+    [DeclaredElementDescriptionProvider(Instantiation.DemandAnyThreadSafe)]
     public class ShaderLabDeclaredElementDescriptionProvider : IDeclaredElementDescriptionProvider
     {
         public RichTextBlock? GetElementDescription(IDeclaredElement element, DeclaredElementDescriptionStyle style, PsiLanguageType language, IPsiModule? module = null) =>

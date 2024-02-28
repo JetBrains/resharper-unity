@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -10,7 +11,7 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.LiveTemplates
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityShadersTemplatesDefaultSettingsStream : IHaveDefaultSettingsStream, ITemplatesLocalizationSource
     {
         public string Name => "Unity Shaders default LiveTemplates";

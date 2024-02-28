@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -6,7 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.LocalVariableDeclaration
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class BurstStringAssignmentAnalyzer : IBurstProblemSubAnalyzer<IMultipleLocalVariableDeclaration>
     {
         public BurstProblemSubAnalyzerStatus CheckAndAnalyze(IMultipleLocalVariableDeclaration t, IHighlightingConsumer consumer)

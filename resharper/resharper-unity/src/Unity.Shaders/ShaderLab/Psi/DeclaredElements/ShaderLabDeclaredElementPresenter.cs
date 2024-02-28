@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Text;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -8,7 +9,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements
 {
-    [PsiSharedComponent]
+    [PsiSharedComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShaderLabDeclaredElementPresenter : IDeclaredElementPresenter
     {
         public static ShaderLabDeclaredElementPresenter Instance => PsiShared.GetComponent<ShaderLabDeclaredElementPresenter>();

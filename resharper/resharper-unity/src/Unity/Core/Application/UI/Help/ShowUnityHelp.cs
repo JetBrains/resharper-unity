@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.StdApplicationUI;
 using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
@@ -13,7 +14,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShowUnityHelp : IShowHelp
     {
         private readonly OpensUri myUriOpener;
