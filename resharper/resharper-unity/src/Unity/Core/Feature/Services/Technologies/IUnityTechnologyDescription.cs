@@ -166,7 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
 
         public IEnumerable<string> GetPossibleAssemblyName()
         {
-            yield return "Photon3Unity3D.dll";
+            yield return "Photon3Unity3D";
         }
 
         public IEnumerable<string> GetPossibleProjectName()
@@ -235,6 +235,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
         public IEnumerable<string> GetPossibleProjectName()
         {
             yield return "UniTask";
+        }
+    }
+
+    // ReSharper disable once InconsistentNaming
+    public class DOTweenTechnologyDescription : IUnityTechnologyDescription
+    {
+        public string Id => "DOTween";
+
+        public IEnumerable<string> GetPossiblePackageName()
+        {
+            yield break;
+        }
+        
+        public IEnumerable<string> GetPossibleAssemblyName()
+        {
+            yield return "DOTween";
+            yield return "DOTweenPro";
+        }
+        
+        public IEnumerable<string> GetPossibleProjectName()
+        {
+            yield break;
         }
     }
     
@@ -443,6 +465,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
     public class VisualScriptingUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
     {
         public VisualScriptingUnityTechnologyDescription() : base("VisualScripting", "com.unity.visualscripting")
+        {
+        }
+    }
+
+    public class HotReloadUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public HotReloadUnityTechnologyDescription() : base("HotReload", "com.singularitygroup.hotreload")
         {
         }
     }
