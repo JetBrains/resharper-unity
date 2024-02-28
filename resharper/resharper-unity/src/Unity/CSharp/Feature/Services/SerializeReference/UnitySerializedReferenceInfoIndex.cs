@@ -137,7 +137,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             }
         }
 
-        public SerializedFieldStatus IsTypeSerializable(ElementId elementId, bool useSwea, HashSet<ElementId>? visitedNodes = null)
+        public SerializedFieldStatus IsTypeSerializable(ElementId elementId, bool useSwea)
+        {
+            return IsTypeSerializable(elementId, useSwea, new HashSet<ElementId>(), true, true);
+        }
+        
+        private SerializedFieldStatus IsTypeSerializable(ElementId elementId, bool useSwea, HashSet<ElementId> visitedNodes, bool traverseSuper, bool traverseInherited)
         {
             if(!elementId.IsCompiledElementId)
             {
@@ -145,28 +150,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     return SerializedFieldStatus.Unknown; //if swea is not completed
             }
 
-            if (visitedNodes != null && visitedNodes.Contains(elementId))
+            if (visitedNodes.Contains(elementId))
                 return SerializedFieldStatus.NonSerializedField;
 
             if (ClassInfoDictionary.TryGetValue(elementId, out var info))
             {
-                visitedNodes ??= new HashSet<ElementId>();
 
                 if (info.SerializeReferenceHolders.Count > 0)
                     return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField | SerializedFieldStatus.SerializedReferenceSerializedField;
 
                 visitedNodes.Add(elementId);
-
-                foreach (var (id, _) in info.SuperClasses)
+                
+                if (traverseSuper)
                 {
-                    if (IsTypeSerializable(id, useSwea, visitedNodes).HasFlag(SerializedFieldStatus.SerializedField))
-                        return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField | SerializedFieldStatus.SerializedReferenceSerializedField;
+                    foreach (var (id, _) in info.SuperClasses)
+                    {
+                        if (IsTypeSerializable(id, useSwea, visitedNodes, true, false).HasFlag(SerializedFieldStatus.SerializedField))
+                            return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField | SerializedFieldStatus.SerializedReferenceSerializedField;
+                    }
                 }
 
-                foreach (var (id, _) in info.Inheritors)
+                if (traverseInherited)
                 {
-                    if (IsTypeSerializable(id, useSwea, visitedNodes).HasFlag(SerializedFieldStatus.SerializedField))
-                        return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField | SerializedFieldStatus.SerializedReferenceSerializedField;
+                    foreach (var (id, _) in info.Inheritors)
+                    {
+                        if (IsTypeSerializable(id, useSwea, visitedNodes, false, true).HasFlag(SerializedFieldStatus.SerializedField))
+                            return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField |
+                                   SerializedFieldStatus.SerializedReferenceSerializedField;
+                    }
                 }
 
                 return SerializedFieldStatus.NonSerializedField;

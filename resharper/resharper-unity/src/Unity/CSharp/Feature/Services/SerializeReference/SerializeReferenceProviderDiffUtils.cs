@@ -5,6 +5,7 @@ using System.Linq;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.Util;
 using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference
