@@ -16,12 +16,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         public string MethodName { get; }
         public EventHandlerArgumentMode Mode { get; }
         public string Type { get; }
+        public string PsiModuleName { get; }
+        public TextRange ArgumentTypeNameRange { get; }
         public IHierarchyReference TargetScriptReference { get; }
         public TextRange TextRangeOwnerPsiPersistentIndex { get; }
         
         public OWORD TextRangeOwner { get; }
         
-        public AssetMethodUsages(string ownerName, string methodName, TextRange textRangeOwnerPsiPersistentIndex, OWORD textRangeOwner, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
+        public AssetMethodUsages(string ownerName, string methodName,
+            TextRange textRangeOwnerPsiPersistentIndex, OWORD textRangeOwner,
+            EventHandlerArgumentMode mode, string type, string psiModuleName,
+            TextRange argumentTypeNameRange, IHierarchyReference targetReference)
         {
             Assertion.Assert(targetReference != null, "targetReference != null");
             Assertion.Assert(methodName != null, "methodName != null");
@@ -31,6 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             TextRangeOwner = textRangeOwner;
             Mode = mode;
             Type = type;
+            PsiModuleName = psiModuleName;
+            ArgumentTypeNameRange = argumentTypeNameRange;
             TargetScriptReference = targetReference;
         }
         
@@ -43,6 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             AssetUtils.WriteOWORD(TextRangeOwner, writer);
             writer.Write((int)Mode);
             writer.Write(Type);
+            writer.Write(PsiModuleName);
+            writer.Write(ArgumentTypeNameRange.StartOffset);
+            writer.Write(ArgumentTypeNameRange.EndOffset);
             TargetScriptReference.WriteTo(writer);
         }
         
@@ -50,13 +60,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             return new AssetMethodUsages(reader.ReadString(),reader.ReadString(),
                 new TextRange(reader.ReadInt32(), reader.ReadInt32()), AssetUtils.ReadOWORD(reader),
-                (EventHandlerArgumentMode)reader.ReadInt32(), reader.ReadString(), HierarchyReferenceUtil.ReadReferenceFrom(reader));
+                (EventHandlerArgumentMode)reader.ReadInt32(), reader.ReadString(), reader.ReadString(), new TextRange(reader.ReadInt32(), reader.ReadInt32()), HierarchyReferenceUtil.ReadReferenceFrom(reader));
         }
 
         protected bool Equals(AssetMethodUsages other)
         {
             return OwnerName == other.OwnerName &&
                    MethodName == other.MethodName && Mode == other.Mode && Type == other.Type &&
+                   PsiModuleName == other.PsiModuleName && ArgumentTypeNameRange == other.ArgumentTypeNameRange &&
                    Equals(TargetScriptReference, other.TargetScriptReference) && TextRangeOwnerPsiPersistentIndex.Equals(other.TextRangeOwnerPsiPersistentIndex) &&
                    TextRangeOwner == other.TextRangeOwner;
         }
@@ -132,7 +143,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 target = (referenceValue as AssetReferenceValue).NotNull("referenceValue as AssetReferenceValue != null").Reference;            
             }
 
-            return new AssetMethodUsages(unityEventName, name, textRange, textRangeOwner, mode, null, target);
+            return new AssetMethodUsages(unityEventName, name, textRange, textRangeOwner, mode, null, null, TextRange.InvalidRange, target);
         }
 
         public Dictionary<string, IAssetValue> ToDictionary()

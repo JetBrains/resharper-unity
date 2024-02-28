@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi.Search;
 
@@ -60,6 +61,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                     var guid = assetScriptUsage.UsageTarget.ExternalAssetGuid;
                     var owningElementLocation = unityScriptsFindResults.OwningElementLocation;
                     return new UnityScriptsOccurrence(file, declaredElementPointer, owningElementLocation, guid);
+                case ScriptUsageInTypeName assetScriptUsage:
+                    guid = assetScriptUsage.UsageTarget.ExternalAssetGuid;
+                    owningElementLocation = unityScriptsFindResults.OwningElementLocation;
+                    return new UnityScriptInArgumentNameOccurrence(file, declaredElementPointer, 
+                        owningElementLocation, guid, assetScriptUsage.Range);
                 case AnimatorStateScriptUsage animatorStateUsage:
                     return new UnityAnimatorScriptOccurence(file, declaredElementPointer, animatorStateUsage);
                 case AnimatorStateMachineScriptUsage animatorStateMachineUsage:
