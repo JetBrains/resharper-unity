@@ -314,7 +314,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         }
                     }
                     
-                    if (call.ArgumentTypeNameRange.IsValid)
+                    if (call.Type != null && call.ArgumentTypeNameRange.IsValid)
                     {
                         myFQNUsagesCount.Remove(call.Type);
                         myScriptFQNToSourceFileWithUsages.Remove(call.Type, currentAssetSourceFile);
@@ -369,7 +369,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         }
                     }
 
-                    if (method.ArgumentTypeNameRange.IsValid)
+                    if (method.Type != null && method.ArgumentTypeNameRange.IsValid)
                     {
                         myFQNUsagesCount.Add(method.Type);
                         myScriptFQNToSourceFileWithUsages.Add(method.Type, currentAssetSourceFile);
