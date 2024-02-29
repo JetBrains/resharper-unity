@@ -15,10 +15,9 @@ public class UnityObjectNullPatternMatchingProblemInSwitchExpressionAnalyzer(Uni
         {
             foreach (var arm in expression.Arms)
             {
-                if (arm.Pattern is {} armPattern && helper.IsLifetimeBypassPattern(armPattern))
-                    consumer.AddHighlighting(new UnityObjectNullPatternMatchingWarning(arm.BodyArrow));        
+                if (arm.Pattern is {} armPattern)
+                    helper.AddNullPatternMatchingWarnings(armPattern, consumer);
             }
-            
         }   
     }
 }

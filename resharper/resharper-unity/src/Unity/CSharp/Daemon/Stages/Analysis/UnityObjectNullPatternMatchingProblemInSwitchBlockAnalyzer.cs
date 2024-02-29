@@ -17,11 +17,10 @@ public class UnityObjectNullPatternMatchingProblemInSwitchBlockAnalyzer(UnityApi
             {
                 foreach (var caseLabel in section.CaseLabelsEnumerable)
                 {
-                    if (caseLabel.Pattern is {} armPattern && helper.IsLifetimeBypassPattern(armPattern))
-                        consumer.AddHighlighting(new UnityObjectNullPatternMatchingWarning(caseLabel.Keyword));    
+                    if (caseLabel.Pattern is {} armPattern)
+                        helper.AddNullPatternMatchingWarnings(armPattern, consumer);
                 }
             }
-            
         }   
     }
 }
