@@ -1,0 +1,60 @@
+﻿using Unity.Entities;
+
+public partial struct RotationSystem : ISystem
+{
+    public void OnCreate(ref SystemState state){}
+    public void OnDestroy(ref SystemState state){}
+
+    public void OnUpdate(ref SystemState state)
+    {
+
+        foreach (var a in  SystemAPI.Query<RefRW<ComponentA>, |ComponentB|(0)>())
+        {
+        }
+
+        foreach (var a in SystemAPI.Query<|ComponentA|(1)>())
+        {
+        }
+    }
+}
+
+struct ComponentA : IComponentData
+{
+    public float WriteValue;
+}
+
+
+struct ComponentB : IComponentData
+{
+    public float ReadValue;
+}
+
+------------------------------------------------
+0: Type parameter 'ComponentB' must be Aspect, RefRO, or RefRW parameter type
+QUICKFIXES:
+Surround 'ComponentB' with 'RefRO'
+--Surround 'ComponentB' with 'RefRO' in method 'OnUpdate'
+--Surround 'ComponentB' with 'RefRO' in struct 'RotationSystem'
+--Surround 'ComponentB' with 'RefRO' in file
+--Surround 'ComponentB' with 'RefRO' in project
+--Surround 'ComponentB' with 'RefRO' in solution
+Surround 'ComponentB' with 'RefRW'
+--Surround 'ComponentB' with 'RefRW' in method 'OnUpdate'
+--Surround 'ComponentB' with 'RefRW' in struct 'RotationSystem'
+--Surround 'ComponentB' with 'RefRW' in file
+--Surround 'ComponentB' with 'RefRW' in project
+--Surround 'ComponentB' with 'RefRW' in solution
+1: Type parameter 'ComponentA' must be Aspect, RefRO, or RefRW parameter type
+QUICKFIXES:
+Surround 'ComponentA' with 'RefRO'
+--Surround 'ComponentA' with 'RefRO' in method 'OnUpdate'
+--Surround 'ComponentA' with 'RefRO' in struct 'RotationSystem'
+--Surround 'ComponentA' with 'RefRO' in file
+--Surround 'ComponentA' with 'RefRO' in project
+--Surround 'ComponentA' with 'RefRO' in solution
+Surround 'ComponentA' with 'RefRW'
+--Surround 'ComponentA' with 'RefRW' in method 'OnUpdate'
+--Surround 'ComponentA' with 'RefRW' in struct 'RotationSystem'
+--Surround 'ComponentA' with 'RefRW' in file
+--Surround 'ComponentA' with 'RefRW' in project
+--Surround 'ComponentA' with 'RefRW' in solution
