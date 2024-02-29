@@ -4,7 +4,7 @@ public class Foo : MonoBehaviour
 {
     public GameObject Method(GameObject o)
     {
-        return o ? o : this.{caret}gameObject;
+        return o ? o :{caret} this.gameObject;
     }
 }
 

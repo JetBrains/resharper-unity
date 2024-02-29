@@ -17,11 +17,11 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 
 [QuickFix]
-public class UnityObjectLifetimeCheckViaNullEqualityQuickFix(IEqualityExpression equalityExpression) : IQuickFix
+public class UnityObjectNullComparisonQuickFix(IEqualityExpression equalityExpression) : IQuickFix
 {
-    public UnityObjectLifetimeCheckViaNullEqualityQuickFix(UnityObjectLifetimeCheckViaNullEqualityWarning warning) : this(warning.Expression) { }
+    public UnityObjectNullComparisonQuickFix(UnityObjectNullComparisonWarning warning) : this(warning.Expression) { }
 
-    public UnityObjectLifetimeCheckViaNullEqualityQuickFix(UnityObjectLifetimeCheckViaNullEqualityHintHighlighting highlighting) : this(highlighting.Expression) { }
+    public UnityObjectNullComparisonQuickFix(UnityObjectNullComparisonHintHighlighting highlighting) : this(highlighting.Expression) { }
 
     public IEnumerable<IntentionAction> CreateBulbItems()
     {
@@ -33,7 +33,7 @@ public class UnityObjectLifetimeCheckViaNullEqualityQuickFix(IEqualityExpression
         yield return SimpleBulbItems.ReplaceCSharpExpression(equalityExpression, Strings.BypassUnityLifetimeCheck_Text, (factory, exp) =>
         {
             string template;
-            if (exp.GetLanguageVersion() >= CSharpLanguageLevel.CSharp70 && !exp.GetSolution().GetComponent<UnityLifetimeChecksHelper>().ForceLifetimeChecks.Value)
+            if (ShouldSuggestIsOperator(exp))
                 template = exp.EqualityType == EqualityExpressionType.NE ? "$0 is not null" : "$0 is null";
             else
                 template = exp.EqualityType == EqualityExpressionType.NE ? "!ReferenceEquals($0, null)" : "ReferenceEquals($0, null)";
@@ -44,6 +44,14 @@ public class UnityObjectLifetimeCheckViaNullEqualityQuickFix(IEqualityExpression
 
         static ICSharpExpression GetUnityObjectOperand(IEqualityExpression exp) => exp.LeftOperand.GetOperandThroughParenthesis().IsNullLiteral() ? exp.RightOperand : exp.LeftOperand;
     }
+
+    private bool ShouldSuggestIsOperator(IEqualityExpression exp)
+    {
+        if (exp.GetLanguageVersion() < CSharpLanguageLevel.CSharp70)
+            return false;
+        var helper = exp.GetSolution().GetComponent<UnityLifetimeChecksHelper>();
+        return exp.GetSourceFile() is { } sourceFile && !helper.IsNullPatternMatchingWarningEnabled(sourceFile);
+    } 
 
     public bool IsAvailable(IUserDataHolder cache) => equalityExpression.IsValid();
 }

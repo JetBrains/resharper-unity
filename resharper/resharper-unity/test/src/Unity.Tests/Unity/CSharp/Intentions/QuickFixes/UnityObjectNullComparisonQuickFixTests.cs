@@ -1,33 +1,32 @@
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
-using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
-using Lifetime = JetBrains.Lifetimes.Lifetime;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes;
 
 [TestUnity]
 public class UnityObjectLifetimeCheckViaNullEqualityQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
 {
-    protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityObjectLifetimeCheckViaNullEquality\Availability";
+    protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityObjectNullComparison\Availability";
 
     protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile, IContextBoundSettingsStore boundSettingsStore) => 
-        highlighting is UnityObjectLifetimeCheckViaNullEqualityWarning or UnityObjectLifetimeCheckViaNullEqualityHintHighlighting;
+        highlighting is UnityObjectNullComparisonWarning or UnityObjectNullComparisonHintHighlighting;
 
     [Test] public void Test01() { DoNamedTest(); }
 }
 
 
 [TestUnity]
-public class UnityObjectLifetimeCheckViaNullEqualityQuickFixTests : QuickFixTestBase<UnityObjectLifetimeCheckViaNullEqualityQuickFix>
+[TestCustomInspectionSeverity(UnityObjectNullPatternMatchingWarning.HIGHLIGHTING_ID, Severity.DO_NOT_SHOW)]
+public class UnityObjectNullComparisonQuickFixTests : QuickFixTestBase<UnityObjectNullComparisonQuickFix>
 {
-    protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityObjectLifetimeCheckViaNullEquality";
+    protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityObjectNullComparison";
     protected override bool AllowHighlightingOverlap => true;
 
     [Test] public void Test01() { DoNamedTest(); }
@@ -40,10 +39,10 @@ public class UnityObjectLifetimeCheckViaNullEqualityQuickFixTests : QuickFixTest
 }
 
 [TestUnity]
-[TestSetting(typeof(UnitySettings), nameof(UnitySettings.ForceLifetimeChecks), true)]
-public class UnityObjectLifetimeCheckViaNullEqualityQuickFixWithBypassCheckTests : QuickFixTestBase<UnityObjectLifetimeCheckViaNullEqualityQuickFix>
+[TestCustomInspectionSeverity(UnityObjectNullPatternMatchingWarning.HIGHLIGHTING_ID, Severity.WARNING)]
+public class UnityObjectNullComparisonQuickFixWithBypassCheckTests : QuickFixTestBase<UnityObjectNullComparisonQuickFix>
 {
-    protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityObjectLifetimeCheckViaNullEquality";
+    protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityObjectNullComparison";
     protected override bool AllowHighlightingOverlap => true;
     
     [Test] public void TestWithBypassCheck01() { DoNamedTest(); }
