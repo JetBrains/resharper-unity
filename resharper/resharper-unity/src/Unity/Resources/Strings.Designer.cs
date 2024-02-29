@@ -429,6 +429,9 @@
     public static string UnityDots_InconsistentModifiersForDotsInheritor => ResourceManager.GetString("UnityDots_InconsistentModifiersForDotsInheritor");
     public static string UnityDots_MustBeStructForDotsInheritor => ResourceManager.GetString("UnityDots_MustBeStructForDotsInheritor");
     public static string UnityDots_AspectWrongFieldsType => ResourceManager.GetString("UnityDots_AspectWrongFieldsType");
+    public static string UnityDots_WrongQueryTypeArgument => ResourceManager.GetString("UnityDots_WrongQueryTypeArgument");
+    public static string UnityDots_MustBeSurroundedWithRefRwRo => ResourceManager.GetString("UnityDots_MustBeSurroundedWithRefRwRo");
+    public static string UnityDots_WrongQueryTypeArgument_SurroundWith => ResourceManager.GetString("UnityDots_WrongQueryTypeArgument_SurroundWith");
     public static string UnityDots_AspectWrongFieldsType_WrapWith => ResourceManager.GetString("UnityDots_AspectWrongFieldsType_WrapWith");
     public static string UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly => ResourceManager.GetString("UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly");
     public static string UnityDots_AddFieldToExistingBakerAndAuthoring_Description => ResourceManager.GetString("UnityDots_AddFieldToExistingBakerAndAuthoring_Description");
