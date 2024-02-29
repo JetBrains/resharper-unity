@@ -236,6 +236,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return IsRelatedMethod(invocationExpression.InvocationExpressionReference, IsEntitiesForEach);
         }
         
+        public static bool IsSystemApiQuery(this IInvocationExpression invocationExpression)
+        {
+            return invocationExpression.TypeArguments.Count != 0 &&
+                   IsRelatedMethod(invocationExpression.InvocationExpressionReference, IsSystemApiQuery);
+        }
+        
         private static bool IsRelatedMethod(IInvocationExpressionReference reference, Func<IMethod, bool> checker)
         {
             var result = reference.Resolve();
@@ -310,6 +316,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         {
             return method is { ShortName: "ForEach" } &&
                    method.ContainingType?.GetClrName().Equals(KnownTypes.LambdaForEachDescriptionConstructionMethods) == true;
+        }
+        
+        private static bool IsSystemApiQuery(IMethod method)
+        {
+            return method is { ShortName: "Query" } &&
+                   method.ContainingType?.GetClrName().Equals(KnownTypes.SystemAPI) == true;
         }
         
         public static bool IsUQueryExtensionsQueueMethod(this IInvocationExpression expr)
