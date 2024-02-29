@@ -1,31 +1,31 @@
 #nullable enable
-using JetBrains.Application.Settings;
-using JetBrains.DataFlow;
-using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
+using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
 [SolutionComponent]
-public class UnityLifetimeChecksHelper
+public class UnityLifetimeChecksHelper(ISolution solution, HighlightingSettingsManager highlightingSettingsManager)
 {
-    private readonly IClrTypeName myNotDestroyedAttribute;
-    
-    public IProperty<bool> ForceLifetimeChecks { get; }
-   
+    private readonly IClrTypeName myNotDestroyedAttribute = new ClrTypeName("JetBrains.Annotations.NotDestroyedAttribute");
 
-    public UnityLifetimeChecksHelper(Lifetime lifetime, IApplicationWideContextBoundSettingStore store)
+    public bool IsNullPatternMatchingWarningEnabled(IPsiSourceFile sourceFile) => highlightingSettingsManager.GetConfigurableSeverity(UnityObjectNullPatternMatchingWarning.HIGHLIGHTING_ID, sourceFile, sourceFile.GetLazySettingsStoreWithEditorConfig(solution)) >= Severity.HINT;
+
+    public bool IsLifetimeBypassPattern(IPattern pattern)
     {
-        ForceLifetimeChecks = store.BoundSettingsStore.GetValueProperty(lifetime, (UnitySettings s) => s.ForceLifetimeChecks);
-        myNotDestroyedAttribute = new ClrTypeName("JetBrains.Annotations.NotDestroyedAttribute");
-    }
+        return pattern.GetPatternThroughNegations(out _).GetPatternThroughParentheses() switch
+        {
+            IVarPattern or IDiscardPattern => false,
+            IBinaryPattern binaryPattern => IsLifetimeBypassPattern(binaryPattern.LeftPattern) || IsLifetimeBypassPattern(binaryPattern.RightPattern),
+            _ => true
+        };
+    } 
 
     public bool CanBeDestroyed(ICSharpExpression expression)
     {

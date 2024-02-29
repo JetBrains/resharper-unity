@@ -18,18 +18,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
     AttributeId = AnalysisHighlightingAttributeIds.PARAMETER_NAME_HINT,
     OverlapResolve = OverlapResolveKind.NONE,
     ShowToolTipInStatusBar = false)]
-public class UnityObjectLifetimeCheckViaNullEqualityHintHighlighting(IEqualityExpression expression) : IUnityHighlighting, IInlayHintWithDescriptionHighlighting, IHighlightingWithTestOutput
+public class UnityObjectNullComparisonHintHighlighting(IEqualityExpression expression) : IUnityHighlighting, IInlayHintWithDescriptionHighlighting, IHighlightingWithTestOutput
 {
     public const double DefaultOrder = 2;
 
     public IEqualityExpression Expression => expression;
     public IconId Icon => PsiSymbolsThemedIcons.InterceptedCall.Id;
-    public /*Localized*/ string ToolTip => Strings.UnityObjectLifetimeCheckViaNullEqualityHint_Description;
+    public /*Localized*/ string ToolTip => Strings.UnityObjectNullComparisonHint_Message;
     public /*Localized*/ string ErrorStripeToolTip => ToolTip;
     public bool IsValid() => expression.IsValid();
     public DocumentRange CalculateRange() => expression.OperatorSign.GetHighlightingRange();
 
     public RichText Text { get; } = new(string.Empty);
-    public /*Localized*/ RichText Description { get; } = new(Strings.UnityObjectLifetimeCheckViaNullEqualityHint_Description); 
+    public /*Localized*/ RichText Description { get; } = new(Strings.UnityObjectNullComparisonHint_Message); 
     public string TestOutput => $"🖼️{Icon}|🏷️{Text.Text}|📖{Description}"; 
 }

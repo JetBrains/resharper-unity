@@ -4,6 +4,6 @@ public class Foo : MonoBehaviour
 {
     public Transform Method(Transform t)
     {
-        return t ? t : trans{caret}form;
+        return t ? t :{caret} transform;
     }
 }

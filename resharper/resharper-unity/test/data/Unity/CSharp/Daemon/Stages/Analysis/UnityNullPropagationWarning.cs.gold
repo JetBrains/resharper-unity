@@ -36,7 +36,7 @@ public class Test : MonoBehaviour
 public static class UnityObjectExtensions
 {
     [return: JetBrains.Annotations.NotDestroyed]
-    public static Object Opt(this Object obj) => obj ? obj : null;
+    public static T Opt<T>(this T obj) where T : Object => obj ? obj : null;
 }
 
 namespace JetBrains.Annotations

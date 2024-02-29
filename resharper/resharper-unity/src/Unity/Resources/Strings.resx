@@ -252,7 +252,7 @@
         <value>To standard event function</value>
     </data>
     <data name="ConvertToUnityObjectLifetimeCheck_Text" xml:space="preserve">
-        <value>Convert to Unity object lifetime check</value>
+        <value>Convert to explicit Unity engine object lifetime check</value>
     </data>
     <data name="ConvertToCompareTagQuickFix_Text_Convert_to__CompareTag_" xml:space="preserve">
         <value>Convert to 'CompareTag'</value>
@@ -276,7 +276,7 @@
         <value>To named reference</value>
     </data>
     <data name="BypassUnityLifetimeCheck_Text" xml:space="preserve">
-        <value>Bypass Unity object lifetime check</value>
+        <value>Convert Unity engine object lifetime check to C# null check</value>
     </data>
     <data name="ConvertToScriptableObjectCreateInstanceQuickFix_Text_Convert_to__ScriptableObject_CreateInstance__0_____" xml:space="preserve">
         <value>Convert to 'ScriptableObject.CreateInstance&lt;{0}&gt;()'</value>
@@ -310,12 +310,6 @@
     </data>
     <data name="DebugLoggingFunctionsAcceptsOnlyStrings" xml:space="preserve">
         <value>Debug logging functions only accept strings</value>
-    </data>
-    <data name="UnityOptionsPage_AddCSharpSection_ForceUnityObjectLifetimeCheckWhenCheckedForNull" xml:space="preserve">
-        <value>Force Unity object lifetime-check when checked for null</value>
-    </data>
-    <data name="UnitySettings_t_ForceLifetimeChecks" xml:space="preserve">
-        <value>Force lifetime checks</value>
     </data>
     <data name="StringFormatFunctionsAcceptsOnlyStrings" xml:space="preserve">
         <value>String.Format(format, ...) only accepts string literals and const strings</value>
@@ -563,23 +557,20 @@
     <data name="MultiplicationOrderQuickFix_Text_Reorder_multiplication" xml:space="preserve">
         <value>Reorder multiplication</value>
     </data>
-    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject" xml:space="preserve">
-        <value>'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    <data name="UnityObjectNullCoalescingWarning_Inspection_Title" xml:space="preserve">
+        <value>Null coalescing on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
-    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6" xml:space="preserve">
+    <data name="UnityObjectNullCoalescingWarning_Message" xml:space="preserve">
+        <value>'{0}' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    </data>
+    <data name="UnityObjectNullPropagationWarning_Inspection_Title" xml:space="preserve">
+        <value>Null propagating on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    </data>
+    <data name="UnityObjectNullPropagationWarning_Message" xml:space="preserve">
         <value>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
-    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" xml:space="preserve">
-        <value>'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
-    </data>
-    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" xml:space="preserve">
-        <value>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
-    </data>
-    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2" xml:space="preserve">
-        <value>'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
-    </data>
-    <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2" xml:space="preserve">
-        <value>'is' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
+    <data name="UnityObjectNullPatternMatchingWarning_Message" xml:space="preserve">
+        <value>Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
     <data name="OrderOfMultiplicationOperationsIsInefficient" xml:space="preserve">
         <value>Order of multiplication operations is inefficient</value>
@@ -810,20 +801,20 @@
     <data name="TheNameIsNotDefinedInTheInputManagerTheCallIsLikelyToFailAtRuntimeMessage" xml:space="preserve">
         <value>The name is not defined in the Input manager. The call is likely to fail at runtime.</value>
     </data>
-    <data name="TheNullCoalescingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" xml:space="preserve">
+    <data name="UnityObjectNullCoalescingWarning_Description" xml:space="preserve">
         <value>The null coalescing operator does not call the custom equality operators defined on 'UnityEngine.Object',
           which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
           comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
     </data>
-    <data name="TheNullPropagatingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" xml:space="preserve">
+    <data name="UnityObjectNullPropagationWarning_Description" xml:space="preserve">
         <value>The null propagating operator does not call the custom equality operators defined on 'UnityEngine.Object',
           which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
           comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
     </data>
-    <data name="TheIsOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" xml:space="preserve">
-        <value>The 'is' operator does not call the custom equality operators defined on 'UnityEngine.Object',
+    <data name="UnityObjectNullPatternMatchingWarning_Description" xml:space="preserve">
+        <value>Pattern matching null checks operators do not call the custom equality operators defined on 'UnityEngine.Object',
           which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
           comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
@@ -1657,22 +1648,16 @@ a plugin to be installed to a project.</value>
     <data name="UnityFixFloatingPointComparison_Text" xml:space="preserve">
         <value>Fix comparison with Mathf.Approximately</value>
     </data>
-    <data name="UnityObjectPossiblyUnintendedLifetimeCheck" xml:space="preserve">
-        <value>Possible unintended lifetime check of underlying Unity engine object</value>
-    </data>
-    <data name="UnityObjectLifetimeCheckViaNullEqualityWarning_Title" xml:space="preserve">
-        <value>Implicit check for Unity object lifetime.</value>
-    </data>
-    <data name="UnityObjectLifetimeCheckViaNullEqualityWarning_Description" xml:space="preserve">
+    <data name="UnityObjectNullComparisonWarning_Description" xml:space="preserve">
         <value>Calls the custom equality operator defined on 'UnityEngine.Object',
-          which will check to see if the underlying Unity engine object has been destroyed. Prefer implicit bool comparison if the lifetime check is intended, or explicitly use `is` operator or 'object.ReferenceEquals()'
+          which will check to see if the underlying Unity engine object has been destroyed. Prefer implicit bool comparison if the lifetime check is intended, or explicitly use 'is' operator or 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
     </data>
-    <data name="UnityObjectLifetimeCheckViaNullEqualityWarning_Message" xml:space="preserve">
-        <value>Implicit check for Unity object lifetime.</value>
+    <data name="UnityObjectNullComparisonWarning_Message" xml:space="preserve">
+        <value>Implicit check for Unity object lifetime</value>
     </data>
-    <data name="UnityObjectLifetimeCheckViaNullEqualityHint_Description">
-        <value>Implicit check for Unity object lifetime.</value>
+    <data name="UnityObjectNullComparisonHint_Message">
+        <value>Implicit check for Unity object lifetime</value>
     </data>
     <data name="Odin_UnknownGroupingPathMessage" xml:space="preserve">
         <value>Group path '{0}' is not defined</value>

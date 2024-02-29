@@ -4,6 +4,6 @@ public class Foo
 {
     public Component Method(Component c)
     {
-        return c{caret} ?? new Component();
+        return c {caret}?? new Component();
     }
 }

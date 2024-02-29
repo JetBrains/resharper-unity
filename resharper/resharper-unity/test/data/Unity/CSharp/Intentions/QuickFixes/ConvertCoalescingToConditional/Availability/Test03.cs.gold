@@ -4,7 +4,7 @@ public class Foo
 {
     public Component Method(Component c)
     {
-        return |c ?? new Component()|(0);
+        return c |??|(0) new Component();
     }
 }
 

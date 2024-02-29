@@ -135,30 +135,24 @@
         <Title resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature" resourceType="Strings" />
         <Description resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature5" resourceType="Strings" />
       </Tag>
-      <Tag externalName="UnityObjectDoubleQuestionAssignmentWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject" resourceType="Strings" />
-        <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
-        <Description resourceName="TheNullCoalescingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
-      </Tag>
       <Tag externalName="UnityObjectNullCoalescingWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject" resourceType="Strings" />
+        <Title resourceName="UnityObjectNullCoalescingWarning_Inspection_Title" resourceType="Strings" />
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
-        <Description resourceName="TheNullCoalescingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
+        <Description resourceName="UnityObjectNullCoalescingWarning_Description" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityObjectNullPropagationWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6" resourceType="Strings" />
+        <Title resourceName="UnityObjectNullCoalescingWarning_Inspection_Title" resourceType="Strings" />
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
-        <Description resourceName="TheNullPropagatingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
+        <Description resourceName="UnityObjectNullPropagationWarning_Description" resourceType="Strings" />
       </Tag>
-      <Tag externalName="UnityObjectLifetimeCheckBypassedByIsOperatorWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject2" resourceType="Strings" />
+      <Tag externalName="UnityObjectNullPatternMatchingWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="UnityObjectNullPatternMatchingWarning_Message" resourceType="Strings" />
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
-        <Description resourceName="TheIsOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
+        <Description resourceName="UnityObjectNullPatternMatchingWarning_Description" resourceType="Strings" />
       </Tag>
-      <Tag externalName="UnityObjectLifetimeCheckViaNullEqualityWarning.HIGHLIGHTING_ID" default="SUGGESTION">
-        <Title resourceName="UnityObjectLifetimeCheckViaNullEqualityWarning_Title" resourceType="Strings" />
-        <CompoundItemName resourceName="UnityObjectPossiblyUnintendedLifetimeCheck" resourceType="Strings" />
-        <Description resourceName="UnityObjectLifetimeCheckViaNullEqualityWarning_Description" resourceType="Strings" />
+      <Tag externalName="UnityObjectNullComparisonWarning.HIGHLIGHTING_ID" default="SUGGESTION">
+        <Title resourceName="UnityObjectNullComparisonWarning_Message" resourceType="Strings" />
+        <Description resourceName="UnityObjectNullComparisonWarning_Description" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnresolvedComponentOrScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title resourceName="CannotResolveComponentOrScriptableObject" resourceType="Strings" />
@@ -607,37 +601,32 @@
     <Behavour overlapResolvePolicy="ERROR" />
   </Error>
 
-  <Warning name="UnityObjectDoubleQuestionAssignment" configurableSeverity="Unity.NoAssignmentNullCoalescing">
-    <Parameter type="IAssignmentExpression" name="expression" />
-    <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" resourceType="Strings" />
-    <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
-  </Warning>
-
   <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
-    <Parameter type="INullCoalescingExpression" name="expression" />
-    <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" resourceType="Strings" />
-    <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
+    <Parameter type="ITreeNode" name="node" />
+    <Message resourceName="UnityObjectNullCoalescingWarning_Message" resourceType="Strings">
+      <Argument>Node.GetText()</Argument>
+    </Message>
+    <Range>Node.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnityObjectNullPropagation" configurableSeverity="Unity.NoNullPropagation">
-    <Parameter type="IConditionalAccessExpression" name="expression" />
-    <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" resourceType="Strings" />
-    <Range>Expression.ConditionalAccessSign.GetHighlightingRange()</Range>
+    <Parameter type="ITreeNode" name="node" />
+    <Message resourceName="UnityObjectNullPropagationWarning_Message" resourceType="Strings" />
+    <Range>Node.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
-  <Warning name="UnityObjectLifetimeCheckBypassedByIsOperator" configurableSeverity="Unity.NoLifetimeCheckBypassedByIsOperator">
-    <Parameter type="IIsExpression" name="expression" />
-    <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage2" resourceType="Strings" />
-    <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
+  <Warning name="UnityObjectNullPatternMatching" configurableSeverity="Unity.NoNullPatternMatching">
+    <Parameter type="ITreeNode" name="node" />
+    <Message resourceName="UnityObjectNullPatternMatchingWarning_Message" resourceType="Strings" />
+    <Range>Node.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
   
-  <Warning name="UnityObjectLifetimeCheckViaNullEquality" configurableSeverity="Unity.NoLifetimeCheckViaNullEquality" staticGroup="UnitySuggestions">
+  <Warning name="UnityObjectNullComparison" configurableSeverity="Unity.UnityObjectNullComparison" staticGroup="UnitySuggestions">
     <Parameter type="IEqualityExpression" name="expression" />
-    <Message resourceName="UnityObjectLifetimeCheckViaNullEqualityWarning_Message" resourceType="Strings" />
+    <Message resourceName="UnityObjectNullComparisonWarning_Message" resourceType="Strings" />
     <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
