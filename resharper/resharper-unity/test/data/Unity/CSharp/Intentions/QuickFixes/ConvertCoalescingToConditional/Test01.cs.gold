@@ -4,6 +4,6 @@ public class Foo : MonoBehaviour
 {
     public GameObject Method(GameObject o)
     {
-        return o{caret} ? o : gameObject;
+        return o {caret}? o : gameObject;
     }
 }

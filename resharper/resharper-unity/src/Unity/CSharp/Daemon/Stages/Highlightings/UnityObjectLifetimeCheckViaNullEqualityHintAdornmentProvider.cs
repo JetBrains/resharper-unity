@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Controls.Utils;
-using JetBrains.Application.UI.Icons.FeaturesIntellisenseThemedIcons;
 using JetBrains.Application.UI.PopupLayout;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl.DocumentMarkup;
@@ -18,13 +16,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 [SolutionComponent]
 public class UnityObjectLifetimeCheckViaNullEqualityHintAdornmentProvider : IHighlighterAdornmentProvider
 {
-    public bool IsValid(IHighlighter highlighter) => highlighter.UserData is UnityObjectLifetimeCheckViaNullEqualityHintHighlighting hint && hint.IsValid();
+    public bool IsValid(IHighlighter highlighter) => highlighter.UserData is UnityObjectNullComparisonHintHighlighting hint && hint.IsValid();
 
     public IAdornmentDataModel? CreateDataModel(IHighlighter highlighter)
     {
-        if (highlighter.UserData is UnityObjectLifetimeCheckViaNullEqualityHintHighlighting hint && hint.IsValid())
+        if (highlighter.UserData is UnityObjectNullComparisonHintHighlighting hint && hint.IsValid())
         {
-            var data = new AdornmentData(hint.Text, hint.Icon, AdornmentFlags.IsNavigable, new AdornmentPlacement(UnityObjectLifetimeCheckViaNullEqualityHintHighlighting.DefaultOrder), PushToHintMode.Always);
+            var data = new AdornmentData(hint.Text, hint.Icon, AdornmentFlags.IsNavigable, new AdornmentPlacement(UnityObjectNullComparisonHintHighlighting.DefaultOrder), PushToHintMode.Always);
             return new DataModel(data, hint.Expression);
         }
 

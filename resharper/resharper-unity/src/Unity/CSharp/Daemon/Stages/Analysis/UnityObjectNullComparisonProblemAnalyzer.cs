@@ -8,8 +8,8 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
-[ElementProblemAnalyzer(typeof(IEqualityExpression), HighlightingTypes = [typeof(UnityObjectLifetimeCheckViaNullEqualityWarning)])]
-public class UnityObjectLifetimeCheckViaNullEqualityAnalyzer(UnityApi unityApi) : UnityElementProblemAnalyzer<IEqualityExpression>(unityApi)
+[ElementProblemAnalyzer(typeof(IEqualityExpression), HighlightingTypes = [typeof(UnityObjectNullComparisonWarning)])]
+public class UnityObjectNullComparisonProblemAnalyzer(UnityApi unityApi) : UnityElementProblemAnalyzer<IEqualityExpression>(unityApi)
 {
     protected override void Analyze(IEqualityExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
@@ -21,8 +21,8 @@ public class UnityObjectLifetimeCheckViaNullEqualityAnalyzer(UnityApi unityApi) 
             || right.IsNullLiteral() && UnityTypeUtils.IsUnityObject(left.Type()))
         {
             IHighlighting highlighting = Api.HasNullabilityAttributeOnImplicitBoolOperator.Value 
-                ? new UnityObjectLifetimeCheckViaNullEqualityWarning(expression)
-                : new UnityObjectLifetimeCheckViaNullEqualityHintHighlighting(expression);
+                ? new UnityObjectNullComparisonWarning(expression)
+                : new UnityObjectNullComparisonHintHighlighting(expression);
             consumer.AddHighlighting(highlighting);
         }
     }

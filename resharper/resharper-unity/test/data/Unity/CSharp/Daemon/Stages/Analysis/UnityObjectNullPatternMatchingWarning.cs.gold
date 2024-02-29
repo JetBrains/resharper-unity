@@ -1,0 +1,156 @@
+using UnityEngine;
+
+public class PatternMatching : MonoBehaviour
+{
+    public int Method(GameObject go, Component c, Transform t, Object o)
+    {
+        var counter = 0;
+        if (go |is|(0) null) counter++;
+        if (c |is|(1) null) counter++;
+        if (t |is|(2) null) counter++;
+        if (o |is|(3) null) counter++;
+        if (go |is|(4) not null) counter++;
+        if (c |is|(5) not null) counter++;
+        if (t |is|(6) not null) counter++;
+        if (o |is|(7) not null) counter++;
+        if (go |is|(8) {}) counter++;
+        if (c |is|(9) {}) counter++;
+        if (t |is|(10) {}) counter++;
+        if (o |is|(11) {}) counter++;
+        if (go |is|(12) not {}) counter++;
+        if (c |is|(13) not {}) counter++;
+        if (t |is|(14) not {}) counter++;
+        if (o |is|(15) not {}) counter++;
+        if (go |is|(16) {name: ""}) counter++;
+        if (c |is|(17) {name: ""}) counter++;
+        if (t |is|(18) {name: ""}) counter++;
+        if (o |is|(19) {name: ""}) counter++;
+        if (go |is|(20) not {name: ""}) counter++;
+        if (c |is|(21) not {name: ""}) counter++;
+        if (t |is|(22) not {name: ""}) counter++;
+        if (o |is|(23) not {name: ""}) counter++;
+        if (t |is|(24) {parent|:|(25) {}}) counter++;
+        if (t |is|(26) {parent|:|(27) not {}}) counter++;
+        if (t |is|(28) RectTransform) counter++;
+        if (t |is|(29) not RectTransform) counter++;
+        if (t |is|(30) RectTransform {parent|:|(31) {}}) counter++;
+        if (t |is|(32) RectTransform {parent|:|(33) not null}) counter++;
+        if (t |is|(34) RectTransform {parent|:|(35) null}) counter++;
+        counter += t switch
+        {
+            RectTransform |=>|(36) 1,
+            { } when t.parent |is|(37) {} |=>|(38) 2,
+            null |=>|(39) 2,
+            _ => 3
+        };
+        switch (t)
+        {
+            |case|(40) RectTransform:
+                counter++;
+                break;
+            |case|(41) {} when t.parent |is|(42) {}:
+                counter++;
+                break;
+            |case|(43) null:
+                counter++;
+                break;
+            default:
+                counter++;
+                break;
+        }
+        
+        if (o.Opt() is not {name: ""}) counter++;
+        if (go.Opt() is null) counter++;
+        if (t.Opt() is RectTransform) counter++;
+        if (t.Opt() is not RectTransform) counter++;
+        if (t.Opt() is RectTransform {parent|:|(44) {}}) counter++;
+        if (t.Opt() is RectTransform {parent: var parent1} && parent1.Opt() is {}) counter++;
+        if (t.Opt() is RectTransform {parent: var parent2} && parent2.Opt() is not null) counter++;
+        if (t.Opt() is RectTransform {parent: var parent3} && parent3.Opt() is null) counter++;
+        if (t.parent is var parent4 && parent4.Opt() is not null) counter++;
+        counter += t.Opt() switch
+        {
+            RectTransform => 1,
+            { parent: var parent5 } when parent5.Opt() is null => 2,
+            { } when t.parent.Opt() is {} => 2,
+            { } => 2,
+            _ => 3
+        };
+        switch (t.Opt())
+        {
+            case RectTransform:
+                counter++;
+                break;
+            case { parent: var parent6 } when parent6.Opt() is null => 2:
+                break;
+            case {} when t.parent.Opt() is {}:
+                counter++;
+                break;
+            case null:
+                counter++;
+                break;
+            default:
+                counter++;
+                break;
+        }
+        return counter;
+    }
+}
+
+public static class UnityObjectExtensions
+{
+    [return: JetBrains.Annotations.NotDestroyed]
+    public static T Opt<T>(this T obj) where T : Object => obj ? obj : null;
+}
+
+namespace JetBrains.Annotations
+{
+    public class NotDestroyedAttribute : System.Attribute { }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(1): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(2): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(3): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(4): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(5): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(6): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(7): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(8): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(9): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(10): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(11): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(12): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(13): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(14): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(15): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(16): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(17): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(18): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(19): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(20): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(21): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(22): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(23): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(24): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(25): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(26): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(27): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(28): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(29): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(30): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(31): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(32): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(33): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(34): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(35): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(36): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(37): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(38): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(39): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(40): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(41): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(42): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(43): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+(44): ReSharper Warning: Pattern matching null checks on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object

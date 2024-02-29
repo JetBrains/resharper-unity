@@ -11,33 +11,35 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class ConvertCoalescingToConditionalQuickFix : UnityScopedQuickFixBase
+    public class ConvertCoalescingToConditionalQuickFix(UnityObjectNullCoalescingWarning warning) : UnityScopedQuickFixBase
     {
-        private readonly INullCoalescingExpression myExpression;
+        private readonly ITreeNode myOperator = warning.Node;
 
-        public ConvertCoalescingToConditionalQuickFix(UnityObjectNullCoalescingWarning warning)
-        {
-            myExpression = warning.Expression;
-        }
+        public override bool IsAvailable(IUserDataHolder cache) => myOperator.Parent is INullCoalescingExpression or IAssignmentExpression && base.IsAvailable(cache);
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             using (WriteLockCookie.Create())
             {
-                var leftOperand = myExpression.LeftOperand;
-                var rightOperand = myExpression.RightOperand;
-                var factory = CSharpElementFactory.GetInstance(myExpression);
-                var newExpression = factory.CreateExpression("$0?$0:$1", leftOperand, rightOperand);
-                ModificationUtil.ReplaceChild(myExpression, newExpression);
+                var factory = CSharpElementFactory.GetInstance(myOperator);
+                var parent = myOperator.Parent;
+                var newExpression = parent switch
+                {
+                    INullCoalescingExpression coalescing => factory.CreateExpression("$0?$0:$1", coalescing.LeftOperand, coalescing.RightOperand),
+                    IAssignmentExpression assignment => factory.CreateExpression("$0=$0?$0:$1", assignment.Dest, assignment.Source),
+                    _ => throw new NotSupportedException($"Unexpected expression type for ConvertCoalescingToConditionalQuickFix: {parent?.GetType()}")
+                };
+                ModificationUtil.ReplaceChild(parent, newExpression);
             }
             return null;
         }
 
-        protected override ITreeNode TryGetContextTreeNode() => myExpression;
+        protected override ITreeNode TryGetContextTreeNode() => myOperator;
         public override string Text => Strings.ConvertCoalescingToConditionalQuickFix_Text_Convert_to_conditional_expression;
     }
 }

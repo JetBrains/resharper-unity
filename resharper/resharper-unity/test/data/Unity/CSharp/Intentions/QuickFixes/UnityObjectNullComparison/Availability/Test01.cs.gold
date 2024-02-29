@@ -14,11 +14,11 @@ public class Test : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Implicit check for Unity object lifetime.
+0: Implicit check for Unity object lifetime
 QUICKFIXES:
-Convert to Unity object lifetime check
-Bypass Unity object lifetime check
-1: Implicit check for Unity object lifetime.
+Convert to explicit Unity engine object lifetime check
+Convert Unity engine object lifetime check to C# null check
+1: Implicit check for Unity object lifetime
 QUICKFIXES:
-Convert to Unity object lifetime check
-Bypass Unity object lifetime check
+Convert to explicit Unity engine object lifetime check
+Convert Unity engine object lifetime check to C# null check

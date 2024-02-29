@@ -4,7 +4,7 @@ public class Foo : MonoBehaviour
 {
     public GameObject Method(GameObject o)
     {
-        return |o ?? |this.|(1)gameObject|(0);
+        return o |??|(0) |this.|(1)gameObject;
     }
 }
 
