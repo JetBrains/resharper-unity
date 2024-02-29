@@ -11,7 +11,7 @@ public class UnityObjectNullPatternMatchingProblemInSubpatternAnalyzer(UnityApi 
 {
     protected override void Analyze(ISubpattern expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-        if (expression.AccessExpression is { } operand && helper.CanBeDestroyed(operand) && helper.IsLifetimeBypassPattern(expression.Pattern))
-            consumer.AddHighlighting(new UnityObjectNullPatternMatchingWarning(expression.Colon));
+        if (expression.AccessExpression is { } operand && helper.CanBeDestroyed(operand))
+            helper.AddNullPatternMatchingWarnings(expression.Pattern, consumer);
     }
 }

@@ -11,7 +11,7 @@ public class UnityObjectNullPatternMatchingProblemAnalyzer(UnityApi unityApi, Un
 {
     protected override void Analyze(IIsExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
     {
-        if (expression.Operand is { } operand && helper.CanBeDestroyed(operand) && helper.IsLifetimeBypassPattern(expression.Pattern))
-            consumer.AddHighlighting(new UnityObjectNullPatternMatchingWarning(expression.OperatorSign));
+        if (expression.Operand is { } operand && helper.CanBeDestroyed(operand))
+            helper.AddNullPatternMatchingWarnings(expression.Pattern, consumer);
     }
 }

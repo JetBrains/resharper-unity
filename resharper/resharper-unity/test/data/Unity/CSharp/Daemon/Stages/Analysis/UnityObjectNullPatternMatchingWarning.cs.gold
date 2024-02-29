@@ -5,53 +5,53 @@ public class PatternMatching : MonoBehaviour
     public int Method(GameObject go, Component c, Transform t, Object o)
     {
         var counter = 0;
-        if (go |is|(0) null) counter++;
-        if (c |is|(1) null) counter++;
-        if (t |is|(2) null) counter++;
-        if (o |is|(3) null) counter++;
-        if (go |is|(4) not null) counter++;
-        if (c |is|(5) not null) counter++;
-        if (t |is|(6) not null) counter++;
-        if (o |is|(7) not null) counter++;
-        if (go |is|(8) {}) counter++;
-        if (c |is|(9) {}) counter++;
-        if (t |is|(10) {}) counter++;
-        if (o |is|(11) {}) counter++;
-        if (go |is|(12) not {}) counter++;
-        if (c |is|(13) not {}) counter++;
-        if (t |is|(14) not {}) counter++;
-        if (o |is|(15) not {}) counter++;
-        if (go |is|(16) {name: ""}) counter++;
-        if (c |is|(17) {name: ""}) counter++;
-        if (t |is|(18) {name: ""}) counter++;
-        if (o |is|(19) {name: ""}) counter++;
-        if (go |is|(20) not {name: ""}) counter++;
-        if (c |is|(21) not {name: ""}) counter++;
-        if (t |is|(22) not {name: ""}) counter++;
-        if (o |is|(23) not {name: ""}) counter++;
-        if (t |is|(24) {parent|:|(25) {}}) counter++;
-        if (t |is|(26) {parent|:|(27) not {}}) counter++;
-        if (t |is|(28) RectTransform) counter++;
-        if (t |is|(29) not RectTransform) counter++;
-        if (t |is|(30) RectTransform {parent|:|(31) {}}) counter++;
-        if (t |is|(32) RectTransform {parent|:|(33) not null}) counter++;
-        if (t |is|(34) RectTransform {parent|:|(35) null}) counter++;
+        if (go is |null|(0)) counter++;
+        if (c is |null|(1)) counter++;
+        if (t is |null|(2)) counter++;
+        if (o is |null|(3)) counter++;
+        if (go is not |null|(4)) counter++;
+        if (c is not |null|(5)) counter++;
+        if (t is not |null|(6)) counter++;
+        if (o is not |null|(7)) counter++;
+        if (go is |{|(8)}) counter++;
+        if (c is |{|(9)}) counter++;
+        if (t is |{|(10)}) counter++;
+        if (o is |{|(11)}) counter++;
+        if (go is not |{|(12)}) counter++;
+        if (c is not |{|(13)}) counter++;
+        if (t is not |{|(14)}) counter++;
+        if (o is not |{|(15)}) counter++;
+        if (go is |{|(16)name: ""}) counter++;
+        if (c is |{|(17)name: ""}) counter++;
+        if (t is |{|(18)name: ""}) counter++;
+        if (o is |{|(19)name: ""}) counter++;
+        if (go is not |{|(20)name: ""}) counter++;
+        if (c is not |{|(21)name: ""}) counter++;
+        if (t is not |{|(22)name: ""}) counter++;
+        if (o is not |{|(23)name: ""}) counter++;
+        if (t is |{|(24)parent: |{|(25)}}) counter++;
+        if (t is |{|(26)parent: not |{|(27)}}) counter++;
+        if (t is |RectTransform|(28)) counter++;
+        if (t is not |RectTransform|(29)) counter++;
+        if (t is |RectTransform|(30) {parent: |{|(31)}}) counter++;
+        if (t is |RectTransform|(32) {parent: not |null|(33)}) counter++;
+        if (t is |RectTransform|(34) {parent: |null|(35)}) counter++;
         counter += t switch
         {
-            RectTransform |=>|(36) 1,
-            { } when t.parent |is|(37) {} |=>|(38) 2,
-            null |=>|(39) 2,
+            |RectTransform|(36) => 1,
+            |{|(37) } when t.parent is |{|(38)} => 2,
+            |null|(39) => 2,
             _ => 3
         };
         switch (t)
         {
-            |case|(40) RectTransform:
+            case |RectTransform|(40):
                 counter++;
                 break;
-            |case|(41) {} when t.parent |is|(42) {}:
+            case |{|(41)} when t.parent is |{|(42)}:
                 counter++;
                 break;
-            |case|(43) null:
+            case |null|(43):
                 counter++;
                 break;
             default:
@@ -63,7 +63,7 @@ public class PatternMatching : MonoBehaviour
         if (go.Opt() is null) counter++;
         if (t.Opt() is RectTransform) counter++;
         if (t.Opt() is not RectTransform) counter++;
-        if (t.Opt() is RectTransform {parent|:|(44) {}}) counter++;
+        if (t.Opt() is RectTransform {parent: |{|(44)}}) counter++;
         if (t.Opt() is RectTransform {parent: var parent1} && parent1.Opt() is {}) counter++;
         if (t.Opt() is RectTransform {parent: var parent2} && parent2.Opt() is not null) counter++;
         if (t.Opt() is RectTransform {parent: var parent3} && parent3.Opt() is null) counter++;

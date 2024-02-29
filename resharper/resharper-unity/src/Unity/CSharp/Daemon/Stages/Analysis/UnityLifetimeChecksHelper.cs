@@ -1,4 +1,5 @@
 #nullable enable
+using System.Collections.Generic;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
@@ -7,6 +8,8 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
@@ -17,15 +20,45 @@ public class UnityLifetimeChecksHelper(ISolution solution, HighlightingSettingsM
 
     public bool IsNullPatternMatchingWarningEnabled(IPsiSourceFile sourceFile) => highlightingSettingsManager.GetConfigurableSeverity(UnityObjectNullPatternMatchingWarning.HIGHLIGHTING_ID, sourceFile, sourceFile.GetLazySettingsStoreWithEditorConfig(solution)) >= Severity.HINT;
 
-    public bool IsLifetimeBypassPattern(IPattern pattern)
+    public void AddNullPatternMatchingWarnings(IPattern? pattern, IHighlightingConsumer consumer)
     {
-        return pattern.GetPatternThroughNegations(out _).GetPatternThroughParentheses() switch
+        Stack<IPattern>? pendingPatterns = null;
+        do
         {
-            IVarPattern or IDiscardPattern => false,
-            IBinaryPattern binaryPattern => IsLifetimeBypassPattern(binaryPattern.LeftPattern) || IsLifetimeBypassPattern(binaryPattern.RightPattern),
-            _ => true
-        };
-    } 
+            ITreeNode? node = null;
+            switch (pattern)
+            {
+                case IParenthesizedPattern { Pattern: { } operand }:
+                    pattern = operand;
+                    continue;
+                case INegatedPattern { Pattern: { } negatedOperand }:
+                    pattern = negatedOperand;
+                    continue;
+                case IBinaryPattern { LeftPattern: {} leftPattern, RightPattern: var rightPattern }:
+                    pattern = leftPattern;
+                    if (rightPattern != null)
+                        (pendingPatterns ??= new Stack<IPattern>()).Push(rightPattern);
+                    continue;
+                case IBinaryPattern { RightPattern: { } rightPattern }:
+                    pattern = rightPattern;
+                    continue;
+                case IConstantOrTypePattern constantOrTypePattern:
+                    node = constantOrTypePattern.Expression;
+                    break;
+                case IRecursivePattern recursivePattern:
+                    node = (ITreeNode?)recursivePattern.TypeUsage ?? recursivePattern.PropertyPatternClause?.LBrace;
+                    break;
+                case ITypePattern typePattern:
+                    node = typePattern.TypeUsage;
+                    break;
+            }
+            
+            if (node != null)
+                consumer.AddHighlighting(new UnityObjectNullPatternMatchingWarning(node));
+
+            pattern = pendingPatterns?.TryPop();
+        } while (pattern != null);
+    }
 
     public bool CanBeDestroyed(ICSharpExpression expression)
     {
