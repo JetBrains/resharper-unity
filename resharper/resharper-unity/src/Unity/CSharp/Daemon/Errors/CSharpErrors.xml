@@ -135,17 +135,17 @@
         <Title resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature" resourceType="Strings" />
         <Description resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature5" resourceType="Strings" />
       </Tag>
-      <Tag externalName="UnityObjectNullCoalescingWarning.HIGHLIGHTING_ID" default="WARNING">
+      <Tag externalName="UnityObjectNullCoalescingWarning.HIGHLIGHTING_ID" default="DO_NOT_SHOW">
         <Title resourceName="UnityObjectNullCoalescingWarning_Inspection_Title" resourceType="Strings" />
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
         <Description resourceName="UnityObjectNullCoalescingWarning_Description" resourceType="Strings" />
       </Tag>
-      <Tag externalName="UnityObjectNullPropagationWarning.HIGHLIGHTING_ID" default="WARNING">
+      <Tag externalName="UnityObjectNullPropagationWarning.HIGHLIGHTING_ID" default="DO_NOT_SHOW">
         <Title resourceName="UnityObjectNullCoalescingWarning_Inspection_Title" resourceType="Strings" />
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
         <Description resourceName="UnityObjectNullPropagationWarning_Description" resourceType="Strings" />
       </Tag>
-      <Tag externalName="UnityObjectNullPatternMatchingWarning.HIGHLIGHTING_ID" default="WARNING">
+      <Tag externalName="UnityObjectNullPatternMatchingWarning.HIGHLIGHTING_ID" default="DO_NOT_SHOW">
         <Title resourceName="UnityObjectNullPatternMatchingWarning_Message" resourceType="Strings" />
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
         <Description resourceName="UnityObjectNullPatternMatchingWarning_Description" resourceType="Strings" />
