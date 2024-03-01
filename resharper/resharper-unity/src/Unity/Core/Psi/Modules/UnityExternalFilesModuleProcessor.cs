@@ -103,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 {
                     myLocks.ExecuteOrQueueReadLockEx(lifetime, "UnityInitialUpdateExternalFiles", () =>
                     {
-                        CollectInitialFiles();
+                        CollectInitialFiles(false);
                     });
                 }
             });
@@ -162,7 +162,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // For project model access
             myLocks.AssertReadAccessAllowed();
 
-            var externalFiles = CollectInitialFiles();
+            var externalFiles = CollectInitialFiles(true);
 
             try
             {
@@ -180,7 +180,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myUsageStatistics.FinishInitialUpdate();
         }
 
-        private ExternalFiles CollectInitialFiles()
+        private ExternalFiles CollectInitialFiles(bool initialRun)
         {
             var externalFiles = myLogger.DoCalculation("CollectExternalFiles", null,
                 () =>
@@ -200,7 +200,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
                     // Disable asset indexing for massive projects. Note that we still collect all files, and always index
                     // project settings, meta and asmdef files.
-                    myIndexDisablingStrategy.Run(files.AssetFiles);
+
+                    if (initialRun)
+                    {
+                        myIndexDisablingStrategy.Run(files.AssetFiles);
+                    }
 
                     return FilterFiles(files);
                 });
