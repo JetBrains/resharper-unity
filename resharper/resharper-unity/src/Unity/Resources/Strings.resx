@@ -1413,9 +1413,6 @@ a plugin to be installed to a project.</value>
     <data name="UnitySettings_t_Suppress_resolve_errors_in_HLSL_" xml:space="preserve">
         <value>Suppress resolve errors in HLSL</value>
     </data>
-    <data name="UnitySettings_t_Shader_variants_support_Preview" xml:space="preserve">
-        <value>Shader variants support (Preview)</value>
-    </data>
     <data name="UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_" xml:space="preserve">
         <value>Suppress resolve errors in render-pipeline package in HLSL</value>
     </data>

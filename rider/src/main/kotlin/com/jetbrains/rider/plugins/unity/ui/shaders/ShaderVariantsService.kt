@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.ui.shaders
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.util.runIf
 import com.jetbrains.rd.ide.model.TextControlId
 import com.jetbrains.rd.ide.model.TextControlModel
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
@@ -17,11 +16,8 @@ class ShaderVariantsService : RiderResolveContextWidgetProvider {
                                textControlId: TextControlId,
                                editorModel: TextControlModel,
                                editor: Editor
-    ): RiderResolveContextWidget? = runIf(ShaderVariantsUtils.isShaderVariantSupportEnabled(project)) {
-        val model = project.solution.frontendBackendModel
-        model.shaderVariantExtensions[textControlId]?.let {
-            ShaderVariantWidget(project, editor, it)
-        }
+    ): RiderResolveContextWidget? = project.solution.frontendBackendModel.shaderVariantExtensions[textControlId]?.let {
+        ShaderVariantWidget(project, editor, it)
     }
 
     override fun revalidateWidget(widget: RiderResolveContextWidget,
@@ -30,5 +26,5 @@ class ShaderVariantsService : RiderResolveContextWidgetProvider {
                                   textControlId: TextControlId,
                                   editorModel: TextControlModel,
                                   editor: Editor): RiderResolveContextWidget? =
-        widget.takeIf { ShaderVariantsUtils.isShaderVariantSupportEnabled(project) && ShaderVariantsUtils.isValidContext(editor) }
+        widget.takeIf { ShaderVariantsUtils.isValidContext(editor) }
 }
