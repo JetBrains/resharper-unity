@@ -49,6 +49,7 @@ public class OdinGroupingAttributesAnalyzer : UnityElementProblemAnalyzer<IClass
             return;
 
         var existingGroup = new Dictionary<string, IClrTypeName>();
+        var existingGroupToOriginMember = new Dictionary<string, ITypeMember>();
         var trie = new QualifiedNamesTrie<string>(false, '/');
         
         var grouping = OdinAttributeUtil.CollectGroupInfo(classType);
@@ -64,11 +65,13 @@ public class OdinGroupingAttributesAnalyzer : UnityElementProblemAnalyzer<IClass
                 if (!attribute.Equals(clrName))
                 {
                     membersWithDefinedGroupWithDifferentAttribute.Add(info.Member);
+                    membersWithDefinedGroupWithDifferentAttribute.Add(existingGroupToOriginMember[info.GroupPath]);
                 }
             }
             else
             {
                 existingGroup[info.GroupPath] = clrName;
+                existingGroupToOriginMember[info.GroupPath] = info.Member;
             }
         }
 
