@@ -8,6 +8,6 @@ import com.jetbrains.rider.projectView.baseDirectories.ExternalDirectoryProvider
 class UnityExternalDirectoryProvider(private val project: Project) : ExternalDirectoryProvider {
     override fun isInExternalDirectory(virtualFile: VirtualFile): Boolean {
         val packagesRoot = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot() ?: return false
-        return packagesRoot.startsWith(virtualFile.toNioPath())
+        return virtualFile.toNioPath().startsWith(packagesRoot)
     }
 }
