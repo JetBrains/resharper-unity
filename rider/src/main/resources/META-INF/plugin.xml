@@ -88,6 +88,7 @@
     <backend.autoPopup.support language="ShaderLab" implementationClass="com.jetbrains.rider.completion.BackendAndGenericRider" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
     <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
+    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.completion.patchEngine.RiderPatchEngineCompletionContributor" />
     <codeInsight.parameterInfo language="ShaderLab" implementationClass="com.jetbrains.rdclient.parameterInfo.FrontendParameterInfoHandler"/>
     <lang.documentationProvider language="ShaderLab" implementationClass="com.jetbrains.rider.quickDoc.FrontendDocumentationProvider"/>
     <backend.typedHandler language="ShaderLab" implementationClass="com.jetbrains.rider.cpp.fileType.CppTypedHandler"/>
@@ -110,6 +111,7 @@
     <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
     <backend.markup.adapterFactory language="JSON" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <completion.contributor language="JSON" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
+    <completion.contributor language="JSON" implementationClass="com.jetbrains.rider.completion.patchEngine.RiderPatchEngineCompletionContributor" />
     <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefActionCallPolicy" />
     <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefActionCallPolicy" />
     <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.spellchecker.AsmDefSpellcheckerStrategy" />
@@ -134,6 +136,7 @@
     <backend.actions.support language="UXML" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlIconProvider" />
     <completion.contributor language="UXML" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
+    <completion.contributor language="UXML" implementationClass="com.jetbrains.rider.completion.patchEngine.RiderPatchEngineCompletionContributor" />
     <spellchecker.support language="XML" order="first" implementationClass="com.jetbrains.rider.plugins.unity.spellchecker.UxmlSpellcheckingStrategy" />
     <intentionsOrderProvider language="UXML" implementationClass="com.jetbrains.rider.spellChecker.BackendLanguageIntentionsOrderProvider"/>
     <lang.inspectionSuppressor language="UXML" order="first" implementationClass="com.jetbrains.rider.inspections.suppression.BackendXmlInspectionSuppressor"/>
