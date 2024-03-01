@@ -13,7 +13,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
-using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
@@ -33,7 +32,6 @@ public class ShaderVariantsManager : ICppChangeProvider
 
     private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
     private readonly SettingsIndexedEntry myDefaultEnabledKeywordsEntry;
-    private readonly SettingsScalarEntry myFeaturePreviewEnabledEntry;
     private readonly SettingsScalarEntry myDefaultShaderApiEntry;
     private readonly SettingsScalarEntry myShaderPlatformEntry;
     
@@ -42,10 +40,6 @@ public class ShaderVariantsManager : ICppChangeProvider
 
     private readonly ViewableProperty<int> myTotalKeywordsCount = new(0);
     private readonly ViewableProperty<int> myTotalEnabledKeywordsCount = new(0);
-    
-    private ShaderApi myShaderApi;
-    private ShaderPlatform myShaderPlatform;
-    private bool mySupportEnabled;
 
     public ShaderVariantsManager(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, ShaderProgramCache shaderProgramCache, ChangeManager changeManager)
     {
@@ -60,18 +54,16 @@ public class ShaderVariantsManager : ICppChangeProvider
         myDefaultShaderApiEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (ShaderVariantsSettings s) => s.ShaderApi);
         myShaderPlatformEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (ShaderVariantsSettings s) => s.ShaderPlatform);
         myEnabledKeywords.UnionWith(EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
-        myShaderApi = GetShaderApi(myDefaultShaderApiEntry);
-        myShaderPlatform = GetShaderPlatform(myShaderPlatformEntry); 
-        
-        myFeaturePreviewEnabledEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.FeaturePreviewShaderVariantsSupport);
-        mySupportEnabled = myBoundSettingsStore.GetValue(myFeaturePreviewEnabledEntry, null) is true;
+        ShaderApi = GetShaderApi(myDefaultShaderApiEntry);
+        ShaderPlatform = GetShaderPlatform(myShaderPlatformEntry); 
         
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
         myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderKeywords(myEnabledKeywords));
     }
     
-    public ShaderApi ShaderApi => mySupportEnabled ? myShaderApi : ShaderApiDefineSymbolDescriptor.DefaultValue;
-    public ShaderPlatform ShaderPlatform => mySupportEnabled ? myShaderPlatform : ShaderPlatformDefineSymbolDescriptor.DefaultValue;
+    public ShaderApi ShaderApi { get; private set; }
+
+    public ShaderPlatform ShaderPlatform { get; private set; }
 
     public IReadonlyProperty<int> TotalKeywordsCount => myTotalKeywordsCount;
 
@@ -122,7 +114,7 @@ public class ShaderVariantsManager : ICppChangeProvider
             myBoundSettingsStore.RemoveIndexedValue(entry, index);
     }
 
-    public ISet<string> GetEnabledKeywords(CppFileLocation location) => mySupportEnabled ? myEnabledKeywords : EmptySet<string>.Instance;
+    public ISet<string> GetEnabledKeywords(CppFileLocation _) => myEnabledKeywords;
 
     public bool IsKeywordEnabled(string keyword) => myEnabledKeywords.Contains(keyword);
     
@@ -140,19 +132,13 @@ public class ShaderVariantsManager : ICppChangeProvider
         if (args.ChangedEntries.Contains(myDefaultShaderApiEntry))
             work += changeTracker =>
             {
-                myShaderApi = GetShaderApi(myDefaultShaderApiEntry);
+                ShaderApi = GetShaderApi(myDefaultShaderApiEntry);
                 changeTracker.MarkAllDirty();
             };
         if (args.ChangedEntries.Contains(myShaderPlatformEntry))
             work += changeTracker =>
             {
-                myShaderPlatform = GetShaderPlatform(myShaderPlatformEntry);
-                changeTracker.MarkAllDirty();
-            };
-        if (args.ChangedEntries.Contains(myFeaturePreviewEnabledEntry))
-            work += changeTracker =>
-            {
-                mySupportEnabled = myBoundSettingsStore.GetValue(myFeaturePreviewEnabledEntry, null) is true;
+                ShaderPlatform = GetShaderPlatform(myShaderPlatformEntry);
                 changeTracker.MarkAllDirty();
             };
         return work != null ? lifetime.StartMainRead(() =>
@@ -211,21 +197,15 @@ public class ShaderVariantsManager : ICppChangeProvider
         }
     }
     
-    private struct ChangeTracker : IDisposable, IValueAction<CppFileLocation>
+    private struct ChangeTracker(ShaderVariantsManager manager) : IDisposable, IValueAction<CppFileLocation>
     {
-        private readonly ShaderVariantsManager myManager;
         private readonly HashSet<CppFileLocation> myOutdatedLocations = new();
-
-        public ChangeTracker(ShaderVariantsManager manager)
-        {
-            myManager = manager;
-        }
 
         void IValueAction<CppFileLocation>.Invoke(CppFileLocation location) => myOutdatedLocations.Add(location);
 
-        public void MarkShaderKeywordDirty(string shaderKeyword) => myManager.myShaderProgramCache.ForEachKeywordLocation(shaderKeyword, ref this);
+        public void MarkShaderKeywordDirty(string shaderKeyword) => manager.myShaderProgramCache.ForEachKeywordLocation(shaderKeyword, ref this);
 
-        public void MarkAllDirty() => myManager.myShaderProgramCache.CollectLocationsTo(myOutdatedLocations);
+        public void MarkAllDirty() => manager.myShaderProgramCache.CollectLocationsTo(myOutdatedLocations);
 
         public void Dispose()
         {
@@ -233,7 +213,7 @@ public class ShaderVariantsManager : ICppChangeProvider
             {
                 using (WriteLockCookie.Create())
                 {
-                    myManager.myChangeManager.OnProviderChanged(myManager, new CppChange(myOutdatedLocations), SimpleTaskExecutor.Instance);
+                    manager.myChangeManager.OnProviderChanged(manager, new CppChange(myOutdatedLocations), SimpleTaskExecutor.Instance);
                     FixMeInvalidateInjectedFiles();
                 }
             }
@@ -244,7 +224,7 @@ public class ShaderVariantsManager : ICppChangeProvider
             foreach (var location in myOutdatedLocations)
             {
                 if (location.IsInjected())
-                    InjectedHlslUtils.InvalidatePsiForInjectedLocation(myManager.mySolution, location);
+                    InjectedHlslUtils.InvalidatePsiForInjectedLocation(manager.mySolution, location);
             }
         }
     }

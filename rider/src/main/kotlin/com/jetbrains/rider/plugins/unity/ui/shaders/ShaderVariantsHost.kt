@@ -13,7 +13,6 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.put
 import com.jetbrains.rdclient.document.getAllDocumentIds
 import com.jetbrains.rdclient.editors.FrontendTextControlHostListener
-import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetManager
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderVariantExtension
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteractionOrigin
@@ -42,9 +41,6 @@ class ShaderVariantsHost : ProjectActivity, FrontendTextControlHostListener {
         val lifetime = UnityProjectLifetimeService.getLifetime(project)
         val model = project.solution.frontendBackendModel
         withContext(Dispatchers.EDT) {
-            model.backendSettings.previewShaderVariantsSupport.advise(lifetime) {
-                RiderResolveContextWidgetManager.invalidateWidgets(project)
-            }
             model.showShaderVariantInteraction.advise(lifetime) { params ->
                 val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return@advise
                 val showAt = when (params.origin) {

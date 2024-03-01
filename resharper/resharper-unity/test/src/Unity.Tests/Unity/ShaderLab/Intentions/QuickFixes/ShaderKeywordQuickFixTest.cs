@@ -3,11 +3,9 @@ using System.Text.RegularExpressions;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
-using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.TestFramework;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using NUnit.Framework;
@@ -15,7 +13,6 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Intentions.QuickFixes;
 
 [RequireHlslSupport, TestUnity]
-[TestSetting(typeof(UnitySettings), nameof(UnitySettings.FeaturePreviewShaderVariantsSupport), true)]
 public class ShaderKeywordQuickFixTest : QuickFixTestBase<ShaderKeywordQuickFix>
 {
     private static readonly Regex ourParamRegex = new Regex("^\\$\\$ (?<Name>\\w+)\\s*:\\s*(?<Value>.*)", RegexOptions.Multiline);

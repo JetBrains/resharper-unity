@@ -508,7 +508,6 @@
     public static string UnitySettings_t_Should_yaml_heuristic_be_applied_ => ResourceManager.GetString("UnitySettings_t_Should_yaml_heuristic_be_applied_");
     public static string UnitySettings_t_Show_Inspector_properties_changes_in_editor => ResourceManager.GetString("UnitySettings_t_Show_Inspector_properties_changes_in_editor");
     public static string UnitySettings_t_Suppress_resolve_errors_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_HLSL_");
-    public static string UnitySettings_t_Shader_variants_support_Preview => ResourceManager.GetString("UnitySettings_t_Shader_variants_support_Preview");
     public static string UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_");
     public static string UnitySettings_t_Unity_highlighter_scheme_for_editor_ => ResourceManager.GetString("UnitySettings_t_Unity_highlighter_scheme_for_editor_");
     public static string UnitySettings_t_Unity_plugin_settings => ResourceManager.GetString("UnitySettings_t_Unity_plugin_settings");

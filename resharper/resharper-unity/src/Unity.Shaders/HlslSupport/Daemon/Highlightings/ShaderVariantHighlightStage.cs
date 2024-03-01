@@ -31,8 +31,7 @@ public class ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar element
     protected override IDaemonStageProcess? CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, CppFile file) =>
         processKind switch
         {
-            DaemonProcessKind.VISIBLE_DOCUMENT when settings.GetValue((UnitySettings s) => s.FeaturePreviewShaderVariantsSupport) && 
-                                                    unitySolutionTracker.IsUnityProjectOrHasUnityReference && 
+            DaemonProcessKind.VISIBLE_DOCUMENT when unitySolutionTracker.IsUnityProjectOrHasUnityReference && 
                                                     file.InclusionContext.RootContext is { BaseFile: var rootFile, LanguageDialect: var dialect } && 
                                                     shaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) 
                 => new ShaderKeywordsHighlightProcess(process, settings, file, shaderProgramInfo, shaderVariantsManager.ShaderApi, shaderVariantsManager.ShaderPlatform, shaderVariantsManager.GetEnabledKeywords(rootFile), dialect.Pragmas, inactiveShaderBranchHighlightFactory),
