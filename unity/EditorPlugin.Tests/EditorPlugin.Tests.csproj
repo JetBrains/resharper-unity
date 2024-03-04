@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Tests</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor.Tests</RootNamespace>
     <DebugType>full</DebugType>
@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EditorPlugin\EditorPlugin.SinceUnity.4.7.csproj" />
+    <ProjectReference Include="..\EditorPlugin\EditorPlugin.SinceUnity.2019.2.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,8 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />    
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
-    <PackageReference Include="xunit" Version="1.9.2" />
+    <PackageReference Include="xunit" Version="2.7.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
