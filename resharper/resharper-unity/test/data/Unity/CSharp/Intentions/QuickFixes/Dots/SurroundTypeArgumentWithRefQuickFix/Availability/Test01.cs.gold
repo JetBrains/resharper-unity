@@ -30,7 +30,7 @@ struct ComponentB : IComponentData
 }
 
 ------------------------------------------------
-0: Type parameter 'ComponentB' must be Aspect, RefRO, or RefRW parameter type
+0: Type parameter 'ComponentB' must be Aspect, RefRO, or RefRW
 QUICKFIXES:
 Surround 'ComponentB' with 'RefRO'
 --Surround 'ComponentB' with 'RefRO' in method 'OnUpdate'
@@ -44,7 +44,7 @@ Surround 'ComponentB' with 'RefRW'
 --Surround 'ComponentB' with 'RefRW' in file
 --Surround 'ComponentB' with 'RefRW' in project
 --Surround 'ComponentB' with 'RefRW' in solution
-1: Type parameter 'ComponentA' must be Aspect, RefRO, or RefRW parameter type
+1: Type parameter 'ComponentA' must be Aspect, RefRO, or RefRW
 QUICKFIXES:
 Surround 'ComponentA' with 'RefRO'
 --Surround 'ComponentA' with 'RefRO' in method 'OnUpdate'
