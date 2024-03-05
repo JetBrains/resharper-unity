@@ -7,6 +7,7 @@
   using JetBrains.Lifetimes;
   using JetBrains.Util;
   using JetBrains.Util.Logging;
+  using JetBrains.Application.I18n.Plurals;
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -48,6 +49,13 @@
         }
         return resourceManager.Value;
       }
+    }
+
+    public static string Choice(string format, params object[] args)
+    {
+        var formatter = ResourceManager.ChoiceFormatter;
+        if (formatter == null) return "???";
+        return string.Format(formatter, format, args);
     }
 
     public static string AccessingManagedMethodsIsNotSupported => ResourceManager.GetString("AccessingManagedMethodsIsNotSupported");
