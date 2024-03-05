@@ -9,39 +9,97 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
 ## 2024.1.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net233...net241)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net233...241)
+* [YouTrack issues](https://youtrack.jetbrains.com/issues?q=project:RIDER%20Technology:%20Unity%20Available%20in:%202024.1*)
 
 ### Added
 
+- Add support for Odin Inspector
+    - Highlight Odin serialised fields ([RIDER-56644](https://youtrack.jetbrains.com/issue/RIDER-56644), [RIDER-70566](https://youtrack.jetbrains.com/issue/RIDER-70566))
+    - Add code completion for group name in layout attributes ([RIDER-105868](https://youtrack.jetbrains.com/issue/RIDER-105868))
+    - Add inspections and warnings for undefined name in group path, group path used in different group attributes and if a field is included in multiple groups ([RIDER-105869](https://youtrack.jetbrains.com/issue/RIDER-105869))
+    - Add Quick Fix to use the expected group type for a given group name
+    - Add code completion for paths in `AssetList`, `AssetSelector`, `FilePath` and `FolderPath` attributes ([RIDER-105872](https://youtrack.jetbrains.com/issue/RIDER-108572))
+    - Add Find Usages, Go to Definition and Rename for C# members used in string literals in Odin attributes ([RIDER-105871](https://youtrack.jetbrains.com/issue/RIDER-105871))
+    - Add highlighting and picker context action for Odin's `GUIColor` attribute ([RIDER-105870](https://youtrack.jetbrains.com/issue/RIDER-105870))
+    - Support Odin's range attributes in integer value analysis ([RIDER-105873](https://youtrack.jetbrains.com/issue/RIDER-105873))
 - Add link to Unity documentation for USS properties ([RIDER-98053](https://youtrack.jetbrains.com/issue/RIDER-98053))
 - Add quick fix to use `Mathf.Approximately` for floating point comparison warning ([RIDER-43927](https://youtrack.jetbrains.com/issue/RIDER-43927))
+- Add nullable annotations for `UnityEngine.Awaitable` and `UnityEngine.SceneManagement.SceneManager` ([RIDER-94838](https://youtrack.jetbrains.com/issue/RIDER-94838))
+- Add highlight, code insight and quick fixes to control inactive shader variant branches
+- Add support for `_KEYWORD_DEFINED` suffix for shader keywords (see [UUM-59203](https://issuetracker.unity3d.com/issues/dynamic-branching-shader-code-cant-be-shared-with-passes-that-dont-declare-the-keywords))
+- Add support for stage-specific local shader keywords ([RIDER-103143](https://youtrack.jetbrains.com/issue/RIDER-103143))
+- Add support for implicitly defined shader keywords
+- Add support for `interface` keyword in shaders ([RIDER-92974](https://youtrack.jetbrains.com/issue/RIDER-92974))
+- Add extra syntax highlighting configuration for ShaderLab keywords ([RIDER-97029](https://youtrack.jetbrains.com/issue/RIDER-97029))
+- Rider: Add "Current Entity" node in debugger for `IJobChunk` and `IJobEntity` ([RIDER-92628](https://youtrack.jetbrains.com/issue/RIDER-92628))
 
 ### Changed
 
+- Replace bypassed lifetime check warnings with inlay icon to show when lifetime check is happening ([RIDER-79739](https://youtrack.jetbrains.com/issue/RIDER-79739), [RIDER-106007](https://youtrack.jetbrains.com/issue/RIDER-106007))
+- Add warning for implicit lifetime check when comparing against `null`, with Quick Fix to convert to more explicit form ([RIDER-79739](https://youtrack.jetbrains.com/issue/RIDER-79739), [RIDER-106007](https://youtrack.jetbrains.com/issue/RIDER-106007))
+- Add option to re-enable bypassed lifetime check warnings, with `[NotDestroyed]` attribute to allow control flow ([RIDER-106403](https://youtrack.jetbrains.com/issue/RIDER-106403))
+- Improve bypassed lifetime checks to work with method returns, null coalescing assignment and patterns ([#372](https://github.com/JetBrains/resharper-unity/issues/372), [RIDER-39854](https://youtrack.jetbrains.com/issue/RIDER-39854), [RIDER-58175](https://youtrack.jetbrains.com/issue/RIDER-58175), [RIDER-96701](https://youtrack.jetbrains.com/issue/RIDER-96701))
 - Update API information to Unity 2023.3
+- Remove obsolete Cg/HLSL custom colour scheme configuration. Cg/HLSL support is based on C++ ([RIDER-97028](https://youtrack.jetbrains.com/issue/RIDER-97028))
+- Change default severity of "repeated access of external property" from warning to do not show ([RIDER-53077](https://youtrack.jetbrains.com/issue/RIDER-53077))
+- Remove preview option for shader variants support
+- Rider: Pausepoints will pause the editor when invoked from DOTS systems ([RIDER-58197](https://youtrack.jetbrains.com/issue/RIDER-58197))
+- Rider: Play controls now allow pausing game before running it ([RIDER-70161](https://youtrack.jetbrains.com/issue/RIDER-70161))
 - Rider: Provide notification of missing project files when opening a subfolder of a Unity project ([RIDER-91087](https://youtrack.jetbrains.com/issue/RIDER-91087))
+- Rider: Add notification for Unity 2019.1 and earlier that advanced editor integration is no longer supported ([RIDER-105806](https://youtrack.jetbrains.com/issue/RIDER-105806))
+- Rider: Notify if Unity's Rider package is older than 3.0.27
+- Unity editor: Remove support for advanced editor plugin for .NET 3.5/Unity versions prior to 2019.2 ([RIDER-105806](https://youtrack.jetbrains.com/issue/RIDER-105806))
 
 ### Fixed
 
-- Fixed exception when package is updated ([DEXP-712466](https://youtrack.jetbrains.com/issue/DEXP-712466))
+- Fix invalid "repeated access of external property" warning with switch expressions ([RIDER-101138](https://youtrack.jetbrains.com/issue/RIDER-101138))
+- Fix serialised field naming rules not applied to fields marked with `[SerializeReference]` ([RIDER-92709](https://youtrack.jetbrains.com/issue/RIDER-92709))
+- Fix incorrect "collection never updated" warning for fields marked with `[SerializeReference]` ([RIDER-94348](https://youtrack.jetbrains.com/issue/RIDER-94348))
+- Fix incorrect Unity asset usage indicator for `Close` method on non-Unity class ([RIDER-101814](https://youtrack.jetbrains.com/issue/RIDER-101814))
+- Fix smart enter and code completion to respect brace style in shader files ([RIDER-100317](https://youtrack.jetbrains.com/issue/RIDER-100317))
+- Fix incorrect parsing of comments as keywords in shader variants popup ([RIDER-105490](https://youtrack.jetbrains.com/issue/RIDER-105490))
+- Fix incorrect ambiguous reference error in string literal after debugging ([RIDER-105659](https://youtrack.jetbrains.com/issue/RIDER-105659))
+- Fix renaming type not updating usage of type name in assets for serialised type handler ([RIDER-102180](https://youtrack.jetbrains.com/issue/RIDER-102180))
+- Fix incorrectly adding `[FormerlySerializedAs]` attribute to Unity job struct ([RIDER-106358](https://youtrack.jetbrains.com/issue/RIDER-106358))
+- Fix incorrectly disabling asset indexing for large projects when automatic check is disabled ([RIDER-106139](https://youtrack.jetbrains.com/issue/RIDER-106139))
+- Fix incorrectly processing `.meta` files each time project is opened ([RIDER-106473](https://youtrack.jetbrains.com/issue/RIDER-106473))
+- Fix exception when package is updated ([DEXP-712466](https://youtrack.jetbrains.com/issue/DEXP-712466))
+- Rider: Fix error preventing showing pixels in texture debug visualiser ([RIDER-101223](https://youtrack.jetbrains.com/issue/RIDER-101223))
+- Rider: Fix debugger presentation with renamed `RefRO`/`RefRW` types ([RIDER-104548](https://youtrack.jetbrains.com/issue/RIDER-14548))
+- Rider: Support deselecting item in Unity Log view, to reinstate auto-scroll ([RIDER-100615](https://youtrack.jetbrains.com/issue/RIDER-100615))
 - Rider: Remove unavailable advanced integration notification from notification centre when it becomes available ([RIDER-98129](https://youtrack.jetbrains.com/issue/RIDER-98129))
-- Rider: Fix exception about running slow operations on UI thread ([DEXP-755077](https://youtrack.jetbrains.com/issue/DEXP-755077))
+- Rider: Fix Unity asset usages hidden by read/write filters ([RIDER-99282](https://youtrack.jetbrains.com/issue/RIDER-99282))
+- Rider: Fix exceptions about running slow operations on UI thread ([DEXP-755077](https://youtrack.jetbrains.com/issue/DEXP-755077), [RIDER-742831](https://youtrack.jetbrains.com/issue/DEXP-742831))
+
+
+
+## 2023.3.3
+* Released: [2023-03-03](https://blog.jetbrains.com/dotnet/2024/01/22/2023-3-3-rsrp-rd/)
+* Rider Build: 233.14105.60
+* No ReSharper release
+* [No changes](https://github.com/JetBrains/resharper-unity/compare/net233-rtm-2023.3.2...net233-rtm-2023.3.3)
 
 
 
 ## 2023.3.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net233-rtm-2023.3.0-rtm-2023.3.1...net233)
+* Released: [2023-12-20](https://blog.jetbrains.com/dotnet/2023/12/20/resharper-and-rider-2023-3-2-bug-fix/)
+* Rider Build: 233.13135.100
+* ReSharper Build: 2023.3.2.100
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net233-rtm-2023.3.0-rtm-2023.3.1...net233-rtm-2023.3.2)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net233-rtm-2023.3.2)
 
 ### Changed
 
-- Type conversion hint settings are no longer overridden for Unity projects ([RiDER-90596](https://youtrack.jetbrains.com/issue/RIDER-90596))
-- Navigation to external source settings are now only overridden in Rider, so navigation to packages matches browsing through Unity Explorer ([RIDER-90596](https://youtrack.jetbrains.com/issue/RIDER-90596)9
+- Type conversion hint settings are no longer overridden for Unity projects ([RIDER-90596](https://youtrack.jetbrains.com/issue/RIDER-90596))
+- Navigation to external source settings are now only overridden in Rider, so navigation to packages matches browsing through Unity Explorer ([RIDER-90596](https://youtrack.jetbrains.com/issue/RIDER-90596))
 
 ### Fixed
 
 - Fix duplicate items in shader variants keyword completion ([RIDER-102979](https://youtrack.jetbrains.com/issue/RIDER-102979))
 - Fix missing UI for configuring ShaderLab block name in Live Templates ([RIDER-102980](https://youtrack.jetbrains.com/issue/RIDER-102980))
 - Rider: Fix texture visualiser not available from additional debugger nodes ([RIDER-102061](https://youtrack.jetbrains.com/issue/RIDER-102061))
+- Rider: Fix pause button in Unity play controls not showing current status ([RIDER-103395](https://youtrack.jetbrains.com/issue/RIDER-103395))
 
 
 
