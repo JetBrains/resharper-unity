@@ -611,8 +611,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // This must be a git package, make sure we return something
             try
             {
-                var packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}");
-                if (!packageFolder.ExistsDirectory && hash != null)
+                var packageFolder = myLocalPackageCacheFolder.Combine($"{id}");
+                if (hash != null && !packageFolder.ExistsDirectory)
+                {
+                    packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}");
+                }
+
+                if (hash != null && !packageFolder.ExistsDirectory)
                 {
                     var shortHash = hash.Substring(0, Math.Min(hash.Length, 10));
                     packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{shortHash}");
@@ -627,7 +632,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                         new GitDetails(version, hash, revision));
                 }
 
-                return null;
+                // folder may not yet be created on disk
+                myLogger.Warn("Error resolving git package. Its folder may not yet be created on disk.");
+                return PackageData.CreateUnknown(id, version);
             }
             catch (Exception e)
             {
