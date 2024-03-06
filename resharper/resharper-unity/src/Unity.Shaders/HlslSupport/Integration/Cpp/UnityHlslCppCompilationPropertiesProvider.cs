@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
+using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.ReSharper.Psi.Cpp.Util;
 
@@ -35,6 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                     GetShaderProgramCompilationProperties(globalCache.CppModule, project, projectFile, rootFile, dialects.ShaderLabHlslDialect),
                 var location when UnityShaderFileUtils.IsComputeShaderFile(location) => 
                     GetShaderProgramCompilationProperties(globalCache.CppModule, project, projectFile, rootFile, dialects.ComputeHlslDialect),
+                var location when PsiSourceFileUtil.IsBlockShadersFile(location) =>
+                    GetHlslCompilationProperties(globalCache.Solution, project, rootFile, null, dialects.BlockShadersDialect),
                 var location when PsiSourceFileUtil.IsHlslFile(location) => 
                     GetHlslCompilationProperties(globalCache.Solution, project, rootFile, null, dialects.HlslDialect),
                 _ => null
@@ -51,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         public CppCompilationProperties GetShaderLabHlslCompilationProperties(ISolution solution, IProject? project, CppFileLocation location, ShaderProgramInfo shaderProgramInfo) => 
             GetHlslCompilationProperties(solution, project, location, shaderProgramInfo, dialects.ShaderLabHlslDialect);        
 
-        private CppCompilationProperties GetHlslCompilationProperties(ISolution solution, IProject? project, CppFileLocation location, ShaderProgramInfo? shaderProgramInfo, UnityHlslDialectBase dialect)
+        private CppCompilationProperties GetHlslCompilationProperties(ISolution solution, IProject? project, CppFileLocation location, ShaderProgramInfo? shaderProgramInfo, CppLanguageDialect dialect)
         {
             var solutionDirectory = solution.SolutionDirectory;
             

@@ -7,6 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 [ShellComponent(Instantiation.DemandAnyThreadSafe)]
 public sealed class UnityDialects
 {
+    public UnityBlockShadersDialect BlockShadersDialect { get; } = new();
     public UnityHlslDialect HlslDialect { get; } = new();
     public UnityShaderLabHlslDialect ShaderLabHlslDialect { get; } = new();
     public UnityComputeHlslDialect ComputeHlslDialect { get; } = new();
