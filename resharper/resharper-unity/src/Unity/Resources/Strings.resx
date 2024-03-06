@@ -802,20 +802,20 @@
         <value>The name is not defined in the Input manager. The call is likely to fail at runtime.</value>
     </data>
     <data name="UnityObjectNullCoalescingWarning_Description" xml:space="preserve">
-        <value>The null coalescing operator does not call the custom equality operators defined on 'UnityEngine.Object',
-          which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
+        <value>The null coalescing operator does not call custom equality operators defined on 'UnityEngine.Object'.
+          These operators check if the underlying Unity engine object has been destroyed. Prefer an explicit null
           comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
     </data>
     <data name="UnityObjectNullPropagationWarning_Description" xml:space="preserve">
-        <value>The null propagating operator does not call the custom equality operators defined on 'UnityEngine.Object',
-          which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
+        <value>The null propagating operator does not call custom equality operators defined on 'UnityEngine.Object'.
+          These operators check if the underlying Unity engine object has been destroyed. Prefer an explicit null
           comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
     </data>
     <data name="UnityObjectNullPatternMatchingWarning_Description" xml:space="preserve">
-        <value>Pattern matching null checks operators do not call the custom equality operators defined on 'UnityEngine.Object',
-          which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
+        <value>Pattern matching null checks operators do not call custom equality operators defined on 'UnityEngine.Object'.
+          These operators check if the underlying Unity engine object has been destroyed. Prefer an explicit null
           comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
     </data>
@@ -1688,8 +1688,8 @@ a plugin to be installed to a project.</value>
         <value>Fix comparison with Mathf.Approximately</value>
     </data>
     <data name="UnityObjectNullComparisonWarning_Description" xml:space="preserve">
-        <value>Calls the custom equality operator defined on 'UnityEngine.Object',
-          which will check to see if the underlying Unity engine object has been destroyed. Prefer implicit bool comparison if the lifetime check is intended, or explicitly use 'is' operator or 'object.ReferenceEquals()'
+        <value>Calls the custom equality operator defined on 'UnityEngine.Object'.
+          This operator checks if the underlying Unity engine object has been destroyed. Prefer implicit bool comparison if the lifetime check is intended, or explicitly use 'is' operator or 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
     </data>
     <data name="UnityObjectNullComparisonWarning_Message" xml:space="preserve">
