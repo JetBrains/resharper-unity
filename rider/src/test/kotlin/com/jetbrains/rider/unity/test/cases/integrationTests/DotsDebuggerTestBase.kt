@@ -83,7 +83,7 @@ abstract class DotsDebuggerTestBase(private val unityVersion: UnityVersion) : In
             })
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterMethod
     fun removeAllUnityPausepoints() {
         XDebuggerManager.getInstance(project).breakpointManager.allBreakpoints.filter {
             it.type is UnityPausepointBreakpointType

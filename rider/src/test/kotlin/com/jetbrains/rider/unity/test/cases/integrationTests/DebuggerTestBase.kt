@@ -154,7 +154,7 @@ abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : Integr
             }, testGoldFile)
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterMethod
     fun removeAllUnityPausepoints() {
         XDebuggerManager.getInstance(project).breakpointManager.allBreakpoints.filter {
             it.type is UnityPausepointBreakpointType

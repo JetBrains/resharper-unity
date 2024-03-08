@@ -11,8 +11,9 @@ import io.qameta.allure.*
 @Feature("Unit Testing in Unity solution with started Unity2022")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@Suppress("unused")
 class UnitTestingTests {
-    class TestUnity2020 : UnitTestingTestBase(UnityVersion.V2020) {}
-    class TestUnity2022 : UnitTestingTestBase(UnityVersion.V2022) {}
-    class TestUnity2023 : UnitTestingTestBase(UnityVersion.V2023) {}
+    class TestUnity2020 : UnitTestingTestBase(UnityVersion.V2020)
+    class TestUnity2022 : UnitTestingTestBase(UnityVersion.V2022)
+    class TestUnity2023 : UnitTestingTestBase(UnityVersion.V2023)
 }
