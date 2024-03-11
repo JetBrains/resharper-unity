@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiParser", "ApiParser", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testLibNupkgGenerator", "testLibNupkgGenerator\TestLibNupkgGenerator.csproj", "{66AB4DAE-0961-4FC3-83AE-E8465ED19D2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuiltInShadersExtractor", "BuiltInShadersExtractor\BuiltInShadersExtractor.csproj", "{0CFA8A25-5A25-4F81-88BE-2C4DEA4857BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{66AB4DAE-0961-4FC3-83AE-E8465ED19D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66AB4DAE-0961-4FC3-83AE-E8465ED19D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66AB4DAE-0961-4FC3-83AE-E8465ED19D2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CFA8A25-5A25-4F81-88BE-2C4DEA4857BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CFA8A25-5A25-4F81-88BE-2C4DEA4857BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CFA8A25-5A25-4F81-88BE-2C4DEA4857BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CFA8A25-5A25-4F81-88BE-2C4DEA4857BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
