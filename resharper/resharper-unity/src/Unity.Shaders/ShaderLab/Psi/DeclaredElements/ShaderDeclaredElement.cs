@@ -9,11 +9,9 @@ using JetBrains.Util.DataStructures.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements
 {
-    public class ShaderDeclaredElement : ShaderLabDeclaredElementBase
+    public class ShaderDeclaredElement(string shortName, IPsiSourceFile sourceFile, int treeOffset) : ShaderLabDeclaredElementBase(shortName, sourceFile, treeOffset)
     {
         public override DeclaredElementType GetElementType() => ShaderLabDeclaredElementType.Shader;
-        
-        public ShaderDeclaredElement(string shortName, IPsiSourceFile sourceFile, int treeOffset) : base(shortName, sourceFile, treeOffset) { }
 
         public override IList<IDeclaration> GetDeclarations() => SourceFile.GetPrimaryPsiFile() is ShaderLabFile file ? FixedList.ListOf<IDeclaration>(file) : EmptyList<IDeclaration>.Instance;
     }
