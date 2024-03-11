@@ -1,20 +1,16 @@
 #nullable enable
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve
 {
-    public class ShaderReference<TOwner> : ReferenceWithOrigin<TOwner>, IShaderReference where TOwner : ITreeNode
+    public class ShaderReference<TOwner>(TOwner owner, IReferenceOrigin<TOwner> origin) : ReferenceWithOrigin<TOwner>(owner, origin), IShaderReference
+        where TOwner : ITreeNode
     {
-        public ShaderReference(TOwner owner, IReferenceOrigin<TOwner> origin) : base(owner, origin)
-        {
-        }
-
-        protected override ISymbolTable GetLookupSymbolTable() => myOwner.GetSolution().GetComponent<ShaderLabCache>().GetShaderSymbolTable();
+        protected override ISymbolTable GetLookupSymbolTable() => myOwner.GetSolution().GetComponent<ShaderSymbolTableProvider>().GetSymbolTable();
 
         protected override ResolveResultWithInfo ResolveByName(string name) => new(EmptyResolveResult.Instance, ShaderLabResolveErrorType.SHADERLAB_SHADER_REFERENCE_UNRESOLVED_WARNING);
 
