@@ -141,7 +141,7 @@
         <Description resourceName="UnityObjectNullCoalescingWarning_Description" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityObjectNullPropagationWarning.HIGHLIGHTING_ID" default="DO_NOT_SHOW">
-        <Title resourceName="UnityObjectNullCoalescingWarning_Inspection_Title" resourceType="Strings" />
+        <Title resourceName="UnityObjectNullPropagationWarning_Inspection_Title" resourceType="Strings" />
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
         <Description resourceName="UnityObjectNullPropagationWarning_Description" resourceType="Strings" />
       </Tag>
