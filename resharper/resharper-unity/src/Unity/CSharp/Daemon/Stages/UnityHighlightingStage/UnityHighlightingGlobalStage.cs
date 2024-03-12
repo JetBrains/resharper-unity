@@ -5,7 +5,10 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlightingStage
 {
-    [DaemonStage(GlobalAnalysisStage = true, OverridenStages = new[] {typeof(UnityHighlightingStage)})]
+    [DaemonStage(
+        StagesBefore = [typeof(SolutionAnalysisFileStructureCollectorStage)],
+        GlobalAnalysisStage = true,
+        OverridenStages = [typeof(UnityHighlightingStage)])]
     public class UnityHighlightingGlobalStage : UnityHighlightingAbstractStage
     {
         public UnityHighlightingGlobalStage(
