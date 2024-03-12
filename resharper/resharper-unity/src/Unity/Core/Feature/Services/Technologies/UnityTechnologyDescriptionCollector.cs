@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Resources.Shell;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
 {
-    [SolutionComponent(InstantiationEx.ContainerAsyncAnyThreadSafe)]
+    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
     public class UnityTechnologyDescriptionCollector
     {
         private readonly ISolutionLoadTasksScheduler myTasksScheduler;

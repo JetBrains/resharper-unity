@@ -12,7 +12,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 {
-    [SolutionComponent(InstantiationEx.ContainerAsyncAnyThreadSafe)]
+    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
     public class UnitySolutionTracker : IUnityReferenceChangeHandler
     {
         private readonly ISolution mySolution;

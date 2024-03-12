@@ -15,7 +15,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
 {
-    [SolutionComponent(InstantiationEx.ContainerAsyncAnyThreadSafe)]
+    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
     public class UnityProjectFileCacheProvider : IProjectFileDataProvider<UnityProjectDataCache>
     {
         private static readonly char[] ourSymbolSeparator = { ';', ',' };
