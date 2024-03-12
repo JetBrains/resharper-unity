@@ -36,7 +36,7 @@ fun WorkspaceModel.tryGetPackage(packageFolder: VirtualFile): UnityPackageEntity
 }
 
 // previously was com.intellij.workspaceModel.storage.bridgeEntities.ExtensionsKt.addContentRootEntity
-fun MutableEntityStorage.addContentRootEntity(url: VirtualFileUrl,
+fun MutableEntityStorage.addContentRootEntity(url: VirtualFileUrl, //
                                               excludedUrls: List<VirtualFileUrl>,
                                               excludedPatterns: List<@NlsSafe String>,
                                               module: ModuleEntity,
