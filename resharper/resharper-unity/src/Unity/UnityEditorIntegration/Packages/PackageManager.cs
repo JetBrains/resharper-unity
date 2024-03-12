@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -611,7 +612,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // This must be a git package, make sure we return something
             try
             {
-                var packageFolder = myLocalPackageCacheFolder.Combine($"{id}");
+                var packageFolder = myLocalPackageCacheFolder.Combine(id);
                 if (hash != null && !packageFolder.ExistsDirectory)
                 {
                     packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}");
@@ -691,10 +692,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     // have no way of knowing that the package has been updated or imported.
                     // On the plus side, I have yet to see anyone talk about tarball packages in the wild.
                     // Also, once it's been imported, we'll refresh and all will be good
-                    var timestamp = (long) (tarballPath.FileModificationTimeUtc - DateTimeEx.UnixEpoch).TotalMilliseconds;
-                    var hash = GetMd5OfString(tarballPath.FullPath).Substring(0, 12).ToLowerInvariant();
 
-                    var packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}-{timestamp}");
+                    // newer UPM
+                    var hash = GetMD5HashOfFileContents(tarballPath.FullPath).Substring(0, 12).ToLowerInvariant();
+                    var packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}");
+                    if (!packageFolder.ExistsDirectory) // UPM 8.0.0+, in Unity 2023.3+ no longer include the @... suffix in the project's PackageCache
+                        packageFolder = myLocalPackageCacheFolder.Combine(id);
+
+                    if (!packageFolder.ExistsDirectory)
+                    {
+                        // older UPM
+                        var timestamp = (long) (tarballPath.FileModificationTimeUtc - DateTimeEx.UnixEpoch).TotalMilliseconds;
+                        hash = GetMd5OfString(tarballPath.FullPath).Substring(0, 12).ToLowerInvariant();
+                        packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}-{timestamp}");
+                    }
+
                     var tarballLocation = tarballPath.StartsWith(mySolution.SolutionDirectory)
                         ? tarballPath.RemovePrefix(mySolution.SolutionDirectory.Parent)
                         : tarballPath;
@@ -740,6 +752,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
             return null;
         }
+        
+        private static string GetMD5HashOfFileContents(string filePath)
+        {
+            using var md5 = MD5.Create();
+            using var stream = File.OpenRead(filePath);
+            var hash = md5.ComputeHash(stream);
+            return ConvertByteArrayToHexadecimalString(hash);
+        }
 
         private static string GetMd5OfString(string value)
         {
@@ -748,13 +768,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
             var inputBytes = Encoding.UTF8.GetBytes(value);
             var hashBytes = md5.ComputeHash(inputBytes);
+            return ConvertByteArrayToHexadecimalString(hashBytes).PadLeft(32, '0');
+        }
 
-            // Convert the byte array to hexadecimal string
+        private static string ConvertByteArrayToHexadecimalString(byte[] hashBytes)
+        {
             var sb = new StringBuilder();
             foreach (var t in hashBytes)
                 sb.Append(t.ToString("X2"));
 
-            return sb.ToString().PadLeft(32, '0');
+            return sb.ToString();
         }
 
         private List<PackageData> GetPackagesFromDependencies(string registry,
