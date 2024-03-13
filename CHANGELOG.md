@@ -23,16 +23,20 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
     - Add Find Usages, Go to Definition and Rename for C# members used in string literals in Odin attributes ([RIDER-105871](https://youtrack.jetbrains.com/issue/RIDER-105871))
     - Add highlighting and picker context action for Odin's `GUIColor` attribute ([RIDER-105870](https://youtrack.jetbrains.com/issue/RIDER-105870))
     - Support Odin's range attributes in integer value analysis ([RIDER-105873](https://youtrack.jetbrains.com/issue/RIDER-105873))
+- Add inspection and quick fix to ensure component reference wrapper class is used in DOTS `Query` API ([RIDER-102018](https://youtrack.jetbrains.com/issue/RIDER-102018))
+- Add Generate item and context action to generate references to `IComponentData` instances in DOTS aspect structs ([RIDER-102017](https://youtrack.jetbrains.com/issue/RIDER-102017))
 - Add link to Unity documentation for USS properties ([RIDER-98053](https://youtrack.jetbrains.com/issue/RIDER-98053))
 - Add quick fix to use `Mathf.Approximately` for floating point comparison warning ([RIDER-43927](https://youtrack.jetbrains.com/issue/RIDER-43927))
 - Add nullable annotations for `UnityEngine.Awaitable` and `UnityEngine.SceneManagement.SceneManager` ([RIDER-94838](https://youtrack.jetbrains.com/issue/RIDER-94838))
-- Add highlight, code insight and quick fixes to control inactive shader variant branches
+- Add completion and resolving for known built in shaders ([RIDER-106803](https://youtrack.jetbrains.com/issue/RIDER-106803))
+- Add highlight, code insight and quick fixes to control inactive shader variant branches ([RIDER-99290](https://youtrack.jetbrains.com/issue/RIDER-99290))
 - Add support for `_KEYWORD_DEFINED` suffix for shader keywords (see [UUM-59203](https://issuetracker.unity3d.com/issues/dynamic-branching-shader-code-cant-be-shared-with-passes-that-dont-declare-the-keywords))
 - Add support for stage-specific local shader keywords ([RIDER-103143](https://youtrack.jetbrains.com/issue/RIDER-103143))
 - Add support for implicitly defined shader keywords
 - Add support for `interface` keyword in shaders ([RIDER-92974](https://youtrack.jetbrains.com/issue/RIDER-92974))
 - Add extra syntax highlighting configuration for ShaderLab keywords ([RIDER-97029](https://youtrack.jetbrains.com/issue/RIDER-97029))
 - Rider: Add "Current Entity" node in debugger for `IJobChunk` and `IJobEntity` ([RIDER-92628](https://youtrack.jetbrains.com/issue/RIDER-92628))
+- Rider: Add option to output logs to both Rider's debug console and Unity's Console ([RIDER-104827](https://youtrack.jetbrains.com/issue/RIDER-104827))
 
 ### Changed
 
@@ -44,6 +48,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Remove obsolete Cg/HLSL custom colour scheme configuration. Cg/HLSL support is based on C++ ([RIDER-97028](https://youtrack.jetbrains.com/issue/RIDER-97028))
 - Change default severity of "repeated access of external property" from warning to do not show ([RIDER-53077](https://youtrack.jetbrains.com/issue/RIDER-53077))
 - Remove preview option for shader variants support
+- Support finding asset usages in AI Assistant smart chat ([RIDER-103371](https://youtrack.jetbrains.com/issue/RIDER-103371))
 - Rider: Pausepoints will pause the editor when invoked from DOTS systems ([RIDER-58197](https://youtrack.jetbrains.com/issue/RIDER-58197))
 - Rider: Play controls now allow pausing game before running it ([RIDER-70161](https://youtrack.jetbrains.com/issue/RIDER-70161))
 - Rider: Provide notification of missing project files when opening a subfolder of a Unity project ([RIDER-91087](https://youtrack.jetbrains.com/issue/RIDER-91087))
@@ -65,6 +70,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix incorrectly disabling asset indexing for large projects when automatic check is disabled ([RIDER-106139](https://youtrack.jetbrains.com/issue/RIDER-106139))
 - Fix incorrectly processing `.meta` files each time project is opened ([RIDER-106473](https://youtrack.jetbrains.com/issue/RIDER-106473))
 - Fix exception when package is updated ([DEXP-712466](https://youtrack.jetbrains.com/issue/DEXP-712466))
+- Fix exceptions trying to resolve a Git-based package in the Unity Explorer ([DEXP-738202](https://youtrack.jetbrains.com/issue/DEXP-738202))
 - Rider: Fix error preventing showing pixels in texture debug visualiser ([RIDER-101223](https://youtrack.jetbrains.com/issue/RIDER-101223))
 - Rider: Fix debugger presentation with renamed `RefRO`/`RefRW` types ([RIDER-104548](https://youtrack.jetbrains.com/issue/RIDER-14548))
 - Rider: Support deselecting item in Unity Log view, to reinstate auto-scroll ([RIDER-100615](https://youtrack.jetbrains.com/issue/RIDER-100615))
