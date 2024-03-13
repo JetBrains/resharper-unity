@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Parts;
@@ -11,7 +8,6 @@ using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
-using JetBrains.Extension;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -680,41 +676,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 return null;
 
             // This is a package installed from a package.tgz file. The original file is referenced, but not touched.
-            // It is expanded into Library/PackageCache with a filename of name@{md5-of-path}-{file-modification-in-epoch-ms}
+            // It is expanded into Library/PackageCache, folder name can differ
+            // just myLocalPackageCacheFolder.Combine(id)
+            // or myLocalPackageCacheFolder.Combine($"{id}@{hash}"), where hash is GetMD5HashOfFileContents(tarballPath.FullPath).Substring(0, 12).ToLowerInvariant()
+            // or even myLocalPackageCacheFolder.Combine($"{id}@{hash}-{timestamp}"
+            // we don't care much about it, since there is no way to have multiple versions in the myLocalPackageCacheFolder
             try
             {
                 var path = version.Substring(5);
                 var tarballPath = myPackagesFolder.Combine(path);
-                if (tarballPath.ExistsFile)
+                if (!tarballPath.ExistsFile) return null;
+                
+                // Note that this is inherently fragile. If the file is touched, but not imported (i.e. Unity isn't
+                // running), we won't be able to resolve it at all. We also don't have a watch on the file, so we
+                // have no way of knowing that the package has been updated or imported.
+                // On the plus side, I have yet to see anyone talk about tarball packages in the wild.
+                // Also, once it's been imported, we'll refresh and all will be good
+
+                // UPM 8.0.0+, in Unity 2023.3+ no longer include the @... suffix in the project's PackageCache
+                var packageFolder = myLocalPackageCacheFolder.Combine(id);
+                    
+                // previous UPM
+                if (!packageFolder.ExistsDirectory)
                 {
-                    // Note that this is inherently fragile. If the file is touched, but not imported (i.e. Unity isn't
-                    // running), we won't be able to resolve it at all. We also don't have a watch on the file, so we
-                    // have no way of knowing that the package has been updated or imported.
-                    // On the plus side, I have yet to see anyone talk about tarball packages in the wild.
-                    // Also, once it's been imported, we'll refresh and all will be good
-
-                    // newer UPM
-                    var hash = GetMD5HashOfFileContents(tarballPath.FullPath).Substring(0, 12).ToLowerInvariant();
-                    var packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}");
-                    if (!packageFolder.ExistsDirectory) // UPM 8.0.0+, in Unity 2023.3+ no longer include the @... suffix in the project's PackageCache
-                        packageFolder = myLocalPackageCacheFolder.Combine(id);
-
-                    if (!packageFolder.ExistsDirectory)
-                    {
-                        // older UPM
-                        var timestamp = (long) (tarballPath.FileModificationTimeUtc - DateTimeEx.UnixEpoch).TotalMilliseconds;
-                        hash = GetMd5OfString(tarballPath.FullPath).Substring(0, 12).ToLowerInvariant();
-                        packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}-{timestamp}");
-                    }
-
-                    var tarballLocation = tarballPath.StartsWith(mySolution.SolutionDirectory)
-                        ? tarballPath.RemovePrefix(mySolution.SolutionDirectory.Parent)
-                        : tarballPath;
-                    return GetPackageDataFromFolder(id, packageFolder, PackageSource.LocalTarball,
-                        tarballLocation: tarballLocation);
+                    // use simple fallback
+                    packageFolder = myLocalPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault() ?? packageFolder;
                 }
+                    
+                var tarballLocation = tarballPath.StartsWith(mySolution.SolutionDirectory)
+                    ? tarballPath.RemovePrefix(mySolution.SolutionDirectory.Parent)
+                    : tarballPath;
+                return GetPackageDataFromFolder(id, packageFolder, PackageSource.LocalTarball,
+                    tarballLocation: tarballLocation);
 
-                return null;
             }
             catch (Exception e)
             {
@@ -751,33 +745,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             }
 
             return null;
-        }
-        
-        private static string GetMD5HashOfFileContents(string filePath)
-        {
-            using var md5 = MD5.Create();
-            using var stream = File.OpenRead(filePath);
-            var hash = md5.ComputeHash(stream);
-            return ConvertByteArrayToHexadecimalString(hash);
-        }
-
-        private static string GetMd5OfString(string value)
-        {
-            // Use input string to calculate MD5 hash
-            using var md5 = MD5.Create();
-
-            var inputBytes = Encoding.UTF8.GetBytes(value);
-            var hashBytes = md5.ComputeHash(inputBytes);
-            return ConvertByteArrayToHexadecimalString(hashBytes).PadLeft(32, '0');
-        }
-
-        private static string ConvertByteArrayToHexadecimalString(byte[] hashBytes)
-        {
-            var sb = new StringBuilder();
-            foreach (var t in hashBytes)
-                sb.Append(t.ToString("X2"));
-
-            return sb.ToString();
         }
 
         private List<PackageData> GetPackagesFromDependencies(string registry,
