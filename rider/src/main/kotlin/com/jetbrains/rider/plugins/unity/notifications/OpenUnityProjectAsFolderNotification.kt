@@ -135,7 +135,9 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                             notification.setSuggestionType(
                                 true) // such a Notification would be removed from the NotificationToolWindow, fixes RIDER-98129 Notification "Advanced integration" behaviour
                             Notifications.Bus.notify(notification, project)
-                            model.unityEditorConnected.whenTrue(lt) { notification.expire() }
+                            withContext(Dispatchers.EDT){
+                                model.unityEditorConnected.whenTrue(lt) { notification.expire() }
+                            }
                         }
                     }
                 }
