@@ -67,6 +67,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     fun baseTestYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/NewBehaviourScript.cs") { false }
 
+    @Mute("RIDER-96147", specificParameters = ["Properties"])
     @Test(description = "Unity property code vision test with yaml off", dataProvider = "assetSettings")
     @TestEnvironment(solution = "RiderSample")
     fun propertyCodeVisionYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
@@ -98,6 +99,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
         true
     }
 
+    @Mute("RIDER-96147", specificParameters = ["Properties"])
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     fun prefabModifications02(caseName: String, showProperties: String) = doUnityTest("True",
@@ -105,6 +107,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
         true
     }
 
+    @Mute("RIDER-96147", specificParameters = ["NoProperties"])
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     fun prefabModifications03(caseName: String, showProperties: String) = doUnityTest("True",

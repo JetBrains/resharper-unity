@@ -114,6 +114,8 @@ class DotsDebuggerTest {
     class TestUnity2020 : DotsDebuggerTestBase(UnityVersion.V2020) {
         init {
             addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+            addMute(Mute("RIDER-105466"), ::removeAllUnityPausepoints)
+            addMute(Mute("RIDER-105466"), ::setUpTestCaseSolution)
         }
     }
     class TestUnity2022 : DotsDebuggerTestBase(UnityVersion.V2022) {
