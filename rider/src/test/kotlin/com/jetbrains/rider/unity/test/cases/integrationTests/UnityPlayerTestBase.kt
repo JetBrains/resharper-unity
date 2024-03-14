@@ -3,9 +3,11 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
+import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
+import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
@@ -31,6 +33,8 @@ abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
     private lateinit var unityProjectPath: File
     private lateinit var lifetimeDefinition: LifetimeDefinition
 
+    override val traceScenarios: Set<LogTraceScenario>
+        get() = super.traceScenarios + LogTraceScenarios.Debugger
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTestBase::class.simpleName!!)
     override val testCaseSourceDirectory: File

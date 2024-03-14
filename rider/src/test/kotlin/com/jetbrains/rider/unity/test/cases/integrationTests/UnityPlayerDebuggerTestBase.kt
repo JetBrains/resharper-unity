@@ -3,14 +3,14 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rdclient.util.idea.toIOFile
-import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.unity.test.framework.api.*
-import io.qameta.allure.Epic
 import io.qameta.allure.Severity
 import io.qameta.allure.SeverityLevel
 import org.testng.annotations.Test
@@ -71,11 +71,11 @@ abstract class UnityPlayerDebuggerTestBase(unityVersion: UnityVersion, buildName
     }
 }
 
-@Epic(Subsystem.UNITY_DEBUG)
+@Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnityPlayerDebuggerTest {
-    class TestUnity2020 : UnityPlayerDebuggerTestBase(UnityVersion.V2020, mapOf(
+    class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(UnityVersion.V2020, mapOf(
         winOS to "UnityPlayerDebuggerTest_StandaloneWindows64_2022.3.17f1_2024-Feb-20.zip",
         macOS to "UnityPlayerDebuggerTest_StandaloneOSX_2022.3.17f1_2024-Feb-20.zip"))
 }
