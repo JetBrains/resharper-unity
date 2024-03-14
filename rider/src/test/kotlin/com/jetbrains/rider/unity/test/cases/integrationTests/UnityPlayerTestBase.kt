@@ -141,6 +141,7 @@ abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
         assert(file.exists())
         try {
             logger.info("Starting game process:$file")
+            file.setExecutable(true)
             val process: Process? = ProcessBuilder(mutableListOf(file.path, "-logfile", logPath.toString(), "-batchMode")).start()
             if (process != null) {
                 logger.info("Game process started:${process.info()}")
