@@ -65,6 +65,8 @@ open class StartUnityAction : DumbAwareAction() {
 
         fun startUnity(args: MutableList<String>): Process? {
             val processBuilder = ProcessBuilder(args)
+            // only needed for locally compiled Rider, which can contaminate Unity/UnityHub with this env
+            processBuilder.environment().remove("RESHARPER_HOST_BIN")
             return processBuilder.start()
         }
     }
