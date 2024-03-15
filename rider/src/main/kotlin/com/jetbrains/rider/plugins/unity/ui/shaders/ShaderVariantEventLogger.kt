@@ -22,10 +22,9 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
         @JvmField
         internal val GROUP = EventLogGroup("rider.unity.shaders.variants", 2)
 
-        private val SHOW_SHADER_VARIANT_POPUP_ACTIVITY = GROUP.registerIdeActivity("show_variants", finishEventAdditionalFields = arrayOf(
-            DEFINE_COUNT,
-            ORIGIN
-        ))
+        private val SHOW_SHADER_VARIANT_POPUP_ACTIVITY = GROUP.registerIdeActivity("show_variants",
+                                                                                   startEventAdditionalFields = arrayOf(ORIGIN),
+                                                                                   finishEventAdditionalFields = arrayOf(DEFINE_COUNT))
 
         private val RESET_KEYWORDS = GROUP.registerEvent("reset")
         private val RESET_ALL_KEYWORDS = GROUP.registerEvent("reset_all")
