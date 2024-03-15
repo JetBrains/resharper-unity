@@ -27,6 +27,7 @@ import com.jetbrains.rider.plugins.unity.run.configurations.isAttachedToUnityEdi
 import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.projectView.solution
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.awt.Frame
 import java.io.File
@@ -38,11 +39,15 @@ class FrontendBackendHost() {
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         private fun activateRider(project: Project) {
-            ProjectUtil.focusProjectWindow(project, true)
-            val frame = WindowManager.getInstance().getFrame(project)
-            if (frame != null) {
-                if (BitUtil.isSet(frame.extendedState, Frame.ICONIFIED))
-                    frame.extendedState = BitUtil.set(frame.extendedState, Frame.ICONIFIED, false)
+            UnityPluginScopeService.getScope(project).launch {
+                withContext(Dispatchers.EDT){
+                    ProjectUtil.focusProjectWindow(project, true)
+                }
+                val frame = WindowManager.getInstance().getFrame(project)
+                if (frame != null) {
+                    if (BitUtil.isSet(frame.extendedState, Frame.ICONIFIED))
+                        frame.extendedState = BitUtil.set(frame.extendedState, Frame.ICONIFIED, false)
+                }
             }
         }
 
