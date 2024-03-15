@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.backend.workspace.toVirtualFileUrl
+import com.intellij.platform.workspace.jps.entities.modifyEntity
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.util.application
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -98,11 +99,19 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
         }
         else null
 
-        val entity = UnityPackageEntity(unityPackage, RiderUnityPackageEntitySource) {
-            this.descriptor = unityPackage
-            this.contentRootEntity = contentRootEntity
+        val entity = if (contentRootEntity != null) {
+            val updatedRoot = entityStorage.modifyEntity(contentRootEntity) {
+                this.unityPackageEntity = UnityPackageEntity(unityPackage, RiderUnityPackageEntitySource) {
+                    this.descriptor = unityPackage
+                }
+            }
+            updatedRoot.unityPackageEntity!!
+        } else {
+            entityStorage addEntity UnityPackageEntity(unityPackage, RiderUnityPackageEntitySource) {
+                this.descriptor = unityPackage
+                this.contentRootEntity = null
+            }
         }
-        entityStorage.addEntity(entity)
 
         val mapping = entityStorage.getMutableExternalMapping(UNITY_PACKAGE_ID_MAPPING)
         mapping.addMapping(entity, entity.packageId)
