@@ -8,6 +8,7 @@ import com.intellij.platform.workspace.jps.entities.ContentRootEntity
 import com.intellij.platform.workspace.storage.*
 import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
+import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.GeneratedCodeImplVersion
 import com.intellij.platform.workspace.storage.MutableEntityStorage
@@ -22,6 +23,7 @@ import com.intellij.platform.workspace.storage.impl.extractOneToOneChild
 import com.intellij.platform.workspace.storage.impl.updateOneToOneChildOfParent
 import com.intellij.platform.workspace.storage.instrumentation.EntityStorageInstrumentation
 import com.intellij.platform.workspace.storage.instrumentation.EntityStorageInstrumentationApi
+import com.intellij.platform.workspace.storage.instrumentation.MutableEntityStorageInstrumentation
 import com.intellij.platform.workspace.storage.metadata.model.EntityMetadata
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
@@ -130,15 +132,17 @@ open class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData
 
       }
 
-    override var contentRootEntity: ContentRootEntity?
+    override var contentRootEntity: ContentRootEntity.Builder?
       get() {
         val _diff = diff
         return if (_diff != null) {
-          _diff.extractOneToOneChild(CONTENTROOTENTITY_CONNECTION_ID, this) ?: this.entityLinks[EntityLink(true,
-                                                                                                           CONTENTROOTENTITY_CONNECTION_ID)] as? ContentRootEntity
+          @OptIn(EntityStorageInstrumentationApi::class)
+          ((_diff as MutableEntityStorageInstrumentation).getOneChildBuilder(CONTENTROOTENTITY_CONNECTION_ID,
+                                                                             this) as? ContentRootEntity.Builder)
+          ?: (this.entityLinks[EntityLink(true, CONTENTROOTENTITY_CONNECTION_ID)] as? ContentRootEntity.Builder)
         }
         else {
-          this.entityLinks[EntityLink(true, CONTENTROOTENTITY_CONNECTION_ID)] as? ContentRootEntity
+          this.entityLinks[EntityLink(true, CONTENTROOTENTITY_CONNECTION_ID)] as? ContentRootEntity.Builder
         }
       }
       set(value) {
@@ -207,7 +211,7 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
   override fun deserialize(de: EntityInformation.Deserializer) {
   }
 
-  override fun createDetachedEntity(parents: List<WorkspaceEntity>): WorkspaceEntity {
+  override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {
     return UnityPackageEntity(descriptor, entitySource) {
     }
   }

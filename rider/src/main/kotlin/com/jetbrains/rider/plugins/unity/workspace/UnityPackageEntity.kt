@@ -46,10 +46,10 @@ interface UnityPackageEntity : WorkspaceEntity {
 
   //region generated code
   @GeneratedCodeApiVersion(2)
-  interface Builder : UnityPackageEntity, WorkspaceEntity.Builder<UnityPackageEntity> {
+  interface Builder : WorkspaceEntity.Builder<UnityPackageEntity> {
     override var entitySource: EntitySource
-    override var descriptor: UnityPackage
-    override var contentRootEntity: ContentRootEntity?
+    var descriptor: UnityPackage
+    var contentRootEntity: ContentRootEntity.Builder?
   }
 
   companion object : EntityType<UnityPackageEntity, Builder>() {
@@ -60,7 +60,7 @@ interface UnityPackageEntity : WorkspaceEntity {
       descriptor: UnityPackage,
       entitySource: EntitySource,
       init: (Builder.() -> Unit)? = null,
-    ): UnityPackageEntity {
+    ): Builder {
       val builder = builder()
       builder.descriptor = descriptor
       builder.entitySource = entitySource
@@ -79,8 +79,8 @@ fun MutableEntityStorage.modifyEntity(
   return modifyEntity(UnityPackageEntity.Builder::class.java, entity, modification)
 }
 
-var ContentRootEntity.Builder.unityPackageEntity: UnityPackageEntity?
-  by WorkspaceEntity.extension()
+var ContentRootEntity.Builder.unityPackageEntity: UnityPackageEntity.Builder?
+  by WorkspaceEntity.extensionBuilder(UnityPackageEntity::class.java)
 //endregion
 
 @Suppress("unused")
