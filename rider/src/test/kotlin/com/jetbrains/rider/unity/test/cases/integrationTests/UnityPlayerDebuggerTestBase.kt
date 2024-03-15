@@ -36,7 +36,7 @@ abstract class UnityPlayerDebuggerTestBase(unityVersion: UnityVersion, buildName
 
         val exeName = getExecutionFileName()
         assertNotNull(exeName)
-        val folderName = gameFileName.toIOFile().name.removeSuffix(".gz").removeSuffix(".tar").removeSuffix(".zip")
+        val folderName = gameFileName.toIOFile().nameWithoutExtension
         var gameFullPath = activeSolutionDirectory.combine(folderName).combine(exeName)
 
         if(SystemInfo.isMac)
@@ -80,6 +80,6 @@ abstract class UnityPlayerDebuggerTestBase(unityVersion: UnityVersion, buildName
 class UnityPlayerDebuggerTest {
     class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(UnityVersion.V2020, mapOf(
         winOS to "UnityPlayerDebuggerTest_StandaloneWindows64_2022.3.17f1_2024-Feb-20.zip",
-        macOS to "UnityPlayerDebuggerTest_StandaloneOSX_2022.3.21f1_2024-Mar-14.tar.gz"))
+        macOS to "UnityPlayerDebuggerTest_StandaloneOSX_2022.3.20f1_2024-Feb-26.zip"))
 }
 
