@@ -1,3 +1,5 @@
+package com.jetbrains.rider.unity.test.cases.markup
+
 import com.jetbrains.rider.unity.test.framework.api.doFindUsagesTest
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rd.ide.model.findUsagesHost
