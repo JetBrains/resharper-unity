@@ -57,6 +57,11 @@ fun MutableList<String>.withRunTests(): MutableList<String> {
     return this
 }
 
+fun MutableList<String>.withEditorLog(): MutableList<String> {
+    this.addAll(listOf("-logFile", "Logs/Editor.log"))
+    return this
+}
+
 fun MutableList<String>.withTestResults(): MutableList<String> {
     this.addAll(listOf("-testResults", "Logs/results.xml"))
     return this

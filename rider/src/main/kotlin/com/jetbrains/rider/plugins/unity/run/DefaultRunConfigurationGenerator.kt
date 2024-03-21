@@ -89,6 +89,7 @@ class DefaultRunConfigurationGenerator {
                             session.project.solutionDirectory.canonicalPath,
                             mutableListOf<String>().withRunTests().withBatchMode()
                                 .withProjectPath(session.project).withTestResults()
+                                .withEditorLog()
                                 .withTestPlatform().withDebugCodeOptimization().toProgramParameters(),
                             runManager)
                     } else
