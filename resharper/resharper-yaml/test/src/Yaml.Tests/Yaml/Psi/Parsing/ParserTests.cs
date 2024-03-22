@@ -1,4 +1,4 @@
-﻿using JetBrains.ReSharper.Plugins.Tests.YamlTestComponents;
+﻿using JetBrains.ReSharper.Plugins.Tests.YamlTestFramework;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
@@ -6,6 +6,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 {
   [TestFileExtension(TestYamlProjectFileType.YAML_EXTENSION)]
+  [UnityExtensionMapping]
   public class ParserTests : ParserTestBase<YamlLanguage>
   {
     protected override string RelativeTestDataPath => @"Psi\Parsing";

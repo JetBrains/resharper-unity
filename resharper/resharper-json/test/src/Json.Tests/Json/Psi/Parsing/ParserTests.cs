@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Plugins.Json.Psi;
+﻿using JetBrains.ReSharper.Plugins.Json.ProjectModel;
+using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using NUnit.Framework;
@@ -7,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Json.Psi.Parsing
 {
     [TestFileExtension(".json")]
     [TestTraceCategories("JetBrains.Application")]
+    [CustomExtensionMapping(typeof(JsonNewProjectFileType), ".json")]
     public class ParserTests : ParserTestBase<JsonNewLanguage>
     {
         protected override string RelativeTestDataPath => @"Json\Psi\Parsing";

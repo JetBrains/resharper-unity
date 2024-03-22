@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Diagnostics;
+using JetBrains.ReSharper.Plugins.Tests.YamlTestFramework;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
@@ -8,6 +9,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 {
+  [UnityExtensionMapping]
   public class UnityParserTests : ParserTestBase<YamlLanguage>
   {
     protected override string RelativeTestDataPath => @"Psi\Parsing\Unity";
