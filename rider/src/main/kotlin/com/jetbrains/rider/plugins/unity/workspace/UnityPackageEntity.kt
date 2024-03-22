@@ -40,7 +40,7 @@ interface UnityPackageEntity : WorkspaceEntity {
     val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
 
   //region generated code
-  @GeneratedCodeApiVersion(2)
+  @GeneratedCodeApiVersion(3)
   interface Builder : WorkspaceEntity.Builder<UnityPackageEntity> {
     override var entitySource: EntitySource
     var descriptor: UnityPackage

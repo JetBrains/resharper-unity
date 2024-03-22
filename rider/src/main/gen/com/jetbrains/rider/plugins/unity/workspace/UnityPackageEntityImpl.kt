@@ -28,8 +28,8 @@ import com.intellij.platform.workspace.storage.metadata.model.EntityMetadata
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 
-@GeneratedCodeApiVersion(2)
-@GeneratedCodeImplVersion(3)
+@GeneratedCodeApiVersion(3)
+@GeneratedCodeImplVersion(5)
 open class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData) : UnityPackageEntity, WorkspaceEntityBase(dataSource) {
 
   private companion object {
