@@ -1,10 +1,11 @@
-using JetBrains.ReSharper.Plugins.Tests.YamlTestComponents;
+using JetBrains.ReSharper.Plugins.Tests.YamlTestFramework;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 {
   [TestFileExtension(TestYamlProjectFileType.YAML_EXTENSION)]
+  [UnityExtensionMapping]
   public class IncrementalReparseTests : IncrementalReparseTestBase
   {
     protected override string RelativeTestDataPath => @"Psi\Parsing\Reparse";
