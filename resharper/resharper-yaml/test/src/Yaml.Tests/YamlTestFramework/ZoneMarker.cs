@@ -1,6 +1,6 @@
 using JetBrains.Application.BuildScript.Application.Zones;
 
-namespace JetBrains.ReSharper.Plugins.Tests.YamlTestComponents
+namespace JetBrains.ReSharper.Plugins.Tests.YamlTestFramework
 {
   // Zone requirements for all shell and solution test components. Make sure to restrict this to the plugin under
   // test, or the components will leak into the full product when built from the monorepo. Environment components must
