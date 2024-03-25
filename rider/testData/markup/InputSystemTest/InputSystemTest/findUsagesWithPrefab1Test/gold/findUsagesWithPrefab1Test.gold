@@ -1,0 +1,7 @@
+Search target
+    NewBehaviourScript1.OnJump1WithPrefab() : void
+Found usages  (1 usage found)
+    Other  (1 usage found)
+        Assets  (1 usage found)
+            MyInputForPrefab.inputactions  (1 usage found)
+                [218, Assets/MyInputForPrefab.inputactions] (9: 30)  "name": "Jump1WithPrefab",
