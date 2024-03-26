@@ -79,7 +79,6 @@ open class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData
       }
 
       this.diff = builder
-      this.snapshot = builder
       addToBuilder()
       this.id = getEntityData().createEntityId()
       // After adding entity data to the builder, we need to unbind it and move the control over entity data to builder
@@ -181,7 +180,6 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
   override fun wrapAsModifiable(diff: MutableEntityStorage): WorkspaceEntity.Builder<UnityPackageEntity> {
     val modifiable = UnityPackageEntityImpl.Builder(null)
     modifiable.diff = diff
-    modifiable.snapshot = diff
     modifiable.id = createEntityId()
     return modifiable
   }
