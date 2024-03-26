@@ -11,7 +11,7 @@ import com.jetbrains.rider.projectView.solution
 class UnityVersionRiderTechnicalSupportInfoProvider : RiderTechnicalSupportInfoProvider {
 
     override fun getEntry(e: AnActionEvent, appInfo: ApplicationInfoEx): RiderTechnicalSupportEntry {
-        return RiderTechnicalSupportEntry("\$UNITY_VERSION", getUnityVersion(e.project))
+        return RiderTechnicalSupportEntry("unity_version", getUnityVersion(e.project))
     }
 
 
