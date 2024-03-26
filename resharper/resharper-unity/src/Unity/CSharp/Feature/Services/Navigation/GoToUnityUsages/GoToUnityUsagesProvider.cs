@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.DataContext;
+using JetBrains.Application.UI.ActionsRevised.Loader;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -40,7 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.G
             var execution = GetSearchesExecution(dataContext, navigationExecutionHost);
             if (execution != null)
             {
-                yield return new ContextNavigation(Strings.GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol, "FindUnityUsages",
+                yield return new ContextNavigation(Strings.GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol,
+                    dataContext.GetComponent<IActionDefs>().GetActionId<GoToUnityUsagesAction>(),
                     NavigationActionGroup.Important, execution);
             }
         }
