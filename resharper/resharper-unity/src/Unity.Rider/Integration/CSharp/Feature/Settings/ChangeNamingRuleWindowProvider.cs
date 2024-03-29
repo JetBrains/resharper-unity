@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Naming;
 using JetBrains.ReSharper.Psi.Naming.Settings;
-using JetBrains.Rider.Backend.Features.Settings;
+using JetBrains.Rider.Backend.Features.Settings.OptionsPage.Naming;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
 {
     // TODO: Get rid of this once RIDER-8339 is implemented
     [SolutionComponent]
-    public class ChangeNamingRuleWindowProvider : RiderChangeNamingRuleWindowProvider, IChangeNamingRuleWindowProvider
+    public class ChangeNamingRuleWindowProvider : CSharpChangeNamingRuleWindowProvider, IChangeNamingRuleWindowProvider
     {
         private readonly UnityApi myUnityApi;
 
