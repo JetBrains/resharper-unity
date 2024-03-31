@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Feature.Services.Daemon
             var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile,
                 DaemonProcess.ContextBoundSettingsStore);
             fileHighlighter(myFile, consumer);
-            commiter(new DaemonStageResult(consumer.Highlightings));
+            commiter(new DaemonStageResult(consumer.CollectHighlightings()));
         }
     }
 }

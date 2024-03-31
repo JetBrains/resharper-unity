@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
     {
       var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile, DaemonProcess.ContextBoundSettingsStore);
       fileHighlighter(myFile, consumer);
-      committer(new DaemonStageResult(consumer.Highlightings));
+      committer(new DaemonStageResult(consumer.CollectHighlightings()));
     }
   }
 }

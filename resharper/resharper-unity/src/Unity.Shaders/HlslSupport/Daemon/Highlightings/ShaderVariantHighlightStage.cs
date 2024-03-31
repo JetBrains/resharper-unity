@@ -80,7 +80,7 @@ file class ShaderKeywordsHighlightProcess(IDaemonProcess process, IContextBoundS
             myDirectiveNode = null;
         }
 
-        committer(new DaemonStageResult(consumer.Highlightings));
+        committer(new DaemonStageResult(consumer.CollectHighlightings()));
     }
 
     public bool InteriorShouldBeProcessed(ITreeNode element, IHighlightingConsumer context) => element.NodeType != CppCompositeNodeTypes.MACRO_REF && (myDirectiveNode != null || element is not ICppDirective);

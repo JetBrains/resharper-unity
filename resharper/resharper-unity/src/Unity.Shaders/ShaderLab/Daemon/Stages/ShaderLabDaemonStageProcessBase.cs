@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         {
             var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile, DaemonProcess.ContextBoundSettingsStore);
             fileHighlighter(myFile, consumer);
-            commiter(new DaemonStageResult(consumer.Highlightings));
+            commiter(new DaemonStageResult(consumer.CollectHighlightings()));
         }
     }
 }

@@ -112,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
                 }
             }
 
-            committer(new DaemonStageResult(highlightingConsumer.Highlightings));
+            committer(new DaemonStageResult(highlightingConsumer.CollectHighlightings()));
         }
 
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)

@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
             File.ProcessThisAndDescendants(this, highlightingConsumer);
 
-            committer(new DaemonStageResult(highlightingConsumer.Highlightings));
+            committer(new DaemonStageResult(highlightingConsumer.CollectHighlightings()));
         }
 
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
