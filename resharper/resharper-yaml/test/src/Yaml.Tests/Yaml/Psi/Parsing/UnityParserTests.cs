@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.TestFramework;
@@ -47,14 +49,15 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
       }
 
       // Make sure we have the equivalent of `{caret}` at the start of the file, so we don't have to edit the binary file
-      public override void Process(FileSystemPath basePath, params string[] files)
+      public override void Process(FileSystemPath basePath, IEnumerable<string> files)
       {
         base.Process(basePath, files);
         if (CaretPosition == null)
         {
-          var file = FileSystemPath.TryParse(files[0]);
+          var first = files.First();
+          var file = FileSystemPath.TryParse(first);
           if (file.IsEmpty)
-            file = basePath.NotNull().Combine(files[0]);
+            file = basePath.NotNull().Combine(first);
           file = GetProcessedFilePath(file);
           CaretPosition = new CaretPosition(file.ToVirtualFileSystemPath(), 0);
         }
