@@ -5,7 +5,11 @@ package com.jetbrains.rider.plugins.unity.workspace
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.backend.workspace.virtualFile
 import com.intellij.platform.workspace.jps.entities.ContentRootEntity
-import com.intellij.platform.workspace.storage.*
+import com.intellij.platform.workspace.storage.EntitySource
+import com.intellij.platform.workspace.storage.EntityType
+import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
+import com.intellij.platform.workspace.storage.MutableEntityStorage
+import com.intellij.platform.workspace.storage.WorkspaceEntity
 import com.intellij.platform.workspace.storage.annotations.Child
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
@@ -39,43 +43,43 @@ interface UnityPackageEntity : WorkspaceEntity {
 
     val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
 
-  //region generated code
-  @GeneratedCodeApiVersion(3)
-  interface Builder : WorkspaceEntity.Builder<UnityPackageEntity> {
-    override var entitySource: EntitySource
-    var descriptor: UnityPackage
-    var contentRootEntity: ContentRootEntity.Builder?
-  }
-
-  companion object : EntityType<UnityPackageEntity, Builder>() {
-    @JvmOverloads
-    @JvmStatic
-    @JvmName("create")
-    operator fun invoke(
-      descriptor: UnityPackage,
-      entitySource: EntitySource,
-      init: (Builder.() -> Unit)? = null,
-    ): Builder {
-      val builder = builder()
-      builder.descriptor = descriptor
-      builder.entitySource = entitySource
-      init?.invoke(builder)
-      return builder
+    //region generated code
+    @GeneratedCodeApiVersion(3)
+    interface Builder : WorkspaceEntity.Builder<UnityPackageEntity> {
+        override var entitySource: EntitySource
+        var descriptor: UnityPackage
+        var contentRootEntity: ContentRootEntity.Builder?
     }
-  }
-  //endregion
+
+    companion object : EntityType<UnityPackageEntity, Builder>() {
+        @JvmOverloads
+        @JvmStatic
+        @JvmName("create")
+        operator fun invoke(
+            descriptor: UnityPackage,
+            entitySource: EntitySource,
+            init: (Builder.() -> Unit)? = null,
+        ): Builder {
+            val builder = builder()
+            builder.descriptor = descriptor
+            builder.entitySource = entitySource
+            init?.invoke(builder)
+            return builder
+        }
+    }
+    //endregion
 }
 
 //region generated code
 fun MutableEntityStorage.modifyEntity(
-  entity: UnityPackageEntity,
-  modification: UnityPackageEntity.Builder.() -> Unit,
+    entity: UnityPackageEntity,
+    modification: UnityPackageEntity.Builder.() -> Unit,
 ): UnityPackageEntity {
-  return modifyEntity(UnityPackageEntity.Builder::class.java, entity, modification)
+    return modifyEntity(UnityPackageEntity.Builder::class.java, entity, modification)
 }
 
 var ContentRootEntity.Builder.unityPackageEntity: UnityPackageEntity.Builder?
-  by WorkspaceEntity.extensionBuilder(UnityPackageEntity::class.java)
+    by WorkspaceEntity.extensionBuilder(UnityPackageEntity::class.java)
 //endregion
 
 @Suppress("unused")
