@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using JetBrains.ReSharper.IntentionsTests.Navigation;
+﻿using JetBrains.ReSharper.IntentionsTests.Navigation;
 using JetBrains.ReSharper.TestFramework;
-using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.Navigation
@@ -18,20 +15,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.Navigation
         [Test] public void Test02() { DoNamedTest("Ref1.asmdef"); }
         [Test] public void Test03() { DoNamedTest("Ref1.asmdef", "Ref2.asmdef"); }
 
-        [Test] public void TestGuidReference01() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test] public void TestGuidReference01() { DoTestSolution([TestName2], ["GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"]); }
 
         [Test, TestFileExtension(".asmref")] public void TestAsmRefNamedReference() { DoNamedTest2("AsmRef_FirstProject.asmdef"); }
         [Test, TestFileExtension(".asmref")] public void TestAsmRefGuidReference() { DoNamedTest2("AsmRef_FirstProject.asmdef", "AsmRef_FirstProject.asmdef.meta"); }
-
-        protected override TestSolutionConfiguration CreateSolutionConfiguration(
-            ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
-            IEnumerable<string> fileSet)
-        {
-            var files = fileSet.ToList();
-            var mainFileSet = files.Where(f => !f.Contains("_SecondProject"));
-            var secondaryFileSet = files.Where(f => f.Contains("_SecondProject"));
-            return base.CreateSolutionConfiguration(referencedLibraries,
-                CreateProjectFileSets(mainFileSet, secondaryFileSet));
-        }
     }
 }
