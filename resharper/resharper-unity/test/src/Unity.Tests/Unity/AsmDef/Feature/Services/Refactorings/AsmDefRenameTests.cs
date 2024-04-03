@@ -17,9 +17,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Refact
         protected override string RelativeTestDataPath => @"AsmDef\Refactorings\Rename";
 
         [Test] public void TestSingleFile() { DoNamedTest2(); }
-        [Test] public void TestCrossFileRename() { DoNamedTest2("CrossFileRename_SecondProject.asmdef"); }
+        [Test] public void TestCrossFileRename() { DoTestSolution([TestName2], ["CrossFileRename_SecondProject.asmdef"]); }
         [Test] public void TestRenameFile() { DoNamedTest2(); }
-        [Test] public void TestGuidReference() { DoNamedTest2("GuidReference.asmdef.meta", "GuidReference_SecondProject.asmdef"); }
+        [Test] public void TestGuidReference() { DoTestSolution([TestName2, "GuidReference.asmdef.meta"], ["GuidReference_SecondProject.asmdef"]); }
 
         protected override void AdditionalTestChecks(ITextControl textControl, IProject project)
         {
@@ -40,19 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Refact
                     // TODO: Should really recurse into child folders, but not used by these tests
                 }
             }
-        }
-
-        // Sadly, we can't just use DoTestSolution(fileSet, fileSet) here, CodeCompletionTestBase.DoTestSolution(files)
-        // sets up a CaretPositionsProcessor and processes files. Split the file sets here instead
-        protected override TestSolutionConfiguration CreateSolutionConfiguration(
-            ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
-            IEnumerable<string> fileSet)
-        {
-            var files = fileSet.ToList();
-            var mainFileSet = files.Where(f => !f.Contains("_SecondProject"));
-            var secondaryFileSet = files.Where(f => f.Contains("_SecondProject"));
-            return base.CreateSolutionConfiguration(referencedLibraries,
-                CreateProjectFileSets(mainFileSet, secondaryFileSet));
         }
     }
 }
