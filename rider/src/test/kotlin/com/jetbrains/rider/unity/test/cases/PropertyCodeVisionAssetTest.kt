@@ -52,7 +52,6 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     fun propertyCodeVision(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
-    @Mute("RIDER-96147", specificParameters = ["NoProperties"])
     @Test(description = "Unity property code vision test with typing", dataProvider = "assetSettings")
     @TestEnvironment(solution = "RiderSample")
     fun propertyCodeVisionWithTyping(caseName: String, showProperties: String) = doUnityTest(showProperties,
@@ -67,14 +66,12 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     fun baseTestYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/NewBehaviourScript.cs") { false }
 
-    @Mute("RIDER-96147", specificParameters = ["Properties"])
     @Test(description = "Unity property code vision test with yaml off", dataProvider = "assetSettings")
     @TestEnvironment(solution = "RiderSample")
     fun propertyCodeVisionYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
     @Test(description = "Unity property code vision test with yaml off and typing", dataProvider = "assetSettings")
-    @Mute("RIDER-96147", specificParameters = ["Properties", "NoProperties"])
     @TestEnvironment(solution = "RiderSample")
     fun propertyCodeVisionWithTypingYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") {
@@ -91,7 +88,6 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     // I am not sure, how implement counter without estimated `+` sign
     // Tests for fixing current behaviour only
-    @Mute("RIDER-96147", specificParameters = ["NoProperties"])
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     fun prefabModifications01(caseName: String, showProperties: String) = doUnityTest("True",
@@ -99,7 +95,6 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
         true
     }
 
-    @Mute("RIDER-96147", specificParameters = ["Properties"])
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     fun prefabModifications02(caseName: String, showProperties: String) = doUnityTest("True",
@@ -107,7 +102,6 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
         true
     }
 
-    @Mute("RIDER-96147", specificParameters = ["NoProperties"])
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     fun prefabModifications03(caseName: String, showProperties: String) = doUnityTest("True",
@@ -117,14 +111,12 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
-    @Mute("RIDER-96147", specificParameters = ["Properties", "NoProperties"])
     fun prefabModifications04(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script4.cs") {
         true
     }
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
-    @Mute("RIDER-96147", specificParameters = ["NoProperties", "Properties"])
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     fun prefabModifications05(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script5.cs") {
@@ -134,14 +126,14 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     fun doUnityTest(showProperties: String, file: String, action: EditorImpl.() -> Boolean) {
         setReSharperSetting("CodeEditing/Unity/EnableInspectorPropertiesEditor/@EntryValue", showProperties)
-        waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
+        val lifetime = project.lifetime
+        waitAndPump(lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
 
         waitForLensInfos(project)
         waitForAllAnalysisFinished(project)
         val editor = withOpenedEditor(file) {
-            waitForLenses()
             executeWithGold(testGoldFile) {
-
+                waitAndPump(lifetime, { hasLenses() }, Duration.ofSeconds(10), { "Deferred caches are not completed" })
                 it.println("before change")
                 it.print(dumpLenses())
                 if (action()) {
@@ -154,4 +146,6 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
         }
         closeEditor(editor)
     }
+
+    private fun EditorImpl.hasLenses() = inlayModel.hasBlockElements() || inlayModel.hasAfterLineEndElements()
 }
