@@ -10,7 +10,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Tests</RootNamespace>
-    <LangVersion>11</LangVersion>
+    <LangVersion>12</LangVersion>
     <!-- LibHarmony is not signed -->
     <NoWarn>CS8002</NoWarn>
     <JetTestProject>True</JetTestProject>
