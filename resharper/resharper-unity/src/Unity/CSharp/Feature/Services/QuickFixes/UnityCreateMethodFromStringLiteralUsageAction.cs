@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return new CreateMethodDeclarationContext
             {
                 MethodName = Reference.GetName(),
-                MethodSignatures = new [] { signature },
+                MethodSignatures = [signature],
                 TypeArguments = EmptyList<IType>.InstanceList,
                 IsAbstract = false,
                 IsStatic = false,
