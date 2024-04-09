@@ -5,8 +5,7 @@ package com.jetbrains.rider.plugins.unity.workspace
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.backend.workspace.virtualFile
 import com.intellij.platform.workspace.jps.entities.ContentRootEntity
-import com.intellij.platform.workspace.storage.EntityInformation
-import com.intellij.platform.workspace.storage.EntitySource
+ import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.GeneratedCodeImplVersion
@@ -200,12 +199,6 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
 
     override fun getEntityInterface(): Class<out WorkspaceEntity> {
         return UnityPackageEntity::class.java
-    }
-
-    override fun serialize(ser: EntityInformation.Serializer) {
-    }
-
-    override fun deserialize(de: EntityInformation.Deserializer) {
     }
 
     override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {
