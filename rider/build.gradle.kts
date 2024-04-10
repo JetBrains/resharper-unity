@@ -900,7 +900,6 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         // Copy annotations to `rider-unity/dotnet/Extensions/JetBrains.Unity/annotations`
 
         // Frontend:
-        // Copy projectTemplates to `rider-unity/projectTemplates`
         doLast {
             dotnetDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             debuggerDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
@@ -922,7 +921,6 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         from("../resharper/resharper-unity/src/Unity/annotations") {
             into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
         }
-        from("projectTemplates") { into("${pluginName}/projectTemplates") }
     }
 
     withType<Test>().configureEach {
