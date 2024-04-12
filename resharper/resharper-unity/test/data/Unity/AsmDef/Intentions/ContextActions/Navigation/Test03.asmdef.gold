@@ -3,6 +3,8 @@
 
 ## FindUsagesAdvancedProvider activity:
   FindResults window with 2 results
+    TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test03.asmdef
+    TO: [O] "references": [ "|Ref1|" ] RANGE: (39,43) @ Ref2.asmdef
 
 ## GotoDeclarationProvider activity:
   Immediate result:
@@ -55,4 +57,6 @@
 
 ## UnityFindUsagesProvider activity:
   FindResults window with 2 results
+    TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test03.asmdef
+    TO: [O] "references": [ "|Ref1|" ] RANGE: (39,43) @ Ref2.asmdef
 
