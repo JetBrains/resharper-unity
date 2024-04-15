@@ -24,10 +24,6 @@ class UnityExeConfigurationFactory(type: ConfigurationType) : UnityConfiguration
         }
     }
 
-    override fun isConfigurationSingletonByDefault(): Boolean {
-        return true
-    }
-
     override fun createTemplateConfiguration(@NotNull project: Project): RunConfiguration =
         UnityExeConfiguration(this.name, project, this, ExeConfigurationParameters(
             exePath = "",
