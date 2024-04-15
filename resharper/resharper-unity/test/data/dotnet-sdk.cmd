@@ -5,13 +5,18 @@ GOTO :CMDSCRIPT
 
 set -eu
 
-SCRIPT_VERSION=dotnet-cmd-v2
+DOTNET_VERSION=8.0.101
+DOTNET_SHORT_VERSION=$DOTNET_VERSION
 COMPANY_DIR="JetBrains"
 TARGET_DIR="${TEMPDIR:-$HOME/.local/share}/$COMPANY_DIR/dotnet-cmd"
 KEEP_ROSETTA2=false
 export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
 export DOTNET_CLI_TELEMETRY_OPTOUT=true
+export DOTNET_MULTILEVEL_LOOKUP=false
+unset DOTNET_ROOT
+unset MSBUILD_TASK_PARENT_PROCESS_PID
+unset MSBuildSDKsPath
 
 warn () {
     echo "$*"
@@ -40,59 +45,31 @@ is_linux_musl () {
 
 case $(uname) in
 Darwin)
-  DOTNET_ARCH=$(uname -m)
+  DOTNET_OS=osx
+  UNAME_ARCH=$(uname -m)
   if ! $KEEP_ROSETTA2 && [ "$(sysctl -n sysctl.proc_translated 2>/dev/null || true)" = "1" ]; then
     DOTNET_ARCH=arm64
   fi
-  case $DOTNET_ARCH in
-  x86_64)
-    DOTNET_HASH_URL=09e4b839-c809-49b5-b424-86d8ca67b42e/54be2d3868ae49fa00b1cc59065d5e2e
-    DOTNET_FILE_NAME=dotnet-sdk-7.0.100-osx-x64
-    ;;
-  arm64)
-    DOTNET_HASH_URL=1a0e0146-3401-4c2b-9369-4cb5e72785b7/8548e8f2c619330ea7282e15d1116155
-    DOTNET_FILE_NAME=dotnet-sdk-7.0.100-osx-arm64
-    ;;
-  *) echo "Unknown architecture $DOTNET_ARCH" >&2; exit 1;;
+  case $UNAME_ARCH in
+  arm64)  DOTNET_ARCH=arm64;;
+  x86_64) DOTNET_ARCH=x64;;
+  *) echo "Unknown architecture $UNAME_ARCH" >&2; exit 1;;
   esac;;
 Linux)
-  DOTNET_ARCH=$(linux$(getconf LONG_BIT) uname -m)
-  case $DOTNET_ARCH in
-  x86_64)
-    if is_linux_musl; then
-      DOTNET_HASH_URL=302a8de6-66a1-418f-b349-638d4b88dcd4/248ad4dfcbbf931009fa736ced0518e0
-      DOTNET_FILE_NAME=dotnet-sdk-7.0.100-linux-musl-x64
-    else
-      DOTNET_HASH_URL=253e5af8-41aa-48c6-86f1-39a51b44afdc/5bb2cb9380c5b1a7f0153e0a2775727b
-      DOTNET_FILE_NAME=dotnet-sdk-7.0.100-linux-x64
-    fi
-    ;;
-  aarch64)
-    if is_linux_musl; then
-      DOTNET_HASH_URL=a620c089-f7f2-4b54-9c29-1e123e346c40/52bf752a693f9139133a041009d27ae4
-      DOTNET_FILE_NAME=dotnet-sdk-7.0.100-linux-musl-arm64
-    else
-      DOTNET_HASH_URL=47337472-c910-4815-9d9b-80e1a30fcf16/14847f6a51a6a7e53a859d4a17edc311
-      DOTNET_FILE_NAME=dotnet-sdk-7.0.100-linux-arm64
-    fi
-    ;;
-  armv7l | armv8l)
-    if is_linux_musl; then
-      DOTNET_HASH_URL=14c9ff00-b457-4bf3-ba1e-b54634827e8e/1292a52a53115da28ce17b19a2a0cd45
-      DOTNET_FILE_NAME=dotnet-sdk-7.0.100-linux-musl-arm
-    else
-      DOTNET_HASH_URL=fd193b5b-f171-436e-8783-5eb77a7ad5ee/2a0af2a874f3c4f7da0199dc64996829
-      DOTNET_FILE_NAME=dotnet-sdk-7.0.100-linux-arm
-    fi
-    ;;
-  *) echo "Unknown architecture $DOTNET_ARCH" >&2; exit 1;;
+  DOTNET_OS=linux
+  UNAME_ARCH=$(linux$(getconf LONG_BIT) uname -m)
+  case $UNAME_ARCH in
+  armv7l | armv8l) is_linux_musl && DOTNET_ARCH=musl-arm   || DOTNET_ARCH=arm;;
+  aarch64)         is_linux_musl && DOTNET_ARCH=musl-arm64 || DOTNET_ARCH=arm64;;
+  x86_64)          is_linux_musl && DOTNET_ARCH=musl-x64   || DOTNET_ARCH=x64;;
+  *) echo "Unknown architecture $UNAME_ARCH" >&2; exit 1;;
   esac;;
 *) echo "Unknown platform: $(uname)" >&2; exit 1;;
 esac
 
-DOTNET_URL=https://cache-redirector.jetbrains.com/download.visualstudio.microsoft.com/download/pr/$DOTNET_HASH_URL/$DOTNET_FILE_NAME.tar.gz
-DOTNET_TARGET_DIR=$TARGET_DIR/$DOTNET_FILE_NAME-$SCRIPT_VERSION
-DOTNET_TEMP_FILE=$TARGET_DIR/dotnet-sdk-temp.tar.gz
+DOTNET_URL=https://cache-redirector.jetbrains.com/dotnetcli.azureedge.net/dotnet/Sdk/$DOTNET_VERSION/dotnet-sdk-$DOTNET_VERSION-$DOTNET_OS-$DOTNET_ARCH.tar.gz
+DOTNET_TARGET_DIR=$TARGET_DIR/s$DOTNET_SHORT_VERSION-$DOTNET_ARCH
+DOTNET_TEMP_FILE=$TARGET_DIR/temp.tar.gz
 
 if grep -q -x "$DOTNET_URL" "$DOTNET_TARGET_DIR/.flag" 2>/dev/null; then
   # Everything is up-to-date in $DOTNET_TARGET_DIR, do nothing
@@ -159,43 +136,41 @@ if [ ! -x "$DOTNET_TARGET_DIR/dotnet" ]; then
   die "Unable to find dotnet under $DOTNET_TARGET_DIR"
 fi
 
-exec "$DOTNET_TARGET_DIR/dotnet" "$@"
+# Ensure usage of the same dotnet runtime for any child dotnet processes
+DOTNET_HOST_PATH=$DOTNET_TARGET_DIR/dotnet
+
+exec "$DOTNET_HOST_PATH" "$@"
 
 :CMDSCRIPT
 
 setlocal
-set SCRIPT_VERSION=v2
+set DOTNET_VERSION=8.0.101
+set DOTNET_SHORT_VERSION=%DOTNET_VERSION%
 set COMPANY_NAME=JetBrains
 set TARGET_DIR=%LOCALAPPDATA%\%COMPANY_NAME%\dotnet-cmd\
 
 for /f "tokens=3 delims= " %%a in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "PROCESSOR_ARCHITECTURE"') do set ARCH=%%a
 
-if "%ARCH%"=="ARM64" (
-    set DOTNET_HASH_URL=2586d573-4d02-43b9-bf4a-452d4170daaa/0f25ae6ea4381187688ddde932655343
-    set DOTNET_FILE_NAME=dotnet-sdk-7.0.100-win-arm64
-) else (
-
-if "%ARCH%"=="AMD64" (
-    set DOTNET_HASH_URL=1fb808dc-d017-4460-94f8-bf1ac83e6cd8/756b301e714755e411b84684b885a516
-    set DOTNET_FILE_NAME=dotnet-sdk-7.0.100-win-x64
-) else (
-
-if "%ARCH%"=="x86" (
-    set DOTNET_HASH_URL=c45d50f1-c3f6-47cd-b9c9-861d095f8cb7/5a5ed9fb5e4b40fa4d4131cbe79d6a36
-    set DOTNET_FILE_NAME=dotnet-sdk-7.0.100-win-x86
-) else (
+if "%ARCH%"=="ARM"   (set DOTNET_ARCH=arm)   else (
+if "%ARCH%"=="ARM64" (set DOTNET_ARCH=arm64) else (
+if "%ARCH%"=="AMD64" (set DOTNET_ARCH=x64)   else (
+if "%ARCH%"=="x86"   (set DOTNET_ARCH=x86)   else (
 
 echo Unknown Windows architecture
 goto fail
 
-)))
+))))
 
-set DOTNET_URL=https://cache-redirector.jetbrains.com/download.visualstudio.microsoft.com/download/pr/%DOTNET_HASH_URL%/%DOTNET_FILE_NAME%.zip
-set DOTNET_TARGET_DIR=%TARGET_DIR%%DOTNET_FILE_NAME%-%SCRIPT_VERSION%\
-set DOTNET_TEMP_FILE=%TARGET_DIR%dotnet-sdk-temp.zip
+set DOTNET_URL=https://cache-redirector.jetbrains.com/dotnetcli.azureedge.net/dotnet/Sdk/%DOTNET_VERSION%/dotnet-sdk-%DOTNET_VERSION%-win-%DOTNET_ARCH%.zip
+set DOTNET_TARGET_DIR=%TARGET_DIR%s%DOTNET_SHORT_VERSION%-%DOTNET_ARCH%\
+set DOTNET_TEMP_FILE=%TARGET_DIR%temp.zip
 set DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true
 set DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
 set DOTNET_CLI_TELEMETRY_OPTOUT=true
+set DOTNET_MULTILEVEL_LOOKUP=false
+set DOTNET_ROOT=
+set MSBUILD_TASK_PARENT_PROCESS_PID=
+set MSBuildSDKsPath=
 
 set POWERSHELL=%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe
 
@@ -244,20 +219,18 @@ if errorlevel 1 goto fail
 
 :continueWithDotNet
 
-if not exist "%DOTNET_TARGET_DIR%\dotnet.exe" (
+if not exist "%DOTNET_TARGET_DIR%dotnet.exe" (
   echo Unable to find dotnet.exe under %DOTNET_TARGET_DIR%
   goto fail
 )
 
 REM Prevent globally installed .NET Core from leaking into this runtime's lookup
 SET DOTNET_MULTILEVEL_LOOKUP=0
+REM Ensure usage of the same dotnet runtime for any child dotnet processes
+SET DOTNET_HOST_PATH=%DOTNET_TARGET_DIR%dotnet.exe
 
-for /f "tokens=2 delims=:." %%c in ('chcp') do set /a PREV_CODE_PAGE=%%c
-chcp 65001 >nul && call "%DOTNET_TARGET_DIR%\dotnet.exe" %*
-set /a DOTNET_EXIT_CODE=%ERRORLEVEL%
-chcp %PREV_CODE_PAGE% >nul
-
-exit /B %DOTNET_EXIT_CODE%
+call "%DOTNET_HOST_PATH%" %*
+exit /B %ERRORLEVEL%
 endlocal
 
 :fail
