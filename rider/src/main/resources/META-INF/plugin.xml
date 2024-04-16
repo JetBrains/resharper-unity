@@ -96,7 +96,8 @@
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.breadcrumbs.ShaderLabBreadcrumbsInfoProvider"/>
     <spellchecker.support language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.spellchecker.ShaderLabSpellcheckingStrategy" />
 
-    <fileType name="HLSL" extensions="cg;cginc;hlslinc;compute;glsl;glslinc" />
+    <fileType name="HLSL" extensions="cg;cginc;hlslinc;compute" />
+    <fileType name="GLSL" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.glsl.GlslFileType" fieldName="INSTANCE" extensions="glsl;glslinc" />
 
     <!-- asmdef + asmref support. Note the shared JSON registrations -->
     <fileType name="AsmDef" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileType" language="JSON" extensions="asmdef"/>
