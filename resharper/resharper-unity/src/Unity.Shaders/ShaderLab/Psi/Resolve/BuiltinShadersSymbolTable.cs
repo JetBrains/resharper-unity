@@ -321,12 +321,30 @@ public class BuiltinShadersSymbolTable(IPsiServices psiServices) : SymbolTableBa
 
     public override IEnumerable<string> Names() => ourShaderNames;
 
-    public override IList<ISymbolInfo> GetSymbolInfos(string name) => (IList<ISymbolInfo>)(mySymbolInfos.TryGetValue(name, out var value) ? FixedList.Of(value) : EmptyList<ISymbolInfo>.Instance);
+    public override IList<ISymbolInfo> GetSymbolInfos(string name)
+    {
+        return mySymbolInfos.TryGetValue(name, out var value)
+            ? FixedList.ListOf(value)
+            : EmptyList<ISymbolInfo>.Instance;
+    }
 
-    public override void ForAllSymbolInfos(Action<ISymbolInfo> processor)
+    public override void AppendSymbolInfos(string name, List<ISymbolInfo> consumer)
+    {
+        if (mySymbolInfos.TryGetValue(name, out var value))
+        {
+            consumer.Add(value);
+        }
+    }
+
+    public override bool ForAllSymbolInfos<TState>(TState state, Func<TState, ISymbolInfo, bool> processor)
     {
         foreach (var symbol in mySymbolInfos.Values)
-            processor(symbol);
+        {
+            if (!processor(state, symbol))
+                return false;
+        }
+
+        return true;
     }
 
     public override ISymbolTableDependencySet? GetDependencySet() => null;
