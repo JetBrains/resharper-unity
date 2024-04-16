@@ -325,24 +325,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
 
         private ShaderContextData? GetContextDataFor(IPsiSourceFile rootFile, TextRange rootRange)
         {
+            var location = rootFile.GetLocation();
+            var name = location.Name;
             int startLine;
             // range is empty when it isn't injected location
             if (!rootRange.IsEmpty)
             {
-                var range = myShaderContextDataPresentationCache.GetRangeForShaderProgram(rootFile, rootRange);
-                if (!range.HasValue)
+                if (myShaderContextDataPresentationCache.GetShaderProgramPresentationInfo(rootFile, rootRange) is not {} info)
                     return null;
-                startLine = range.Value.startLine + 1;
+                if (info.Hint != null)
+                    name = $"{name}:{info.Hint}";
+                startLine = info.StartLine + 1;
             }
             else
                 startLine = 0;
-
-            var location = rootFile.GetLocation();
+            
             var folderFullPath = location.Parent;
             var folderPath = folderFullPath.TryMakeRelativeTo(mySolution.SolutionDirectory);
 
             var folderHint = folderPath.FullPath.ShortenTextWithEllipsis(40);
-            return new ShaderContextData(location.FullPath, location.Name, folderHint, rootRange.StartOffset, rootRange.EndOffset, startLine);
+            return new ShaderContextData(location.FullPath, name, folderHint, rootRange.StartOffset, rootRange.EndOffset, startLine);
         }
 
         private class TrackingInfo(ModificationStamp syncStamp)

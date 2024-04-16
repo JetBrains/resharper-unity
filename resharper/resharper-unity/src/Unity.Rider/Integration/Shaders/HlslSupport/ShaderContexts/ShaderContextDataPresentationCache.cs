@@ -1,6 +1,5 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -12,6 +11,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Serialization;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
@@ -19,21 +19,19 @@ using JetBrains.Util.PersistentMap;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts
 {
     [SolutionComponent]
-    public class ShaderContextDataPresentationCache : SimplePsiSourceFileCacheWithLocalCache<List<ShaderContextDataPresentationCache.ShaderProgramInfo>, ShaderContextDataPresentationCache.ShaderFileInfo>, IBuildMergeParticipant<IPsiSourceFile>
+    public class ShaderContextDataPresentationCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager)
+        : SimplePsiSourceFileCacheWithLocalCache<List<ShaderContextDataPresentationCache.CacheItem>, ShaderContextDataPresentationCache.ShaderFileInfo>(lifetime, shellLocks, persistentIndexManager,
+            UnsafeMarshallers.GetCollectionMarshaller(Read, Write, c => new List<CacheItem>(c)), "Unity::Shaders::ShaderContextDataPresentationCacheUpdated"), IBuildMergeParticipant<IPsiSourceFile>
     {
-        public ShaderContextDataPresentationCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager) : 
-            base(lifetime, shellLocks, persistentIndexManager, UnsafeMarshallers.GetCollectionMarshaller(Read, Write, c => new List<ShaderProgramInfo>(c)), "Unity::Shaders::ShaderContextDataPresentationCacheUpdated")
-        {
-        }
+        private static CacheItem Read(UnsafeReader reader) => new(new TextRange(reader.ReadInt32(), reader.ReadInt32()), new ShaderFileEntryInfo(reader.ReadInt32(), reader.ReadInt32(), reader.ReadString()));
 
-        private static ShaderProgramInfo Read(UnsafeReader reader) => new(new TextRange(reader.ReadInt(), reader.ReadInt()), reader.ReadInt(), reader.ReadInt());
-
-        private static void Write(UnsafeWriter writer, ShaderProgramInfo value)
+        private static void Write(UnsafeWriter writer, CacheItem value)
         {
-            writer.Write(value.TextRange.StartOffset);
-            writer.Write(value.TextRange.EndOffset);
-            writer.Write(value.LineStart);
-            writer.Write(value.LineEnd);
+            writer.WriteInt32(value.TextRange.StartOffset);
+            writer.WriteInt32(value.TextRange.EndOffset);
+            writer.WriteInt32(value.Info.StartLine);
+            writer.WriteInt32(value.Info.EndLine);
+            writer.WriteString(value.Info.Hint);
         }
 
         protected override bool IsApplicable(IPsiSourceFile sf) => sf.LanguageType.Is<ShaderLabProjectFileType>();
@@ -42,48 +40,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
 
         public object? Build(IPsiSourceFile key)
         {
-            var file = key.GetDominantPsiFile<ShaderLabLanguage>();
-            return file?.Descendants<ICgContent>().Collect().Select(t =>
-            {
-                var range = t.GetDocumentRange();
+            if (key.GetDominantPsiFile<ShaderLabLanguage>() is not { } file)
+                return null;
 
-                return new ShaderProgramInfo(range.TextRange, (int)range.StartOffset.ToDocumentCoords().Line, (int)range.EndOffset.ToDocumentCoords().Line);
-            }).ToList();
+            var entries = new List<CacheItem>();
+            foreach (var cgContent in file.Descendants<ICgContent>())
+            {
+                var hint = cgContent.GetContainingNode<ITexturePassDef>()?.GetEntityNameToken()?.GetUnquotedText();
+                var range = cgContent.GetDocumentRange();
+                var entryInfo = new ShaderFileEntryInfo((int)range.StartOffset.ToDocumentCoords().Line, (int)range.EndOffset.ToDocumentCoords().Line, hint);
+                entries.Add(new CacheItem(range.TextRange, entryInfo));
+            }
+            return entries;
         }
 
-        protected override ShaderFileInfo BuildLocal(IPsiSourceFile sourceFile, List<ShaderProgramInfo> cacheItem)
+        protected override ShaderFileInfo BuildLocal(IPsiSourceFile sourceFile, List<CacheItem> cacheItem)
         {
-            var result = new Dictionary<TextRange, (int, int)>();
-            foreach (var info in cacheItem) 
-                result.Add(info.TextRange, (info.LineStart, info.LineEnd));
+            var result = new Dictionary<TextRange, ShaderFileEntryInfo>();
+            foreach (var info in cacheItem)
+                result.Add(info.TextRange, info.Info);
             return new ShaderFileInfo(result);
         }
 
-        public (int startLine, int endLine)? GetRangeForShaderProgram(IPsiSourceFile sourceFile, TextRange textRange) 
+        public ShaderFileEntryInfo? GetShaderProgramPresentationInfo(IPsiSourceFile sourceFile, TextRange textRange) 
             => TryGetLocalCacheValue(sourceFile, out var fileInfo) && fileInfo.Mapping.TryGetValue(textRange, out var range) ? range : null;
         
-        public readonly struct ShaderProgramInfo
+        public readonly struct CacheItem(TextRange textRange, ShaderFileEntryInfo info)
         {
-            public readonly TextRange TextRange;
-            public readonly int LineStart;
-            public readonly int LineEnd;
-
-            public ShaderProgramInfo(TextRange textRange, int start, int end)
-            {
-                TextRange = textRange;
-                LineStart = start;
-                LineEnd = end;
-            }
+            public readonly TextRange TextRange = textRange;
+            public readonly ShaderFileEntryInfo Info = info;
         }
 
-        public readonly struct ShaderFileInfo
+        public readonly struct ShaderFileInfo(Dictionary<TextRange, ShaderFileEntryInfo> mapping)
         {
-            public readonly Dictionary<TextRange, (int StartLine, int EndLine)> Mapping;
-
-            public ShaderFileInfo(Dictionary<TextRange, (int StartLine, int EndLine)> mapping)
-            {
-                Mapping = mapping;
-            }
+            public Dictionary<TextRange, ShaderFileEntryInfo> Mapping => mapping;
         }
+
+        public readonly record struct ShaderFileEntryInfo(int StartLine, int EndLine, string? Hint = null);
     }
 }
