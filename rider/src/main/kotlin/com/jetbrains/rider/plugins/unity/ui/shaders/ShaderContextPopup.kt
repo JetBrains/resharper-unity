@@ -3,13 +3,15 @@ package com.jetbrains.rider.plugins.unity.ui.shaders
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.impl.PresentationFactory
 import com.intellij.openapi.ui.popup.IconButton
-import com.intellij.openapi.util.Condition
 import com.intellij.ui.ErrorLabel
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.panels.OpaquePanel
+import com.intellij.ui.popup.ActionPopupOptions
 import com.intellij.ui.popup.PopupFactoryImpl
 import com.intellij.ui.popup.list.PopupListElementRenderer
 import com.intellij.util.ui.JBUI
@@ -28,15 +30,16 @@ import javax.swing.JPanel
 
 class ShaderContextPopup(group: ActionGroup, dataContext: DataContext, currentContextMode: IProperty<ShaderContextData?>) :
     PopupFactoryImpl.ActionGroupPopup(
-        UnityUIBundle.message("popup.title.include.context.from"), group, dataContext, false, false,
-        false, true, null, 10, Condition {
-        if (it is ShaderAutoContextSwitchAction && currentContextMode.value == null)
-            return@Condition true
-        if (it is ShaderContextSwitchAction && currentContextMode.value?.path == it.data.path &&
-            currentContextMode.value?.startLine == it.data.startLine)
-            return@Condition true
-        return@Condition false
-    }, null) {
+        null, UnityUIBundle.message("popup.title.include.context.from"), group, dataContext,
+        ActionPlaces.getPopupPlace("ShaderContextPopup"), PresentationFactory(),
+        ActionPopupOptions.create(false, false, false, true, 10, false) {
+            when {
+                it is ShaderAutoContextSwitchAction && currentContextMode.value == null -> true
+                it is ShaderContextSwitchAction && currentContextMode.value?.path == it.data.path &&
+                currentContextMode.value?.startLine == it.data.startLine -> true
+                else -> false
+            }
+        }, null) {
     init {
         setSpeedSearchAlwaysShown()
         title.setButtonComponent(InplaceButton(IconButton(UnityBundle.message("tooltip.help"), AllIcons.Actions.Help)) {
