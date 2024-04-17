@@ -84,7 +84,7 @@ class ShaderContextPopup(group: ActionGroup, dataContext: DataContext, currentCo
             val action = value?.action ?: return
             if (action is ShaderContextSwitchAction) {
                 myInfoLabel!!.text = action.data.folder
-                myPosLabel!!.text = ":" + action.data.startLine
+                myPosLabel!!.text = if (action.data.startLine > 0) ":" + action.data.startLine else ""
             }
             else {
                 myInfoLabel!!.text = ""

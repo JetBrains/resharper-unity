@@ -2,6 +2,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
 {
     public enum InjectedHlslProgramType
     {
+        NotApplicable,
         CGInclude,
         CGProgram,
         HLSLInclude,

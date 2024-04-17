@@ -9,6 +9,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Core;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
@@ -29,37 +30,47 @@ using JetBrains.Util.PersistentMap;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 {
     [PsiComponent]
-    public class ShaderProgramCache : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, VirtualFileSystemPath>, IBuildMergeParticipant<IPsiSourceFile>
+    public class ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, UnityDialects dialects)
+        : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, VirtualFileSystemPath>(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated"),
+            IBuildMergeParticipant<IPsiSourceFile>
     {
         // Multiple source files may have same virtual file system path and so may have clashing CppFileLocations which are path based. We have to count how many times path used and invalidate locations on any of source file change 
         private readonly Dictionary<VirtualFileSystemPath, (int Count, ImmutableArray<CppFileLocation> Locations)> myPathToLocations = new(); 
         private readonly Dictionary<CppFileLocation, ShaderProgramInfo> myProgramInfos = new();
         private readonly OneToSetMap<string, CppFileLocation> myShaderKeywords = new();
 
-        private readonly UnityDialects myDialects;
-        
-        public ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, UnityDialects dialects) : base(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
-        {
-            myDialects = dialects;
-        }
-        
-        protected override bool IsApplicable(IPsiSourceFile sourceFile) => sourceFile.PrimaryPsiLanguage.Is<ShaderLabLanguage>();
+        protected override bool IsApplicable(IPsiSourceFile sourceFile) => sourceFile.PrimaryPsiLanguage.Is<ShaderLabLanguage>() || UnityShaderFileUtils.IsComputeShaderFile(sourceFile.GetLocation());
 
         public object? Build(IPsiSourceFile sourceFile) => Build(sourceFile, false);
 
         public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
         {
-            if (sourceFile.GetPrimaryPsiFile() is not ShaderLabFile shaderLabFile) return null;
-            
+            return sourceFile.GetPrimaryPsiFile() switch
+            {
+                ShaderLabFile shaderLabFile => BuildForShaderLabFile(shaderLabFile),
+                _ when UnityShaderFileUtils.IsComputeShaderFile(sourceFile.GetLocation()) => BuildForHlslFile(sourceFile, dialects.ComputeHlslDialect), 
+                _ => null
+            };
+        }
+
+        private Item BuildForHlslFile(IPsiSourceFile sourceFile, UnityHlslDialectBase dialect)
+        {
+            var programInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer), dialect);
+            return new Item([new(TextRange.InvalidRange, programInfo)]);
+        }
+        
+        private Item BuildForShaderLabFile(ShaderLabFile shaderLabFile)
+        {
             var entries = new LocalList<Item.Entry>();
             var buffer = shaderLabFile.Buffer ?? shaderLabFile.GetTextAsBuffer();
             foreach (var cgContent in shaderLabFile.Descendants<ICgContent>())
             {
                 var content = cgContent.Content;
                 var textRange = TextRange.FromLength(content.GetTreeStartOffset().Offset, content.GetTextLength());
-                var programInfo = ReadProgramInfo(new CppDocumentBuffer(buffer, textRange), myDialects.ShaderLabHlslDialect);
+                var programInfo = ReadProgramInfo(new CppDocumentBuffer(buffer, textRange), dialects.ShaderLabHlslDialect);
                 entries.Add(new Item.Entry(textRange, programInfo));
             }
+
             return new Item(entries.ToArray());
         }
 
@@ -81,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             var builder = ImmutableArray.CreateBuilder<CppFileLocation>(persistent.Entries.Length);
             foreach (var entry in persistent.Entries)
             {
-                var location = new CppFileLocation(sourceFile, entry.Range);
+                var location = entry.Range.IsValid ? new CppFileLocation(sourceFile, entry.Range) : new CppFileLocation(sourceFile);
                 builder.Add(location);
                 AddProgramInfo(location, entry.ProgramInfo);
             }
@@ -138,14 +149,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             if (!myPathToLocations.TryGetValue(path, out var countAndLocations))
                 return false;
             
-            var result = countAndLocations.Locations.BinarySearchRo(offset, location => location.RootRange.StartOffset);
-            var index = result.NearestIndexNotAboveTargetOrMinus1;
-            if (index < 0)
-                return false;
-                
-            var location = countAndLocations.Locations[index];
-            if (offset >= location.RootRange.EndOffset)
-                return false;
+            if (countAndLocations.Locations is not [var location] || location.IsInjected())
+            {
+                var result = countAndLocations.Locations.BinarySearchRo(offset, x => x.RootRange.StartOffset);
+                var index = result.NearestIndexNotAboveTargetOrMinus1;
+                if (index < 0)
+                    return false;
+
+                location = countAndLocations.Locations[index];
+                if (offset >= location.RootRange.EndOffset)
+                    return false;
+            }
 
             shaderProgramInfo = myProgramInfos[location];
             return true;
@@ -189,18 +203,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 
         public bool TryGetOrReadUpToDateProgramInfo(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)
         {
-            var range = cppFileLocation.RootRange;
-            // Only injected shader programs supported for now
-            if (!range.IsValid)
-            {
-                shaderProgramInfo = default;
-                return false;
-            }
-
             // PSI is not committed here
             // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
             if (!UpToDate(sourceFile))
-                shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer, range), myDialects.ShaderLabHlslDialect);
+            {
+                if (!IsApplicable(sourceFile))
+                {
+                    shaderProgramInfo = null;
+                    return false;
+                }
+                
+                var location = cppFileLocation.Location;
+                if (UnityShaderFileUtils.IsComputeShaderFile(location))
+                    shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer), dialects.ComputeHlslDialect);
+                else if (cppFileLocation.RootRange is { IsValid: true } range)
+                    shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer, range), dialects.ShaderLabHlslDialect);
+                else
+                {
+                    shaderProgramInfo = null;
+                    return false;
+                }
+            }
             else if (!TryGetShaderProgramInfo(cppFileLocation, out shaderProgramInfo))
                 return false;
             return true;
@@ -208,13 +231,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 
         private ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer, UnityHlslDialectBase dialect)
         {
-            var injectedProgramType = GetShaderProgramType(buffer);
+            var injectedProgramType = dialect is UnityShaderLabHlslDialect ? GetShaderProgramType(buffer) : InjectedHlslProgramType.NotApplicable;
             
             var lexer = CppLexer.Create(buffer);
             lexer.Start();
 
             var data = new ShaderProgramInfoData(lexer, dialect);
-            return new ShaderProgramInfo(injectedProgramType, data.IsSurface ? ShaderType.Surface : ShaderType.VertFrag, data.ShaderTarget, data.ShaderFeatures.MoveOrCopyToImmutableArray(), data.DefinedMacros);
+            var shaderType = dialect switch
+            {
+                UnityShaderLabHlslDialect => data.IsSurface ? ShaderType.Surface : ShaderType.VertFrag,
+                UnityComputeHlslDialect => ShaderType.Compute,
+                _ => ShaderType.Unknown
+            };
+            return new ShaderProgramInfo(injectedProgramType, shaderType, data.ShaderTarget, data.ShaderFeatures.MoveOrCopyToImmutableArray(), data.DefinedMacros);
         }
         
         private InjectedHlslProgramType GetShaderProgramType(CppDocumentBuffer documentBuffer)
@@ -262,17 +291,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         }
 
         #region Cache item
-        public class Item
+        public class Item(Item.Entry[] entries)
         {
             public static readonly IUnsafeMarshaller<Item> Marshaller = new UniversalMarshaller<Item>(Read, Write);
 
-            public readonly Entry[] Entries;  
+            public readonly Entry[] Entries = entries;
 
-            public Item(Entry[] entries)
-            {
-                Entries = entries;
-            }
-            
             private static readonly UnsafeReader.ReadDelegate<Entry> ourReadEntry = reader =>
             {
                 var range = new TextRange(reader.ReadInt32(), reader.ReadInt32());
@@ -287,20 +311,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 ShaderProgramInfo.Marshaller.Marshal(writer, entry.ProgramInfo);
             };
 
-            private static Item Read(UnsafeReader reader) => new(reader.ReadArray(ourReadEntry) ?? Array.Empty<Entry>());
+            private static Item Read(UnsafeReader reader) => new(reader.ReadArray(ourReadEntry) ?? []);
 
             private static void Write(UnsafeWriter writer, Item? item) => writer.WriteCollection(ourWriteEntry, item?.Entries);
             
-            public readonly struct Entry
+            public readonly struct Entry(TextRange range, ShaderProgramInfo programInfo)
             {
-                public readonly TextRange Range;
-                public readonly ShaderProgramInfo ProgramInfo;
-
-                public Entry(TextRange range, ShaderProgramInfo programInfo)
-                {
-                    Range = range;
-                    ProgramInfo = programInfo;
-                }
+                public readonly TextRange Range = range;
+                public readonly ShaderProgramInfo ProgramInfo = programInfo;
             }
         }
         #endregion

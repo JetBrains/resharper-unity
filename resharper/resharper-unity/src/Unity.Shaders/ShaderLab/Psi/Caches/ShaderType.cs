@@ -5,5 +5,6 @@ public enum ShaderType : byte
 {
     Unknown,
     VertFrag,
-    Surface
+    Surface,
+    Compute
 }

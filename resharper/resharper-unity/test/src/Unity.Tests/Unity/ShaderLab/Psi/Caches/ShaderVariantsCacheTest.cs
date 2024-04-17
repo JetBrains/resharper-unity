@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injectio
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using NUnit.Framework;
@@ -24,6 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Caches
         [TestCase("AllDirectives")]
         [TestCase("DirectivesWithComments")]
         public void TestCacheItem(string testName) => DoOneTest(testName);
+
+        [Test]
+        public void TestComputeShader() => DoTestSolution("ComputeShader.compute");
         
         protected override void DoTest(Lifetime lifetime, IProject testProject)
         {
@@ -39,8 +43,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Caches
             ExecuteWithGold(sourceFile, textWriter =>
             {
                 var cache = project.GetComponent<ShaderProgramCache>();
-                var locationTracker = Solution.GetComponent<InjectedHlslFileLocationTracker>();
-                var fileLocations = locationTracker.GetActualFileLocations(sourceFile);
+                var fileLocations = sourceFile.LanguageType.Is<ShaderLabProjectFileType>()
+                    ? Solution.GetComponent<InjectedHlslFileLocationTracker>().GetActualFileLocations(sourceFile)
+                    : [new CppFileLocation(sourceFile)];
                 var keywords = new SortedSet<string>();
                 foreach (var location in fileLocations)
                 {

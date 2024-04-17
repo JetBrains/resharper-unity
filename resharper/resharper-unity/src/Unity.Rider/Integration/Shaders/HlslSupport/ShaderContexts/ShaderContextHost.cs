@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Application.Changes;
@@ -15,6 +16,8 @@ using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.RdBackend.Common.Features.TextControls;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Core;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
@@ -50,7 +53,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             ITextControlHost textControlHost,
             CppGlobalSymbolCache cppGlobalSymbolCache,
             ShaderContextCache shaderContextCache,
-            ShaderContextDataPresentationCache shaderContextDataPresentationCache, FrontendBackendHost? frontendBackendHost = null)
+            ShaderContextDataPresentationCache shaderContextDataPresentationCache,
+            ShaderProgramCache shaderProgramCache,
+            FrontendBackendHost? frontendBackendHost = null)
         {
             mySolution = solution;
             myPsiFiles = psiFiles;
@@ -63,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
 
             frontendBackendHost?.Do(model =>
             {
-                myShaderContextDataPresentationCache.CacheUpdated.Advise(lifetime, _ => SyncTrackedRoots());
+                shaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncTrackedRoots());
                 textControlHost.ViewHostTextControls(lifetime, OnTextControlAdded);
 
                 model.CreateSelectShaderContextInteraction.SetAsync((lt, id) =>
@@ -86,7 +91,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             mySolution.Locks.AssertMainThread();
 
             var sourceFile = textControl.Document.GetPsiSourceFile(mySolution);
-            if (sourceFile == null || !PsiSourceFileUtil.IsHlslFile(sourceFile))
+            if (sourceFile == null)
+                return;
+            var location = sourceFile.GetLocation();
+            if (UnityShaderFileUtils.IsComputeShaderFile(location) || !PsiSourceFileUtil.IsHlslFile(sourceFile))
                 return;
 
             var documentId = textControlId.DocumentId;
@@ -160,7 +168,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                             Assertion.Assert(context.RootFile == rootFile, "Tracked root mapped to wrong shader context");
                             Assertion.Assert(rootRangeMarker != null, "Invalid context state: RootRangeMarker is null with non-null root file");
                             var contextData = GetContextDataFor(rootFile, rootRangeMarker.Range);
-                            if (contextData != null)
+                            if (contextData != null && myShaderContextCache.GetAssignedRoot(new CppFileLocation(context.SourceFile)).IsValid())
                                 SyncToFrontend(context, contextData);
                             else
                                 invalidContexts.Add(context);
@@ -182,12 +190,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             var (rootFile, rootRangeMarker, contextData) = await lifetime.StartBackgroundRead<(IPsiSourceFile?, IRangeMarker?, ShaderContextDataBase)>(() =>
             {
                 var targetLocation = new CppFileLocation(context.SourceFile);
-                if (!TryGetCurrentRoot(targetLocation, out var rootLocation))
-                    return (null, null, myAutoContext);
-                var rootFile = rootLocation.GetRandomSourceFile(mySolution);
-                var rootRange = rootLocation.RootRange;
-                var rootRangeMarker = myDocumentManager.CreateRangeMarker(new DocumentRange(rootFile.Document, rootRange));
-                return (rootFile, rootRangeMarker, (ShaderContextDataBase?)GetContextDataFor(rootFile, rootRange) ?? myAutoContext);
+                if (myShaderContextCache.GetAssignedRoot(targetLocation) is var rootLocation && rootLocation.IsValid() &&
+                    TryGetRootData(rootLocation, out var rootFile, out var contextData, out var rootRangeMarker))
+                    return (rootFile, rootRangeMarker, contextData);
+                return (null, null, myAutoContext);
             });
 
             await lifetime.StartMainRead(() => UpdateContextData(context, rootFile, rootRangeMarker, contextData));
@@ -252,36 +258,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             return document?.GetPsiSourceFile(mySolution);
         }
 
-        private bool TryGetCurrentRoot(CppFileLocation target, out CppFileLocation currentRoot)
-        {
-            currentRoot = myShaderContextCache.GetPreferredRootFile(target);
-            if (!currentRoot.IsValid())
-                return false;
-
-            var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRootsForFile(target);
-            return possibleRoots.Contains(currentRoot);
-        }
-
         private async Task<SelectShaderContextDataInteraction> CreateSelectShaderContextInteraction(Lifetime lt, RdDocumentId documentId, IPsiSourceFile sourceFile)
         {
             var items = new List<ShaderContextData>();
             var roots = new List<(IPsiSourceFile SourceFile, IRangeMarker RangeMarker)>();
             await myPsiFiles.CommitWithRetryBackgroundRead(lt, () =>
             {
-                var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRootsForFile(new CppFileLocation(sourceFile)).OrderBy(x => x.Name).ThenBy(x => x.RootRange.StartOffset).ToList();
+                var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRootsForFile(new CppFileLocation(sourceFile)).OrderBy(x => x.Name).ThenBy(x => x.RootRange.StartOffset);
                 foreach (var root in possibleRoots)
                 {
-                    if (root.IsInjected())
+                    if (TryGetRootData(root, out var rootSourceFile, out var item, out var rangeMarker))
                     {
-                        var rootSourceFile = root.GetRandomSourceFile(mySolution);
-                        var textRange = root.RootRange;
-                        var item = GetContextDataFor(rootSourceFile, textRange);
-                        if (item != null)
-                        {
-                            var rangeMarker = myDocumentManager.CreateRangeMarker(new DocumentRange(rootSourceFile.Document, textRange));
-                            roots.Add((rootSourceFile, rangeMarker));
-                            items.Add(item);
-                        }
+                        roots.Add((rootSourceFile, rangeMarker));
+                        items.Add(item);
                     }
                 }
 
@@ -307,27 +296,60 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             return interaction;
         }
 
+        private bool TryGetRootData(CppFileLocation root, [MaybeNullWhen(false)] out IPsiSourceFile rootSourceFile, [MaybeNullWhen(false)] out ShaderContextData contextData,
+            [MaybeNullWhen(false)] out IRangeMarker rangeMarker)
+        {
+            rootSourceFile = null;
+            contextData = null;
+            rangeMarker = null;
+
+            TextRange textRange;
+            if (root.IsInjected())
+                textRange = root.RootRange;
+            else if (UnityShaderFileUtils.IsComputeShaderFile(root.Location))
+                textRange = TextRange.FromLength(0);
+            else
+                return false;
+
+            rootSourceFile = root.GetRandomSourceFile(myCppGlobalSymbolCache.CppModule);
+            if (rootSourceFile == null)
+                return false;
+
+            contextData = GetContextDataFor(rootSourceFile, textRange);
+            if (contextData == null)
+                return false;
+
+            rangeMarker = myDocumentManager.CreateRangeMarker(new DocumentRange(rootSourceFile.Document, textRange));
+            return true;
+        }
+
         private ShaderContextData? GetContextDataFor(IPsiSourceFile rootFile, TextRange rootRange)
         {
-            var range = myShaderContextDataPresentationCache.GetRangeForShaderProgram(rootFile, rootRange);
-            if (!range.HasValue)
-                return null;
+            int startLine;
+            // range is empty when it isn't injected location
+            if (!rootRange.IsEmpty)
+            {
+                var range = myShaderContextDataPresentationCache.GetRangeForShaderProgram(rootFile, rootRange);
+                if (!range.HasValue)
+                    return null;
+                startLine = range.Value.startLine + 1;
+            }
+            else
+                startLine = 0;
 
             var location = rootFile.GetLocation();
             var folderFullPath = location.Parent;
             var folderPath = folderFullPath.TryMakeRelativeTo(mySolution.SolutionDirectory);
 
             var folderHint = folderPath.FullPath.ShortenTextWithEllipsis(40);
-            return new ShaderContextData(location.FullPath, location.Name, folderHint, rootRange.StartOffset, rootRange.EndOffset, range.Value.startLine + 1);
+            return new ShaderContextData(location.FullPath, location.Name, folderHint, rootRange.StartOffset, rootRange.EndOffset, startLine);
         }
 
-        private class TrackingInfo
+        private class TrackingInfo(ModificationStamp syncStamp)
         {
             public readonly List<ShaderContext> Contexts = new();
             
-            public ModificationStamp SyncStamp;
-
-            public TrackingInfo(ModificationStamp syncStamp) => SyncStamp = syncStamp;
+            public ModificationStamp SyncStamp = syncStamp;
         }
     }
 }

@@ -46,7 +46,7 @@ public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider
     private readonly IPsiModules myPsiModules;
     private readonly DocumentManager myDocumentManager;
     private readonly ShaderContextCache myShaderContextCache;
-    private readonly IPreferredRootFileProvider myPreferredPreferredRootFileProvider;
+    private readonly IPreferredRootFileProvider myPreferredRootFileProvider;
     private readonly FrontendBackendHost? myFrontendBackendHost;
     private readonly ILogger myLogger;
     private readonly Dictionary<TextControlId, ShaderVariantRegistration> myActiveControls = new();
@@ -68,7 +68,7 @@ public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider
     {
         mySolution = solution;
         myShaderProgramCache = shaderProgramCache;
-        myPreferredPreferredRootFileProvider = preferredRootFileProvider;
+        myPreferredRootFileProvider = preferredRootFileProvider;
         myDocumentHost = documentHost;
         myTextControlHost = textControlHost;
         myShaderVariantsManager = shaderVariantsManager;
@@ -199,17 +199,17 @@ public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider
 
     private ShaderProgramInfo? GetShaderProgramInfo(DocumentOffset documentOffset)
     {
-        if (documentOffset.Document is RiderDocument document)
-        {
-            using (ReadLockCookie.Create())
-            {
-                if (document.Location.Name.EndsWith(ShaderLabProjectFileType.SHADERLAB_EXTENSION))
-                    return myShaderProgramCache.TryGetShaderProgramInfo(document.Location, documentOffset.Offset, out var shaderProgramInfo) ? shaderProgramInfo : null;
-                if (myPreferredPreferredRootFileProvider.GetPreferredRootFile(new CppFileLocation(document.Location)) is var rootLocation && rootLocation.IsValid())
-                    return myShaderProgramCache.TryGetShaderProgramInfo(rootLocation, out var shaderProgramInfo) ? shaderProgramInfo : null;
-            }
-        }
-        return null;
+        if (documentOffset.Document is not RiderDocument document) return null;
+        
+        ShaderProgramInfo? shaderProgramInfo;
+        using var cookie = ReadLockCookie.Create();
+        if (document.Location.Name.EndsWith(ShaderLabProjectFileType.SHADERLAB_EXTENSION))
+            myShaderProgramCache.TryGetShaderProgramInfo(document.Location, documentOffset.Offset, out shaderProgramInfo);
+        else if (myPreferredRootFileProvider.GetPreferredRootFile(new CppFileLocation(document.Location)) is var preferredRoot && preferredRoot.IsValid())
+            myShaderProgramCache.TryGetShaderProgramInfo(preferredRoot, out shaderProgramInfo);
+        else
+            shaderProgramInfo = null;
+        return shaderProgramInfo;
     }
 
     public void ShowShaderVariantInteraction(DocumentOffset offset, ShaderVariantInteractionOrigin origin, IEnumerable<string>? scopeKeywords)

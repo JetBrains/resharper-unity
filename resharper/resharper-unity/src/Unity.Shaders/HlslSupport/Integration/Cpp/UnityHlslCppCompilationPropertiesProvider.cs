@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Core;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
@@ -16,51 +16,40 @@ using JetBrains.ReSharper.Psi.Cpp.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
     [SolutionComponent]
-    public class UnityHlslCppCompilationPropertiesProvider : ICppCompilationPropertiesProvider
+    public class UnityHlslCppCompilationPropertiesProvider(
+        IUnityVersion unityVersion,
+        CgIncludeDirectoryProvider cgIncludeDirectoryProvider,
+        IReadOnlyList<IUnityHlslCustomMacrosProvider> customDefinesProviders,
+        ShaderProgramCache shaderProgramCache,
+        UnityDialects dialects)
+        : ICppCompilationPropertiesProvider
     {
-        private readonly IUnityVersion myUnityVersion;
-        private readonly CgIncludeDirectoryProvider myCgIncludeDirectoryProvider;
-        private readonly IReadOnlyList<IUnityHlslCustomMacrosProvider> myCustomDefinesProviders;
-        private readonly ShaderProgramCache myShaderProgramCache;
-        private readonly UnityDialects myDialects;
-
-        public UnityHlslCppCompilationPropertiesProvider(IUnityVersion unityVersion, CgIncludeDirectoryProvider cgIncludeDirectoryProvider, IReadOnlyList<IUnityHlslCustomMacrosProvider> customDefinesProviders, ShaderProgramCache shaderProgramCache, UnityDialects dialects)
-        {
-            myUnityVersion = unityVersion;
-            myCgIncludeDirectoryProvider = cgIncludeDirectoryProvider;
-            myCustomDefinesProviders = customDefinesProviders;
-            myShaderProgramCache = shaderProgramCache;
-            myDialects = dialects;
-        }
-
         public CppCompilationProperties? GetCompilationProperties(IProject project, IProjectFile? projectFile, CppFileLocation rootFile,
             CppGlobalSymbolCache globalCache)
         {
-            if (project.IsUnityProject())
-            {
-                var filePath = rootFile.Location;
-                var solution = globalCache.Solution;
-                switch (filePath.ExtensionWithDot)
-                {
-                    case ShaderLabProjectFileType.SHADERLAB_EXTENSION:
-                    {
-                        var sourceFile = projectFile?.ToSourceFile() ?? rootFile.GetRandomSourceFile(solution);
-                        if (myShaderProgramCache.TryGetOrReadUpToDateProgramInfo(sourceFile, rootFile, out var shaderProgramInfo))
-                            return GetShaderLabHlslCompilationProperties(solution, project, rootFile, shaderProgramInfo);
-                        break;
-                    }
-                    case CppProjectFileType.COMPUTE_EXTENSION:
-                        return GetHlslCompilationProperties(solution, project, rootFile, null, myDialects.ComputeHlslDialect);
-                    case var _ when PsiSourceFileUtil.IsHlslFile(filePath):
-                        return GetHlslCompilationProperties(solution, project, rootFile, null, myDialects.HlslDialect);
-                }
-            }
+            if (!project.IsUnityProject()) return null;
 
-            return null;
+            return rootFile.Location switch
+            {
+                var location when UnityShaderFileUtils.IsShaderLabFile(location) =>
+                    GetShaderProgramCompilationProperties(globalCache.CppModule, project, projectFile, rootFile, dialects.ShaderLabHlslDialect),
+                var location when UnityShaderFileUtils.IsComputeShaderFile(location) => 
+                    GetShaderProgramCompilationProperties(globalCache.CppModule, project, projectFile, rootFile, dialects.ComputeHlslDialect),
+                var location when PsiSourceFileUtil.IsHlslFile(location) => 
+                    GetHlslCompilationProperties(globalCache.Solution, project, rootFile, null, dialects.HlslDialect),
+                _ => null
+            };
+        }
+        
+        private CppCompilationProperties GetShaderProgramCompilationProperties(CppExternalModule module, IProject project, IProjectFile? projectFile, CppFileLocation rootFile, UnityHlslDialectBase dialect)
+        {
+            var sourceFile = projectFile?.ToSourceFile() ?? rootFile.GetRandomSourceFile(module);
+            shaderProgramCache.TryGetOrReadUpToDateProgramInfo(sourceFile, rootFile, out var shaderProgramInfo);
+            return GetHlslCompilationProperties(module.GetSolution(), project, rootFile, shaderProgramInfo, dialect);
         }
 
         public CppCompilationProperties GetShaderLabHlslCompilationProperties(ISolution solution, IProject? project, CppFileLocation location, ShaderProgramInfo shaderProgramInfo) => 
-            GetHlslCompilationProperties(solution, project, location, shaderProgramInfo, myDialects.ShaderLabHlslDialect);
+            GetHlslCompilationProperties(solution, project, location, shaderProgramInfo, dialects.ShaderLabHlslDialect);        
 
         private CppCompilationProperties GetHlslCompilationProperties(ISolution solution, IProject? project, CppFileLocation location, ShaderProgramInfo? shaderProgramInfo, UnityHlslDialectBase dialect)
         {
@@ -71,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                 OverridenDialect =  dialect,
                 LanguageKind = dialect.LanguageKind
             };
-            var path = myCgIncludeDirectoryProvider.GetCgIncludeFolderPath();
+            var path = cgIncludeDirectoryProvider.GetCgIncludeFolderPath();
             if (!path.IsEmpty)
                 properties.HeaderSearchPaths.IncludePaths.Add(path);
             properties.HeaderSearchPaths.IncludePaths.Add(solutionDirectory);
@@ -81,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             DefineCommonSymbols(project, properties.PredefinedMacros);
             
             // Add macros from custom providers
-            foreach (var provider in myCustomDefinesProviders)
+            foreach (var provider in customDefinesProviders)
                 properties.PredefinedMacros.AddRange(provider.ProvideCustomMacros(location, shaderProgramInfo));
             
             // Add macros from shader program info (if provided)
@@ -110,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 
         private int GetHlslUnityVersion(IProject? project)
         {
-            var version = myUnityVersion.GetActualVersion(project);
+            var version = unityVersion.GetActualVersion(project);
             return version.Major * 100 + version.Minor * 10 + version.Build.Clamp(0, 9);
         }
     }

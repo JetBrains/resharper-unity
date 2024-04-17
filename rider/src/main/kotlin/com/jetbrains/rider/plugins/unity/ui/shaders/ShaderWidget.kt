@@ -27,7 +27,7 @@ import java.awt.Point
 class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
     companion object {
         @Nls
-        private fun getContextPresentation(data: ShaderContextData) = "${data.name}:${data.startLine}"
+        private fun getContextPresentation(data: ShaderContextData) = if (data.startLine > 0) "${data.name}:${data.startLine}" else data.name
     }
 
     private val widgetLifetime = this.createLifetime()

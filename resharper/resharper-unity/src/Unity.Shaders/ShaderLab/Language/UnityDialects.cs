@@ -1,3 +1,4 @@
+#nullable enable
 using JetBrains.Application;
 using JetBrains.Application.Parts;
 
