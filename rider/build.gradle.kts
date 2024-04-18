@@ -11,17 +11,19 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 plugins {
-    id("idea")
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.8"
-    id("me.filippov.gradle.jvm.wrapper") version "0.14.0"
+    id("me.filippov.gradle.jvm.wrapper")
     id("org.jetbrains.changelog") version "2.0.0"
-    id("org.jetbrains.intellij") version "1.17.3" // https://github.com/JetBrains/gradle-intellij-plugin/releases
+    id("org.jetbrains.intellij")
     kotlin("jvm")
 }
 
 repositories {
-    maven { setUrl("https://cache-redirector.jetbrains.com/maven-central") }
+    maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
+    maven("https://cache-redirector.jetbrains.com/intellij-repository/releases")
+    maven("https://cache-redirector.jetbrains.com/intellij-repository/snapshots")
+    maven("https://cache-redirector.jetbrains.com/maven-central")
 }
 
 apply {

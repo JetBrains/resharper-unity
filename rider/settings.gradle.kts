@@ -3,6 +3,9 @@ rootProject.name = "rider-unity"
 pluginManagement {
     val rdVersion: String by settings
     val rdKotlinVersion: String by settings
+    val intellijGradlePluginVersion: String by settings
+    val gradleJvmWrapperVersion: String by settings
+
     repositories {
         maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
         maven("https://cache-redirector.jetbrains.com/plugins.gradle.org")
@@ -16,6 +19,8 @@ pluginManagement {
     plugins {
         id("com.jetbrains.rdgen") version rdVersion
         id("org.jetbrains.kotlin.jvm") version rdKotlinVersion
+        id("org.jetbrains.intellij") version intellijGradlePluginVersion
+        id("me.filippov.gradle.jvm.wrapper") version gradleJvmWrapperVersion
     }
 
     resolutionStrategy {
