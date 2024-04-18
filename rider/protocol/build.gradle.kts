@@ -23,13 +23,21 @@ sourceSets {
 }
 
 data class UnityGeneratorSettings(
-    val backendCsOutDir: File,
-    val unityEditorCsOutDir: File,
-    val frontendKtOutDir: File,
+    val backendUnityCsOutDir: File,
+    val backendUnityEditorCsOutDir: File,
+    val debuggerWorkerCsOutDir: File,
+    val debuggerWorkerKtOutDir: File,
+    val frontendBackendCsOutDir: File,
+    val frontendBackendKtOutDir: File,
+    val modelLibCsOutDir: File,
+    val modelLibEditorCsOutDir: File,
+    val modelLibKtOutDir: File,
     val suffix: String
 )
 
-val frontendKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
+val debuggerWorkerKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/debuggerWorker"
+val frontendBackendKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/frontendBackend"
+val modelLibKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
 val unityGeneratorSettings = if (isMonorepo) {
     val monorepoRoot = buildscript.sourceFile?.parentFile?.parentFile?.parentFile?.parentFile?.parentFile?.parentFile
         ?: error("Cannot find products home")
@@ -41,23 +49,88 @@ val unityGeneratorSettings = if (isMonorepo) {
     val monorepoPreGeneratedUnityDir = monorepoPreGeneratedRootDir.resolve("UnityModel")
     val monorepoPreGeneratedFrontendDir = monorepoPreGeneratedRootDir.resolve("Frontend")
     UnityGeneratorSettings(
+        monorepoPreGeneratedBackendDir.resolve("resharper/BackendUnity"),
+        monorepoPreGeneratedUnityDir.resolve("unity/BackendUnity"),
+        monorepoPreGeneratedBackendDir.resolve("resharper/DebuggerWorker"),
+        monorepoPreGeneratedFrontendDir.resolve(debuggerWorkerKtOutLayout),
+        monorepoPreGeneratedBackendDir.resolve("resharper/FrontendBackend"),
+        monorepoPreGeneratedFrontendDir.resolve(frontendBackendKtOutLayout),
         monorepoPreGeneratedBackendDir.resolve("resharper/ModelLib"),
         monorepoPreGeneratedUnityDir.resolve("unity/ModelLib"),
-        monorepoPreGeneratedFrontendDir.resolve(frontendKtOutLayout),
+        monorepoPreGeneratedFrontendDir.resolve(modelLibKtOutLayout),
         ".Pregenerated"
     )
 } else {
     UnityGeneratorSettings(
+        unityRepoRoot.resolve("resharper/build/generated/Model/BackendUnity"),
+        unityRepoRoot.resolve("unity/build/generated/Model/BackendUnity"),
+        unityRepoRoot.resolve("resharper/build/generated/Model/DebuggerWorker"),
+        unityRepoRoot.resolve("rider/$debuggerWorkerKtOutLayout"),
+        unityRepoRoot.resolve( "resharper/build/generated/Model/FrontendBackend"),
+        unityRepoRoot.resolve( "rider/$frontendBackendKtOutLayout"),
         unityRepoRoot.resolve("resharper/build/generated/Model/Lib"),
         unityRepoRoot.resolve("unity/build/generated/Model/Lib"),
-        unityRepoRoot.resolve("rider/$frontendKtOutLayout"),
-        ".Pregenerated"
+        unityRepoRoot.resolve("rider/$modelLibKtOutLayout"),
+        ""
     )
 }
 
-
 rdgen {
     verbose = true
+
+    generator {
+        language = "csharp"
+        transform = "asis"
+        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
+        root = "model.backendUnity.BackendUnityModel"
+        directory = unityGeneratorSettings.backendUnityCsOutDir.absolutePath
+        generatedFileSuffix = unityGeneratorSettings.suffix
+    }
+
+    generator {
+        language = "csharp"
+        transform = "reversed"
+        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
+        root = "model.backendUnity.BackendUnityModel"
+        directory = unityGeneratorSettings.backendUnityEditorCsOutDir.absolutePath
+        generatedFileSuffix = unityGeneratorSettings.suffix
+    }
+
+    generator {
+        language = "csharp"
+        transform = "reversed"
+        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
+        root = "com.jetbrains.rider.model.nova.debugger.main.DebuggerRoot"
+        directory = unityGeneratorSettings.debuggerWorkerCsOutDir.absolutePath
+        generatedFileSuffix = unityGeneratorSettings.suffix
+    }
+
+    generator {
+        language = "kotlin"
+        transform = "asis"
+        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
+        root = "com.jetbrains.rider.model.nova.debugger.main.DebuggerRoot"
+        directory = unityGeneratorSettings.debuggerWorkerKtOutDir.absolutePath
+        generatedFileSuffix = unityGeneratorSettings.suffix
+    }
+
+    generator {
+        language = "csharp"
+        transform = "reversed"
+        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
+        root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
+        directory = unityGeneratorSettings.frontendBackendCsOutDir.absolutePath
+        generatedFileSuffix = unityGeneratorSettings.suffix
+    }
+
+    generator {
+        language = "kotlin"
+        transform = "asis"
+        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
+        root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
+        directory = unityGeneratorSettings.frontendBackendKtOutDir.absolutePath
+        generatedFileSuffix = unityGeneratorSettings.suffix
+    }
 
     // Library is used as backend in backendUnityModel and backend in frontendBackendModel, so needs to be both
     // asis and reversed.
@@ -67,7 +140,7 @@ rdgen {
         transform = "symmetric"
         packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
         root = "model.lib.Library"
-        directory = unityGeneratorSettings.backendCsOutDir.absolutePath
+        directory = unityGeneratorSettings.modelLibCsOutDir.absolutePath
         generatedFileSuffix = unityGeneratorSettings.suffix
     }
 
@@ -77,7 +150,7 @@ rdgen {
         transform = "reversed"
         packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
         root = "model.lib.Library"
-        directory = unityGeneratorSettings.unityEditorCsOutDir.absolutePath
+        directory = unityGeneratorSettings.modelLibEditorCsOutDir.absolutePath
         generatedFileSuffix = unityGeneratorSettings.suffix
     }
 
@@ -87,61 +160,7 @@ rdgen {
         transform = "asis"
         packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
         root = "model.lib.Library"
-        directory = unityGeneratorSettings.frontendKtOutDir.absolutePath
-        generatedFileSuffix = unityGeneratorSettings.suffix
-    }
-
-    generator {
-        language = "kotlin"
-        transform = "asis"
-        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
-        root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
-        directory = unityGeneratorSettings.frontendKtOutDir.absolutePath
-        generatedFileSuffix = unityGeneratorSettings.suffix
-    }
-
-    generator {
-        language = "csharp"
-        transform = "reversed"
-        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
-        root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
-        directory = unityGeneratorSettings.backendCsOutDir.absolutePath
-        generatedFileSuffix = unityGeneratorSettings.suffix
-    }
-
-    generator {
-        language = "kotlin"
-        transform = "asis"
-        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
-        root = "com.jetbrains.rider.model.nova.debugger.main.DebuggerRoot"
-        directory = unityGeneratorSettings.frontendKtOutDir.absolutePath
-        generatedFileSuffix = unityGeneratorSettings.suffix
-    }
-
-    generator {
-        language = "csharp"
-        transform = "reversed"
-        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
-        root = "com.jetbrains.rider.model.nova.debugger.main.DebuggerRoot"
-        directory = unityGeneratorSettings.backendCsOutDir.absolutePath
-        generatedFileSuffix = unityGeneratorSettings.suffix
-    }
-
-    generator {
-        language = "csharp"
-        transform = "asis"
-        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
-        root = "model.backendUnity.BackendUnityModel"
-        directory = unityGeneratorSettings.backendCsOutDir.absolutePath
-        generatedFileSuffix = unityGeneratorSettings.suffix
-    }
-
-    generator {
-        language = "csharp"
-        transform = "reversed"
-        packages = "model.backendUnity,model.debuggerWorker,model.frontendBackend,model.lib"
-        root = "model.backendUnity.BackendUnityModel"
-        directory = unityGeneratorSettings.unityEditorCsOutDir.absolutePath
+        directory = unityGeneratorSettings.modelLibKtOutDir.absolutePath
         generatedFileSuffix = unityGeneratorSettings.suffix
     }
 }
