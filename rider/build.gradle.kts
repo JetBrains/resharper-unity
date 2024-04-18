@@ -10,15 +10,13 @@ import org.jetbrains.intellij.tasks.PrepareSandboxTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
-
 plugins {
     id("idea")
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.8"
     id("me.filippov.gradle.jvm.wrapper") version "0.14.0"
     id("org.jetbrains.changelog") version "2.0.0"
-    id("org.jetbrains.intellij") version "1.13.3" // https://github.com/JetBrains/gradle-intellij-plugin/releases
-    id("org.jetbrains.grammarkit") version "2022.3"
+    id("org.jetbrains.intellij") version "1.17.3" // https://github.com/JetBrains/gradle-intellij-plugin/releases
     kotlin("jvm")
 }
 
@@ -51,16 +49,7 @@ val modelSrcDir = File(repoRoot, "rider/protocol/src/main/kotlin/model")
 val hashBaseDir = File(repoRoot, "rider/build/rdgen")
 val skipDotnet = extra["skipDotnet"].toString().lowercase(Locale.getDefault()).toBoolean()
 val runTests = extra["RunTests"].toString().lowercase(Locale.getDefault()).toBoolean()
-val monoRepoRootDir by lazy {
-    var currentDir = projectDir
-    while (currentDir.parentFile != null) {
-        if (currentDir.resolve(".ultimate.root.marker").exists()) {
-            return@lazy currentDir
-        }
-        currentDir = currentDir.parentFile
-    }
-    return@lazy null
-}
+val isMonorepo = rootProject.projectDir != projectDir
 
 val dotnetDllFiles = files(
     "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
@@ -112,8 +101,6 @@ val rdModelJarFile: File by lazy {
     assert(jarFile.isFile)
     return@lazy jarFile
 }
-
-extra["monoRepoRootDir"] = monoRepoRootDir
 
 val backendDir = projectDir.parentFile.resolve("resharper")
 val resharperHostPluginSolution =  backendDir.resolve("resharper-unity.sln")
@@ -209,7 +196,6 @@ artifacts {
 tasks {
     val backendGroup = "backend"
     val ciGroup = "ci"
-    val protocolGroup = "protocol"
     val testGroup = "verification"
 
     val dotNetSdkPath by lazy {
@@ -225,8 +211,8 @@ tasks {
     }
 
     withType<InstrumentCodeTask> {
-        // For SDK from local folder, you also need to manually download maven-artefacts folder
-        // from SDK build artefacts on TC and put it into the build folder.
+        // For SDK from local folder, you also need to manually download maven-artifacts folder
+        // from SDK build artifacts on TC and put it into the build folder.
         if (bundledMavenArtifacts.exists()) {
             logger.lifecycle("Use ant compiler artifacts from local folder: $bundledMavenArtifacts")
             compilerClassPathFromMaven.set(
@@ -419,8 +405,8 @@ tasks {
 
     val packReSharperPlugin by creating(com.ullink.NuGetPack::class) {
         // Don't know the way to rewrite this task in a lazy manner (using registering) because NuGetPack uses `project.afterEvaluate` in its implementation,
-        // so it's just workaround to not download the Rider SDK in the monorepo mode
-        if (monoRepoRootDir != null) {
+        // so it's just a workaround to not download the Rider SDK in the monorepo mode
+        if (isMonorepo) {
             doFirst {
                 throw GradleException("This task is not expected to be run in the monorepo environment")
             }
@@ -438,7 +424,7 @@ tasks {
             !line.startsWith("- Rider:") && !line.startsWith("- Unity editor:")
         }, Changelog.OutputType.PLAIN_TEXT).trim().let {
             // There's a bug in the changelog plugin that adds extra newlines on Windows, possibly
-            // due to Unix/Windows line ending mismatch.
+            // due to a Unix / Windows line ending mismatch.
             // Remove this hack once JetBrains/gradle-changelog-plugin#8 is fixed
             if (isWindows) {
                 it.replace("\n\n", "\r\n")
@@ -459,7 +445,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         }
 
         // The command line to call nuget pack passes properties as a semicolon-delimited string
-        // We can't have HTML encoded entities (e.g. &quot;)
+        // We can't have HTML-encoded entities (e.g. &quot;)
         if (releaseNotes.contains(";")) throw GradleException("Release notes cannot semi-colon")
 
         setNuspecFile(
@@ -533,8 +519,8 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
     val runNunit by registering {
         group = testGroup
-        // nunit3 defaults to running test assemblies in parallel, which causes problems with shared access to databases
-        // The nunit plugin doesn't have the ability to disable this, so we'll do it long hand...
+        // nunit3 defaults to running test assemblies in parallel, which causes problems with shared access to databases;
+        // The nunit plugin can't disable this, so we'll do it long hand...
         dependsOn(
             //buildReSharperHostPlugin,
             nunitReSharperJson,
@@ -544,7 +530,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         )
     }
 
-    // It might be better to make it a top-level task that is called separately, e.g. gradle buildPlugin nunit
+    // It might be better to make it a top-level task called separately, e.g., gradle buildPlugin nunit
     // (and we could get rid of RunTests then, too)
     if (runTests) {
         runNunit.get().shouldRunAfter(buildReSharperHostPlugin)
@@ -627,5 +613,10 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
             showStandardStreams = true
             exceptionFormat = TestExceptionFormat.FULL
         }
+    }
+
+    wrapper {
+        gradleVersion = "8.7"
+        distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip"
     }
 }
