@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
@@ -10,6 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
     public abstract class ShaderLabBlockCommandBase : ShaderLabCommandBase, IBlockCommand
     {
+        protected override DeclaredElementType DeclaredElementType => ShaderLabDeclaredElementType.BlockCommand;
+
         public sealed override IEnumerable<IStructuralDeclaration> GetMemberDeclarations()
         {
             if (((IBlockCommand)this).Value is not {} value) return EmptyList<IStructuralDeclaration>.Enumerable;

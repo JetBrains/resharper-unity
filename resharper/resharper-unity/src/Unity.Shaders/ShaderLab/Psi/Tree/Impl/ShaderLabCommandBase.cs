@@ -21,11 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 
         public sealed override TreeTextRange GetNameRange() => ((IShaderLabCommand)this).CommandKeyword?.GetTreeTextRange() ?? TreeTextRange.InvalidRange;
 
+        protected virtual DeclaredElementType DeclaredElementType => ShaderLabDeclaredElementType.Command;
+
         protected override IDeclaredElement? TryCreateDeclaredElement()
         {
             if (GetSourceFile() is not { } sourceFile || GetName() is not { } name)
                 return null;
-            return new ShaderLabCommandDeclaredElement(name, GetEntityNameToken()?.GetText(), sourceFile, GetTreeStartOffset().Offset);
+            return new ShaderLabCommandDeclaredElement(name, GetEntityNameToken()?.GetText(), sourceFile, GetTreeStartOffset().Offset, DeclaredElementType);
         }
 
         #region IShaderLabCommand

@@ -9,13 +9,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
     public class ShaderLabDeclaredElementType : DeclaredElementType
     {
         public static readonly ShaderLabDeclaredElementType Property = new("Property", PsiSymbolsThemedIcons.Property.Id);
-        public static readonly ShaderLabDeclaredElementType Command = new("Command", null);
-        public static readonly ShaderLabDeclaredElementType IncludeBlock = new("IncludeBlock", null);
-        public static readonly ShaderLabDeclaredElementType ProgramBlock = new("ProgramBlock", null);
-        public static readonly ShaderLabDeclaredElementType Shader = new("Shader", PsiSymbolsThemedIcons.FileShader.Id);
-        public static readonly ShaderLabDeclaredElementType TexturePass = new("TexturePass", null);
-        public static readonly ShaderLabDeclaredElementType Category = new("Category", null);
-        public static readonly ShaderLabDeclaredElementType GrabPass = new("GrabPass", null);
+        public static readonly ShaderLabDeclaredElementType Command = new("Command", PsiSymbolsThemedIcons.Field.Id);
+        public static readonly ShaderLabDeclaredElementType BlockCommand = new("BlockCommand", PsiSymbolsThemedIcons.Struct.Id);
+        public static readonly ShaderLabDeclaredElementType PropertiesCommand = new("PropertiesCommand", PsiSymbolsThemedIcons.Property.Id);
+        public static readonly ShaderLabDeclaredElementType ShaderCommand = new("ShaderCommand", PsiSymbolsThemedIcons.FileShader.Id);
+        public static readonly ShaderLabDeclaredElementType TexturePassDef = new("TexturePassDef", PsiSymbolsThemedIcons.ShaderPass.Id);
+        public static readonly ShaderLabDeclaredElementType SubShaderCommand = new("SubShaderCommand", PsiSymbolsThemedIcons.SubShader.Id);
+        public static readonly ShaderLabDeclaredElementType IncludeBlock = new("IncludeBlock", PsiSymbolsThemedIcons.Pipeline.Id);        
+        public static readonly ShaderLabDeclaredElementType ProgramBlock = new("ProgramBlock", PsiSymbolsThemedIcons.Pipeline.Id);
+        public static readonly ShaderLabDeclaredElementType Shader = new("Shader", null);
+        public static readonly ShaderLabDeclaredElementType TexturePass = new("TexturePass", PsiSymbolsThemedIcons.ShaderPass.Id);
 
         private readonly IconId? myIconId;
 

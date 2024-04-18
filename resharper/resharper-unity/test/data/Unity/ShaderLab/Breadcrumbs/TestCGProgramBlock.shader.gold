@@ -1,5 +1,5 @@
-﻿[ ] Shader "MyShader" -- Shader "MyShader"\nClick to navigate
-[ ] SubShader -- SubShader\nClick to navigate
-[ ] Pass -- Pass\nClick to navigate
-[ ] CGPROGRAM -- CGPROGRAM\nClick to navigate
+﻿[Composite(PsiSymbolTypicalSizePlaceholder, FileShader)] Shader "MyShader" -- Shader "MyShader"\nClick to navigate
+[Composite(PsiSymbolTypicalSizePlaceholder, SubShader)] SubShader -- SubShader\nClick to navigate
+[Composite(PsiSymbolTypicalSizePlaceholder, ShaderPass)] Pass -- Pass\nClick to navigate
+[Composite(PsiSymbolTypicalSizePlaceholder, Pipeline)] CGPROGRAM -- CGPROGRAM\nClick to navigate
 [Composite(PsiSymbolTypicalSizePlaceholder, Method)] hsv2rgb -- hsv2rgb\nClick to navigate
