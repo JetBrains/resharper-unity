@@ -12,6 +12,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.xdebugger.XDebuggerManager
+import com.jetbrains.rider.plugins.unity.EngineConstants
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
@@ -42,6 +43,7 @@ fun ProcessInfo.toUnityProcess(extraDetails: UnityLocalProcessExtraDetails?): Un
 
 object UnityRunUtil {
     private val logger = Logger.getInstance(UnityRunUtil::class.java)
+    private val engineNames = arrayOf(EngineConstants.UnityEngineName, EngineConstants.TuanjieEngineName)
 
     fun isUnityEditorProcess(processInfo: ProcessInfo): Boolean {
         val name = processInfo.executableDisplayName
@@ -59,13 +61,20 @@ object UnityRunUtil {
         // .NET's Process.ProcessName
         // "Unity_s.debug" is a Linux only process that's packaged with Unity and contains some debug information. See RIDER-97262
         // https://github.com/Unity-Technologies/MonoDevelop.Debugger.Soft.Unity/blob/9f116ee5d344bce5888e838a75ded418bd7852c7/UnityProcessDiscovery.cs#L155
-        return (name.equals("Unity", true)
-                || name.equals("Unity Editor", true)
-                || name.equals("Unity_s.debug", true)
-                || canonicalName.equals("unity", true)
-                || canonicalName.equals("Unity Editor", true)
-                || canonicalName.equals("Unity_s.debug", true)
-               )
+        
+        for (engineName in engineNames) {
+            if (name.equals(engineName, true)
+                    || name.equals("$engineName Editor", true)
+                    || name.equals("${engineName}_s.debug", true)
+                    || canonicalName.equals(engineName, true)
+                    || canonicalName.equals("$engineName Editor", true)
+                    || canonicalName.equals("${engineName}_s.debug", true)
+                   )
+                return true
+        }
+        
+        return false
+
     }
 
     fun isValidUnityEditorProcess(pid: Int, processList: Array<out ProcessInfo>): Boolean {
