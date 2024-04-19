@@ -105,8 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return null;
 
             var sceneName = constantValue;
-            if (sceneName.StartsWith("Assets/") && sceneName.EndsWith(UnityFileExtensions.SceneFileExtensionWithDot,
-                StringComparison.InvariantCultureIgnoreCase))
+            if (sceneName.StartsWith("Assets/"))
             {
                 sceneName = UnityProjectSettingsUtils.GetUnityScenePathRepresentation(sceneName);
             }

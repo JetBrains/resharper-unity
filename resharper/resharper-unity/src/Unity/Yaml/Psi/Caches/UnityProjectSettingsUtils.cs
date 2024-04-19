@@ -50,8 +50,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public static string GetUnityScenePathRepresentation(string scenePath)
         {
-            return scenePath.RemoveStart("Assets/").RemoveEnd(UnityFileExtensions.SceneFileExtensionWithDot,
-                StringComparison.InvariantCultureIgnoreCase);
+            // TODO support packages?
+            var assetPathWithExtension = scenePath.RemoveStart("Assets/");
+            if (assetPathWithExtension.EndsWith(UnityFileExtensions.SceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase))
+                return assetPathWithExtension.RemoveEnd(UnityFileExtensions.SceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase);
+        
+            if (assetPathWithExtension.EndsWith(UnityFileExtensions.TuanjieSceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase))
+                return assetPathWithExtension.RemoveEnd(UnityFileExtensions.TuanjieSceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase);
+
+            return assetPathWithExtension;
         }
 
         public static UnityExternalFilesPsiModule GetUnityModule(ISolution solution)

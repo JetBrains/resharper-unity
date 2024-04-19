@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
 
             }
 
-            return files.Where(f => f.Name.Equals(scene + UnityFileExtensions.SceneFileExtensionWithDot))
+            return files.Where(f => f.IsScene() && f.GetLocation().NameWithoutExtension.Equals(scene))
                 .Select(f => (f, GetUnityPathFor(f)));
         }
 

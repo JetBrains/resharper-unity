@@ -22,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public const string AssetFileExtensionWithDot = ".asset";
         public const string PrefabFileExtensionWithDot = ".prefab";
         public const string SceneFileExtensionWithDot = ".unity";
+        public const string TuanjieSceneFileExtensionWithDot = ".scene";
         public const string ControllerFileExtensionWithDot = ".controller";
         public const string AnimFileExtensionWithDot = ".anim";
         
@@ -35,6 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public static readonly string[] YamlDataFileExtensionsWithDot =
         {
             SceneFileExtensionWithDot,
+            TuanjieSceneFileExtensionWithDot,
             AssetFileExtensionWithDot,
             PrefabFileExtensionWithDot,
             ControllerFileExtensionWithDot,
@@ -82,10 +84,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             SourceFileNameEndsWith(sourceFile, PrefabFileExtensionWithDot);
 
         public static bool IsScene(this IPath path) =>
-            SimplePathEndsWith(path, SceneFileExtensionWithDot);
+            SimplePathEndsWith(path, SceneFileExtensionWithDot) || 
+            SimplePathEndsWith(path, TuanjieSceneFileExtensionWithDot);
 
         public static bool IsScene(this IPsiSourceFile sourceFile) =>
-            SourceFileNameEndsWith(sourceFile, SceneFileExtensionWithDot);
+            SourceFileNameEndsWith(sourceFile, SceneFileExtensionWithDot) || 
+            SourceFileNameEndsWith(sourceFile, TuanjieSceneFileExtensionWithDot);
 
         public static bool IsController(this IPath path) =>
             SimplePathEndsWith(path, ControllerFileExtensionWithDot);

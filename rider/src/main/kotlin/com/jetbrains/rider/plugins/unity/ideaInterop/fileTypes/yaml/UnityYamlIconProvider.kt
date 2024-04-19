@@ -15,6 +15,8 @@ class UnityYamlIconProvider : IconProvider(), DumbAware {
         if (fileElement != null) {
             if (fileElement.name.endsWith(".unity", true))
                 return UnityIcons.FileTypes.UnityScene
+            if (fileElement.name.endsWith(".scene", true))
+                return UnityIcons.FileTypes.UnityScene
             if (fileElement.name.endsWith(".meta", true))
                 return UnityIcons.FileTypes.Meta
             if (fileElement.name.endsWith(".prefab", true))

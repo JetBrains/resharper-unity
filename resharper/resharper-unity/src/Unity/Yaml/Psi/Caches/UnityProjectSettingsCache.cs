@@ -238,8 +238,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public string GetShortNameForSceneName(string name)
         {
-            return name.Split('/').Last().RemoveEnd(UnityFileExtensions.SceneFileExtensionWithDot,
-                StringComparison.InvariantCultureIgnoreCase);
+            var sceneName = name.Split('/').Last();
+            if (sceneName.EndsWith(UnityFileExtensions.SceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase))
+                return sceneName.RemoveEnd(UnityFileExtensions.SceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase);
+            
+            if (sceneName.EndsWith(UnityFileExtensions.TuanjieSceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase))
+                return sceneName.RemoveEnd(UnityFileExtensions.TuanjieSceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase);
+            
+            return name;
         }
 
         public bool IsSceneDisabledAtEditorBuildSettings(string sceneName)
