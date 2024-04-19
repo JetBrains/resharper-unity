@@ -2,6 +2,7 @@ package com.jetbrains.rider.unity.test.cases
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rdclient.codeVision.frontendLensContextOrThrow
 import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -131,22 +132,25 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
         waitForLensInfos(project)
         waitForAllAnalysisFinished(project)
         val editor = withOpenedEditor(file) {
-            waitForLenses()
             executeWithGold(testGoldFile) {
                 val expectedInlaysText = getGoldFileText(testGoldFile)
                 val expectedTextBeforeAction = expectedInlaysText.substringBefore("after change")
                 val currentBeforeActionInlaysTextBuilder: StringBuilder = StringBuilder(expectedInlaysText.length)
-                pumpMessages(Duration.ofSeconds(5)) {
+                val timeout = Duration.ofSeconds(60)
+                waitForLenses()
+                pumpMessages(timeout) {
+                    frontendLensContextOrThrow.resubmitThings()
                     currentBeforeActionInlaysTextBuilder.clear()
                     currentBeforeActionInlaysTextBuilder.appendLine("before change")
                     currentBeforeActionInlaysTextBuilder.append(dumpLenses())
-                    return@pumpMessages expectedInlaysText == expectedTextBeforeAction
+                    return@pumpMessages currentBeforeActionInlaysTextBuilder.toString() == expectedTextBeforeAction
                 }
                 if (action()) {
                     persistAllFilesOnDisk()
-                    waitForNextLenses()
                     val currentAfterActionInlaysTextBuilder = StringBuilder(expectedInlaysText.length)
-                    pumpMessages(Duration.ofSeconds(5)) {
+                    waitForLenses()
+                    pumpMessages(timeout) {
+                        frontendLensContextOrThrow.resubmitThings()
                         currentAfterActionInlaysTextBuilder.clear()
                         currentAfterActionInlaysTextBuilder.append(currentBeforeActionInlaysTextBuilder.toString())
                         currentAfterActionInlaysTextBuilder.appendLine("after change")
