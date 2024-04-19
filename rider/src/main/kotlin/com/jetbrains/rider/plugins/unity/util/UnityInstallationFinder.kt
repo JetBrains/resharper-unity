@@ -9,6 +9,7 @@ import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.flowInto
+import com.jetbrains.rider.plugins.unity.EngineConstants
 import com.jetbrains.rider.plugins.unity.model.UnityApplicationData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import java.nio.file.Path
@@ -21,8 +22,11 @@ class UnityInstallationFinder {
         fun getInstance(project: Project): UnityInstallationFinder = project.service()
 
         fun getOsSpecificPath(path: Path): Path {
-            if (SystemInfo.isMac)
-                return path.resolve("Contents/MacOS/Unity")
+            if (SystemInfo.isMac) {
+                if (path.endsWith("${EngineConstants.TuanjieEngineName}.app"))
+                    return path.resolve("Contents/MacOS/${EngineConstants.TuanjieEngineName}")
+                return path.resolve("Contents/MacOS/${EngineConstants.UnityEngineName}")
+            }
             return path
         }
     }

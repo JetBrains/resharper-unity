@@ -16,6 +16,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
     public static class UnityInstallationFinder
     {
         private static readonly ILogger ourLogger = Logger.GetLogger(typeof(UnityInstallationFinder));
+        
+        private const string Tuanjie = "Tuanjie";
+        private const string Unity = "Unity";
 
         [CanBeNull]
         public static UnityInstallationInfo GetApplicationInfo(Version version, UnityVersion unityVersion)
@@ -32,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             var pathForSolution = unityVersion.GetActualAppPathForSolution();
             var versionByAppPath = UnityVersion.GetVersionByAppPath(pathForSolution);
             if (versionByAppPath!=null)
-                possibleWithVersion.Add(new UnityInstallationInfo(versionByAppPath, pathForSolution));
+                possibleWithVersion.Add(new UnityInstallationInfo(versionByAppPath, pathForSolution, pathForSolution.FullPath.Contains(Tuanjie)));
 
             // check best choice again, since newly added version may be best one
             bestChoice = TryGetBestChoice(version, possibleWithVersion);
@@ -107,24 +110,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         private static List<UnityInstallationInfo> GetPossibleInstallationInfos()
         {
-            var installations = GetPossibleApplicationPaths();
-            return installations.Select(path =>
+            var installations = GetPossibleApplicationPaths(Unity);
+            var unityInstallationsInfo =  installations.Select(path =>
             {
                 var version = UnityVersion.GetVersionByAppPath(path);
-                return new UnityInstallationInfo(version, path);
+                return new UnityInstallationInfo(version, path, false);
             }).ToList();
-        }
+            
+            var tuanjieInstallations = GetPossibleApplicationPaths(Tuanjie);
+            var tuanjieInstallationsInfo = tuanjieInstallations.Select(path =>
+            {
+                var version = UnityVersion.GetVersionByAppPath(path);
+                return new UnityInstallationInfo(version, path, true);
+            }).ToList();
 
-        public static List<VirtualFileSystemPath> GetPossibleApplicationPaths()
+            if (tuanjieInstallationsInfo.Count == 0)
+                return unityInstallationsInfo;
+
+            unityInstallationsInfo.AddRange(tuanjieInstallationsInfo);
+            return unityInstallationsInfo;
+        }
+        
+        private static List<VirtualFileSystemPath> GetPossibleApplicationPaths(string engineName)
         {
             switch (PlatformUtil.RuntimePlatform)
             {
                 case JetPlatform.MacOsX:
                 {
                     var appsHome = VirtualFileSystemPath.Parse("/Applications", InteractionContext.SolutionContext);
-                    var unityApps = appsHome.GetChildDirectories("Unity*").Select(a=>a.Combine("Unity.app")).ToList();
+                    var unityApps = appsHome.GetChildDirectories($"{engineName}*").Select(a=>a.Combine($"{engineName}.app")).ToList();
 
-                    var defaultHubLocation = appsHome.Combine("Unity/Hub/Editor");
+                    var defaultHubLocation = appsHome.Combine($"{engineName}/Hub/Editor");
                     var hubLocations = new List<VirtualFileSystemPath> {defaultHubLocation};
 
                     // Hub custom location
@@ -132,14 +148,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                     if (!string.IsNullOrEmpty(home))
                     {
                         var localAppData = VirtualFileSystemPath.Parse(home, InteractionContext.SolutionContext).Combine("Library/Application Support");
-                        var hubCustomLocation = GetCustomHubInstallPath(localAppData);
+                        var hubCustomLocation = GetCustomHubInstallPath(engineName, localAppData);
                         if (!hubCustomLocation.IsEmpty)
                             hubLocations.Add(hubCustomLocation);
                     }
 
                     // /Applications/Unity/Hub/Editor/2018.1.0b4/Unity.app
                     unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
-                        unityDir.Combine(@"Unity.app"))));
+                        unityDir.Combine($@"{engineName}.app"))));
 
                     return unityApps.Where(a=>a.ExistsDirectory).Distinct().OrderBy(b=>b.FullPath).ToList();
                 }
@@ -155,23 +171,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
                     // Old style installations
                     unityApps.AddRange(
-                        homes.SelectMany(a => a.GetChildDirectories("Unity*"))
-                            .Select(unityDir => unityDir.Combine(@"Editor/Unity")));
+                        homes.SelectMany(a => a.GetChildDirectories($"{engineName}*"))
+                            .Select(unityDir => unityDir.Combine($@"Editor/{engineName}")));
 
                     // Installations with Unity Hub
                     if (!string.IsNullOrEmpty(homeEnv))
                     {
                         var home = VirtualFileSystemPath.Parse(homeEnv, InteractionContext.SolutionContext);
-                        var defaultHubLocation = home.Combine("Unity/Hub/Editor");
+                        var defaultHubLocation = home.Combine($"{engineName}/Hub/Editor");
                         var hubLocations = new List<VirtualFileSystemPath> {defaultHubLocation};
                         // Hub custom location
                         var configPath = home.Combine(".config");
-                        var customHubInstallPath = GetCustomHubInstallPath(configPath);
+                        var customHubInstallPath = GetCustomHubInstallPath(engineName, configPath);
                         if (!customHubInstallPath.IsEmpty)
                             hubLocations.Add(customHubInstallPath);
 
                         unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
-                            unityDir.Combine(@"Editor/Unity"))));
+                            unityDir.Combine($@"Editor/{engineName}"))));
                     }
 
                     return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
@@ -183,30 +199,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
                     var programFiles = GetProgramFiles();
                     unityApps.AddRange(
-                        programFiles.GetChildDirectories("Unity*")
-                            .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
+                        programFiles.GetChildDirectories($"{engineName}*")
+                            .Select(unityDir => unityDir.Combine($@"Editor\{engineName}.exe"))
                         );
 
                     // default Hub location
                     //"C:\Program Files\Unity\Hub\Editor\2018.1.0b4\Editor\Data\MonoBleedingEdge"
                     unityApps.AddRange(
-                        programFiles.Combine(@"Unity\Hub\Editor").GetChildDirectories()
-                            .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
+                        programFiles.Combine($@"{engineName}\Hub\Editor").GetChildDirectories()
+                            .Select(unityDir => unityDir.Combine($@"Editor\{engineName}.exe"))
                     );
 
                     // custom Hub location
                     var appData = VirtualFileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), InteractionContext.SolutionContext);
-                    var customHubInstallPath = GetCustomHubInstallPath(appData);
+                    var customHubInstallPath = GetCustomHubInstallPath(engineName, appData);
                     if (!customHubInstallPath.IsEmpty)
                     {
                         unityApps.AddRange(
                             customHubInstallPath.GetChildDirectories()
-                                .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
+                                .Select(unityDir => unityDir.Combine($@"Editor\{engineName}.exe"))
                         );
                     }
 
                     var lnks = VirtualFileSystemPath.Parse(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs", InteractionContext.SolutionContext)
-                        .GetChildDirectories("Unity*").SelectMany(a => a.GetChildFiles("Unity.lnk")).ToArray();
+                        .GetChildDirectories($"{engineName}*").SelectMany(a => a.GetChildFiles($"{engineName}.lnk")).ToArray();
                     unityApps.AddRange(lnks
                         .Select(t => ShellLinkHelper.ResolveLinkTarget(t.ToNativeFileSystemPath()).ToVirtualFileSystemPath())
                         .OrderBy(c => new FileInfo(c.FullPath).CreationTime));
@@ -222,9 +238,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return new List<VirtualFileSystemPath>();
         }
 
-        private static VirtualFileSystemPath GetCustomHubInstallPath(VirtualFileSystemPath appData)
+        private static VirtualFileSystemPath GetCustomHubInstallPath(string engineName, VirtualFileSystemPath appData)
         {
-            var filePath = appData.Combine("UnityHub/secondaryInstallPath.json");
+            var filePath = appData.Combine($"{engineName}Hub/secondaryInstallPath.json");
             if (filePath.ExistsFile)
             {
                 var text = filePath.ReadAllText2().Text.TrimStart('"').TrimEnd('"');
@@ -270,11 +286,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                 {
                     case JetPlatform.Windows:
                     {
-                        return GoUpForUnityExecutable(filePath,"Unity.exe");
+                        return GoUpForUnityExecutable(filePath,$"{Unity}.exe") ?? GoUpForUnityExecutable(filePath,$"{Tuanjie}.exe");
                     }
                     case JetPlatform.Linux:
                     {
-                        return GoUpForUnityExecutable(filePath,"Unity");
+                        return GoUpForUnityExecutable(filePath, Unity) ?? GoUpForUnityExecutable(filePath, Tuanjie);
                     }
                     case JetPlatform.MacOsX:
                     {
@@ -343,40 +359,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                     break;
             }
         }
-
-        public static List<VirtualFileSystemPath> GetPossibleMonoPaths()
-        {
-            var possibleApplicationPaths = GetPossibleApplicationPaths();
-            switch (PlatformUtil.RuntimePlatform)
-            {
-                // dotTrace team uses these constants to detect unity's mono.
-                // If you want change any constant, please notify dotTrace team
-                case JetPlatform.MacOsX:
-                {
-                    var monoFolders = possibleApplicationPaths.Select(a => a.Combine("Contents/MonoBleedingEdge")).ToList();
-                    monoFolders.AddRange(possibleApplicationPaths.Select(a => a.Combine("Contents/Frameworks/MonoBleedingEdge")));
-                    return monoFolders;
-                }
-                case JetPlatform.Linux:
-                case JetPlatform.Windows:
-                {
-                    return possibleApplicationPaths.Select(a => a.Directory.Combine(@"Data/MonoBleedingEdge")).ToList();
-                }
-            }
-            ourLogger.Error("Unknown runtime platform");
-            return new List<VirtualFileSystemPath>();
-        }
     }
 
     public class UnityInstallationInfo
     {
         public Version Version { get; }
         public VirtualFileSystemPath Path { get; }
+        public bool IsTuanjie { get; }
 
-        public UnityInstallationInfo(Version version, VirtualFileSystemPath path)
+        public UnityInstallationInfo(Version version, VirtualFileSystemPath path, bool isTuanjie)
         {
             Version = version;
             Path = path;
+            IsTuanjie = isTuanjie;
         }
     }
 }
