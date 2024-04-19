@@ -19,12 +19,14 @@ import com.intellij.util.io.delete
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.toIOFile
+import com.jetbrains.rider.plugins.unity.EngineConstants
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
 import kotlin.io.path.exists
+import kotlin.io.path.pathString
 import kotlin.io.path.readBytes
 
 class UnityYamlAutomaticExternalMergeTool : AutomaticExternalMergeTool {
@@ -47,7 +49,13 @@ class UnityYamlAutomaticExternalMergeTool : AutomaticExternalMergeTool {
 
         try {
             val isMergeTrustExitCode = true
-            val mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
+            val mergeToolName = if (appDataPath.pathString.contains(EngineConstants.TuanjieEngineName)) {
+                "${EngineConstants.TuanjieEngineName}YAMLMerge"
+            } else {
+                "${EngineConstants.UnityEngineName}YAMLMerge"
+            }
+            
+            val mergeExePath = appDataPath.resolve("Tools/$mergeToolName" + extension).toString()
             val mergeParametersFromBackend = project.solution.frontendBackendModel.backendSettings.mergeParameters.valueOrThrow
             val mergeParameters = if (mergeParametersFromBackend.contains(" -p ")) {
                 "$mergeParametersFromBackend $premergedBase $premergedRight"
