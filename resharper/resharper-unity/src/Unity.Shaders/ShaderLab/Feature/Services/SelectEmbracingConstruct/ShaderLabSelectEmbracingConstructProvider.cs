@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.SelectEmbracingConstruct
 {
-    [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfSettingsStore)]
+    [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabSelectEmbracingConstructProvider : ISelectEmbracingConstructProvider
     {
         private readonly ISettingsStore mySettingsStore;

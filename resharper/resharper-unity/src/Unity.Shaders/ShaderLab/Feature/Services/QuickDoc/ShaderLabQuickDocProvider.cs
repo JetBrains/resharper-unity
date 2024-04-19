@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using JetBrains.Application.DataContext;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Descriptions;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
@@ -17,7 +18,7 @@ using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.QuickDoc
 {
-    [QuickDocProvider(0)]
+    [QuickDocProvider(0, Instantiation.DemandAnyThreadSafe)]
     public class ShaderLabQuickDocProvider : IQuickDocProvider
     {
         private readonly ShaderLabDeclaredElementDescriptionProvider myDescriptionProvider;
