@@ -245,7 +245,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (sceneName.EndsWith(UnityFileExtensions.TuanjieSceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase))
                 return sceneName.RemoveEnd(UnityFileExtensions.TuanjieSceneFileExtensionWithDot, StringComparison.InvariantCultureIgnoreCase);
             
-            return name;
+            return sceneName;
         }
 
         public bool IsSceneDisabledAtEditorBuildSettings(string sceneName)
