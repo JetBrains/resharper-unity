@@ -65,7 +65,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
             if (breakEvent is not LineBreakpoint lineBreakpoint)
                 return false;
 
-            if (!lineBreakpoint.AdditionalData.OfType<UnityPausePointAdditionalData>().Any())
+            if (lineBreakpoint.TryGetAdditionalData<UnityPausePointAdditionalData>() == null)
                 return false;
 
             var evaluationParameters = mySession.EvaluationOptions
