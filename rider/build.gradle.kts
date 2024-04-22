@@ -118,7 +118,7 @@ sourceSets {
     main {
         java {
             srcDir("src/main/gen")
-            srcDir("src/main/rdgen/kotlin")
+            srcDir("src/generated/kotlin")
         }
         resources {
             srcDir("src/main/rdgen/resources")
