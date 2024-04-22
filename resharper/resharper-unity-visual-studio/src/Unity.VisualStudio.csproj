@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <InternalBuild Condition="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), 'Product.Root')) != ''">True</InternalBuild>
+    <InternalBuild Condition="'$(SolutionFileName)' != 'resharper-unity.sln' AND '$(SolutionFileName)' != 'JetBrains.Rider.Unity.Editor.sln' AND '$(SolutionFileName)' != 'tools.sln' AND '$(SolutionFileName)' != 'resharper-unity-fleet.sln' AND '$(SolutionFileName)' != 'DebuggerTools.sln'">True</InternalBuild>
     <InternalBuild Condition="$(InternalBuild) == ''">False</InternalBuild>
   </PropertyGroup>
   <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
@@ -33,6 +33,9 @@
     <Reference Include="mscorlib" />
     <Reference Include="PresentationCore" />
   </ItemGroup>
+  <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
+    <RemoveDir Directories="obj" />
+  </Target>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio_SinceVs10.Props" Condition="!$(InternalBuild)" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio_ReSpeller.Props" Condition="!$(InternalBuild)" />

@@ -47,6 +47,9 @@
     <None Remove="UntilUnity.2017.3\**" />
     <EmbeddedResource Remove="UntilUnity.2017.3\**" />
   </ItemGroup>
+  <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
+    <RemoveDir Directories="obj" />
+  </Target>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
   <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="!$(InternalBuild)" />
