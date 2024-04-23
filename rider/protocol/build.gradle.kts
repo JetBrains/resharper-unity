@@ -35,9 +35,9 @@ data class UnityGeneratorSettings(
     val suffix: String
 )
 
-val debuggerWorkerKtOutLayout = "com/jetbrains/rider/plugins/unity/model/debuggerWorker"
-val frontendBackendKtOutLayout = "com/jetbrains/rider/plugins/unity/model/frontendBackend"
-val modelLibKtOutLayout = "com/jetbrains/rider/plugins/unity/model/lib"
+val debuggerWorkerKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/debuggerWorker"
+val frontendBackendKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/frontendBackend"
+val modelLibKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
 val unityGeneratorSettings = if (isMonorepo) {
     val monorepoRoot = buildscript.sourceFile?.parentFile?.parentFile?.parentFile?.parentFile?.parentFile?.parentFile
         ?: error("Cannot find products home")
@@ -52,12 +52,12 @@ val unityGeneratorSettings = if (isMonorepo) {
         monorepoPreGeneratedBackendDir.resolve("resharper/BackendUnity"),
         monorepoPreGeneratedUnityDir.resolve("unity/BackendUnity"),
         monorepoPreGeneratedBackendDir.resolve("resharper/DebuggerWorker"),
-        monorepoPreGeneratedFrontendDir.resolve("src/main/rdgen/kotlin/$debuggerWorkerKtOutLayout"),
+        monorepoPreGeneratedFrontendDir.resolve(debuggerWorkerKtOutLayout),
         monorepoPreGeneratedBackendDir.resolve("resharper/FrontendBackend"),
-        monorepoPreGeneratedFrontendDir.resolve("src/main/rdgen/kotlin/$frontendBackendKtOutLayout"),
+        monorepoPreGeneratedFrontendDir.resolve(frontendBackendKtOutLayout),
         monorepoPreGeneratedBackendDir.resolve("resharper/ModelLib"),
         monorepoPreGeneratedUnityDir.resolve("unity/ModelLib"),
-        monorepoPreGeneratedFrontendDir.resolve("src/main/rdgen/kotlin/$modelLibKtOutLayout"),
+        monorepoPreGeneratedFrontendDir.resolve(modelLibKtOutLayout),
         ".Pregenerated"
     )
 } else {
@@ -65,12 +65,12 @@ val unityGeneratorSettings = if (isMonorepo) {
         unityRepoRoot.resolve("resharper/build/generated/Model/BackendUnity"),
         unityRepoRoot.resolve("unity/build/generated/Model/BackendUnity"),
         unityRepoRoot.resolve("resharper/build/generated/Model/DebuggerWorker"),
-        unityRepoRoot.resolve("rider/src/generated/kotlin/$debuggerWorkerKtOutLayout"),
+        unityRepoRoot.resolve("rider/$debuggerWorkerKtOutLayout"),
         unityRepoRoot.resolve( "resharper/build/generated/Model/FrontendBackend"),
-        unityRepoRoot.resolve( "rider/src/generated/kotlin/$frontendBackendKtOutLayout"),
+        unityRepoRoot.resolve( "rider/$frontendBackendKtOutLayout"),
         unityRepoRoot.resolve("resharper/build/generated/Model/Lib"),
         unityRepoRoot.resolve("unity/build/generated/Model/Lib"),
-        unityRepoRoot.resolve("rider/src/generated/kotlin/$modelLibKtOutLayout"),
+        unityRepoRoot.resolve("rider/$modelLibKtOutLayout"),
         ""
     )
 }
