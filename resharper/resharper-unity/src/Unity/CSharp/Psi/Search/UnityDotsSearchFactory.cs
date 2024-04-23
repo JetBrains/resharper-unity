@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Search;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
 {
-    [PsiSharedComponent(InstantiationEx.DemandAnyThreadNotSafeBecauseOfSettingsStore)]
+    [PsiSharedComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityDotsSearchFactory : DomainSpecificSearcherFactoryBase
     {
         private readonly IContextBoundSettingsStore mySettingsStore;

@@ -17,7 +17,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Breadcrumbs
 {
-    [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfSettingsStore)]
+    [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabBreadcrumbsProvider : StructuralDeclarationBreadcrumbsProviderBase
     {
         public ShaderLabBreadcrumbsProvider(IIconHost iconHost, PsiIconManager iconManager) : base(iconHost, iconManager) { }
