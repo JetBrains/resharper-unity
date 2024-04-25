@@ -292,12 +292,16 @@ namespace JetBrains.Rider.PathLocator
       if (string.IsNullOrEmpty(input))
         return null;
 
-      var match = Regex.Match(input, @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)");
+      var match = Regex.Match(input, @"(?<major>\d+)\.(?<minor>\d+)(\.(?<build>\d+))?");
       var groups = match.Groups;
       Version version = null;
       if (match.Success)
       {
-        version = new Version($"{groups["major"].Value}.{groups["minor"].Value}.{groups["build"].Value}");
+        var major = match.Groups["major"].Value;
+        var minor = match.Groups["minor"].Value;
+        var build = match.Groups["build"].Success ? match.Groups["build"].Value : "0";
+        
+        version = new Version($"{major}.{minor}.{build}");
       }
 
       return version;
