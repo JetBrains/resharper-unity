@@ -296,8 +296,12 @@ tasks {
         }
     }
 
-    named<KotlinCompile>("compileKotlin") {
+    val generateModels = create("generateModels") {
         dependsOn(":protocol:rdgen")
+    }
+
+    named<KotlinCompile>("compileKotlin") {
+        dependsOn(generateModels)
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjvm-default=all")
             jvmTarget = "17"
@@ -363,7 +367,7 @@ tasks {
     val buildReSharperHostPlugin = register("buildReSharperHostPlugin") {
         group = backendGroup
         description = "Builds the full ReSharper backend plugin solution"
-        dependsOn(prepareNuGetConfig, ":protocol:rdgen")
+        dependsOn(prepareNuGetConfig, generateModels)
         onlyIf {
             skipDotnet.not()
         }
