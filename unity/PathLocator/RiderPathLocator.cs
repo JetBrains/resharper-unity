@@ -299,9 +299,9 @@ namespace JetBrains.Rider.PathLocator
       {
         var major = match.Groups["major"].Value;
         var minor = match.Groups["minor"].Value;
-        var build = match.Groups["build"].Success ? match.Groups["build"].Value : "0";
-        
-        version = new Version($"{major}.{minor}.{build}");
+        version = match.Groups["build"].Success
+          ? new Version($"{major}.{minor}.{match.Groups["build"].Value}")
+          : new Version($"{major}.{minor}");
       }
 
       return version;
