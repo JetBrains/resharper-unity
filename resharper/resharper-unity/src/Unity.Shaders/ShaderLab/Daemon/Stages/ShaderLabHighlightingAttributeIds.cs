@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes.Idea;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
-using JetBrains.ReSharper.Psi.Cpp.Daemon;
+using JetBrains.ReSharper.Psi.Cpp.Presentation;
 using JetBrains.TextControl.DocumentMarkup;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
