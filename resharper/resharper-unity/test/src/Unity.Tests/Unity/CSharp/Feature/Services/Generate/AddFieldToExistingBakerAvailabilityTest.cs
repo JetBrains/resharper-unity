@@ -51,13 +51,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             base.CheckProjectFile(projectItem, test);
         }
 
-        protected override void CheckDocument(TextWriter writer, IDocument document, IProjectFile projectFile)
+        protected override void CheckDocument(TextWriter dumpWriter, IDocument document, IProjectFile projectFile)
         {
             if (projectFile.Name.Contains(DotsClassesFileName))
             {
                 return;
             }
-            base.CheckDocument(writer, document, projectFile);
+            base.CheckDocument(dumpWriter, document, projectFile);
         }
 
         protected override void DoTest(Lifetime lifetime, IProject project)
