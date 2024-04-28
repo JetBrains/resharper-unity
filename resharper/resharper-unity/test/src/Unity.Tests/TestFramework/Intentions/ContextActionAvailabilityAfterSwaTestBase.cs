@@ -46,11 +46,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
             }
         }
 
-        protected override bool IsAvailable(TContextAction action, ITextControl textControl)
+        protected override bool IsAvailable(ContextActionInstance contextActionInstance, ITextControl textControl)
         {
-            var isAvailable = base.IsAvailable(action, textControl);
+            var isAvailable = base.IsAvailable(contextActionInstance, textControl);
 
-            return isAvailable && action.CreateBulbItems().Any();
+            return isAvailable && contextActionInstance.CreateBulbItemsNoScoped(Solution).Any();
         }
     }
 }
