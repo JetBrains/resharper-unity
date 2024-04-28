@@ -8,6 +8,7 @@ import com.jetbrains.rdclient.daemon.util.backendAttributeIdOrThrow
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
@@ -28,6 +29,8 @@ class InputSystemUnityEventModeTest : BaseTestWithSolution() {
     override fun preprocessTempDirectory(tempDir: File) {
         prepareAssemblies(activeSolutionDirectory)
     }
+    
+    @Mute("RIDER-96147")
     @Test
     fun usedCodeTest() {
         val projectLifetime = project.lifetime
