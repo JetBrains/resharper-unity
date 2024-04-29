@@ -9,11 +9,12 @@
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
     <Company>JetBrains.Rider.Unity.Editor.Plugin.Unity56</Company>
     <Product>JetBrains.Rider.Unity.Editor.Plugin.Unity56</Product>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Unity.Libs.Ref.5.6.7" Version="2020.6.10" />
-    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.5" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+    <PackageReference Include="JetBrains.Unity.Libs.Ref.5.6.7" />
+    <PackageReference Include="JetBrains.Build.ILRepack" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -31,5 +32,4 @@
   </ItemGroup>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
-  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="!$(InternalBuild)" />
 </Project>

@@ -23,13 +23,7 @@
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <InternalBuild Condition="'$(SolutionFileName)' != 'resharper-unity.sln' AND '$(SolutionFileName)' != 'JetBrains.Rider.Unity.Editor.sln' AND '$(SolutionFileName)' != 'tools.sln' AND '$(SolutionFileName)' != 'resharper-unity-fleet.sln' AND '$(SolutionFileName)' != 'DebuggerTools.sln'">True</InternalBuild>
-    <InternalBuild Condition="$(InternalBuild) == ''">False</InternalBuild>
-  </PropertyGroup>
-
   <!-- Import version number -->
   <Import Project="..\Packaging.props" />
-  <Import Project="$(MSBuildThisFileDirectory)\PackageReference.JetBrains.RdFramework.Props" Condition="$(InternalBuild)"/>
   <Import Project="$(MSBuildThisFileDirectory)..\resharper\build\generated\DotNetSdkPath.generated.props" Condition="Exists('$(MSBuildThisFileDirectory)..\resharper\build\generated\DotNetSdkPath.generated.props')" />
 </Project>

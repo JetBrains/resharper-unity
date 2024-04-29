@@ -9,13 +9,14 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
-    <PackageReference Include="JetBrains.Unity.Libs.Ref.4.7.2f1" Version="2020.6.10" />
-    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.Unity.Libs.Ref.4.7.2f1" />
+    <PackageReference Include="JetBrains.Build.ILRepack" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -39,5 +40,4 @@
   </ItemGroup>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
-  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="!$(InternalBuild)" />
 </Project>
