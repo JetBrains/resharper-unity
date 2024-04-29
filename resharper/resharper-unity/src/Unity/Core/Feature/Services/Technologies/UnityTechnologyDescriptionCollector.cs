@@ -70,7 +70,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
                 new ProfilingCoreUnityTechnologyDescription(),
                 new CollabUnityTechnologyDescription(),
                 new VisualScriptingUnityTechnologyDescription(),
-                new HotReloadUnityTechnologyDescription()
+                new HotReloadUnityTechnologyDescription(),
+                new NoesisUnityTechnologyDescription()
             };
             
             myProjectsProcessed.Compose(lifetime, myPackagesProcessed, (a, b) => a && b).AdviseUntil(lifetime, v =>

@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
         {
             myUnitySolutionTracker = unitySolutionTracker;
             myDescriptionCollector = descriptionCollector;
-            myGroup = new EventLogGroup("dotnet.unity.state", "Packages and Assets used by Unity users", 4, featureUsageLogger);
+            myGroup = new EventLogGroup("dotnet.unity.state", "Packages and Assets used by Unity users", 5, featureUsageLogger);
             myEvent = myGroup.RegisterEvent("unityTechnology", "Unity Technology", EventFields.String("id", "Name",
                 new[] { "HDRP", "CoreRP", "URP", "ECS", "InputSystem", "Burst", "Odin", "Photon", "Peek", "UniRx",
                     "UniTask",
@@ -55,7 +55,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
                     "ProfilerCore",
                     "Collab",
                     "VisualScripting",
-                    "HotReload"
+                    "HotReload",
+                    "UnityNoesis"
                 }), EventFields.Boolean("isDiscovered", "Is Discovered"));
         }
         

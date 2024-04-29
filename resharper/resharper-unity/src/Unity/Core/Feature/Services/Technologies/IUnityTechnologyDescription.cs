@@ -475,4 +475,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
         {
         }
     }
+        
+    public class NoesisUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public NoesisUnityTechnologyDescription() : base("UnityNoesis", "com.noesis.noesisgui")
+        {
+        }
+    }
 }
