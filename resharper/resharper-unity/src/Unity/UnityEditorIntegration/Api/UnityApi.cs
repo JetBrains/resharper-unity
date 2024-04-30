@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
@@ -409,15 +408,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
             foreach (var type in UnityTypeUtils.GetBaseUnityTypes(containingType, unityVersion, myUnityTypesProvider, myKnownTypesCache))
             {
-                var function = type.GetEventFunctions(unityVersion)
-                    .Select(function => new
-                    {
-                        Function = function,
-                        Match = function.Match(method)
-                    })
-                    .Where(matched => matched.Match != MethodSignatureMatch.NoMatch)
-                    .OrderBy(a => a.Match).FirstOrDefault()?.Function;
-                return function;
+                foreach (var function in type.GetEventFunctions(unityVersion))
+                {
+                    match = function.Match(method);
+                    if (function.Match(method) != MethodSignatureMatch.NoMatch)
+                        return function;
+                }
             }
 
             return null;
