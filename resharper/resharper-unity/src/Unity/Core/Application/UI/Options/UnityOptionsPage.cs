@@ -94,7 +94,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 
             AddPerformanceAnalysisSubSection();
             AddBurstAnalysisSubSection();
-            AddNamingSubSection();
             AddDotsSubSection();
         }
 
@@ -148,91 +147,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
                 Strings.UnitySettings_Dots_Hide_generated_code_from_navigation);
         }
 
-        private void AddNamingSubSection()
-        {
-            // ReSharper already has a UI for editing user defined rules. Rider doesn't. See RIDER-8339
-            if (!OptionsPageContext.IsRider) return;
-
-            AddHeader(Strings.UnityOptionsPage_AddNamingSubSection_Serialized_field_naming_rules);
-
-            var entry = OptionsSettingsSmartContext.Schema.GetIndexedEntry(ourUserRulesAccessor);
-            var cachedUserRule = UnityNamingRuleDefaultSettings.GetActualUnitySerializedFieldRule(OptionsSettingsSmartContext, entry)
-                                 ?? UnityNamingRuleDefaultSettings.CreateDefaultUnitySerializedFieldRule();
-
-            var prefixProperty = new Property<string>("StringOptionViewModel_SerializedFieldPrefix");
-            prefixProperty.SetValue(cachedUserRule.Policy.NamingRule.Prefix);
-            prefixProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
-            {
-                var newNamingRule = cachedUserRule.Policy.NamingRule with { Prefix = args.New ?? string.Empty };
-                cachedUserRule = new ClrUserDefinedNamingRule(
-                    cachedUserRule.Descriptor, cachedUserRule.Policy with { NamingRule = newNamingRule });
-
-                UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
-            });
-
-            var suffixProperty = new Property<string>("StringOptionViewModel_SerializedFieldSuffix");
-            suffixProperty.SetValue(cachedUserRule.Policy.NamingRule.Suffix);
-            suffixProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
-            {
-                var newNamingRule = cachedUserRule.Policy.NamingRule with { Suffix = args.New ?? string.Empty };
-                cachedUserRule = new ClrUserDefinedNamingRule(
-                    cachedUserRule.Descriptor, cachedUserRule.Policy with { NamingRule = newNamingRule });
-
-                UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
-            });
-
-            var kindProperty = new Property<object>("ComboOptionViewModel_SerializedFieldNamingStyle");
-            kindProperty.SetValue(cachedUserRule.Policy.NamingRule.NamingStyleKind);
-            kindProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
-            {
-                var newNamingRule = cachedUserRule.Policy.NamingRule with { NamingStyleKind = (NamingStyleKinds)args.New };
-                cachedUserRule = new ClrUserDefinedNamingRule(
-                    cachedUserRule.Descriptor, cachedUserRule.Policy with { NamingRule = newNamingRule });
-
-                UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
-            });
-
-            var enabledProperty = new Property<bool>("BoolOptionViewModel_SerializedFieldEnableInspection");
-            AddBoolOption(enabledProperty, Strings.UnityOptionsPage_AddNamingSubSection_Enable_inspection, null);
-
-            var actualUnitySerializedFieldRule = UnityNamingRuleDefaultSettings.GetActualUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
-            enabledProperty.SetValue(actualUnitySerializedFieldRule != null);
-            enabledProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
-            {
-                if(args.New)
-                {
-                    var defaultUnitySerializedFieldRule = UnityNamingRuleDefaultSettings.CreateDefaultUnitySerializedFieldRule();
-                    UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, defaultUnitySerializedFieldRule);
-                }
-                else
-                {
-                    UnityNamingRuleDefaultSettings.RemoveUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
-                }
-            });
-
-            using (Indent())
-            {
-                var prefixOption = AddStringOption(Lifetime, prefixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Prefix_);
-                AddBinding(prefixOption, BindingStyle.IsEnabledProperty, enabledProperty, enable => enable);
-
-                var suffixOption = AddStringOption(Lifetime, suffixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Suffix_);
-                AddBinding(suffixOption, BindingStyle.IsEnabledProperty, enabledProperty, enable => enable);
-
-                var comboOption = AddComboOption(kindProperty, Strings.UnityOptionsPage_AddNamingSubSection_Style_, string.Empty, string.Empty,
-                    new[]
-                    {
-                        new RadioOptionPoint(NamingStyleKinds.AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase),
-                        new RadioOptionPoint(NamingStyleKinds.AaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_UnderscoreTolerant),
-                        new RadioOptionPoint(NamingStyleKinds.AaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_underscoreTolerant2),
-                        new RadioOptionPoint(NamingStyleKinds.aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase),
-                        new RadioOptionPoint(NamingStyleKinds.aaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_UnderscoreTolerant),
-                        new RadioOptionPoint(NamingStyleKinds.aaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_underscoreTolerant2),
-                        new RadioOptionPoint(NamingStyleKinds.AA_BB, Strings.UnityOptionsPage_AddNamingSubSection_ALL_UPPER),
-                        new RadioOptionPoint(NamingStyleKinds.Aa_bb, Strings.UnityOptionsPage_AddNamingSubSection_First_upper)
-                    });
-                AddBinding(comboOption, BindingStyle.IsEnabledProperty, enabledProperty, enable => enable);
-            }
-        }
         private void AddTextBasedAssetsSection()
         {
             AddHeader(Strings.UnityOptionsPage_AddTextBasedAssetsSection_Text_based_assets);

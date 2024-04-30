@@ -1287,45 +1287,6 @@ a plugin to be installed to a project.</value>
     <data name="UnityOptionsPage_AddInternalSection_Suppress_resolve_errors_in_render_pipeline_packages" xml:space="preserve">
         <value>Suppress resolve errors in render-pipeline packages</value>
     </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_ALL_UPPER" xml:space="preserve">
-        <value>ALL_UPPER</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_Enable_inspection" xml:space="preserve">
-        <value>Enable inspection</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_First_upper" xml:space="preserve">
-        <value>First_upper</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_lowerCamelCase" xml:space="preserve">
-        <value>lowerCamelCase</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_lowerCamelCase_UnderscoreTolerant" xml:space="preserve">
-        <value>lowerCamelCase_UnderscoreTolerant</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_lowerCamelCase_underscoreTolerant2" xml:space="preserve">
-        <value>lowerCamelCase_underscoreTolerant</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_Prefix_" xml:space="preserve">
-        <value>Prefix:</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_Serialized_field_naming_rules" xml:space="preserve">
-        <value>Serialized field naming rules</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_Style_" xml:space="preserve">
-        <value>Style:</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_Suffix_" xml:space="preserve">
-        <value>Suffix:</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_UpperCamelCase" xml:space="preserve">
-        <value>UpperCamelCase</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_UpperCamelCase_UnderscoreTolerant" xml:space="preserve">
-        <value>UpperCamelCase_UnderscoreTolerant</value>
-    </data>
-    <data name="UnityOptionsPage_AddNamingSubSection_UpperCamelCase_underscoreTolerant2" xml:space="preserve">
-        <value>UpperCamelCase_underscoreTolerant</value>
-    </data>
     <data name="UnityOptionsPage_AddPerformanceAnalysisSubSection_Current_method_only" xml:space="preserve">
         <value>Current method only</value>
     </data>
