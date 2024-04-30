@@ -408,12 +408,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
             foreach (var type in UnityTypeUtils.GetBaseUnityTypes(containingType, unityVersion, myUnityTypesProvider, myKnownTypesCache))
             {
+                (MethodSignatureMatch, UnityEventFunction)? nonExactMatch = null;
                 foreach (var function in type.GetEventFunctions(unityVersion))
                 {
-                    match = function.Match(method);
-                    if (function.Match(method) != MethodSignatureMatch.NoMatch)
+                    var currentMatch = function.Match(method);
+                    if (currentMatch == MethodSignatureMatch.ExactMatch)
+                    {
+                        match = currentMatch;
                         return function;
+                    }
+
+                    if (currentMatch != MethodSignatureMatch.NoMatch && nonExactMatch == null) // save first not exact match
+                        nonExactMatch = (currentMatch, function);
                 }
+
+                if (nonExactMatch == null) continue;
+                match = nonExactMatch.Value.Item1;
+                return nonExactMatch.Value.Item2;
             }
 
             return null;
