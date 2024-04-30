@@ -34,7 +34,6 @@ using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using JetBrains.Util.Extension;
 using JetBrains.Util.Threading;
-using IRuntimeEnvironment = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IRuntimeEnvironment;
 using IUnitTestLaunch = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IUnitTestLaunch;
 using IUnitTestRun = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IUnitTestRun;
 using Status = JetBrains.Rider.Model.Unity.BackendUnity.Status;
@@ -93,12 +92,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
         public bool RequiresProjectExplorationAfterBuild(IProject project) => false;
         public IProject? GetProjectForPropertiesRefreshBeforeLaunch(IUnitTestElement element) => null;
 
-        public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project,
-                                                         TargetFrameworkId targetFrameworkId,
-                                                         IUnitTestElement element)
+        public IRuntimeDescriptor GetRuntimeDescriptor(IUnitTestLaunch launch, IUnitTestElement element)
         {
-            var targetPlatform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
-            return new UnityRuntimeEnvironment(targetPlatform, project);
+            var targetPlatform = TargetPlatformCalculator.GetTargetPlatform(launch, element.Project, element.TargetFrameworkId);
+            return new UnityRuntimeEnvironment(targetPlatform, element.Project);
         }
 
         Task IUnitTestRunStrategy.Run(IUnitTestRun run)
@@ -472,7 +469,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                 .Select(p => p.NaturalId.TestId)
                 .ToList();
 
-            filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
+            filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeDescriptor).Project.Name, testNames, groups, categories));
             return filters;
 
             // https://github.com/JetBrains/resharper-unity/pull/1801#discussion_r472383244
@@ -519,20 +516,20 @@ else if (criterion is CategoryCriterion categoryCriterion)
 
         public int? TryGetRunnerProcessId() => myProcessTracker.UnityProcessId.Value;
 
-        private class UnityRuntimeEnvironment : IRuntimeEnvironmentWithProject
+        private class UnityRuntimeEnvironment : IRuntimeDescriptorWithProject
         {
             public UnityRuntimeEnvironment(TargetPlatform targetPlatform, IProject project)
             {
-                TargetPlatform = targetPlatform;
+                Platform = targetPlatform;
                 Project = project;
             }
 
-            public TargetPlatform TargetPlatform { get; }
+            public TargetPlatform Platform { get; }
             public IProject Project { get; }
 
             private bool Equals(UnityRuntimeEnvironment other)
             {
-                return TargetPlatform == other.TargetPlatform && Equals(Project, other.Project);
+                return Platform == other.Platform && Equals(Project, other.Project);
             }
 
             public override bool Equals(object? obj)
@@ -545,7 +542,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
 
             public override int GetHashCode()
             {
-                return (int) TargetPlatform;
+                return (int) Platform;
             }
 
             public static bool operator ==(UnityRuntimeEnvironment? left, UnityRuntimeEnvironment? right)
@@ -558,7 +555,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
                 return !Equals(left, right);
             }
 
-            public bool IsUnmanaged => false;
+            public bool HasNativeCode => false;
         }
     }
 }
