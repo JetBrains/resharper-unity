@@ -4,6 +4,7 @@ using System;
 using System.Linq.Expressions;
 using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
+using JetBrains.Application.Help;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
@@ -25,7 +26,7 @@ using JetBrains.Rider.Model.UIAutomation;
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 {
     [OptionsPage(PID, Name, typeof(LogoIcons.Unity), ParentId = CodeEditingPage.PID, 
-        HelpKeyword = "Settings_Unity_Engine")]
+        HelpKeyword = HelpId.Settings_Unity_Engine)]
     public class UnityOptionsPage : BeSimpleOptionsPage
     {
         public const string PID = "UnityPluginSettings";

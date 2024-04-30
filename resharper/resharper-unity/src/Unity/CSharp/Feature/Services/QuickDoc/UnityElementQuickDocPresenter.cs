@@ -130,7 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 
                 var unityName = element?.GetUnityEventFunctionName(myUnityApi);
                 if (unityName != null)
-                    myHelpSystem.ShowHelp(unityName, HelpSystem.HelpKind.Msdn);
+                    myHelpSystem.ShowMsdnHelp(unityName);
             }
         }
     }

@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.Help;
 using JetBrains.Application.Parts;
 using JetBrains.Application.StdApplicationUI;
 using JetBrains.Application.UI.Help;
@@ -31,9 +32,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
             myUnityDocumentation = unityDocumentation;
         }
 
-        public bool ShowHelp(string keyword, HelpSystem.HelpKind kind, string preferredProduct = "")
+        public bool ShowMsdnHelp(string keyword)
         {
-            if (kind != HelpSystem.HelpKind.Msdn) return false;
             if (!IsUnityKeyword(keyword)) return false;
             keyword = StripPrefix(keyword);
 
@@ -43,9 +43,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
             return true;
         }
 
+        public bool ShowProductHelp(HelpId helpId, string preferredProduct) => false;
+
         // Must be less than `VsShowMsdnHelp` so we get a shot at handling it
         public double Priority => 0;
-        public HelpSystem.HelpKind[] SupportedKinds => new[] {HelpSystem.HelpKind.Msdn};
 
         private static bool IsUnityKeyword(string keyword)
         {

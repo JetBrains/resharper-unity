@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Application.Components;
+using JetBrains.Application.Help;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Components;
 using JetBrains.Application.UI.Options;
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
         "ShaderLab Formatting Style",
         typeof(PsiFeaturesUnsortedOptionsThemedIcons.Indent),
         ParentId = UnityOptionsPage.PID,
-        HelpKeyword = "Reference__Options__ShaderLab_Formatting",
+        HelpKeyword = HelpId.Reference__Options__ShaderLab_Formatting,
         Sequence = 0,
         FilterTags = new[] {ConfigFileUtils.EditorConfigName}, 
         NameResourceType = typeof(Strings),

@@ -148,7 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution,
                                                                            IProgressIndicator progress)
             {
-                myShowUnityHelp.ShowHelp(myMethod.GetUnityEventFunctionName(myUnityApi), HelpSystem.HelpKind.Msdn);
+                myShowUnityHelp.ShowMsdnHelp(myMethod.GetUnityEventFunctionName(myUnityApi));
                 return null;
             }
 
