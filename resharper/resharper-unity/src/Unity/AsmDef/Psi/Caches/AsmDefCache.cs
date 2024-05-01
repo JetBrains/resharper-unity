@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             if (myDeclaredElements.IsEmpty())
                 return EmptySymbolTable.INSTANCE;
             var psiServices = mySolution.GetComponent<IPsiServices>();
-            return new DeclaredElementsSymbolTable<IDeclaredElement>(psiServices, myDeclaredElements.Values);
+            return new DeclaredElementsSymbolTable<AsmDefNameDeclaredElement>(psiServices, myDeclaredElements.Values.ToIList());
         }
 
         // Note that this is getting the location of a .asmdef file for a given assembly definition name. The name of

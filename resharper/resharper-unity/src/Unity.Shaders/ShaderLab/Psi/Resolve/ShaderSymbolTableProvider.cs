@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve;
 
@@ -18,6 +19,8 @@ public class ShaderSymbolTableProvider(ShaderLabCache shaderLabCache, IPsiServic
         var values = shaderLabCache.LocalCacheValues;
         if (values.Count == 0)
             return myBuiltinShadersSymbolTable;
-        return new DeclaredElementsSymbolTable<IDeclaredElement>(psiServices, values).Merge(myBuiltinShadersSymbolTable);
+
+        return new DeclaredElementsSymbolTable<IDeclaredElement>(psiServices, values.ToIList())
+            .Merge(myBuiltinShadersSymbolTable);
     }
 }

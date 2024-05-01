@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve
 {
@@ -25,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve
             var shader = myShaderReference.Resolve().DeclaredElement;
             if (shader == null)
                 return EmptySymbolTable.INSTANCE;
-            return new DeclaredElementsSymbolTable<IDeclaredElement>(myOwner.GetPsiServices(), GetTexturePasses(shader));
+
+            return new DeclaredElementsSymbolTable<IDeclaredElement>(myOwner.GetPsiServices(), GetTexturePasses(shader).ToIList());
 
             static IEnumerable<IDeclaredElement> GetTexturePasses(IDeclaredElement shader)
             {
@@ -33,12 +35,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve
                 {
                     if (sourceFile.GetDominantPsiFile<ShaderLabLanguage>() is not {} file)
                         continue;
+
                     foreach (var node in file.Descendants<TexturePassDeclaration>())
                     {
                         if (node.DeclaredElement is {} element)
                             yield return element;
                     }
-                }    
+                }
             }
         }
     }
