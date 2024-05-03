@@ -1,13 +1,10 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
-import com.intellij.ide.impl.ContentManagerWatcher
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.status.StatusBarUtil
-import com.intellij.ui.content.ContentManagerEvent
-import com.intellij.ui.content.ContentManagerListener
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
@@ -38,32 +35,14 @@ class UnityToolWindowFactory(private val project: Project) {
         }
     }
 
-    // TODO: Use ToolWindowFactory and toolWindow extension points
+    // TODO: Use ToolWindowFactory/RiderNuGetToolWindowFactory and toolWindow extension points
     @Suppress("DEPRECATION")
     private fun create(): UnityToolWindowContext {
         val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project,
                                                                                    true, false)
-
         val contentManager = toolWindow.contentManager
-        contentManager.addContentManagerListener(object : ContentManagerListener {
-            override fun selectionChanged(p0: ContentManagerEvent) {
-            }
-
-            override fun contentRemoveQuery(p0: ContentManagerEvent) {
-            }
-
-            override fun contentAdded(p0: ContentManagerEvent) {
-            }
-
-            override fun contentRemoved(event: ContentManagerEvent) {
-                context = null
-                ToolWindowManager.getInstance(project).unregisterToolWindow(TOOL_WINDOW_ID)
-            }
-        })
         toolWindow.title = ""
         toolWindow.setIcon(UnityIcons.ToolWindows.UnityLog)
-        // Required for hiding window without content
-        ContentManagerWatcher(toolWindow, contentManager)
 
         val logModel = UnityLogPanelModel(UnityProjectLifetimeService.getLifetime(project), project, toolWindow)
         val logView = UnityLogPanelView(UnityProjectLifetimeService.getLifetime(project), project, logModel, toolWindow)

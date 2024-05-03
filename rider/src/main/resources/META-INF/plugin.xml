@@ -199,6 +199,8 @@
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantEventLogger"/>
 
     <rider.completion.csharpIdentifierPartHelper implementation="com.jetbrains.rider.plugins.unity.csharp.completion.OdinLayoutAttributeCSharpIdentifierPartHelper"/>
+
+    <toolWindowAllowlist id="Unity" />
   </extensions>
 
   <applicationListeners>
