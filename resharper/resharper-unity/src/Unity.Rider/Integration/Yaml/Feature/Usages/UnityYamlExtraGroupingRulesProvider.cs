@@ -72,7 +72,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
             return new RdUsageGroup(RuleId, string.Empty, null);
         }
 
-        public abstract RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor);
+        public abstract RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
+            bool forInspectionResult);
         public abstract void Navigate(IOccurrence occurrence);
 
         public string RuleId { get; }
@@ -95,7 +96,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         {
         }
 
-        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
+        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
+            bool forInspectionResult)
         {
             if (!(occurrence is UnityAnimatorScriptOccurence animationEventOccurence)) return EmptyModel();
             var text = animationEventOccurence.GetDisplayText()?.Text.Split('/');
@@ -118,7 +120,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         {
         }
 
-        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
+        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
+            bool forInspectionResult)
         {
             if (!(occurrence is AnimExplicitEventOccurence animationEventOccurence)) return EmptyModel();
             var text = animationEventOccurence.GetDisplayText()?.Text;
@@ -142,7 +145,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         {
         }
 
-        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
+        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
+            bool forInspectionResult)
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
@@ -188,7 +192,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
             myMetaFileGuidCache = metaFileGuidCache;
         }
 
-        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
+        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
+            bool forInspectionResult)
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
