@@ -3,7 +3,7 @@ rootProject.name = "rider-unity"
 pluginManagement {
     val rdVersion: String by settings
     val rdKotlinVersion: String by settings
-    val intellijGradlePluginVersion: String by settings
+    val intellijPlatformGradlePluginVersion: String by settings
     val gradleJvmWrapperVersion: String by settings
 
     repositories {
@@ -19,7 +19,7 @@ pluginManagement {
     plugins {
         id("com.jetbrains.rdgen") version rdVersion
         id("org.jetbrains.kotlin.jvm") version rdKotlinVersion
-        id("org.jetbrains.intellij") version intellijGradlePluginVersion
+        id("org.jetbrains.intellij.platform") version intellijPlatformGradlePluginVersion
         id("me.filippov.gradle.jvm.wrapper") version gradleJvmWrapperVersion
     }
 

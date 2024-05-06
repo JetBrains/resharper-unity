@@ -1,21 +1,23 @@
+import com.jetbrains.plugin.structure.base.utils.isFile
+import com.jetbrains.plugin.structure.base.utils.listFiles
 import com.ullink.gradle.nunit.NUnit
 import groovy.xml.XmlParser
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.ChangelogPluginExtension
-
-import org.jetbrains.intellij.tasks.InstrumentCodeTask
-import org.jetbrains.intellij.tasks.PatchPluginXmlTask
-import org.jetbrains.intellij.tasks.PrepareSandboxTask
+import org.jetbrains.intellij.platform.gradle.Constants
+import org.jetbrains.intellij.platform.gradle.tasks.PatchPluginXmlTask
+import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
+import kotlin.io.path.*
 
 plugins {
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.8"
     id("me.filippov.gradle.jvm.wrapper")
     id("org.jetbrains.changelog") version "2.0.0"
-    id("org.jetbrains.intellij")
+    id("org.jetbrains.intellij.platform")
     kotlin("jvm")
 }
 
@@ -24,6 +26,9 @@ repositories {
     maven("https://cache-redirector.jetbrains.com/intellij-repository/releases")
     maven("https://cache-redirector.jetbrains.com/intellij-repository/snapshots")
     maven("https://cache-redirector.jetbrains.com/maven-central")
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 apply {
@@ -96,7 +101,7 @@ val unityEditorDllFiles = files(
     "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/netstandard2.0/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
 )
 
-val rdLibDirectory: () -> File = { file("${tasks.setupDependencies.get().idea.get().classes}/lib/rd") }
+val rdLibDirectory: () -> File = { file(intellijPlatform.platformPath.resolve("lib/rd/")) }
 
 val rdModelJarFile: File by lazy {
     val jarFile = File(rdLibDirectory(), "rider-model.jar").canonicalFile
@@ -133,32 +138,37 @@ idea {
     }
 }
 
-intellij {
-    pluginName.set("rider-unity")
-    type.set("RD")
-    // Download a version of Rider to compile and run with. Either set `version` to
-    // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
-    // This will download from www.jetbrains.com/intellij-repository/snapshots or
-    // www.jetbrains.com/intellij-repository/releases, respectively.
-    // http://jetbrains-com-mirror.labs.intellij.net/intellij-repository/snapshots/
-    // Note that there's no guarantee that these are kept up-to-date
-    // version = 'LATEST-TRUNK-SNAPSHOT'
-    // If the build isn't available in intellij-repository, use an installed version via `localPath`
-    // localPath.set('/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents')
-    // localPath.set("D:\\RiderSDK")
+dependencies {
+    intellijPlatform {
+        with(file("build/rider")) {
+            when {
+                exists() -> {
+                    logger.lifecycle("*** Using Rider SDK from local path $this")
+                    local(this)
+                }
 
-    if (bundledRiderSdkRoot.exists()) {
-        localPath.set(bundledRiderSdkRoot.canonicalPath)
-    } else {
-        version.set("${productVersion}-SNAPSHOT")
+                else -> {
+                    logger.lifecycle("*** Using Rider SDK from intellij-snapshots repository")
+                    rider("${productVersion}-SNAPSHOT")
+                }
+            }
+        }
+
+        instrumentationTools()
+
+        bundledPlugin("rider.intellij.plugin.appender")
+        bundledPlugin("com.intellij.css")
+        bundledPlugin("org.jetbrains.plugins.yaml")
+        bundledPlugin("com.jetbrains.dotCover")
+        bundledPlugin("org.intellij.intelliLang")
+        bundledPlugin("com.intellij.platform.images")
     }
+}
 
-    intellijRepository.set("https://cache-redirector.jetbrains.com/intellij-repository")
-
-    // Sources aren't available for Rider
-    downloadSources.set(false)
-
-    plugins.set(listOf("rider.intellij.plugin.appender", "com.intellij.css", "yaml", "dotCover", "org.intellij.intelliLang"))
+intellijPlatform {
+    pluginConfiguration {
+        name = "rider-unity"
+    }
 }
 
 configure<ChangelogPluginExtension> {
@@ -184,14 +194,13 @@ val riderModel: Configuration by configurations.creating {
 
 artifacts {
     add(riderModel.name, provider {
-        val sdkRoot = tasks.setupDependencies.get().idea.get().classes
-        sdkRoot.resolve("lib/rd/rider-model.jar").also {
+        intellijPlatform.platformPath.resolve("lib/rd/rider-model.jar").also {
             check(it.isFile) {
                 "rider-model.jar is not found at $riderModel"
             }
         }
     }) {
-        builtBy(tasks.setupDependencies)
+        builtBy(Constants.Tasks.INITIALIZE_INTELLIJ_PLATFORM_PLUGIN)
     }
 }
 
@@ -201,8 +210,8 @@ tasks {
     val testGroup = "verification"
 
     val dotNetSdkPath by lazy {
-        val sdkPath = setupDependencies.get().idea.get().classes.resolve("lib").resolve("DotNetSdkForRdPlugins")
-        if (sdkPath.isDirectory.not()) error("$sdkPath does not exist or not a directory")
+        val sdkPath = intellijPlatform.platformPath.resolve("lib/DotNetSdkForRdPlugins").absolute()
+        if (sdkPath.isDirectory().not()) error("$sdkPath does not exist or not a directory")
 
         println("SDK path: $sdkPath")
         return@lazy sdkPath
@@ -210,24 +219,6 @@ tasks {
 
     buildSearchableOptions {
         enabled = isReleaseBuild
-    }
-
-    withType<InstrumentCodeTask> {
-        // For SDK from local folder, you also need to manually download maven-artifacts folder
-        // from SDK build artifacts on TC and put it into the build folder.
-        if (bundledMavenArtifacts.exists()) {
-            logger.lifecycle("Use ant compiler artifacts from local folder: $bundledMavenArtifacts")
-            compilerClassPathFromMaven.set(
-                bundledMavenArtifacts.walkTopDown()
-                    .filter { it.extension == "jar" && !it.name.endsWith("-sources.jar") }
-                    .toList()
-                    + File("${setupDependencies.get().idea.get().classes}/lib/3rd-party-rt.jar")
-                    + File("${ideaDependency.get().classes}/lib/util.jar")
-                    + File("${ideaDependency.get().classes}/lib/util-8.jar")
-            )
-        } else {
-            logger.lifecycle("Use ant compiler artifacts from maven")
-        }
     }
 
     runIde {
@@ -324,11 +315,11 @@ tasks {
         outputs.file(propsFile)
         doLast {
             val dotNetSdkFile= dotNetSdkPath
-            assert(dotNetSdkFile.isDirectory)
+            assert(dotNetSdkFile.isDirectory())
             logger.info("Generating :${propsFile.canonicalPath}...")
             project.file(propsFile).writeText("""<Project>
           <PropertyGroup>
-            <DotNetSdkPath>${dotNetSdkFile.canonicalPath}</DotNetSdkPath>
+            <DotNetSdkPath>${dotNetSdkFile.toRealPath()}</DotNetSdkPath>
           </PropertyGroup>
         </Project>""".trimIndent())
         }
@@ -340,14 +331,14 @@ tasks {
         group = backendGroup
         doLast {
             logger.info("dotNetSdk location: '$dotNetSdkPath'")
-            assert(dotNetSdkPath.isDirectory)
+            assert(dotNetSdkPath.isDirectory())
 
             logger.info("Generating :${nuGetConfigFile.canonicalPath}...")
             val nugetConfigText = """<?xml version="1.0" encoding="utf-8"?>
             |<configuration>
             |  <packageSources>
             |    <clear />
-            |    <add key="local-dotnet-sdk" value="${dotNetSdkPath.canonicalPath}" />
+            |    <add key="local-dotnet-sdk" value="${dotNetSdkPath.toRealPath()}" />
             |    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
             |  </packageSources>
             |</configuration>
@@ -357,8 +348,8 @@ tasks {
             logger.info("Generated content:\n$nugetConfigText")
 
             val sb = StringBuilder("Dump dotNetSdkFile content:\n")
-            for(file in dotNetSdkPath.listFiles() ?: emptyArray()) {
-                sb.append("${file.canonicalPath}\n")
+            for(file in dotNetSdkPath.listFiles()) {
+                sb.append("${file.toRealPath()}\n")
             }
             logger.info(sb.toString())
         }
@@ -586,7 +577,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
             unityEditorDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
         }
 
-        val pluginName = intellij.pluginName.get()
+        val pluginName = intellijPlatform.projectName.get()
 
         dotnetDllFiles.forEach { from(it) { into("${pluginName}/dotnet") } }
         debuggerDllFiles.forEach { from(it) { into("${pluginName}/dotnetDebuggerWorker") } }
