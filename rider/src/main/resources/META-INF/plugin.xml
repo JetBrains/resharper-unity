@@ -11,9 +11,9 @@
   <depends>rider.intellij.plugin.appender</depends>
 
   <content>
-    <module name="resharper-unity/yaml" />
-    <module name="resharper-unity/css" />
-    <module name="resharper-unity/javascript" />
+    <module name="intellij.rider.plugins.unity/yaml" />
+    <module name="intellij.rider.plugins.unity/css" />
+    <module name="intellij.rider.plugins.unity/javascript" />
   </content>
 
   <extensionPoints>
