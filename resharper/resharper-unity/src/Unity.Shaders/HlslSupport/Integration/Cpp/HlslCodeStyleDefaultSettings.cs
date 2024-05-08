@@ -8,7 +8,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class HlslCodeStyleDefaultSettings : IUnitySolutionSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;

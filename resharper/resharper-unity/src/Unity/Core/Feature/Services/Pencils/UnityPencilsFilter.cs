@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Pencils
         public override string Kind => PencilsGroupKind.UnityPerformanceKind;
     }
 
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityPencilsFilterProvider : IPencilsFiltersProvider
     {
         private readonly UnitySolutionTracker mySolutionTracker;

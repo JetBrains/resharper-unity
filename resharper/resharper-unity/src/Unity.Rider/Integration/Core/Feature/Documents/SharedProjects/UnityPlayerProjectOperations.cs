@@ -9,7 +9,7 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Documents.SharedProjects
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityPlayerProjectOperations : ISharedProjectOperations
     {
         private const string PlayerProjectSuffix = ".Player";

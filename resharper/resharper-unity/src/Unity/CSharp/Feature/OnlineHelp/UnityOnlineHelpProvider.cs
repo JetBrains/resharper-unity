@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 {
-    [ShellComponent(Instantiation.DemandAnyThread)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityOnlineHelpProvider : IOnlineHelpProvider
     {
         private readonly ShowUnityHelp myShowUnityHelp;

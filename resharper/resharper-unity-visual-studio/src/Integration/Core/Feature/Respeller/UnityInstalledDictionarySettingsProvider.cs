@@ -9,7 +9,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.Feature.Respeller
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityInstalledDictionarySettingsProvider : IUnitySolutionSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;

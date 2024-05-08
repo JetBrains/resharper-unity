@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi.Naming.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeStyle.Naming
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShaderLabCppNamingPolicyProvider : ICustomCppNamingPolicyProvider
     {
         private const string InputStructName = "Input"; 

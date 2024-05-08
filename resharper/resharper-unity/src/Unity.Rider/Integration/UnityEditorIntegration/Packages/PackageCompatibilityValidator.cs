@@ -8,7 +8,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class PackageCompatibilityValidator
     {
         private readonly UnityVersion myUnityVersion;

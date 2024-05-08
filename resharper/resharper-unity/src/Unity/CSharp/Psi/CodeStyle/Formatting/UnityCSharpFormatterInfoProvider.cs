@@ -18,7 +18,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting
 {
-    [Language(typeof(CSharpLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfSettingsStore)]
+    [Language(typeof(CSharpLanguage))]
     public class UnityCSharpFormatterInfoProvider : CSharpFormatterInfoProviderPart
     {
         public const int UnityPriority = 1_000_000;

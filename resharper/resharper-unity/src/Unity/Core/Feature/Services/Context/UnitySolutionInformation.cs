@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.Utils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Context
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnitySolutionInformation: IUnitySolutionInformation
     {
         private readonly UnitySolutionTracker mySolutionTracker;

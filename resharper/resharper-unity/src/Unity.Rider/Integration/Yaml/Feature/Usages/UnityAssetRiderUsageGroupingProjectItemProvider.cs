@@ -12,7 +12,7 @@ using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usages
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityAssetRiderUsageGroupingProjectItemProvider : UnityCustomProjectItemProvider
     {
         private readonly ISolution mySolution;

@@ -16,7 +16,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Daemon
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class NamespaceProviderProjectSettingsProvider : IUnityProjectSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;

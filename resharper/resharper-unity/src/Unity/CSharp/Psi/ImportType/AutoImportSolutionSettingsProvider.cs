@@ -10,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.ImportType
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class AutoImportSolutionSettingsProvider : IUnitySolutionSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;

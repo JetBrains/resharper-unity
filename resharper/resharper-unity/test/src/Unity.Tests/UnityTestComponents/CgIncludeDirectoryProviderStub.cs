@@ -6,7 +6,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class CgIncludeDirectoryProviderStub : CgIncludeDirectoryProvider
     {
         public VirtualFileSystemPath? CgIncludeFolderPathOverride { get; set; }

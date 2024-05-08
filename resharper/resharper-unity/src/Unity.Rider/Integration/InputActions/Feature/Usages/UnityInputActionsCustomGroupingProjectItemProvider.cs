@@ -11,7 +11,7 @@ using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.InputActions.Feature.Usages
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityInputActionsCustomGroupingProjectItemProvider : UnityCustomProjectItemProvider
     {
         private readonly ISolution mySolution;

@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Debugger.Host.Debu
     // isn't enough to match the Unity assemblies, and they are marked as external code, and can be hidden in the stack
     // Note that this doesn't affect player debugging, as remote debugging doesn't seem to get the required assembly
     // details
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityDebuggerOutputAssembliesProviderHost : IDebuggerOutputAssembliesProvider
     {
         private readonly ISolution mySolution;

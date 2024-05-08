@@ -9,7 +9,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class InputManagerAssetHandler : IProjectSettingsAssetHandler
     {
         private readonly ILogger myLogger;

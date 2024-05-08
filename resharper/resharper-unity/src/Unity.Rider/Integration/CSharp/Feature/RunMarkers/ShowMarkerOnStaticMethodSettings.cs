@@ -9,7 +9,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.RunMarkers
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShowMarkerOnStaticMethodSettings : IUnityProjectSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;

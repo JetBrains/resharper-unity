@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 {
-  [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfCalculatedSettingsSchema)]
+  [Language(typeof(ShaderLabLanguage))]
   public class ShaderLabFormattingInfoProvider : FormatterInfoProviderWithFluentApi<CodeFormattingContext, ShaderLabFormatSettingsKey>
   {
     public ShaderLabFormattingInfoProvider(ISettingsSchema settingsSchema, ICalculatedSettingsSchema calculatedSettingsSchema, IThreading threading, Lifetime lifetime) : base(settingsSchema, calculatedSettingsSchema, threading, lifetime)

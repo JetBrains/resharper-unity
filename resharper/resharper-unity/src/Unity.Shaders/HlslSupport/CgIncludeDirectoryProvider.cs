@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
         VirtualFileSystemPath GetCgIncludeFolderPath();
     }
     
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class CgIncludeDirectoryProvider : ICgIncludeDirectoryProvider
     {
         private readonly IUnityVersion myUnityVersion;

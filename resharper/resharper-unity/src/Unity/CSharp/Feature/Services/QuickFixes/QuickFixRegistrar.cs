@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     // Most QuickFixes are auto-registered, via [QuickFix] and ctor injection.
     // Manual registration allows us to reuse an existing quick fix with a different highlighting.
-    [ShellComponent(Instantiation.DemandAnyThread)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class QuickFixRegistrar : IQuickFixesProvider
     {
         private readonly Lifetime myLifetime;

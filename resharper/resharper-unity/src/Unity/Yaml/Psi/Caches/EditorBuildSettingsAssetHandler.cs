@@ -10,7 +10,7 @@ using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSetti
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class EditorBuildSettingsAssetHandler : IProjectSettingsAssetHandler
     {
         private readonly ILogger myLogger;

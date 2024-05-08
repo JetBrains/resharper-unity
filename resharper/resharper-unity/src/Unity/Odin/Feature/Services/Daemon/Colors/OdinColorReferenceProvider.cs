@@ -24,7 +24,7 @@ using JetBrains.Util.Media.ColorSpaces;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.Daemon.Colors;
 
-[SolutionComponent(Instantiation.DemandAnyThread)]
+[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
 public class OdinColorReferenceProvider : IUnityColorReferenceProvider
 {
     private readonly UnityTechnologyDescriptionCollector myDescriptionCollector;

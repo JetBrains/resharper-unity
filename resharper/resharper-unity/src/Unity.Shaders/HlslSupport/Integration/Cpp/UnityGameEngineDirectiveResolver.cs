@@ -16,7 +16,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityGameEngineDirectiveResolver : IGameEngineIncludeDirectiveResolver, IGameEngineIncludeDirectiveProvider
     {
         private readonly ISolution mySolution;

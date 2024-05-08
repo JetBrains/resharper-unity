@@ -12,7 +12,7 @@ using JetBrains.Rider.Backend.Platform.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Usages
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityAsmDefCustomGroupingProjectItemProvider : UnityCustomProjectItemProvider
     {
         private const string ExternalPackages = "<External Packages>";
