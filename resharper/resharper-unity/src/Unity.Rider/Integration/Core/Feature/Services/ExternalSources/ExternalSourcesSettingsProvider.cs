@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
@@ -13,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
     // settings are correctly set to navigate to source from PDB files.
     // Since ReSharper does not have a Unity Explorer view, it is harder to navigate to package sources, so we won't
     // override the user's settings. (RIDER-90596)
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class ExternalSourcesSettingsProvider : IUnitySolutionSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -10,7 +11,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
-    [MiscFilesProjectPsiModuleProvider]
+    [MiscFilesProjectPsiModuleProvider(Instantiation.DemandAnyThread)]
     public class UnityMiscFilesProjectPsiModuleProvider : IMiscFilesProjectPsiModuleProvider
     {
         private readonly UnityExternalFilesModuleFactory myModuleFactory;

@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -12,7 +13,7 @@ using JetBrains.Rider.Backend.Platform.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public sealed class BurstCodeVisionProvider : BurstGutterMarkProvider
     {
         private readonly IApplicationWideContextBoundSettingStore mySettingsStore;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.DataContext;
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.ActionsRevised.Loader;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
@@ -14,7 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages
 {
-    [ContextNavigationProvider]
+    [ContextNavigationProvider(Instantiation.DemandAnyThread)]
     public class GoToUnityUsagesProvider : UsagesContextSearchProviderBase<UnityUsagesContextSearch>,
         INavigateFromHereProvider
     {

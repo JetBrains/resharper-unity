@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
@@ -10,7 +11,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowExpensiveCalls
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class ShowExpensiveCallsBulbItemsProvider : PerformanceCriticalBulbItemsProvider
     {
         private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;

@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
@@ -10,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
         VirtualFileSystemPath GetCgIncludeFolderPath();
     }
     
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class CgIncludeDirectoryProvider : ICgIncludeDirectoryProvider
     {
         private readonly IUnityVersion myUnityVersion;

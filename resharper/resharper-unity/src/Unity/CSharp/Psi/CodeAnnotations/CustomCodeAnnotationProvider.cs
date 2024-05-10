@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
@@ -19,7 +20,7 @@ using JetBrains.Util.Caches;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class CustomCodeAnnotationProvider : ICustomCodeAnnotationProvider, IInvalidatingCache
     {
         private static readonly IClrTypeName ourMustUseReturnValueAttributeFullName = new ClrTypeName(typeof(MustUseReturnValueAttribute).FullName);

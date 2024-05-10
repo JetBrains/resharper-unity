@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
@@ -11,7 +12,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class JsonNewAutopopupCodeCompletionStrategy : IAutomaticCodeCompletionStrategy
     {
         private readonly JsonNewIntellisenseManager myJsonIntellisenseManager;

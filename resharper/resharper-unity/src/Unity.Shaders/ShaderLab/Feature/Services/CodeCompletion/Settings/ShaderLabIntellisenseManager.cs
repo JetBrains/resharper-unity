@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
@@ -7,7 +8,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion.Settings
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThread)]
     public class ShaderLabIntellisenseManager : LanguageSpecificCodeCompletionManager
     {
         public ShaderLabIntellisenseManager(CodeCompletionSettingsService settingsService)

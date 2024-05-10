@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
@@ -6,8 +7,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
-    [DaemonStage(
-        GlobalAnalysisStage = true,
+    [DaemonStage(Instantiation.DemandAnyThread, GlobalAnalysisStage = true,
         StagesBefore = new[] {typeof(SolutionAnalysisFileStructureCollectorStage)},
         OverridenStages = new[] {typeof(CallGraphLocalStage)})]
     public class CallGraphGlobalStage : CallGraphAbstractStage

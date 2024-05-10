@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -5,7 +6,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class CgIncludeDirectoryProviderStub : CgIncludeDirectoryProvider
     {
         public VirtualFileSystemPath? CgIncludeFolderPathOverride { get; set; }

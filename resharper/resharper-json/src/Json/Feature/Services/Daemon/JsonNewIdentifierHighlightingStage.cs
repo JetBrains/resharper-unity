@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
@@ -8,7 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Json.Feature.Services.Daemon
 {
-    [DaemonStage(StagesBefore = [typeof(GlobalFileStructureCollectorStage)])]
+    [DaemonStage(Instantiation.DemandAnyThread, StagesBefore = [typeof(GlobalFileStructureCollectorStage)])]
     public class JsonNewIdentifierHighlightingStage : JsonNewDaemonStageBase
     {
         private readonly ResolveHighlighterRegistrar myRegistrar;

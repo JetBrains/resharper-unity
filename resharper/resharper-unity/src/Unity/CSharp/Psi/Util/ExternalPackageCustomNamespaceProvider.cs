@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
@@ -12,7 +13,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class ExternalPackageCustomNamespaceProvider : ICustomDefaultNamespaceProvider
     {
         private static readonly Key<DefaultNamespace?> ourCalculatedDefaultNamespaceKey = new("Unity::ExternalPackage::DefaultNamespace");

@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.OnlineHelp;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help;
@@ -9,7 +10,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThread)]
     public class UnityOnlineHelpProvider : IOnlineHelpProvider
     {
         private readonly ShowUnityHelp myShowUnityHelp;

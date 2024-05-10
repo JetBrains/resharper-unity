@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
@@ -11,7 +12,7 @@ using JetBrains.TextControl.CodeWithMe;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class BurstCodeInsights
     {
         private readonly ITextControlManager myTextControlManager;

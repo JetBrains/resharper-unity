@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -22,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Pencils
         public override string Kind => PencilsGroupKind.UnityPerformanceKind;
     }
 
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class UnityPencilsFilterProvider : IPencilsFiltersProvider
     {
         private readonly UnitySolutionTracker mySolutionTracker;

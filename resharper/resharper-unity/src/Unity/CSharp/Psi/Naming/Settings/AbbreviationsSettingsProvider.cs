@@ -1,4 +1,5 @@
 using System.IO;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.Threading;
@@ -9,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Settings
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class AbbreviationsSettingsProvider : IUnitySolutionSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;

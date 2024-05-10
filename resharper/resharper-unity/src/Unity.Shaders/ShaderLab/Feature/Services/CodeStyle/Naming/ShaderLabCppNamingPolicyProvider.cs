@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.CodeStyle.Naming;
@@ -9,7 +10,7 @@ using JetBrains.ReSharper.Psi.Naming.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeStyle.Naming
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class ShaderLabCppNamingPolicyProvider : ICustomCppNamingPolicyProvider
     {
         private const string InputStructName = "Input"; 

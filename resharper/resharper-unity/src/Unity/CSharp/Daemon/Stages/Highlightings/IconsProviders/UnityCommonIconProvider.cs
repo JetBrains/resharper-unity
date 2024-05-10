@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
@@ -29,7 +30,7 @@ using Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class UnityCommonIconProvider
     {
         protected readonly IApplicationWideContextBoundSettingStore SettingsStore;
@@ -42,10 +43,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         public UnityCommonIconProvider(ISolution solution, UnityApi unityApi,
                                        IApplicationWideContextBoundSettingStore settingsStore,
                                        PerformanceCriticalContextProvider performanceContextProvider,
-                                       IEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders)
+                                       IEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders,
+                                       ITextControlManager textControlManager)
         {
             mySolution = solution;
-            myTextControlManager = solution.GetComponent<ITextControlManager>();
+            myTextControlManager = textControlManager;
             myUnityApi = unityApi;
             SettingsStore = settingsStore;
             PerformanceContextProvider = performanceContextProvider;

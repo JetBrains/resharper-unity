@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
@@ -14,7 +15,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services.TypingAssists
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class InjectedHlslDummyFormatter : CppDummyFormatterBase
     {
         private readonly ISolution mySolution;

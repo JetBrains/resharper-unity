@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
@@ -23,7 +24,7 @@ using Strings = JetBrains.ReSharper.Plugins.Unity.Rider.Resources.Strings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class RiderFieldDetector : FieldDetector
     {
         private readonly UnityCodeInsightFieldUsageProvider myFieldUsageProvider;

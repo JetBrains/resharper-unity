@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
@@ -23,7 +24,7 @@ using JetBrains.Util.Media.ColorSpaces;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.Daemon.Colors;
 
-[SolutionComponent]
+[SolutionComponent(Instantiation.DemandAnyThread)]
 public class OdinColorReferenceProvider : IUnityColorReferenceProvider
 {
     private readonly UnityTechnologyDescriptionCollector myDescriptionCollector;

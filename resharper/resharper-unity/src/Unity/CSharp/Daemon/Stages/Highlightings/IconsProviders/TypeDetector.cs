@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Application.BuildScript.Application.Zones;
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
@@ -29,7 +30,7 @@ using JetBrains.TextControl.CodeWithMe;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     [ZoneMarker(typeof(ICodeEditingZone))]
     public class TypeDetector : UnityDeclarationHighlightingProviderBase
     {

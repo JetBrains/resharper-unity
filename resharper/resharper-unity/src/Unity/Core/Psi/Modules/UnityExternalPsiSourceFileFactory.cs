@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.DocumentManagers;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
@@ -9,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class UnityExternalPsiSourceFileFactory
     {
         private readonly IProjectFileExtensions myProjectFileExtensions;

@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.TextControl.DocumentMarkup;
@@ -7,7 +8,7 @@ using JetBrains.TextControl.DocumentMarkup.Adornments;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class AsmDefPackageVersionIntraTextAdornmentProvider : IHighlighterAdornmentProvider
     {
         private readonly ISolution mySolution;

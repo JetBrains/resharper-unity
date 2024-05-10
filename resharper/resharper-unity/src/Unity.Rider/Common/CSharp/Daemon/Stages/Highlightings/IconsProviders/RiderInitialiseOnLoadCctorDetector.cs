@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -13,7 +14,7 @@ using JetBrains.Rider.Backend.Platform.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class RiderInitialiseOnLoadCctorDetector : InitialiseOnLoadCctorDetector
     {
         private readonly UnityCodeInsightFieldUsageProvider myFieldUsageProvider;

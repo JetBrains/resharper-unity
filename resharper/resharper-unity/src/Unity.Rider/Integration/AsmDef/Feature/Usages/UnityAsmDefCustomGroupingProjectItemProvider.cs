@@ -1,4 +1,5 @@
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences;
@@ -11,7 +12,7 @@ using JetBrains.Rider.Backend.Platform.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Usages
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class UnityAsmDefCustomGroupingProjectItemProvider : UnityCustomProjectItemProvider
     {
         private const string ExternalPackages = "<External Packages>";

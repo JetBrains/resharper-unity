@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Debugger.Common.OutputAssemblies;
 using JetBrains.Application.Infra;
+using JetBrains.Application.Parts;
 using JetBrains.Debugger.Host.Core.DebuggerOutputAssemblies;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Debugger.Host.Debu
     // isn't enough to match the Unity assemblies, and they are marked as external code, and can be hidden in the stack
     // Note that this doesn't affect player debugging, as remote debugging doesn't seem to get the required assembly
     // details
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class UnityDebuggerOutputAssembliesProviderHost : IDebuggerOutputAssembliesProvider
     {
         private readonly ISolution mySolution;

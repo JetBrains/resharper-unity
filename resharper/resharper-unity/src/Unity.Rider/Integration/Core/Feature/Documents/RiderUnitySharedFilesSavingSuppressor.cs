@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentManagers.Transactions;
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Docum
     /// <summary>
     /// Removes auto sync through disk for shared files, to avoid unity refresh
     /// </summary>
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class RiderUnitySharedFilesSavingSuppressor : IRiderDocumentSavingSuppressor
     {
         [NotNull] private readonly ISolution mySolution;

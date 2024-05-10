@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.CodeCompletion;
+﻿using JetBrains.Application.Parts;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion.Settings;
@@ -8,7 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion
 {
-    [IntellisensePart]
+    [IntellisensePart(Instantiation.DemandAnyThread)]
     public class ShaderLabCodeCompletionContextProvider : CodeCompletionContextProviderBase
     {
         private readonly ShaderLabIntellisenseManager myShaderLabIntellisenseManager;

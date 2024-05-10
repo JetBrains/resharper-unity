@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search;
@@ -20,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
     // with millions of methods, only pointers to AssetMethodData should be stored. AssetMethodData will be deserialized only in find usages,
     // strings should be replaced by int hashes.
     // Information about imported/prefab modifications could be stored in memory, it should not allocate a lot of memory ever.
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class InputActionsElementContainer : IUnityAssetDataElementContainer
     {
         private const string PlayerInputGuid = "62899f850307741f2a39c98a8b639597";

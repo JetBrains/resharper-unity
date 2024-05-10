@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search;
@@ -10,7 +11,7 @@ using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.InputActions.Feature.Usages
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class UnityInputActionsCustomGroupingProjectItemProvider : UnityCustomProjectItemProvider
     {
         private readonly ISolution mySolution;

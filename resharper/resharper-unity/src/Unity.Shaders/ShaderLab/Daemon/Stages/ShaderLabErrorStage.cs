@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -7,7 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
 {
-    [DaemonStage(StagesBefore = new[] { typeof(CollectUsagesStage), typeof(GlobalFileStructureCollectorStage) },
+    [DaemonStage(Instantiation.DemandAnyThread, StagesBefore = new[] { typeof(CollectUsagesStage), typeof(GlobalFileStructureCollectorStage) },
         StagesAfter = new[] { typeof(LanguageSpecificDaemonStage) })]
     public class ShaderLabErrorStage : ShaderLabStageBase
     {

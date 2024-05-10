@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -10,7 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.ProjectModel
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class VsUnityVersionPropertiesExtenderProvider : IPropertiesExtenderProvider
     {
         private readonly Lifetime myLifetime;

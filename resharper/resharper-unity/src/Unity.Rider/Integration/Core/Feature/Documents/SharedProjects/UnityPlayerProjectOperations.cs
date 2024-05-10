@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers.Transactions.ProjectHostActions.SharedProjects;
 using JetBrains.ProjectModel;
@@ -8,7 +9,7 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Documents.SharedProjects
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class UnityPlayerProjectOperations : ISharedProjectOperations
     {
         private const string PlayerProjectSuffix = ".Player";

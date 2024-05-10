@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -13,10 +14,11 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Platform.Icons;
+using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public sealed class RiderUnityCommonIconProvider : UnityCommonIconProvider
     {
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
@@ -31,8 +33,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
                                             UnitySolutionTracker solutionTracker,
                                             IBackendUnityHost backendUnityHost,
                                             IconHost iconHost, PerformanceCriticalContextProvider contextProvider,
-                                            IEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders)
-            : base(solution, api, settingsStore, contextProvider, menuItemProviders)
+                                            IEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders,
+                                            ITextControlManager textControlManager)
+            : base(solution, api, settingsStore, contextProvider, menuItemProviders, textControlManager)
         {
             myCodeInsightProvider = codeInsightProvider;
             mySolutionTracker = solutionTracker;

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
@@ -15,7 +16,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class UnityGameEngineDirectiveResolver : IGameEngineIncludeDirectiveResolver, IGameEngineIncludeDirectiveProvider
     {
         private readonly ISolution mySolution;

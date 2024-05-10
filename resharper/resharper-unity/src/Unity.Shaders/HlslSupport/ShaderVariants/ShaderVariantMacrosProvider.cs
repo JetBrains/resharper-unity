@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Semantic;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
@@ -10,7 +11,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 
-[SolutionComponent]
+[SolutionComponent(Instantiation.DemandAnyThread)]
 public class ShaderVariantMacrosProvider : IUnityHlslCustomMacrosProvider
 {
     private readonly ShaderVariantsManager myShaderVariantsManager;

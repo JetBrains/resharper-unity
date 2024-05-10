@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.IDE.UsageStatistics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThread)]
     public class UnityProjectTechnologyProvider : IProjectTechnologyProvider
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;

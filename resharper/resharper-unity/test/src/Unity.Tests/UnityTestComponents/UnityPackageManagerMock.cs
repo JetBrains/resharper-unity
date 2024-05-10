@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
         }
     }
     
-    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityPackageManagerMock : PackageManager
     {
         private readonly HashSet<string> myInternalPackages = new();

@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
@@ -11,7 +12,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion
 {
-    [IntellisensePart]
+    [IntellisensePart(Instantiation.DemandAnyThread)]
     public class JsonNewCodeCompletionContextProvider : CodeCompletionContextProviderBase
     {
         private readonly JsonNewIntellisenseManager myIntellisenseManager;
