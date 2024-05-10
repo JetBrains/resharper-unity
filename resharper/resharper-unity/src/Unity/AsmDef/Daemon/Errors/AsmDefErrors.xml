@@ -72,7 +72,7 @@
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
-  <Warning name="UnresolvedProjectReference" staticGroup="AsmDefWarnings">
+  <Warning name="UnresolvedProjectReference" staticGroup="AsmDefWarnings" baseInterfaces="IResolveProblemHighlighting">
     <Parameter type="IReference" name="reference" />
     <Message resourceName="MissingAssemblyReferenceAssemblyWillNotBeReferencedDuringCompilationMessage" resourceType="Strings">
       <Argument>Reference.GetName()</Argument>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP" baseClass="CSharpUnityHighlightingBase, IUnityAnalyzerHighlighting">
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP" baseClass="CSharpUnityHighlightingBase" baseInterfaces="IUnityAnalyzerHighlighting">
   <Usings>
     JetBrains.ReSharper.Psi.CSharp;
     JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -354,7 +354,7 @@
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
-  <Warning name="ExpectedComponent" configurableSeverity="Unity.ExpectedComponent">
+  <Warning name="ExpectedComponent" configurableSeverity="Unity.ExpectedComponent" baseInterfaces="IResolveProblemHighlighting">
     <Parameter type="IReference" name="reference" />
     <Parameter type="string" name="requiredBaseType" />
     <Message resourceName="ExpectedTypeDerivedFromMessage" resourceType="Strings">
@@ -363,7 +363,7 @@
     <Range>Reference.GetDocumentRange()</Range>
   </Warning>
 
-  <Warning name="ExpectedScriptableObject" configurableSeverity="Unity.ExpectedScriptableObject">
+  <Warning name="ExpectedScriptableObject" configurableSeverity="Unity.ExpectedScriptableObject" baseInterfaces="IResolveProblemHighlighting">
     <Parameter type="IReference" name="reference" />
     <Message resourceName="ExpectedTypeDerivedFromUnityEngineScriptableObjectMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
@@ -575,7 +575,7 @@
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
 
-  <Error name="StringLiteralReferenceIncorrectSignature" staticGroup="UnityErrors">
+  <Error name="StringLiteralReferenceIncorrectSignature" staticGroup="UnityErrors" baseInterfaces="IResolveProblemHighlighting">
     <Parameter type="SyncVarHookReference" name="reference" />
     <Message resourceName="ExpectedAMethodWithSignatureMessage" resourceType="Strings">
       <Argument>Reference.MethodSignature.FormatSignature(Reference.GetName())</Argument>
@@ -585,7 +585,7 @@
   </Error>
 
 
-  <Warning name="StringLiteralReferenceIncorrectSignature" configurableSeverity="Unity.IncorrectMethodSignatureInStringLiteral">
+  <Warning name="StringLiteralReferenceIncorrectSignature" configurableSeverity="Unity.IncorrectMethodSignatureInStringLiteral" baseInterfaces="IResolveProblemHighlighting">
     <Parameter type="UnityEventFunctionReference" name="reference" isValid="skip" />
     <Message resourceName="ExpectedAMethodWithSignatureMessage" resourceType="Strings">
       <Argument>Reference.MethodSignature.FormatSignature(Reference.GetName())</Argument>
@@ -631,7 +631,7 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
-  <Warning name="UnresolvedComponentOrScriptableObject" configurableSeverity="Unity.UnresolvedComponentOrScriptableObject">
+  <Warning name="UnresolvedComponentOrScriptableObject" configurableSeverity="Unity.UnresolvedComponentOrScriptableObject" baseInterfaces="IResolveProblemHighlighting">
     <Parameter type="IReference" name="reference" />
     <Message resourceName="CannotResolveSymbolMessage" resourceType="Strings">
       <Argument>Reference.GetName()</Argument>
