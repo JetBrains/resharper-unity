@@ -37,9 +37,22 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
         val sourceDirectory = File(solutionSourceRootDirectory, solutionDirectoryName)
         // Copy solution from sources
         FileUtil.copyDir(sourceDirectory, workDirectory, filter)
-        workDirectory.isDirectory.shouldBeTrue("Expected '${workDirectory.absolutePath}' to be a directory")
+        // Copy additional files
+        copyAdditionalFilesToProject(solutionName, workDirectory)
 
+        workDirectory.isDirectory.shouldBeTrue("Expected '${workDirectory.absolutePath}' to be a directory")
         return workDirectory
+    }
+
+    private fun copyAdditionalFilesToProject (solutionName: String, workDirectory: File) {
+        var helperFileDirectory = testDataDirectory.resolve("additionalFiles").resolve(solutionName)
+        val destinationPath = workDirectory.resolve("Assets").resolve("Editor")
+        if (!helperFileDirectory.exists()) {
+            helperFileDirectory = testDataDirectory.resolve("additionalFiles").resolve("integrationTestHelper")
+        }
+        helperFileDirectory.listFiles()?.forEach { file ->
+            file.copyTo(destinationPath.resolve(file.name))
+        }
     }
 
     private fun waitForSlnGeneratedByUnity(
