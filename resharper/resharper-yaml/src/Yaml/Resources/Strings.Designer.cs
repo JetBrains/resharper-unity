@@ -1,4 +1,4 @@
-﻿namespace JetBrains.ReSharper.Plugins.Yaml.Resources
+namespace JetBrains.ReSharper.Plugins.Yaml.Resources
 {
   using System;
   using JetBrains.Application.I18n;
@@ -7,6 +7,7 @@
   using JetBrains.Lifetimes;
   using JetBrains.Util;
   using JetBrains.Util.Logging;
+  using JetBrains.Application.I18n.Plurals;
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -16,9 +17,10 @@
 
     static Strings()
     {
-      CultureContextComponent.Instance.WhenNotNull(Lifetime.Eternal, (lifetime, instance) =>
+      CultureContextComponent.Instance.Change.Advise(Lifetime.Eternal, args =>
       {
-        lifetime.Bracket(() =>
+          var instance = args.HasNew ? args.New : null;
+          if (instance != null)
           {
             ourResourceManager = new Lazy<JetResourceManager>(
               () =>
@@ -26,11 +28,11 @@
                 return instance
                   .CreateResourceManager("JetBrains.ReSharper.Plugins.Yaml.Resources.Strings", typeof(Strings).Assembly);
               });
-          },
-          () =>
+          }
+          else
           {
             ourResourceManager = null;
-          });
+          };
       });
     }
     
@@ -48,6 +50,13 @@
         }
         return resourceManager.Value;
       }
+    }
+
+    public static string Choice(string format, params object[] args)
+    {
+        var formatter = ResourceManager.ChoiceFormatter;
+        if (formatter == null) return "???";
+        return string.Format(formatter, format, args);
     }
 
     public static string CannotResolveSymbolMessage => ResourceManager.GetString("CannotResolveSymbolMessage");
