@@ -1,14 +1,14 @@
 package com.jetbrains.rider.unity.test.cases
-import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.Severity
+import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.unity.test.framework.base.FindUsagesAssetTestBase
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
 import org.testng.annotations.Test
 
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)

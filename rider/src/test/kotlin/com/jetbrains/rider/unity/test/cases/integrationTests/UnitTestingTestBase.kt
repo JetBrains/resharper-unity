@@ -1,9 +1,11 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.jetbrains.rdclient.testFramework.waitForDaemon
-import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.Severity
+import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
@@ -12,9 +14,7 @@ import com.jetbrains.rider.test.scriptingApi.changeFileContent
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
 import com.jetbrains.rider.unity.test.framework.UnityVersion
-import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import io.qameta.allure.*
 import org.testng.annotations.Test
 import java.io.File
 

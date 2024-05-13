@@ -7,7 +7,7 @@ import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.base.CodeLensTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion

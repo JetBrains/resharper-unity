@@ -1,8 +1,10 @@
 package com.jetbrains.rider.unity.test.cases
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
-import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
+import com.jetbrains.rider.test.annotations.Severity
+import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.RefactoringsTestBase
@@ -13,8 +15,6 @@ import com.jetbrains.rider.test.scriptingApi.callAltEnterMenu
 import com.jetbrains.rider.test.scriptingApi.executeItemByPrefix
 import com.jetbrains.rider.test.scriptingApi.waitBackendDocumentChange
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File

@@ -3,16 +3,16 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rdclient.util.idea.toIOFile
-import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.Severity
+import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.unity.test.framework.api.*
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
 import org.testng.annotations.Test
 import java.time.Duration
 import kotlin.test.assertNotNull

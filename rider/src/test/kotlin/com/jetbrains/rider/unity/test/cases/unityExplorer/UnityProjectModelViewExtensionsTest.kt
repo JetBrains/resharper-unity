@@ -1,7 +1,7 @@
 package com.jetbrains.rider.unity.test.cases.unityExplorer
 
 import com.jetbrains.rider.projectView.solutionDirectory
-import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.env.enums.SdkVersion

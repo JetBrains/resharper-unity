@@ -3,14 +3,14 @@ import com.jetbrains.rider.unity.test.framework.api.doFindUsagesTest
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rd.ide.model.findUsagesHost
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.Severity
+import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
