@@ -1,4 +1,4 @@
-﻿namespace JetBrains.ReSharper.Plugins.Unity.Rider.Resources
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Resources
 {
   using System;
   using JetBrains.Application.I18n;
@@ -7,6 +7,7 @@
   using JetBrains.Lifetimes;
   using JetBrains.Util;
   using JetBrains.Util.Logging;
+  using JetBrains.Application.I18n.Plurals;
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -16,9 +17,10 @@
 
     static Strings()
     {
-      CultureContextComponent.Instance.WhenNotNull(Lifetime.Eternal, (lifetime, instance) =>
+      CultureContextComponent.Instance.Change.Advise(Lifetime.Eternal, args =>
       {
-        lifetime.Bracket(() =>
+          var instance = args.HasNew ? args.New : null;
+          if (instance != null)
           {
             ourResourceManager = new Lazy<JetResourceManager>(
               () =>
@@ -26,11 +28,11 @@
                 return instance
                   .CreateResourceManager("JetBrains.ReSharper.Plugins.Unity.Rider.Resources.Strings", typeof(Strings).Assembly);
               });
-          },
-          () =>
+          }
+          else
           {
             ourResourceManager = null;
-          });
+          };
       });
     }
     
@@ -48,6 +50,13 @@
         }
         return resourceManager.Value;
       }
+    }
+
+    public static string Choice(string format, params object[] args)
+    {
+        var formatter = ResourceManager.ChoiceFormatter;
+        if (formatter == null) return "???";
+        return string.Format(formatter, format, args);
     }
 
     public static string AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_ => ResourceManager.GetString("AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_");
