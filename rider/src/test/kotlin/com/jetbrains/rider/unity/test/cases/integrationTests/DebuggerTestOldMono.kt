@@ -1,12 +1,12 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.jetbrains.rider.test.allure.SubsystemConstants
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.Severity
+import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.unity.test.framework.UnityVersion
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
 import java.io.File
 
 @Mute("RIDER-67296")
