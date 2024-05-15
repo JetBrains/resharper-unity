@@ -13,6 +13,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 using JetBrains.Util.Media;
+using JetBrains.Util.NetFX.Media.Colors;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {

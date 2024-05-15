@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 using JetBrains.Util.Media;
+using JetBrains.Util.NetFX.Media.Colors;
 
 #nullable enable
 
