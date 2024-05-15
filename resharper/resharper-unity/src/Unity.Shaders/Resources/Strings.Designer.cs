@@ -60,6 +60,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Resources
         return string.Format(formatter, format, args);
     }
 
+    public static string Choice(string format, params object[] args)
+    {
+        var formatter = ResourceManager.ChoiceFormatter;
+        if (formatter == null) return "???";
+        return string.Format(formatter, format, args);
+    }
+
     public static string AmbiguousReferencematchMessage => ResourceManager.GetString("AmbiguousReferencematchMessage");
     public static string CannotResolveSymbolMessage => ResourceManager.GetString("CannotResolveSymbolMessage");
     public static string CommentsBlockComment_RiderPresentableName => ResourceManager.GetString("CommentsBlockComment_RiderPresentableName");
@@ -74,6 +81,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Resources
     public static string ReformatCode_Text => ResourceManager.GetString("ReformatCode_Text");
     public static string RemoveSwallowedToken_Text_Insert_new_line => ResourceManager.GetString("RemoveSwallowedToken_Text_Insert_new_line");
     public static string RemoveToken_Text_Remove_invalid_parameters => ResourceManager.GetString("RemoveToken_Text_Remove_invalid_parameters");
+    public static string ShaderKeywordsHighlighting_Text => ResourceManager.GetString("ShaderKeywordsHighlighting_Text");
+    public static string ShaderLabErrors_Text => ResourceManager.GetString("ShaderLabErrors_Text");
+    public static string ShaderLabWarnings_Text => ResourceManager.GetString("ShaderLabWarnings_Text");
     public static string ThereIsAlreadyAPropertyNamedDeclaredMessage => ResourceManager.GetString("ThereIsAlreadyAPropertyNamedDeclaredMessage");
     public static string IntellisenseEnabledSettingShaderLab_s_Override_VS_IntelliSense_for_ShaderLab => ResourceManager.GetString("IntellisenseEnabledSettingShaderLab_s_Override_VS_IntelliSense_for_ShaderLab");
     public static string IntellisenseEnabledSettingShaderLab_s_ShaderLab__Unity__shader_files_ => ResourceManager.GetString("IntellisenseEnabledSettingShaderLab_s_ShaderLab__Unity__shader_files_");

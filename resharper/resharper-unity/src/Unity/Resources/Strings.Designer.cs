@@ -89,11 +89,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string AlternativeNonAllocatingMethodAvailable => ResourceManager.GetString("AlternativeNonAllocatingMethodAvailable");
     public static string AnAlternativeMethodIsAvailableThatAvoidsAllocationAndReusesAnExistingBuffer => ResourceManager.GetString("AnAlternativeMethodIsAvailableThatAvoidsAllocationAndReusesAnExistingBuffer");
     public static string ApplyingAnAttributeToASingleDeclarationContainingMultipleFieldsWillApplyTheAttributeToEachFieldTheHighlightedAttributeEGFormerlySerializedAsIsIntendedToBeAppliedOnlyToASingleFieldPreferAnExplicitApplicationToASingleFieldInASingleDeclaration => ResourceManager.GetString("ApplyingAnAttributeToASingleDeclarationContainingMultipleFieldsWillApplyTheAttributeToEachFieldTheHighlightedAttributeEGFormerlySerializedAsIsIntendedToBeAppliedOnlyToASingleFieldPreferAnExplicitApplicationToASingleFieldInASingleDeclaration");
+    public static string AsmDefErrors_Text => ResourceManager.GetString("AsmDefErrors_Text");
     public static string AsmDefGuidReferenceInlayHintHighlighting_ContextMenuTitle_GUID_Reference_Hints => ResourceManager.GetString("AsmDefGuidReferenceInlayHintHighlighting_ContextMenuTitle_GUID_Reference_Hints");
     public static string AsmDefIntraTextAdornmentModel_BuildContextMenuItems_Configure___ => ResourceManager.GetString("AsmDefIntraTextAdornmentModel_BuildContextMenuItems_Configure___");
     public static string AsmDefOccurrenceKindProvider_AssemblyDefinitionReference_Assembly_definition_reference => ResourceManager.GetString("AsmDefOccurrenceKindProvider_AssemblyDefinitionReference_Assembly_definition_reference");
     public static string AsmDefPackageVersionInlayHintHighlighting_ContextMenuTitle_Package_Version_Hints => ResourceManager.GetString("AsmDefPackageVersionInlayHintHighlighting_ContextMenuTitle_Package_Version_Hints");
     public static string AsmDefProjectFileType_AsmDefProjectFileType_Assembly_Definition__Unity_ => ResourceManager.GetString("AsmDefProjectFileType_AsmDefProjectFileType_Assembly_Definition__Unity_");
+    public static string AsmDefWarnings_Text => ResourceManager.GetString("AsmDefWarnings_Text");
     public static string AsmRefProjectFileType_AsmRefProjectFileType_Assembly_Definition_Reference__Unity_ => ResourceManager.GetString("AsmRefProjectFileType_AsmRefProjectFileType_Assembly_Definition_Reference__Unity_");
     public static string AttributeIsRedundantOnThisDeclarationTypeItIsOnlyUsedWhenAppliedToDeclarationsMessage => ResourceManager.GetString("AttributeIsRedundantOnThisDeclarationTypeItIsOnlyUsedWhenAppliedToDeclarationsMessage");
     public static string AttributeIsRedundantWhenAppliedToThisDeclarationType => ResourceManager.GetString("AttributeIsRedundantWhenAppliedToThisDeclarationType");
@@ -240,6 +242,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string MoveFromLoopAction_Text_Move_outside_of_loop => ResourceManager.GetString("MoveFromLoopAction_Text_Move_outside_of_loop");
     public static string MultidimensionalArrayElementAccessIsConvertedToAMethodCallItIsMoreEfficientToUseAJaggedOrOneDimensionalArray => ResourceManager.GetString("MultidimensionalArrayElementAccessIsConvertedToAMethodCallItIsMoreEfficientToUseAJaggedOrOneDimensionalArray");
     public static string MultiplicationOrderQuickFix_Text_Reorder_multiplication => ResourceManager.GetString("MultiplicationOrderQuickFix_Text_Reorder_multiplication");
+    public static string UnityBurst_Text => ResourceManager.GetString("UnityBurst_Text");
+    public static string UnityErrors_Text => ResourceManager.GetString("UnityErrors_Text");
+    public static string UnityGutterMarks_Text => ResourceManager.GetString("UnityGutterMarks_Text");
     public static string UnityObjectNullCoalescingWarning_Inspection_Title => ResourceManager.GetString("UnityObjectNullCoalescingWarning_Inspection_Title");
     public static string UnityObjectNullCoalescingWarning_Message => ResourceManager.GetString("UnityObjectNullCoalescingWarning_Message");
     public static string UnityObjectNullPropagationWarning_Inspection_Title => ResourceManager.GetString("UnityObjectNullPropagationWarning_Inspection_Title");
@@ -378,7 +383,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string TypeDetector_GetActions_Generate_Unity_event_functions => ResourceManager.GetString("TypeDetector_GetActions_Generate_Unity_event_functions");
     public static string TypeofIsProhibitedInBurst => ResourceManager.GetString("TypeofIsProhibitedInBurst");
     public static string TypeParameterMustBeUnmanagedIsNotMessage => ResourceManager.GetString("TypeParameterMustBeUnmanagedIsNotMessage");
+    public static string UnityPerformanceHints_Text => ResourceManager.GetString("UnityPerformanceHints_Text");
     public static string UnitySerializedField_PresentableName_Text => ResourceManager.GetString("UnitySerializedField_PresentableName_Text");
+    public static string UnityWarnings_Text => ResourceManager.GetString("UnityWarnings_Text");
     public static string Unity_Internal_DumpDuplicateTypeNames_Text => ResourceManager.GetString("Unity_Internal_DumpDuplicateTypeNames_Text");
     public static string Unity_Internal_DumpSpellCheckWordLists_Text => ResourceManager.GetString("Unity_Internal_DumpSpellCheckWordLists_Text");
     public static string Unity_Internal_SerializeReferencesDump_Text => ResourceManager.GetString("Unity_Internal_SerializeReferencesDump_Text");

@@ -60,8 +60,16 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Resources
         return string.Format(formatter, format, args);
     }
 
+    public static string Choice(string format, params object[] args)
+    {
+        var formatter = ResourceManager.ChoiceFormatter;
+        if (formatter == null) return "???";
+        return string.Format(formatter, format, args);
+    }
+
     public static string CannotResolveSymbolMessage => ResourceManager.GetString("CannotResolveSymbolMessage");
     public static string Message => ResourceManager.GetString("Message");
+    public static string YAMLErrors_Text => ResourceManager.GetString("YAMLErrors_Text");
     public static string YamlLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Yaml => ResourceManager.GetString("YamlLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Yaml");
   }
 }

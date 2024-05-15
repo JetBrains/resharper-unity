@@ -103,6 +103,9 @@
     <data name="ApplyingAnAttributeToASingleDeclarationContainingMultipleFieldsWillApplyTheAttributeToEachFieldTheHighlightedAttributeEGFormerlySerializedAsIsIntendedToBeAppliedOnlyToASingleFieldPreferAnExplicitApplicationToASingleFieldInASingleDeclaration" xml:space="preserve">
         <value>Applying an attribute to a single declaration containing multiple fields will apply the attribute to each field. The highlighted attribute (e.g. 'FormerlySerializedAs') is intended to be applied only to a single field. Prefer an explicit application to a single field in a single declaration.</value>
     </data>
+    <data name="AsmDefErrors_Text" xml:space="preserve">
+        <value>AsmDef Errors</value>
+    </data>
     <data name="AsmDefGuidReferenceInlayHintHighlighting_ContextMenuTitle_GUID_Reference_Hints" xml:space="preserve">
         <value>GUID Reference Hints</value>
     </data>
@@ -117,6 +120,9 @@
     </data>
     <data name="AsmDefProjectFileType_AsmDefProjectFileType_Assembly_Definition__Unity_" xml:space="preserve">
         <value>Assembly Definition (Unity)</value>
+    </data>
+    <data name="AsmDefWarnings_Text" xml:space="preserve">
+        <value>AsmDef Warnings</value>
     </data>
     <data name="AsmRefProjectFileType_AsmRefProjectFileType_Assembly_Definition_Reference__Unity_" xml:space="preserve">
         <value>Assembly Definition Reference (Unity)</value>
@@ -557,6 +563,15 @@
     <data name="MultiplicationOrderQuickFix_Text_Reorder_multiplication" xml:space="preserve">
         <value>Reorder multiplication</value>
     </data>
+    <data name="UnityBurst_Text" xml:space="preserve">
+        <value>Unity Burst</value>
+    </data>
+    <data name="UnityErrors_Text" xml:space="preserve">
+        <value>Unity Errors</value>
+    </data>
+    <data name="UnityGutterMarks_Text" xml:space="preserve">
+        <value>Unity Gutter Marks</value>
+    </data>
     <data name="UnityObjectNullCoalescingWarning_Inspection_Title" xml:space="preserve">
         <value>Null coalescing on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
@@ -983,8 +998,14 @@
     <data name="TypeParameterMustBeUnmanagedIsNotMessage" xml:space="preserve">
         <value>Type parameter must be unmanaged, '{0}' is not</value>
     </data>
+    <data name="UnityPerformanceHints_Text" xml:space="preserve">
+        <value>Unity Performance Hints</value>
+    </data>
     <data name="UnitySerializedField_PresentableName_Text" xml:space="preserve">
         <value>Unity serialized field</value>
+    </data>
+    <data name="UnityWarnings_Text" xml:space="preserve">
+        <value>Unity Warnings</value>
     </data>
     <data name="Unity_Internal_DumpDuplicateTypeNames_Text" xml:space="preserve">
         <value>Dump Duplicate Type Names</value>

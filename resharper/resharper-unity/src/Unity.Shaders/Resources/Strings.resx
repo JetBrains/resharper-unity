@@ -58,6 +58,15 @@
     <data name="RemoveToken_Text_Remove_invalid_parameters" xml:space="preserve">
         <value>Remove invalid parameters</value>
     </data>
+    <data name="ShaderKeywordsHighlighting_Text" xml:space="preserve">
+        <value>Shader Keywords Highlighting</value>
+    </data>
+    <data name="ShaderLabErrors_Text" xml:space="preserve">
+        <value>ShaderLab Errors</value>
+    </data>
+    <data name="ShaderLabWarnings_Text" xml:space="preserve">
+        <value>ShaderLab Warnings</value>
+    </data>
     <data name="ThereIsAlreadyAPropertyNamedDeclaredMessage" xml:space="preserve">
         <value>The property named '{0}' is already declared</value>
     </data>
