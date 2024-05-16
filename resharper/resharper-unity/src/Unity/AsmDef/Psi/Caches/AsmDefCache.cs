@@ -9,6 +9,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -211,7 +212,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonNewLanguage>();
+            var res = base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonNewLanguage>();
+            if (!res) return false;
+            
+            // Sandbox files are created for reasons like a Diff Vcs, we'd better ignore them4
+            // https://jetbrains.slack.com/archives/C53QFRZ7G/p1715772563007159
+            
+            if (!sf.GetProject().IsMiscFilesProject() || sf is UnityExternalPsiSourceFile)
+            {
+                myLogger.Verbose($"IsApplicable {sf}. Misc={sf.GetProject().IsMiscFilesProject()}, UnityExternalPsiSourceFile={sf is UnityExternalPsiSourceFile}.");    
+                return true;
+            }
+            myLogger.Verbose($"Ignoring {sf} becase it is misc and not UnityExternalPsiSourceFile.");
+
+            return false;
         }
 
         private IPsiSourceFile? GetSourceFileForAssembly(string assemblyName)
