@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Plugins.Unity.Resources;
 using JetBrains.Lifetimes;
@@ -20,12 +19,17 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
     {
         private readonly ILogger myLogger;
         private readonly SoftDebuggerSession mySession;
-        private readonly bool myIsEnabled;
+        
         private UnityPausePointHelper? myHelper;
-        private readonly int myEvaluationTimeout;
         private readonly IKnownTypes<Value> myKnownTypes;
         private readonly string myAssemblyAbsolutePath = string.Empty;
+        private readonly IUnityOptions myUnityOptions;
+        
 
+        private int EvaluationTimeout => myUnityOptions.ForcedTimeoutForAdvanceUnityEvaluation;
+        private bool IsEnabled => !string.IsNullOrEmpty(myAssemblyAbsolutePath) && myUnityOptions.ExtensionsEnabled;
+        
+        
         public UnityPausePointHandler(SoftDebuggerSession session,
             IUnityOptions unityOptions,
             ISessionCreationInfo creationInfo,
@@ -36,22 +40,21 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
         {
             myLogger = logger;
             mySession = session;
+            myUnityOptions = unityOptions;
 
             if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {
-                myIsEnabled = unityOptions.ExtensionsEnabled;
                 var unityBundleInfo =
                     unityStartInfo.Bundles.FirstOrDefault(b => b.Id.Equals(UnityPausePointHelper.AssemblyName));
                 if (unityBundleInfo != null)
+                {
                     myAssemblyAbsolutePath = unityBundleInfo.AbsolutePath;
+                }
                 else
                 {
-                    myIsEnabled = false;
                     myAssemblyAbsolutePath = string.Empty;
                     myLogger.Error($"UnityBundles don't contain required one '{UnityPausePointHelper.AssemblyName}'");
                 }
-                
-                myEvaluationTimeout = unityOptions.ForcedTimeoutForAdvanceUnityEvaluation;
             }
             
             myKnownTypes = knownTypes;
@@ -60,7 +63,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
         public bool Handle<TModule>(BreakEvent breakEvent, BreakEventInfo<TModule> breakEventInfo,
             IStackFrame activeFrame)
         {
-            if (!myIsEnabled) return false;
+            if (!IsEnabled) return false;
 
             if (breakEvent is not LineBreakpoint lineBreakpoint)
                 return false;
@@ -70,7 +73,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
 
             var evaluationParameters = mySession.EvaluationOptions
                 .AllowFullInvokes()
-                .WithOverridden(o => { o.EvaluationTimeout = myEvaluationTimeout; });
+                .WithOverridden(o => { o.EvaluationTimeout = EvaluationTimeout; });
 
             try
             {

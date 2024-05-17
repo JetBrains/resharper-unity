@@ -27,8 +27,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
             myHost.Model.IgnoreBreakOnUnhandledExceptionsForIl2Cpp.Value;
         
         public int ForcedTimeoutForAdvanceUnityEvaluation =>
-            myHost.Model.ForcedTimeoutForAdvanceUnityEvaluation.Value;
+            myHost.Model.ForcedTimeoutForAdvanceUnityEvaluation.HasValue() 
+                ? myHost.Model.ForcedTimeoutForAdvanceUnityEvaluation.Value 
+                : 10000; //default evaluation value 10_000 ms
 
-        public int BreakpointTraceOutput => myHost.Model.BreakpointTraceOutput.Value;
+        public int BreakpointTraceOutput =>
+            myHost.Model.BreakpointTraceOutput.HasValue()
+                ? myHost.Model.BreakpointTraceOutput.Value
+                : 0; //0 - stands for no output. check enum BreakpointTraceOutput
     }
 }
