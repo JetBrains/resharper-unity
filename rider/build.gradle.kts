@@ -28,6 +28,7 @@ repositories {
     maven("https://cache-redirector.jetbrains.com/maven-central")
     intellijPlatform {
         defaultRepositories()
+        jetbrainsRuntime()
     }
 }
 
@@ -153,6 +154,8 @@ dependencies {
                 }
             }
         }
+
+        jetbrainsRuntime()
 
         instrumentationTools()
 
