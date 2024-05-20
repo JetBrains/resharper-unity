@@ -18,4 +18,5 @@ class UnitTestingTests {
     class TestUnity2020 : UnitTestingTestBase(UnityVersion.V2020)
     class TestUnity2022 : UnitTestingTestBase(UnityVersion.V2022)
     class TestUnity2023 : UnitTestingTestBase(UnityVersion.V2023)
+    class TestUnity6 : UnitTestingTestBase(UnityVersion.V6)
 }

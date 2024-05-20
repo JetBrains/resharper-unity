@@ -24,4 +24,9 @@ class PlayModeTest {
           addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
         }
     }
+    class TestUnity6 : PlayModeTestBase(UnityVersion.V6) {
+       /* init {
+            addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
+        }*/
+    }
 }
