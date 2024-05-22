@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion
 {
-    [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfCalculatedSettingsSchema)]
+    [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadNotSafeBecauseOfEditorConfigSchema)]
     public class ShaderLabKeywordCompletionRule : ItemsProviderOfSpecificContext<ShaderLabCodeCompletionContext>
     {
         private readonly ShaderLabKeywordSuggester myKeywordSuggester;
