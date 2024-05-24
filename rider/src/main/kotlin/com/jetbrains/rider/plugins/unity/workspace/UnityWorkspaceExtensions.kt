@@ -8,7 +8,7 @@ import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.workspace.jps.entities.ContentRootEntity
 import com.intellij.platform.workspace.jps.entities.ExcludeUrlEntity
 import com.intellij.platform.workspace.jps.entities.ModuleEntity
-import com.intellij.platform.workspace.jps.entities.modifyEntity
+import com.intellij.platform.workspace.jps.entities.modifyModuleEntity
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.ExternalMappingKey
 import com.intellij.platform.workspace.storage.MutableEntityStorage
@@ -43,7 +43,7 @@ fun MutableEntityStorage.addContentRootEntity(url: VirtualFileUrl, //
                                               module: ModuleEntity,
                                               source: EntitySource = module.entitySource): ContentRootEntity {
     val excludes = excludedUrls.map { ExcludeUrlEntity(it, source) }
-    val updatedModule = this.modifyEntity(module) {
+    val updatedModule = this.modifyModuleEntity(module) {
         this.contentRoots += ContentRootEntity(url, excludedPatterns, source) {
             this.excludedUrls = excludes
         }

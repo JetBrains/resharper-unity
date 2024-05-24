@@ -71,7 +71,7 @@ interface UnityPackageEntity : WorkspaceEntity {
 }
 
 //region generated code
-fun MutableEntityStorage.modifyEntity(
+fun MutableEntityStorage.modifyUnityPackageEntity(
     entity: UnityPackageEntity,
     modification: UnityPackageEntity.Builder.() -> Unit,
 ): UnityPackageEntity {

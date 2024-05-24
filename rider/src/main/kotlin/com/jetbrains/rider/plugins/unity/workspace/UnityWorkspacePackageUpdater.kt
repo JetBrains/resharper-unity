@@ -12,7 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.backend.workspace.toVirtualFileUrl
-import com.intellij.platform.workspace.jps.entities.modifyEntity
+import com.intellij.platform.workspace.jps.entities.modifyContentRootEntity
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.util.application
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -100,7 +100,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
         else null
 
         val entity = if (contentRootEntity != null) {
-            val updatedRoot = entityStorage.modifyEntity(contentRootEntity) {
+            val updatedRoot = entityStorage.modifyContentRootEntity(contentRootEntity) {
                 this.unityPackageEntity = UnityPackageEntity(unityPackage, RiderUnityPackageEntitySource) {
                     this.descriptor = unityPackage
                 }
