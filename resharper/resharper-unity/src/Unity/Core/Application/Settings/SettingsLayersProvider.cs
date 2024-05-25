@@ -14,7 +14,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class SettingsLayersProvider : IUnityReferenceChangeHandler
     {
         private readonly Lifetime myLifetime;

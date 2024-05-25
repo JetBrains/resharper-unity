@@ -11,7 +11,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowPerformanceCriticalCalls
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class ShowPerformanceCriticalCallsBulbItemsProvider : PerformanceCriticalBulbItemsProvider
     {
         private readonly SolutionAnalysisConfiguration myConfiguration;

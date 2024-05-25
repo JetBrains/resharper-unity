@@ -16,7 +16,7 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class AnimExplicitUsagesContainer : IUnityAssetDataElementContainer
     {
         [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;

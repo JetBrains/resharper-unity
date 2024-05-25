@@ -11,7 +11,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class AddExpensiveCommentBulbItemsProvider : PerformanceCriticalBulbItemsProvider
     {
         private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;

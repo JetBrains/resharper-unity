@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
     // wrong highlighting for #define branches.
     // This class also won't be called for source files that are part of assembly definitions that aren't compiled, such
     // as tests
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityPackageDefinesProvider : IExternalSourcesDefinesProvider
     {
         private readonly PreProcessingDirectiveCache myPreProcessingDirectiveCache;

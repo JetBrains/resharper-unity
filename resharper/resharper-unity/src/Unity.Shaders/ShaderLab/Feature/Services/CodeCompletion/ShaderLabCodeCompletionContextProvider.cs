@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion
 {
-    [IntellisensePart(Instantiation.DemandAnyThread)]
+    [IntellisensePart(Instantiation.DemandAnyThreadUnsafe)]
     public class ShaderLabCodeCompletionContextProvider : CodeCompletionContextProviderBase
     {
         private readonly ShaderLabIntellisenseManager myShaderLabIntellisenseManager;

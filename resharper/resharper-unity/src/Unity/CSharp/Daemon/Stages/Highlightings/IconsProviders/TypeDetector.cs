@@ -30,7 +30,7 @@ using JetBrains.TextControl.CodeWithMe;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     [ZoneMarker(typeof(ICodeEditingZone))]
     public class TypeDetector : UnityDeclarationHighlightingProviderBase
     {

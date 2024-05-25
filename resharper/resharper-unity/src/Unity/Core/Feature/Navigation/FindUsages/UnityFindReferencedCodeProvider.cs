@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Navigation.FindUsages
 {
-    [ShellComponent(Instantiation.DemandAnyThread)]
+    [ShellComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityFindUsagesProvider : FindUsagesProvider
     {
         private readonly SolutionsManager mySolutionsManager;

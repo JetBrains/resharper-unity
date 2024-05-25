@@ -17,7 +17,7 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class AssetScriptUsagesElementContainer : IScriptUsagesElementContainer
     {
         private readonly IShellLocks myShellLocks;

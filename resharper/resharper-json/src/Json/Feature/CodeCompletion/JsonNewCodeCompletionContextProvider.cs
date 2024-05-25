@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion
 {
-    [IntellisensePart(Instantiation.DemandAnyThread)]
+    [IntellisensePart(Instantiation.DemandAnyThreadUnsafe)]
     public class JsonNewCodeCompletionContextProvider : CodeCompletionContextProviderBase
     {
         private readonly JsonNewIntellisenseManager myIntellisenseManager;

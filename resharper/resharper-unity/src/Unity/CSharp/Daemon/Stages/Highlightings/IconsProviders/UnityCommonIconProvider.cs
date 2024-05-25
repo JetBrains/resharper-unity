@@ -30,7 +30,7 @@ using Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityCommonIconProvider
     {
         protected readonly IApplicationWideContextBoundSettingStore SettingsStore;

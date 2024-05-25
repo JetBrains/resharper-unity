@@ -11,7 +11,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
-    [MiscFilesProjectPsiModuleProvider(Instantiation.DemandAnyThread)]
+    [MiscFilesProjectPsiModuleProvider(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityMiscFilesProjectPsiModuleProvider : IMiscFilesProjectPsiModuleProvider
     {
         private readonly UnityExternalFilesModuleFactory myModuleFactory;

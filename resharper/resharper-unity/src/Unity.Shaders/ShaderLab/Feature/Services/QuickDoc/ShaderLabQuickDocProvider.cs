@@ -18,7 +18,7 @@ using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.QuickDoc
 {
-    [QuickDocProvider(0, Instantiation.DemandAnyThread)]
+    [QuickDocProvider(0, Instantiation.DemandAnyThreadUnsafe)]
     public class ShaderLabQuickDocProvider : IQuickDocProvider
     {
         private readonly ShaderLabDeclaredElementDescriptionProvider myDescriptionProvider;

@@ -11,7 +11,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 
-[SolutionComponent(Instantiation.DemandAnyThread)]
+[SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
 public class ShaderVariantMacrosProvider : IUnityHlslCustomMacrosProvider
 {
     private readonly ShaderVariantsManager myShaderVariantsManager;

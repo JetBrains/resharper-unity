@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.ProjectModel
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class VsUnityVersionPropertiesExtenderProvider : IPropertiesExtenderProvider
     {
         private readonly Lifetime myLifetime;

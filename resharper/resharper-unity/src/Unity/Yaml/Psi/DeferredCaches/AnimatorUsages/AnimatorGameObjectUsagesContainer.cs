@@ -17,7 +17,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public partial class AnimatorGameObjectUsagesContainer : IUnityAssetDataElementContainer
     {
         private readonly Dictionary<LocalReference, Guid> myGameObjectReferenceToControllerGuid = new();

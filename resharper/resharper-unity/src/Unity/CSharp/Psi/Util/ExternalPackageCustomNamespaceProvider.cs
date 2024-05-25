@@ -13,7 +13,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class ExternalPackageCustomNamespaceProvider : ICustomDefaultNamespaceProvider
     {
         private static readonly Key<DefaultNamespace?> ourCalculatedDefaultNamespaceKey = new("Unity::ExternalPackage::DefaultNamespace");

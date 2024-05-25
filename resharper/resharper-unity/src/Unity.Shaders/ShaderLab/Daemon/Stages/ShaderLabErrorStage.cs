@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
 {
-    [DaemonStage(Instantiation.DemandAnyThread, StagesBefore = new[] { typeof(CollectUsagesStage), typeof(GlobalFileStructureCollectorStage) },
+    [DaemonStage(Instantiation.DemandAnyThreadUnsafe, StagesBefore = new[] { typeof(CollectUsagesStage), typeof(GlobalFileStructureCollectorStage) },
         StagesAfter = new[] { typeof(LanguageSpecificDaemonStage) })]
     public class ShaderLabErrorStage : ShaderLabStageBase
     {

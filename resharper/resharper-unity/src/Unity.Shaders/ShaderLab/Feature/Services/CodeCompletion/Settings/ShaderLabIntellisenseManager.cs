@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion.Settings
 {
-    [ShellComponent(Instantiation.DemandAnyThread)]
+    [ShellComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class ShaderLabIntellisenseManager : LanguageSpecificCodeCompletionManager
     {
         public ShaderLabIntellisenseManager(CodeCompletionSettingsService settingsService)

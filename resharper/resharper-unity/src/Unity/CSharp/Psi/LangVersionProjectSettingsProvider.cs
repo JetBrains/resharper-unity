@@ -19,7 +19,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class LangVersionProjectSettingsProvider : IUnityProjectSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;

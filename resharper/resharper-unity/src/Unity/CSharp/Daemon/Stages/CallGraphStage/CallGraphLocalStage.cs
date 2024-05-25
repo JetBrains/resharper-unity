@@ -8,7 +8,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
-    [DaemonStage(Instantiation.DemandAnyThread, StagesBefore = new[] {typeof(CSharpErrorStage)})]
+    [DaemonStage(Instantiation.DemandAnyThreadUnsafe, StagesBefore = new[] {typeof(CSharpErrorStage)})]
     public class CallGraphLocalStage : CallGraphAbstractStage
     {
         public CallGraphLocalStage(

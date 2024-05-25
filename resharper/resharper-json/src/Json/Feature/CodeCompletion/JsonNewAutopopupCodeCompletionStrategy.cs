@@ -12,7 +12,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class JsonNewAutopopupCodeCompletionStrategy : IAutomaticCodeCompletionStrategy
     {
         private readonly JsonNewIntellisenseManager myJsonIntellisenseManager;

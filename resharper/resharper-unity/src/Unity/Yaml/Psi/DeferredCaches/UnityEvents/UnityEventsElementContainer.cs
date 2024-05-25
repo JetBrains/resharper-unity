@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
     // with millions of methods, only pointers to AssetMethodData should be stored. AssetMethodData will be deserialized only in find usages,
     // strings should be replaced by int hashes.
     // Information about imported/prefab modifications could be stored in memory, it should not allocate a lot of memory ever.
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public partial class UnityEventsElementContainer : IUnityAssetDataElementContainer, IScriptUsagesElementContainer
     {
         private readonly ISolution mySolution;

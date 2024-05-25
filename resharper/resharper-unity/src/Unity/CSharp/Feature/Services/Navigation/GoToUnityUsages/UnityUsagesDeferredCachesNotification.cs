@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityUsagesDeferredCachesNotification
     {
         private readonly DeferredCacheController myController;
