@@ -17,7 +17,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
 {
-    [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadUnsafeBecauseOfEditorConfigSchema)]
+    [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabLanguageService : LanguageService
     {
         private readonly CommonIdentifierIntern myCommonIdentifierIntern;

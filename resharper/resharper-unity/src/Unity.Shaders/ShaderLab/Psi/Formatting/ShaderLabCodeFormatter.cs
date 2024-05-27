@@ -18,7 +18,7 @@ using JetBrains.Util.Text;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 {
-  [Language(typeof(ShaderLabLanguage), InstantiationEx.DemandAnyThreadUnsafeBecauseOfEditorConfigSchema)]
+  [Language(typeof(ShaderLabLanguage))]
   public class ShaderLabCodeFormatter : CodeFormatterBase<ShaderLabFormatSettingsKey>
   {
     private readonly ShaderLabFormattingInfoProvider myShaderLabFormattingInfo;
