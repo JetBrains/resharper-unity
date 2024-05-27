@@ -46,4 +46,5 @@ public class UnityFixFloatingPointComparingQuickFixTests : QuickFixTestBase<Unit
     }
 
     [Test] public void Test01() { DoNamedTest(); }
+    [Test] public void Test02() { DoNamedTest(); }
 }
