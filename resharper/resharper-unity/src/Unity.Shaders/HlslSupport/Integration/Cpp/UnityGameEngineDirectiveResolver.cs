@@ -6,7 +6,6 @@ using JetBrains.Application.Parts;
 using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Cpp.Parsing.Preprocessor;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi.Cpp.Parsing.Preprocessor;
