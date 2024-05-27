@@ -10,11 +10,16 @@ public class Test : MonoBehaviour
     if(a == b) //Must be 2 quickfixes available
       Debug.Log("Equals");
       
+    if(a != b) //Must be 2 quickfixes available
+      Debug.Log("Not Equals");
+      
       
     double c = 1.0;
     double d = 2.0;
     if(c == d)//Must only ONE quickfixe available
       Debug.Log("Equals");
     
+    if(c != d)//Must only ONE quickfixe available
+      Debug.Log("Not Equals");
   }
 }
