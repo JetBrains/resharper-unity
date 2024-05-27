@@ -25,6 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 public class UnityFixFloatingPointComparingQuickFix : FixFloatingPointComparingFix
 {
     private readonly ISolution mySolution;
+    private const string EqualityFormat = "$0.Approximately($1, $2)";
+    private const string InequalityFormat = "!$0.Approximately($1, $2)";
 
     private static readonly IAnchor ourTopFixesAnchor = new InvisibleAnchor(IntentionsAnchors.QuickFixesAnchor);
 
@@ -69,7 +71,7 @@ public class UnityFixFloatingPointComparingQuickFix : FixFloatingPointComparingF
         if (systemMathElement == null) return null;
 
         var relational = factory.CreateExpression(
-            "$0.Approximately($1, $2)",
+            isEqualityCheck ? EqualityFormat : InequalityFormat,
             systemMathElement, myEqualityExpression.LeftOperand, myEqualityExpression.RightOperand);
 
         myEqualityExpression.ReplaceBy(relational);

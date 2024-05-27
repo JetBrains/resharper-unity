@@ -10,12 +10,17 @@ public class Test : MonoBehaviour
     if(|a == b|(0)) //Must be 2 quickfixes available
       Debug.Log("Equals");
       
+    if(|a != b|(1)) //Must be 2 quickfixes available
+      Debug.Log("Not Equals");
+      
       
     double c = 1.0;
     double d = 2.0;
-    if(|c == d|(1))//Must only ONE quickfixe available
+    if(|c == d|(2))//Must only ONE quickfixe available
       Debug.Log("Equals");
     
+    if(|c != d|(3))//Must only ONE quickfixe available
+      Debug.Log("Not Equals");
   }
 }
 
@@ -25,5 +30,12 @@ QUICKFIXES:
 Fix comparison with Mathf.Approximately
 Fix floating-point comparison
 1: Equality comparison of floating point numbers. Possible loss of precision while rounding values
+QUICKFIXES:
+Fix comparison with Mathf.Approximately
+Fix floating-point comparison
+2: Equality comparison of floating point numbers. Possible loss of precision while rounding values
+QUICKFIXES:
+Fix floating-point comparison
+3: Equality comparison of floating point numbers. Possible loss of precision while rounding values
 QUICKFIXES:
 Fix floating-point comparison
