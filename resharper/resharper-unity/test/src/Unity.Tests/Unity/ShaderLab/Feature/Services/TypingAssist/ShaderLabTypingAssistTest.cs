@@ -1,5 +1,6 @@
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.FeaturesTestFramework.TypingAssist;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
@@ -58,12 +59,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Typ
         [Test] public void SmartQuot03() { DoNamedTest(); }
         [Test] public void SmartQuot04() { DoNamedTest(); }
 
-        protected override void DoTest(Lifetime lifetime)
+        protected override void DoTest(Lifetime lifetime, ISolution solution)
         {
             var settingsStore = ChangeSettingsTemporarily(TestLifetime).BoundStore;
             settingsStore.SetValue((ShaderLabFormatSettingsKey key) => key.INDENT_SIZE, 4);
 
-            base.DoTest(lifetime);
+            base.DoTest(lifetime, solution);
         }
     }
 }

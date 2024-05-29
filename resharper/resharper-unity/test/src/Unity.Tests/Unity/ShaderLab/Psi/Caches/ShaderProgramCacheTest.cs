@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Caches
         {
             DoTestSolution(_ => CreateSolutionConfiguration(new[] { "TestMultipleSourceFilesWithSamePath.shader", "TestMultipleSourceFilesWithSamePath.shader" }), (lt, solution) =>
             {
-                DoTest(lt);
+                DoTest(lt, solution);
                 
                 var testProject = solution.GetProjectByName("TestProject");
                 var firstProjectFile = testProject.GetAllProjectFiles().First();
@@ -32,11 +32,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Caches
                 var shaderProgramCache = solution.GetComponent<ShaderProgramCache>();
                 shaderProgramCache.MarkAsDirty(firstSourceFile);
                 shaderProgramCache.SyncUpdate(false);
-                DoTest(lt);
+                DoTest(lt, solution);
                 
                 ((ProjectItemBase)firstProjectFile).DoRemove();
                 shaderProgramCache.SyncUpdate(false);
-                DoTest(lt);
+                DoTest(lt, solution);
                 
                 firstProjectFile = testProject.GetAllProjectFiles().First();
                 ((ProjectItemBase)firstProjectFile).DoRemove();

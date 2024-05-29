@@ -1,9 +1,8 @@
-using System.IdentityModel.Protocols.WSTrust;
 using JetBrains.Application.Settings;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Errors;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
@@ -22,10 +21,10 @@ public class UnityFixFloatingPointComparingQuickFixAvailabilityTests : QuickFixA
                && base.HighlightingPredicate(highlighting, psiSourceFile, boundSettingsStore);
     }
     
-    protected override void DoTest(Lifetime lifetime)
+    protected override void DoTest(Lifetime lifetime, ISolution solution)
     {
-        using (UnityProjectCookie.RunUnitySolutionCookie(Solution))
-            base.DoTest(lifetime);
+        using (UnityProjectCookie.RunUnitySolutionCookie(solution))
+            base.DoTest(lifetime, solution);
     }
 
     [Test] public void Test01() { DoNamedTest(); }
@@ -39,10 +38,10 @@ public class UnityFixFloatingPointComparingQuickFixTests : QuickFixTestBase<Unit
     protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityFixFloatingPointComparing";
     protected override bool AllowHighlightingOverlap => true;
     
-    protected override void DoTest(Lifetime lifetime)
+    protected override void DoTest(Lifetime lifetime, ISolution solution)
     {
-        using (UnityProjectCookie.RunUnitySolutionCookie(Solution))
-            base.DoTest(lifetime);
+        using (UnityProjectCookie.RunUnitySolutionCookie(solution))
+            base.DoTest(lifetime, solution);
     }
 
     [Test] public void Test01() { DoNamedTest(); }
