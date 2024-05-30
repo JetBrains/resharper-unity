@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using JetBrains.Lifetimes;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
@@ -8,6 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Language;
+using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highlightings
@@ -15,78 +13,53 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
     [RequireHlslSupport, TestUnity, HighlightOnly(typeof(ImplicitlyEnabledShaderKeywordHighlight), typeof(EnabledShaderKeywordHighlight), typeof(DisabledShaderKeywordHighlight), typeof(SuppressedShaderKeywordHighlight))]
     public class ShaderVariantsHighlightTests : HighlightingTestBase
     {
-        private ShaderApi myShaderApi = ShaderApi.D3D11;
-        private ShaderPlatform myShaderPlatform = ShaderPlatform.Desktop;
-        private readonly List<string> myEnabledKeywords = new();
-        
         protected override PsiLanguageType? CompilerIdsLanguage => CppLanguage.Instance;
         protected override string RelativeTestDataPath => @"ShaderLab\Daemon\Stages\Highlightings";
 
-        public override void TearDown()
-        {
-            myEnabledKeywords.Clear();
-            var shaderVariantsManager = Solution.GetComponent<ShaderVariantsManager>();
-            myShaderApi = ShaderApiDefineSymbolDescriptor.DefaultValue;
-            myShaderPlatform = ShaderPlatformDefineSymbolDescriptor.DefaultValue;
-            shaderVariantsManager.SetShaderApi(myShaderApi);
-            shaderVariantsManager.SetShaderPlatform(myShaderPlatform);
-            base.TearDown();
-        }
-
-        [Test]
+        [Test, ShaderVariantsTest]
         public void TestImplicitHighlight() => DoTestSolution("ShaderVariants.hlsl", "FooBar.shader");
         
-        [Test]
+        [Test, ShaderVariantsTest]
         public void TestSingleKeywordInShader() => DoTestSolution("SingleKeywordInShader.shader");
         
-        [Test]
+        [Test, ShaderVariantsTest]
         public void TestPragmaHighlight() => DoTestSolution("FooBar.shader");
         
-        [Test]
-        public void TestEnabledKeywordsInShader()
-        {
-            myEnabledKeywords.Add("FOO");
-            myEnabledKeywords.Add("B");
-            myEnabledKeywords.Add("C");
-            DoTestSolution("EnabledKeywordsInShader.shader");
-        }
-        
-        [Test]
+        [Test, ShaderVariantsTest(enabledKeywords: ["FOO", "B", "C"])]
+        public void TestEnabledKeywordsInShader() => DoTestSolution("EnabledKeywordsInShader.shader");
+
+        [Test, ShaderVariantsTest]
         public void TestShaderApiInShader() => DoTestSolution("ShaderApiInShader.shader");
 
-        [Test]
-        public void TestShaderApiInShaderMetal()
-        {
-            myShaderApi = ShaderApi.Metal;
-            DoTestSolution("ShaderApiInShaderMetal.shader");
-        }
-        
-        [Test]
+        [Test, ShaderVariantsTest(shaderApi: ShaderApi.Metal)]
+        public void TestShaderApiInShaderMetal() => DoTestSolution("ShaderApiInShaderMetal.shader");
+
+        [Test, ShaderVariantsTest]
         public void TestShaderPlatformInShader() => DoTestSolution("ShaderPlatformInShader.shader");
         
-        [Test]
-        public void TestShaderPlatformInShaderMobile()
-        {
-            myShaderPlatform = ShaderPlatform.Mobile;
-            DoTestSolution("ShaderPlatformInShaderMobile.shader");
-        }
+        [Test, ShaderVariantsTest(shaderPlatform: ShaderPlatform.Mobile)]
+        public void TestShaderPlatformInShaderMobile() => DoTestSolution("ShaderPlatformInShaderMobile.shader");
 
-        protected override void DoTest(Lifetime lifetime, IProject project)
+        private class ShaderVariantsTestAttribute(ShaderApi shaderApi = ShaderApi.D3D11, ShaderPlatform shaderPlatform = ShaderPlatform.Desktop, params string[] enabledKeywords): TestAspectAttribute
         {
-            var shaderVariantsManager = project.GetComponent<ShaderVariantsManager>();
-            foreach (var keyword in myEnabledKeywords) 
-                shaderVariantsManager.SetKeywordEnabled(keyword, true);
-            shaderVariantsManager.SetShaderApi(myShaderApi);
-            shaderVariantsManager.SetShaderPlatform(myShaderPlatform);
-
-            try
+            protected override void OnBeforeTestExecute(TestAspectContext context)
             {
-                project.GetComponent<CppGlobalCacheImpl>().ResetCache();
-                base.DoTest(lifetime, project);
+                var shaderVariantsManager = context.TestProject.GetComponent<ShaderVariantsManager>();
+                foreach (var keyword in enabledKeywords) 
+                    shaderVariantsManager.SetKeywordEnabled(keyword, true);
+                shaderVariantsManager.SetShaderApi(shaderApi);
+                shaderVariantsManager.SetShaderPlatform(shaderPlatform);
+
+                context.TestProject.GetComponent<CppGlobalCacheImpl>().ResetCache();
             }
-            finally
+
+            protected override void OnAfterTestExecute(TestAspectContext context)
             {
+                var shaderVariantsManager = context.TestProject.GetComponent<ShaderVariantsManager>();
                 shaderVariantsManager.ResetAllKeywords();
+                shaderVariantsManager.SetShaderApi(ShaderApiDefineSymbolDescriptor.DefaultValue);
+                shaderVariantsManager.SetShaderPlatform(ShaderPlatformDefineSymbolDescriptor.DefaultValue);
+
             }
         }
     }

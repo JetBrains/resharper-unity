@@ -21,14 +21,6 @@ public class ShaderKeywordQuickFixTest : QuickFixTestBase<ShaderKeywordQuickFix>
 
     protected override bool DumpBulbText => true;
 
-    public override void TearDown()
-    {
-        var manager = Solution.GetComponent<ShaderVariantsManager>();
-        manager.ResetAllKeywords();
-        manager.SetShaderApi(ShaderApiDefineSymbolDescriptor.DefaultValue);
-        base.TearDown();
-    }
-
     [TestCase("Test01.shader")]
     [TestCase("Test02.shader")]
     [TestCase("Test03.shader")]
@@ -77,5 +69,8 @@ public class ShaderKeywordQuickFixTest : QuickFixTestBase<ShaderKeywordQuickFix>
             Assert.That(shaderVariantsManager.IsKeywordEnabled(keyword), Is.True);
         foreach (var keyword in expectedDisabledKeywords) 
             Assert.That(shaderVariantsManager.IsKeywordEnabled(keyword), Is.False);
+        
+        shaderVariantsManager.ResetAllKeywords();
+        shaderVariantsManager.SetShaderApi(ShaderApiDefineSymbolDescriptor.DefaultValue);
     }
 }
