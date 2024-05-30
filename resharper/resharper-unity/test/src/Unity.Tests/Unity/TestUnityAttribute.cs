@@ -4,15 +4,12 @@ using System.Linq;
 using System.Text;
 using JetBrains.Application.platforms;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.Assemblies.Impl;
-using JetBrains.ProjectModel.ProjectImplementation;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Propoerties;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Properties.Flavours;
-using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
-using JetBrains.TestFramework.JetNuGet;
+using JetBrains.TestFramework.Projects;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NuGet.Packaging.Core;
@@ -48,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class TestUnityAttribute : TestAspectAttribute, ITestPackagesProvider,
-        ITestFlavoursProvider, ITestTargetFrameworkIdProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute
+        ITestFlavoursProvider, ITestTargetFrameworkIdProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute, IReuseSolutionScopeAttribute
     {
         private static readonly Version ourDefaultVersion = ToVersion(UnityVersion.DefaultTestVersion);
         private static readonly Version ourMinNetworkingVersion = new(5, 5);
@@ -172,32 +169,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
             }
         }
 
-        // If we're not using the default test version, make sure we clean out the old Unity references. Because all
+        // If we're not using the same test version, make sure we clean out the old Unity references. Because all
         // versions have an assembly version of 0.0, the test framework doesn't see that they're different, and they'll
         // get reused when they shouldn't
-        protected override void OnAfterTestExecute(TestAspectContext context)
-        {
-            if (myVersion != ourDefaultVersion)
-            {
-                var solution = context.TestProject.GetSolution();
-                var targetFrameworkScopes = solution.GetComponent<ResolveContextManager>().EnumerateAllScopes();
-
-                using (WriteLockCookie.Create())
-                {
-                    foreach (var targetFrameworkScope in targetFrameworkScopes)
-                    {
-                        if (targetFrameworkScope is ProjectTargetFrameworkScope projectScope)
-                        {
-                            // These methods are marked as obsolete to make sure they're only used from tests. We have
-                            // warnings as errors on, so disable the warning
-#pragma warning disable 618
-                            projectScope.RemoveAllProjectReferences();
-                            projectScope.RemoveAllResolveResults();
-#pragma warning restore 618
-                        }
-                    }
-                }
-            }
-        }
+        string IReuseSolutionScopeAttribute.ScopeName => myVersion.ToString();
     }
 }
