@@ -6,7 +6,7 @@ import java.io.File
 @Suppress("unused")
 object RiderTestDataMarker : IRiderTestDataMarker {
   override val testDataFromRoot: File
-    get() = File("testData")
+    get() = File("src/test/testData")
 
   override val pluginDirectoryInUltimate: File
     get() = File("dotnet/Plugins/ReSharperUnity/rider")
