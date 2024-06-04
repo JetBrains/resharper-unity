@@ -1,0 +1,16 @@
+using UnityEngine;
+using UnityEngine.Rendering;
+
+namespace DefaultNamespace
+{
+    public class CommandBufferPropertyTest
+    {
+      private static readonly int Offset = Shader.PropertyToID("_offset");
+
+      public void Test()
+        {
+            var cmdBuffer = new CommandBuffer();
+            cmdBuffer.SetGlobalFloat(Off{caret}set, 1.5f);
+        }
+    }
+}

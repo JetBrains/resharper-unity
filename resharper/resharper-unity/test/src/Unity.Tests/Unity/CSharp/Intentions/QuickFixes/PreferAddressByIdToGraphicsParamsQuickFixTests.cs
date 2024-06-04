@@ -41,5 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         [Test] public void PartialClassTest() { DoNamedTest(); }
         [Test] public void UniqueNameTest() { DoNamedTest(); }
         [Test] public void ComputeShaderPropertyTest() { DoNamedTest(); }
+        [Test] public void CommandBufferPropertyTest() { DoNamedTest(); }
+        [Test] public void MaterialPropertyTest() { DoNamedTest(); }
     }
 }

@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Metadata.Reader.API;
@@ -14,25 +15,45 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] { typeof(PreferAddressByIdToGraphicsParamsWarning) })]
+    [ElementProblemAnalyzer(typeof(IInvocationExpression),
+        HighlightingTypes = new[] { typeof(PreferAddressByIdToGraphicsParamsWarning) })]
     public class PreferAddressByIdToGraphicsParamsAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        // The map from IClrTypeName to help method and his IClrTypeName
-        private static readonly IDictionary<IClrTypeName, (IClrTypeName, string)> ourTypes = new Dictionary<IClrTypeName, (IClrTypeName, string)>()
+        private enum SubstitutionMethodTypes
         {
-            {KnownTypes.Animator, (KnownTypes.Animator, "StringToHash")},
-            {KnownTypes.Shader, (KnownTypes.Shader, "PropertyToID")},
-            {KnownTypes.ComputeShader, (KnownTypes.Shader, "PropertyToID")},
-            {KnownTypes.Material, (KnownTypes.Shader, "PropertyToID")},
-            {KnownTypes.MaterialPropertyBlock, (KnownTypes.Shader, "PropertyToID")},
-        };
+            AnimatorStringToHash,
+            ShaderPropertyToID
+        }
+
+        // The map from substitution method type to its IClrTypeName and method's name
+        private static readonly IDictionary<SubstitutionMethodTypes, (IClrTypeName, string)>
+            ourSubstitutionMethodSignature =
+                new Dictionary<SubstitutionMethodTypes, (IClrTypeName, string)>
+                {
+                    { SubstitutionMethodTypes.AnimatorStringToHash, (KnownTypes.Animator, "StringToHash") },
+                    { SubstitutionMethodTypes.ShaderPropertyToID, (KnownTypes.Shader, "PropertyToID") }
+                };
+
+
+        // The map from IClrTypeName to help method type
+        private static readonly IDictionary<IClrTypeName, SubstitutionMethodTypes> ourTypes =
+            new Dictionary<IClrTypeName, SubstitutionMethodTypes>()
+            {
+                { KnownTypes.Animator, SubstitutionMethodTypes.AnimatorStringToHash },
+                { KnownTypes.Shader, SubstitutionMethodTypes.ShaderPropertyToID },
+                { KnownTypes.ComputeShader, SubstitutionMethodTypes.ShaderPropertyToID },
+                { KnownTypes.Material, SubstitutionMethodTypes.ShaderPropertyToID },
+                { KnownTypes.MaterialPropertyBlock, SubstitutionMethodTypes.ShaderPropertyToID },
+                { KnownTypes.CommandBuffer, SubstitutionMethodTypes.ShaderPropertyToID },
+            };
 
         public PreferAddressByIdToGraphicsParamsAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
         }
 
-        protected override void Analyze(IInvocationExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Analyze(IInvocationExpression expression, ElementProblemAnalyzerData data,
+            IHighlightingConsumer consumer)
         {
             var sourceFile = expression.GetSourceFile();
             if (sourceFile == null)
@@ -54,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     // extract argument for replace
                     var argument = arguments[argumentIndex];
                     var argumentValue = argument.Value;
-                    var (clrName, methodName) = ourTypes[containingType.GetClrName()];
+                    var methodType = ourTypes[containingType.GetClrName()];
 
                     if (argumentValue is IInvocationExpression) //nameof
                         return;
@@ -78,24 +99,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     if (argument.Expression != null &&
                         argument.Expression.ConstantValue.IsNotNullString(out var literal))
                     {
+                        var (typeName, methodName) = ourSubstitutionMethodSignature[methodType];
                         consumer.AddHighlighting(new PreferAddressByIdToGraphicsParamsWarning(expression, argument,
-                            argument.Expression, literal, clrName.FullName, methodName));
+                            argument.Expression, literal, typeName.FullName, methodName));
                     }
                 }
             }
         }
 
-        private bool HasOverloadWithIntParameter(IMethod stringMethod, IInvocationExpression expression, out int index, out ITypeElement? containingType)
+        private bool HasOverloadWithIntParameter(IMethod stringMethod, IInvocationExpression expression, out int index,
+            out ITypeElement? containingType)
         {
             index = stringMethod.Parameters.Count;
-            containingType = null;
             var stringMethodName = stringMethod.ShortName;
+            containingType = stringMethod.ContainingType;
 
-            if (!stringMethodName.StartsWith("Get") && !stringMethodName.StartsWith("Set") && !stringMethodName.Equals("ResetTrigger"))
+            if (containingType == null || !ourTypes.ContainsKey(containingType.GetClrName()))
                 return false;
 
-            containingType = stringMethod.ContainingType;
-            if (containingType == null || !ourTypes.ContainsKey(containingType.GetClrName()))
+            if (!stringMethodName.StartsWith("Get") && !stringMethodName.StartsWith("Set") &&
+                !stringMethodName.StartsWith("Has"))
                 return false;
 
             var type = TypeFactory.CreateType(containingType);
@@ -152,7 +175,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
                 if (stringMethodParam.Type.IsString() && intMethodParam.Type.IsInt())
                 {
-                    if (!intMethodParam.ShortName.ToLower().Contains("id")||
+                    var intMethodParamLower = intMethodParam.ShortName.ToLower();
+                    if (!(intMethodParamLower.Contains("id") || intMethodParamLower.Contains("hash")) ||
                         !stringMethodParam.ShortName.ToLower().Contains("name"))
                         return false;
 

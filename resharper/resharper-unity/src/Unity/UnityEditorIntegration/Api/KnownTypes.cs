@@ -78,6 +78,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName SyncVarAttribute =
             new ClrTypeName("UnityEngine.Networking.SyncVarAttribute");
 
+        // UnityEngine.Rendering
+        public static readonly IClrTypeName CommandBuffer = new ClrTypeName("UnityEngine.Rendering.CommandBuffer");
+        
         // UnityEngine.Serialization
         public static readonly IClrTypeName FormerlySerializedAsAttribute =
             new ClrTypeName("UnityEngine.Serialization.FormerlySerializedAsAttribute");

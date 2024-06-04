@@ -1,0 +1,15 @@
+using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class MaterialPropertyTest
+    {
+      private static readonly int DecalLayer = Shader.PropertyToID("_DecalLayer");
+
+      public void Test()
+        {
+            var material = Resources.Load<Material>(materialPath);
+            material.HasProperty(Decal{caret}Layer);
+        }
+    }
+}
