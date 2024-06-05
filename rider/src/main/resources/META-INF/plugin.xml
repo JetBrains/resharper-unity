@@ -118,6 +118,10 @@
     <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.spellchecker.AsmDefSpellcheckerStrategy" />
     <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.spellchecker.AsmRefSpellcheckerStrategy" />
 
+    <!-- Packages support -->
+    <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.unityPackages.spellchecker.UnityPackagesSpellcheckerStrategy" />
+
+
     <!-- YAML asset support -->
     <fileType name="UnityYaml" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType" language="UnityYaml" extensions="meta;unity;scene;prefab;asset;controller;anim"/>
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlIconProvider" />
