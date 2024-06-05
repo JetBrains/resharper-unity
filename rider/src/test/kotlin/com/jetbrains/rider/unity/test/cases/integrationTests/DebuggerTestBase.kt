@@ -15,7 +15,7 @@ import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCu
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import kotlinx.coroutines.launch
@@ -25,10 +25,10 @@ import java.io.File
 import kotlin.test.assertNotNull
 import kotlin.test.fail
 
-abstract class DebuggerTestBase(private val unityVersion: UnityVersion) : IntegrationTestWithUnityProjectBase() {
+abstract class DebuggerTestBase(private val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase() {
 
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
-    override val unityMajorVersion = this.unityVersion
+    override val majorVersion = this.engineVersion
 
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(DebuggerTestBase::class.simpleName!!)

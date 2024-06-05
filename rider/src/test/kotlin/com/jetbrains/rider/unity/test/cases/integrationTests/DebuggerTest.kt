@@ -8,7 +8,7 @@ import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.annotations.Severity
 import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.unity.test.framework.EngineVersion
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity2020")
@@ -16,12 +16,13 @@ import com.jetbrains.rider.unity.test.framework.UnityVersion
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Suppress("unused")
 class DebuggerTest {
-    class TestUnity2020 : DebuggerTestBase(UnityVersion.V2020)  {
+    class TestUnity2020 : DebuggerTestBase(EngineVersion.Unity2020)  {
         init {
           addMute(Mute("RIDER-105466", platforms = arrayOf(PlatformType.WINDOWS_ALL)), ::checkUnityPausePoint)
         }
     }
-    class TestUnity2022 : DebuggerTestBase(UnityVersion.V2022)
-    class TestUnity2023 : DebuggerTestBase(UnityVersion.V2023)
-    class TestUnity6 : DebuggerTestBase(UnityVersion.V6)
+    class TestUnity2022 : DebuggerTestBase(EngineVersion.Unity2022)
+    class TestUnity2023 : DebuggerTestBase(EngineVersion.Unity2023)
+    class TestUnity6 : DebuggerTestBase(EngineVersion.Unity6)
+    class TestTuanjie2022 : DebuggerTestBase (EngineVersion.Tuanjie2022)
 }

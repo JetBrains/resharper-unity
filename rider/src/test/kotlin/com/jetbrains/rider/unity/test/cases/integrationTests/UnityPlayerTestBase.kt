@@ -18,7 +18,7 @@ import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.refreshFileSystem
-import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.api.*
 import kotlinx.coroutines.CompletableDeferred
 import org.testng.annotations.AfterMethod
@@ -26,10 +26,10 @@ import org.testng.annotations.BeforeMethod
 import java.io.File
 import kotlin.test.assertNotNull
 
-abstract class UnityPlayerTestBase(private val unityVersion: UnityVersion,
+abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,
                                    private val buildNames: Map<String, String>) : BaseTestWithSolution(), IntegrationTestWithFrontendBackendModel {
     override val waitForCaches = true
-    private val unityMajorVersion = this.unityVersion
+    private val unityMajorVersion = this.engineVersion
     private lateinit var unityProjectPath: File
     private lateinit var lifetimeDefinition: LifetimeDefinition
 

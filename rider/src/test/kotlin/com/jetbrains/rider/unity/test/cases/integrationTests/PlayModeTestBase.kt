@@ -7,11 +7,11 @@ import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityPro
 import org.testng.annotations.Test
 import java.io.File
 import com.jetbrains.rider.test.framework.combine
-import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.unity.test.framework.EngineVersion
 
-abstract class PlayModeTestBase(private val unityVersion: UnityVersion) : IntegrationTestWithUnityProjectBase() {
+abstract class PlayModeTestBase(private val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase() {
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
-    override val unityMajorVersion = this.unityVersion
+    override val majorVersion = this.engineVersion
 
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(PlayModeTestBase::class.simpleName!!)

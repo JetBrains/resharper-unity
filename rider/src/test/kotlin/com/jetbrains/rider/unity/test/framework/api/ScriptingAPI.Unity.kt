@@ -51,7 +51,7 @@ import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
-import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.utils.NullPrintStream
 import kotlinx.coroutines.launch
 import java.io.File
@@ -127,54 +127,74 @@ fun allowUnityPathVfsRootAccess(lifetimeDefinition: LifetimeDefinition) {
     }
     VfsRootAccess.allowRootAccess(lifetimeDefinition.createNestedDisposable("Unity path disposable"), unityPath)
 }
-
-fun getUnityExecutableInstallationPath(unityMajorVersion: UnityVersion): File {
-    val defaultUnityPaths = when {
-        SystemInfo.isWindows ->
-            listOf("C:/Program Files/Unity/Hub/Editor/")
-        SystemInfo.isMac -> listOf("/Applications/Unity/Hub/Editor/")
-        SystemInfo.isLinux -> listOf(
-            "${System.getProperty("user.home")}",
-            "${System.getProperty("user.home")}/Unity/Hub/Editor",
-            "/opt/Unity/Hub/Editor"
-        )
-        else -> {
-            throw Exception("Unknown OS while detecting Unity Editor path")
-        }
+fun getEngineExecutableInstallationPath(engineVersion: EngineVersion): File {
+    return when {
+        engineVersion.name.startsWith("Tuanjie") -> getEngineExecutable("Tuanjie", engineVersion)
+        else -> getEngineExecutable("Unity", engineVersion)
     }
+}
 
+private fun getUnityDefaultPaths(): List<String> = when {
+    SystemInfo.isWindows -> listOf("C:/Program Files/Unity/Hub/Editor/")
+    SystemInfo.isMac -> listOf("/Applications/Unity/Hub/Editor/")
+    SystemInfo.isLinux -> listOf(
+        "${System.getProperty("user.home")}",
+        "${System.getProperty("user.home")}/Unity/Hub/Editor",
+        "/opt/Unity/Hub/Editor"
+    )
+    else -> throw Exception("Unknown OS while detecting Unity Editor path")
+}
+
+private fun getTuanjieDefaultPaths(): List<String> = when {
+    SystemInfo.isWindows -> listOf("C:/Program Files/Tuanjie")
+    SystemInfo.isMac -> listOf("/Applications/Tuanjie")
+    SystemInfo.isLinux -> listOf(
+        "${System.getProperty("user.home")}",
+        "${System.getProperty("user.home")}/Tuanjie",
+        "/opt/Tuanjie"
+    )
+    else -> throw Exception("Unknown OS while detecting Tuanjie Editor path")
+}
+
+private fun getExecutablePath(engineName: String, editorDirPath: File): String = when {
+    SystemInfo.isWindows -> "${editorDirPath.canonicalPath}/Editor/${engineName}.exe"
+    SystemInfo.isMac -> "${editorDirPath.canonicalPath}/${engineName}.app"
+    SystemInfo.isLinux -> "${editorDirPath.canonicalPath}/Editor/${engineName}"
+    else -> throw Exception("Unknown OS while detecting ${engineName} Editor path")
+}
+
+private fun getEngineExecutable(engineName: String, version: EngineVersion): File {
+    val defaultEnginePaths = when(engineName) {
+        "Tuanjie" -> getTuanjieDefaultPaths()
+        else -> getUnityDefaultPaths()
+    }
     val potentialEditors = mutableListOf<File>()
-    defaultUnityPaths.forEach { path ->
+    defaultEnginePaths.forEach { path ->
         potentialEditors.addAll(
-            File(path).walk().maxDepth(1).filter { file -> file.isDirectory && file.name.contains(unityMajorVersion.version) })
+            File(path).walk().maxDepth(1).filter { file -> file.isDirectory && (file.name.contains(version.version) || file.name.contains(engineName)) })
     }
     if (potentialEditors.isNullOrEmpty()) {
         frameworkLogger.error(
-            "Could not find suitable Unity Editor in the default paths, please install $unityMajorVersion in one of the default locations:\n" +
-            "${defaultUnityPaths.joinToString { it }}")
+            "Could not find suitable ${engineName} Editor in the default paths, please install $version in one of the default locations:\n" +
+            "${defaultEnginePaths.joinToString { it }}")
     }
-    // Get latest minor with matching major Unity Version
-    val editorDirPath = potentialEditors.sortedWith { unity, otherUnity ->
-        VersionComparatorUtil.compare(unity.name, otherUnity.name)
-    }.last()
+    val editorDirPath = when(engineName) {
+        "Tuanjie" -> potentialEditors.first()
+        else -> potentialEditors.sortedWith { unity, otherUnity ->
+            VersionComparatorUtil.compare(unity.name, otherUnity.name)
+        }.last()
+    }
 
-    val editorExecutablePath = when {
-        SystemInfo.isWindows -> "${editorDirPath.canonicalPath}/Editor/Unity.exe"
-        SystemInfo.isMac -> "${editorDirPath.canonicalPath}/Unity.app"
-        SystemInfo.isLinux -> "${editorDirPath.canonicalPath}/Editor/Unity"
-        else -> {
-            throw Exception("Unknown OS while detecting Unity Editor path")
-        }
-    }
+    val editorExecutablePath = getExecutablePath(engineName, editorDirPath)
     val editorExecutable = File(UnityInstallationFinder.getOsSpecificPath(Path(editorExecutablePath)).toString())
     if (!editorExecutable.exists()) {
         frameworkLogger.error(
-            "Could not find Unity Editor in the default paths, please install $unityMajorVersion in one of the default locations:\n" +
-            "${defaultUnityPaths.joinToString { it }}")
+            "Could not find ${engineName} Editor in the default paths, please install $version in one of the default locations:\n" +
+            "${defaultEnginePaths.joinToString { it }}")
     }
-
     return editorExecutable
 }
+
 
 fun startUnity(project: Project,
                logPath: File,
@@ -672,16 +692,16 @@ private fun IntegrationTestWithFrontendBackendModel.selectUnitTestLaunchPreferen
 
 //region for Unity versions gold file
 
-fun getGoldFileUnityDependentSuffix(unityVersion: UnityVersion): String {
-    return when (unityVersion) {
+fun getGoldFileUnityDependentSuffix(engineVersion: EngineVersion): String {
+    return when (engineVersion) {
         //We can use it if we have different gold files for different Unity versions, now it's not needed
         //UnityVersion.V2020 -> "_V${unityVersion.version}"
         else -> ""
     }
 }
 
-fun getUnityDependentGoldFile(unityVersion: UnityVersion, testFile: File): File {
-    val suffix = getGoldFileUnityDependentSuffix(unityVersion)
+fun getUnityDependentGoldFile(engineVersion: EngineVersion, testFile: File): File {
+    val suffix = getGoldFileUnityDependentSuffix(engineVersion)
     val fileWithNameSuffix = testFile.getFileWithNameSuffix(suffix)
     val goldFileWithSuffix = fileWithNameSuffix.getGoldFile()
 

@@ -36,9 +36,10 @@ val TestMethod.unityEnvironment: UnityTestEnvironmentInstance?
     get() = UnityTestEnvironmentInstance.getFromAnnotation(
         method.annotations.filterIsInstance<UnityTestEnvironment>().firstOrNull())
 
-enum class UnityVersion(val version: String) {
-    V2020("2020"),
-    V2022("2022"),
-    V2023("2023"),
-    V6("6000")
+enum class EngineVersion(val version: String) {
+    Unity2020("2020"),
+    Unity2022("2022"),
+    Unity2023("2023"),
+    Unity6("6000"),
+    Tuanjie2022("2022")
 }

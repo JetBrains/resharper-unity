@@ -7,7 +7,7 @@ import com.jetbrains.rider.test.annotations.Severity
 import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.unity.test.framework.EngineVersion
 
 @Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
 @Feature("Unit Testing in Unity solution with started Unity2022")
@@ -15,8 +15,9 @@ import com.jetbrains.rider.unity.test.framework.UnityVersion
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Suppress("unused")
 class UnitTestingTests {
-    class TestUnity2020 : UnitTestingTestBase(UnityVersion.V2020)
-    class TestUnity2022 : UnitTestingTestBase(UnityVersion.V2022)
-    class TestUnity2023 : UnitTestingTestBase(UnityVersion.V2023)
-    class TestUnity6 : UnitTestingTestBase(UnityVersion.V6)
+    class TestUnity2020 : UnitTestingTestBase(EngineVersion.Unity2020)
+    class TestUnity2022 : UnitTestingTestBase(EngineVersion.Unity2022)
+    class TestUnity2023 : UnitTestingTestBase(EngineVersion.Unity2023)
+    class TestUnity6 : UnitTestingTestBase(EngineVersion.Unity6)
+    class TestTunajie2022 : UnitTestingTestBase(EngineVersion.Tuanjie2022)
 }

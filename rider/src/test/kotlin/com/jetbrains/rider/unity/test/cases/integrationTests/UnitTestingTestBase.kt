@@ -13,7 +13,7 @@ import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
 import com.jetbrains.rider.test.scriptingApi.changeFileContent
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
-import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import org.testng.annotations.Test
 import java.io.File
@@ -22,9 +22,9 @@ import java.io.File
 @Feature("Unit Testing in Unity solution with started Unity2020")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-abstract class UnitTestingTestBase(private val unityVersion: UnityVersion) : IntegrationTestWithUnityProjectBase() {
+abstract class UnitTestingTestBase(private val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase() {
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
-    override val unityMajorVersion = this.unityVersion
+    override val majorVersion = this.engineVersion
 
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(UnitTestingTestBase::class.simpleName!!)

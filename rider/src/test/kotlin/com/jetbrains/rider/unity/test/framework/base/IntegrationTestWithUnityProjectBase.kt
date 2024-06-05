@@ -4,9 +4,9 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.WaitFor
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.framework.frameworkLogger
-import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.unity.test.framework.EngineVersion
+import com.jetbrains.rider.unity.test.framework.api.getEngineExecutableInstallationPath
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
-import com.jetbrains.rider.unity.test.framework.api.getUnityExecutableInstallationPath
 import com.jetbrains.rider.unity.test.framework.api.startUnity
 import org.testng.annotations.BeforeMethod
 import java.io.File
@@ -18,13 +18,13 @@ import java.time.Duration
  */
 abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGeneratedSolutionBase() {
     private lateinit var unityProjectPath: File
-    protected abstract val unityMajorVersion: UnityVersion
-    private val unityExecutable: File by lazy { getUnityExecutableInstallationPath(unityMajorVersion) }
+    protected abstract val majorVersion: EngineVersion
+    private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(majorVersion) }
 
     override val testGoldFile: File
-        get() = getUnityDependentGoldFile(unityMajorVersion, super.testGoldFile).takeIf { it.exists() }
+        get() = getUnityDependentGoldFile(majorVersion, super.testGoldFile).takeIf { it.exists() }
                 ?: getUnityDependentGoldFile(
-                    unityMajorVersion,
+                    majorVersion,
                     File(super.testGoldFile.path.replace(this::class.simpleName.toString(), ""))
                 )
 
