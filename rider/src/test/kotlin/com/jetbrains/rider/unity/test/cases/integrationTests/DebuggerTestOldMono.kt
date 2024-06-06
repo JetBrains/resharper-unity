@@ -7,13 +7,14 @@ import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.Severity
 import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.unity.test.framework.EngineVersion
+import com.jetbrains.rider.unity.test.framework.Unity
 import java.io.File
 
 @Mute("RIDER-67296")
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity OldMono")
 @Severity(SeverityLevel.NORMAL)
-class DebuggerTestOldMono : DebuggerTestBase(EngineVersion.Unity2022) {
+class DebuggerTestOldMono : DebuggerTestBase(Unity.V2022) {
     override fun getSolutionDirectoryName() = "SimpleUnityProjectWithoutPlugin"
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)

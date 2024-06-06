@@ -129,7 +129,7 @@ fun allowUnityPathVfsRootAccess(lifetimeDefinition: LifetimeDefinition) {
 }
 fun getEngineExecutableInstallationPath(engineVersion: EngineVersion): File {
     return when {
-        engineVersion.name.startsWith("Tuanjie") -> getEngineExecutable("Tuanjie", engineVersion)
+        engineVersion.isTuanjie() -> getEngineExecutable("Tuanjie", engineVersion)
         else -> getEngineExecutable("Unity", engineVersion)
     }
 }
@@ -164,8 +164,8 @@ private fun getExecutablePath(engineName: String, editorDirPath: File): String =
 }
 
 private fun getEngineExecutable(engineName: String, version: EngineVersion): File {
-    val defaultEnginePaths = when(engineName) {
-        "Tuanjie" -> getTuanjieDefaultPaths()
+    val defaultEnginePaths = when {
+        version.isTuanjie() -> getTuanjieDefaultPaths()
         else -> getUnityDefaultPaths()
     }
     val potentialEditors = mutableListOf<File>()
@@ -178,8 +178,8 @@ private fun getEngineExecutable(engineName: String, version: EngineVersion): Fil
             "Could not find suitable ${engineName} Editor in the default paths, please install $version in one of the default locations:\n" +
             "${defaultEnginePaths.joinToString { it }}")
     }
-    val editorDirPath = when(engineName) {
-        "Tuanjie" -> potentialEditors.first()
+    val editorDirPath = when {
+        version.isTuanjie() -> potentialEditors.first()
         else -> potentialEditors.sortedWith { unity, otherUnity ->
             VersionComparatorUtil.compare(unity.name, otherUnity.name)
         }.last()
