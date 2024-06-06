@@ -27,13 +27,7 @@ class PlayModeTest {
         }
     }
     class TestUnity6 : PlayModeTestBase(Unity.V6) {
-       /* init {
-            addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
-        }*/
     }
     class TestTuanji2022 : PlayModeTestBase(Tuanjie.V2022) {
-        /* init {
-             addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
-         }*/
     }
 }
