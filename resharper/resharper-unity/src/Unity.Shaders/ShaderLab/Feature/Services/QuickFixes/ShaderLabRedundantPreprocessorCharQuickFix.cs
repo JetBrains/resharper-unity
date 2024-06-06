@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Application.Progress;
+using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
@@ -51,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
                 var presentationAsBuffer = lineEnding.GetPresentationAsBuffer();
                 return textControl =>
                 {
-                    textControl.Document.InsertText(mySwallowedToken.GetDocumentStartOffset().Offset, presentationAsBuffer.GetText());
+                    textControl.Document.InsertText(mySwallowedToken.GetDocumentStartOffset(), presentationAsBuffer.GetText());
                 };
             }
 

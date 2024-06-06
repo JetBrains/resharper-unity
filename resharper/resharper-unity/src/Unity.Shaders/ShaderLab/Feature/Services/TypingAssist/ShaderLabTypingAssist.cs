@@ -206,7 +206,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
         private bool TryGetLineIndent(CachingLexer cachingLexer, IDocument document, [MaybeNullWhen(false)] out string indent)
         {
             var savedPosition = cachingLexer.CurrentPosition;
-            var line = document.GetCoordsByOffset(cachingLexer.TokenStart).Line;
+            var line = document.GetCoordsByOffset((DocOffset)cachingLexer.TokenStart).Line;
             var lineOffset = document.GetLineStartOffset(line);
 
             var hasLineStartToken = cachingLexer.FindTokenAt(lineOffset);
@@ -333,9 +333,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
 
         protected override BracketMatcher CreateBraceMatcher() => new GenericBracketMatcher(ourBracePairs);
 
-        protected override bool GetAutoInsertDataForRBrace(ITextControl textControl, ITokenNode rBraceToken, TreeTextRange treeLBraceRange, int lBracePos, int position, IDocument document, out TreeOffset positionForRBrace, out string rBraceText, ref IFile file)
+        protected override bool GetAutoInsertDataForRBrace(ITextControl textControl, ITokenNode rBraceToken,
+            TreeTextRange treeLBraceRange, DocumentOffset lBracePos, int position, IDocument document,
+            out DocumentOffset positionForRBrace, out string rBraceText, ref IFile file)
         {
-            positionForRBrace = rBraceToken.GetTreeEndOffset();
+            positionForRBrace = rBraceToken.GetDocumentEndOffset();
             rBraceText = "}";
             return false;
         }

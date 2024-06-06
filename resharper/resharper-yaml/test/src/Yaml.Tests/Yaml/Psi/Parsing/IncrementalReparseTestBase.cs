@@ -6,6 +6,7 @@ using JetBrains.Application.Components;
 using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.Application.UI.ActionsRevised.Handlers;
 using JetBrains.Application.UI.ActionSystem.Text;
+using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -138,7 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
               switch (action.ToCharArray()[0])
               {
                 case '+':
-                  textControl.Document.InsertText(textControl.Caret.Offset(), text);
+                  textControl.Document.InsertText(textControl.Caret.DocumentOffset(), text);
                   break;
                 case '-':
                   textControl.Document.DeleteText(TextRange.FromLength(textControl.Caret.Offset(), Convert.ToInt32(text)));

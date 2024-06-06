@@ -11,16 +11,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabBlockCommentActionProvider : IBlockCommentActionProvider
     {
-        public TextRange GetBlockComment(ITokenNode tokenNode)
+        public DocumentRange GetBlockComment(ITokenNode tokenNode)
         {
             return tokenNode.GetTokenType() == ShaderLabTokenType.MULTI_LINE_COMMENT
-                ? new TextRange(tokenNode.GetDocumentStartOffset().Offset, tokenNode.GetDocumentEndOffset().Offset)
-                : TextRange.InvalidRange;
+                ? new DocumentRange(tokenNode.GetDocumentStartOffset(), tokenNode.GetDocumentEndOffset())
+                : DocumentRange.InvalidRange;
         }
 
-        public int InsertBlockCommentPosition(ITokenNode tokenNode, int position)
+        public DocumentOffset InsertBlockCommentPosition(ITokenNode tokenNode, DocumentOffset position)
         {
-            return position == tokenNode.GetDocumentStartOffset().Offset ? position : tokenNode.GetDocumentEndOffset().Offset;
+            return position == tokenNode.GetDocumentStartOffset() ? position : tokenNode.GetDocumentEndOffset();
         }
 
         public bool IsAvailable(IFile file, DocumentRange range, out bool disableAllProviders)

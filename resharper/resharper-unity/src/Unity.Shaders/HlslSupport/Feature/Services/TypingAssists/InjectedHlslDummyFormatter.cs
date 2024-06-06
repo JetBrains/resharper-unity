@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
         private static string CalculateLineIndent(CppDummyFormatterContext context, CachingLexer lexer)
         {
             var doc = context.TextControl.Document;
-            var lineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
+            var lineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset((DocOffset)lexer.TokenStart).Line);
             lexer.FindTokenAt(lineStart);
             var tt = lexer.TokenType;
 
@@ -88,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
                 tt = lexer.TokenType;
             }
 
-            var tokenLineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
+            var tokenLineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset((DocOffset)lexer.TokenStart).Line);
             return doc.GetText(new TextRange(tokenLineStart, lexer.TokenStart));
         }
 
