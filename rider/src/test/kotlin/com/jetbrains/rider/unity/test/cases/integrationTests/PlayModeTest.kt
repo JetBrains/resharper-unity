@@ -14,7 +14,7 @@ import com.jetbrains.rider.unity.test.framework.Unity
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Suppress("unused")
 class PlayModeTest {
-    class TestUnity2020 : PlayModeTestBase(Unity.V2023)
+    class TestUnity2020 : PlayModeTestBase(Unity.V2020)
     class TestUnity2022 : PlayModeTestBase(Unity.V2022) {
         init {
             addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)

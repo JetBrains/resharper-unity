@@ -79,7 +79,7 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNa
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnityPlayerDebuggerTest {
-    class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2020, mapOf(
+    class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022, mapOf(
         winOS to "UnityPlayerDebuggerTest_StandaloneWindows64_2022.3.17f1_2024-Feb-20.zip",
         macOS to "UnityPlayerDebuggerTest_StandaloneOSX_2022.3.20f1_2024-Feb-26.zip"))
 }
