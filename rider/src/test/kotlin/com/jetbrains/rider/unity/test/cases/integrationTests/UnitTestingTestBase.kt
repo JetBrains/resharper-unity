@@ -23,7 +23,14 @@ import java.io.File
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 abstract class UnitTestingTestBase(private val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase() {
-    override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
+    override fun getSolutionDirectoryName(): String {
+        return if (engineVersion.isTuanjie()) {
+            "TuanjieDebugAndUnitTesting/Project"
+        }
+        else {
+            "UnityDebugAndUnitTesting/Project"
+        }
+    }
     override val majorVersion = this.engineVersion
 
     override val testClassDataDirectory: File

@@ -10,7 +10,14 @@ import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.unity.test.framework.EngineVersion
 
 abstract class PlayModeTestBase(private val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase() {
-    override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
+    override fun getSolutionDirectoryName(): String {
+        return if (engineVersion.isTuanjie()) {
+            "TuanjieDebugAndUnitTesting/Project"
+        }
+        else {
+            "UnityDebugAndUnitTesting/Project"
+        }
+    }
     override val majorVersion = this.engineVersion
 
     override val testClassDataDirectory: File

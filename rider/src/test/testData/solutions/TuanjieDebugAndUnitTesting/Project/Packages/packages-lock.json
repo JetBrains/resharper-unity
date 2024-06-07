@@ -1,0 +1,43 @@
+{
+    "dependencies": {
+        "com.unity.ext.nunit": {
+            "version": "2.0.3",
+            "depth": 1,
+            "source": "registry",
+            "dependencies": {},
+            "url": "https://packages.tuanjie.cn"
+        },
+        "com.unity.ide.rider": {
+            "version": "https://github.com/van800/com.unity.ide.rider.git?path=/Packages/com.unity.ide.rider#3.0.30",
+            "depth": 0,
+            "source": "git",
+            "dependencies": {
+                "com.unity.ext.nunit": "1.0.6"
+            },
+            "hash": "9b5aaa1ce259a7a1c69a75e2bf6cac7f9a987280"
+        },
+        "com.unity.test-framework": {
+            "version": "1.3.4",
+            "depth": 0,
+            "source": "registry",
+            "dependencies": {
+                "com.unity.ext.nunit": "2.0.3",
+                "com.unity.modules.imgui": "1.0.0",
+                "com.unity.modules.jsonserialize": "1.0.0"
+            },
+            "url": "https://packages.tuanjie.cn"
+        },
+        "com.unity.modules.imgui": {
+            "version": "1.0.0",
+            "depth": 1,
+            "source": "builtin",
+            "dependencies": {}
+        },
+        "com.unity.modules.jsonserialize": {
+            "version": "1.0.0",
+            "depth": 1,
+            "source": "builtin",
+            "dependencies": {}
+        }
+    }
+}

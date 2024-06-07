@@ -1,0 +1,7 @@
+{
+    "disableProjectUpdate": true,
+    "dependencies": {
+        "com.unity.ide.rider": "https://github.com/van800/com.unity.ide.rider.git?path=/Packages/com.unity.ide.rider#3.0.30",
+        "com.unity.test-framework": "1.3.4"
+    }
+}
