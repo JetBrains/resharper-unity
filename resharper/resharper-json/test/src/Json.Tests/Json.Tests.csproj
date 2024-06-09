@@ -31,6 +31,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <PackageReference Include="Lib.Harmony" />
+  </ItemGroup>
+  <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\..\src\Json\Json.csproj" />
   </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">

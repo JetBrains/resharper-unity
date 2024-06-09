@@ -17,7 +17,6 @@
     <DefineConstants Condition="!$(InternalBuild)">$(DefineConstants);INDEPENDENT_BUILD</DefineConstants>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <!-- ********** -->
   <ItemGroup>
     <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs">
       <Link>UnityRider\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs</Link>
@@ -33,15 +32,17 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Console" />
-    <ProjectReference Include="..\..\..\src\Unity.Rider\Unity.Rider.csproj" />
-    <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
-    <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
   </ItemGroup>
   <ItemGroup Label="References">
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup Label="ProjectReference">
+    <ProjectReference Include="..\..\..\src\Unity.Rider\Unity.Rider.csproj" />
+    <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
+    <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" Condition="!$(InternalBuild)" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" Condition="!$(InternalBuild)" />
