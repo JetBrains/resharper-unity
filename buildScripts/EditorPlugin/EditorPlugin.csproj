@@ -14,10 +14,10 @@
     <PackageReference Include="JetBrains.Lifetimes" />
     <PackageReference Include="System.Buffers" />
     <PackageReference Include="System.Collections.Immutable" />
-    <PackageReference Include="System.Text.Encoding.CodePages" />
     <PackageReference Include="System.Memory" />
     <PackageReference Include="System.Numerics.Vectors" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
+    <PackageReference Include="System.Text.Encoding.CodePages" />
     <PackageReference Include="System.Threading.Channels" />
     <PackageReference Include="System.Threading.Tasks.Extensions" />
   </ItemGroup>
