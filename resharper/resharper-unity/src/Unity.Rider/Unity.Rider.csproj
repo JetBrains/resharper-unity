@@ -34,13 +34,6 @@
     <ProjectReference Include="..\Unity.Shaders\Unity.Shaders.csproj" />
     <ProjectReference Include="..\Unity\Unity.csproj" />
   </ItemGroup>
-  <ItemGroup Label="References">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="mscorlib" />
-  </ItemGroup>
   <ItemGroup Label="EmbeddedResource">
     <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
       <Generator>JetResourceGenerator</Generator>

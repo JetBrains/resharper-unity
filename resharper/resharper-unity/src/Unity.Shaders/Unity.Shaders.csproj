@@ -48,12 +48,6 @@
   <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\Unity\Unity.csproj" />
   </ItemGroup>
-  <ItemGroup Label="References">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-    <Reference Include="mscorlib" />
-  </ItemGroup>
   <ItemGroup Label="ShaderLab">
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>

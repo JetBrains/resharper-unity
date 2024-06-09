@@ -34,12 +34,6 @@
     <PackageReference Include="JetBrains.Lifetimes" />
     <PackageReference Include="NVelocity" />
   </ItemGroup>
-  <ItemGroup Label="Reference">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-    <Reference Include="mscorlib" />
-  </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
     <RemoveDir Directories="obj" />
   </Target>

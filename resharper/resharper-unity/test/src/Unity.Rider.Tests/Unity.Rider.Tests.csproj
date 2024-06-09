@@ -33,12 +33,6 @@
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Console" />
   </ItemGroup>
-  <ItemGroup Label="References">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
   <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\..\src\Unity.Rider\Unity.Rider.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />

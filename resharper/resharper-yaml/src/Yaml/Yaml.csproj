@@ -35,10 +35,6 @@
     <PackageReference Include="NVelocity" />
     <PackageReference Include="System.Memory" />
   </ItemGroup>
-  <ItemGroup Label="Reference">
-    <Reference Include="System" />
-    <Reference Include="netstandard" />
-  </ItemGroup>
   <ItemGroup Label="Yaml">
     <PsiLanguageNames Include="Yaml">
       <Visible>False</Visible>

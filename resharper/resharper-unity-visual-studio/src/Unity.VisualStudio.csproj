@@ -15,23 +15,17 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Lifetimes" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="VSSDK.Text" />
     <PackageReference Include="VSSDK.CoreUtility" />
     <PackageReference Include="VSSDK.IDE.10" />
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="mscorlib" />
-    <Reference Include="PresentationCore" />
   </ItemGroup>
   <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\resharper-unity\src\Unity.Shaders\Unity.Shaders.csproj" />
     <ProjectReference Include="..\..\resharper-unity\src\Unity\Unity.csproj" />
+  </ItemGroup>
+  <ItemGroup Label="Reference">
+    <Reference Include="PresentationCore" />
+    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
     <RemoveDir Directories="obj" />

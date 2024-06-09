@@ -16,9 +16,6 @@
   <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\Yaml\Yaml.csproj" />
   </ItemGroup>
-  <ItemGroup Label="Reference">
-    <Reference Include="System" />
-  </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
     <RemoveDir Directories="obj" />
   </Target>
