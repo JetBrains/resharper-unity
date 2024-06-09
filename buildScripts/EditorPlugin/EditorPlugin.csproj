@@ -21,11 +21,11 @@
     <PackageReference Include="System.Threading.Channels" />
     <PackageReference Include="System.Threading.Tasks.Extensions" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\BuildInterfaces\BuildInterfaces.csproj" Project="{abcbff38-8466-41ad-9e31-93a9e56ffd18}" Name="BuildInterfaces" />
-    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\Core\Core.csproj" Project="{8e1f05d1-11b6-4230-8c11-d1cf4585560e}" Name="Core" />
-    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\Shell\Shell.csproj" Project="{6cbfb1e9-b475-4f53-a4d3-edd8edc06c33}" Name="Shell" />
-    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\ComponentModel\ComponentModel.csproj" Project="{1913DEF0-EE6E-4297-89D1-F503AEBF191F}" Name="ComponentModel" />
+  <ItemGroup Label="ProjectReference">
+    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\BuildInterfaces\BuildInterfaces.csproj" />
+    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\ComponentModel\ComponentModel.csproj" />
+    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\Core\Core.csproj" />
+    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\Shell\Shell.csproj" />
     <ProjectReference Include="..\..\..\..\Rider\Rider.Backend\Rider.Backend\Rider.Backend.csproj" />
   </ItemGroup>
   <Import Project="ManagedProject.Generated.Targets" />
