@@ -10,7 +10,7 @@ import com.intellij.openapi.rd.createLifetime
 import com.intellij.ui.awt.RelativePoint
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
-import com.jetbrains.rdclient.document.getFirstDocumentId
+import com.jetbrains.rdclient.document.getDocumentId
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.*
@@ -62,7 +62,7 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
 
     override fun showPopup(pointOnComponent: Point) {
         UnityProjectLifetimeService.getScope(project).launch(Dispatchers.EDT, CoroutineStart.UNDISPATCHED) {
-            val id = editor.document.getFirstDocumentId(project) ?: return@launch
+            val id = editor.document.getDocumentId(project) ?: return@launch
             val activity = ShaderVariantEventLogger.logShowShaderContextsPopupStarted(project)
             try {
                 val model = project.solution.frontendBackendModel

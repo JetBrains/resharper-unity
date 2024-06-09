@@ -11,7 +11,7 @@ import com.jetbrains.rd.ide.model.TextControlId
 import com.jetbrains.rd.ide.model.TextControlModel
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.put
-import com.jetbrains.rdclient.document.getFirstDocumentId
+import com.jetbrains.rdclient.document.getDocumentId
 import com.jetbrains.rdclient.editors.FrontendTextControlHostListener
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderVariantExtension
@@ -52,7 +52,7 @@ class ShaderVariantsHost : ProjectActivity, FrontendTextControlHostListener {
                   ShaderVariantInteractionOrigin.QuickFix -> RelativePoint(editor.contentComponent, editor.offsetToXY(editor.caretModel.offset))
                   else -> throw IllegalStateException("showShaderVariantInteraction may not have Widget origin")
                 }
-                if (editor.document.getFirstDocumentId(project) == params.documentId) {
+                if (editor.document.getDocumentId(project) == params.documentId) {
                     ShaderVariantPopup.show(lifetime, project, editor, params, showAt)
                 }
             }

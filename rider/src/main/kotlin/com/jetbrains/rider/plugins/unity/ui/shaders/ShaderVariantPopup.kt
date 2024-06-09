@@ -22,7 +22,7 @@ import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rdclient.document.getFirstDocumentId
+import com.jetbrains.rdclient.document.getDocumentId
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.common.ui.ToggleButtonModel
@@ -81,7 +81,7 @@ class ShaderVariantPopup(private val project: Project,
         }
 
         fun show(lifetime: Lifetime, project: Project, editor: Editor, showAt: RelativePoint) {
-            val documentId = editor.document.getFirstDocumentId(project) ?: return
+            val documentId = editor.document.getDocumentId(project) ?: return
             show(lifetime, project, editor, ShowShaderVariantInteractionArgs(documentId, editor.caretModel.offset, ShaderVariantInteractionOrigin.Widget, null), showAt)
         }
     }
