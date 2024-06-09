@@ -13,8 +13,33 @@
     <LangVersion>9</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
-  <!-- ********** -->
-  <ItemGroup>
+  <ItemGroup Label="BuildScript">
+    <None Remove="BuildScript\**" />
+  </ItemGroup>
+  <ItemGroup Label="EmbeddedResource">
+    <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Strings.resx" Condition="!$(InternalBuild)">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Remove="BuildScript\**" />
+  </ItemGroup>
+  <ItemGroup Label="PackageReference">
+    <PackageReference Include="Antlr2.Runtime" />
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.Build.Platform.DistributedCache" />
+    <PackageReference Include="JetBrains.Lifetimes" />
+    <PackageReference Include="NVelocity" />
+    <PackageReference Include="System.Memory" />
+  </ItemGroup>
+  <ItemGroup Label="Reference">
+    <Reference Include="System" />
+    <Reference Include="netstandard" />
+  </ItemGroup>
+  <ItemGroup Label="Yaml">
     <PsiLanguageNames Include="Yaml">
       <Visible>False</Visible>
     </PsiLanguageNames>
@@ -35,39 +60,6 @@
       <DependentUpon>YamlErrors.xml</DependentUpon>
     </Compile>
     <Compile Remove="BuildScript\**" />
-  </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
-      <Generator>JetResourceGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Strings.resx" Condition="!$(InternalBuild)">
-      <Generator>JetResourceGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Remove="BuildScript\**" />
-  </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" />
-    <PackageReference Include="JetBrains.Lifetimes" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="System.Memory" />
-    <Reference Include="System" />
-    <Reference Include="netstandard" />
-
-    <!-- CsLex task -->
-    <PackageReference Include="JetBrains.Build.Platform.DistributedCache" />
-    <!-- ParserGen task -->
-    <PackageReference Include="Antlr2.Runtime" />
-    <PackageReference Include="NVelocity" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="BuildScript\**" />
   </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
     <RemoveDir Directories="obj" />

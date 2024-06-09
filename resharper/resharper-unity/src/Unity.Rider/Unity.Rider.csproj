@@ -13,38 +13,35 @@
     <LangVersion>12</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
-  <!-- ********** -->
   <ItemGroup Label="Model">
     <Compile Include="..\..\..\build\generated\Model\**\*" LinkBase="Model" Condition="!$(InternalBuild)" />
     <Compile Include="..\..\..\..\unity\EditorPlugin\NonUnity\ProtocolCompatibility.cs">
       <Link>Protocol\ProtocolCompatibility.cs</Link>
     </Compile>
   </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup Label="References">
-    <PackageReference Include="System.Collections.Immutable" />
+  <ItemGroup Label="PackageReference">
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="JetBrains.HabitatDetector" />
     <PackageReference Include="JetBrains.Lifetimes" />
-    <PackageReference Include="JetBrains.ReSharper.TestRunner.Abstractions" />
     <PackageReference Include="JetBrains.RdFramework" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="JetBrains.ReSharper.TestRunner.Abstractions" />
     <PackageReference Include="Newtonsoft.Json" />
-    <ProjectReference Include="..\Unity\Unity.csproj" />
-    <ProjectReference Include="..\Unity.Shaders\Unity.Shaders.csproj" />
+    <PackageReference Include="System.Collections.Immutable" />
+  </ItemGroup>
+  <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\..\resharper-json\src\Json.Rider\Json.Rider.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj" />
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="mscorlib" />
-    <Reference Include="WindowsBase" />
+    <ProjectReference Include="..\Unity.Shaders\Unity.Shaders.csproj" />
+    <ProjectReference Include="..\Unity\Unity.csproj" />
   </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup Label="Resources">
+  <ItemGroup Label="References">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="mscorlib" />
+  </ItemGroup>
+  <ItemGroup Label="EmbeddedResource">
     <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
       <Generator>JetResourceGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>

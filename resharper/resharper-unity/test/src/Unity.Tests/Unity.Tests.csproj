@@ -17,26 +17,25 @@
     <DefineConstants Condition="!$(InternalBuild)">$(DefineConstants);INDEPENDENT_BUILD</DefineConstants>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <!-- ********** -->
-  <ItemGroup>
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
+  <ItemGroup Label="PackageReference">
     <PackageReference Include="JetBrains.Lifetimes" />
     <PackageReference Include="JetBrains.NuGet.Packaging" />
+    <PackageReference Include="Lib.Harmony" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Console" />
-    <PackageReference Include="Lib.Harmony" />
     <PackageReference Include="System.Collections.Immutable" />
-    <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
+  </ItemGroup>
+  <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
+    <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
+  </ItemGroup>
+  <ItemGroup Label="Reference">
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
     <RemoveDir Directories="obj" />

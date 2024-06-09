@@ -14,7 +14,46 @@
     <!-- We still have lots of obsolete warnings from ParserGen, and disabling obsolete warnings totally is too broad -->
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
-  <!-- ********** -->
+  <ItemGroup Label="EmbeddedResource">
+    <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Strings.resx" Condition="!$(InternalBuild)">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup Label="Live templates">
+    <LiveTemplate Include="Templates\**\*.md">
+      <OutputFile>Templates\templates.generated.dotSettings</OutputFile>
+      <ReadmeFile>Templates\README.md</ReadmeFile>
+    </LiveTemplate>
+    <EmbeddedResource Include="Templates\templates.generated.dotSettings">
+      <LogicalName>JetBrains.ReSharper.Plugins.Unity.Shaders.Templates.templates.dotSettings</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup Label="PackageReference">
+    <PackageReference Include="Antlr2.Runtime" />
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.Build.Platform.DistributedCache" />
+    <PackageReference Include="JetBrains.Lifetimes" />
+    <PackageReference Include="NVelocity" />
+    <PackageReference Include="System.Collections.Immutable" />
+    <PackageReference Include="System.Memory" />
+  </ItemGroup>
+  <ItemGroup Label="ProjectReference">
+    <ProjectReference Include="..\Unity\Unity.csproj" />
+  </ItemGroup>
+  <ItemGroup Label="References">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="mscorlib" />
+  </ItemGroup>
   <ItemGroup Label="ShaderLab">
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
@@ -43,51 +82,6 @@
     <Compile Update="ShaderLab\Daemon\Errors\ShaderLabCSharpErrors.generated.cs">
       <DependentUpon>ShaderLabCSharpErrors.xml</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup Label="Live templates">
-    <LiveTemplate Include="Templates\**\*.md">
-      <OutputFile>Templates\templates.generated.dotSettings</OutputFile>
-      <ReadmeFile>Templates\README.md</ReadmeFile>
-    </LiveTemplate>
-    <EmbeddedResource Include="Templates\templates.generated.dotSettings">
-      <LogicalName>JetBrains.ReSharper.Plugins.Unity.Shaders.Templates.templates.dotSettings</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup Label="References">
-    <PackageReference Include="JetBrains.Annotations" />
-    <PackageReference Include="JetBrains.Lifetimes" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="System.Collections.Immutable" />
-    <PackageReference Include="System.Memory" />
-    <ProjectReference Include="..\Unity\Unity.csproj" />
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="mscorlib" />
-
-    <!-- CsLex task -->
-    <PackageReference Include="JetBrains.Build.Platform.DistributedCache" />
-    <!-- ParserGen task -->
-    <PackageReference Include="Antlr2.Runtime" />
-    <PackageReference Include="NVelocity" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
-      <Generator>JetResourceGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Strings.resx" Condition="!$(InternalBuild)">
-      <Generator>JetResourceGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
     <RemoveDir Directories="obj" />

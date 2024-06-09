@@ -14,7 +14,43 @@
     <LangVersion>12</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
-  <!-- ********** -->
+  <ItemGroup Label="AsmDef">
+    <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
+      <OutputFile>AsmDef\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="AsmDef\Daemon\Errors\AsmDefErrors.generated.cs">
+      <DependentUpon>AsmDefErrors.xml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup Label="EmbeddedResource">
+    <EmbeddedResource Include="UnityEditorIntegration\Api\api.xml" />
+    <None Remove="api.xml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatterns.xaml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatternsWithRegions.xaml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx" Condition="$(InternalBuild)">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx" Condition="!$(InternalBuild)">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
+    <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
+    <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Strings.resx" Condition="!$(InternalBuild)">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup Label="C#">
     <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
@@ -57,46 +93,6 @@
       <DependentUpon>GutterMarkInfos.xml</DependentUpon>
     </Compile>
   </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup Label="AsmDef">
-    <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
-      <OutputFile>AsmDef\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
-      <Mode>ERRORS</Mode>
-    </ErrorsGen>
-    <Compile Update="AsmDef\Daemon\Errors\AsmDefErrors.generated.cs">
-      <DependentUpon>AsmDefErrors.xml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup Label="Resources">
-    <EmbeddedResource Include="UnityEditorIntegration\Api\api.xml" />
-    <None Remove="api.xml" />
-    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatterns.xaml" />
-    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatternsWithRegions.xaml" />
-    <EmbeddedResource Include="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx" Condition="$(InternalBuild)">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx" Condition="!$(InternalBuild)">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
-    <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
-    <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
-      <Generator>JetResourceGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Strings.resx" Condition="!$(InternalBuild)">
-      <Generator>JetResourceGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <!-- ********** -->
   <ItemGroup Label="Live templates">
     <LiveTemplate Include="Templates\**\*.md">
       <OutputFile>Templates\templates.generated.dotSettings</OutputFile>
@@ -107,7 +103,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="References">
+  <ItemGroup Label="PackageReference">
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -116,22 +112,22 @@
     <PackageReference Include="JetBrains.Lifetimes" />
     <PackageReference Include="JetBrains.RdFramework" />
     <PackageReference Include="JetBrains.Vestris.ResourceLib" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="System.Collections.Immutable" />
     <PackageReference Include="System.Memory" />
-    <Reference Include="System.Xaml" />
+  </ItemGroup>
+  <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\..\..\..\..\Platform\Core\Shell\Util.NetFX\Util.NetFX.csproj" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
+  </ItemGroup>
+  <ItemGroup Label="References">
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="mscorlib" />
   </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
