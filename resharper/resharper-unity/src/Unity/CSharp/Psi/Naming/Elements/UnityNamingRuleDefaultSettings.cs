@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
@@ -11,7 +12,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityNamingRuleDefaultSettings(ILogger logger, ISettingsSchema settingsSchema)
         : HaveDefaultSettings(settingsSchema, logger)
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.Diagnostics;
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 {
     // Defines settings for the Unity QuickList, or we don't get a QuickList at all
     // Note that the QuickList can be empty, but it's still required
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityQuickListDefaultSettings : HaveDefaultSettings
     {
         private readonly ILogger myLogger;
