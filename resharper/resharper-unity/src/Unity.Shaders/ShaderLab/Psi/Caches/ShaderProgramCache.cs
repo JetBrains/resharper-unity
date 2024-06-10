@@ -31,8 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 {
     [PsiComponent]
     public class ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, UnityDialects dialects)
-        : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, VirtualFileSystemPath>(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated"),
-            IBuildMergeParticipant<IPsiSourceFile>
+        : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, VirtualFileSystemPath>(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
     {
         // Multiple source files may have same virtual file system path and so may have clashing CppFileLocations which are path based. We have to count how many times path used and invalidate locations on any of source file change 
         private readonly Dictionary<VirtualFileSystemPath, (int Count, ImmutableArray<CppFileLocation> Locations)> myPathToLocations = new(); 

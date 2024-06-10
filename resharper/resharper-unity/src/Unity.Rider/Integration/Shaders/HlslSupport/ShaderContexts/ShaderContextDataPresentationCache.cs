@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
     [SolutionComponent]
     public class ShaderContextDataPresentationCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager)
         : SimplePsiSourceFileCacheWithLocalCache<List<ShaderContextDataPresentationCache.CacheItem>, ShaderContextDataPresentationCache.ShaderFileInfo>(lifetime, shellLocks, persistentIndexManager,
-            UnsafeMarshallers.GetCollectionMarshaller(Read, Write, c => new List<CacheItem>(c)), "Unity::Shaders::ShaderContextDataPresentationCacheUpdated"), IBuildMergeParticipant<IPsiSourceFile>
+            UnsafeMarshallers.GetCollectionMarshaller(Read, Write, c => new List<CacheItem>(c)), "Unity::Shaders::ShaderContextDataPresentationCacheUpdated")
     {
         private static CacheItem Read(UnsafeReader reader) => new(new TextRange(reader.ReadInt32(), reader.ReadInt32()), new ShaderFileEntryInfo(reader.ReadInt32(), reader.ReadInt32(), reader.ReadString()));
 
