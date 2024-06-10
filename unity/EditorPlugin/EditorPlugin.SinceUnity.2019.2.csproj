@@ -16,10 +16,6 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.Ref.2019.2.0f1" />
     <PackageReference Include="JetBrains.Build.ILRepack" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="NUnit" />
   </ItemGroup>
   <ItemGroup>

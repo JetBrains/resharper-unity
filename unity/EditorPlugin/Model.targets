@@ -1,10 +1,14 @@
 ﻿<Project>
+  <PropertyGroup>
+    <InternalBuild Condition="'$(SolutionFileName)' != 'resharper-unity.sln' AND '$(SolutionFileName)' != 'JetBrains.Rider.Unity.Editor.sln' AND '$(SolutionFileName)' != 'tools.sln' AND '$(SolutionFileName)' != 'resharper-unity-fleet.sln' AND '$(SolutionFileName)' != 'DebuggerTools.sln'">True</InternalBuild>
+    <InternalBuild Condition="$(InternalBuild) == ''">False</InternalBuild>
+  </PropertyGroup>
   <ItemGroup Label="Model">
     <Compile Include="..\build\generated\Model\**\*" LinkBase="Model">
         <Visible>False</Visible>
     </Compile>
   </ItemGroup>
-  <ItemGroup Label="ModelInternal" Condition="Exists('..\..\..\_Unity.Pregenerated\UnityModel\unity')">
+  <ItemGroup Label="ModelInternal" Condition="$(InternalBuild)">
     <Compile Include="..\..\..\_Unity.Pregenerated\UnityModel\unity\**\*" LinkBase="Model">
       <Visible>False</Visible>
     </Compile>
