@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         // to push it to the end of the list
         private const int Priority = -200;
 
-        public UnityScopeCategoryUIProvider(IReadOnlyList<IUnityAdditionalTemplateScopePointsProvider> scopePointsProviders)
+        public UnityScopeCategoryUIProvider(ILazyEnumerable<IUnityAdditionalTemplateScopePointsProvider> scopePointsProviders)
             : base(LogoIcons.Unity.Id)
         {
             MainPoint = new InUnityCSharpProject();
