@@ -1,4 +1,5 @@
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
@@ -9,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Settings
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityDefaultPerformanceThresholdSettingsProvider : HaveDefaultSettings
     {
         public UnityDefaultPerformanceThresholdSettingsProvider(ILogger logger, ISettingsSchema settingsSchema)
