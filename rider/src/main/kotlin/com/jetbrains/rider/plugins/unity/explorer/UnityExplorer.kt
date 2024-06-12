@@ -107,7 +107,6 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
 
     // Adds to the tool window toolbar
     override fun addToolbarActions(actionGroup: DefaultActionGroup) {
-        actionGroup.addAction(ConfigureScratchesAction()).setAsSecondary(true)
         actionGroup.addAction(SolutionViewToggleAction(
             UnityPluginActionsBundle.message("action.show.project.names.text"),
             UnityPluginActionsBundle.message("action.show.project.names.description"),
