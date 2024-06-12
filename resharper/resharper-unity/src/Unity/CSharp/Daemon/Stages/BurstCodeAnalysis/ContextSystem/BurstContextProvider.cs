@@ -35,10 +35,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             if (IsContextAvailable == false)
                 return false;
-            // there is problem:
-            // due to root-ban check at not-merged state we have 2 data for graph - local data and index
-            // they checks marks independently on their data
-            // and the result on not-merged and merged state MAY DIFFER, for e.x. index has strict ban while data not
+            // there is a problem:
+            // due to root-ban check at not-merged state, we have 2 data for graph - local data and index
+            // they check marks independently on their data,
+            // and the result on not-merged and merged state MAY DIFFER, for e.x.: index has a strict ban while data not
             // !!BUT!!!
             // cuz strictly banned at only at function declaration, it is impossible for index data to differ from local data very hard
             // only partial functions may result in false positives

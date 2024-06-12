@@ -128,7 +128,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 while (burstableLambda is ILambdaExpression lambdaExpression)
                 {
                     result.Add(lambdaExpression.DeclaredElement);
-                    burstableLambda = burstableLambda.GetContainingNode<IInvocationExpression>()?.NextSibling?.FindNextNode(FindBurstableLambdaNode);
+                    burstableLambda = burstableLambda
+                        .GetContainingNode<IInvocationExpression>()?
+                        .NextSibling?.FindNextNode(FindBurstableLambdaNode);
                 }
             }
         }
@@ -143,10 +145,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var invocationExpression = lambdaExpression.GetContainingNode<IInvocationExpression>();
             if (invocationExpression == null)
                 return TreeNodeActionType.CONTINUE;
-            
+
             if (invocationExpression.IsJobWithCodeMethod() ||
-                invocationExpression.IsEntitiesForEach())
+                (invocationExpression.IsEntitiesForEach() && !invocationExpression.IsInsideRunWithoutBurstForeach()))
+            {
                 return TreeNodeActionType.ACCEPT;
+            }
 
             return TreeNodeActionType.CONTINUE;
         }
@@ -203,17 +207,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             var result = myStrictlyBannedMarkProvider.GetBanMarksFromNode(currentNode, containingFunction);
 
-            if (containingFunction == null)
-                return result;
+            switch (currentNode)
+            {
+                case ILambdaExpression lambdaExpression:
+                {
+                    if (BurstCodeAnalysisUtil.IsWithoutBurstForEachLambdaExpression(lambdaExpression))
+                        result.Add(lambdaExpression.DeclaredElement);
+                    break;
+                }
+                case IFunctionDeclaration { DeclaredElement: { } function } functionDeclaration :
+                {
+                    if (containingFunction == null)
+                        break;
+                    if (CheckBurstBannedAnalyzers(functionDeclaration))
+                        result.Add(function);
+                    break;
+                }
+            }
 
-            var functionDeclaration = currentNode as IFunctionDeclaration;
-            var function = functionDeclaration?.DeclaredElement;
-
-            if (function == null)
-                return result;
-
-            if (CheckBurstBannedAnalyzers(functionDeclaration))
-                result.Add(function);
 
             return result;
         }

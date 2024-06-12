@@ -261,5 +261,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             return true;
         }
+
+        public static bool IsWithoutBurstForEachLambdaExpression(ILambdaExpression lambdaExpression)
+        {
+            var invocationExpression = lambdaExpression.GetContainingNode<IInvocationExpression>();
+            
+            if (invocationExpression == null)
+                return false;
+            
+            return invocationExpression.IsEntitiesForEach() &&
+                   invocationExpression.IsInsideRunWithoutBurstForeach();
+        }
     }
 }

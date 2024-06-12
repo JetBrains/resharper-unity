@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp
@@ -235,6 +236,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         {
             return IsRelatedMethod(invocationExpression.InvocationExpressionReference, IsEntitiesForEach);
         }
+        private static bool IsEntitiesForEachWithoutBurst(this IInvocationExpression invocationExpression)
+        {
+            return IsRelatedMethod(invocationExpression.InvocationExpressionReference, IsEntitiesForEachWithoutBurst);
+        }
+        
+        public static bool IsInsideRunWithoutBurstForeach(this ITreeNode treeNode)
+        {
+            var invocationExpression = treeNode.GetContainingNode<IInvocationExpression>(returnThis: true);
+            while (invocationExpression != null)
+            {
+                if (invocationExpression.IsEntitiesForEachWithoutBurst())
+                    return true;
+
+                invocationExpression = invocationExpression.GetContainingNode<IInvocationExpression>();
+            }
+
+            return false;
+        }
         
         public static bool IsSystemApiQuery(this IInvocationExpression invocationExpression)
         {
@@ -316,6 +335,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         {
             return method is { ShortName: "ForEach" } &&
                    method.ContainingType?.GetClrName().Equals(KnownTypes.LambdaForEachDescriptionConstructionMethods) == true;
+        }
+        
+        private static bool IsEntitiesForEachWithoutBurst(IMethod method)
+        {
+            return method is { ShortName: "WithoutBurst" } &&
+                   method.ContainingType?.GetClrName().Equals(KnownTypes.LambdaJobDescriptionConstructionMethods) == true;
         }
         
         private static bool IsSystemApiQuery(IMethod method)

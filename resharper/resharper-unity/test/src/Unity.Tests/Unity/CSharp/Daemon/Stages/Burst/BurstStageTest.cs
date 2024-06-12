@@ -33,5 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Burst
         [Test] public void IssueRider2181() { DoNamedTest(); }
         
         [Test] public void BugRider106221() { DoNamedTest(); }
+        
+        [Test] public void BugRider113317WithoutBurst() { DoNamedTest(); }
     }
 }

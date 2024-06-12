@@ -1,0 +1,113 @@
+﻿using System;
+using System.Collections.Generic;
+using Unity.Entities;
+using Unity.Entities.CodeGeneratedJobForEach;
+using Unity.Entities.UniversalDelegates;
+
+namespace UnityEngine
+{
+    public class Debug
+    {
+        public static void Log(object message)
+        {
+        }
+    }
+}
+
+namespace Unity
+{
+
+    namespace Entities
+    {
+        namespace UniversalDelegates
+        {
+            public delegate void Empty();
+        }
+        
+        namespace CodeGeneratedJobForEach
+        {
+            public interface ILambdaJobDescription {}
+            public interface ILambdaJobExecutionDescription {}
+        }
+        
+
+        public abstract partial class ComponentSystemBase
+        {
+        }
+
+        public struct ForEachLambdaJobDescription : ILambdaJobDescription, ILambdaJobExecutionDescription
+        {
+        }
+
+        public abstract partial class SystemBase : ComponentSystemBase
+        {
+            protected internal ForEachLambdaJobDescription Entities;
+            protected abstract void OnUpdate();
+        }
+        
+        public delegate void RI<T0, T1>(ref T0 t0, in T1 t1);
+
+        public static  class LambdaForEachDescriptionConstructionMethods
+        {
+            public static TDescription ForEach<TDescription, T0, T1>(this TDescription description,
+                RI<T0, T1> codeToRun) where TDescription : struct
+            {
+                return default;
+            }
+
+            public static TDescription ForEach<TDescription>(this TDescription description, Empty codeToRun)
+                where TDescription : struct
+            {
+                return default;
+            }
+        }
+
+        public static class LambdaJobDescriptionConstructionMethods
+        {
+            public static TDescription WithoutBurst<TDescription>(this TDescription description) where TDescription : ILambdaJobDescription => description;
+           // public static TDescription WithBurst<TDescription>(this TDescription description, FloatMode floatMode = FloatMode.Default, FloatPrecision floatPrecision = FloatPrecision.Standard, bool synchronousCompilation = false) where TDescription : ILambdaJobDescription => description;
+        }
+
+        public static class LambdaJobDescriptionExecutionMethods
+        {
+            public static void Run<TDescription>(this TDescription description) where TDescription : ILambdaJobExecutionDescription {};
+        }
+
+
+    }
+
+    namespace Burst
+    {
+        public class BurstCompileAttribute : Attribute
+        {
+        }
+
+        public class BurstDiscardAttribute : Attribute
+        {
+        }
+    }
+}
+
+public partial class ECSSystem : SystemBase
+{
+    protected override void OnUpdate()
+    {
+            Entities.ForEach(() =>
+                {
+                    // --- Must be no burst warnings ---\\
+                    var current = new object();
+                    UnityEngine.Debug.Log(typeof(int)); 
+                    GeneratePosition(4, 2.0f);
+                    //-----------------------------------\\
+                })  
+            .WithoutBurst()
+            .Run();
+    }
+
+    private static void GeneratePosition(int position, float velocity)
+    {
+        var l = new List<int>();
+    }
+}
+
+---------------------------------------------------------

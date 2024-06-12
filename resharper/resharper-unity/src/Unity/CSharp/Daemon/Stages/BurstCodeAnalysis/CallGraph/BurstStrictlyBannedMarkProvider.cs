@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
@@ -35,17 +36,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             var result = base.GetBanMarksFromNode(currentNode, containingFunction);
 
-            if (containingFunction == null)
-                return result;
-
-            var functionDeclaration = currentNode as IFunctionDeclaration;
-            var function = functionDeclaration?.DeclaredElement;
-
-            if (function == null)
-                return result;
-
-            if (BurstCodeAnalysisUtil.IsBurstProhibitedFunction(function))
-                result.Add(function);
+            switch (currentNode)
+            {
+                case ILambdaExpression lambdaExpression:
+                {
+                    if (BurstCodeAnalysisUtil.IsWithoutBurstForEachLambdaExpression(lambdaExpression))
+                        result.Add(lambdaExpression.DeclaredElement);
+                    break;
+                }
+                case IFunctionDeclaration { DeclaredElement: { } function }:
+                {
+                    if (containingFunction == null)
+                        break;
+                    if (BurstCodeAnalysisUtil.IsBurstProhibitedFunction(function))
+                        result.Add(function);
+                    break;
+                }
+            }
 
             return result;
         }
