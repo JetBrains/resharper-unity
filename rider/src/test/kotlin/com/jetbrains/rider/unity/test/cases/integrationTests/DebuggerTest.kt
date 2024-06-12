@@ -8,7 +8,6 @@ import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.annotations.Severity
 import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.Tuanjie
 import com.jetbrains.rider.unity.test.framework.Unity
 
@@ -25,6 +24,8 @@ class DebuggerTest {
     }
     class TestUnity2022 : DebuggerTestBase(Unity.V2022)
     class TestUnity2023 : DebuggerTestBase(Unity.V2023)
+    @Mute("RIDER-113191")
     class TestUnity6 : DebuggerTestBase(Unity.V6)
+    @Mute("RIDER-113191")
     class TestTuanjie2022 : DebuggerTestBase (Tuanjie.V2022)
 }

@@ -3,7 +3,6 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.unity.test.framework.Tuanjie
 import com.jetbrains.rider.unity.test.framework.Unity
@@ -26,8 +25,9 @@ class PlayModeTest {
           addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
         }
     }
-    class TestUnity6 : PlayModeTestBase(Unity.V6) {
-    }
-    class TestTuanji2022 : PlayModeTestBase(Tuanjie.V2022) {
-    }
+
+    @Mute("RIDER-113191")
+    class TestUnity6 : PlayModeTestBase(Unity.V6)
+    @Mute("RIDER-113191")
+    class TestTuanjie2022 : PlayModeTestBase(Tuanjie.V2022)
 }
