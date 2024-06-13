@@ -26,7 +26,7 @@ internal object MetadataStorageImpl: MetadataStorageBase() {
         
         addMetadata(typeMetadata)
         
-        typeMetadata = EntityMetadata(fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity", entityDataFqName = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntityData", supertypes = listOf("com.intellij.platform.workspace.storage.WorkspaceEntity"), properties = listOf(OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "entitySource", valueType = ValueTypeMetadata.SimpleType.CustomType(isNullable = false, typeMetadata = FinalClassMetadata.KnownClass(fqName = "com.intellij.platform.workspace.storage.EntitySource")), withDefault = false),
+        typeMetadata = EntityMetadata(fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity", entityDataFqName = "com.jetbrains.rider.plugins.unity.workspace.impl.UnityPackageEntityData", supertypes = listOf("com.intellij.platform.workspace.storage.WorkspaceEntity"), properties = listOf(OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "entitySource", valueType = ValueTypeMetadata.SimpleType.CustomType(isNullable = false, typeMetadata = FinalClassMetadata.KnownClass(fqName = "com.intellij.platform.workspace.storage.EntitySource")), withDefault = false),
 OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "descriptor", valueType = ValueTypeMetadata.SimpleType.CustomType(isNullable = false, typeMetadata = FinalClassMetadata.ClassMetadata(fqName = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage", properties = listOf(OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "id", valueType = primitiveTypeStringNotNullable, withDefault = false),
 OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "version", valueType = primitiveTypeStringNotNullable, withDefault = false),
 OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "packageFolderPath", valueType = primitiveTypeStringNullable, withDefault = false),
@@ -52,7 +52,7 @@ OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = 
     }
 
     override fun initializeMetadataHash() {
-        addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity", metadataHash = 142577515)
+        addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity", metadataHash = -2040665757)
         addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage", metadataHash = -572504383)
         addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource", metadataHash = -217023979)
         addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityGitDetails", metadataHash = -55238709)
