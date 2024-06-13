@@ -399,9 +399,9 @@ fun waitConnectionToUnityEditor(project: Project) {
     frameworkLogger.info("unityHost is initialized.")
 }
 
-fun BaseTestWithSolutionBase.checkSweaInSolution(project: Project) {
+fun checkSweaInSolution(project: Project) {
     changeFileSystem2(project) { arrayOf(project.solutionDirectory.resolve("Assembly-CSharp.csproj")) }
-    checkSwea(project)
+  checkSwea(project, 0)
 }
 
 fun BaseTestWithSolution.checkSweaInSolution() = checkSweaInSolution(project)
