@@ -33,6 +33,7 @@ public class CompileEditorPluginBuildStep
                 .AppendSwitch("Release")
                 .AppendSwitch("--force")
                 .AppendSwitch("--no-incremental")
+                .AppendSwitch("-p:InternalBuild=true")
                 .AppendFileName(solution);
         
             var shellName = PlatformUtil.IsRunningUnderWindows
