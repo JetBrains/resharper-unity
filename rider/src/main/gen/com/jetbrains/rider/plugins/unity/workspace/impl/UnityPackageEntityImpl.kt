@@ -29,7 +29,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSourc
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 
 @GeneratedCodeApiVersion(3)
-@GeneratedCodeImplVersion(5)
+@GeneratedCodeImplVersion(6)
 @OptIn(WorkspaceEntityInternalApi::class)
 internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData) : UnityPackageEntity, WorkspaceEntityBase(
   dataSource) {
