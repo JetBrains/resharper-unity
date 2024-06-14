@@ -5,14 +5,15 @@ package com.jetbrains.rider.plugins.unity.workspace.impl
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.backend.workspace.virtualFile
 import com.intellij.platform.workspace.jps.entities.ContentRootEntity
+import com.intellij.platform.workspace.storage.ConnectionId
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.GeneratedCodeImplVersion
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.platform.workspace.storage.WorkspaceEntity
+import com.intellij.platform.workspace.storage.WorkspaceEntityInternalApi
 import com.intellij.platform.workspace.storage.annotations.Child
-import com.intellij.platform.workspace.storage.impl.ConnectionId
 import com.intellij.platform.workspace.storage.impl.EntityLink
 import com.intellij.platform.workspace.storage.impl.ModifiableWorkspaceEntityBase
 import com.intellij.platform.workspace.storage.impl.WorkspaceEntityBase
@@ -29,6 +30,7 @@ import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 
 @GeneratedCodeApiVersion(3)
 @GeneratedCodeImplVersion(5)
+@OptIn(WorkspaceEntityInternalApi::class)
 internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData) : UnityPackageEntity, WorkspaceEntityBase(
   dataSource) {
 
@@ -172,6 +174,7 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
   }
 }
 
+@OptIn(WorkspaceEntityInternalApi::class)
 internal class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
   lateinit var descriptor: UnityPackage
 
