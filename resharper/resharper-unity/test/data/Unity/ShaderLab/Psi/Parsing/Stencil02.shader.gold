@@ -4,7 +4,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Red")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"Red")
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -25,14 +25,14 @@ IShaderLabFile
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IStringLiteralTagDeclaration
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"RenderType")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"RenderType")
                     ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Opaque")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"Opaque")
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IStringLiteralTagDeclaration
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Queue")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"Queue")
                     ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Geometry")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"Geometry")
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "

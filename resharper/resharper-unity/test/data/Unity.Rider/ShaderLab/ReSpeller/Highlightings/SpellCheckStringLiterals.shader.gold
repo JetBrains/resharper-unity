@@ -1,0 +1,49 @@
+Shader "TestCases/|Spiell|(0)Check"
+{
+    // |Spiell|(1)Check shader
+    Properties
+    {
+        _Main|Textue|(2) ("Main Texture (RGB)", 2D) = "|whitte|(3)" {} // Typo: should be _MainTex
+        _Color ("Tint Color", Color) = (1,1,1,1)
+        _|Shiney|(4) ("|Shinins|(5)", Range(0.03, 1)) = 0.078125 // Typo: should be _Shininess
+    }
+
+    SubShader
+    {
+        Tags { "RenderType" = "|Opafque|(6)" }
+        LOD 200
+
+        CGPROGRAM
+#pragma surface surf Standard fullforwardshadows
+
+        struct Input
+        {
+            float2 uv_MainTextue; // Typo: should be uv_MainTex
+        };
+
+        sampler2D _MainTextue; // Typo: should be _MainTex
+        half4 _Color;
+        half _Shiney; // Typo: should be _Shininess
+
+        void surf (Input IN, inout SurfaceOutputStandard o)
+        {
+            half4 c = tex2D(_MainTextue, IN.uv_MainTextue) * _Color; // Typos
+            o.Albedo = c.rgb;
+            o.Alpha = c.a;
+            o.Metallic = _Shiney; // Typo
+        }
+        ENDCG
+    }
+// |incorrect phrase part|(7) should be detected
+    FallBack "|Difuse|(8)"
+}
+---------------------------------------------------------
+(0): ReSharper Suggestion: Typo in string: 'Spiell'
+(1): ReSharper Suggestion: Typo in comment: 'Spiell'
+(2): ReSharper Suggestion: Typo in identifier: 'Textue'
+(3): ReSharper Suggestion: Typo in string: 'whitte'
+(4): ReSharper Suggestion: Typo in identifier: 'Shiney'
+(5): ReSharper Suggestion: Typo in string: 'Shinins'
+(6): ReSharper Suggestion: Typo in string: 'Opafque'
+(7): ReSharper Suggestion: Grammar mistake: 'incorrect phrase part'
+(8): ReSharper Suggestion: Typo in string: 'Difuse'

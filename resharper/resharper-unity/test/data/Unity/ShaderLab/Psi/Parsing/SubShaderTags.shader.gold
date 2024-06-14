@@ -4,7 +4,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -26,18 +26,18 @@ IShaderLabFile
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IStringLiteralTagDeclaration
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Foo")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"Foo")
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Bar")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"Bar")
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IStringLiteralTagDeclaration
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Thing")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"Thing")
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Other Thing")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"Other Thing")
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -49,11 +49,11 @@ IShaderLabFile
                   ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IStringLiteralTagDeclaration
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Something")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"Something")
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -83,11 +83,11 @@ IShaderLabFile
                       Identifier(type:IDENTIFIER, text:OtherIdentifier)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IStringLiteralTagDeclaration
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"string literal")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"string literal")
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"other string literal")
+                    StringLiteralTokenElement(type:STRING_LITERAL, text:"other string literal")
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"

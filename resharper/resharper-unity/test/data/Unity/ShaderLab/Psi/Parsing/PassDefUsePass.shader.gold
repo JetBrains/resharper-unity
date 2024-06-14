@@ -4,7 +4,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"Unlit/SingleColor")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -22,7 +22,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_Color)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Main Color")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Main Color")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
@@ -65,7 +65,7 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:USEPASS_KEYWORD, text:UsePass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IQualifiedPassReferenceElement
-                  ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyPassName")
+                  StringLiteralTokenElement(type:STRING_LITERAL, text:"MyPassName")
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "

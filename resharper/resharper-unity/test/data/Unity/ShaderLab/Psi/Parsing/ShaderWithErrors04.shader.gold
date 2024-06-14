@@ -4,7 +4,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"test")
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"

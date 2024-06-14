@@ -18,6 +18,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Unity.Tests\Unity\ShaderLab\Daemon\ShaderLabHighlightingTestBase.cs">
+      <Link>UnityRider\ShaderLab\Daemon\ShaderLabHighlightingTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\RequireHlslSupportAttribute.cs">
+      <Link>UnityRider\RequireHlslSupportAttribute.cs</Link>
+    </Compile>
     <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs">
       <Link>UnityRider\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs</Link>
     </Compile>
@@ -34,6 +40,8 @@
     <PackageReference Include="NUnit.Console" />
   </ItemGroup>
   <ItemGroup Label="ProjectReference">
+    <ProjectReference Include="..\..\..\..\..\..\..\Psi.Features\src\Features\ReSpeller\Features.ReSpeller.csproj" />
+    <ProjectReference Include="..\..\..\..\..\..\..\Psi.Features\test\Framework\Features\Test.Framework.Features.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Rider\Unity.Rider.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
     <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />

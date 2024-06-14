@@ -4,7 +4,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"VertexLit Simple")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"VertexLit Simple")
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -21,7 +21,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_Color)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Main Color")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Main Color")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
@@ -51,7 +51,7 @@ IShaderLabFile
             IShaderLabIdentifier
               Identifier(type:IDENTIFIER, text:_ColorComponent)
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Color Component")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Color Component")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType

@@ -5,7 +5,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"test")
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -15,11 +15,11 @@ IShaderLabFile
           ShaderLabTokenType+KeywordTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           IDependencyValue
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"AddPassShader")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"AddPassShader")
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyShaders/Terrain/Editor/AddPass")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"MyShaders/Terrain/Editor/AddPass")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       Whitespace(type:WHITESPACE, text:  ) spaces: "  "
       IShaderBlock
@@ -27,11 +27,11 @@ IShaderLabFile
           ShaderLabTokenType+KeywordTokenElement(type:DEPENDENCY_KEYWORD, text:Dependency)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           IDependencyValue
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"BaseMapShader")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"BaseMapShader")
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyShaders/Terrain/Editor/BaseMap")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"MyShaders/Terrain/Editor/BaseMap")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
   NewLine(type:NEW_LINE, text:\n) spaces: "\n"

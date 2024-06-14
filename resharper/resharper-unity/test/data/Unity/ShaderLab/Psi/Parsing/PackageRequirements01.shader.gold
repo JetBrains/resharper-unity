@@ -4,7 +4,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Examples/ExampleShader")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"Examples/ExampleShader")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -27,14 +27,14 @@ IShaderLabFile
                 NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                 Whitespace(type:WHITESPACE, text:            ) spaces: "            "
                 IPackageRequirementEntry
-                  ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"com.my.package")
+                  StringLiteralTokenElement(type:STRING_LITERAL, text:"com.my.package")
                   ShaderLabTokenType+FixedTokenElement(type:COLON, text::)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"2.2")
+                  StringLiteralTokenElement(type:STRING_LITERAL, text:"2.2")
                 NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                 Whitespace(type:WHITESPACE, text:            ) spaces: "            "
                 IPackageRequirementEntry
-                  ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"com.package.without.version")
+                  StringLiteralTokenElement(type:STRING_LITERAL, text:"com.package.without.version")
                 NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                 Whitespace(type:WHITESPACE, text:        ) spaces: "        "
                 ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -59,17 +59,17 @@ IShaderLabFile
                         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                         Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                         IPackageRequirementEntry
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"com.unity.render-pipelines.universal")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"com.unity.render-pipelines.universal")
                           ShaderLabTokenType+FixedTokenElement(type:COLON, text::)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"[10.2.1,11.0]")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"[10.2.1,11.0]")
                         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                         Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                         IPackageRequirementEntry
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"com.unity.textmeshpro")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"com.unity.textmeshpro")
                           ShaderLabTokenType+FixedTokenElement(type:COLON, text::)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"3.2")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"3.2")
                         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                         Whitespace(type:WHITESPACE, text:            ) spaces: "            "
                         ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -97,10 +97,10 @@ IShaderLabFile
                         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                         Whitespace(type:WHITESPACE, text:                ) spaces: "                "
                         IPackageRequirementEntry
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"com.unity.render-pipelines.high-definition")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"com.unity.render-pipelines.high-definition")
                           ShaderLabTokenType+FixedTokenElement(type:COLON, text::)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"[8.0,8.5]")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"[8.0,8.5]")
                         NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                         Whitespace(type:WHITESPACE, text:            ) spaces: "            "
                         ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

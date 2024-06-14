@@ -8,7 +8,7 @@ IShaderLabFile
       ErrorElement:"XXX" expected
         Identifier(type:IDENTIFIER, text:whatever)
         Whitespace(type:WHITESPACE, text: ) spaces: " "
-        ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
+        StringLiteralTokenElement(type:STRING_LITERAL, text:"test")
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"

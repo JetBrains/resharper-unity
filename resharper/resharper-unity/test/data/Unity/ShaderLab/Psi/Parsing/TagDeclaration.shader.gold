@@ -4,7 +4,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Test")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"Test")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       Whitespace(type:WHITESPACE, text:    ) spaces: "    "
@@ -51,11 +51,11 @@ IShaderLabFile
                         ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IStringLiteralTagDeclaration
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"LightMode")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"LightMode")
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
                           ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Vertex")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"Vertex")
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
                     NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -77,7 +77,7 @@ IShaderLabFile
                           ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         ErrorElement:Identifier expected
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Vertex")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"Vertex")
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
                     NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -89,7 +89,7 @@ IShaderLabFile
                         ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         IStringLiteralTagDeclaration
-                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"LightMode")
+                          StringLiteralTokenElement(type:STRING_LITERAL, text:"LightMode")
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
                           ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
                         Whitespace(type:WHITESPACE, text: ) spaces: " "

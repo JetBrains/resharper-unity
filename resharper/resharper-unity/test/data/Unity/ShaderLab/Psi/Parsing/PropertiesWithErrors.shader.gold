@@ -5,7 +5,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"test")
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -20,7 +20,7 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Wave scale")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Wave scale")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRangePropertyType
@@ -46,7 +46,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_MissingOpenBrace)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ErrorElement:( expected
-              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Reflection distort")
+              StringLiteralTokenElement(type:STRING_LITERAL, text:"Reflection distort")
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+KeywordTokenElement(type:RANGE_KEYWORD, text:Range)
@@ -116,7 +116,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_PropertyTypeIncorrect)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ErrorElement:Property type expected
@@ -134,7 +134,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_PropertyTypeMissing)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ErrorElement:Property type expected
@@ -151,7 +151,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_PropertyTypeMissing2)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ErrorElement:, expected
               ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
             Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -166,7 +166,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_TooManyParameters)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
@@ -188,7 +188,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_RangeMissingOpenBrace)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRangePropertyType
@@ -214,7 +214,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_RangeMissingFirstParameter)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRangePropertyType
@@ -240,7 +240,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_RangeFirstParameterIncorrectType)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRangePropertyType
@@ -267,7 +267,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_RangeMissingSecondParameter)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRangePropertyType
@@ -292,7 +292,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_RangeSecondParameterIncorrectType)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRangePropertyType
@@ -319,7 +319,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_RangeMissingClosingBrace)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRangePropertyType
@@ -345,7 +345,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_RangeMissingAllClosingBraces)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             IRangePropertyType
@@ -370,7 +370,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_ColorWithWrongType)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
@@ -401,7 +401,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_ColorWithMissingValue)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
@@ -431,7 +431,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_ColorWithMissingOpenBrace)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
@@ -460,7 +460,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_ColorWithMissingClosingBrace)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+              StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+KeywordTokenElement(type:COLOR_KEYWORD, text:Color)
@@ -491,7 +491,7 @@ IShaderLabFile
                   Identifier(type:IDENTIFIER, text:_ColorWithTooManyValues)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-                  ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+                  StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   ShaderLabTokenType+KeywordTokenElement(type:COLOR_KEYWORD, text:Color)
@@ -535,7 +535,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_MissingValue)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
@@ -551,7 +551,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_MissingEquals)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ISimplePropertyType
@@ -565,7 +565,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_TextureWithMissingName)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+              StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
               ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+KeywordTokenElement(type:TEXTURE_2D_KEYWORD, text:2D)
@@ -583,7 +583,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_TextureWithMissingBlock)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ITextureDimensionPropertyType
@@ -593,7 +593,7 @@ IShaderLabFile
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ITexturePropertyValue
-              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Name")
+              StringLiteralTokenElement(type:STRING_LITERAL, text:"Name")
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:    ) spaces: "    "
           IPropertyDeclaration
@@ -601,7 +601,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_TextureWithExtraBlockValues)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ITextureDimensionPropertyType
@@ -611,7 +611,7 @@ IShaderLabFile
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ITexturePropertyValue
-              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Name")
+              StringLiteralTokenElement(type:STRING_LITERAL, text:"Name")
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "
@@ -626,7 +626,7 @@ IShaderLabFile
               Identifier(type:IDENTIFIER, text:_TextureWithExtraBlockValues2)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"Whatever")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ITextureDimensionPropertyType
@@ -636,7 +636,7 @@ IShaderLabFile
             ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             ITexturePropertyValue
-              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Name")
+              StringLiteralTokenElement(type:STRING_LITERAL, text:"Name")
               Whitespace(type:WHITESPACE, text: ) spaces: " "
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               Whitespace(type:WHITESPACE, text: ) spaces: " "

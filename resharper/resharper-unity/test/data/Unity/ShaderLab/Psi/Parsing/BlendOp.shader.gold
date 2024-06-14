@@ -4,7 +4,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Test")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"Test")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -21,7 +21,7 @@ IShaderLabFile
             IShaderLabIdentifier
               Identifier(type:IDENTIFIER, text:_Op)
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_Op")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"_Op")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             ISimplePropertyType
               ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
@@ -37,7 +37,7 @@ IShaderLabFile
             IShaderLabIdentifier
               Identifier(type:IDENTIFIER, text:_ColorOp)
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_ColorOp")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"_ColorOp")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             ISimplePropertyType
               ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
@@ -53,7 +53,7 @@ IShaderLabFile
             IShaderLabIdentifier
               Identifier(type:IDENTIFIER, text:_AlphaOp)
             ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"_AlphaOp")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"_AlphaOp")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             ISimplePropertyType
               ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)

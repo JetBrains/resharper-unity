@@ -5,7 +5,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"test")
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -15,7 +15,7 @@ IShaderLabFile
           ShaderLabTokenType+KeywordTokenElement(type:CUSTOM_EDITOR_KEYWORD, text:CustomEditor)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           ICustomEditorValue
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyCustomEditor")
+            StringLiteralTokenElement(type:STRING_LITERAL, text:"MyCustomEditor")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
   NewLine(type:NEW_LINE, text:\n) spaces: "\n"

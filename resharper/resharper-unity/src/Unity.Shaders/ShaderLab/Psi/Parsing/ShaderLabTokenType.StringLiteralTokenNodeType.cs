@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Psi;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
@@ -18,12 +19,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 
             public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
             {
-                return new GenericTokenElement(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
+                return new StringLiteralTokenElement(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));
             }
 
             public override LeafElementBase Create(string token)
             {
-                return new GenericTokenElement(this, token);
+                return new StringLiteralTokenElement(this, token);
             }
 
             public override bool IsStringLiteral => true;

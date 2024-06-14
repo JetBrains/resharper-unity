@@ -2,6 +2,7 @@
 <SubplatformInfo xmlns="urn:schemas-jetbrains-com:build-subplatform-info" CompanyNameHuman="JetBrains" IsGitSubplatform="true">
     <SubplatformInfo.SubplatformReferences>
         <SubplatformReference Name="Psi.Features\test\Framework" />
+        <SubplatformReference Name="Psi.Features\src" />
         <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src\Unity" />
         <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src\Unity.Rider" />
         <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src\Unity.Shaders" />

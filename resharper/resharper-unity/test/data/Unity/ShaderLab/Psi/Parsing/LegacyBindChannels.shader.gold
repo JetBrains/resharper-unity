@@ -4,7 +4,7 @@ IShaderLabFile
     ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
     Whitespace(type:WHITESPACE, text: ) spaces: " "
     IShaderValue
-      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Solid Red")
+      StringLiteralTokenElement(type:STRING_LITERAL, text:"Solid Red")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -39,7 +39,7 @@ IShaderLabFile
                           ShaderLabTokenType+KeywordTokenElement(type:BIND_KEYWORD, text:Bind)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
                           IBindValue
-                            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Vertex")
+                            StringLiteralTokenElement(type:STRING_LITERAL, text:"Vertex")
                             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                             Whitespace(type:WHITESPACE, text: ) spaces: " "
                             IShaderLabIdentifier
@@ -50,7 +50,7 @@ IShaderLabFile
                           ShaderLabTokenType+KeywordTokenElement(type:BIND_KEYWORD, text:Bind)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
                           IBindValue
-                            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"texcoord")
+                            StringLiteralTokenElement(type:STRING_LITERAL, text:"texcoord")
                             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                             Whitespace(type:WHITESPACE, text: ) spaces: " "
                             IShaderLabIdentifier
@@ -61,7 +61,7 @@ IShaderLabFile
                           ShaderLabTokenType+KeywordTokenElement(type:BIND_KEYWORD, text:Bind)
                           Whitespace(type:WHITESPACE, text: ) spaces: " "
                           IBindValue
-                            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"texcoord1")
+                            StringLiteralTokenElement(type:STRING_LITERAL, text:"texcoord1")
                             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                             Whitespace(type:WHITESPACE, text: ) spaces: " "
                             IShaderLabIdentifier
