@@ -6,7 +6,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
-using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -21,9 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
         private readonly ISolution mySolution;
         private readonly UnityDialects myDialects;
 
-        public InjectedHlslDummyFormatter(ISolution solution, CachingLexerService cachingLexerService,
+        public InjectedHlslDummyFormatter(ISolution solution,
             DocumentToProjectFileMappingStorage projectFileMappingStorage, UnityDialects dialects)
-            : base(solution, cachingLexerService, projectFileMappingStorage)
+            : base(solution, projectFileMappingStorage)
         {
             mySolution = solution;
             myDialects = dialects;
