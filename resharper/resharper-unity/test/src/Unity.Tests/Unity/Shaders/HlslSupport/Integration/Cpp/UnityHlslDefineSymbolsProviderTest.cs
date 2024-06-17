@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Shaders.HlslSupport.Integratio
             var project = solution.GetProjectByName("TestProject");
             Assert.NotNull(project);
             var symbolCache = solution.GetComponent<CppGlobalCacheImpl>().SymbolCache;
-            var compilationProperties = solution.GetComponent<UnityHlslCppCompilationPropertiesProvider>().GetCompilationProperties(project, null, new CppFileLocation(VirtualFileSystemPath.Parse("Dummy.hlsl", solution.GetInteractionContext())), symbolCache);
+            var compilationProperties = solution.GetComponent<UnityHlslCppCompilationPropertiesProvider>().GetCompilationProperties(project, null, new CppFileLocation(VirtualFileSystemPath.Parse("Dummy.hlsl", solution.GetInteractionContext())), symbolCache, null);
             return compilationProperties?.PredefinedMacros;
         }
 

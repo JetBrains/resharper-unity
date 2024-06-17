@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Properties.VCXProj;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Core;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
@@ -16,7 +17,7 @@ using JetBrains.ReSharper.Psi.Cpp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
-    [SolutionComponent]
+    [CppCompilationPropertiesProvider(CppCompilationPropertiesProviderAttribute.NORMAL_PRIORITY)]
     public class UnityHlslCppCompilationPropertiesProvider(
         IUnityVersion unityVersion,
         CgIncludeDirectoryProvider cgIncludeDirectoryProvider,
@@ -26,9 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         : ICppCompilationPropertiesProvider
     {
         public CppCompilationProperties? GetCompilationProperties(IProject project, IProjectFile? projectFile, CppFileLocation rootFile,
-            CppGlobalSymbolCache globalCache)
+            CppGlobalSymbolCache globalCache, CppIntelliSenseInfo? intelliSenseInfo)
         {
-            if (!project.IsUnityProject()) return null;
+            if (project.ProjectProperties is VCXProjectProperties || !project.IsUnityProject()) return null;
 
             return rootFile.Location switch
             {
