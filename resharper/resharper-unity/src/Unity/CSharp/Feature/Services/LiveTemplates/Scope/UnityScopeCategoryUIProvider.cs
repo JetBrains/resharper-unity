@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         // to push it to the end of the list
         private const int Priority = -200;
 
-        public UnityScopeCategoryUIProvider(ILazyEnumerable<IUnityAdditionalTemplateScopePointsProvider> scopePointsProviders)
+        public UnityScopeCategoryUIProvider(ILazyImmutableList<IUnityAdditionalTemplateScopePointsProvider> scopePointsProviders)
             : base(LogoIcons.Unity.Id)
         {
             MainPoint = new InUnityCSharpProject();
