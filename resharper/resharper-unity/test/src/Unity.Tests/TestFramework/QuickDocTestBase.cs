@@ -10,6 +10,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
+using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
@@ -49,12 +50,23 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
             Assert.IsTrue(quickDocService.CanShowQuickDoc(context), "No QuickDoc available");
             quickDocService.ResolveGoto(context, (presenter, language) => ExecuteWithGold(projectFile, writer =>
             {
-                var text = presenter.GetHtml(language).Text?.Text;
-                Assert.NotNull(text);
-                var startIdx = text!.IndexOf("  <head>", StringComparison.Ordinal);
-                var endIdx = text.IndexOf("</head>", StringComparison.Ordinal) + "</head>".Length;
-                Assert.AreEqual(string.CompareOrdinal(text, endIdx, "\n<body>", 0, "\n<body>".Length), 0);
-                writer.Write(text.Remove(startIdx, endIdx - startIdx + 1));
+                var html = presenter.GetHtml(language).Text;
+                Assert.NotNull(html);
+
+                var text = html.Text;
+                var startIdx = text.IndexOf(XmlDocHtmlUtil.START_HEAD_MARKER, StringComparison.Ordinal);
+                var endIdx = text.IndexOf(XmlDocHtmlUtil.END_HEAD_MARKER, StringComparison.Ordinal) + XmlDocHtmlUtil.END_HEAD_MARKER.Length;
+
+                while (startIdx != -1)
+                {
+                    Assert.AreEqual(string.CompareOrdinal(text, endIdx, "\n<body>", 0, "\n<body>".Length), 0);
+              
+                    text = text.Remove(startIdx, endIdx - startIdx + 1);
+                    startIdx = text.IndexOf(XmlDocHtmlUtil.START_HEAD_MARKER, StringComparison.Ordinal);
+                    endIdx = text.IndexOf(XmlDocHtmlUtil.END_HEAD_MARKER, StringComparison.Ordinal) + XmlDocHtmlUtil.END_HEAD_MARKER.Length;
+                }
+
+                writer.Write(text);
             }));
             if (exception != null)
                 throw exception;
