@@ -31,13 +31,15 @@ import com.jetbrains.rider.run.configurations.exe.ExeConfigurationParameters
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
+import com.jetbrains.rider.run.configurations.unity.UnityAttachRunConfiguration
 import org.jdom.Element
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: ConfigurationFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
       RunConfigurationWithSuppressedDefaultRunAction,
       RemoteConfiguration,
-      WithoutOwnBeforeRunSteps {
+      WithoutOwnBeforeRunSteps,
+      UnityAttachRunConfiguration {
 
     // TEMP, will be removed in 19.2
     companion object {
@@ -67,6 +69,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     override fun hideDisabledExecutorButtons() = true
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = UnityAttachToEditorSettingsEditor(project)
+
+    override fun getUnityEditorPid(): Int? = pid
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
         val executorId = executor.id
