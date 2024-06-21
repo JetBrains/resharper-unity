@@ -1,4 +1,6 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -13,7 +15,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class BurstGutterMarkProvider: BurstProblemAnalyzerBase<IMethodDeclaration>
     {
         private readonly BurstCodeInsights myBurstCodeInsights;
@@ -21,10 +23,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         
         public BurstGutterMarkProvider(
             Lifetime lifetime,
+            IThreading threading,
             IApplicationWideContextBoundSettingStore store,
             BurstCodeInsights burstCodeInsights)
         {
-            myBurstEnableIcons = store.BoundSettingsStore.GetValueProperty(lifetime, (UnitySettings key) => key.EnableIconsForBurstCode);
+            myBurstEnableIcons = store.BoundSettingsStore.GetValueProperty2(lifetime, (UnitySettings key) => key.EnableIconsForBurstCode, ApartmentForNotifications.Primary(threading));
             myBurstCodeInsights = burstCodeInsights;
         }
 
