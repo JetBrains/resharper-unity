@@ -1,11 +1,12 @@
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.RdBackend.Common.Features.Daemon.Registration;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages;
 using JetBrains.Rider.Model.HighlighterRegistration;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.ShaderLab.Feature.Daemon.Registration
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShaderLabHighlighterPropertiesProvider : IRiderHighlighterPropertiesProvider
     {
         public bool Applicable(RiderHighlighterDescription description)
