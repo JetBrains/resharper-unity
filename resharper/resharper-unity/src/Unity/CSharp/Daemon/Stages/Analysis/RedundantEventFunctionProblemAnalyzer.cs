@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -11,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     // Empty event functions are still called, which is a performance overhead
     // https://blogs.unity3d.com/2015/12/23/1k-update-calls/
-    [ElementProblemAnalyzer(typeof(IMethodDeclaration), HighlightingTypes = new[] { typeof(RedundantEventFunctionWarning) })]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IMethodDeclaration), HighlightingTypes = new[] { typeof(RedundantEventFunctionWarning) })]
     public class RedundantEventFunctionProblemAnalyzer : UnityElementProblemAnalyzer<IMethodDeclaration>
     {
         public RedundantEventFunctionProblemAnalyzer(UnityApi unityApi)

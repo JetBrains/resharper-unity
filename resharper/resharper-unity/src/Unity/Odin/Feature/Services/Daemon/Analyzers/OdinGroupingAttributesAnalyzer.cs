@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JetBrains.Application.Parts;
 using JetBrains.DocumentModel;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -18,7 +19,7 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.Daemon.Analyzers;
 
-[ElementProblemAnalyzer(typeof(IClassLikeDeclaration))]
+[ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IClassLikeDeclaration))]
 public class OdinGroupingAttributesAnalyzer : UnityElementProblemAnalyzer<IClassLikeDeclaration>
 {
     private readonly UnityTechnologyDescriptionCollector myTechnologyCollector;

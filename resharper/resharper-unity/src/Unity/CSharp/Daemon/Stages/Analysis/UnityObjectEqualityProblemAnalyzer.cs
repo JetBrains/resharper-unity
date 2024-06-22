@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -12,7 +13,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IEqualityExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IEqualityExpression),
         HighlightingTypes = new[] { typeof(SuspiciousComparisonWarning) })]
     public class UnityObjectEqualityProblemAnalyzer : UnityElementProblemAnalyzer<IEqualityExpression>
     {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Collections;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -13,7 +14,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IMemberOwnerDeclaration),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IMemberOwnerDeclaration),
         HighlightingTypes = new[]
         {
             typeof(DuplicateEventFunctionWarning),

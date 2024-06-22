@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -12,8 +13,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
 {
-    [ElementProblemAnalyzer(typeof(IClassLikeDeclaration)
-        , HighlightingTypes = new[] { typeof(SingletonMustBeRequestedWarning) }
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IClassLikeDeclaration), HighlightingTypes = new[] { typeof(SingletonMustBeRequestedWarning) }
     )]
     public class RequiredSingletonAnalyzer : UnityElementProblemAnalyzer<IClassLikeDeclaration>
     {

@@ -1,5 +1,6 @@
 #nullable enable
 
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
@@ -12,7 +13,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IInvocationExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IInvocationExpression),
         HighlightingTypes = new[] {typeof(UnknownAnimatorStateNameWarning)})]
     public class PlayAnimatorStateAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {

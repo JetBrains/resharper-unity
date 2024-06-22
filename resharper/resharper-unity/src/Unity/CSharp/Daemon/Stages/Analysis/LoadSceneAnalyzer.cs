@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -12,7 +13,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new []
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IInvocationExpression), HighlightingTypes = new []
     {
         typeof(LoadSceneDisabledSceneNameWarning),
         typeof(LoadSceneUnknownSceneNameWarning),

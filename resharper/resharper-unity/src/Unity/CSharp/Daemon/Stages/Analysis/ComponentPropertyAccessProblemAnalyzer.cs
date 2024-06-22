@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -22,6 +23,7 @@ using QualifierEqualityComparer = JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlo
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(
+        Instantiation.DemandAnyThreadUnsafe,
         ElementTypes: new [] { typeof(IParametersOwnerDeclaration), typeof(IPropertyDeclaration)},
         HighlightingTypes = new[] {typeof(InefficientPropertyAccessWarning)})]
     public class ComponentPropertyAccessProblemAnalyzer : UnityElementProblemAnalyzer<ITreeNode>

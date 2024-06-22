@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
@@ -11,7 +12,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IMethodDeclaration),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IMethodDeclaration),
         HighlightingTypes = new[] {typeof(UnityEventFunctionInheritanceMarkOnGutter)})]
     public class HiddenEventFunctionProblemAnalyzer : UnityElementProblemAnalyzer<IMethodDeclaration>
     {

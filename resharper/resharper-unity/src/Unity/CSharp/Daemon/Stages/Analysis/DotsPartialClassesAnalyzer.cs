@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -13,7 +14,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IClassLikeDeclaration), HighlightingTypes = new[]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IClassLikeDeclaration), HighlightingTypes = new[]
     {
         typeof(InconsistentModifiersForDotsInheritorWarning),
         typeof(MustBeStructForDotsInheritorWarning),

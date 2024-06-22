@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -11,7 +12,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IAttribute), HighlightingTypes = new[] { typeof(RedundantAttributeOnTargetWarning) })]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IAttribute), HighlightingTypes = new[] { typeof(RedundantAttributeOnTargetWarning) })]
     public class RedundantAttributeOnTargetProblemAnalyzer : UnityElementProblemAnalyzer<IAttribute>
     {
         private static readonly Dictionary<IClrTypeName, AttributeTargets> ourAttributeData =

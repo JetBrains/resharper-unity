@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -11,7 +12,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] {typeof(PreferNonAllocApiWarning)})]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IInvocationExpression), HighlightingTypes = new[] {typeof(PreferNonAllocApiWarning)})]
     public class PreferNonAllocApiAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private static readonly IDictionary<string, string> ourPhysicsKnownMethods =

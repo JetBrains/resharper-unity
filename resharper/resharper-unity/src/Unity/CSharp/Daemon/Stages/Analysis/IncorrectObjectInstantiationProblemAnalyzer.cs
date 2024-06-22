@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.Application.Parts;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -7,7 +8,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IObjectCreationExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IObjectCreationExpression),
         HighlightingTypes = new[]
         {
             typeof(IncorrectMonoBehaviourInstantiationWarning),
