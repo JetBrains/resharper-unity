@@ -20,6 +20,8 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.WorkerRunInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * [RunProfileState] to attach to the current Unity editor, optionally entering play mode.
@@ -47,6 +49,8 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState: UnityExe
                 // later user starts Unity and wants to attach debugger - we need to set listenPortForConnections = false,
                 // otherwise old serialized value would be used.
                 remoteConfiguration.listenPortForConnections = false
+                executionEnvironment.putUserData(DebuggerWorkerProcessHandler.PID_KEY,
+                                                 requireNotNull(remoteConfiguration.pid) { "Pid should be initialized in updatePidAndPort" })
                 super.createWorkerRunInfo(lifetime, helper, port)
             }
         }

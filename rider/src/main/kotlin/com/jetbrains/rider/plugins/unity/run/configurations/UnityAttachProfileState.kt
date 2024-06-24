@@ -6,13 +6,10 @@ import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rd.util.reactive.flowInto
-import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
-import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityStartInfo
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.unityDebuggerWorkerModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -60,19 +57,6 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
                 override fun processTerminated(event: ProcessEvent) { debuggerWorkerLifetime.terminate() }
             })
 
-            if (executionEnvironment.project.solution.frontendBackendModel.unityEditorState
-                    .valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Disconnected) {
-                putUserData(DebuggerWorkerProcessHandler.PID_KEY,
-                            executionEnvironment.project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId
-                            ?: pid)
-            }
-            else
-                executionEnvironment.project.solution.frontendBackendModel.unityEditorState.adviseUntil(debuggerWorkerLifetime) {
-                    if (it == UnityEditorState.Disconnected) return@adviseUntil false
-                    putUserData(DebuggerWorkerProcessHandler.PID_KEY,
-                                executionEnvironment.project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId)
-                    return@adviseUntil true
-                }
         }
     }
 
