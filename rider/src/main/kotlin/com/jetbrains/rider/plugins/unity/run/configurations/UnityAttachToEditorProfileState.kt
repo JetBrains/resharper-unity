@@ -36,7 +36,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState: UnityExe
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
         // Make sure we have a pid and port to connect. This requires fetching the OS process list, which must happen
         // on the background thread
-        return withBackgroundContext(lifetime) {
+        return withContext(Dispatchers.Default) {
             if (!remoteConfiguration.updatePidAndPort()) {
                 thisLogger().trace("Have not found Unity, would start a new Unity Editor instead.")
                 exeDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
