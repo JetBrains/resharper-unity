@@ -192,7 +192,7 @@
         <value>Shader Variants//Enabled shader keyword</value>
     </data>
     <data name="ImplicitlyEnabledShaderKeyword_RiderPresentableName" xml:space="preserve">
-        <value>Shader Variants//Implicitly shader keyword</value>
+        <value>Shader Variants//Implicitly used shader keyword</value>
     </data>
     <data name="DisabledShaderKeyword_RiderPresentableName" xml:space="preserve">
         <value>Shader Variants//Disabled shader keyword</value>
