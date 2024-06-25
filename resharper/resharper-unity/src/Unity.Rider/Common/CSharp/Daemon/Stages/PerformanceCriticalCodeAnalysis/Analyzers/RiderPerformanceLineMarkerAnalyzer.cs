@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class RiderPerformanceLineMarkerAnalyzer : PerformanceLineMarkerAnalyzer
     {
         public RiderPerformanceLineMarkerAnalyzer(Lifetime lifetime, IApplicationWideContextBoundSettingStore store, IThreading threading)

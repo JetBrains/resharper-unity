@@ -14,7 +14,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
 {
-    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
     public class PerformanceLineMarkerAnalyzer : PerformanceProblemAnalyzerBase<IFunctionDeclaration>
     {
         private readonly IProperty<PerformanceHighlightingMode> myLineMarkerStatus;
