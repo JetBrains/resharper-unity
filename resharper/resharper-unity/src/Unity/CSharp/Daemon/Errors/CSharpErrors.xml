@@ -207,15 +207,15 @@
         <Description resourceName="UnityDots_CurrentComponentLookupMustBeUpdated" resourceType="Strings" />
       </Tag>
       <Tag externalName="SingletonMustBeRequestedWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
+        <Title resourceName="UnityDots_GetSingletonMustBeRequested_Title" resourceType="Strings" />
         <Description resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
       </Tag>
       <Tag externalName="InconsistentModifiersForDotsInheritorWarning.HIGHLIGHTING_ID" default="ERROR">
-        <Title resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings" />
+        <Title resourceName="UnityDots_InconsistentModifiersForDotsInheritor_Title" resourceType="Strings" />
         <Description resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings" />
       </Tag>
       <Tag externalName="MustBeStructForDotsInheritorWarning.HIGHLIGHTING_ID" default="ERROR">
-        <Title resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
+        <Title resourceName="UnityDots_MustBeStructForDotsInheritor_Title" resourceType="Strings" />
         <Description resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
       </Tag>
       <Tag externalName="MustBeSurroundedWithRefRwRoWarning.HIGHLIGHTING_ID" default="WARNING">
@@ -224,7 +224,7 @@
       </Tag>
       
       <Tag externalName="AspectWrongFieldsTypeWarning.HIGHLIGHTING_ID" default="ERROR">
-        <Title resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings" />
+        <Title resourceName="UnityDots_AspectWrongFieldsType_Title" resourceType="Strings" />
         <Description resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings" />
       </Tag>
 
