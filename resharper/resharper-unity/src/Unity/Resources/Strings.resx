@@ -1121,6 +1121,9 @@
     <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
         <value>To use the result of a 'GetSingleton&lt;{0}&gt;' call in the function, 'OnCreate' must include a 'RequireForUpdate' call</value>
     </data>
+    <data name="UnityDots_GetSingletonMustBeRequested_Title" xml:space="preserve">
+        <value>To use the result of a 'GetSingleton' call in the function, 'OnCreate' must include a 'RequireForUpdate' call</value>
+    </data>
     <data name="UnityDots_projects" xml:space="preserve">
         <value>Unity DOTS projects</value>
     </data>
@@ -1163,11 +1166,20 @@
     <data name="UnityDots_InconsistentModifiersForDotsInheritor" xml:space="preserve">
         <value>{0}'s inheritor '{1}' must be '{2}{3}{4}'</value>
     </data>
+    <data name="UnityDots_InconsistentModifiersForDotsInheritor_Title" xml:space="preserve">
+        <value>DOTS: Inconsistent type keywords</value>
+    </data>
     <data name="UnityDots_MustBeStructForDotsInheritor" xml:space="preserve">
         <value>{0}'s inheritor '{1}' must be struct</value>
     </data>
+    <data name="UnityDots_MustBeStructForDotsInheritor_Title" xml:space="preserve">
+        <value>DOTS: The type specified must be a structure type</value>
+    </data>
     <data name="UnityDots_AspectWrongFieldsType" xml:space="preserve">
         <value>{0}'s field '{1}' must be of type RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity</value>
+    </data>
+    <data name="UnityDots_AspectWrongFieldsType_Title" xml:space="preserve">
+        <value>DOTS: IAspect fields are required to be one of the following types: RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity</value>
     </data>
     <data name="UnityDots_WrongQueryTypeArgument" xml:space="preserve">
         <value>Type parameter '{0}' must be Aspect, RefRO, or RefRW</value>
