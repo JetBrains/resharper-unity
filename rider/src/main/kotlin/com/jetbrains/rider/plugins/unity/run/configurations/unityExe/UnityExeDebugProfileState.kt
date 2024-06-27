@@ -106,7 +106,7 @@ class UnityExeDebugProfileState(private val exeConfiguration: UnityExeConfigurat
 
         // Once the frontend starts the debugger worker process, we'll start the Unity exe, and terminate it when the
         // debug session ends
-        workerProcessHandler.debuggerWorkerRealHandler.addProcessListener(object : ProcessAdapter() {
+        workerProcessHandler.addProcessListener(object : ProcessAdapter() {
             override fun startNotified(event: ProcessEvent) {
                 val targetProcessHandler = if (exeConfiguration.parameters.useExternalConsole)
                     ExternalConsoleMediator.createProcessHandler(runCommandLine) as KillableProcessHandler
