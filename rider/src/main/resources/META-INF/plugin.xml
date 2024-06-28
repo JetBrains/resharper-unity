@@ -199,6 +199,8 @@
     <rider.debugger.value.evaluator.factory implementation="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluatorFactory"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider" order="after projectAndFrameworkResolveContextWidget"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsService" order="after projectAndFrameworkResolveContextWidget"/>
+    <iw.actionProvider id="ShaderVariantWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantWidgetActionProvider"/>
+    <iw.actionProvider id="ShaderWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetActionProvider"/>
 
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantEventLogger"/>
 
