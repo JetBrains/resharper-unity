@@ -48,7 +48,7 @@ class ShaderWidgetProvider : RiderResolveContextWidgetProvider, ProjectActivity 
         if (isUnityHlslFile(project, editor)) widget else null
 
     private fun isUnityHlslFile(project: Project, editor: Editor) =
-        project.isUnityProject.value && editor.virtualFile.fileType.let { it === HlslHeaderFileType || it === HlslSourceFileType }
+        project.isUnityProject.value && editor.virtualFile?.fileType.let { it === HlslHeaderFileType || it === HlslSourceFileType }
 
     override suspend fun execute(project: Project) {
         withContext(Dispatchers.EDT) {

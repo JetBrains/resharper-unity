@@ -1,10 +1,13 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
 import com.intellij.ui.awt.RelativePoint
@@ -12,6 +15,7 @@ import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getDocumentId
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
+import com.jetbrains.rider.editors.resolveContextWidget.WidgetAction
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.*
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
@@ -21,7 +25,17 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
-import java.awt.Point
+
+class ShaderWidgetActionProvider : InspectionWidgetActionProvider {
+    override fun createAction(editor: Editor): AnAction? {
+        val project = editor.project ?: return null
+        return object : WidgetAction<ShaderWidget>(editor, project, ShaderWidget::class) {
+            override fun update(e: AnActionEvent, widget: ShaderWidget) {
+                e.presentation.text = UnityUIBundle.message("shader.inspection.widget.text", widget.text.value)
+            }
+        }
+    }
+}
 
 
 class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
@@ -42,11 +56,11 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
 
         currentContextData.advise(UnityProjectLifetimeService.getLifetime(project)) {
             if (it == null) {
-                label.text = UnityUIBundle.message("auto")
+                text.set(UnityUIBundle.message("auto"))
                 toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
             }
             else {
-                label.text = getContextPresentation(it)
+                text.set(getContextPresentation(it))
                 toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
             }
         }
@@ -60,7 +74,7 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
         isVisible = data != null
     }
 
-    override fun showPopup(pointOnComponent: Point) {
+    override fun showPopup(point: RelativePoint) {
         UnityProjectLifetimeService.getScope(project).launch(Dispatchers.EDT, CoroutineStart.UNDISPATCHED) {
             val id = editor.document.getDocumentId(project) ?: return@launch
             val activity = ShaderVariantEventLogger.logShowShaderContextsPopupStarted(project)
@@ -73,7 +87,7 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
                 }
 
                 val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project), currentContextData)
-                popup.show(RelativePoint(this@ShaderWidget, pointOnComponent))
+                popup.show(point)
 
                 val count = actions.count()
                 activity?.finished {

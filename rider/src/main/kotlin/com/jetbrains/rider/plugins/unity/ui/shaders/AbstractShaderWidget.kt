@@ -4,20 +4,27 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.createLifetime
+import com.intellij.openapi.util.NlsSafe
+import com.intellij.ui.awt.RelativePoint
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rider.editors.resolveContextWidget.ResolveContextWidgetTheme
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.ui.borders.IconBorder
 import java.awt.BorderLayout
 import java.awt.Component
-import java.awt.Point
 import java.awt.event.MouseEvent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-abstract class AbstractShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayout()), RiderResolveContextWidget, Disposable {
+abstract class AbstractShaderWidget(val project: Project,
+                                    val editor: Editor) : JPanel(BorderLayout()), RiderResolveContextWidget, Disposable {
+    internal val text = Property<@NlsSafe String>("")
     protected val label = JLabel()
 
     init {
+        text.advise(this.createLifetime()) { label.text = it }
         enableEvents(MouseEvent.MOUSE_EVENT_MASK)
         label.apply {
             foreground = null
@@ -39,7 +46,7 @@ abstract class AbstractShaderWidget(val project: Project, val editor: Editor) : 
                 foreground = null
             }
             MouseEvent.MOUSE_RELEASED -> {
-                mousePosition?.let { showPopup(it) }
+                mousePosition?.let { showPopup(RelativePoint.getNorthWestOf(this)) }
             }
         }
     }
@@ -53,8 +60,6 @@ abstract class AbstractShaderWidget(val project: Project, val editor: Editor) : 
         foreground = null
         background = null
     }
-
-    abstract fun showPopup(pointOnComponent: Point)
 
     override fun dispose() {}
 }
