@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 
         public static bool HasUnityReference(this ISolution solution)
         {
-            var tracker = solution.GetComponent<UnitySolutionTracker>();
-            return tracker.HasUnityReference.Value;
+            var tracker = solution.TryGetComponent<UnitySolutionTracker>();
+            return tracker is { HasUnityReference.Value: true };
         }
 
         /// <summary>
