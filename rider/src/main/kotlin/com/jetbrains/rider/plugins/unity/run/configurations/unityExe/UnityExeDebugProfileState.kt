@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations.unityExe
 
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
+import com.intellij.execution.KillableProcess
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.process.*
@@ -109,13 +110,13 @@ class UnityExeDebugProfileState(private val exeConfiguration: UnityExeConfigurat
         workerProcessHandler.addProcessListener(object : ProcessAdapter() {
             override fun startNotified(event: ProcessEvent) {
                 val targetProcessHandler = if (exeConfiguration.parameters.useExternalConsole)
-                    ExternalConsoleMediator.createProcessHandler(runCommandLine) as KillableProcessHandler
+                    ExternalConsoleMediator.createProcessHandler(runCommandLine)
                 else
                     KillableProcessHandler(runCommandLine)
 
                 lifetime.onTermination {
                     if (!targetProcessHandler.isProcessTerminated) {
-                        targetProcessHandler.killProcess()
+                        (targetProcessHandler as KillableProcess).killProcess()
                     }
                 }
 
