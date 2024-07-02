@@ -13,6 +13,10 @@ using UnityEditor.Callbacks;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 
+#if UNITY_2019_2_OR_NEWER
+using UnityEditor.Build.Reporting;
+#endif
+
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 {
   // DO NOT CHANGE NAME OR NAMESPACE!
@@ -51,6 +55,18 @@ namespace JetBrains.Rider.Unity.Editor
     // Accessed by package via reflection
     [PublicAPI]
     internal static OnOpenAssetHandler OpenAssetHandler;
+    
+#if UNITY_2019_2_OR_NEWER    
+    // DO NOT RENAME OR REFACTOR!
+    // Accessed by package via reflection
+    [PublicAPI]
+    internal static string GenerateAdditionalLinkXmlFile(BuildReport report, object data,
+      bool preserveUnityEngineDlls, bool preservePlayerDlls)
+    {
+      return Il2CppDebugProvider.GenerateAdditionalLinkXmlFile(report,  data,
+         preserveUnityEngineDlls,  preservePlayerDlls);
+    }
+#endif
 
     internal static string SlnFile;
 
