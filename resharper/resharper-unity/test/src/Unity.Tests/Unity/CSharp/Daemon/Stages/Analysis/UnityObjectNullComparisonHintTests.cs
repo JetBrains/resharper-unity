@@ -17,7 +17,7 @@ public class UnityObjectNullComparisonHintTests : CSharpHighlightingTestBase<Uni
 
     protected override void DoTest(Lifetime lifetime, IProject project)
     {
-        using (project.GetComponent<UnityApi>().HasNullabilityAttributeOnImplicitBoolOperator.LocalReplaceCookie(x => x.Value, false))
+        using (project.GetComponent<UnityApi>().HasNullabilityAttributeOnImplicitBoolOperator.LocalReplaceCookie(static x => x.Value, false))
             base.DoTest(lifetime, project);
     }
 }
