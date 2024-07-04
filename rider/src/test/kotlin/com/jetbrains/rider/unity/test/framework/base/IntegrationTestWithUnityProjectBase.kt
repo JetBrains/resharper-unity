@@ -10,6 +10,7 @@ import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.startUnity
 import org.testng.annotations.BeforeMethod
 import java.io.File
+import java.io.FileNotFoundException
 import java.time.Duration
 
 /**
@@ -20,6 +21,9 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
     private lateinit var unityProjectPath: File
     protected abstract val majorVersion: EngineVersion
     private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(majorVersion) }
+    private val riderPackageVersion = "3.0.31"
+    private val packageManifestPath = "/Packages/manifest.json"
+    private val riderPackageTag = "{{VERSION}}"
 
     override val testGoldFile: File
         get() = getUnityDependentGoldFile(majorVersion, super.testGoldFile).takeIf { it.exists() }
@@ -77,9 +81,19 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
         }
     }
 
+    private fun replaceRiderPackageVersion(sourceDirectory: File) {
+
+        val file = File("${sourceDirectory.path}$packageManifestPath").takeIf { it.isFile } ?: throw FileNotFoundException("Cannot find $packageManifestPath")
+        val content = file.readText()
+        val updatedContent = content.replace(riderPackageTag, riderPackageVersion)
+        file.writeText(updatedContent)
+    }
+
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
-        unityProjectPath = putUnityProjectToTempTestDir(getSolutionDirectoryName(), null)
+        val solutionName = getSolutionDirectoryName()
+        replaceRiderPackageVersion(File(solutionSourceRootDirectory, solutionName))
+        unityProjectPath = putUnityProjectToTempTestDir(solutionName, null)
         val unityProcessHandle = startUnity(
             executable = unityExecutable.canonicalPath,
             projectPath = unityProjectPath.canonicalPath,

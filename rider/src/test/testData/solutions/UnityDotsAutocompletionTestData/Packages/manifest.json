@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "com.unity.entities.graphics": "1.0.0-pre.65",
+      "com.unity.entities.graphics": "1.0.0-pre.65",
+      "com.unity.ide.rider": "{{VERSION}}"
   }
 }
