@@ -65,14 +65,6 @@
       <inline id="global-keywords" inline="yes" />
     </group>
   </named-value>
-  <named-value id="color" declared-in="0">
-    <group type="or">
-      <color />
-      <invoke id="rgb" />
-      <invoke id="rgba" />
-      <inline id="global-keywords" inline="yes" />
-    </group>
-  </named-value>
   <named-value id="asset" declared-in="0">
     <group type="or">
       <uri/>
