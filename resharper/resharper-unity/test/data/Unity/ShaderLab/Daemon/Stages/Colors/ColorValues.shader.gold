@@ -18,21 +18,21 @@
 }
 
 ---------------------------------------------------------
-(0): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
+(0): ReSharper Parameter Name Hint: Color  ㅤ
 ARGB:  229, 76, 102, 51
-HEX:  E5, 4C, 66, 33' (E) ''
-(1): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
+HEX:  E5, 4C, 66, 33
+(1): ReSharper Parameter Name Hint: Color  ㅤ
 ARGB:  255, 76, 102, 76
-HEX:  FF, 4C, 66, 4C' (E) ''
-(2): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
+HEX:  FF, 4C, 66, 4C
+(2): ReSharper Parameter Name Hint: Color  ㅤ
 ARGB:  127, 229, 51, 25
-HEX:  7F, E5, 33, 19' (E) ''
-(3): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
+HEX:  7F, E5, 33, 19
+(3): ReSharper Parameter Name Hint: Color  ㅤ
 ARGB:  255, 255, 127, 51
-HEX:  FF, FF, 7F, 33' (E) ''
-(4): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
+HEX:  FF, FF, 7F, 33
+(4): ReSharper Parameter Name Hint: Color  ㅤ
 ARGB:  127, 102, 76, 51
-HEX:  7F, 66, 4C, 33' (E) ''
-(5): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
+HEX:  7F, 66, 4C, 33
+(5): ReSharper Parameter Name Hint: Color  ㅤ
 ARGB:  255, 178, 204, 76
-HEX:  FF, B2, CC, 4C' (E) ''
+HEX:  FF, B2, CC, 4C
