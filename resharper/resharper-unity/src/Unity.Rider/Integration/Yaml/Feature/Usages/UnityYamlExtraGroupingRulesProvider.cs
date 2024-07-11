@@ -73,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         }
 
         public abstract RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
-            bool forInspectionResult);
+            bool forInspectionResult, bool forUsagesPopup);
         public abstract void Navigate(IOccurrence occurrence);
 
         public string RuleId { get; }
@@ -97,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         }
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
-            bool forInspectionResult)
+            bool forInspectionResult, bool forUsagesPopup)
         {
             if (!(occurrence is UnityAnimatorScriptOccurence animationEventOccurence)) return EmptyModel();
             var text = animationEventOccurence.GetDisplayText()?.Text.Split('/');
@@ -121,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         }
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
-            bool forInspectionResult)
+            bool forInspectionResult, bool forUsagesPopup)
         {
             if (!(occurrence is AnimExplicitEventOccurence animationEventOccurence)) return EmptyModel();
             var text = animationEventOccurence.GetDisplayText()?.Text;
@@ -146,7 +146,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         }
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
-            bool forInspectionResult)
+            bool forInspectionResult, bool forUsagesPopup)
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
@@ -193,7 +193,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         }
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor,
-            bool forInspectionResult)
+            bool forInspectionResult, bool forUsagesPopup)
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
