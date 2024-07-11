@@ -7,11 +7,11 @@
   <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.VisualStudio</AssemblyName>
-    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.VisualStudio</RootNamespace>
     <LangVersion>9</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.VisualStudio</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
   <ItemGroup Label="PackageReference">
     <PackageReference Include="JetBrains.Lifetimes" />

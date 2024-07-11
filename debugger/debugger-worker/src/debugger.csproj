@@ -8,12 +8,12 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="$(ImportGuard-DirectoryBuildProps) == ''" />
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Debugger</AssemblyName>
-    <RootNamespace>JetBrains.Debugger.Worker.Plugins.Unity</RootNamespace>
-    <LangVersion>9</LangVersion>
     <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
+    <RootNamespace>JetBrains.Debugger.Worker.Plugins.Unity</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\..\resharper\build\generated\Model\DebuggerWorker\**\*" LinkBase="Model" Condition="!$(InternalBuild)" />

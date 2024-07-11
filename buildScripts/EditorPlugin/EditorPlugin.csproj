@@ -1,11 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="Current" Sdk="JetBrains.Toolset.MainSolution.Sdk/20200625.1.1.2">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <ProjectGuid>{7B2D7183-8B19-4AA4-863C-1F8FA0A1FA74}</ProjectGuid>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.EditorPlugin</AssemblyName>
-    <OutputType>Library</OutputType>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.EditorPlugin</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
     <Title>JetBrains .NET Public Platform Core Utilities</Title>
   </PropertyGroup>
   <ItemGroup Label="PackageReference">
