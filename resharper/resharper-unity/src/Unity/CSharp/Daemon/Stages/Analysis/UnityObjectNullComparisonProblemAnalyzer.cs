@@ -8,7 +8,13 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
-[ElementProblemAnalyzer(typeof(IEqualityExpression), HighlightingTypes = [typeof(UnityObjectNullComparisonWarning)])]
+[ElementProblemAnalyzer(
+    typeof(IEqualityExpression),
+    HighlightingTypes =
+    [
+        typeof(UnityObjectNullComparisonWarning),
+        typeof(UnityObjectNullComparisonHintHighlighting)
+    ])]
 public class UnityObjectNullComparisonProblemAnalyzer(UnityApi unityApi) : UnityElementProblemAnalyzer<IEqualityExpression>(unityApi)
 {
     protected override void Analyze(IEqualityExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

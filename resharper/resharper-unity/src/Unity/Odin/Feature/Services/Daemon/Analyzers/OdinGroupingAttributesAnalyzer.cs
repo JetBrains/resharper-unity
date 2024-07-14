@@ -19,7 +19,15 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.Daemon.Analyzers;
 
-[ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IClassLikeDeclaration))]
+[ElementProblemAnalyzer(
+    Instantiation.DemandAnyThreadUnsafe,
+    typeof(IClassLikeDeclaration),
+    HighlightingTypes =
+    [
+        typeof(OdinUnknownGroupingPathWarning),
+        typeof(OdinMemberWrongGroupingAttributeWarning),
+        typeof(OdinMemberPresentInMultipleGroupsWarning)
+    ])]
 public class OdinGroupingAttributesAnalyzer : UnityElementProblemAnalyzer<IClassLikeDeclaration>
 {
     private readonly UnityTechnologyDescriptionCollector myTechnologyCollector;

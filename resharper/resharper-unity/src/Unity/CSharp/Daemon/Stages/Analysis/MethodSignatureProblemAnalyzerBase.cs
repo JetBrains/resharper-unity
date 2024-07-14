@@ -7,6 +7,15 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
+    [HighlightingSource(HighlightingTypes =
+    [
+        typeof(IncorrectSignatureWarning),
+        typeof(InvalidStaticModifierWarning),
+        typeof(InvalidReturnTypeWarning),
+        typeof(InvalidParametersWarning),
+        typeof(InvalidTypeParametersWarning),
+        typeof(IncorrectSignatureWithChoiceWarning)
+    ])]
     public abstract class MethodSignatureProblemAnalyzerBase<T> : UnityElementProblemAnalyzer<T>
         where T : ITreeNode
     {

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -15,16 +14,7 @@ using MethodSignature = JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IAttribute),
-        HighlightingTypes = new[]
-        {
-            typeof(InvalidStaticModifierWarning),
-            typeof(InvalidReturnTypeWarning),
-            typeof(InvalidTypeParametersWarning),
-            typeof(InvalidParametersWarning),
-            typeof(IncorrectSignatureWarning),
-            typeof(IncorrectSignatureWithChoiceWarning)
-        })]
+    [ElementProblemAnalyzer(typeof(IAttribute))]
     public class AttributedMethodSignatureProblemAnalyzer : MethodSignatureProblemAnalyzerBase<IAttribute>
     {
         // These attributes either don't have RequiredSignatureAttribute, or only added it later, in which case, we

@@ -11,12 +11,10 @@ using JetBrains.ReSharper.Psi.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IAttribute),
-        HighlightingTypes = new[]
-        {
-            typeof(InvalidStaticModifierWarning), typeof(InvalidReturnTypeWarning),
-            typeof(InvalidTypeParametersWarning), typeof(InvalidParametersWarning),
-            typeof(IncorrectSignatureWarning), typeof(ParameterNotDerivedFromComponentWarning)
-        })]
+        HighlightingTypes =
+        [
+            typeof(ParameterNotDerivedFromComponentWarning)
+        ])]
     public class DrawGizmoAttributeProblemAnalyzer : MethodSignatureProblemAnalyzerBase<IAttribute>
     {
         private readonly IPredefinedTypeCache myPredefinedTypeCache;

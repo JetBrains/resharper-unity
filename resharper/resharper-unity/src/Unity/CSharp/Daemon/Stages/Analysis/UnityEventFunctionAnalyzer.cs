@@ -15,15 +15,10 @@ using JetBrains.Util.DataStructures;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IMemberOwnerDeclaration),
-        HighlightingTypes = new[]
-        {
-            typeof(DuplicateEventFunctionWarning),
-            typeof(IncorrectSignatureWarning),
-            typeof(InvalidStaticModifierWarning),
-            typeof(InvalidReturnTypeWarning),
-            typeof(InvalidParametersWarning),
-            typeof(InvalidTypeParametersWarning)
-        })]
+        HighlightingTypes =
+        [
+            typeof(DuplicateEventFunctionWarning)
+        ])]
     public class UnityEventFunctionAnalyzer : MethodSignatureProblemAnalyzerBase<IMemberOwnerDeclaration>
     {
         private readonly KnownTypesCache myKnownTypesCache;
