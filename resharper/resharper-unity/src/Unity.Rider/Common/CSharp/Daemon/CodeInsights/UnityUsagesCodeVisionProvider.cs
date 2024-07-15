@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Components;
 using JetBrains.Application.DataContext;
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.Application.UI.ActionsRevised.Handlers;
 using JetBrains.Application.UI.DataContext;
@@ -30,18 +32,10 @@ using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsights
 {
-    [ShellComponent]
-    public class UnityUsagesCodeVisionProvider : ICodeInsightsProvider
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
+    public class UnityUsagesCodeVisionProvider(ILazy<IActionManager> manager, ILazy<DataContexts> dataContexts)
+        : ICodeInsightsProvider
     {
-        private readonly IActionManager myActionManager;
-        private readonly DataContexts myContexts;
-
-        public UnityUsagesCodeVisionProvider(Shell shell)
-        {
-            myActionManager = shell.GetComponent<IActionManager>();
-            myContexts = shell.GetComponent<DataContexts>();
-        }
-        
         public bool IsAvailableIn(ISolution solution)
         {
             return solution.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue();
@@ -69,10 +63,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
                 rules.AddRule("DontNavigateImmediatelyToSingleUsage", NavigationSettings.DONT_NAVIGATE_IMMEDIATELY_TO_SINGLE_USAGE, new object());
 
-                var ctx = myContexts.CreateWithDataRules(Lifetime.Eternal, rules);
+                var ctx = dataContexts.Value.CreateWithDataRules(Lifetime.Eternal, rules);
 
-                var def = myActionManager.Defs.GetActionDef<GoToUnityUsagesAction>();
-                def.EvaluateAndExecute(myActionManager, ctx);
+                var actionManager = manager.Value;
+                var def = actionManager.Defs.GetActionDef<GoToUnityUsagesAction>();
+                def.EvaluateAndExecute(actionManager, ctx);
             }
         }
 
