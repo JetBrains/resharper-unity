@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using Graphics = UnityEngine.Graphics;
@@ -19,11 +18,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
         public string TextureName;
         public bool HasAlphaChannel;
 
-        public TexturePixelsInfo(Size size, Color32[] pixels, UnityEngine.Texture texture)
+        public TexturePixelsInfo(Vector2Int size, Color32[] pixels, UnityEngine.Texture texture)
         {
             Pixels = GetPixelsInts(pixels);
-            Width = size.Width;
-            Height = size.Height;
+            Width = size.x;
+            Height = size.y;
             TextureName = texture.name;
             GraphicsTextureFormat = texture.graphicsFormat.ToString();
             OriginalWidth = texture.width;
@@ -53,10 +52,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
         // ReSharper disable once UnusedMember.Global
         public static string GetPixelsInString(UnityEngine.Texture texture) //Called by debugger evaluator
         {
-            return GetPixelsInString(texture, new Size(texture.width, texture.height));
+            return GetPixelsInString(texture, new Vector2Int(texture.width, texture.height));
         }
 
-        public static string GetPixelsInString(UnityEngine.Texture texture, Size size)
+        public static string GetPixelsInString(UnityEngine.Texture texture, Vector2Int size)
         {
             var texturePixelsInfo = GetTexturePixelsInfo(texture, size);
             return JsonUtility.ToJson(texturePixelsInfo, true);
@@ -65,17 +64,17 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
         // ReSharper disable once UnusedMember.Global
         public static TexturePixelsInfo GetTexturePixelsInfo(UnityEngine.Texture texture)
         {
-            return GetTexturePixelsInfo(texture, new Size(texture.width, texture.height));
+            return GetTexturePixelsInfo(texture, new Vector2Int(texture.width, texture.height));
         }
         
-        public static TexturePixelsInfo GetTexturePixelsInfo(UnityEngine.Texture texture, Size size)
+        public static TexturePixelsInfo GetTexturePixelsInfo(UnityEngine.Texture texture, Vector2Int size)
         {
             size = GetTextureConvertedSize(texture, size);
             var texturePixelsInfo = GetPixels(texture, size);
             return texturePixelsInfo;
         }
 
-        private static TexturePixelsInfo GetPixels(UnityEngine.Texture texture, Size size)
+        private static TexturePixelsInfo GetPixels(UnityEngine.Texture texture, Vector2Int size)
         {
             var targetTexture = CreateTargetTexture(size);
 
@@ -83,7 +82,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             {
                 CopyTexture(texture, targetTexture);
                 var pixels = targetTexture.GetPixels32();
-                var texturePixelsInfo = new TexturePixelsInfo(new Size(targetTexture.width, targetTexture.height)
+                var texturePixelsInfo = new TexturePixelsInfo(new Vector2Int(targetTexture.width, targetTexture.height)
                     , pixels
                     , texture);
                 return texturePixelsInfo;
@@ -94,7 +93,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             }
         }
 
-        private static byte[] GetRawBytes(UnityEngine.Texture texture, Size size)
+        private static byte[] GetRawBytes(UnityEngine.Texture texture, Vector2Int size)
         {
             Texture2D targetTexture = null;
             try
@@ -146,24 +145,24 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             }
         }
 
-        private static Texture2D CreateTargetTexture(Size size)
+        private static Texture2D CreateTargetTexture(Vector2Int size)
         {
-            var texture2D = new Texture2D(size.Width, size.Height, TextureFormat.RGBA32, false);
+            var texture2D = new Texture2D(size.x, size.y, TextureFormat.RGBA32, false);
             return texture2D;
         }
 
-        private static Size GetTextureConvertedSize(UnityEngine.Texture texture, Size size)
+        private static Vector2Int GetTextureConvertedSize(UnityEngine.Texture texture, Vector2Int size)
         {
             var texture2dWidth = texture.width;
             var texture2dHeight = texture.height;
 
             var divider = 1;
-            while (texture2dWidth / divider > size.Width || texture2dHeight / divider > size.Height)
+            while (texture2dWidth / divider > size.x || texture2dHeight / divider > size.y)
                 divider *= 2;
 
             var targetTextureWidth = texture2dWidth / divider;
             var targetTextureHeight = texture2dHeight / divider;
-            return new Size(targetTextureWidth, targetTextureHeight);
+            return new Vector2Int(targetTextureWidth, targetTextureHeight);
         }
     }
 }
