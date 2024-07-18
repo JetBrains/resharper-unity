@@ -64,7 +64,7 @@ public class OdinMemberReferenceFactory : IReferenceFactory
             references.Add(new OdinMemberReference(attribute.GetContainingTypeElement(), expression, name, startOffset, endOffset));
         }
 
-        if (stringValue.Length == 0 || stringValue[0] != '@')
+        if (stringValue.Length == 0 || stringValue[0] != '@' && stringValue[0] != '$')
         {
             if (OdinKnownAttributes.AttributesWithMemberCompletion.TryGetValue(clrName, out var possibleNames))
             {
