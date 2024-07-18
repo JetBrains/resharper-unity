@@ -81,6 +81,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         public bool IsUnityType([NotNullWhen(true)] ITypeElement? type) =>
             type != null && myUnityTypeCache.IsUnityType(type);
+        
+        public bool IsOdinType([NotNullWhen(true)] ITypeElement? type)
+        {
+            if (type == null)
+                return false;
+
+            if (!OdinAttributeUtil.HasOdinSupport(myTechnologyDescriptionCollector))
+                return false;
+
+            return type.DerivesFromOdinDrawer();
+        }
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
         // method differentiates between a type declaration and a type usage. Consider renaming if we ever need to
@@ -172,6 +183,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             }
 
             return status;
+        }
+        
+        public bool IsOdinInspectorField(IField? field)
+        {
+            if (field == null)
+                return false;
+            
+            if (!OdinAttributeUtil.HasOdinSupport(myTechnologyDescriptionCollector))
+                return false;
+
+            foreach (var attribute in field.GetAttributeInstances(AttributesSource.Self))
+            {
+                if (attribute.GetAttributeType().GetTypeElement().DerivesFrom(OdinKnownAttributes.PropertyGroupAttribute))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
+        public bool IsOdinInspectorProperty(IProperty? property)
+        {
+            if (property == null)
+                return false;
+            
+            if (!OdinAttributeUtil.HasOdinSupport(myTechnologyDescriptionCollector))
+                return false;
+
+            foreach (var attribute in property.GetBackingFieldAttributeInstances())
+            {
+                if (attribute.GetAttributeType().GetTypeElement().DerivesFrom(OdinKnownAttributes.PropertyGroupAttribute))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private SerializedFieldStatus IsSerialisedFieldByOdinRules(IField? field)
