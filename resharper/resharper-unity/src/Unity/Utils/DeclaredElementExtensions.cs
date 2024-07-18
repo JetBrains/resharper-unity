@@ -2,6 +2,7 @@
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -55,6 +56,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
         public static bool DerivesFromMonoBehaviour([CanBeNull] this ITypeElement candidate)
         {
             return candidate.DerivesFrom(KnownTypes.MonoBehaviour);
+        }
+        
+        public static bool DerivesFromOdinDrawer([CanBeNull] this ITypeElement candidate)
+        {
+            return candidate.DerivesFrom(OdinKnownAttributes.OdinDrawer);
         }
 
         public static bool DerivesFromScriptableObject([CanBeNull] this ITypeElement candidate)

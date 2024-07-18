@@ -59,7 +59,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             {
                 case IClass cls when unityApi.IsUnityType(cls) ||
                                      cls.IsDotsImplicitlyUsedType() ||
-                                     IsUxmlFactory(cls):
+                                     IsUxmlFactory(cls) ||
+                                     unityApi.IsOdinType(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
                 case IStruct @struct when unityApi.IsUnityType(@struct) ||
@@ -105,6 +106,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                 case IField field when unityApi.IsSerialisedField(field).HasFlag(SerializedFieldStatus.SerializedField):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
+                
+                case IField field when unityApi.IsOdinInspectorField(field):
+                    flags = ImplicitUseKindFlags.Assign;
+                    return true;
 
                 case IProperty property when IsEventHandler(unityApi, property.Setter) ||
                                              IsImplicitlyUsedInterfaceProperty(property) ||
@@ -112,7 +117,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                                              unityApi.IsSerialisedAutoProperty(property, useSwea:true).HasFlag(SerializedFieldStatus.SerializedField):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
-
+                case IProperty property when unityApi.IsOdinInspectorProperty(property):
+                    flags = ImplicitUseKindFlags.Assign;
+                    return true;
+                
                 case IParameter parameter
                     when parameter.IsRefMember() && parameter.GetContainingType().IsDotsImplicitlyUsedType():
                     flags = ImplicitUseKindFlags.Assign;
