@@ -71,6 +71,9 @@ public static class OdinKnownAttributes
     public static readonly IClrTypeName OdinSerializedComponent = new ClrTypeName("Sirenix.OdinInspector.SerializedComponent");
     public static readonly IClrTypeName OdinSerializedStateMachineBehaviour = new ClrTypeName("Sirenix.OdinInspector.SerializedStateMachineBehaviour");
     public static readonly IClrTypeName OdinSerializedUnityObject= new ClrTypeName("Sirenix.OdinInspector.SerializedUnityObject");
+  
+    public static readonly IClrTypeName PropertyGroupAttribute = new ClrTypeName("Sirenix.OdinInspector.PropertyGroupAttribute");
+    public static readonly IClrTypeName OdinDrawer = new ClrTypeName("Sirenix.OdinInspector.Editor.OdinDrawer");
 
     
     public static readonly Dictionary<IClrTypeName, string[]> AttributesWithMemberCompletion = new()
