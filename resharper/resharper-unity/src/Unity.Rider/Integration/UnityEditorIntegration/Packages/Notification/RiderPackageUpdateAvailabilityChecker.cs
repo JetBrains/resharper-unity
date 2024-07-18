@@ -160,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                             var file = mySolution.SolutionDirectory.Combine("Packages").Combine("manifest.json");
                                             if (model != null && file.ExistsFile)
                                             { 
-                                                model.OpenFileLineCol.Start(notificationLifetime.Lifetime, new RdOpenFileArgs(file.FullPath, 1, 0));
+                                                model.OpenFileLineCol.Start(mySolution.GetSolutionLifetimes().UntilSolutionCloseLifetime, new RdOpenFileArgs(file.FullPath, 1, 0));
                                                 notificationLifetime.Terminate();
                                             }
                                         }),
