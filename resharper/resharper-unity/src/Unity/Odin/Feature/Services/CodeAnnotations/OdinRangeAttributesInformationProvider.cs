@@ -20,8 +20,12 @@ public class OdinRangeAttributesInformationProvider : IUnityRangeAttributeProvid
             return false;
         
         var unityMinValue = attributeInstance.PositionParameter(0);
+        var unityMaxValue = attributeInstance.PositionParameter(1);
 
         if (!OdinCodeAnnotationUtil.IsApplicable(unityMinValue.ConstantValue))
+            return false;
+        
+        if (!OdinCodeAnnotationUtil.IsApplicable(unityMaxValue.ConstantValue))
             return false;
 
         return true;
@@ -36,6 +40,7 @@ public class OdinRangeAttributesInformationProvider : IUnityRangeAttributeProvid
 
     public long GetMaxValue(IAttributeInstance attributeInstance)
     {
-        return long.MaxValue;
+        var unityMinValue = attributeInstance.PositionParameter(1);
+        return OdinCodeAnnotationUtil.GetMaxValue(unityMinValue.ConstantValue);
     }
 }
