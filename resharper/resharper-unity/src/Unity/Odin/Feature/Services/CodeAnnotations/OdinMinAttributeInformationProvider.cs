@@ -32,7 +32,6 @@ public class OdinMinAttributeInformationProvider : IUnityRangeAttributeProvider
 
     public long GetMaxValue(IAttributeInstance attributeInstance)
     {
-        var unityMaxValue = attributeInstance.PositionParameter(0);
-        return OdinCodeAnnotationUtil.GetMaxValue(unityMaxValue.ConstantValue);
+        return long.MaxValue;
     }
 }
