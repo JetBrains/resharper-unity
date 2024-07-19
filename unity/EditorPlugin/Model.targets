@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <InternalBuild Condition="'$(SolutionFileName)' != 'resharper-unity.sln' AND '$(SolutionFileName)' != 'JetBrains.Rider.Unity.Editor.sln' AND '$(SolutionFileName)' != 'tools.sln' AND '$(SolutionFileName)' != 'resharper-unity-fleet.sln' AND '$(SolutionFileName)' != 'DebuggerTools.sln'">True</InternalBuild>
+    <InternalBuild Condition="'$(SolutionFileName)' != 'resharper-unity.sln' AND '$(SolutionFileName)' != 'tools.sln' AND '$(SolutionFileName)' != 'resharper-unity-fleet.sln' AND '$(SolutionFileName)' != 'DebuggerTools.sln'">True</InternalBuild>
     <InternalBuild Condition="$(InternalBuild) == ''">False</InternalBuild>
   </PropertyGroup>
   <ItemGroup Label="Model">
