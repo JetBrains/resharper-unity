@@ -10,6 +10,7 @@ import com.jetbrains.rdclient.daemon.util.backendAttributeIdOrThrow
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
@@ -20,6 +21,7 @@ import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
+@Mute("RIDER-114854")
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class InputSystemTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String {
