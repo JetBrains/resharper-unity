@@ -34,8 +34,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
 
         private static readonly MethodSelector ourGetComponentsSelector = new MethodSelector(m =>
             m.Name == "GetComponents" && m.Parameters.Length == 1 && m.Parameters[0].Type.Is("System.Type"));
-        
-        private static readonly Func<IMetadataMethodLite, bool> ourGetComponentsGenericSelector = m => m.Name == "GetComponents" && m.Parameters.Length == 0;
 
         private static readonly MethodSelector ourGetInspectorTitleSelector = new MethodSelector(m =>
             m.IsStatic && m.Name == "GetInspectorTitle" && m.Parameters.Length == 1 &&
@@ -118,10 +116,22 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                     myLogger.Warn("Unable to find UnityEngine.Component");
                     yield break;
                 }
-                
-                
-                var componentArray = TryGetComponentArray(options, frame, componentType);
 
+                var getComponentsMethod = myGameObjectRole.ReifiedType.MetadataType.GetMethods()
+                    .FirstOrDefault(ourGetComponentsSelector);
+                if (getComponentsMethod == null)
+                {
+                    myLogger.Warn("Unable to find UnityEngine.GameObject.GetComponents method");
+                    yield break;
+                }
+
+                // Call Component[] GameObject.GetComponents(typeof(Component))
+                var typeObject = (IValueReference<TValue>) componentType.GetTypeObject(frame);
+                var componentsArray =
+                    myGameObjectRole.CallInstanceMethod(getComponentsMethod, typeObject.GetValue(options));
+                var componentArray =
+                    new SimpleValueReference<TValue>(componentsArray, frame, myValueServices.RoleFactory)
+                        .GetExactPrimaryRoleSafe<TValue, IArrayValueRole<TValue>>(options);
                 if (componentArray == null)
                 {
                     myLogger.Warn("Cannot get return value of GameObject.GetComponents or method returned null");
@@ -141,7 +151,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 var getInspectorTitleMethod = objectNamesType?.MetadataType.GetMethods()
                     .FirstOrDefault(ourGetInspectorTitleSelector);
 
-                var childReferencesEnumerator = (IChildReferencesEnumerator<TValue>)componentArray;
+                var childReferencesEnumerator = (IChildReferencesEnumerator<TValue>) componentArray;
                 foreach (var componentReference in childReferencesEnumerator.GetChildReferences())
                 {
                     var componentName = GetComponentName(componentReference, objectNamesType,
@@ -152,33 +162,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                     yield return new CalculatedValueReferenceDecorator<TValue>(componentReference,
                         myValueServices.RoleFactory, componentName, !isNameFromValue, false).ToValue(myValueServices);
                 }
-            }
-
-            private IArrayValueRole<TValue>? TryGetComponentArray(IValueFetchOptions options, IStackFrame frame,
-                IReifiedType<TValue> componentType)
-            {
-                //gameobject.GetComponents<Component>()
-                var getComponentsGenericValueReference =
-                    myGameObjectRole.GetInstanceMethodInvocationReference(ourGetComponentsGenericSelector, new[] { componentType.MetadataType });
-                var exactPrimaryRole = getComponentsGenericValueReference?.GetPrimaryRole(options);
-                if (exactPrimaryRole is IArrayValueRole<TValue> componentArray)
-                    return componentArray;
-
-                //gameobject.GetComponents(typeof(Component)) - used as follback,
-                //typeof() - usally stripped out of il2cpp build 
-                var getComponentsMethod = myGameObjectRole.ReifiedType.MetadataType.GetMethods().FirstOrDefault(ourGetComponentsSelector);
-                if (getComponentsMethod == null)
-                {
-                    myLogger.Warn("Unable to find UnityEngine.GameObject.GetComponents method");
-                    return null;
-                }
-                
-                // Call Component[] GameObject.GetComponents(typeof(Component))
-                var typeObject = (IValueReference<TValue>) componentType.GetTypeObject(frame);
-                var componentsArray =
-                    myGameObjectRole.CallInstanceMethod(getComponentsMethod, typeObject.GetValue(options));
-                return new SimpleValueReference<TValue>(componentsArray, frame, myValueServices.RoleFactory)
-                        .GetExactPrimaryRoleSafe<TValue, IArrayValueRole<TValue>>(options);
             }
 
             private string GetComponentName(IValueReference<TValue> componentValue,
