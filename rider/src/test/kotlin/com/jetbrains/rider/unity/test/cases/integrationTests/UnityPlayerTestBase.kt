@@ -82,7 +82,7 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,
 
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
-        unityProjectPath = putUnityProjectToTempTestDir(getSolutionDirectoryName(), null)
+        unityProjectPath = putUnityProjectToTempTestDir(testSolution, null)
         super.setUpTestCaseSolution()
         prepareAssemblies(project, activeSolutionDirectory)
         downloadGameFiles(project, activeSolutionDirectory)

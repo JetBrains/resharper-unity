@@ -11,9 +11,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     override val traceCategories: List<String>
         get() = super.traceCategories + "JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents"
 
-    override fun getSolutionDirectoryName(): String {
-        return "PrefabModificationTestSolution"
-    }
+    override val testSolution: String = "PrefabModificationTestSolution"
 
     @Test(dataProvider = "findUsagesGrouping")
     fun test01(caseName: String, groups: List<String>?) {

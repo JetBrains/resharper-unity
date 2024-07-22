@@ -18,7 +18,7 @@ import java.io.File
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
-    override fun getSolutionDirectoryName() = "UnityProjectModelViewExtensionsTest"
+    override val testSolution = "UnityProjectModelViewExtensionsTest"
     override val persistCaches: Boolean
         get() = true
 

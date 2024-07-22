@@ -21,7 +21,7 @@ import java.io.File
 
 abstract class DotsDebuggerTestBase(private val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase() {
 
-    override fun getSolutionDirectoryName() = "UnityDotsDebug/Project"
+    override val testSolution = "UnityDotsDebug/Project"
     override val majorVersion = this.engineVersion
 
     override val testClassDataDirectory: File

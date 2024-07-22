@@ -22,7 +22,7 @@ import kotlin.test.assertNotNull
 abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNames: Map<String, String>)
     : UnityPlayerTestBase(engineVersion, buildNames) {
 
-    override fun getSolutionDirectoryName() = "UnityPlayerProjects/SimpleUnityGame"
+    override val testSolution = "UnityPlayerProjects/SimpleUnityGame"
 
     private fun getExecutionFileName() = if (SystemInfo.isMac)
         "SimpleUnityGame.app"

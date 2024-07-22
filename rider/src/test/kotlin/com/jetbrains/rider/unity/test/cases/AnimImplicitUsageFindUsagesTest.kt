@@ -20,9 +20,7 @@ import java.io.File
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class AnimImplicitUsageFindUsagesTest : BaseTestWithSolution() {
-    override fun getSolutionDirectoryName(): String {
-        return "AnimImplicitUsageTest"
-    }
+    override val testSolution: String = "AnimImplicitUsageTest"
 
     override fun preprocessTempDirectory(tempDir: File) {
         prepareAssemblies(activeSolutionDirectory)

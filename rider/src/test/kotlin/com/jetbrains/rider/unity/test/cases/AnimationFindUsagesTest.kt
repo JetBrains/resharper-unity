@@ -15,9 +15,7 @@ import org.testng.annotations.Test
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 open class AnimationFindUsagesTest : FindUsagesAssetTestBase() {
-    override fun getSolutionDirectoryName(): String {
-        return "AnimationFindUsages"
-    }
+    override val testSolution: String = "AnimationFindUsages"
 
     @Test(description = "Test animation find usagesfor method", dataProvider = "findUsagesGrouping")
     fun animationFindUsagesForMethod(caseName: String, groups: List<String>?) {

@@ -19,9 +19,7 @@ class FindUguiUsagesPrefabModificationsTest : FindUsagesAssetTestBase() {
     override val traceCategories: List<String>
         get() = super.traceCategories + "JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents"
 
-    override fun getSolutionDirectoryName(): String {
-        return "UI_PrefabModifications"
-    }
+    override val testSolution: String = "UI_PrefabModifications" 
 
     @Test(description="Find Usages for event OnClickFromPrefabModification")
     fun test01() {

@@ -33,7 +33,7 @@ import java.time.Duration
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
-    override fun getSolutionDirectoryName(): String = "ResourcesAutocompletionTestData"
+    override val testSolution: String = "ResourcesAutocompletionTestData"
 
     override val traceCategories: List<String>
         get() = listOf(

@@ -24,9 +24,7 @@ import java.time.Duration
 @Mute("RIDER-114854")
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class InputSystemTest : BaseTestWithSolution() {
-    override fun getSolutionDirectoryName(): String {
-        return "InputSystemTestData"
-    }
+    override val testSolution: String = "InputSystemTestData"
 
     override fun preprocessTempDirectory(tempDir: File) {
         prepareAssemblies(activeSolutionDirectory)

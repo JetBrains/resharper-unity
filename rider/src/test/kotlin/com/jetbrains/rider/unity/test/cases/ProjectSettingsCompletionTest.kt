@@ -28,7 +28,7 @@ import java.io.File
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class ProjectSettingsCompletionTest : BaseTestWithSolution() {
-    override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
+    override val testSolution: String = "ProjectSettingsTestData"
     override fun preprocessTempDirectory(tempDir: File) {
         if (testMethod.name.contains("YamlOff")) {
             SettingsHelper.disableIsAssetIndexingEnabledSetting(activeSolution, activeSolutionDirectory)

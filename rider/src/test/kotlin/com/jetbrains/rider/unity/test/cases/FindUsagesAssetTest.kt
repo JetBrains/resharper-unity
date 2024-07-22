@@ -17,9 +17,7 @@ import org.testng.annotations.Test
 @TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.DOT_NET_6)
 open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
-    override fun getSolutionDirectoryName(): String {
-        return "FindUsages_event_handlers_2017"
-    }
+    override val testSolution: String = "FindUsages_event_handlers_2017"
 
     @Test(description = "Find script usages with Unity2017 scene model", dataProvider = "findUsagesGrouping")
     fun findScript_2017(caseName: String, groups: List<String>?) {

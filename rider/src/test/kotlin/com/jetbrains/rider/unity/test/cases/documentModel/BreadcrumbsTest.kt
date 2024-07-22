@@ -16,7 +16,7 @@ import org.testng.annotations.Test
 @Feature("Breadcrumbs in Shader files")
 @Severity(SeverityLevel.NORMAL)
 class BreadcrumbsTest : BaseTestWithSolution() {
-    override fun getSolutionDirectoryName() = "SimpleUnityProjectWithShaders"
+    override val testSolution = "SimpleUnityProjectWithShaders"
 
     @Test(description="Test Breadcrumbs in .shader files")
     fun simpleCheck() {

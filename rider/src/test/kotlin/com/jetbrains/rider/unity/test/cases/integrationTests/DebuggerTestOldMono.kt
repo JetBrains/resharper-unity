@@ -15,7 +15,7 @@ import java.io.File
 @Feature("Debug Unity OldMono")
 @Severity(SeverityLevel.NORMAL)
 class DebuggerTestOldMono : DebuggerTestBase(Unity.V2022) {
-    override fun getSolutionDirectoryName() = "SimpleUnityProjectWithoutPlugin"
+    override val testSolution = "SimpleUnityProjectWithoutPlugin"
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)
 

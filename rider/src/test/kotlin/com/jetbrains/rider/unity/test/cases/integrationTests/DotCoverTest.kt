@@ -12,7 +12,7 @@ import java.io.File
 @Feature("DotCover in Unity")
 @Severity(SeverityLevel.CRITICAL)
 class DotCoverTest : IntegrationTestWithGeneratedSolutionBase() {
-    override fun getSolutionDirectoryName() = "SimpleUnityUnitTestingProject"
+    override val testSolution = "SimpleUnityUnitTestingProject"
 
     override val withCoverage: Boolean
         get() = true

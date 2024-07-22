@@ -35,7 +35,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     override val waitForCaches = true
 
-    override fun getSolutionDirectoryName() = "CodeLensTestSolution"
+    override val testSolution = "CodeLensTestSolution"
 
     @DataProvider(name = "assetSettings")
     fun assetSettings() = arrayOf(

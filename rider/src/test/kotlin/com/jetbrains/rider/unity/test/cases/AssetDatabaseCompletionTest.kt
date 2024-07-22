@@ -31,7 +31,7 @@ import java.time.Duration
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class AssetDatabaseCompletionTest : BaseTestWithSolution() {
-    override fun getSolutionDirectoryName(): String = "AssetDatabasePathCompletionProject"
+    override val testSolution: String = "AssetDatabasePathCompletionProject"
 
     override val traceCategories: List<String>
         get() = listOf(

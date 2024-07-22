@@ -6,11 +6,11 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.env.enums.SdkVersion
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
@@ -84,15 +84,17 @@ class UnityExplorerTest : BaseTestWithSolutionBase() {
     @Issue("RIDER-92886")
     @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6, platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
     fun test_project_loading_with_special_folder() { // infinite loading caused by a "..\\" folder
-        val params = OpenSolutionParams()
-        withSolution("AnimImplicitUsageTest", params, preprocessTempDirectory = {
-            prepareAssemblies(activeSolutionDirectory)
-            val processBuilder = ProcessBuilder("mkdir", "..\\")
-            processBuilder.directory(it.resolve("Assets"))
-            processBuilder.start()
+        withSolution("AnimImplicitUsageTest", OpenSolutionParams().apply {
+            preprocessTempDirectory = {
+                prepareAssemblies(activeSolutionDirectory)
+                val processBuilder = ProcessBuilder("mkdir", "..\\")
+                processBuilder.directory(it.resolve("Assets"))
+                processBuilder.start()
+            }
         }) { project ->
             prepareProjectView(project)
-            waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
+            waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false) },
+                        Duration.ofSeconds(10), { "Deferred caches are not completed" })
         }
     }
 

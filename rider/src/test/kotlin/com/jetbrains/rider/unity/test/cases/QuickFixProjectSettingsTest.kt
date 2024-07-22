@@ -24,7 +24,7 @@ import java.io.File
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
-    override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
+    override val testSolution: String = "ProjectSettingsTestData"
     override val editorGoldFile: File
         get() = File(testCaseGoldDirectory,  testMethod.name)
 

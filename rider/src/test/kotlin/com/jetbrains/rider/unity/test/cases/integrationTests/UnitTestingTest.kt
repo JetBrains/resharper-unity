@@ -19,7 +19,7 @@ import java.io.File
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTest : IntegrationTestWithGeneratedSolutionBase() {
-    override fun getSolutionDirectoryName() = "SimpleUnityUnitTestingProject"
+    override val testSolution = "SimpleUnityUnitTestingProject"
 
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)

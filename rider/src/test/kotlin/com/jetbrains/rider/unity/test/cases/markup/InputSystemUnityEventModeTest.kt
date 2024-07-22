@@ -22,9 +22,7 @@ import java.time.Duration
 
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class InputSystemUnityEventModeTest : BaseTestWithSolution() {
-    override fun getSolutionDirectoryName(): String {
-        return "MarkupTestData"
-    }
+    override val testSolution: String = "MarkupTestData"
 
     override fun preprocessTempDirectory(tempDir: File) {
         prepareAssemblies(activeSolutionDirectory)

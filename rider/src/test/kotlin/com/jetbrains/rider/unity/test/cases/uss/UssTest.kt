@@ -11,9 +11,7 @@ import java.io.File
 
 @TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.DOT_NET_6)
 class UssTest : BaseTestWithSolution() {
-    override fun getSolutionDirectoryName(): String {
-        return "SimpleUnityProject"
-    }
+    override val testSolution: String = "SimpleUnityProject"
 
     override fun preprocessTempDirectory(tempDir: File) {
         prepareAssemblies(activeSolutionDirectory)
