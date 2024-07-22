@@ -2,6 +2,9 @@ package com.jetbrains.rider.unity.test.framework
 
 import com.jetbrains.rider.test.framework.TestMethod
 
+//Update this version when the new one is available
+const val riderPackageVersion: String = "3.0.31"
+
 @Target(AnnotationTarget.FUNCTION)
 annotation class UnityTestEnvironment(
     val withCoverage: Boolean = false,

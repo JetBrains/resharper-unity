@@ -8,6 +8,7 @@ import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.api.getEngineExecutableInstallationPath
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.startUnity
+import com.jetbrains.rider.unity.test.framework.riderPackageVersion
 import org.testng.annotations.BeforeMethod
 import java.io.File
 import java.io.FileNotFoundException
@@ -21,7 +22,6 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
     private lateinit var unityProjectPath: File
     protected abstract val majorVersion: EngineVersion
     private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(majorVersion) }
-    private val riderPackageVersion = "3.0.31"
     private val packageManifestPath = "/Packages/manifest.json"
     private val riderPackageTag = "{{VERSION}}"
 
@@ -81,8 +81,9 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
         }
     }
 
-    private fun replaceRiderPackageVersion(sourceDirectory: File) {
-
+    //Set the latest version of rider package in tests projects via replacing {{VERSION}} marker in manifest.json
+    //riderPackageVersion is stored in UnityTestEnvironment.kt
+    private fun setRiderPackageVersion (sourceDirectory: File) {
         val file = File("${sourceDirectory.path}$packageManifestPath").takeIf { it.isFile } ?: throw FileNotFoundException("Cannot find $packageManifestPath")
         val content = file.readText()
         val updatedContent = content.replace(riderPackageTag, riderPackageVersion)
@@ -92,7 +93,7 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
         val solutionName = getSolutionDirectoryName()
-        replaceRiderPackageVersion(File(solutionSourceRootDirectory, solutionName))
+        setRiderPackageVersion(File(solutionSourceRootDirectory, solutionName))
         unityProjectPath = putUnityProjectToTempTestDir(solutionName, null)
         val unityProcessHandle = startUnity(
             executable = unityExecutable.canonicalPath,
