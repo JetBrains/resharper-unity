@@ -167,7 +167,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         firstComponent = listPanel
         secondComponent = RiderUI.borderPanel {
             add(console.component, BorderLayout.CENTER)
-            console.editor.settings.isCaretRowShown = true
+            console.editor!!.settings.isCaretRowShown = true
             console.clear()
             console.allowHeavyFilters()
         }
