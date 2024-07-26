@@ -8,6 +8,7 @@ import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.api.getEngineExecutableInstallationPath
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.startUnity
+import com.jetbrains.rider.unity.test.framework.riderPackageVersion
 import org.testng.annotations.BeforeMethod
 import java.io.File
 import java.io.FileNotFoundException
@@ -91,6 +92,7 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
 
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
+        setRiderPackageVersion(File(solutionSourceRootDirectory, testSolution))
         unityProjectPath = putUnityProjectToTempTestDir(testSolution, null)
         val unityProcessHandle = startUnity(
             executable = unityExecutable.canonicalPath,

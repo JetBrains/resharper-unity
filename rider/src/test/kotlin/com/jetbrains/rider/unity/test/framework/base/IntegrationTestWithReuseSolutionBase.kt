@@ -17,7 +17,7 @@ import java.time.Duration
 abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase(), IntegrationTestWithFrontendBackendModel {
 
     override val customTempTestDirName = "IntegrationTestWithReuseSolution"
-    override val cleanTempTestDirectory = false
+    //override val cleanTempTestDirectory = false
 
     protected open val withCoverage: Boolean
         get() = false
