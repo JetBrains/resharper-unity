@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -70,7 +71,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {
             }
 
-            protected override string KindName(ITypeMember declaredElement) => Strings.UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function;
+            protected override RichText KindName(ITypeMember declaredElement)
+            {
+                return Strings.UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function;
+            }
         }
     }
 }

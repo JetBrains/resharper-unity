@@ -533,7 +533,7 @@
     <Parameter type="ITypeElement" name="attributeType" />
     <Parameter type="System.AttributeTargets" name="validTargets" isValid="skip" />
     <Message resourceName="AttributeIsRedundantOnThisDeclarationTypeItIsOnlyUsedWhenAppliedToDeclarationsMessage" resourceType="Strings">
-      <Argument>DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, AttributeType)</Argument>
+      <Argument>DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, AttributeType).Text</Argument>
       <Argument>ValidTargets</Argument>
     </Message>
     <Range>Attribute.GetHighlightingRange()</Range>
