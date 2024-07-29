@@ -38,7 +38,7 @@ abstract class DebuggerTestBase(private val engineVersion: EngineVersion) : Inte
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(DebuggerTestBase::class.simpleName!!)
     override val testCaseSourceDirectory: File
-        get() = testClassDataDirectory.combine(super.testStorage.testMethod.name).combine("source")
+        get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
 
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)

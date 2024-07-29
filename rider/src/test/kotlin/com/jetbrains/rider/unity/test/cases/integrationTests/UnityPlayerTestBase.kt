@@ -41,7 +41,7 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTestBase::class.simpleName!!)
     override val testCaseSourceDirectory: File
-        get() = testClassDataDirectory.combine(super.testStorage.testMethod.name).combine("source")
+        get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
     override val frontendBackendModel: FrontendBackendModel
         get() = project.solution.frontendBackendModel
 

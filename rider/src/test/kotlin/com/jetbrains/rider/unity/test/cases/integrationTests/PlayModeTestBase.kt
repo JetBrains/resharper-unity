@@ -19,7 +19,7 @@ abstract class PlayModeTestBase(private val engineVersion: EngineVersion) : Inte
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(PlayModeTestBase::class.simpleName!!)
     override val testCaseSourceDirectory: File
-        get() = testClassDataDirectory.combine(super.testStorage.testMethod.name)
+        get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name)
 
     @Test(description="Check play, pause, step, unpause, stop actions for Unity")
     fun checkPlayingPauseModesAndSteps() {
