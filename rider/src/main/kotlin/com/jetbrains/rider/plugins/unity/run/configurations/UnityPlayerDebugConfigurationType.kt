@@ -20,6 +20,8 @@ import com.jetbrains.rider.run.configurations.AsyncRunConfiguration
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteForm
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import icons.UnityIcons
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.concurrency.Promise
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -296,7 +298,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                                           processFinder: (List<UnityProcess>) -> UnityLocalProcess?): RunProfileState {
         // Refresh the port from the process list
         return withBackgroundProgress(environment.project, UnityBundle.message("debugging.refreshing.player.list"), false) {
-            val processes = UnityEditorListener().getEditorProcesses(environment.project)
+            val processes = withContext(Dispatchers.Default) { UnityEditorListener().getEditorProcesses(environment.project) }
             val process = processFinder(processes)
             if (process != null) {
                 state.host = process.host
