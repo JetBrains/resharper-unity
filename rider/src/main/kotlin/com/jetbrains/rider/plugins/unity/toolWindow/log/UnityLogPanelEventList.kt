@@ -6,8 +6,9 @@ import com.intellij.ide.ui.UISettings
 import com.intellij.ide.ui.UISettingsListener
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.DataProvider
+import com.intellij.openapi.actionSystem.DataSink
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.actionSystem.UiDataProvider
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -27,7 +28,7 @@ import java.awt.datatransfer.StringSelection
 import javax.swing.DefaultListModel
 import javax.swing.ListSelectionModel
 
-class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyList()), DataProvider, CopyProvider {
+class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyList()), UiDataProvider, CopyProvider {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     val riderModel: DefaultListModel<LogPanelItem>
         get() = model as DefaultListModel<LogPanelItem>
@@ -104,9 +105,8 @@ class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyLis
             null
     }
 
-    override fun getData(dataId: String): Any? = when {
-        PlatformDataKeys.COPY_PROVIDER.`is`(dataId) -> this
-        else -> null
+    override fun uiDataSnapshot(sink: DataSink) {
+        sink[PlatformDataKeys.COPY_PROVIDER] = this
     }
 
     override fun performCopy(dataContext: DataContext) {
