@@ -2,11 +2,12 @@ package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.spellchec
 
 import com.intellij.json.JsonSpellcheckerStrategy
 import com.intellij.json.psi.*
+import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import com.intellij.spellchecker.tokenizer.Tokenizer
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileType
 
-class AsmDefSpellcheckerStrategy : JsonSpellcheckerStrategy() {
+class AsmDefSpellcheckerStrategy : JsonSpellcheckerStrategy(), DumbAware {
     override fun getTokenizer(element: PsiElement): Tokenizer<*> {
 
         // Only spell check string literals for things we define, which is name, rootNamespace and versionDefines.define

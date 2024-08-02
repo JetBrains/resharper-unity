@@ -2,10 +2,11 @@ package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.unityPackages.sp
 
 import com.intellij.json.JsonDialectUtil
 import com.intellij.json.JsonSpellcheckerStrategy
+import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import com.intellij.spellchecker.tokenizer.Tokenizer
 
-class UnityPackagesSpellcheckerStrategy : JsonSpellcheckerStrategy() {
+class UnityPackagesSpellcheckerStrategy : JsonSpellcheckerStrategy(), DumbAware {
     private val MANIFEST_DEFAULT_FILENAME: String = "manifest.json"
     private val PACKAGE_LOCK_DEFAULT_FILENAME: String = "packages-lock.json"
     private val PACKAGES_FOLDER_NAME = "Packages"

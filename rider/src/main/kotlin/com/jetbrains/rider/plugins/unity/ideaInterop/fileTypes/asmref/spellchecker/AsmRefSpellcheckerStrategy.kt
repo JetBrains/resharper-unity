@@ -1,11 +1,12 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.spellchecker
 
 import com.intellij.json.JsonSpellcheckerStrategy
+import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import com.intellij.spellchecker.tokenizer.Tokenizer
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefFileType
 
-class AsmRefSpellcheckerStrategy : JsonSpellcheckerStrategy() {
+class AsmRefSpellcheckerStrategy : JsonSpellcheckerStrategy(), DumbAware {
 
     // There is nothing in a .asmref file that we want to spell check
     override fun getTokenizer(element: PsiElement): Tokenizer<PsiElement> = EMPTY_TOKENIZER
