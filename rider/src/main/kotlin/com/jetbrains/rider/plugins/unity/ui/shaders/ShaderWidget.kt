@@ -31,6 +31,10 @@ class ShaderWidgetActionProvider : InspectionWidgetActionProvider {
         val project = editor.project ?: return null
         return object : WidgetAction<ShaderWidget>(editor, project, ShaderWidget::class) {
             override fun update(e: AnActionEvent, widget: ShaderWidget) {
+                if (editor.isViewer) {
+                    e.presentation.isEnabledAndVisible = false
+                    return
+                }
                 e.presentation.text = UnityUIBundle.message("shader.inspection.widget.text", widget.text.value)
             }
         }

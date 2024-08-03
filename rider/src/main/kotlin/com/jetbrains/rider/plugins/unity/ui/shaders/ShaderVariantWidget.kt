@@ -23,6 +23,10 @@ class ShaderVariantWidgetActionProvider : InspectionWidgetActionProvider {
         val project = editor.project ?: return null
         return object : WidgetAction<ShaderVariantWidget>(editor, project, ShaderVariantWidget::class) {
             override fun update(e: AnActionEvent, widget: ShaderVariantWidget) {
+                if (editor.isViewer) {
+                    e.presentation.isEnabledAndVisible = false
+                    return
+                }
                 e.presentation.text = widget.text.value
             }
         }
