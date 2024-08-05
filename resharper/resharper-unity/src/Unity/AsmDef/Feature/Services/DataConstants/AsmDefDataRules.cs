@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.DataContext;
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Json.Psi;
@@ -13,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.DataConstant
 {
     // This enables Find Usages on the string literal value for the "name" JSON property. The string literal value
     // doesn't have an IDeclaration, so the default rules can't find any IDeclaredElements. We have to provide one
-    [ShellComponent]
+    [ShellComponent(InstantiationEx.LegacyDefault)]
     public class AsmDefDataRules
     {
         public AsmDefDataRules(Lifetime lifetime, IActionManager actionManager)

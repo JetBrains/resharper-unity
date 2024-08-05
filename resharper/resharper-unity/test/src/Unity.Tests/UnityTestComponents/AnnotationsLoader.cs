@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Utils;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.ExternalAnnotations;
@@ -9,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
-    [ShellComponent]
+    [ShellComponent(InstantiationEx.LegacyDefault)]
     public class AnnotationsLoader : IExternalAnnotationsFileProvider
     {
         private readonly OneToSetMap<string, VirtualFileSystemPath> myAnnotations;

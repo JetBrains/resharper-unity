@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Common.ProjectModel;
@@ -9,7 +10,7 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
-    [ShellComponent]
+    [ShellComponent(InstantiationEx.LegacyDefault)]
     public class UnityExternalProjectFileTypes
     {
         public static readonly Key<ExternalModuleFileFlags> ExternalModuleFileFlagsKey = new("ExternalModuleFileFlags");

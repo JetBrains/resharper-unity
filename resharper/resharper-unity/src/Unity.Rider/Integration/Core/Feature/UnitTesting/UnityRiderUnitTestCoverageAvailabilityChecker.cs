@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Application;
 using JetBrains.Application.Components;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -11,7 +12,7 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting
 {
-    [ShellComponent]
+    [ShellComponent(InstantiationEx.LegacyDefault)]
     public class UnityRiderUnitTestCoverageAvailabilityChecker : IRiderUnitTestCoverageAvailabilityChecker, IHideImplementation<DefaultRiderUnitTestCoverageAvailabilityChecker>
     {
         private static readonly Version ourMinSupportedUnityVersion = new(2019, 2);

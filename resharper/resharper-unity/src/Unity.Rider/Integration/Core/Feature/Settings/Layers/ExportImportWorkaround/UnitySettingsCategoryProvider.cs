@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
@@ -8,7 +9,7 @@ using JetBrains.Rider.Backend.Features.Settings.Layers.ExportImportWorkaround;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Settings.Layers.ExportImportWorkaround
 {
-    [ShellComponent]
+    [ShellComponent(InstantiationEx.LegacyDefault)]
     public class UnitySettingsCategoryProvider : IExportableSettingsCategoryProvider
     {
         private readonly Dictionary<string, Type[]> myCategoryToKeys = new Dictionary<string, Type[]>

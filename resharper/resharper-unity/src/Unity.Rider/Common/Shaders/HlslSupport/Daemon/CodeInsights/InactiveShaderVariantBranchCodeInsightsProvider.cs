@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
@@ -14,7 +15,7 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.Shaders.HlslSupport.Daemon.CodeInsights;
 
-[ShellComponent]
+[ShellComponent(InstantiationEx.LegacyDefault)]
 public class InactiveShaderVariantBranchCodeInsightsProvider : ICodeInsightsProvider, IInactiveShaderBranchHighlightFactory
 {
     public string ProviderId => "Unity inactive shader variant branch";

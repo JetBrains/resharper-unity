@@ -2,6 +2,7 @@
 
 using System;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.OnlineHelp;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help;
@@ -13,7 +14,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.OnlineHelp
 {
-    [ShellComponent]
+    [ShellComponent(InstantiationEx.LegacyDefault)]
     public class ShaderLabOnlineHelpProvider : IOnlineHelpProvider
     {
         private readonly UnityDocumentation myDocumentation;
