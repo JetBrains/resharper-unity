@@ -1,4 +1,5 @@
-﻿using JetBrains.Collections.Viewable;
+﻿using JetBrains.Application.Parts;
+using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -12,7 +13,7 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnityNUnitServiceProvider : NUnitServiceProvider
     {
         private readonly BackendUnityHost myBackendUnityHost;

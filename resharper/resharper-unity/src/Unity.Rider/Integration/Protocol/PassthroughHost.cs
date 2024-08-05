@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Diagnostics;
@@ -20,7 +21,7 @@ using FrontendOpenArgs = JetBrains.Rider.Model.Unity.FrontendBackend.RdOpenFileA
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class PassthroughHost
     {
         private readonly BackendUnityHost myBackendUnityHost;

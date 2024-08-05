@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Components;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -16,7 +17,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSources
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     [ZoneMarker(typeof(ExternalSourcesZone))]
     public class UnityPdbServiceImpl : PdbServiceImpl
     {

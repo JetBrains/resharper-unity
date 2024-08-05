@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -11,7 +12,7 @@ using JetBrains.ReSharper.Psi.Modules;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnitySerializedReferenceProviderMock : UnitySerializedReferenceProvider
     {
         public UnitySerializedReferenceProviderMock(Lifetime lifetime, IUnityElementIdProvider provider,

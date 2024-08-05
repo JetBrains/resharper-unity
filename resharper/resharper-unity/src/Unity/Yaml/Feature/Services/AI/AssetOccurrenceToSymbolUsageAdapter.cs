@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.ChatContexts.Usages;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
@@ -6,7 +7,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.AI;
 
-[SolutionComponent]
+[SolutionComponent(InstantiationEx.LegacyDefault)]
 public class AssetOccurrenceToSymbolUsageAdapter : IOccurrenceToSymbolUsageAdapter
 {
     public SymbolUsageOccurrence Transform(string clrName, IDeclaredElement declaredElement, IOccurrence occurrence)

@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -6,7 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class AssetModeNotification
     {
         public AssetModeNotification(UnitySolutionTracker solutionTracker, AssetSerializationMode assetSerializationMode, FrontendBackendHost frontendBackendHost)

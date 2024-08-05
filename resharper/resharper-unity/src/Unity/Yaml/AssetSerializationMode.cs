@@ -1,11 +1,12 @@
 using System.Text.RegularExpressions;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class AssetSerializationMode
     {
         public AssetSerializationMode(ISolution solution, ILogger logger)

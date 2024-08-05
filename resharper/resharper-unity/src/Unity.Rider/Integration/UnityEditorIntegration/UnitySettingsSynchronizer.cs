@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
@@ -13,7 +14,7 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnitySettingsSynchronizer
     {
         public UnitySettingsSynchronizer(Lifetime lifetime, ISolution solution, FrontendBackendHost host,

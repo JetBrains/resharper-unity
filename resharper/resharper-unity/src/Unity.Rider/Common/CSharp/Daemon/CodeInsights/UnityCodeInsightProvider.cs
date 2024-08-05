@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
@@ -10,7 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsights
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnityCodeInsightProvider : AbstractUnityCodeInsightProvider
     {
         public override string ProviderId => "Unity implicit usage";

@@ -1,11 +1,12 @@
 using System;
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRiderTestComponents
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class FrontendBackendHostStub : IFrontendBackendHost
     {
         public void Do(Action<FrontendBackendModel> action)
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRiderTestComponents
         }
     }
 
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class BackendUnityHostStub : IBackendUnityHost
     {
         public bool IsConnectionEstablished()

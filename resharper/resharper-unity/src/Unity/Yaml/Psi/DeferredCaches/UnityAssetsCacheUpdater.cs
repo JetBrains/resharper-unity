@@ -1,5 +1,6 @@
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
@@ -14,7 +15,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnityAssetsCacheUpdater
     {
         public UnityAssetsCacheUpdater(Lifetime lifetime, ISolution solution,

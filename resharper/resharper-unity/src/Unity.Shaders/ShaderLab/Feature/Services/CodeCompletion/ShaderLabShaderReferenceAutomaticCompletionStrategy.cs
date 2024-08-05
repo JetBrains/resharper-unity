@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
@@ -12,7 +13,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class ShaderLabShaderReferenceAutomaticCompletionStrategy : IAutomaticCodeCompletionStrategy
     {
         private readonly ShaderLabIntellisenseManager myShaderLabIntellisenseManager;

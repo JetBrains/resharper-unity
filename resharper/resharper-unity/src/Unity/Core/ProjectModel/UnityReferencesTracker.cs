@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Parts;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -23,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         void OnUnityProjectAdded(Lifetime projectLifetime, IProject project);
     }
 
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnityReferencesTracker : IChangeProvider
     {
         public static readonly Key<UnityReferencesTracker> UnityReferencesTrackerKey = new("UnityReferencesTrackerKey");

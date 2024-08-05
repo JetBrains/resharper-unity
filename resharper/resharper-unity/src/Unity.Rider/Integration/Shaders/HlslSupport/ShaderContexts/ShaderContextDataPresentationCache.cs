@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -18,7 +19,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class ShaderContextDataPresentationCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager)
         : SimplePsiSourceFileCacheWithLocalCache<List<ShaderContextDataPresentationCache.CacheItem>, ShaderContextDataPresentationCache.ShaderFileInfo>(lifetime, shellLocks, persistentIndexManager,
             UnsafeMarshallers.GetCollectionMarshaller(Read, Write, c => new List<CacheItem>(c)), "Unity::Shaders::ShaderContextDataPresentationCacheUpdated")

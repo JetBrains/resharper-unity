@@ -1,4 +1,5 @@
 using JetBrains.Application.changes;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
@@ -24,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Psi.Modules
     // the platform could allow us to create on demand?)
     // ReSharper does not require project files for saving documents (but has its own workarounds for similar issues).
     // Creating project files in the Misc Files project is not allowed - this project needs to be kept in sync with VS.
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class RiderMiscFilesProjectFileManager : IChangeProvider
     {
         private readonly ISolution mySolution;

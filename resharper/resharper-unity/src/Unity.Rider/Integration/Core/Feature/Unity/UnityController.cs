@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Application.Components;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Application.UI.Controls;
@@ -26,7 +27,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnityController : IUnityController, IHideImplementation<DefaultUnityController>
     {
         private static readonly TimeSpan ourUnityConnectionTimeout = TimeSpan.FromMinutes(10);

@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Parts;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
@@ -42,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
     // * ReSharper will only add a valid module, so we won't get circular references
     // * If we have Player projects and use Alt+Enter to add a reference from a QF, the reference is only added to the
     //   current project context. We could update the other context's project?
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class AsmDefModuleReferenceChangeListener : IChangeProvider
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;

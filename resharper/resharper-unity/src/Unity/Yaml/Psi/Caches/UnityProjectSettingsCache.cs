@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
@@ -18,7 +19,7 @@ using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Pr
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnityProjectSettingsCache : SimpleICache<ProjectSettingsCacheItem>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;

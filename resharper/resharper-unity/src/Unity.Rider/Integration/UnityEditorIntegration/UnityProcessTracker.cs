@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
@@ -12,7 +13,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnityProcessTracker
     {
         public readonly IProperty<int?> UnityProcessId;

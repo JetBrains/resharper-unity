@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
@@ -28,7 +29,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnityAssetsCache : DeferredCacheBase<UnityAssetData> , IUnityAssetDataElementPointer
     {
         private readonly AssetDocumentHierarchyElementContainer myHierarchyElementContainer;

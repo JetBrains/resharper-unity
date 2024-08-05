@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
@@ -12,7 +13,7 @@ using JetBrains.Util.Threading.Tasks;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
 {
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class CgIncludeDirectoryTracker
     {
         private const string CG_INCLUDE_DIRECTORY_PATH = "CgIncludeFolderPath";

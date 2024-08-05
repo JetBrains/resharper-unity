@@ -1,5 +1,6 @@
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.Psi.Mo
     // This is not required in Rider because we always create a project file (so there's always an association between
     // document, project file and PSI source file)
     // (See also SolutionDocumentChangeProvider)
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class ReSharperExternalDocumentChangeProvider : IChangeProvider
     {
         public ReSharperExternalDocumentChangeProvider(Lifetime lifetime,

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Components;
 using JetBrains.Collections.Viewable;
@@ -27,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
     // * Use PassthroughHost to set up subscriptions between frontend and Unity
     // * Avoid using BackendUnityModel for subscriptions. It should be used to get values and start tasks
     // These guidelines help avoid introducing circular dependencies. Subscriptions should be handled by the host
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class BackendUnityHost : IBackendUnityHost
     {
         private readonly UnityEditorUsageCollector myUnityEditorUsageCollector;

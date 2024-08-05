@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.DocumentManagers;
@@ -20,7 +21,7 @@ using JetBrains.Util.Caches;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts;
 
-[SolutionComponent]
+[SolutionComponent(InstantiationEx.LegacyDefault)]
 public class ShaderContextCache : IPreferredRootFileProvider, ICppChangeProvider
 {
     private readonly Lifetime myLifetime;

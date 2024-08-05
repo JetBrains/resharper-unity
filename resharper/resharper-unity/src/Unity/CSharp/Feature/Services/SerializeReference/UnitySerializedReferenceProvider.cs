@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using JetBrains.Application.Parts;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Application.Progress;
 using JetBrains.Collections.Viewable;
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         SerializedFieldStatus GetSerializableStatus(ITypeElement? type, bool useSwea);
     }
 
-    [SolutionComponent]
+    [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class UnitySerializedReferenceProvider : SwaExtensionProviderBase, IAssemblyCache,
         IUnitySerializedReferenceProvider
     {

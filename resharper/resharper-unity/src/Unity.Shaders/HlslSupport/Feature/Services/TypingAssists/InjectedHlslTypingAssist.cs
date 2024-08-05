@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.CommandProcessing;
 using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.ActionSystem.Text;
 using JetBrains.Lifetimes;
@@ -23,7 +24,7 @@ using JetBrains.Util;
 // @formatter:indent_size 2
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services.TypingAssists
 {
-  [SolutionComponent]
+  [SolutionComponent(InstantiationEx.LegacyDefault)]
   public class InjectedHlslTypingAssist : TypingAssistLanguageBase<ShaderLabLanguage>, ITypingHandler
   { 
     [NotNull] private readonly InjectedHlslDummyFormatter myDummyFormatter;
