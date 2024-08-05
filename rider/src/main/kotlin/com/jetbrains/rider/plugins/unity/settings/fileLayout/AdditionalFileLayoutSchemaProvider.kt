@@ -11,15 +11,15 @@ import com.intellij.xml.XmlSchemaProvider
 import com.jetbrains.rider.settings.fileLayout.filelayoutXmlSchema.FileLayoutConstants
 
 private const val Namespace = "urn:schemas-jetbrains-com:member-reordering-patterns-unity"
-private const val SchemaLocation = "/schemas/fileLayout/unityFileLayout.xsd"
+private const val SchemaLocation = "schemas/fileLayout/unityFileLayout.xsd"
 
-class AdditionalFileLayoutStandardResourceProvider : StandardResourceProvider {
+private class AdditionalFileLayoutStandardResourceProvider : StandardResourceProvider {
     override fun registerResources(registrar: ResourceRegistrar) {
-        registrar.addStdResource(Namespace, SchemaLocation, this::class.java)
+        registrar.addStdResource(Namespace, SchemaLocation, AdditionalFileLayoutStandardResourceProvider::class.java.classLoader)
     }
 }
 
-class AdditionalFileLayoutSchemaProvider : XmlSchemaProvider() {
+private class AdditionalFileLayoutSchemaProvider : XmlSchemaProvider() {
     override fun isAvailable(file: XmlFile): Boolean {
         // Only for files ending with `.filelayout`, as per the C# File Layout options page. We create an editor showing
         // a file called "dummy.filelayout" in the options page to get syntax highlighting
@@ -28,7 +28,7 @@ class AdditionalFileLayoutSchemaProvider : XmlSchemaProvider() {
 
     override fun getSchema(url: String, module: Module?, baseFile: PsiFile): XmlFile? {
         module ?: return null
-        val resource = javaClass.getResource(SchemaLocation)
+        val resource = AdditionalFileLayoutSchemaProvider::class.java.classLoader.getResource(SchemaLocation)
         val file = VfsUtil.findFileByURL(resource) ?: return null
 
         val psiFile = PsiManager.getInstance(module.project).findFile(file)
