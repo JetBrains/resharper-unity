@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Application.Environment;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Parts;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestEnvComponents
@@ -9,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestEnvComponents
     // disabled/re-enabled at the start and end of each test. But re-enabling reinitialises the watchers, which is very
     // slow on Mono - killing performance in tests. It also means we initialise the watchers at the end of a test only
     // to dispose at the start of the next test, which is completely unnecessary.
-    [EnvironmentComponent]
+    [EnvironmentComponent(InstantiationEx.LegacyDefault)]
     public class MonoFileSystemTrackerDisabler
     {
         public MonoFileSystemTrackerDisabler(IFileSystemTracker fileSystemTracker)
