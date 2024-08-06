@@ -72,7 +72,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
                 if (rangeMarker is {DocumentRange: var documentRange} && documentRange.IsValid())
                     files = sourceFile.GetPsiServices().GetPsiFiles<KnownLanguage>(documentRange).ToIReadOnlyList();
                 else
-                    files = sourceFile.GetPsiFiles<ShaderLabLanguage>();
+                    // we get all known languages instead of just ShaderLabLanguage to warm up injected HLSL (see https://youtrack.jetbrains.com/issue/DEXP-804035/Parsing-C-under-write-lock-leads-to-deadlock)
+                    files = sourceFile.GetPsiFiles<KnownLanguage>().Where(x => x.Language.Is<ShaderLabLanguage>()).ToList();
             }
 
             using (progressIndicator.SafeTotal(Name, files.Count))
