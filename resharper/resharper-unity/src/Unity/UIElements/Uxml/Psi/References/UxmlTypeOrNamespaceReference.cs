@@ -16,9 +16,9 @@ using JetBrains.ReSharper.Psi.Xml.Tree.References;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
-    internal class UxmlNsAliasReference : ReferenceWithinElementBase<IXmlTagHeader, IXmlToken>, ICompletableReference, IQualifier, IReferenceWithToken
+    internal class UxmlNsAliasReference : ReferenceWithinElementBase<IXmlTreeNode, IXmlToken>, ICompletableReference, IQualifier, IReferenceWithToken
     {
-        public UxmlNsAliasReference(IXmlTagHeader owner, IXmlToken token, TreeTextRange rangeWithin) : base(owner, token, rangeWithin)
+        public UxmlNsAliasReference(IXmlTreeNode owner, IXmlIdentifier token) : base(owner, token, token.XmlNamespaceRange)
         {
         }
 
@@ -26,7 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
         {
             var psiServices = myOwner.GetPsiServices();
             var symbolTable = EmptySymbolTable.INSTANCE;
-            var xmlTag = XmlTagNavigator.GetByTagHeader(myOwner);
+            IXmlTag xmlTag = null;
+            if (myOwner is IXmlTagHeader header) xmlTag = XmlTagNavigator.GetByTagHeader(header);
+            else if (myOwner is IXmlTagFooter footer) xmlTag = XmlTagNavigator.GetByTagFooter(footer);
+            
             while (xmlTag != null)
             {
                 var table = new SymbolTable(psiServices);
@@ -70,14 +73,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
         public bool Resolved => Resolve().DeclaredElement != null;
     }
     
-    internal class UxmlTypeOrNamespaceReference :
-        QualifiableReferenceWithinElement<IXmlTagHeader, IXmlToken>,
+    internal class UxmlTypeOrNamespaceReference : QualifiableReferenceWithinElement<IXmlTreeNode,IXmlToken>, 
         IReferenceQualifier, ICompletableReference, IReferenceWithToken
     {
         private readonly ISymbolCache mySymbolCache;
         private readonly ExpectedVisualElementTypeFilter myTypeFilter;
 
-        public UxmlTypeOrNamespaceReference(IXmlTagHeader owner, [CanBeNull] IQualifier qualifier,
+        public UxmlTypeOrNamespaceReference(IXmlTreeNode owner, [CanBeNull] IQualifier qualifier,
             IXmlToken token, TreeTextRange rangeWithin, ISymbolCache symbolCache,
                                                    bool isFinalPart)
             : base(owner, qualifier, token, rangeWithin)
