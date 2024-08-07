@@ -9,10 +9,11 @@
             <|ui|(19):|Button|(20) text="Show message" display-tooltip-when-elided="true" name="show-message-button" class="button-style" />
             <|uie|(21):|ToolbarButton|(22) text="New Achiev" display-tooltip-when-elided="true" name="ToolbarButton-button" />
             <|ui|(23):|Label|(24) tabindex="-1" text="Label" display-tooltip-when-elided="true" name="message" />
-            <|MyElement|(25) tooltip="sss" />
-            <|fs|(26):|MyFirstElement|(27)/>
-        </ui:VisualElement>
-    </ui:VisualElement>
+            <|MyElement|(25) tooltip="sss" >
+            </|MyElement|(26)>
+            <|fs|(27):|MyFirstElement|(28)/>
+        </|ui|(29):|VisualElement|(30)>
+    </|ui|(31):|VisualElement|(32)>
 </ui:UXML>
 
 ------------------------------------------------
@@ -42,5 +43,10 @@
 23: result=OK declaredElem=ui [UxmlNsAliasReference]
 24: result=OK declaredElem=UnityEngine.UIElements.Label [UxmlTypeOrNamespaceReference]
 25: result=OK declaredElem=MyElement [UxmlTypeOrNamespaceReference]
-26: result=OK declaredElem=fs [UxmlNsAliasReference]
-27: result=OK declaredElem=First.Second.MyFirstElement [UxmlTypeOrNamespaceReference]
+26: result=OK declaredElem=MyElement [UxmlTypeOrNamespaceReference]
+27: result=OK declaredElem=fs [UxmlNsAliasReference]
+28: result=OK declaredElem=First.Second.MyFirstElement [UxmlTypeOrNamespaceReference]
+29: result=OK declaredElem=ui [UxmlNsAliasReference]
+30: result=OK declaredElem=UnityEngine.UIElements.VisualElement [UxmlTypeOrNamespaceReference]
+31: result=OK declaredElem=ui [UxmlNsAliasReference]
+32: result=OK declaredElem=UnityEngine.UIElements.VisualElement [UxmlTypeOrNamespaceReference]
