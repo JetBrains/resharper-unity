@@ -31,5 +31,5 @@ public class UnityObjectNullComparisonHintHighlighting(IEqualityExpression expre
 
     public RichText Text { get; } = new(string.Empty);
     public /*Localized*/ RichText Description { get; } = new(Strings.UnityObjectNullComparisonHint_Message); 
-    public string TestOutput => $"🖼️{Icon}|🏷️{Text.Text}|📖{Description}"; 
+    public string TestOutput => $"🖼️{Icon}|🏷️{Text.Text}|📖{Description.ToDebugString()}";
 }
