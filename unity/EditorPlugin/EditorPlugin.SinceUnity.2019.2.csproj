@@ -39,11 +39,6 @@
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Rider.PathLocator.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="UntilUnity.2017.3\**" />
-    <None Remove="UntilUnity.2017.3\**" />
-    <EmbeddedResource Remove="UntilUnity.2017.3\**" />
-  </ItemGroup>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
 </Project>
