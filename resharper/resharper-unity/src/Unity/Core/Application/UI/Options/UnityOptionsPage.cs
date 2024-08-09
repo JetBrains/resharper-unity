@@ -60,8 +60,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             if (!OptionsPageContext.IsRider) return;
 
             AddHeader(Strings.UnityOptionsPage_AddGeneralSection_General);
-            AddBoolOption((UnitySettings s) => s.InstallUnity3DRiderPlugin,
-                Strings.UnityOptionsPage_AddGeneralSection_Automatically_install_and_update_Rider_s_Unity_editor_plugin);
             AddBetterCommentText(Strings.UnityOptionsPage_AddGeneralSection_);
 
             AddBoolOption((UnitySettings s) => s.AllowAutomaticRefreshInUnity,

@@ -186,7 +186,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         // (These should probably be calls, rather than signal/source/sink, as they are RPC, and not events)
         source("refresh", bool).documentation = "Refresh the asset database. Pass true to force a refresh. False will queue a refresh"
         source("showPreferences", void).documentation = "Tell the Unity model to show the preferences window"
-        source("installEditorPlugin", void)
         source("showFileInUnity", string).documentation = "Focus Unity, focus the Project window and select and ping the given file path"
         call("generateUIElementsSchema", void, bool).documentation = "Tell the Unity backend to generate UIElement schema"
         call("hasUnsavedState", void, bool).documentation = "Returns true if the currently open Unity editor has any unsaved state, such as scenes, prefabs, etc."

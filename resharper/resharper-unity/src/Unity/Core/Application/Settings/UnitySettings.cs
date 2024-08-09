@@ -12,9 +12,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
     [SettingsKey(typeof(CodeEditingSettings), DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Unity_plugin_settings))]
     public class UnitySettings
     {
-        [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_If_this_option_is_enabled__the_Rider_Unity_editor_plugin_will_be_automatically_installed_and_updated_))]
-        public bool InstallUnity3DRiderPlugin;
-        
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_If_this_option_is_disabled__Rider_package_update_notifications_would_never_be_shown_))]
         public bool AllowRiderUpdateNotifications;
 

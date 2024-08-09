@@ -306,9 +306,6 @@
 
     <action id="DumpUnityExplorerAction" class="com.jetbrains.rider.plugins.unity.actions.internal.DumpUnityExplorerAction" internal="true" />
 
-    <action id="InstallEditorPluginAction"
-            class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" />
-
     <group id="RiderInternal.Unity" popup="true" internal="true">
       <add-to-group group-id="RiderInternal" anchor="last" />
 

@@ -1299,9 +1299,6 @@ refreshing assets in the background are automatically supported by
 the Rider package in Unity 2019.2 and newer. Earlier versions require
 a plugin to be installed to a project.</value>
     </data>
-    <data name="UnityOptionsPage_AddGeneralSection_Automatically_install_and_update_Rider_s_Unity_editor_plugin" xml:space="preserve">
-        <value>Automatically install and update Rider's Unity editor plugin</value>
-    </data>
     <data name="UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity" xml:space="preserve">
         <value>Automatically refresh assets in Unity</value>
     </data>
@@ -1421,9 +1418,6 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="UnitySettings_t_If_this_option_is_enabled__Rider_will_automatically_notify_the_Unity_editor_to_refresh_assets_" xml:space="preserve">
         <value>If this option is enabled, Rider will automatically notify the Unity editor to refresh assets</value>
-    </data>
-    <data name="UnitySettings_t_If_this_option_is_enabled__the_Rider_Unity_editor_plugin_will_be_automatically_installed_and_updated_" xml:space="preserve">
-        <value>If this option is enabled, the Rider Unity editor plugin will be automatically installed and updated</value>
     </data>
     <data name="UnitySettings_t_If_this_option_is_enabled__UnityYamlMerge_would_be_used_to_merge_YAML_files_" xml:space="preserve">
         <value>If this option is enabled, UnityYamlMerge would be used to merge YAML files</value>
