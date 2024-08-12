@@ -12,14 +12,14 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   {
     private static readonly ILog ourLogger = Log.GetLog("Initialization");
 
-    public static void Advise(Lifetime modelLifetime, BackendUnityModel model)
+    public static void Advise(Lifetime appDomainLifetime, Lifetime modelLifetime, BackendUnityModel model)
     {
       ourLogger.Verbose("AdviseUnitTestLaunch");
 
       model.GetCompilationResult.Set(_ => !EditorUtility.scriptCompilationFailed);
       model.UnitTestLaunch.Advise(modelLifetime, launch =>
       {
-        new TestEventsSender(launch);
+        new TestEventsSender(appDomainLifetime, launch);
         UnityEditorTestLauncher.SupportAbortNew(launch); // TestFramework 1.2.x
       });
 

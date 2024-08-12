@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
@@ -13,7 +14,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(TestEventsSender));
 
-    public TestEventsSender(UnitTestLaunch unitTestLaunch)
+    public TestEventsSender(Lifetime appDomainLifetime, UnitTestLaunch unitTestLaunch)
     {
       var assembly = RiderPackageInterop.GetAssembly();
       if (assembly == null)
@@ -27,17 +28,20 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
 
       ProcessQueue(data, unitTestLaunch);
 
-      SubscribeToChanged(data, unitTestLaunch);
+      SubscribeToChanged(appDomainLifetime, data, unitTestLaunch);
     }
 
-    private static void SubscribeToChanged(Type data, UnitTestLaunch unitTestLaunch)
+    private static void SubscribeToChanged(Lifetime appDomainLifetime, Type data, UnitTestLaunch unitTestLaunch)
     {
       var eventInfo = data.GetEvent("Changed");
       if (eventInfo != null)
       {
         var handler = new EventHandler((sender, e) => { ProcessQueue(data, unitTestLaunch); });
         eventInfo.AddEventHandler(handler.Target, handler);
-        AppDomain.CurrentDomain.DomainUnload += (_, __) => eventInfo.RemoveEventHandler(handler.Target, handler);
+        appDomainLifetime.OnTermination(() =>
+        {
+          eventInfo.RemoveEventHandler(handler.Target, handler);
+        });
       }
       else
       {

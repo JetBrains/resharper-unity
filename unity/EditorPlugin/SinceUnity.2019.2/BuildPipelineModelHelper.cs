@@ -20,26 +20,29 @@ namespace JetBrains.Rider.Unity.Editor
       {
         // ReSharper disable once JoinDeclarationAndInitializer
         string sdkRoot;
-
-#if UNITY_2019_2_OR_NEWER
-        // TODO: This method was internal until 2018.1, possibly with different parameters
+#if UNITY_CORCLR_OR_NEWER // https://unity.slack.com/archives/C06E918KRV4/p1723480471625999
+        if (BuildPipeline.IsBuildPlatformSupported(BuildTarget.Android))
+#else
         if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Android, BuildTarget.Android))
+#endif
         {
           // This is the checkbox in Unity Settings (External Tools) to use the Android SDK Tools that ships with Unity
           var useEmbedded = EditorPrefs.GetBool("SdkUseEmbedded");
           ourLogger.Verbose("Android build target installed. Use embedded Android SDK flag: {0}", useEmbedded);
           if (useEmbedded)
           {
-            // TODO: This method was internal until 2019.1
+#if UNITY_CORCLR_OR_NEWER
+            sdkRoot = BuildPipeline.GetPlaybackEngineDirectory(BuildTarget.Android, false);
+#else
             // Note that calling it when the build target isn't installed will write an error to the Unity Console
             sdkRoot = BuildPipeline.GetPlaybackEngineDirectory(BuildTarget.Android, BuildOptions.None);
+#endif
             ourLogger.Verbose("Using embedded Android SDK Tools: {0}", sdkRoot ?? "(Not installed)");
             return sdkRoot;
           }
         }
         else
           ourLogger.Verbose("Android build target not installed");
-#endif
 
         // Check if the Android SDK root has been set manually
         sdkRoot = EditorPrefs.GetString("AndroidSdkRoot");

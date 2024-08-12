@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Unity.Editor.Utils;
@@ -28,35 +27,21 @@ namespace JetBrains.Rider.Unity.Editor
       };
 
       // Both of these methods were introduced in 5.0+ but EditorPlugin.csproj still targets 4.7
-      var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public) ??
-                      typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
+      Application.logMessageReceivedThreaded += ApplicationOnLogMessageReceived;
+      lifetime.OnTermination(() => Application.logMessageReceivedThreaded -= ApplicationOnLogMessageReceived);
 
-      if (eventInfo != null)
+      PlayModeStateTracker.Current.Advise(lifetime, _ =>
       {
-        var handler = new Application.LogCallback(ApplicationOnLogMessageReceived);
-        eventInfo.AddEventHandler(null, handler);
-        lifetime.OnTermination(() => eventInfo.RemoveEventHandler(null, handler));
-
-        PlayModeStateTracker.Current.Advise(lifetime, _ =>
+        // Work around an issue in Unity 2017.1+ that stops sending log messages to the handler when leaving play mode.
+        // The issue will not be fixed because it might break compatibility of existing workarounds
+        // https://issuetracker.unity3d.com/issues/general-unityengine-dot-application-dot-logmessagereceived-is-not-being-raised-after-exiting-play-mode
+        // Note that although the issue says 2017.4+ it is actually 2017.1 and above. I haven't been able to test 5.x
+        if (!EditorApplication.isPlayingOrWillChangePlaymode)
         {
-          // Work around an issue in Unity 2017.1+ that stops sending log messages to the handler when leaving play mode.
-          // The issue will not be fixed because it might break compatibility of existing workarounds
-          // https://issuetracker.unity3d.com/issues/general-unityengine-dot-application-dot-logmessagereceived-is-not-being-raised-after-exiting-play-mode
-          // Note that although the issue says 2017.4+ it is actually 2017.1 and above. I haven't been able to test 5.x
-          if (!EditorApplication.isPlayingOrWillChangePlaymode)
-          {
-            eventInfo.RemoveEventHandler(null, handler);
-            eventInfo.AddEventHandler(null, handler);
-          }
-        });
-      }
-      else
-      {
-#pragma warning disable 612, 618
-        // Obsolete from 5.0+
-        Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
-#pragma warning restore 612, 618
-      }
+          Application.logMessageReceivedThreaded -= ApplicationOnLogMessageReceived;
+          Application.logMessageReceivedThreaded += ApplicationOnLogMessageReceived;
+        }
+      });
     }
 
     private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)

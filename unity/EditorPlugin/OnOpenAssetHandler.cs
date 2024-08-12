@@ -1,12 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.PathLocator;
@@ -30,52 +26,6 @@ namespace JetBrains.Rider.Unity.Editor
       myRiderPathProvider = riderPathProvider;
       mySlnFile = slnFile;
       myOpener = new RiderFileOpener(RiderPathProvider.RiderPathLocator.RiderLocatorEnvironment);
-    }
-
-    // DO NOT RENAME OR CHANGE SIGNATURE!
-    // Used from package via reflection. Must remain public and non-static.
-    // Note that the package gets the type from PluginEntryPoint.OpenAssetHandler, so name, namespace and visibility of
-    // the class is not important
-    [PublicAPI]
-    public bool OnOpenedAsset(int instanceID, int line, int column)
-    {
-      // determine asset that has been double clicked in the project view
-      var selected = EditorUtility.InstanceIDToObject(instanceID);
-      var assetPath = AssetDatabase.GetAssetPath(selected);
-
-      if (string.IsNullOrEmpty(assetPath)) // RIDER-16784
-        return false;
-
-      var assetFilePath = Path.GetFullPath(assetPath);
-      if (!(selected.GetType().ToString() == "UnityEditor.MonoScript" ||
-            selected.GetType().ToString() == "UnityEngine.Shader" ||
-            selected.GetType().ToString() == "UnityEngine.Experimental.UIElements.VisualTreeAsset" ||
-            selected.GetType().ToString() == "UnityEngine.StyleSheets.StyleSheet" ||
-            Path.HasExtension(assetPath) && GetExtensionStrings().Contains(Path.GetExtension(assetFilePath).Substring(1))
-            ))
-        return false;
-
-      return OnOpenedAsset(assetFilePath, line, column);
-    }
-
-    private static string[] GetExtensionStrings()
-    {
-      var extensionStrings = new[] {"ts", "bjs", "javascript", "json", "html", "shader"};
-      var propertyInfo = typeof(EditorSettings)
-        .GetProperty("projectGenerationUserExtensions", BindingFlags.Public | BindingFlags.Static);
-      if (propertyInfo != null)
-      {
-        var value = propertyInfo.GetValue(null, null);
-        extensionStrings = (string[]) value;
-      }
-
-      // https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/VisualStudioIntegration/SolutionSynchronizer.cs#L50
-      var builtinSupportedExtensions = new[] {"template", "compute", "cginc", "hlsl", "glslinc"}; // todo: get it via reflection
-      var list = extensionStrings.ToList();
-      list.AddRange(builtinSupportedExtensions);
-      extensionStrings = list.ToArray();
-
-      return extensionStrings;
     }
 
     // DO NOT RENAME OR CHANGE SIGNATURE!

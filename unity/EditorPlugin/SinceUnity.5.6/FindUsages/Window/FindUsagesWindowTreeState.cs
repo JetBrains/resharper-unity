@@ -12,7 +12,12 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
   // and add actual result
   [Serializable]
   [SuppressMessage("ReSharper", "InconsistentNaming")]
-  internal class FindUsagesWindowTreeState : TreeViewState
+  internal class FindUsagesWindowTreeState : 
+#if UNITY_CORCLR_OR_NEWER
+    TreeViewState<int>
+#else
+    TreeViewState
+#endif
   {
     [SerializeField]
     public List<SceneElement> SceneElements = new List<SceneElement>();

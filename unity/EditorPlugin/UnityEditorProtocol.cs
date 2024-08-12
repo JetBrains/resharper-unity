@@ -65,7 +65,7 @@ namespace JetBrains.Rider.Unity.Editor
 #endregion
     public static readonly IViewableList<BackendUnityModel> Models = new ViewableList<BackendUnityModel>();
 
-    public static void Initialise(Lifetime lifetime, long initTime, ILog logger)
+    public static void Initialise(Lifetime appDomainLifetime, long initTime, ILog logger)
     {
       ourLogger = logger;
       ourInitTime = initTime;
@@ -88,10 +88,10 @@ namespace JetBrains.Rider.Unity.Editor
       var protocols = new List<ProtocolInstance>();
 
       // If any protocol connection is lost, we will drop all connections and recreate them
-      var allProtocolsLifetimeDefinition = lifetime.CreateNested();
+      var allProtocolsLifetimeDefinition = appDomainLifetime.CreateNested();
       foreach (var solutionName in GetSolutionNames())
       {
-        var port = CreateProtocolForSolution(allProtocolsLifetimeDefinition.Lifetime, solutionName,
+        var port = CreateProtocolForSolution(appDomainLifetime, allProtocolsLifetimeDefinition.Lifetime, solutionName,
           () => allProtocolsLifetimeDefinition.Terminate());
 
         if (port == -1)
@@ -108,23 +108,23 @@ namespace JetBrains.Rider.Unity.Editor
 
       allProtocolsLifetimeDefinition.Lifetime.OnTermination(() =>
       {
-        if (lifetime.IsAlive)
+        if (appDomainLifetime.IsAlive)
         {
           ourLogger.Verbose("Schedule recreating protocol, project lifetime is alive");
           new Thread(() =>
           {
             Thread.Sleep(1000);
 
-            if (lifetime.IsAlive)
+            if (appDomainLifetime.IsAlive)
             {
               ourLogger.Verbose("Before MainThreadDispatcher.Instance.Queue(() =>");
               MainThreadDispatcher.Instance.Queue(() =>
               {
                 ourLogger.Verbose("Inside MainThreadDispatcher.Instance.Queue(() =>");
-                if (lifetime.IsAlive)
+                if (appDomainLifetime.IsAlive)
                 {
                   ourLogger.Verbose("Recreating protocol, project lifetime is alive");
-                  Initialise(lifetime, initTime, logger);
+                  Initialise(appDomainLifetime, initTime, logger);
                 }
               });
             }
@@ -143,7 +143,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       // TODO: Will this cause problems if we call Initialise a second time?
       // Perhaps we need another lifetime?
-      lifetime.OnTermination(() =>
+      appDomainLifetime.OnTermination(() =>
       {
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstancePath);
@@ -167,7 +167,7 @@ namespace JetBrains.Rider.Unity.Editor
       return solutionNames;
     }
 
-    private static int CreateProtocolForSolution(Lifetime lifetime, string solutionName, Action onDisconnected)
+    private static int CreateProtocolForSolution(Lifetime appDomainLifetime, Lifetime lifetime, string solutionName, Action onDisconnected)
     {
       ourLogger.Verbose($"Initialising protocol for {solutionName}");
       try
@@ -205,7 +205,7 @@ namespace JetBrains.Rider.Unity.Editor
           BuildPipelineModelHelper.Advise(connectionLifetime, model);
 
 #if UNITY_5_6_OR_NEWER
-          UnitTestingModelHelper.Advise(connectionLifetime, model);
+          UnitTestingModelHelper.Advise(appDomainLifetime, connectionLifetime, model);
           FindUsagesModelHelper.Advise(connectionLifetime, model);
           UnsavedChangesModelHelper.Advise(connectionLifetime, model);
 #endif

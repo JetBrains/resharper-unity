@@ -2,42 +2,49 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using JetBrains.Annotations;
 using JetBrains.Core;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
-using UnityEditor;
-using UnityEditor.Callbacks;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
-
-#if UNITY_2019_2_OR_NEWER
 using UnityEditor.Build.Reporting;
-#endif
 
+#if !UNITY_CORCLR_OR_NEWER
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 {
   // DO NOT CHANGE NAME OR NAMESPACE!
   // Accessed from the package via reflection
-  // This class is only InitializeOnLoad when the plugin is loaded by Unity from the Assets folder. When the package
-  // explicitly loads the plugin from the product install folder, it will execute this class constructor.
-  [InitializeOnLoad, PublicAPI]
+  // When the package explicitly loads the plugin from the product install folder, it will execute this class constructor.
+  [PublicAPI]
   public static class EntryPoint
   {
     // DO NOT REMOVE OR REFACTOR!
     // When loaded by Unity from the Assets folder, Unity will automatically run this static class constructor. When the
     // package loads the type, the package explicitly invokes it via reflection.
-    [PublicAPI] static EntryPoint() => PluginEntryPoint.EnsureInitialised();
+    [PublicAPI] static EntryPoint()
+    {
+      var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
+      AppDomain.CurrentDomain.DomainUnload += (_, __) =>
+      {
+        Log.GetLog("RiderPlugin").Verbose("AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate");
+        lifetimeDefinition.Terminate();
+      };
+      
+      PluginEntryPoint.EnsureInitialised(lifetimeDefinition.Lifetime);
+    }
   }
 }
+#endif
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  // DO NOT RENAME!
+  // DO NOT CHANGE NAME OR NAMESPACE!
   // Used by package via reflection
-  [InitializeOnLoad, PublicAPI]
+  [PublicAPI]
   public static class PluginEntryPoint
   {
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
@@ -56,7 +63,6 @@ namespace JetBrains.Rider.Unity.Editor
     [PublicAPI]
     internal static OnOpenAssetHandler OpenAssetHandler;
     
-#if UNITY_2019_2_OR_NEWER    
     // DO NOT RENAME OR REFACTOR!
     // Accessed by package via reflection
     [PublicAPI]
@@ -66,35 +72,29 @@ namespace JetBrains.Rider.Unity.Editor
       return Il2CppDebugProvider.GenerateAdditionalLinkXmlFile(report,  data,
          preserveUnityEngineDlls,  preservePlayerDlls);
     }
-#endif
 
     internal static string SlnFile;
 
-    static PluginEntryPoint()
-    {
-      EnsureInitialised();
-    }
-
-    internal static void EnsureInitialised()
+    // DO NOT RENAME OR REFACTOR!
+    // Accessed by package via reflection
+    [PublicAPI]
+    internal static void EnsureInitialised(CancellationToken token)
     {
       if (ourInitialised || UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
 
       var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
-      AppDomain.CurrentDomain.DomainUnload += (_, __) =>
+      token.Register(() =>
       {
         ourLogger.Verbose("LifetimeDefinition.Terminate");
         lifetimeDefinition.Terminate();
-      };
+      });
 
       var appDomainLifetime = lifetimeDefinition.Lifetime;
 
       // Init log before doing any logging, and start collecting Unity messages ASAP
       LogInitializer.InitLog(appDomainLifetime, PluginSettings.SelectedLoggingLevel);
       UnityEventLogSender.Start(appDomainLifetime);
-
-      // Old mechanism, when EditorPlugin was copied to Assets folder. Package was introduced with Unity 2019.2
-      AssetsBasedPlugin.Initialise(appDomainLifetime, ourRiderPathProvider, ourLogger);
 
       // ReSharper disable once PossibleNullReferenceException
       var projectName = Path.GetFileName(Directory.GetParent(Application.dataPath).FullName);
@@ -176,20 +176,6 @@ namespace JetBrains.Rider.Unity.Editor
           $"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location) ? "" : " from: " + location)}. " +
           $"LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogInitializer.LogPath}.");
       }
-    }
-
-    /// <summary>
-    /// Called when Unity is about to open an asset. This method is for pre-2019.2 when loaded from Assets
-    /// </summary>
-    [OnOpenAsset]
-    static bool OnOpenedAsset(int instanceID, int line)
-    {
-      if (!IsRiderDefaultEditor())
-        return false;
-
-      // if (UnityUtils.UnityVersion >= new Version(2019, 2)
-      //   return false;
-      return OpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
     }
   }
 }

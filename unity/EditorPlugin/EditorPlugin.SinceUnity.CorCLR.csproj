@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Net46</AssemblyName>
+    <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.CorCLR</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_2019_2;UNITY_2019_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_4_7_OR_NEWER;UNITY_5_6_OR_NEWER;RIDER_EDITOR_PLUGIN</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DefineConstants>UNITY_CORCLR_OR_NEWER;UNITY_2019_2;UNITY_2019_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_4_7_OR_NEWER;UNITY_5_6_OR_NEWER;RIDER_EDITOR_PLUGIN</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
     <LangVersion>9</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Unity.Libs.Ref.2019.2.0f1" />
+    <PackageReference Include="JetBrains.Unity.Libs.Ref.CorCLR" />
     <PackageReference Include="JetBrains.Build.ILRepack" />
     <PackageReference Include="NUnit" />
   </ItemGroup>
@@ -33,15 +33,15 @@
   </Target>
 
   <ItemGroup>
-    <Compile Remove="SinceUnity.5.6\FindUsages\Window\FindUsagesTreeViewCorCLR.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <!-- This one should be the first - it provides version to resulting assembly-->
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Rider.PathLocator.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="SinceUnity.5.6\FindUsages\Window\FindUsagesTreeView.cs" />
   </ItemGroup>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
