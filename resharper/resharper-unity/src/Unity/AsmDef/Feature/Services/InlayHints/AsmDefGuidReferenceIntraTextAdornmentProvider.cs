@@ -1,6 +1,7 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.TextControl.DocumentMarkup.Adornments;
 
@@ -22,13 +23,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 
         public bool IsValid(IHighlighter highlighter)
         {
-            return highlighter.UserData is AsmDefGuidReferenceInlayHintHighlighting highlighting &&
+            return highlighter.GetHighlighting() is AsmDefGuidReferenceInlayHintHighlighting highlighting &&
                    highlighting.IsValid();
         }
 
         public IAdornmentDataModel? CreateDataModel(IHighlighter highlighter)
         {
-            if (highlighter.UserData is AsmDefGuidReferenceInlayHintHighlighting highlighting && highlighting.IsValid())
+            if (highlighter.GetHighlighting() is AsmDefGuidReferenceInlayHintHighlighting highlighting && highlighting.IsValid())
             {
                 return new AsmDefIntraTextAdornmentModel(highlighting, s => s.ShowAsmDefGuidReferenceNames, mySolution,
                     mySettingsStore);

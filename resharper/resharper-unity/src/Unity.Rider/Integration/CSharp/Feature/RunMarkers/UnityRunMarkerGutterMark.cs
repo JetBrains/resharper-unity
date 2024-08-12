@@ -3,6 +3,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
@@ -28,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Run
 
         public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
         {
-            if (highlighter.UserData is not UnityRunMarkerHighlighting runMarker) yield break;
+            if (highlighter.GetHighlighting() is not UnityRunMarkerHighlighting runMarker) yield break;
 
             var solution = Shell.Instance.GetComponent<SolutionsManager>().Solution;
             if (solution == null) yield break;
