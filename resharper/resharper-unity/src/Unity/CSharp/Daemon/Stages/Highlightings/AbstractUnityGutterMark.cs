@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                 return EmptyList<BulbMenuItem>.InstanceList;
 
             var daemon = solution.GetComponent<IDaemon>();
-            var highlighting = daemon.GetHighlighting(highlighter);
+            var highlighting = highlighter.GetHighlighting();
 
             if (highlighting != null)
             {
