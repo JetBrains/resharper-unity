@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectL
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Presentations;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.Feature.Services.Cpp.CodeCompletion;
+using JetBrains.ReSharper.Feature.Services.Cpp.CodeCompletion.BlockShaders;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Semantic;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Psi;
@@ -24,22 +25,34 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services.CodeCompletion
 {
     [Language(typeof(CppLanguage))]
-    public class BlockShadersSemanticItemsProvider : ItemsProviderOfSpecificContext<CppCodeCompletionContext>
+    public class BlockShadersSemanticItemsProvider : ItemsProviderOfSpecificContext<BlockShadersCodeCompletionContext>
     {
         
-        protected override bool IsAvailable(CppCodeCompletionContext context) => context.LanguageDialect is UnityBlockShadersDialect;
+        protected override bool IsAvailable(BlockShadersCodeCompletionContext context) => true;
 
-        protected override bool AddLookupItems(CppCodeCompletionContext context, IItemsCollector collector)
+        protected override bool AddLookupItems(BlockShadersCodeCompletionContext context, IItemsCollector collector)
         {
-            if (context.UnterminatedContext.TreeNode is not { Parent: BSAttributeParameterValue attributeParameterValue } ||
-                !BSAttributeParameterValueNavigator.IsSemanticAttributeValue(attributeParameterValue) || 
-                BSAttributeParameterValueNavigator.GetAttribute(attributeParameterValue) is not {} attribute ||
-                context.LanguageDialect is not UnityBlockShadersDialect { Semantics: { Length: > 0 } semantics } ||
-                BSAttributeNavigator.GetCorrespondingDeclaration(attribute) is not { } declaration)
+            if (context.LanguageDialect is not UnityBlockShadersDialect { Semantics: { Length: > 0 } semantics} 
+                || context.UnterminatedContext.TreeNode is not {} node)
                 return false;
 
+            var isTrailing = false;
+            Declarator? declarator; 
+            if (node is { Parent: HlslTrailingSemantic semanticNode })
+            {
+                declarator = semanticNode.GetContainingNode<Declarator>();
+                isTrailing = true;
+            }
+            else if (node is { Parent: BSAttributeParameterValue attributeParameterValue } &&
+                     BSAttributeParameterValueNavigator.IsSemanticAttributeValue(attributeParameterValue) &&
+                     BSAttributeParameterValueNavigator.GetAttribute(attributeParameterValue) is { } attribute &&
+                     BSAttributeNavigator.GetCorrespondingDeclaration(attribute) is { } declaration)
+                declarator = declaration.TryGetSingleDeclaratorNode() as Declarator;
+            else
+                return false;
+            
             var scope = HlslSemanticScope.Any;
-            if (declaration.TryGetSingleDeclaratorNode() is Declarator declarator) {
+            if (declarator != null) {
                 
                 var qualType = declarator.GetResolveEntity().GetCppType();
                 var cppType = qualType.InternalType switch
@@ -53,11 +66,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
                 {
                     if ((hlslSemantic.Scope & scope) != 0 && (isUnknownType || hlslSemantic.IsTypeSupported(cppType)))
                     {
-                        AttributeSemanticsNames.TryGetValue(hlslSemantic.Name, out var attrName);
-                        attrName ??= TryGetAttributeEnumerableSemanticName(hlslSemantic);
-                        if (attrName == null)
-                            continue;
-                        AddLookupItem(context, collector, attrName);
+                        string? name;
+                        if (isTrailing)
+                            name = hlslSemantic.Name;
+                        else
+                        {
+                            AttributeSemanticsNames.TryGetValue(hlslSemantic.Name, out name);
+                            name ??= TryGetAttributeEnumerableSemanticName(hlslSemantic);
+                            if (name == null)
+                                continue;
+                        }
+                        
+                        AddLookupItem(context, collector, name);
                     }
                 }
             }
@@ -72,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
             return true;
         }
 
-        private void AddLookupItem(CppCodeCompletionContext context, IItemsCollector collector, string attributeName)
+        private void AddLookupItem(BlockShadersCodeCompletionContext context, IItemsCollector collector, string attributeName)
         {
             var info = new AttributeSemanticTextualInfo(attributeName) { Ranges = context.CompletionRanges };
             var item = LookupItemFactory.CreateLookupItem(info)
