@@ -34,7 +34,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
         lifetimeDefinition.Terminate();
       };
       
-      PluginEntryPoint.EnsureInitialised(lifetimeDefinition.Lifetime);
+      PluginEntryPoint.Initialize(lifetimeDefinition.Lifetime);
     }
   }
 }
@@ -74,11 +74,16 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     internal static string SlnFile;
+    internal static Lifetime AppDomainLifetime;
 
     // DO NOT RENAME OR REFACTOR!
-    // Accessed by package via reflection
+    /// <summary>
+    /// For "Unity CoreCLR" EditorPlugin is initialized from the Rider package by reflection
+    /// The Initialize itself is always sync, fully executed within ProcessInitializeOnLoadAttributes
+    /// </summary>
+    /// <param name="token">Is used as a root of Lifetimes, which are passed further to protocol, etc</param>
     [PublicAPI]
-    internal static void EnsureInitialised(CancellationToken token)
+    internal static void Initialize(CancellationToken token)
     {
       if (ourInitialised || UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
@@ -86,25 +91,25 @@ namespace JetBrains.Rider.Unity.Editor
       var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
       token.Register(() =>
       {
-        ourLogger.Verbose("LifetimeDefinition.Terminate");
+        ourLogger.Verbose("Initialize. LifetimeDefinition.Terminate");
         lifetimeDefinition.Terminate();
       });
 
-      var appDomainLifetime = lifetimeDefinition.Lifetime;
+      AppDomainLifetime = lifetimeDefinition.Lifetime;
 
       // Init log before doing any logging, and start collecting Unity messages ASAP
-      LogInitializer.InitLog(appDomainLifetime, PluginSettings.SelectedLoggingLevel);
-      UnityEventLogSender.Start(appDomainLifetime);
+      LogInitializer.InitLog(AppDomainLifetime, PluginSettings.SelectedLoggingLevel);
+      UnityEventLogSender.Start(AppDomainLifetime);
 
       // ReSharper disable once PossibleNullReferenceException
       var projectName = Path.GetFileName(Directory.GetParent(Application.dataPath).FullName);
       SlnFile = Path.GetFullPath($"{projectName}.sln");
 
-      CreateEditorInstanceJson(appDomainLifetime);
+      CreateEditorInstanceJson(AppDomainLifetime);
       PlayModeStateTracker.Initialise();
-      UnityEditorProtocol.Initialise(appDomainLifetime, ourInitTime, ourLogger);
+      UnityEditorProtocol.Initialise(AppDomainLifetime, ourInitTime, ourLogger);
 
-      OpenAssetHandler = new OnOpenAssetHandler(appDomainLifetime, ourRiderPathProvider, SlnFile);
+      OpenAssetHandler = new OnOpenAssetHandler(AppDomainLifetime, ourRiderPathProvider, SlnFile);
 
       ReportInitialisationDone();
 

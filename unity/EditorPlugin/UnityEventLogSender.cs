@@ -18,17 +18,10 @@ namespace JetBrains.Rider.Unity.Editor
       if (!ourLogEventsCollectorEnabled)
         return;
 
-      EditorApplication.update += () =>
-      {
-        // can be called only from main thread
-        ourLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled;
-        if (ourLogEventsCollectorEnabled)
-          ProcessQueue();
-      };
-
-      // Both of these methods were introduced in 5.0+ but EditorPlugin.csproj still targets 4.7
-      Application.logMessageReceivedThreaded += ApplicationOnLogMessageReceived;
-      lifetime.OnTermination(() => Application.logMessageReceivedThreaded -= ApplicationOnLogMessageReceived);
+      lifetime.Bracket(() => EditorApplication.update += Process,
+        () => EditorApplication.update -= Process);
+      lifetime.Bracket(() => Application.logMessageReceivedThreaded += ApplicationOnLogMessageReceived,
+        ()=> Application.logMessageReceivedThreaded -= ApplicationOnLogMessageReceived);
 
       PlayModeStateTracker.Current.Advise(lifetime, _ =>
       {
@@ -42,6 +35,14 @@ namespace JetBrains.Rider.Unity.Editor
           Application.logMessageReceivedThreaded += ApplicationOnLogMessageReceived;
         }
       });
+    }
+
+    private static void Process()
+    {
+      // main thread
+      ourLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled;
+      if (ourLogEventsCollectorEnabled)
+        ProcessQueue();
     }
 
     private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)

@@ -28,7 +28,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
         if (!model.UnitTestLaunch.HasValue()) return false;
         if (EditorApplication.isPlaying)
           throw new InvalidOperationException("Running tests during the Play mode is not possible.");
-        var testLauncher = new UnityEditorTestLauncher(model.UnitTestLaunch.Value, modelLifetime);
+        var testLauncher = new UnityEditorTestLauncher(model.UnitTestLaunch.Value);
         return testLauncher.TryLaunchUnitTests();
       });
     }

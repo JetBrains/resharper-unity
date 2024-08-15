@@ -194,7 +194,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         // Actions called from the backend to the frontend
         sink("activateRider", void).documentation = "Tell Rider to bring itself to the foreground. Called when opening a file from Unity"
         sink("activateUnityLogView", void).documentation = "Show the Unity log tool window. E.g. in response to compilation failure"
-        sink("showInstallMonoDialog", void)
         sink("startUnity", void)
         sink("notifyAssetModeForceText", void)
         sink("showDeferredCachesProgressNotification", void)

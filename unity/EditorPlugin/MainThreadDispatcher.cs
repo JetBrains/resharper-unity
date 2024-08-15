@@ -18,7 +18,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     private MainThreadDispatcher()
     {
-      EditorApplication.update += DispatchTasks;
+      PluginEntryPoint.AppDomainLifetime.Bracket(() => EditorApplication.update += DispatchTasks,
+        () => EditorApplication.update -= DispatchTasks);
     }
 
     /// <summary>

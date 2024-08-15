@@ -39,8 +39,6 @@
     <rd.solutionExtListener endpoint="IDE Frontend"
                             listener="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater$ProtocolListener"/>
     <rd.solutionExtListener endpoint="IDE Frontend"
-                            listener="com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification$ProtocolListener"/>
-    <rd.solutionExtListener endpoint="IDE Frontend"
                             listener="com.jetbrains.rider.plugins.unity.FrontendBackendHost$ProtocolListener"/>
     <rd.solutionExtListener endpoint="IDE Frontend"
                             listener="com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification$ProtocolListener"/>

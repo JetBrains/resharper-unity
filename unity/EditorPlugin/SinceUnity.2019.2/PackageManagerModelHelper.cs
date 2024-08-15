@@ -27,12 +27,8 @@ namespace JetBrains.Rider.Unity.Editor
         WaitForResult(definition, model, request);
       }
 
-      EditorApplication.update += Action;
-      definition.Lifetime.OnTermination(() =>
-      {
-        ourLogger.Verbose($"EditorApplication.update -= WaitForResult");
-        EditorApplication.update -= Action;
-      });
+      definition.Lifetime.Bracket(() => EditorApplication.update += Action,
+        () => EditorApplication.update -= Action);
     }
 
     private static void WaitForResult(LifetimeDefinition definition, BackendUnityModel model, SearchRequest request)

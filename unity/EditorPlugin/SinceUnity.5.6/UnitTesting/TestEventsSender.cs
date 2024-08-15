@@ -37,11 +37,8 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
       if (eventInfo != null)
       {
         var handler = new EventHandler((sender, e) => { ProcessQueue(data, unitTestLaunch); });
-        eventInfo.AddEventHandler(handler.Target, handler);
-        appDomainLifetime.OnTermination(() =>
-        {
-          eventInfo.RemoveEventHandler(handler.Target, handler);
-        });
+        appDomainLifetime.Bracket(() => eventInfo.AddEventHandler(handler.Target, handler),
+          () => eventInfo.RemoveEventHandler(handler.Target, handler));
       }
       else
       {
