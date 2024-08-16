@@ -26,6 +26,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ShaderWidgetProvider : RiderResolveContextWidgetProvider, ProjectActivity {
+    override val widgetId: String = "ShaderWidgetProvider"
+
     override fun provideWidget(disposable: Disposable,
                                project: Project,
                                textControlId: TextControlId,
@@ -66,7 +68,7 @@ class ShaderWidgetProvider : RiderResolveContextWidgetProvider, ProjectActivity 
         val textControlHost = project.frontendProjectSession.appSession.service<FrontendTextControlHost>()
         model.shaderContexts.advise(lifetime) { event ->
             textControlHost.getEditorsIds(event.key).forEach { editor ->
-                RiderResolveContextWidgetManager.getWidget<ShaderWidget>(editor)?.setData(event.newValueOpt)
+                (RiderResolveContextWidgetManager.getWidget(editor, widgetId) as? ShaderWidget)?.setData(event.newValueOpt)
             }
         }
     }

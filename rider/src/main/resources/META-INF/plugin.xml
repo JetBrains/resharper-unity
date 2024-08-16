@@ -245,6 +245,12 @@
             class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
             icon="UnityIcons.Actions.RefreshInUnity" />
 
+    <action id="ShaderVariantWidgetAction"
+            class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantWidgetAction" />
+
+    <action id="ShaderWidgetAction"
+            class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetAction" />
+
     <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionBar" anchor="after" />
       <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionBar" anchor="after" />

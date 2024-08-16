@@ -1,8 +1,10 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider
 import com.intellij.openapi.project.Project
@@ -20,17 +22,22 @@ import java.net.URL
 
 class ShaderVariantWidgetActionProvider : InspectionWidgetActionProvider {
     override fun createAction(editor: Editor): AnAction? {
-        val project = editor.project ?: return null
-        return object : WidgetAction<ShaderVariantWidget>(editor, project, ShaderVariantWidget::class) {
-            override fun update(e: AnActionEvent, widget: ShaderVariantWidget) {
-                if (editor.isViewer) {
-                    e.presentation.isEnabledAndVisible = false
-                    return
-                }
-                e.presentation.text = widget.text.value
-            }
-        }
+        editor.project ?: return null
+        return ActionManager.getInstance().getAction("ShaderVariantWidgetAction")
     }
+}
+
+class ShaderVariantWidgetAction : WidgetAction("ShaderVariantsService"){
+    override fun updateInternal(e: AnActionEvent, widget: RiderResolveContextWidget) {
+        val editor = e.getData(CommonDataKeys.EDITOR) ?: return
+        val shaderVariantWidget = widget as? ShaderVariantWidget ?: return
+        if (editor.isViewer) {
+            e.presentation.isEnabledAndVisible = false
+            return
+        }
+        e.presentation.text = shaderVariantWidget.text.value
+    }
+
 }
 
 class ShaderVariantWidget(project: Project, editor: Editor, shaderVariant: RdShaderVariantExtension) : AbstractShaderWidget(project,

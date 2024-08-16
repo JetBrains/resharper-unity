@@ -1,8 +1,10 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.EDT
@@ -28,17 +30,21 @@ import org.jetbrains.annotations.Nls
 
 class ShaderWidgetActionProvider : InspectionWidgetActionProvider {
     override fun createAction(editor: Editor): AnAction? {
-        val project = editor.project ?: return null
-        return object : WidgetAction<ShaderWidget>(editor, project, ShaderWidget::class) {
-            override fun update(e: AnActionEvent, widget: ShaderWidget) {
-                if (editor.isViewer) {
-                    e.presentation.isEnabledAndVisible = false
-                    return
-                }
-                e.presentation.text = UnityUIBundle.message("shader.inspection.widget.text", widget.text.value)
-            }
-        }
+        editor.project ?: return null
+        return ActionManager.getInstance().getAction("ShaderWidgetAction")
     }
+}
+
+class ShaderWidgetAction : WidgetAction("ShaderWidgetProvider"){
+    override fun updateInternal(e: AnActionEvent, widget: RiderResolveContextWidget) {
+        val editor = e.getData(CommonDataKeys.EDITOR) ?: return
+        val shaderWidget = widget as? ShaderWidget ?: return
+        if (editor.isViewer) {
+            e.presentation.isEnabledAndVisible = false
+            return
+        }
+
+        e.presentation.text = UnityUIBundle.message("shader.inspection.widget.text", shaderWidget.text.value)    }
 }
 
 

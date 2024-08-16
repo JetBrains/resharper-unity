@@ -11,6 +11,8 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.projectView.solution
 
 class ShaderVariantsService : RiderResolveContextWidgetProvider {
+    override val widgetId: String = "ShaderVariantsService"
+
     override fun provideWidget(disposable: Disposable,
                                project: Project,
                                textControlId: TextControlId,
