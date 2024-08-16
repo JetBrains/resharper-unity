@@ -1,0 +1,19 @@
+BlockShader SystemValue_FragmentIn_DepthOut implements Tests::Unlit
+{
+    Block TestFragment
+    {
+        Interface
+        {
+            [System(Semantic::{caret})] out float Depth;
+        }
+        function void apply()
+        {
+            Depth = 0.001;
+        }
+    }
+    
+    Implementation SurfaceDescription
+    {
+        TestFragment;
+    }
+}

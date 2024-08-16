@@ -1,0 +1,10 @@
+BlockShader SystemValue_FragmentIn_DepthOut implements Tests::Unlit
+{
+    Block TestFragment
+    {
+        Interface
+        {
+            [System(Semantic::{caret}
+        }
+    }
+}

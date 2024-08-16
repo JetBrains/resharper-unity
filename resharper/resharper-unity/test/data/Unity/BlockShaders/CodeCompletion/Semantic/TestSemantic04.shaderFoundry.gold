@@ -1,0 +1,25 @@
+# 23 ITEMS #
+
++ ClipDistance
+Color
+Coverage
+CullDistance
+Depth
+DepthGreaterEqual
+DepthLessEqual
+InstanceID
+IsFrontFace
+PointSize
+Position
+SampleIndex
+ShadingRate
+StencilReference
+VertexAttributeBlendIndices
+VertexAttributeBlendWeight
+VertexAttributeColor
+VertexAttributeNormal
+VertexAttributePosition
+VertexAttributeTangent
+VertexAttributeTextureCoordinate
+VertexID
+ViewportArrayIndex

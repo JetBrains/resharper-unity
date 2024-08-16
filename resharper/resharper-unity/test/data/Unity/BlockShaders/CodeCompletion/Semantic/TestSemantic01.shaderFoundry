@@ -1,0 +1,29 @@
+Imports
+{
+    "Assets/HW23/CustomShaderFundamentals/Interfaces/UnlitInterface.shaderFoundry";
+}
+
+BlockShader UnlitColor implements UnlitInterface
+{    
+    Block UnlitColor 
+    {
+        Interface
+        {
+            [Property][Color] in float4 _Color : {caret}
+
+            out float3 Color;
+            out float Alpha;
+        }
+
+        function void apply()
+        {
+            Color = _Color.rgb;
+            Alpha = _Color.a;
+        }
+    }
+
+    Implementation SurfaceDescription
+    {
+        UnlitColor;
+    }
+}

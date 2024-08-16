@@ -1,0 +1,22 @@
+BlockShader UnlitColor implements UnlitInterface
+{    
+    Block UnlitColor 
+    {
+        Interface
+        {
+            in float pSize : {caret}
+
+            out float Alpha;
+        }
+
+        function void apply()
+        {
+            Alpha = pSize;
+        }
+    }
+
+    Implementation SurfaceDescription
+    {
+        UnlitColor;
+    }
+}

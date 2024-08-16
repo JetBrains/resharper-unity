@@ -1,0 +1,21 @@
+BlockShader UnlitColor implements UnlitInterface
+{
+    Block UnlitColor 
+    {
+        struct Input
+        {
+            float4 _Color : {caret}
+        }
+        Interface
+        {
+            in Input;
+
+            out float3 Color;
+            out float Alpha;
+        }
+
+        function void apply()
+        {
+        }
+    }
+}

@@ -1,0 +1,22 @@
+# 20 ITEMS #
+
++ Color
+Position
+VertexAttributeColor, 0
+VertexAttributeColor, 1
+VertexAttributeColor, 2
+VertexAttributeColor, 3
+VertexAttributeColor, 4
+VertexAttributeColor, 5
+VertexAttributeColor, 6
+VertexAttributeColor, 7
+VertexAttributePosition
+VertexAttributeTangent
+VertexAttributeTextureCoordinate, 0
+VertexAttributeTextureCoordinate, 1
+VertexAttributeTextureCoordinate, 2
+VertexAttributeTextureCoordinate, 3
+VertexAttributeTextureCoordinate, 4
+VertexAttributeTextureCoordinate, 5
+VertexAttributeTextureCoordinate, 6
+VertexAttributeTextureCoordinate, 7

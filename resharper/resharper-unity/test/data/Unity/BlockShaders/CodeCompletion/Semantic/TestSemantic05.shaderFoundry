@@ -1,0 +1,12 @@
+BlockShaderInterface MyInterface
+{
+    CustomizationPoint A
+    {
+        Interface
+        {
+            [Property] in float Depth;
+            
+            [System(Semantic::{caret})] out float4 Depth;
+        }
+    }
+}

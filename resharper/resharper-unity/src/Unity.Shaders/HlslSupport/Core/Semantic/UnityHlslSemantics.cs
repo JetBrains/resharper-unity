@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Immutable;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Types;
+using JetBrains.ReSharper.Psi.Cpp.Types;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Semantic
 {
@@ -16,10 +17,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Semantic
             new HlslSemantic("TEXCOORD3", HlslSemanticScope.VertexInput | HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half2, HlslWellKnownTypes.Half3, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float2, HlslWellKnownTypes.Float3, HlslWellKnownTypes.Float4), //
             new HlslSemantic("TANGENT", HlslSemanticScope.VertexInput, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float4), // TANGENT is the tangent vector (used for normal mapping), typically a float4.
             new HlslSemantic("COLOR", HlslSemanticScope.VertexInput, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float4), // COLOR is the per-vertex color, typically a float4.
+            new HlslSemantic("PSIZE", HlslSemanticScope.VertexInput | HlslSemanticScope.VertexOutput, CppPredefinedTypes.Half, CppPredefinedTypes.Float), // PSize is a point size
+            new HlslSemantic("BLENDWEIGHT", HlslSemanticScope.VertexInput, CppPredefinedTypes.Half, CppPredefinedTypes.Float),
+            new HlslSemantic("BLENDINDICES", HlslSemanticScope.VertexInput, CppPredefinedTypes.UInt),
+            new HlslSemantic("SV_VertexID", HlslSemanticScope.VertexInput, CppPredefinedTypes.UInt),
+
             // Vertex outputs/Fragment inputs semantic
             new HlslSemantic("SV_POSITION", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float4), // A vertex shader needs to output the final clip space position of a vertex, so that the GPU knows where on the screen to rasterize it, and at what depth. This output needs to have the SV_POSITION semantic, and be of a float4 type.
             new HlslSemantic("TEXCOORD4", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half2, HlslWellKnownTypes.Half3, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float2, HlslWellKnownTypes.Float3, HlslWellKnownTypes.Float4), // TEXCOORD0, TEXCOORD1 etc are used to indicate arbitrary high precision data such as texture coordinates and positions.
-            new HlslSemantic("TEXCOORD5", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half2, HlslWellKnownTypes.Half3, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float2, HlslWellKnownTypes.Float3, HlslWellKnownTypes.Float4), // 
+            new HlslSemantic("TEXCOORD5", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half2, HlslWellKnownTypes.Half3, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float2, HlslWellKnownTypes.Float3, HlslWellKnownTypes.Float4), //
             new HlslSemantic("TEXCOORD6", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half2, HlslWellKnownTypes.Half3, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float2, HlslWellKnownTypes.Float3, HlslWellKnownTypes.Float4), //
             new HlslSemantic("TEXCOORD7", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half2, HlslWellKnownTypes.Half3, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float2, HlslWellKnownTypes.Float3, HlslWellKnownTypes.Float4), //
             new HlslSemantic("COLOR0", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float4), // COLOR0 and COLOR1 semantics on vertex outputs and fragment inputs are for low-precision, 0–1 range data (like simple color values).
@@ -29,8 +35,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Semantic
             new HlslSemantic("COLOR4", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float4),
             new HlslSemantic("COLOR5", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float4),
             new HlslSemantic("COLOR6", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float4),
-            new HlslSemantic("COLOR7", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float4)
+            new HlslSemantic("COLOR7", HlslSemanticScope.VertexOutput, HlslWellKnownTypes.Half4, HlslWellKnownTypes.Float4),
+            new HlslSemantic("SV_IsFrontFace", HlslSemanticScope.VertexOutput, CppPredefinedTypes.Bool),
+            new HlslSemantic("SV_ViewportArrayIndex", HlslSemanticScope.VertexOutput, CppPredefinedTypes.UInt),
+            new HlslSemantic("SV_ShadingRate", HlslSemanticScope.VertexOutput, CppPredefinedTypes.UInt),
             // Fragment outputs are defined via macro in Unity, no need to add separate completion
+            
+            // System-Value FragmentInput and Output Semantic
+            new HlslSemantic("SV_SampleIndex", HlslSemanticScope.FragmentInput | HlslSemanticScope.FragmentOutput, CppPredefinedTypes.UInt),
+            new HlslSemantic("SV_ClipDistance", HlslSemanticScope.FragmentInput | HlslSemanticScope.FragmentOutput, CppPredefinedTypes.Half, CppPredefinedTypes.Float),
+            new HlslSemantic("SV_CullDistance", HlslSemanticScope.FragmentInput | HlslSemanticScope.FragmentOutput, CppPredefinedTypes.Half, CppPredefinedTypes.Float),
+            new HlslSemantic("SV_Coverage", HlslSemanticScope.FragmentInput | HlslSemanticScope.FragmentOutput, CppPredefinedTypes.UInt),
+            
+            new HlslSemantic("SV_Depth", HlslSemanticScope.FragmentOutput, CppPredefinedTypes.Half, CppPredefinedTypes.Float),
+            new HlslSemantic("SV_DepthGreaterEqual", HlslSemanticScope.FragmentOutput, CppPredefinedTypes.Half, CppPredefinedTypes.Float),
+            new HlslSemantic("SV_DepthLessEqual", HlslSemanticScope.FragmentOutput, CppPredefinedTypes.Half, CppPredefinedTypes.Float),
+            new HlslSemantic("SV_StencilRef", HlslSemanticScope.FragmentOutput, CppPredefinedTypes.UInt),
+
+            new HlslSemantic("SV_InstanceID", HlslSemanticScope.Any, CppPredefinedTypes.UInt)
         );
     }
 }
