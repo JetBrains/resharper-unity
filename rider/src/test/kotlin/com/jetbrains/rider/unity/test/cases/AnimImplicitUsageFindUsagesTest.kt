@@ -23,7 +23,7 @@ class AnimImplicitUsageFindUsagesTest : BaseTestWithSolution() {
     override val testSolution: String = "AnimImplicitUsageTest"
 
     override fun preprocessTempDirectory(tempDir: File) {
-        prepareAssemblies(activeSolutionDirectory)
+        prepareAssemblies(tempDir)
     }
 
     override val traceCategories: List<String>

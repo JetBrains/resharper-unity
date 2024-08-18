@@ -46,9 +46,9 @@ import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.base.BaseTestWithSolution
-import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.test.framework.*
+import com.jetbrains.rider.test.framework.processor.TestProcessor
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
 import com.jetbrains.rider.unity.test.framework.EngineVersion
@@ -299,14 +299,14 @@ fun getRiderDevAppPath(): File {
     return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
 }
 
-fun BaseTestWithSolutionBase.startUnity(project: Project,
+fun TestProcessor<*>.startUnity(project: Project,
                                         withCoverage: Boolean,
                                         resetEditorPrefs: Boolean,
                                         useRiderTestPath: Boolean,
                                         batchMode: Boolean) =
     startUnity(project, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 
-fun BaseTestWithSolutionBase.startUnity(executable: String,
+fun TestProcessor<*>.startUnity(executable: String,
                                         projectPath: String,
                                         withCoverage: Boolean,
                                         resetEditorPrefs: Boolean,
@@ -358,7 +358,7 @@ fun BaseTestWithSolution.withUnityProcess(
 
 fun BaseTestWithSolution.executeScript(file: String) {
     val script = testCaseSourceDirectory.combine(file)
-    script.copyTo(activeSolutionDirectory.combine("Assets", file))
+    script.copyTo(project.solutionDirectory.combine("Assets", file))
 
     frameworkLogger.info("Executing script '$file'")
     project.solution.frontendBackendModel.refreshUnityModel()
@@ -645,7 +645,7 @@ private fun debugUnityProgramWithoutGold(project: Project,
                                          test: DebugTestExecutionContext.() -> Unit) =
     debugProgram(project, NullPrintStream, beforeRun, test, {}, true)
 
-fun BaseTestWithSolutionBase.toggleUnityPausepoint(project: Project,
+fun toggleUnityPausepoint(project: Project,
                                                    projectFile: String,
                                                    lineNumber: Int,
                                                    condition: String = ""): XLineBreakpoint<DotNetLineBreakpointProperties> {

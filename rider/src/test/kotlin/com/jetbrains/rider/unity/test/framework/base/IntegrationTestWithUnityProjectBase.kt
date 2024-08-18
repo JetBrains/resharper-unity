@@ -2,11 +2,10 @@ package com.jetbrains.rider.unity.test.framework.base
 
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.WaitFor
-import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.asserts.shouldBeTrue
+import com.jetbrains.rider.test.facades.RiderExistingSolutionApiFacade
+import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.frameworkLogger
-import com.jetbrains.rider.test.suplementary.ITestSolution
-import com.jetbrains.rider.test.suplementary.RiderTestUtils.findSolutionFile
 import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.api.getEngineExecutableInstallationPath
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
@@ -93,12 +92,7 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
         file.writeText(updatedContent)
     }
 
-    override fun prepareSolution(solution: ITestSolution, params: OpenSolutionParams): File {
-        activeSolution = solution.name
-        val solutionFile = findSolutionFile(activeSolutionDirectory, params.overrideSolutionName ?: solution.slnName)
-        params.preprocessTempDirectory?.invoke(activeSolutionDirectory)
-        return if (params.preprocessSolutionFile != null) params.preprocessSolutionFile?.invoke(solutionFile)!! else solutionFile
-    }
+    override val solutionApiFacade: SolutionApiFacade by lazy { RiderExistingSolutionApiFacade() }
     
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {

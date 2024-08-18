@@ -13,14 +13,13 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
+import com.jetbrains.rider.test.facades.RiderExistingSolutionApiFacade
+import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.refreshFileSystem
-import com.jetbrains.rider.test.suplementary.ITestSolution
-import com.jetbrains.rider.test.suplementary.RiderTestUtils.findSolutionFile
 import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.api.*
 import kotlinx.coroutines.CompletableDeferred
@@ -63,12 +62,7 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,
                    )
         }
 
-    override fun prepareSolution(solution: ITestSolution, params: OpenSolutionParams): File {
-        activeSolution = solution.name
-        val solutionFile = findSolutionFile(activeSolutionDirectory, params.overrideSolutionName ?: solution.slnName)
-        params.preprocessTempDirectory?.invoke(activeSolutionDirectory)
-        return if (params.preprocessSolutionFile != null) params.preprocessSolutionFile?.invoke(solutionFile)!! else solutionFile
-    }
+    override val solutionApiFacade: SolutionApiFacade by lazy { RiderExistingSolutionApiFacade() }
     
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,
