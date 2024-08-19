@@ -14,7 +14,7 @@ class UssTest : BaseTestWithSolution() {
     override val testSolution: String = "SimpleUnityProject"
 
     override fun preprocessTempDirectory(tempDir: File) {
-        prepareAssemblies(activeSolutionDirectory)
+        prepareAssemblies(tempDir)
     }
 
     @Test

@@ -21,7 +21,7 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
 
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)
-        prepareAssemblies(activeSolutionDirectory)
+        prepareAssemblies(tempDir)
     }
 
     protected fun doTest(line : Int, column : Int, groups: List<String>?, fileName : String = "NewBehaviourScript.cs") {

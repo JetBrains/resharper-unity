@@ -27,9 +27,9 @@ import java.time.Duration
 class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     override fun preprocessTempDirectory(tempDir: File) {
-        prepareAssemblies(activeSolutionDirectory)
+        prepareAssemblies(tempDir)
         if (testMethod.name.contains("YamlOff")) {
-            SettingsHelper.disableIsAssetIndexingEnabledSetting(activeSolution, activeSolutionDirectory)
+            SettingsHelper.disableIsAssetIndexingEnabledSetting(tempDir.name, tempDir)
         }
     }
 

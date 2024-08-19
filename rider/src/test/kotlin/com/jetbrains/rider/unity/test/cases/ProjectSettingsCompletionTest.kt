@@ -31,7 +31,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     override val testSolution: String = "ProjectSettingsTestData"
     override fun preprocessTempDirectory(tempDir: File) {
         if (testMethod.name.contains("YamlOff")) {
-            SettingsHelper.disableIsAssetIndexingEnabledSetting(activeSolution, activeSolutionDirectory)
+            SettingsHelper.disableIsAssetIndexingEnabledSetting(tempDir.name, tempDir)
         }
     }
 

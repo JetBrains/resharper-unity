@@ -25,7 +25,7 @@ class InputSystemUnityEventModeTest : BaseTestWithSolution() {
     override val testSolution: String = "MarkupTestData"
 
     override fun preprocessTempDirectory(tempDir: File) {
-        prepareAssemblies(activeSolutionDirectory)
+        prepareAssemblies(tempDir)
     }
     
     @Mute("RIDER-96147")
