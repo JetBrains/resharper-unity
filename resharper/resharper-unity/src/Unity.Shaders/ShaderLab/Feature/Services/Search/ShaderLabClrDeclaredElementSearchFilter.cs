@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -6,7 +7,7 @@ using JetBrains.ReSharper.Psi.Search;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Search;
 
-[PsiComponent]
+[PsiComponent(InstantiationEx.LegacyDefault)]
 public class ShaderLabClrDeclaredElementSearchFilter : ISearchFilter
 {
     public SearchFilterKind Kind => SearchFilterKind.Language;

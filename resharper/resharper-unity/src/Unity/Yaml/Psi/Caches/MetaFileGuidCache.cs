@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.DataFlow;
@@ -16,7 +17,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [PsiComponent]
+    [PsiComponent(InstantiationEx.LegacyDefault)]
     public class MetaFileGuidCache : SimpleICache<MetaFileCacheItem>
     {
         private readonly ILogger myLogger;

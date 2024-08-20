@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
@@ -18,7 +19,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
 {
-    [PsiComponent]
+    [PsiComponent(InstantiationEx.LegacyDefault)]
     public class UxmlCache : SimpleICache<List<UxmlCacheItem>>
     {
         private readonly ISolution mySolution;

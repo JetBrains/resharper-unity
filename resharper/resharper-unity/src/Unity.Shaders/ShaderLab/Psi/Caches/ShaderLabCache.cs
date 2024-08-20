@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -13,7 +14,7 @@ using JetBrains.ReSharper.Psi.Files;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 
-[PsiComponent]
+[PsiComponent(InstantiationEx.LegacyDefault)]
 public class ShaderLabCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, ISolution solution)
     : SimplePsiSourceFileCacheWithLocalCache<ShaderLabCacheItem, IDeclaredElement>(lifetime, locks, persistentIndexManager, ShaderLabCacheItem.Marshaller, "Unity::Shaders::ShaderLabCacheUpdated")
 {

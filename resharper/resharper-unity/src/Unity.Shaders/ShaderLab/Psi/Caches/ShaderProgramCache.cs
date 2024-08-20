@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -29,7 +30,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 {
-    [PsiComponent]
+    [PsiComponent(InstantiationEx.LegacyDefault)]
     public class ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, UnityDialects dialects)
         : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, VirtualFileSystemPath>(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
     {
