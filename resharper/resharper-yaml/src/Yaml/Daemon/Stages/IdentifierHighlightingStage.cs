@@ -1,5 +1,6 @@
 ﻿using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -14,7 +15,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
 {
-  [DaemonStage(StagesBefore = new[] {typeof(GlobalFileStructureCollectorStage)},
+  [DaemonStage(Instantiation.DemandAnyThreadUnsafe, StagesBefore = new[] {typeof(GlobalFileStructureCollectorStage)},
     StagesAfter = new[] {typeof(CollectUsagesStage)})]
   public class IdentifierHighlightingStage : YamlDaemonStageBase
   {
