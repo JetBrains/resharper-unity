@@ -15,7 +15,6 @@ class UnitTestingTests {
     class TestUnity2020 : UnitTestingTestBase(Unity.V2020)
     class TestUnity2022 : UnitTestingTestBase(Unity.V2022)
     class TestUnity2023 : UnitTestingTestBase(Unity.V2023)
-    @Mute("RIDER-113191")
     class TestUnity6 : UnitTestingTestBase(Unity.V6)
     @Mute("RIDER-113191")
     class TestTuanjie2022 : UnitTestingTestBase(Tuanjie.V2022)
