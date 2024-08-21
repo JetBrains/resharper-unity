@@ -21,6 +21,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         public bool BreakOnUserUnhandledExceptions => DebuggerSessionOptionsImplementation.BreakOnUserUnhandledExceptions;
         public IReadOnlyList<string> UserUnhandledExceptionsIgnoreList => DebuggerSessionOptionsImplementation.UserUnhandledExceptionsIgnoreList;
         public virtual bool BreakOnUnhandledExceptions => DebuggerSessionOptionsImplementation.BreakOnUnhandledExceptions;
+        public bool EnableSingleThreadStepper => DebuggerSessionOptionsImplementation.EnableSingleThreadStepper;
         public bool DisableJitOptimizationOnModuleLoad => DebuggerSessionOptionsImplementation.DisableJitOptimizationOnModuleLoad;
 
         public bool DeOptimizeMethodsOnStepInAndMethodsWithBreakpoints => DebuggerSessionOptionsImplementation.DeOptimizeMethodsOnStepInAndMethodsWithBreakpoints;
