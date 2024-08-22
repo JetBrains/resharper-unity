@@ -14,6 +14,7 @@ import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreak
 import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
 import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
@@ -158,13 +159,22 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 }
 
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity2020 : DebuggerTest(Unity.V2020)  {
     init {
         addMute(Mute("RIDER-105466", platforms = arrayOf(PlatformType.WINDOWS_ALL)), ::checkUnityPausePoint)
     }
 }
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity2022 : DebuggerTest(Unity.V2022)
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity2023 : DebuggerTest(Unity.V2023)
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity6 : DebuggerTest(Unity.V6)
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 class DebuggerTestTuanjie2022 : DebuggerTest (Tuanjie.V2022)

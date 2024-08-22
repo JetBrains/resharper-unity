@@ -105,6 +105,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
     }
 }
 
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerestUnity2020 : DotsDebuggerTest(Unity.V2020) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
@@ -112,16 +113,22 @@ class DotsDebuggerestUnity2020 : DotsDebuggerTest(Unity.V2020) {
         addMute(Mute("RIDER-105466"), ::setUpTestCaseSolution)
     }
 }
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
     }
 }
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTestUnity2023 : DotsDebuggerTest(Unity.V2023) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
     }
 }
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTestUnity6 : DotsDebuggerTest(Unity.V6) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)

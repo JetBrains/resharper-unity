@@ -79,10 +79,18 @@ abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWi
     }
 }
 
-
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTestUnity2020 : UnitTestingTest(Unity.V2020)
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTestUnity2022 : UnitTestingTest(Unity.V2022)
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTestUnity2023 : UnitTestingTest(Unity.V2023)
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTestUnity6 : UnitTestingTest(Unity.V6)
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 class UnitTestingTestTuanjie2022 : UnitTestingTest(Tuanjie.V2022)

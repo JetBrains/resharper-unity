@@ -18,7 +18,6 @@ import java.io.File
 @Feature("PlayMode Action for Unity")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@Suppress("unused")
 abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
     override val testSolution
         get() = if (engineVersion.isTuanjie()) "TuanjieDebugAndUnitTesting/Project"
@@ -71,24 +70,31 @@ abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 }
 
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class PlayModeTestUnity2020 : PlayModeTest(Unity.V2020)
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class PlayModeTestUnity2022 : PlayModeTest(Unity.V2022) {
     init {
         addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
     }
 }
 
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class PlayModeTestUnity2023 : PlayModeTest(Unity.V2023) {
     init {
         addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
     }
 }
 
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class PlayModeTestUnity6 : PlayModeTest(Unity.V6)
 {
     init {
         addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
     }
 }
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 class PlayModeTestTuanjie2022 : PlayModeTest(Tuanjie.V2022)
