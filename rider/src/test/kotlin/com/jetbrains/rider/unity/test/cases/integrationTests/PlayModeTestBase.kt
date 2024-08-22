@@ -9,12 +9,10 @@ import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityPro
 import org.testng.annotations.Test
 import java.io.File
 
-abstract class PlayModeTestBase(private val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase() {
+abstract class PlayModeTestBase(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
     override val testSolution
         get() = if (engineVersion.isTuanjie()) "TuanjieDebugAndUnitTesting/Project"
         else "UnityDebugAndUnitTesting/Project"
-
-    override val majorVersion = this.engineVersion
 
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(PlayModeTestBase::class.simpleName!!)

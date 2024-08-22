@@ -6,7 +6,6 @@ import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.Severity
 import com.jetbrains.rider.test.annotations.SeverityLevel
-import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.Unity
 import java.io.File
 
@@ -14,7 +13,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity OldMono")
 @Severity(SeverityLevel.NORMAL)
-class DebuggerTestOldMono : DebuggerTestBase(Unity.V2022) {
+class DebuggerTestOldMono : DebuggerTest(Unity.V2022) {
     override val testSolution = "SimpleUnityProjectWithoutPlugin"
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)

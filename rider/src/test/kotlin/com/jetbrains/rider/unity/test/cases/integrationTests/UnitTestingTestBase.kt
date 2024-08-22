@@ -22,14 +22,12 @@ import java.io.File
 @Feature("Unit Testing in Unity solution with started Unity2020")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-abstract class UnitTestingTestBase(private val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase() {
+abstract class UnitTestingTestBase(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
     override val testSolution: String =
         if (engineVersion.isTuanjie())
             "TuanjieDebugAndUnitTesting/Project"
         else
             "UnityDebugAndUnitTesting/Project"
-    
-    override val majorVersion = this.engineVersion
 
     override val testClassDataDirectory: File
         get() = super.testClassDataDirectory.parentFile.combine(UnitTestingTestBase::class.simpleName!!)

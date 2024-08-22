@@ -19,13 +19,16 @@ import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 
-abstract class DotsDebuggerTestBase(private val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase() {
+@Subsystem(SubsystemConstants.UNITY_DEBUG)
+@Feature("Debug Unity Dots")
+@Severity(SeverityLevel.CRITICAL)
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
 
     override val testSolution = "UnityDotsDebug/Project"
-    override val majorVersion = this.engineVersion
 
     override val testClassDataDirectory: File
-        get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTestBase::class.simpleName!!)
+        get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTest::class.simpleName!!)
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
 
@@ -107,32 +110,27 @@ abstract class DotsDebuggerTestBase(private val engineVersion: EngineVersion) : 
     }
 }
 
-@Subsystem(SubsystemConstants.UNITY_DEBUG)
-@Feature("Debug Unity Dots")
-@Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DotsDebuggerTest {
-    class TestUnity2020 : DotsDebuggerTestBase(Unity.V2020) {
-        init {
-            addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
-            addMute(Mute("RIDER-105466"), ::removeAllUnityPausepoints)
-            addMute(Mute("RIDER-105466"), ::setUpTestCaseSolution)
-        }
+class DotsDebuggerestUnity2020 : DotsDebuggerTest(Unity.V2020) {
+    init {
+        addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-105466"), ::removeAllUnityPausepoints)
+        addMute(Mute("RIDER-105466"), ::setUpTestCaseSolution)
     }
-    class TestUnity2022 : DotsDebuggerTestBase(Unity.V2022) {
-        init {
-            addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
-        }
-    }
-    class TestUnity2023 : DotsDebuggerTestBase(Unity.V2023) {
-        init {
-            addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
-        }
-    }
-    class TestUnity6 : DotsDebuggerTestBase(Unity.V6) {
-        init {
-            addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
-        }
-    }
-
 }
+class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
+    init {
+        addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+    }
+}
+class DotsDebuggerTestUnity2023 : DotsDebuggerTest(Unity.V2023) {
+    init {
+        addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+    }
+}
+class DotsDebuggerTestUnity6 : DotsDebuggerTest(Unity.V6) {
+    init {
+        addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+    }
+}
+
+

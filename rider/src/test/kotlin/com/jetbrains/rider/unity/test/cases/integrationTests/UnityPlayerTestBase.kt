@@ -38,7 +38,7 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger
     override val testClassDataDirectory: File
-        get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTestBase::class.simpleName!!)
+        get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTest::class.simpleName!!)
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
     override val frontendBackendModel: FrontendBackendModel

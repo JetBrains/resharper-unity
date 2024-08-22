@@ -6,6 +6,10 @@ import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.facades.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.frameworkLogger
+import com.jetbrains.rider.test.framework.testData.InheritanceBasedTestDataStorage
+import com.jetbrains.rider.test.framework.testData.TestDataStorage
+import com.jetbrains.rider.test.suplementary.ITestSolution
+import com.jetbrains.rider.test.suplementary.RiderTestUtils.findSolutionFile
 import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.api.getEngineExecutableInstallationPath
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
@@ -20,19 +24,23 @@ import java.time.Duration
  * Class should be used when we want to start Unity Editor before Rider to get csproj/sln generated
  * IntegrationTestWithGeneratedSolutionBase always opens Rider first and expect sln files to exist in the test-data
  */
-abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGeneratedSolutionBase() {
+abstract class IntegrationTestWithUnityProjectBase(open val engineVersion: EngineVersion) : IntegrationTestWithGeneratedSolutionBase() {
     private lateinit var unityProjectPath: File
-    protected abstract val majorVersion: EngineVersion
-    private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(majorVersion) }
+
+    private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
     private val packageManifestPath = "/Packages/manifest.json"
     private val riderPackageTag = "{{VERSION}}"
 
+    override val customGoldSuffixes: List<String>
+        get() = listOf("_${engineVersion.version.lowercase()}")
+
     override val testGoldFile: File
-        get() = getUnityDependentGoldFile(majorVersion, super.testGoldFile).takeIf { it.exists() }
+        get() = getUnityDependentGoldFile(engineVersion, super.testGoldFile).takeIf { it.exists() }
                 ?: getUnityDependentGoldFile(
-                    majorVersion,
+                    engineVersion,
                     File(super.testGoldFile.path.replace(this::class.simpleName.toString(), ""))
                 )
+    override val testDataStorage: TestDataStorage by lazy { InheritanceBasedTestDataStorage(testStorage) }
 
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,

@@ -1,6 +1,6 @@
 {
   "dependencies": {
-      "com.unity.ide.rider": "{{VERSION}}",
+      "com.unity.ide.rider": "3.0.31",
       "com.unity.entities": "1.0.16",
       "com.unity.modules.uielements": "1.0.0",
       "com.unity.modules.physics": "1.0.0"

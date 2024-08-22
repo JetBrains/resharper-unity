@@ -588,13 +588,14 @@ fun attachDebuggerToUnityEditorAndPlay(
     project: Project,
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null
-) = attachDebuggerToUnityEditor(project, true, beforeRun, test, goldFile)
+    goldFile: File? = null,
+    customSuffixes: List<String> = emptyList()
+) = attachDebuggerToUnityEditor(project, true, beforeRun, test, goldFile, customSuffixes)
 
 fun BaseTestWithSolution.attachDebuggerToUnityEditorAndPlay(
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null) = attachDebuggerToUnityEditorAndPlay(project, beforeRun, test, goldFile)
+    goldFile: File? = null) = attachDebuggerToUnityEditorAndPlay(project, beforeRun, test, goldFile, customGoldSuffixes)
 
 fun attachDebuggerToUnityEditor(
     project: Project,
@@ -613,7 +614,8 @@ private fun attachDebuggerToUnityEditor(
     andPlay: Boolean,
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null
+    goldFile: File? = null,
+    customSuffixes: List<String> = emptyList()
 ) {
     selectRunConfiguration(
         project,
@@ -627,23 +629,14 @@ private fun attachDebuggerToUnityEditor(
     }
 
     if (goldFile != null) {
-        debugUnityProgramWithGold(project, goldFile, beforeRun, waitAndTest)
+        executeWithGold(goldFile, customSuffixes) {
+            debugProgram(project, it, beforeRun, test, {}, true)
+        }
     }
     else {
-        debugUnityProgramWithoutGold(project, beforeRun, waitAndTest)
+        debugProgram(project, NullPrintStream, beforeRun, test, {}, true)
     }
 }
-
-private fun debugUnityProgramWithGold(project: Project,
-                                      goldFile: File,
-                                      beforeRun: ExecutionEnvironment.() -> Unit = {},
-                                      test: DebugTestExecutionContext.() -> Unit) =
-    testDebugProgram(project, goldFile, beforeRun, test, {}, true)
-
-private fun debugUnityProgramWithoutGold(project: Project,
-                                         beforeRun: ExecutionEnvironment.() -> Unit = {},
-                                         test: DebugTestExecutionContext.() -> Unit) =
-    debugProgram(project, NullPrintStream, beforeRun, test, {}, true)
 
 fun toggleUnityPausepoint(project: Project,
                                                    projectFile: String,
@@ -693,11 +686,7 @@ private fun IntegrationTestWithFrontendBackendModel.selectUnitTestLaunchPreferen
 //region for Unity versions gold file
 
 fun getGoldFileUnityDependentSuffix(engineVersion: EngineVersion): String {
-    return when (engineVersion) {
-        //We can use it if we have different gold files for different Unity versions, now it's not needed
-        //UnityVersion.V2020 -> "_V${unityVersion.version}"
-        else -> ""
-    }
+    return "_${engineVersion.version.lowercase()}"
 }
 
 fun getUnityDependentGoldFile(engineVersion: EngineVersion, testFile: File): File {
