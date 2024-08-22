@@ -1,57 +1,36 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
+import com.jetbrains.rdclient.testFramework.waitForDaemon
+import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.Feature
-import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.annotations.Severity
-import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
+import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
+import com.jetbrains.rider.test.scriptingApi.changeFileContent
+import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
-import com.jetbrains.rider.unity.test.framework.api.preferStandaloneNUnitLauncherInTests
-import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
+import com.jetbrains.rider.unity.test.framework.EngineVersion
+import com.jetbrains.rider.unity.test.framework.Tuanjie
+import com.jetbrains.rider.unity.test.framework.Unity
+import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import org.testng.annotations.Test
 import java.io.File
 
 @Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
-@Feature("Unit Testing in Unity solution without started Unity")
+@Feature("Unit Testing in Unity solution with started Unity2020")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTest : IntegrationTestWithGeneratedSolutionBase() {
-    override val testSolution = "SimpleUnityUnitTestingProject"
+abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
+    override val testSolution: String =
+        if (engineVersion.isTuanjie())
+            "TuanjieDebugAndUnitTesting/Project"
+        else
+            "UnityDebugAndUnitTesting/Project"
 
-    override fun preprocessTempDirectory(tempDir: File) {
-        super.preprocessTempDirectory(tempDir)
-
-        val newTestScript = "NewTestScript.cs"
-        val sourceScript = testCaseSourceDirectory.resolve(newTestScript)
-        if (sourceScript.exists()) {
-            sourceScript.copyTo(tempDir.resolve("Assets").resolve("Tests").resolve(newTestScript), true)
-        }
-    }
-
-    @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-          description = "Check run all tests from solution")
-    fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
-
-    @Test(description = "Check test fixture and value source. RIDER-46658", enabled = false)
-    fun checkTestFixtureAndValueSourceTests() = testWithAllTestsInSolution(14, 16)
-
-    @Test(description = "Check Standalone NUnit launcher. RIDER-49891", enabled = false)
-    fun checkStandaloneNUnitLauncher() {
-        preferStandaloneNUnitLauncherInTests()
-        testWithAllTestsInSolution(5)
-    }
-
-    @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-          description = "Check run all tests from project")
+    @Test(description="Check run all tests from project with Unity2020")
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
-            // workaround the situation, when at first assenblies are not compiled, so discovery returns nothing
-            // later Unity compiles assemblies, but discovery would not start again, till solution reload
-            val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-            waitForDiscoveringWorkaround(file, 5, it)
+            it.waitForDiscovering()
 
             val session = it.runAllTestsInProject(
                 "Tests",
@@ -63,20 +42,47 @@ class UnitTestingTest : IntegrationTestWithGeneratedSolutionBase() {
         }
     }
 
-    private fun testWithAllTestsInSolution(discoveringElements: Int,
-                                           sessionElements: Int = discoveringElements,
-                                           successfulTests: Int = sessionElements) {
-        withUtFacade(project) {
-            val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-            waitForDiscoveringWorkaround(file, 5, it)
+    //@Mute("RIDER-95762")
+    @Test(description = "RIDER-54359. Check refresh assets before Test")
+    fun checkRefreshBeforeTest() {
+        val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
+        withOpenedEditor(project, file.absolutePath) { // the nature of exploration for Unity requires file to be opened
+            withUtFacade(project!!) {
+                it.waitForDiscovering()
+                it.runAllTestsInProject(
+                    "Tests",
+                    5,
+                    RiderUnitTestScriptingFacade.defaultTimeout,
+                    5
+                )
 
-            val session = it.runAllTestsInSolution(
-                sessionElements,
-                RiderUnitTestScriptingFacade.defaultTimeout,
-                successfulTests,
-                testGoldFile
-            )
-            it.compareSessionTreeWithGold(session, testGoldFile)
+                it.closeAllSessions()
+
+                changeFileContent(project, file) {
+                    it.replace("NewTestScriptSimplePasses(", "NewTestScriptSimplePasses2(")
+                }
+
+                this.waitForDaemon()
+
+                it.activateExplorer()
+                it.waitForDiscovering()
+
+                val session2 = it.runAllTestsInProject(
+                    "Tests",
+                    5,
+                    RiderUnitTestScriptingFacade.defaultTimeout,
+                    5
+                )
+                it.compareSessionTreeWithGold(session2, testGoldFile)
+            }
         }
     }
 }
+
+
+class UnitTestingTestUnity2020 : UnitTestingTest(Unity.V2020)
+class UnitTestingTestUnity2022 : UnitTestingTest(Unity.V2022)
+class UnitTestingTestUnity2023 : UnitTestingTest(Unity.V2023)
+class UnitTestingTestUnity6 : UnitTestingTest(Unity.V6)
+@Mute("RIDER-113191")
+class UnitTestingTestTuanjie2022 : UnitTestingTest(Tuanjie.V2022)

@@ -27,11 +27,6 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
 
     override val testSolution = "UnityDotsDebug/Project"
 
-    override val testClassDataDirectory: File
-        get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTest::class.simpleName!!)
-    override val testCaseSourceDirectory: File
-        get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
-
     @Test
     fun checkBreakpointInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(

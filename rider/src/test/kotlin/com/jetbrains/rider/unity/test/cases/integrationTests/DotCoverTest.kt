@@ -17,16 +17,6 @@ class DotCoverTest : IntegrationTestWithGeneratedSolutionBase() {
     override val withCoverage: Boolean
         get() = true
 
-    override fun preprocessTempDirectory(tempDir: File) {
-        super.preprocessTempDirectory(tempDir)
-
-        val newTestScript = "NewTestScript.cs"
-        val sourceScript = testCaseSourceDirectory.resolve(newTestScript)
-        if (sourceScript.exists()) {
-            sourceScript.copyTo(tempDir.resolve("Assets").resolve("Tests").resolve(newTestScript), true)
-        }
-    }
-
     @Test(description = "Check coverage of all tests from Unity solution", enabled = false) // Disabled until merge changes in "Start Unity with Coverage" action
     fun checkCoverAllTestsFromSolution() {
         buildSolutionWithReSharperBuild()

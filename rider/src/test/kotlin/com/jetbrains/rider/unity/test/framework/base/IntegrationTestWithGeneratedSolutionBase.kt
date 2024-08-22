@@ -30,6 +30,16 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
 
     private lateinit var unityProcessHandle: ProcessHandle
 
+    override fun preprocessTempDirectory(tempDir: File) {
+        super.preprocessTempDirectory(tempDir)
+
+        val newBehaviourScript = "NewBehaviourScript.cs"
+        val sourceScript = testCaseSourceDirectory.resolve(newBehaviourScript)
+        if (sourceScript.exists()) {
+            sourceScript.copyTo(tempDir.resolve("Assets").resolve(newBehaviourScript), true)
+        }
+    }
+
     @BeforeMethod
     open fun startUnityProcessAndWait() {
         val unityTestEnvironment = testMethod.unityEnvironment

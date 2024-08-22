@@ -37,21 +37,6 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
         else 
             "UnityDebugAndUnitTesting/Project"
 
-    override val testClassDataDirectory: File
-        get() = super.testClassDataDirectory.parentFile.combine(DebuggerTest::class.simpleName!!)
-    override val testCaseSourceDirectory: File
-        get() = testClassDataDirectory.combine(super.testStorage.testMethod.name).combine("source")
-
-    override fun preprocessTempDirectory(tempDir: File) {
-        super.preprocessTempDirectory(tempDir)
-
-        val newBehaviourScript = "NewBehaviourScript.cs"
-        val sourceScript = testCaseSourceDirectory.resolve(newBehaviourScript)
-        if (sourceScript.exists()) {
-            sourceScript.copyTo(tempDir.resolve("Assets").resolve(newBehaviourScript), true)
-        }
-    }
-
     @Test
     fun checkBreakpoint() {
         attachDebuggerToUnityEditorAndPlay(
@@ -182,4 +167,4 @@ class DebuggerTestUnity2022 : DebuggerTest(Unity.V2022)
 class DebuggerTestUnity2023 : DebuggerTest(Unity.V2023)
 class DebuggerTestUnity6 : DebuggerTest(Unity.V6)
 @Mute("RIDER-113191")
-class TestTuanjie2022 : DebuggerTest (Tuanjie.V2022)
+class DebuggerTestTuanjie2022 : DebuggerTest (Tuanjie.V2022)
