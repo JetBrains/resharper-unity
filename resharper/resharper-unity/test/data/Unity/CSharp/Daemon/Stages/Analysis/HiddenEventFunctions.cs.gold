@@ -57,7 +57,7 @@ public class Derived : Base
 
 ---------------------------------------------------------
 (0): ReSharper Warning: Incorrect method parameters. Expected '(float[] data, int channels)'
-(1): ReSharper Hides: Hides event function from class 'Base' (Click to navigate)
-(2): ReSharper Hides: Hides event function from class 'Base' (Click to navigate)
-(3): ReSharper Hides: Hides event function from class 'Base' (Click to navigate)
-(4): ReSharper Hides: Hides Unity event function from class 'Base' (Click to navigate)
+(1): ReSharper Hides: Hides event function from 'Base' class
+(2): ReSharper Hides: Hides event function from 'Base' class
+(3): ReSharper Hides: Hides event function from 'Base' class
+(4): ReSharper Hides: Hides Unity event function from 'Base' class
