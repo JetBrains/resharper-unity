@@ -54,6 +54,8 @@ Project [Name:AsmdefResponse.Player, GUID:GUID]
             ProjectFileImpl(Path : AsmdefResponse.asmdef)[NONE ]
             ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
             Folder [Name:NewDirectory1]
+              Child items:
+                ProjectFileImpl(Path : Class1.cs)[COMPILE ]
 
 Project [Name:AsmdefResponse2, GUID:GUID]
   Child items:
@@ -104,7 +106,6 @@ Project [Name:Assembly-CSharp.Player, GUID:GUID]
     ProjectFileImpl(Path : Assembly-CSharp.Player.csproj)[]
     Folder [Name:Assets]
       Child items:
-        ProjectFileImpl(Path : Class1.cs)[COMPILE ]
         Folder [Name:Dir1]
           Child items:
             ProjectFileImpl(Path : ClassInDir1.cs)[COMPILE ]
