@@ -1,10 +1,11 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.Application.Parts;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IPreprocessorDirective), HighlightingTypes = new[]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IPreprocessorDirective), HighlightingTypes = new[]
     {
         typeof(ShaderLabPreprocessorDirectiveError),
         typeof(ShaderLabPreprocessorDirectiveWarning),

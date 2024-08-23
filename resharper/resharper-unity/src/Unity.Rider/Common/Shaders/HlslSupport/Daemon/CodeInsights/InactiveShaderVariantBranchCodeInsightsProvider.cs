@@ -15,7 +15,7 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.Shaders.HlslSupport.Daemon.CodeInsights;
 
-[ShellComponent(InstantiationEx.LegacyDefault)]
+[ShellComponent(Instantiation.DemandAnyThreadUnsafe)]
 public class InactiveShaderVariantBranchCodeInsightsProvider : ICodeInsightsProvider, IInactiveShaderBranchHighlightFactory
 {
     public string ProviderId => "Unity inactive shader variant branch";

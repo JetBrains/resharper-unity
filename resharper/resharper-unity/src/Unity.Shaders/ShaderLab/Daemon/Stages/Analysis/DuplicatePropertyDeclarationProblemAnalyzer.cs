@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.Application.Parts;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 using JetBrains.Util;
@@ -6,7 +7,7 @@ using IPropertyDeclaration = JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IPropertiesValue), HighlightingTypes = new[] { typeof(ShaderLabFirstDuplicatePropertyWarning), typeof(ShaderLabSubsequentDuplicatePropertyWarning)})]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IPropertiesValue), HighlightingTypes = new[] { typeof(ShaderLabFirstDuplicatePropertyWarning), typeof(ShaderLabSubsequentDuplicatePropertyWarning)})]
     public class DuplicatePropertyDeclarationProblemAnalyzer : ShaderLabElementProblemAnalyzer<IPropertiesValue>
     {
         protected override void Analyze(IPropertiesValue element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

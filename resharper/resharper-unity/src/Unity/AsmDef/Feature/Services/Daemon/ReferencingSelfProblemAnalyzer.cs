@@ -1,4 +1,5 @@
-﻿using JetBrains.ProjectModel;
+﻿using JetBrains.Application.Parts;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
@@ -10,7 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
-    [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IJsonNewLiteralExpression),
                             HighlightingTypes = new[] { typeof(ReferencingSelfError) })]
     public class ReferencingSelfProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {

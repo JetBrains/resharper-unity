@@ -1,10 +1,11 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.Application.Parts;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IInvalidVariableReferenceParameters), HighlightingTypes = new[] { typeof(ShaderLabInvalidVariableReferenceParametersWarning)})]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IInvalidVariableReferenceParameters), HighlightingTypes = new[] { typeof(ShaderLabInvalidVariableReferenceParametersWarning)})]
     public class InvalidParametersOnVariableReferenceAnalyzer : ShaderLabElementProblemAnalyzer<IInvalidVariableReferenceParameters>
     {
         protected override void Analyze(IInvalidVariableReferenceParameters element, ElementProblemAnalyzerData data,

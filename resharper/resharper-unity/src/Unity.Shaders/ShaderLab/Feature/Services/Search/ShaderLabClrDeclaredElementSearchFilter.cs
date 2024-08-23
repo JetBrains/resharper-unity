@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.Search;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Search;
 
-[PsiComponent(InstantiationEx.LegacyDefault)]
+[PsiComponent(Instantiation.DemandAnyThreadUnsafe)]
 public class ShaderLabClrDeclaredElementSearchFilter : ISearchFilter
 {
     public SearchFilterKind Kind => SearchFilterKind.Language;

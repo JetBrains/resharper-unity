@@ -9,7 +9,7 @@ using JetBrains.Rider.Backend.Features.Settings.Layers.ExportImportWorkaround;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Settings.Layers.ExportImportWorkaround
 {
-    [ShellComponent(InstantiationEx.LegacyDefault)]
+    [ShellComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnitySettingsCategoryProvider : IExportableSettingsCategoryProvider
     {
         private readonly Dictionary<string, Type[]> myCategoryToKeys = new Dictionary<string, Type[]>

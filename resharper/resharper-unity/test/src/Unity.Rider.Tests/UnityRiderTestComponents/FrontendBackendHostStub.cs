@@ -6,7 +6,7 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRiderTestComponents
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class FrontendBackendHostStub : IFrontendBackendHost
     {
         public void Do(Action<FrontendBackendModel> action)
@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRiderTestComponents
         }
     }
 
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class BackendUnityHostStub : IBackendUnityHost
     {
         public bool IsConnectionEstablished()
