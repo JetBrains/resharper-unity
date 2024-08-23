@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {
     // TODO remove in 19.2 
-    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
+    [ShellComponent(Instantiation.ContainerSyncPrimaryThread)]
     public class ConfigurableSeverityHacks
     {
         [NotNull] private static readonly Severity[] ourSeverities = {
