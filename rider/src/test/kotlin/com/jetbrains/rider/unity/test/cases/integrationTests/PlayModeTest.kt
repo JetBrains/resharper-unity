@@ -2,7 +2,6 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.rebuildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.replaceFileContent
@@ -12,7 +11,6 @@ import com.jetbrains.rider.unity.test.framework.Unity
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import org.testng.annotations.Test
-import java.io.File
 
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("PlayMode Action for Unity")

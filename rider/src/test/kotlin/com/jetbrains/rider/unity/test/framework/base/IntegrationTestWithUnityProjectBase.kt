@@ -40,7 +40,7 @@ abstract class IntegrationTestWithUnityProjectBase(open val engineVersion: Engin
                     engineVersion,
                     File(super.testGoldFile.path.replace(this::class.simpleName.toString(), ""))
                 )
-    override val testDataStorage: TestDataStorage by lazy { InheritanceBasedTestDataStorage(testStorage) }
+    override val testDataStorage: TestDataStorage by lazy { InheritanceBasedTestDataStorage(testProcessor) }
 
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,

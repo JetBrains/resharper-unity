@@ -1,12 +1,14 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
+import com.jetbrains.rider.test.annotations.Feature
+import com.jetbrains.rider.test.annotations.Severity
+import com.jetbrains.rider.test.annotations.SeverityLevel
+import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.*
-import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.withDcFacade
+import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
 import org.testng.annotations.Test
-import java.io.File
 
 @Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
 @Feature("DotCover in Unity")

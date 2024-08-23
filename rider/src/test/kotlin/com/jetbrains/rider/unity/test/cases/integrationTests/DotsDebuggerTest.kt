@@ -8,7 +8,6 @@ import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreak
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.unity.test.framework.Unity
@@ -17,7 +16,6 @@ import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityPro
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
-import java.io.File
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Dots")
