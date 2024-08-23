@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Cpp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -24,7 +25,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
-[DaemonStage(StagesBefore = [typeof(GlobalFileStructureCollectorStage), typeof(CppIdentifierHighlightingStage)])]
+[DaemonStage(Instantiation.DemandAnyThreadUnsafe, StagesBefore = [typeof(GlobalFileStructureCollectorStage), typeof(CppIdentifierHighlightingStage)])]
 public class ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, ShaderProgramCache shaderProgramCache, UnitySolutionTracker unitySolutionTracker, ShaderVariantsManager shaderVariantsManager, IInactiveShaderBranchHighlightFactory? inactiveShaderBranchHighlightFactory = null)
     : CppDaemonStageBase(elementProblemAnalyzerRegistrar)
 {
