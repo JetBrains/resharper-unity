@@ -44,17 +44,17 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     )
 
     @Test(description = "Unity base code vision test", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "FindUsages_05_2018")
+    @Solution("FindUsages_05_2018")
     fun baseTest(caseName: String, showProperties: String) = doUnityTest(showProperties,
             "Assets/NewBehaviourScript.cs") { false }
 
     @Test(description = "Unity property code vision test", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "RiderSample")
+    @Solution("RiderSample")
     fun propertyCodeVision(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
     @Test(description = "Unity property code vision test with typing", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "RiderSample")
+    @Solution("RiderSample")
     fun propertyCodeVisionWithTyping(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") {
         typeFromOffset("1", 577)
@@ -63,17 +63,17 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     }
 
     @Test(description = "Unity base code vision  test with yaml off", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "FindUsages_05_2018")
+    @Solution("FindUsages_05_2018")
     fun baseTestYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/NewBehaviourScript.cs") { false }
 
     @Test(description = "Unity property code vision test with yaml off", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "RiderSample")
+    @Solution("RiderSample")
     fun propertyCodeVisionYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
     @Test(description = "Unity property code vision test with yaml off and typing", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "RiderSample")
+    @Solution("RiderSample")
     fun propertyCodeVisionWithTypingYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") {
         typeFromOffset("1", 577)
@@ -81,7 +81,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     }
 
     @Test(description = "Unity property scriptable object code vision test", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "RiderSample")
+    @Solution("RiderSample")
     fun propertyCodeVisionScriptableObject(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/TestScriptableObject.cs") {
         true
@@ -90,35 +90,35 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     // I am not sure, how implement counter without estimated `+` sign
     // Tests for fixing current behaviour only
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Solution("PrefabModificationTestSolution")
     fun prefabModifications01(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script1.cs") {
         true
     }
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Solution("PrefabModificationTestSolution")
     fun prefabModifications02(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script2.cs") {
         true
     }
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Solution("PrefabModificationTestSolution")
     fun prefabModifications03(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script3.cs") {
         true
     }
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Solution("PrefabModificationTestSolution")
     fun prefabModifications04(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script4.cs") {
         true
     }
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
-    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Solution("PrefabModificationTestSolution")
     fun prefabModifications05(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script5.cs") {
         true

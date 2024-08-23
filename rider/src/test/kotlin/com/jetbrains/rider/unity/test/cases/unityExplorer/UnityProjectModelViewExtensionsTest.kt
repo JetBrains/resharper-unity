@@ -59,7 +59,6 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test(description = "Rename a folder in the project")
-    @TestEnvironment
     fun testRenameFolder() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -77,7 +76,6 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test(description = "Rename a folder in the project")
-    @TestEnvironment
     fun testRenameFolder2() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -90,7 +88,6 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test(description = "Rename a folder in the project")
-    @TestEnvironment
     fun testRenameFolder3() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
