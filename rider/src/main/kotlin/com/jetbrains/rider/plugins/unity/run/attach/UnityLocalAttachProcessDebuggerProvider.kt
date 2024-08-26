@@ -6,10 +6,11 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.util.getOrCreateUserData
 import com.intellij.xdebugger.attach.*
+import com.jetbrains.rider.debugger.attach.mono.MonoDebuggersProvider
 import com.jetbrains.rider.plugins.unity.run.UnityLocalProcessExtraDetails
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 
-class UnityLocalAttachProcessDebuggerProvider : XAttachDebuggerProvider {
+class UnityLocalAttachProcessDebuggerProvider : XAttachDebuggerProvider, MonoDebuggersProvider {
 
     companion object {
         val PROCESS_INFO_KEY: Key<MutableMap<Int, UnityLocalProcessExtraDetails>> = Key("UnityProcess::Info")
