@@ -1,12 +1,9 @@
 package com.jetbrains.rider.unity.test.framework.base
 
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
-import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
-import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
-import com.jetbrains.rider.test.scriptingApi.waitBackendDocumentChange
-import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.unity.unityEnvironment
 import com.jetbrains.rider.unity.test.framework.api.*
-import com.jetbrains.rider.unity.test.framework.unityEnvironment
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File

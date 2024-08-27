@@ -11,8 +11,8 @@ import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.unity.test.framework.EngineVersion
-import com.jetbrains.rider.unity.test.framework.Unity
+import com.jetbrains.rider.test.unity.EngineVersion
+import com.jetbrains.rider.test.unity.Unity
 import com.jetbrains.rider.unity.test.framework.api.*
 import org.testng.annotations.Test
 import java.time.Duration

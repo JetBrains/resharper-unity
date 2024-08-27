@@ -72,45 +72,9 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //endregion
 
-//region UnityDll
 
-val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-06-09-2023.zip")
-
-fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {
-    prepareAssemblies(activeSolutionDirectory)
-    refreshFileSystem(project)
-}
-
-fun prepareAssemblies(activeSolutionDirectory: File) {
-    //moving all UnityEngine* and UnityEditor*, netstandard and mscorlib ref-asm dlls to test solution folder
-    for (file in unity2022_2_15f1_ref_asm.root.listFiles()!!) {
-        val target = activeSolutionDirectory.combine(file.name)
-        file.copyTo(target)
-    }
-}
-
-//endregion
 
 //region Connection
-
-fun createLibraryFolderIfNotExist(solutionDirectory: File) {
-    // Needed, because com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher
-    //  isn't initialized without correct unity file structure
-    val libraryFolder = Paths.get(solutionDirectory.toString(), "Library")
-    if (libraryFolder.notExists()) {
-        Files.createDirectory(libraryFolder)
-    }
-}
-
-fun replaceUnityVersionOnCurrent(project: Project) {
-    val projectVersionFile = project.solutionDirectory.resolve("ProjectSettings/ProjectVersion.txt")
-    val oldVersion = projectVersionFile.readText().split(Regex("\\s+"))[1]
-
-    val newVersion = UnityInstallationFinder.getInstance(project).getApplicationVersion()
-
-    frameworkLogger.info("Replace unity project version '$oldVersion' by '$newVersion'")
-    projectVersionFile.writeText("m_EditorVersion: $newVersion")
-}
 
 fun IntegrationTestWithFrontendBackendModel.activateRiderFrontendTest() {
     frameworkLogger.info("Set frontendBackendModel.riderFrontendTests = true")
@@ -118,83 +82,6 @@ fun IntegrationTestWithFrontendBackendModel.activateRiderFrontendTest() {
         frontendBackendModel.riderFrontendTests.set(true)
     }
 }
-
-fun allowUnityPathVfsRootAccess(lifetimeDefinition: LifetimeDefinition) {
-    val unityPath = when {
-        SystemInfo.isWindows -> "C:/Program Files/Unity"
-        SystemInfo.isMac -> "/Applications/Unity"
-        else -> throw Exception("Not implemented")
-    }
-    VfsRootAccess.allowRootAccess(lifetimeDefinition.createNestedDisposable("Unity path disposable"), unityPath)
-}
-fun getEngineExecutableInstallationPath(engineVersion: EngineVersion): File {
-    return when {
-        engineVersion.isTuanjie() -> getEngineExecutable("Tuanjie", engineVersion)
-        else -> getEngineExecutable("Unity", engineVersion)
-    }
-}
-
-private fun getUnityDefaultPaths(): List<String> = when {
-    SystemInfo.isWindows -> listOf("C:/Program Files/Unity/Hub/Editor/")
-    SystemInfo.isMac -> listOf("/Applications/Unity/Hub/Editor/")
-    SystemInfo.isLinux -> listOf(
-        "${System.getProperty("user.home")}",
-        "${System.getProperty("user.home")}/Unity/Hub/Editor",
-        "/opt/Unity/Hub/Editor"
-    )
-    else -> throw Exception("Unknown OS while detecting Unity Editor path")
-}
-
-private fun getTuanjieDefaultPaths(): List<String> = when {
-    SystemInfo.isWindows -> listOf("C:/Program Files/Tuanjie")
-    SystemInfo.isMac -> listOf("/Applications/Tuanjie")
-    SystemInfo.isLinux -> listOf(
-        "${System.getProperty("user.home")}",
-        "${System.getProperty("user.home")}/Tuanjie",
-        "/opt/Tuanjie"
-    )
-    else -> throw Exception("Unknown OS while detecting Tuanjie Editor path")
-}
-
-private fun getExecutablePath(engineName: String, editorDirPath: File): String = when {
-    SystemInfo.isWindows -> "${editorDirPath.canonicalPath}/Editor/${engineName}.exe"
-    SystemInfo.isMac -> "${editorDirPath.canonicalPath}/${engineName}.app"
-    SystemInfo.isLinux -> "${editorDirPath.canonicalPath}/Editor/${engineName}"
-    else -> throw Exception("Unknown OS while detecting ${engineName} Editor path")
-}
-
-private fun getEngineExecutable(engineName: String, version: EngineVersion): File {
-    val defaultEnginePaths = when {
-        version.isTuanjie() -> getTuanjieDefaultPaths()
-        else -> getUnityDefaultPaths()
-    }
-    val potentialEditors = mutableListOf<File>()
-    defaultEnginePaths.forEach { path ->
-        potentialEditors.addAll(
-            File(path).walk().maxDepth(1).filter { file -> file.isDirectory && (file.name.contains(version.version) || file.name.contains(engineName)) })
-    }
-    if (potentialEditors.isNullOrEmpty()) {
-        frameworkLogger.error(
-            "Could not find suitable ${engineName} Editor in the default paths, please install $version in one of the default locations:\n" +
-            "${defaultEnginePaths.joinToString { it }}")
-    }
-    val editorDirPath = when {
-        version.isTuanjie() -> potentialEditors.first()
-        else -> potentialEditors.sortedWith { unity, otherUnity ->
-            VersionComparatorUtil.compare(unity.name, otherUnity.name)
-        }.last()
-    }
-
-    val editorExecutablePath = getExecutablePath(engineName, editorDirPath)
-    val editorExecutable = File(UnityInstallationFinder.getOsSpecificPath(Path(editorExecutablePath)).toString())
-    if (!editorExecutable.exists()) {
-        frameworkLogger.error(
-            "Could not find ${engineName} Editor in the default paths, please install $version in one of the default locations:\n" +
-            "${defaultEnginePaths.joinToString { it }}")
-    }
-    return editorExecutable
-}
-
 
 fun startUnity(project: Project,
                logPath: File,
@@ -275,28 +162,6 @@ private fun startUnity(args: MutableList<String>,
     frameworkLogger.info("Unity process started [pid: ${processHandle.pid()}]")
 
     return processHandle
-}
-
-fun getUnityProcessHandle(project: Project): ProcessHandle {
-    val unityApplicationData = project.solution.frontendBackendModel.unityApplicationData
-    waitAndPump(unityDefaultTimeout, { unityApplicationData.valueOrNull?.unityProcessId != null }) { "Can't get unity process id" }
-    return ProcessHandle.of(unityApplicationData.valueOrNull?.unityProcessId!!.toLong()).get()
-}
-
-fun getRiderDevAppPath(): File {
-    val editorPluginFolderPath = UnityPluginEnvironment.getBundledFile("EditorPlugin")
-    val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
-
-    val riderDevAppPath = editorPluginFolderPath.resolve("rider-dev.app").apply { mkdirs() }
-    val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
-
-    val file = editorPluginFolderPath.resolve(assemblyName)
-    if (!file.exists())
-        throw IllegalStateException("editor plugin $file doesn't exist")
-
-    riderDevBatPath.writeText(file.canonicalPath)
-
-    return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
 }
 
 fun TestProcessor<*>.startUnity(project: Project,

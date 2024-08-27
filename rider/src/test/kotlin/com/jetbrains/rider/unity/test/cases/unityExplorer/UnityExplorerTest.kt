@@ -11,7 +11,10 @@ import com.jetbrains.rider.test.base.BaseTestWithShell
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.TemplateType
+import com.jetbrains.rider.test.scriptingApi.prepareAssemblies
+import com.jetbrains.rider.test.scriptingApi.prepareProjectView
+import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import com.jetbrains.rider.unity.test.framework.api.*
 import org.testng.annotations.Test
 import java.time.Duration
@@ -49,7 +52,7 @@ class UnityExplorerTest : BaseTestWithShell() {
     @Test(description="Add a new folder and script to the project")
     fun testUnityExplorer01() {
         val params = OpenSolutionParams()
-        withSolution("SimpleUnityProject", params) {
+        withSolution("SimpleUnityProject", params) { project ->
             prepareProjectView(project)
             testProjectModel(testGoldFile, project, false) {
                 withUnityExplorerPane(project, showTildeFolders = false) {
@@ -84,12 +87,12 @@ class UnityExplorerTest : BaseTestWithShell() {
     fun test_project_loading_with_special_folder() { // infinite loading caused by a "..\\" folder
         withSolution("AnimImplicitUsageTest", OpenSolutionParams().apply {
             preprocessTempDirectory = {
-                prepareAssemblies(it)
+                prepareAssemblies(activeSolutionDirectory)
                 val processBuilder = ProcessBuilder("mkdir", "..\\")
                 processBuilder.directory(it.resolve("Assets"))
                 processBuilder.start()
             }
-        }) {
+        }) { project ->
             prepareProjectView(project)
             waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false) },
                         Duration.ofSeconds(10), { "Deferred caches are not completed" })

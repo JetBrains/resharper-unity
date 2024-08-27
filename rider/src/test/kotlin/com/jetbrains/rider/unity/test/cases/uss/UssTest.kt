@@ -1,10 +1,10 @@
-import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.getHighlighters
+import com.jetbrains.rider.test.scriptingApi.prepareAssemblies
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import org.testng.annotations.Test
 import java.io.File

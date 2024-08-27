@@ -8,11 +8,12 @@ import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.framework.testData.InheritanceBasedTestDataStorage
 import com.jetbrains.rider.test.framework.testData.TestDataStorage
+import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
+import com.jetbrains.rider.test.scriptingApi.getUnityDependentGoldFile
 import com.jetbrains.rider.test.suplementary.ITestSolution
 import com.jetbrains.rider.test.suplementary.RiderTestUtils.findSolutionFile
-import com.jetbrains.rider.unity.test.framework.EngineVersion
-import com.jetbrains.rider.unity.test.framework.api.getEngineExecutableInstallationPath
-import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
+import com.jetbrains.rider.test.unity.EngineVersion
+import com.jetbrains.rider.test.unity.riderPackageVersion
 import com.jetbrains.rider.unity.test.framework.api.startUnity
 import com.jetbrains.rider.unity.test.framework.riderPackageVersion
 import org.testng.annotations.BeforeMethod
@@ -24,30 +25,26 @@ import java.time.Duration
  * Class should be used when we want to start Unity Editor before Rider to get csproj/sln generated
  * IntegrationTestWithGeneratedSolutionBase always opens Rider first and expect sln files to exist in the test-data
  */
-abstract class IntegrationTestWithUnityProjectBase(open val engineVersion: EngineVersion) : IntegrationTestWithGeneratedSolutionBase() {
+abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGeneratedSolutionBase() {
     private lateinit var unityProjectPath: File
-
-    private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
+    protected abstract val majorVersion: EngineVersion
+    private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(majorVersion) }
     private val packageManifestPath = "/Packages/manifest.json"
     private val riderPackageTag = "{{VERSION}}"
 
-    override val customGoldSuffixes: List<String>
-        get() = listOf("_${engineVersion.version.lowercase()}")
-
     override val testGoldFile: File
-        get() = getUnityDependentGoldFile(engineVersion, super.testGoldFile).takeIf { it.exists() }
+        get() = getUnityDependentGoldFile(majorVersion, super.testGoldFile).takeIf { it.exists() }
                 ?: getUnityDependentGoldFile(
-                    engineVersion,
+                    majorVersion,
                     File(super.testGoldFile.path.replace(this::class.simpleName.toString(), ""))
                 )
-    override val testDataStorage: TestDataStorage by lazy { InheritanceBasedTestDataStorage(testProcessor) }
 
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,
         filter: ((File) -> Boolean)? = null
     ): File {
         val solutionName: String = File(solutionDirectoryName).name
-        val workDirectory = File(testWorkDirectory, solutionName)
+        val workDirectory = File(tempTestDirectory, solutionName)
         val sourceDirectory = File(solutionSourceRootDirectory, solutionDirectoryName)
         // Copy solution from sources
         FileUtil.copyDir(sourceDirectory, workDirectory, filter)
@@ -100,7 +97,12 @@ abstract class IntegrationTestWithUnityProjectBase(open val engineVersion: Engin
         file.writeText(updatedContent)
     }
 
-    override val solutionApiFacade: SolutionApiFacade by lazy { RiderExistingSolutionApiFacade() }
+    override fun prepareSolution(solution: ITestSolution, params: OpenSolutionParams): File {
+        activeSolution = solution.name
+        val solutionFile = findSolutionFile(activeSolutionDirectory, params.overrideSolutionName ?: solution.slnName)
+        params.preprocessTempDirectory?.invoke(activeSolutionDirectory)
+        return if (params.preprocessSolutionFile != null) params.preprocessSolutionFile?.invoke(solutionFile)!! else solutionFile
+    }
     
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {

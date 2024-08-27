@@ -6,7 +6,7 @@ import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.Severity
 import com.jetbrains.rider.test.annotations.SeverityLevel
-import com.jetbrains.rider.unity.test.framework.Unity
+import com.jetbrains.rider.test.unity.Unity
 import java.io.File
 
 @Mute("RIDER-67296")

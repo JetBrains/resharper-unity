@@ -1,5 +1,4 @@
 package com.jetbrains.rider.unity.test.cases
-import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
@@ -11,10 +10,7 @@ import com.jetbrains.rider.test.base.RefactoringsTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
-import com.jetbrains.rider.test.scriptingApi.callAltEnterMenu
-import com.jetbrains.rider.test.scriptingApi.executeItemByPrefix
-import com.jetbrains.rider.test.scriptingApi.waitBackendDocumentChange
-import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File

@@ -1,6 +1,5 @@
 package com.jetbrains.rider.unity.test.framework.base
 
-import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump

@@ -1,5 +1,4 @@
 package com.jetbrains.rider.unity.test.cases
-import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
@@ -18,10 +17,7 @@ import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
-import com.jetbrains.rider.test.scriptingApi.assertLookupContains
-import com.jetbrains.rider.test.scriptingApi.assertLookupNotContains
-import com.jetbrains.rider.test.scriptingApi.typeWithLatency
-import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test

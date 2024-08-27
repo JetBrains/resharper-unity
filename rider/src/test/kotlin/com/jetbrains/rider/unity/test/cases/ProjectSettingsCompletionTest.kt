@@ -1,6 +1,5 @@
 package com.jetbrains.rider.unity.test.cases
 import com.jetbrains.rider.unity.test.framework.SettingsHelper
-import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags

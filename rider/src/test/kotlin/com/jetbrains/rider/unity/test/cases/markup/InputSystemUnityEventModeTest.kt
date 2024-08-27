@@ -1,6 +1,5 @@
 package com.jetbrains.rider.unity.test.cases.markup
 
-import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.daemon.util.annotateDocumentWithHighlighterTags
@@ -15,6 +14,7 @@ import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.runSweaAndGetResults
 import com.jetbrains.rider.test.scriptingApi.markupContributor
+import com.jetbrains.rider.test.scriptingApi.prepareAssemblies
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import org.testng.annotations.Test
 import java.io.File
