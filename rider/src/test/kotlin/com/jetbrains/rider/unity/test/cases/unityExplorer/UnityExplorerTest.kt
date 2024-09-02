@@ -23,7 +23,7 @@ import java.time.Duration
 class UnityExplorerTest : BaseTestWithShell() {
 
     @Test(description = "Add a new item with multiple backends")
-    @Mute("RIDER-101228", platforms = [PlatformType.WINDOWS_ALL])
+    @Mute("RIDER-101228")
     @Issue("RIDER-70098 Rider adds Unity meta files in a non-Unity project")
     @TestEnvironment(allowMultipleBackends = true)
     fun testMultipleBackendsAddNewItem() {
