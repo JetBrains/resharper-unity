@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Errors language="C#" configurableSeverityImplementationLanguage="CSHARP" baseClass="CSharpUnityHighlightingBase" baseInterfaces="IUnityAnalyzerHighlighting">
   <Usings>
+    JetBrains.ReSharper.Psi.Pointers;
     JetBrains.ReSharper.Psi.CSharp;
     JetBrains.ReSharper.Psi.CSharp.Tree;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -528,10 +529,10 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
-  <Warning name="RedundantAttributeOnTarget" configurableSeverity="Unity.RedundantAttributeOnTarget">
+  <Warning name="RedundantAttributeOnTarget" configurableSeverity="Unity.RedundantAttributeOnTarget" supportsPointer="true">
     <Parameter type="IAttribute" name="attribute" />
     <Parameter type="ITypeElement" name="attributeType" />
-    <Parameter type="System.AttributeTargets" name="validTargets" isValid="skip" />
+    <Parameter type="System.AttributeTargets" name="validTargets" isValid="skip" pointer="skip" />
     <Message resourceName="AttributeIsRedundantOnThisDeclarationTypeItIsOnlyUsedWhenAppliedToDeclarationsMessage" resourceType="Strings">
       <Argument>DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, AttributeType).Text</Argument>
       <Argument>ValidTargets</Argument>
@@ -547,28 +548,28 @@
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
-  <Warning name="RedundantFormerlySerializedAsAttribute" configurableSeverity="Unity.RedundantFormerlySerializedAsAttribute">
+  <Warning name="RedundantFormerlySerializedAsAttribute" configurableSeverity="Unity.RedundantFormerlySerializedAsAttribute" supportsPointer="true">
     <Parameter type="IAttribute" name="attribute" />
     <Message resourceName="RedundantFormerlySerializedAsAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
-  <Warning name="RedundantHideInInspectorAttribute" configurableSeverity="Unity.RedundantHideInInspectorAttribute">
+  <Warning name="RedundantHideInInspectorAttribute" configurableSeverity="Unity.RedundantHideInInspectorAttribute" supportsPointer="true">
     <Parameter type="IAttribute" name="attribute" />
     <Message resourceName="RedundantHideInInspectorAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
 
-  <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute">
+  <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute" supportsPointer="true">
     <Parameter type="IAttribute" name="attribute" />
     <Message resourceName="InitializeOnLoadAttributeIsRedundantWhenStaticConstructorIsMissingMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
-  <Warning name="RedundantSerializeFieldAttribute" configurableSeverity="Unity.RedundantSerializeFieldAttribute">
+  <Warning name="RedundantSerializeFieldAttribute" configurableSeverity="Unity.RedundantSerializeFieldAttribute" supportsPointer="true">
     <Parameter type="IAttribute" name="attribute" />
     <Message resourceName="RedundantSerializeFieldAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
