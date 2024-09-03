@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -55,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         private readonly ModuleReferenceResolveSync myModuleReferenceResolveSync;
         private readonly ChangeManager myChangeManager;
         private readonly IViewableProjectsCollection myProjects;
-        private readonly ICollection<IUnityReferenceChangeHandler> myHandlers;
+        private readonly IImmutableList<IUnityReferenceChangeHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myAllProjectLifetimes;
         private readonly HashSet<IProject> myUnityProjects;
 
@@ -70,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 
         public UnityReferencesTracker(
             Lifetime lifetime,
-            IEnumerable<IUnityReferenceChangeHandler> handlers,
+            IImmutableList<IUnityReferenceChangeHandler> handlers,
             ISolution solution,
             ISolutionLoadTasksScheduler scheduler,
             ModuleReferenceResolveSync moduleReferenceResolveSync,
@@ -81,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             myAllProjectLifetimes = new Dictionary<IProject, Lifetime>();
             myUnityProjects = new HashSet<IProject>();
 
-            myHandlers = handlers.ToList();
+            myHandlers = handlers;
             myLifetime = lifetime;
             myLogger = logger;
             mySolution = solution;
