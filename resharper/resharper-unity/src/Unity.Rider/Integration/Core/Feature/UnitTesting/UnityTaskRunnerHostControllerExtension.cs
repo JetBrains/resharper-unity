@@ -7,7 +7,7 @@ using JetBrains.Rider.Backend.Features.Unity;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityTaskRunnerHostControllerExtension : RunUnityTaskRunnerHostControllerExtension
     {
         private static readonly IDictionary<string, string> ourAvailableProviders = new Dictionary<string, string>
