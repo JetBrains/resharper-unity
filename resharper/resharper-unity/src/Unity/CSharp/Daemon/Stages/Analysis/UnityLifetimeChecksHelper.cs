@@ -14,7 +14,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
-[SolutionComponent(InstantiationEx.LegacyDefault)]
+[SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
 public class UnityLifetimeChecksHelper(ISolution solution, HighlightingSettingsManager highlightingSettingsManager)
 {
     private readonly IClrTypeName myNotDestroyedAttribute = new ClrTypeName("JetBrains.Annotations.NotDestroyedAttribute");
