@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
 {
     [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityNamingRuleDefaultSettings(ILogger logger, ISettingsSchema settingsSchema)
-        : HaveDefaultSettings(settingsSchema, logger)
+        : HaveDefaultSettings<CSharpNamingSettings>(settingsSchema, logger)
     {
         private static readonly Guid ourSerializedFieldRuleGuid = new("5F0FDB63-C892-4D2C-9324-15C80B22A7EF");
 

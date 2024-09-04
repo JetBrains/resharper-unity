@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
     // Defines settings for the Unity QuickList, or we don't get a QuickList at all
     // Note that the QuickList can be empty, but it's still required
     [ShellComponent(Instantiation.DemandAnyThreadSafe)]
-    public class UnityQuickListDefaultSettings : HaveDefaultSettings
+    public class UnityQuickListDefaultSettings : HaveDefaultSettings<QuickListSettings>
     {
         private readonly ILogger myLogger;
         private readonly ISettingsSchema mySettingsSchema;

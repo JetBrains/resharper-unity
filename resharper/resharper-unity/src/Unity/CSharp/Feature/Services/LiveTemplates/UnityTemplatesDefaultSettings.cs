@@ -5,11 +5,12 @@ using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Feature.Services.LiveTemplates.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
 {
     [ShellComponent(Instantiation.DemandAnyThreadSafe)]
-    public class UnityTemplatesDefaultSettings : IHaveDefaultSettingsStream
+    public class UnityTemplatesDefaultSettings : IHaveDefaultSettingsStream, IDefaultSettingsRootKey<LiveTemplatesSettings>
     {
         public Stream GetDefaultSettingsStream(Lifetime lifetime)
         {

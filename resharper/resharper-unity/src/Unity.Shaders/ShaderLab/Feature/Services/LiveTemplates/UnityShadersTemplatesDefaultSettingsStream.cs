@@ -8,11 +8,12 @@ using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates;
+using JetBrains.ReSharper.Feature.Services.LiveTemplates.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.LiveTemplates
 {
     [ShellComponent(Instantiation.DemandAnyThreadSafe)]
-    public class UnityShadersTemplatesDefaultSettingsStream : IHaveDefaultSettingsStream, ITemplatesLocalizationSource
+    public class UnityShadersTemplatesDefaultSettingsStream : IHaveDefaultSettingsStream, ITemplatesLocalizationSource, IDefaultSettingsRootKey<LiveTemplatesSettings>
     {
         public string Name => "Unity Shaders default LiveTemplates";
         public Stream GetDefaultSettingsStream(Lifetime lifetime)

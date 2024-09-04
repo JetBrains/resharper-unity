@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
     // This doesn't affect any non-Unity projects, so it's a global default, and can be overridden safely in a user's
     // global settings
     [DefaultSettings(typeof(AdditionalFileLayoutSettings))]
-    public class AdditionalFileLayoutDefaultSettings : HaveDefaultSettings
+    public class AdditionalFileLayoutDefaultSettings : HaveDefaultSettings<AdditionalFileLayoutSettings>
     {
         public AdditionalFileLayoutDefaultSettings(ISettingsSchema settingsSchema, ILogger logger)
             : base(settingsSchema, logger)
