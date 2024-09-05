@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Xml.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.CodeCompletion
 {
-    [IntellisensePart(Instantiation.DemandAnyThreadUnsafe)]
+    [IntellisensePart(Instantiation.DemandAnyThreadSafe)]
     public class UxmlCodeCompletionContextProvider : XmlCodeCompletionContextProvider
     {
         private readonly UxmlCodeCompletionManager myManager;

@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IJsonNewLiteralExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IJsonNewLiteralExpression),
         HighlightingTypes = new[] { typeof(InvalidDefineConstraintExpressionError) })]
     public class DefineConstraintsProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {

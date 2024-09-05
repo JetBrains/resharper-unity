@@ -12,7 +12,7 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting
 {
-    [ShellComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityRiderUnitTestCoverageAvailabilityChecker : IRiderUnitTestCoverageAvailabilityChecker, IHideImplementation<DefaultRiderUnitTestCoverageAvailabilityChecker>
     {
         private static readonly Version ourMinSupportedUnityVersion = new(2019, 2);

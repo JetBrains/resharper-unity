@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
     // (so we can create references from YAML to methods) and .cs.meta files (so we can build an index of GUIDs for
     // MonoScript assets which then allows us to locate the methods referenced in YAML).
     // The files are added, removed and updated by UnityExternalFilesModuleProcessor
-    [PsiModuleFactory(Instantiation.DemandAnyThreadUnsafe)]
+    [PsiModuleFactory(Instantiation.DemandAnyThreadSafe)]
     public class UnityExternalFilesModuleFactory : IPsiModuleFactory
     {
         public UnityExternalFilesModuleFactory(Lifetime lifetime, ISolution solution,

@@ -1,4 +1,5 @@
-﻿using JetBrains.Collections.Viewable;
+﻿using JetBrains.Application.Parts;
+using JetBrains.Collections.Viewable;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -12,7 +13,7 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 {
     // Creates references from the "reference" property value to a "name" declaration
-    [ReferenceProviderFactory]
+    [ReferenceProviderFactory(Instantiation.DemandAnyThreadSafe)]
     public class AsmRefNameReferenceProviderFactory : IReferenceProviderFactory
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;

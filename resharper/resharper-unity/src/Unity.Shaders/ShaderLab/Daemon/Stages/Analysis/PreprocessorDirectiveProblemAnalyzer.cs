@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IPreprocessorDirective), HighlightingTypes = new[]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IPreprocessorDirective), HighlightingTypes = new[]
     {
         typeof(ShaderLabPreprocessorDirectiveError),
         typeof(ShaderLabPreprocessorDirectiveWarning),

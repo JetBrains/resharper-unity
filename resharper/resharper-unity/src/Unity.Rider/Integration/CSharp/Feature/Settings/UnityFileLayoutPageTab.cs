@@ -1,5 +1,6 @@
 #nullable enable
 
+using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.IDE.UI.Extensions;
@@ -12,7 +13,7 @@ using JetBrains.Rider.Model.UIAutomation;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Settings
 {
-    [OptionsComponent]
+    [OptionsComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityFileLayoutPageTab : IFileLayoutPageTab
     {
         private readonly RdLanguage myFileLayoutLanguage = new("XML");

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Json.Psi;
@@ -13,7 +14,7 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 {
     // Creates references from the "references" array to the "name" declaration
-    [ReferenceProviderFactory]
+    [ReferenceProviderFactory(Instantiation.DemandAnyThreadSafe)]
     public class AsmDefNameReferenceProviderFactory : IReferenceProviderFactory
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;

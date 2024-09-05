@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion.Settings
 {
-    [ShellComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class JsonNewIntellisenseManager : LanguageSpecificCodeCompletionManager
     {
         public JsonNewIntellisenseManager(CodeCompletionSettingsService settingsService)

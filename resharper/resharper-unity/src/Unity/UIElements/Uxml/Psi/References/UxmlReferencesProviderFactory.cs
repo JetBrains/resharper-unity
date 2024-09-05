@@ -1,5 +1,6 @@
 #nullable enable
 
+using JetBrains.Application.Parts;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -13,7 +14,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
-    [ReferenceProviderFactory(ReferenceTypes = [typeof(UxmlNsAliasReference), typeof(UxmlTypeOrNamespaceReference)])]
+    [ReferenceProviderFactory(Instantiation.DemandAnyThreadSafe, ReferenceTypes = [typeof(UxmlNsAliasReference), typeof(UxmlTypeOrNamespaceReference)])]
     public class UxmlReferencesProviderFactory : IReferenceProviderFactory
     {
         public UxmlReferencesProviderFactory(Lifetime lifetime)

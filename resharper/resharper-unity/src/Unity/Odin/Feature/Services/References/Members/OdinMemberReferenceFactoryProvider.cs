@@ -1,3 +1,4 @@
+using JetBrains.Application.Parts;
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -9,7 +10,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.References.Members;
 
-[ReferenceProviderFactory]
+[ReferenceProviderFactory(Instantiation.DemandAnyThreadSafe)]
 public class OdinMemberReferenceFactoryProvider : IReferenceProviderFactory
 {
     private readonly UnityTechnologyDescriptionCollector myCollector;

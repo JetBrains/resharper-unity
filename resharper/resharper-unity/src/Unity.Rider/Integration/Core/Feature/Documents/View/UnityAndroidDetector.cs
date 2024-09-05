@@ -8,7 +8,7 @@ using JetBrains.RdBackend.Common.Features.ProjectModel.View;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Documents.View
 {
-    [ShellComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityAndroidDetector: ProjectModelViewPresenterExtension
     {
         public override bool TryAddUserData(IProjectMark projectMark, IProject project, out string name, out string value)

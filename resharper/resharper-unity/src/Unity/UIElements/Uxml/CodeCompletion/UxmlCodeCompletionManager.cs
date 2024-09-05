@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.CodeCompletion
 {
-    [ShellComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UxmlCodeCompletionManager : LanguageSpecificCodeCompletionManager
     {
         public UxmlCodeCompletionManager(CodeCompletionSettingsService codeCompletionSettings)

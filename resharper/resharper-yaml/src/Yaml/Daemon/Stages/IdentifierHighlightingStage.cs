@@ -15,7 +15,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
 {
-  [DaemonStage(Instantiation.DemandAnyThreadUnsafe, StagesBefore = new[] {typeof(GlobalFileStructureCollectorStage)},
+  [DaemonStage(Instantiation.DemandAnyThreadSafe, StagesBefore = new[] {typeof(GlobalFileStructureCollectorStage)},
     StagesAfter = new[] {typeof(CollectUsagesStage)})]
   public class IdentifierHighlightingStage : YamlDaemonStageBase
   {

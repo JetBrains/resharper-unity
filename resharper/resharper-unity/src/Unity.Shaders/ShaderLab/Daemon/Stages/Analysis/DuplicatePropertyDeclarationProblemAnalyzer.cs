@@ -7,7 +7,7 @@ using IPropertyDeclaration = JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IPropertiesValue), HighlightingTypes = new[] { typeof(ShaderLabFirstDuplicatePropertyWarning), typeof(ShaderLabSubsequentDuplicatePropertyWarning)})]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IPropertiesValue), HighlightingTypes = new[] { typeof(ShaderLabFirstDuplicatePropertyWarning), typeof(ShaderLabSubsequentDuplicatePropertyWarning)})]
     public class DuplicatePropertyDeclarationProblemAnalyzer : ShaderLabElementProblemAnalyzer<IPropertiesValue>
     {
         protected override void Analyze(IPropertiesValue element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

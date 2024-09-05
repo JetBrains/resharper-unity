@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.AI;
 
-[SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
 public class AssetOccurrenceToSymbolUsageAdapter : IOccurrenceToSymbolUsageAdapter
 {
     public SymbolUsageOccurrence Transform(string clrName, IDeclaredElement declaredElement, IOccurrence occurrence)

@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IJsonNewLiteralExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IJsonNewLiteralExpression),
                             HighlightingTypes = new[] { typeof(ReferencingSelfError) })]
     public class ReferencingSelfProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {

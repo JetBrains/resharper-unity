@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IInvalidVariableReferenceParameters), HighlightingTypes = new[] { typeof(ShaderLabInvalidVariableReferenceParametersWarning)})]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IInvalidVariableReferenceParameters), HighlightingTypes = new[] { typeof(ShaderLabInvalidVariableReferenceParametersWarning)})]
     public class InvalidParametersOnVariableReferenceAnalyzer : ShaderLabElementProblemAnalyzer<IInvalidVariableReferenceParameters>
     {
         protected override void Analyze(IInvalidVariableReferenceParameters element, ElementProblemAnalyzerData data,

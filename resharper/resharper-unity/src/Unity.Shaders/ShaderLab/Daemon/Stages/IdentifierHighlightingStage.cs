@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
 {
     // TODO: Implement file structure and usages!
-    [DaemonStage(Instantiation.DemandAnyThreadUnsafe, StagesBefore = new[] { typeof(GlobalFileStructureCollectorStage) },
+    [DaemonStage(Instantiation.DemandAnyThreadSafe, StagesBefore = new[] { typeof(GlobalFileStructureCollectorStage) },
         StagesAfter = new [] { typeof(CollectUsagesStage)} )]
     public class IdentifierHighlightingStage : ShaderLabStageBase
     {
