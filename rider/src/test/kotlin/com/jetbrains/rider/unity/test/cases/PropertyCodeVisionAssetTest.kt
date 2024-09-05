@@ -14,6 +14,7 @@ import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.SettingsHelper
+import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.io.File

@@ -12,7 +12,6 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.TemplateType
-import com.jetbrains.rider.test.scriptingApi.prepareAssemblies
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import com.jetbrains.rider.unity.test.framework.api.*

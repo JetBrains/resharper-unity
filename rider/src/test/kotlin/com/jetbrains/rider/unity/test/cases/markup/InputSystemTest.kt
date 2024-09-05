@@ -15,6 +15,7 @@ import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File

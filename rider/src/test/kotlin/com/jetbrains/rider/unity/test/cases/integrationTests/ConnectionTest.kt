@@ -7,9 +7,6 @@ import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold
-import com.jetbrains.rider.test.scriptingApi.killUnity
-import com.jetbrains.rider.test.scriptingApi.printEditorLogEntry
-import com.jetbrains.rider.test.scriptingApi.waitConnectionToUnityEditor
 import com.jetbrains.rider.test.scriptingApi.waitFirstScriptCompilation
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithSolutionBase

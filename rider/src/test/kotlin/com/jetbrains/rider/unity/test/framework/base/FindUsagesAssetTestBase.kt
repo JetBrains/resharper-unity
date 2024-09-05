@@ -8,6 +8,7 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.DataProvider
 import java.io.File
 import java.time.Duration

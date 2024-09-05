@@ -39,7 +39,6 @@ import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.getUnityArgs
-import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
@@ -50,6 +49,7 @@ import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.framework.processor.TestProcessor
 import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.unity.EngineVersion
 import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
 import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.utils.NullPrintStream
@@ -72,9 +72,36 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //endregion
 
+//region UnityDll
 
+val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-06-09-2023.zip")
+
+fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {
+    prepareAssemblies(activeSolutionDirectory)
+    refreshFileSystem(project)
+}
+
+fun prepareAssemblies(activeSolutionDirectory: File) {
+    //moving all UnityEngine* and UnityEditor*, netstandard and mscorlib ref-asm dlls to test solution folder
+    for (file in unity2022_2_15f1_ref_asm.root.listFiles()!!) {
+        val target = activeSolutionDirectory.combine(file.name)
+        file.copyTo(target)
+    }
+}
+
+//endregion
 
 //region Connection
+
+fun replaceUnityVersionOnCurrent(project: Project) {
+    val projectVersionFile = project.solutionDirectory.resolve("ProjectSettings/ProjectVersion.txt")
+    val oldVersion = projectVersionFile.readText().split(Regex("\\s+"))[1]
+
+    val newVersion = UnityInstallationFinder.getInstance(project).getApplicationVersion()
+
+    frameworkLogger.info("Replace unity project version '$oldVersion' by '$newVersion'")
+    projectVersionFile.writeText("m_EditorVersion: $newVersion")
+}
 
 fun IntegrationTestWithFrontendBackendModel.activateRiderFrontendTest() {
     frameworkLogger.info("Set frontendBackendModel.riderFrontendTests = true")
@@ -100,37 +127,11 @@ private fun startUnity(args: MutableList<String>,
                        useRiderTestPath: Boolean,
                        batchMode: Boolean,
                        generateSolution: Boolean = false): ProcessHandle {
-    args.withDebugCodeOptimization().addAll(
-        arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "--burst-disable-compilation"))
-    if (batchMode) {
-        args.add("-batchMode")
-    }
-    if (generateSolution) {
-        args.add("-quit")
-        args.add("-executeMethod Packages.Rider.Editor.RiderScriptEditor.SyncSolution")
-    }
-    args.add("-executeMethod")
-    if (resetEditorPrefs) {
-        args.add("Editor.IntegrationTestHelper.ResetAndStart")
-    }
-    else {
-        args.add("Editor.IntegrationTestHelper.Start")
-    }
-
-    if (useRiderTestPath) {
-        args.add("-riderTestPath")
-    }
+    val unityArgs = addArgsForUnityProcess(logPath, resetEditorPrefs, useRiderTestPath, batchMode, generateSolution, true)
+    args.addAll(unityArgs)
 
     val riderPath = getRiderDevAppPath().canonicalPath
     args.addAll(arrayOf("-riderPath", riderPath))
-
-    if (TeamCityHelper.isUnderTeamCity) {
-        val login = System.getenv("unity.login")
-        val password = System.getenv("unity.password")
-        assertNotNull(login, "System.getenv(\"unity.login\") is null.")
-        assertNotNull(password, "System.getenv(\"unity.password\") is null.")
-        args.addAll(arrayOf("-username", login, "-password", password))
-    }
 
     frameworkLogger.info("Starting unity process${if (withCoverage) " with Coverage" else ""}")
     val processHandle = when {
@@ -162,6 +163,28 @@ private fun startUnity(args: MutableList<String>,
     frameworkLogger.info("Unity process started [pid: ${processHandle.pid()}]")
 
     return processHandle
+}
+
+fun getUnityProcessHandle(project: Project): ProcessHandle {
+    val unityApplicationData = project.solution.frontendBackendModel.unityApplicationData
+    waitAndPump(unityDefaultTimeout, { unityApplicationData.valueOrNull?.unityProcessId != null }) { "Can't get unity process id" }
+    return ProcessHandle.of(unityApplicationData.valueOrNull?.unityProcessId!!.toLong()).get()
+}
+
+fun getRiderDevAppPath(): File {
+    val editorPluginFolderPath = UnityPluginEnvironment.getBundledFile("EditorPlugin")
+    val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
+
+    val riderDevAppPath = editorPluginFolderPath.resolve("rider-dev.app").apply { mkdirs() }
+    val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
+
+    val file = editorPluginFolderPath.resolve(assemblyName)
+    if (!file.exists())
+        throw IllegalStateException("editor plugin $file doesn't exist")
+
+    riderDevBatPath.writeText(file.canonicalPath)
+
+    return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
 }
 
 fun TestProcessor<*>.startUnity(project: Project,
@@ -245,13 +268,6 @@ private fun IntegrationTestWithFrontendBackendModel.executeMethod(runMethodData:
     return runMethodResult
 }
 
-fun waitFirstScriptCompilation(project: Project) {
-    frameworkLogger.info("Waiting for .start file exist")
-    val unityStartFile = project.solutionDirectory.resolve(".start")
-    waitAndPump(project.lifetime, { unityStartFile.exists() }, unityDefaultTimeout) { "Unity was not started." }
-    frameworkLogger.info("Unity started (.start file exist)")
-}
-
 fun waitConnectionToUnityEditor(project: Project) {
     frameworkLogger.info("Waiting for connection between Unity editor and Rider")
     waitAndPump(project.lifetime,
@@ -266,7 +282,7 @@ fun waitConnectionToUnityEditor(project: Project) {
 
 fun checkSweaInSolution(project: Project) {
     changeFileSystem2(project) { arrayOf(project.solutionDirectory.resolve("Assembly-CSharp.csproj")) }
-  checkSwea(project, 0)
+    checkSwea(project, 0)
 }
 
 fun BaseTestWithSolution.checkSweaInSolution() = checkSweaInSolution(project)
@@ -357,7 +373,6 @@ fun IntegrationTestWithFrontendBackendModel.restart() {
     stopPlaying()
     play()
 }
-
 
 //endregion
 
@@ -461,6 +476,13 @@ fun BaseTestWithSolution.attachDebuggerToUnityEditorAndPlay(
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
     goldFile: File? = null) = attachDebuggerToUnityEditorAndPlay(project, beforeRun, test, goldFile, customGoldSuffixes)
+
+fun attachDebuggerToUnityEditor(
+    project: Project,
+    beforeRun: ExecutionEnvironment.() -> Unit = {},
+    test: DebugTestExecutionContext.() -> Unit,
+    goldFile: File? = null
+) = attachDebuggerToUnityEditor(project, false, beforeRun, test, goldFile)
 
 fun attachDebuggerToUnityEditor(
     project: Project,
