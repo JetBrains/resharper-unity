@@ -11,7 +11,7 @@ partial struct Foo : ISystem
     
     public void OnUpdate(ref SystemState state)
     {
-      NotUpdatedComponentLookup1.Update(ref state);
       NotUpdatedComponentLookup2.Update(ref state);
+      NotUpdatedComponentLookup1.Update(ref state);
     }
 }

@@ -5,10 +5,10 @@ using UnityEngine;
 public class CustomHeaderFormatting : MonoBehaviour
 {
   [Header("Something")]
-  [SerializeField] public const int OooooField = 42;
+  public const int OooooField = 42;
 
   [Header("Something")]
-  [SerializeField] public const int HhhhhField = 42;
+  public const int HhhhhField = 42;
 
   public const int OooooField = 42;
 
@@ -48,12 +48,12 @@ public class CustomHeaderFormatting : MonoBehaviour
   [Header("Something")]
 
 
-  [SerializeField] public const int OooooField = 42;
+  public const int OooooField = 42;
 
   [Header("Something")]
 
 
-  [SerializeField] public const int HhhhhField = 42;
+  public const int HhhhhField = 42;
 
   public const int OooooField = 42;
 
@@ -113,7 +113,7 @@ public class CustomHeaderFormatting : MonoBehaviour
 
 
 
-  [SerializeField] public const int OooooField = 42;
+  public const int OooooField = 42;
 
   [Header("Something")]
 
@@ -126,7 +126,7 @@ public class CustomHeaderFormatting : MonoBehaviour
 
 
 
-  [SerializeField] public const int HhhhhField = 42;
+  public const int HhhhhField = 42;
 
   public const int OooooField = 42;
 
