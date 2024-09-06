@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.ModificationTracker
 import com.intellij.openapi.util.getOrCreateUserData
+import com.intellij.openapi.util.getOrCreateUserDataUnsafe
 import com.intellij.openapi.vfs.isFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
@@ -68,7 +69,7 @@ class UxmlSchemaProvider : XmlSchemaProvider(), DumbAware {
         return null
     }
 
-    private fun getSchemas(project: Project): MutableMap<String, CachedValue<XmlFile>> {
-        return project.getOrCreateUserData(SCHEMAS_FILE_MAP_KEY) { mutableMapOf() }
-    }
+  private fun getSchemas(project: Project): MutableMap<String, CachedValue<XmlFile>> {
+    return project.getOrCreateUserDataUnsafe(SCHEMAS_FILE_MAP_KEY) { mutableMapOf() }
+  }
 }
