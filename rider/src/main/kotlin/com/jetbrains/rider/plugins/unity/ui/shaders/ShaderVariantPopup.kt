@@ -43,12 +43,13 @@ import javax.swing.*
 class ShaderVariantPopup(private val project: Project,
                          private val interaction: ShaderVariantInteraction,
                          @Nls val shaderName: String,
-                         private var context: Pair<String, List<String>>? = null) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
+                         private var context: Pair<String, List<String>>? = null,
+                         private val isUrtShader: Boolean) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
     companion object {
         val ENABLED_SEPARATOR_FOREGROUND: Color = JBColor.namedColor("Group.separatorColor", JBColor(Gray.xCD, Gray.x51))
 
-        private fun createPopup(project: Project, interaction: ShaderVariantInteraction, @Nls shaderName: String, branchingKeywords: List<String>? = null): JBPopup {
-            val shaderVariantPopup = ShaderVariantPopup(project, interaction, shaderName,  branchingKeywords?.let { UnityBundle.message("shaderVariant.popup.branching") to it })
+        private fun createPopup(project: Project, interaction: ShaderVariantInteraction, @Nls shaderName: String, branchingKeywords: List<String>? = null, isUrtShader: Boolean): JBPopup {
+            val shaderVariantPopup = ShaderVariantPopup(project, interaction, shaderName,  branchingKeywords?.let { UnityBundle.message("shaderVariant.popup.branching") to it }, isUrtShader)
             val popup = JBPopupFactory.getInstance().createComponentPopupBuilder(shaderVariantPopup, shaderVariantPopup.shaderKeywordsComponent)
                 .setRequestFocus(true)
                 .createPopup()
@@ -64,7 +65,8 @@ class ShaderVariantPopup(private val project: Project,
                     val interaction = model.createShaderVariantInteraction.startSuspending(lifetime, CreateShaderVariantInteractionArgs(args.documentId, args.offset))
                     val shaderName = editor.virtualFile?.takeIf { it.fileType !is ShaderLabFileType }?.name ?: UnityBundle.message(
                         "shaderVariant.popup.shaderProgram")
-                    createPopup(project, interaction, shaderName, args.scopeKeywords).show(showAt)
+                    val isUrtShader = editor.virtualFile?.extension == "urtshader";
+                    createPopup(project, interaction, shaderName, args.scopeKeywords, isUrtShader).show(showAt)
 
                     activity?.finished {
                         listOf(ShaderVariantEventLogger.DEFINE_COUNT with interaction.availableKeywords)
@@ -88,7 +90,11 @@ class ShaderVariantPopup(private val project: Project,
 
     private val shaderApiComponent = ComboBox<ShaderApiEntry>()
     private val shaderPlatformsComponent = JPanel(ListLayout.horizontal(8))
+    private val shaderPlatformsLabel = JLabel(UnityBundle.message("shaderVariant.popup.shaderPlatform.label"))
     private val shaderPlatformsGroup = ButtonGroup()
+    private var urtCompilationModeComponent = JPanel(ListLayout.horizontal(8))
+    private val urtCompilationModeLabel = JLabel(UnityBundle.message("shaderVariant.popup.urtCompilationMode.label"))
+    private var urtCompilationModeGroup = ButtonGroup()
     private val shaderKeywordsComponent = MyCheckboxList()
     private val builtinDefineSymbolsComponent = CheckBoxList<String>()
     private val otherEnabledKeywordsLabel = JBLabel()
@@ -106,6 +112,7 @@ class ShaderVariantPopup(private val project: Project,
     init {
         initShaderApi()
         initPlatforms()
+        if (isUrtShader) initUrtCompilationMode()
         initBuiltinDefineSymbols()
         initKeywords()
 
@@ -115,6 +122,7 @@ class ShaderVariantPopup(private val project: Project,
 
         add(shaderApiComponent)
         add(shaderPlatformsComponent)
+        if (isUrtShader) add(urtCompilationModeComponent)
         val mainBackground = this.background
         add(JBScrollPane().apply {
             horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
@@ -242,6 +250,7 @@ class ShaderVariantPopup(private val project: Project,
     }
 
     private fun initPlatforms() {
+        shaderPlatformsComponent.add(shaderPlatformsLabel)
         for (entry in PlatformEntry.all.values) {
             val radio = JBRadioButton(entry.name).apply {
                 this.model = ToggleButtonModel(entry)
@@ -264,6 +273,30 @@ class ShaderVariantPopup(private val project: Project,
         }
     }
 
+    private fun initUrtCompilationMode() {
+        urtCompilationModeComponent.add(urtCompilationModeLabel)
+        for (entry in UrtModeEntry.all.values) {
+            val radio = JBRadioButton(entry.name).apply {
+                this.model = ToggleButtonModel(entry)
+                this.model.group = urtCompilationModeGroup
+                urtCompilationModeComponent.add(this)
+            }
+            radio.model.isSelected = entry.value == interaction.urtCompilationMode
+            radio.model.addItemListener {
+                if (it.stateChange == ItemEvent.SELECTED) {
+                    val urtModeEntry = (it.item as ToggleButtonModel<*>).item as UrtModeEntry
+                    interaction.setUrtCompilationMode.fire(urtModeEntry.value)
+                }
+                updateBuiltinDefineSymbols()
+
+                if (it.stateChange == ItemEvent.SELECTED) {
+                    val urtModeEntry = (it.item as ToggleButtonModel<*>).item as UrtModeEntry
+                    ShaderVariantEventLogger.logUrtModeChanged(project, urtModeEntry.value)
+                }
+            }
+        }
+    }
+
     private fun initBuiltinDefineSymbols() {
         builtinDefineSymbolsComponent.isEnabled = false
         updateBuiltinDefineSymbols()
@@ -274,8 +307,11 @@ class ShaderVariantPopup(private val project: Project,
 
         val shaderApiDefineSymbol = (shaderApiComponent.selectedItem as ShaderApiEntry).defineSymbol
         val shaderPlatformDefineSymbol = ((shaderPlatformsGroup.selection as ToggleButtonModel<*>).item as PlatformEntry).defineSymbol
+        val urtCompilationModeDefineSymbol = if (isUrtShader) ((urtCompilationModeGroup.selection as ToggleButtonModel<*>).item as UrtModeEntry).defineSymbol else null
         builtinDefineSymbolsComponent.addItem(shaderApiDefineSymbol, shaderApiDefineSymbol, true)
         builtinDefineSymbolsComponent.addItem(shaderPlatformDefineSymbol, shaderPlatformDefineSymbol, true)
+        if (urtCompilationModeDefineSymbol != null)
+            builtinDefineSymbolsComponent.addItem(urtCompilationModeDefineSymbol, urtCompilationModeDefineSymbol, true)
     }
 
     private fun initKeywords() {
@@ -454,6 +490,19 @@ class ShaderVariantPopup(private val project: Project,
                               "SHADER_API_DESKTOP"),
                 PlatformEntry(RdShaderPlatform.Mobile, UnityBundle.message("shaderVariant.popup.shaderPlatform.entries.mobile"),
                               "SHADER_API_MOBILE")
+            ).map { it.value to it }.toMap()
+        }
+
+        override fun toString() = name
+    }
+
+    private data class UrtModeEntry(val value: RdUrtCompilationMode, @Nls val name: String, @NlsSafe val defineSymbol: String) {
+        companion object {
+            val all = sequenceOf(
+                UrtModeEntry(RdUrtCompilationMode.Compute, UnityBundle.message("shaderVariant.popup.urtCompilationMode.entries.compute"),
+                              "UNIFIED_RT_BACKEND_COMPUTE"),
+                UrtModeEntry(RdUrtCompilationMode.Hardware, UnityBundle.message("shaderVariant.popup.urtCompilationMode.entries.hardware"),
+                              "UNIFIED_RT_BACKEND_HARDWARE")
             ).map { it.value to it }.toMap()
         }
 

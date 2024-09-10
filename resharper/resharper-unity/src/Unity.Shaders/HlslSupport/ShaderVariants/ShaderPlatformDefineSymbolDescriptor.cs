@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Immutable;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
+using JetBrains.ReSharper.Psi.Cpp.Caches;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 
@@ -17,6 +18,7 @@ public class ShaderPlatformDefineSymbolDescriptor : IShaderDefineSymbolDescripto
     public const ShaderPlatform DefaultValue = ShaderPlatform.Desktop;
 
     public bool IsDefaultSymbol(string defineSymbol) => defineSymbol == Desktop;
+    public bool IsApplicable(CppFileLocation location) => true;
 
     public string GetDefineSymbol(ShaderPlatform shaderPlatform) =>
         shaderPlatform switch
