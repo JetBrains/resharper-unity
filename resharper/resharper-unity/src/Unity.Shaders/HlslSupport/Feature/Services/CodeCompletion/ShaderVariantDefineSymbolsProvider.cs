@@ -47,8 +47,11 @@ public class ShaderVariantDefineSymbolsProvider : ItemsProviderOfSpecificContext
         foreach (var keyword in shaderProgramInfo.Keywords) 
             AddLookupItem(context, collector, icon, keyword, existingDefineSymbols);
 
-        foreach (var symbol in ShaderDefineSymbolsRecognizer.KnownDefineSymbols) 
-            AddLookupItem(context, collector, icon, symbol, existingDefineSymbols);
+        foreach (var descriptor in ShaderDefineSymbolsRecognizer.Descriptors) {
+            if (!descriptor.IsApplicable(location)) continue;
+            foreach (var symbol in descriptor.AllSymbols)
+                AddLookupItem(context, collector, icon, symbol, existingDefineSymbols);
+        }
 
         return true;
     }

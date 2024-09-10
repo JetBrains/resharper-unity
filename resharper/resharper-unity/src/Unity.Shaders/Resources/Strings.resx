@@ -188,6 +188,9 @@
     <data name="ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform" xml:space="preserve">
         <value>Shader Platform</value>
     </data>
+    <data name="ShaderVariantsSettings_e_UrtCompilationMode_t_Compilation_Mode" xml:space="preserve">
+        <value>Compilation Mode</value>
+    </data>
     <data name="EnabledShaderKeyword_RiderPresentableName" xml:space="preserve">
         <value>Shader Variants//Enabled shader keyword</value>
     </data>

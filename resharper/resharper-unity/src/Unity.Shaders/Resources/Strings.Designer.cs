@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Resources
+﻿namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Resources
 {
   using System;
   using JetBrains.Application.I18n;
@@ -115,6 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Resources
     public static string ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords => ResourceManager.GetString("ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords");
     public static string ShaderVariantsSettings_e_ShaderApi_t_Shader_API => ResourceManager.GetString("ShaderVariantsSettings_e_ShaderApi_t_Shader_API");
     public static string ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform => ResourceManager.GetString("ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform");
+    public static string ShaderVariantsSettings_e_UrtCompilationMode_t_Compilation_Mode => ResourceManager.GetString("ShaderVariantsSettings_e_UrtCompilationMode_t_Compilation_Mode");
     public static string EnabledShaderKeyword_RiderPresentableName => ResourceManager.GetString("EnabledShaderKeyword_RiderPresentableName");
     public static string ImplicitlyEnabledShaderKeyword_RiderPresentableName => ResourceManager.GetString("ImplicitlyEnabledShaderKeyword_RiderPresentableName");
     public static string DisabledShaderKeyword_RiderPresentableName => ResourceManager.GetString("DisabledShaderKeyword_RiderPresentableName");

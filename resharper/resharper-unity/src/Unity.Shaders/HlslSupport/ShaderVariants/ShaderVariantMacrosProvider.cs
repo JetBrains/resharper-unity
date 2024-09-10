@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Core;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Semantic;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
@@ -48,6 +49,14 @@ public class ShaderVariantMacrosProvider : IUnityHlslCustomMacrosProvider
         var shaderPlatform = myShaderVariantsManager.ShaderPlatform;
         var shaderPlatformSymbol = ShaderPlatformDefineSymbolDescriptor.Instance.GetDefineSymbol(shaderPlatform);
         yield return new CppPPDefineSymbol(shaderPlatformSymbol, null, false, "1", new CppSymbolLocation(CppFileLocation.EMPTY, CppComplexOffset.ZERO));
+    
+        if (UrtCompilationModeDefineSymbolDescriptor.Instance.IsApplicable(location))
+        {
+            var urtMode = myShaderVariantsManager.UrtCompilationMode;
+            var urtModeSymbol = UrtCompilationModeDefineSymbolDescriptor.Instance.GetDefineSymbol(urtMode);
+            yield return new CppPPDefineSymbol(urtModeSymbol, null, false, "1",
+                new CppSymbolLocation(CppFileLocation.EMPTY, CppComplexOffset.ZERO));
+        }
     }
     
     private static bool TryGetEnabledKeyword(ShaderFeature shaderFeature, ISet<string> enabledKeywords, out ShaderFeature.Entry entry)

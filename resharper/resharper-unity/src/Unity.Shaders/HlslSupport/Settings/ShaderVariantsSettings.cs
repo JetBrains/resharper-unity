@@ -14,6 +14,8 @@ public class ShaderVariantsSettings
 
     [SettingsEntry(ShaderPlatform.Desktop, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform))]
     public ShaderPlatform ShaderPlatform = ShaderPlatform.Desktop;
+    [SettingsEntry(UrtCompilationMode.Compute, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.ShaderVariantsSettings_e_UrtCompilationMode_t_Compilation_Mode))]
+    public UrtCompilationMode UrtCompilationMode = UrtCompilationMode.Compute;
 
     [SettingsIndexedEntry(DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords))]
     public IIndexedEntry<string, bool> EnabledKeywords = null!;
