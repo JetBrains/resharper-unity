@@ -52,6 +52,11 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"Mobile"
     }
 
+    private val RdUrtCompilationMode = enum {
+        +"Compute"
+        +"Hardware"
+    }
+
     private val UnityPackage = structdef {
         field("id", string)
         field("version", string)
@@ -111,6 +116,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("enabledKeywords", immutableList(string))
         field("shaderApi", RdShaderApi)
         field("shaderPlatform", RdShaderPlatform)
+        field("urtCompilationMode", RdUrtCompilationMode)
         field("totalKeywordsCount", int)
         field("totalEnabledKeywordsCount", int)
         field("availableKeywords", int)
@@ -119,6 +125,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         source("disableKeywords", immutableList(string))
         source("setShaderApi", RdShaderApi)
         source("setShaderPlatform", RdShaderPlatform)
+        source("setUrtCompilationMode", RdUrtCompilationMode)
     }
 
     init {

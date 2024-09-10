@@ -188,13 +188,14 @@ public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider
                 availableCount = shaderProgramInfo.Keywords.Count;
             }
             
-            return new ShaderVariantInteraction(shaderFeatures, enabledKeywords, myShaderVariantsManager.ShaderApi.AsRdShaderApi(), myShaderVariantsManager.ShaderPlatform.AsRdShaderPlatform(), myShaderVariantsManager.TotalKeywordsCount.Value, myShaderVariantsManager.TotalEnabledKeywordsCount.Value, availableCount);
+            return new ShaderVariantInteraction(shaderFeatures, enabledKeywords, myShaderVariantsManager.ShaderApi.AsRdShaderApi(), myShaderVariantsManager.ShaderPlatform.AsRdShaderPlatform(), myShaderVariantsManager.UrtCompilationMode.AsRdUrtCompilationMode(), myShaderVariantsManager.TotalKeywordsCount.Value, myShaderVariantsManager.TotalEnabledKeywordsCount.Value, availableCount);
         });
         interaction.EnableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, true));
         interaction.DisableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, false));
         interaction.DisableKeywords.Advise(lifetime, keywords => myShaderVariantsManager.SetKeywordsEnabled(keywords, false));
         interaction.SetShaderApi.Advise(lifetime, api => myShaderVariantsManager.SetShaderApi(api.AsShaderApi()));
         interaction.SetShaderPlatform.Advise(lifetime, platform => myShaderVariantsManager.SetShaderPlatform(platform.AsShaderPlatform()));
+        interaction.SetUrtCompilationMode.Advise(lifetime, urtMode => myShaderVariantsManager.SetUrtCompilationMode(urtMode.AsUrtCompilationMode()));
         return interaction;
     }
 

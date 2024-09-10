@@ -35,6 +35,7 @@ public class ShaderVariantsManager : ICppChangeProvider
     private readonly SettingsIndexedEntry myDefaultEnabledKeywordsEntry;
     private readonly SettingsScalarEntry myDefaultShaderApiEntry;
     private readonly SettingsScalarEntry myShaderPlatformEntry;
+    private readonly SettingsScalarEntry myUrtCompilationModeEntry;
     
     private readonly ViewableSet<string> myEnabledKeywords = new();
     private readonly HashSet<string> myAllKeywords = new();
@@ -54,9 +55,11 @@ public class ShaderVariantsManager : ICppChangeProvider
         myDefaultEnabledKeywordsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.EnabledKeywords);
         myDefaultShaderApiEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (ShaderVariantsSettings s) => s.ShaderApi);
         myShaderPlatformEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (ShaderVariantsSettings s) => s.ShaderPlatform);
+        myUrtCompilationModeEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (ShaderVariantsSettings s) => s.UrtCompilationMode);
         myEnabledKeywords.UnionWith(EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
         ShaderApi = GetShaderApi(myDefaultShaderApiEntry);
         ShaderPlatform = GetShaderPlatform(myShaderPlatformEntry); 
+        UrtCompilationMode = GetUrtCompilationMode(myUrtCompilationModeEntry); 
         
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
         myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderKeywords(myEnabledKeywords));
@@ -65,6 +68,7 @@ public class ShaderVariantsManager : ICppChangeProvider
     public ShaderApi ShaderApi { get; private set; }
 
     public ShaderPlatform ShaderPlatform { get; private set; }
+    public UrtCompilationMode UrtCompilationMode { get; private set; }
 
     public IReadonlyProperty<int> TotalKeywordsCount => myTotalKeywordsCount;
 
@@ -80,6 +84,8 @@ public class ShaderVariantsManager : ICppChangeProvider
                 SetShaderApi(enabled ? shaderApiDescriptor.GetValue(symbol) : ShaderApiDefineSymbolDescriptor.DefaultValue);
             else if (descriptor is ShaderPlatformDefineSymbolDescriptor shaderPlatformDescriptor)
                 SetShaderPlatform(enabled ? shaderPlatformDescriptor.GetValue(symbol) : ShaderPlatformDefineSymbolDescriptor.DefaultValue);
+            else if (descriptor is UrtCompilationModeDefineSymbolDescriptor urtModeDescriptor)
+                SetUrtCompilationMode(enabled ? urtModeDescriptor.GetValue(symbol) : UrtCompilationModeDefineSymbolDescriptor.DefaultValue);
         }
         else if (myShaderProgramCache.HasShaderKeyword(symbol))
             SetKeywordEnabled(symbol, enabled);
@@ -107,6 +113,7 @@ public class ShaderVariantsManager : ICppChangeProvider
     public void SetShaderApi(ShaderApi shaderApi) => myBoundSettingsStore.SetValue(static (ShaderVariantsSettings s) => s.ShaderApi, shaderApi);
     
     public void SetShaderPlatform(ShaderPlatform shaderPlatform) => myBoundSettingsStore.SetValue(static (ShaderVariantsSettings s) => s.ShaderPlatform, shaderPlatform);
+    public void SetUrtCompilationMode(UrtCompilationMode urtCompilationMode) => myBoundSettingsStore.SetValue(static (ShaderVariantsSettings s) => s.UrtCompilationMode, urtCompilationMode);
 
     public void ResetAllKeywords()
     {
@@ -142,6 +149,12 @@ public class ShaderVariantsManager : ICppChangeProvider
                 ShaderPlatform = GetShaderPlatform(myShaderPlatformEntry);
                 changeTracker.MarkAllDirty();
             };
+        if (args.ChangedEntries.Contains(myUrtCompilationModeEntry))
+            work += changeTracker =>
+            {
+                UrtCompilationMode = GetUrtCompilationMode(myUrtCompilationModeEntry);
+                changeTracker.MarkAllDirty();
+            };
         return work != null ? lifetime.StartMainRead(() =>
         {
             using var changeTracker = new ChangeTracker(this);
@@ -152,6 +165,7 @@ public class ShaderVariantsManager : ICppChangeProvider
     private ShaderApi GetShaderApi(SettingsScalarEntry shaderApiEntry) => myBoundSettingsStore.GetValue(shaderApiEntry, null) is ShaderApi shaderApi ? shaderApi : ShaderApiDefineSymbolDescriptor.DefaultValue;
     
     private ShaderPlatform GetShaderPlatform(SettingsScalarEntry shaderPlatformEntry) => myBoundSettingsStore.GetValue(shaderPlatformEntry, null) is ShaderPlatform shaderApi ? shaderApi : ShaderPlatformDefineSymbolDescriptor.DefaultValue;
+    private UrtCompilationMode GetUrtCompilationMode(SettingsScalarEntry urtCompilationMode) => myBoundSettingsStore.GetValue(urtCompilationMode, null) is UrtCompilationMode urtMode ? urtMode : UrtCompilationModeDefineSymbolDescriptor.DefaultValue;
     
     private void SyncShaderKeywords(ISet<string> enabledKeywords)
     {

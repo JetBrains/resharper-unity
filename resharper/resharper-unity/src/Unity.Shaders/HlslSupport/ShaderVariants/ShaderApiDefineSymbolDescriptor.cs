@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Immutable;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
+using JetBrains.ReSharper.Psi.Cpp.Caches;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 
@@ -22,6 +23,7 @@ public class ShaderApiDefineSymbolDescriptor : IShaderDefineSymbolDescriptor
     public const ShaderApi DefaultValue = ShaderApi.D3D11;
 
     public bool IsDefaultSymbol(string defineSymbol) => defineSymbol == D3D11;
+    public bool IsApplicable(CppFileLocation location) => true;
 
     public string GetDefineSymbol(ShaderApi shaderApi) =>
         shaderApi switch

@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdUrtCompilationMode
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteractionOrigin
 
 class ShaderVariantEventLogger : CounterUsagesCollector() {
@@ -15,6 +16,7 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
 
         private val SHADER_API = EventFields.Enum<RdShaderApi>("shader_api")
         private val SHADER_PLATFORM = EventFields.Enum<RdShaderPlatform>("shader_platform")
+        private val URT_COMPILATION_MODE = EventFields.Enum<RdUrtCompilationMode>("urt_compilation_mode")
         val CONTEXT_COUNT = EventFields.RoundedInt("context_count")
         val DEFINE_COUNT = EventFields.RoundedInt("define_count")
         val ORIGIN = EventFields.Enum<ShaderVariantInteractionOrigin>("origin")
@@ -30,6 +32,7 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
         private val RESET_ALL_KEYWORDS = GROUP.registerEvent("reset_all")
         private val API_CHANGED = GROUP.registerEvent("shader_api_changed", SHADER_API)
         private val PLATFORM_CHANGED = GROUP.registerEvent("shader_platform_changed", SHADER_PLATFORM)
+        private val URT_MODE_CHANGED = GROUP.registerEvent("urt_compilation_mode_changed", URT_COMPILATION_MODE)
         private val DEFINE_CHANGED = GROUP.registerEvent("define_changed")
 
 
@@ -77,6 +80,10 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
 
         fun logPlatformChanged(project: Project, api: RdShaderPlatform) {
             PLATFORM_CHANGED.log(project, api)
+        }
+
+        fun logUrtModeChanged(project: Project, mode: RdUrtCompilationMode) {
+            URT_MODE_CHANGED.log(project, mode)
         }
 
         fun logDefineChanged(project: Project) {

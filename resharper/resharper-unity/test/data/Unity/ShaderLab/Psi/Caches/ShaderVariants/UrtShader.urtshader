@@ -1,0 +1,11 @@
+#pragma warning(12, disable)
+#pragma multi_compile POINT POINT_COOKIE
+#pragma kernel abc5
+#pragma enable_d3d11_debug_symbols
+#pragma hlslcc_bytecode_disassembly
+#pragma disable_fastmath
+
+[numthreads(1,1,1)]
+void abc5()
+{
+}
