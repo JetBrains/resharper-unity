@@ -167,8 +167,14 @@
     <data name="String_RiderPresentableName" xml:space="preserve">
         <value>String</value>
     </data>
+    <data name="ShaderNameNotResolved" xml:space="preserve">
+        <value>Unresolved Shader name</value>
+    </data>
     <data name="ShaderNameNotRevoled" xml:space="preserve">
         <value>Unresolved Shader name '{0}'</value>
+    </data>
+    <data name="ShaderNameHasMultipleCandidates" xml:space="preserve">
+        <value>Multiple Shaders with same name found</value>
     </data>
     <data name="ShaderNameMultipleCandidates" xml:space="preserve">
         <value>Multiple Shaders with same name '{0}'</value>

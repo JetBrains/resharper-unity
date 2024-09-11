@@ -108,7 +108,9 @@
     public static string PreprocessorLineContent_RiderPresentableName => ResourceManager.GetString("PreprocessorLineContent_RiderPresentableName");
     public static string InjectedLanguageFragment_RiderPresentableName => ResourceManager.GetString("InjectedLanguageFragment_RiderPresentableName");
     public static string String_RiderPresentableName => ResourceManager.GetString("String_RiderPresentableName");
+    public static string ShaderNameNotResolved => ResourceManager.GetString("ShaderNameNotResolved");
     public static string ShaderNameNotRevoled => ResourceManager.GetString("ShaderNameNotRevoled");
+    public static string ShaderNameHasMultipleCandidates => ResourceManager.GetString("ShaderNameHasMultipleCandidates");
     public static string ShaderNameMultipleCandidates => ResourceManager.GetString("ShaderNameMultipleCandidates");
     public static string ShaderSettings_t_Shader_settings => ResourceManager.GetString("ShaderSettings_t_Shader_settings");
     public static string ShaderVariantsSettings_t_Shader_variants_settings => ResourceManager.GetString("ShaderVariantsSettings_t_Shader_variants_settings");
