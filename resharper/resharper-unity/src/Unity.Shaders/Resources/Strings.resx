@@ -174,10 +174,10 @@
         <value>Unresolved Shader name '{0}'</value>
     </data>
     <data name="ShaderNameHasMultipleCandidates" xml:space="preserve">
-        <value>Multiple Shaders with same name found</value>
+        <value>Multiple Shaders with the same name found</value>
     </data>
     <data name="ShaderNameMultipleCandidates" xml:space="preserve">
-        <value>Multiple Shaders with same name '{0}'</value>
+        <value>Multiple Shaders with the same name '{0}'</value>
     </data>
     <data name="ShaderSettings_t_Shader_settings" xml:space="preserve">
         <value>Shader settings</value>
