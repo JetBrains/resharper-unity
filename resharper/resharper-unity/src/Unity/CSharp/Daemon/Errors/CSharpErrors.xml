@@ -529,10 +529,10 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
-  <Warning name="RedundantAttributeOnTarget" configurableSeverity="Unity.RedundantAttributeOnTarget" supportsPointer="true">
+  <Warning name="RedundantAttributeOnTarget" configurableSeverity="Unity.RedundantAttributeOnTarget">
     <Parameter type="IAttribute" name="attribute" />
     <Parameter type="ITypeElement" name="attributeType" />
-    <Parameter type="System.AttributeTargets" name="validTargets" isValid="skip" pointer="skip" />
+    <Parameter type="System.AttributeTargets" name="validTargets" isValid="skip" />
     <Message resourceName="AttributeIsRedundantOnThisDeclarationTypeItIsOnlyUsedWhenAppliedToDeclarationsMessage" resourceType="Strings">
       <Argument>DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, AttributeType).Text</Argument>
       <Argument>ValidTargets</Argument>
@@ -548,28 +548,28 @@
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
-  <Warning name="RedundantFormerlySerializedAsAttribute" configurableSeverity="Unity.RedundantFormerlySerializedAsAttribute" supportsPointer="true">
+  <Warning name="RedundantFormerlySerializedAsAttribute" configurableSeverity="Unity.RedundantFormerlySerializedAsAttribute">
     <Parameter type="IAttribute" name="attribute" />
     <Message resourceName="RedundantFormerlySerializedAsAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
-  <Warning name="RedundantHideInInspectorAttribute" configurableSeverity="Unity.RedundantHideInInspectorAttribute" supportsPointer="true">
+  <Warning name="RedundantHideInInspectorAttribute" configurableSeverity="Unity.RedundantHideInInspectorAttribute">
     <Parameter type="IAttribute" name="attribute" />
     <Message resourceName="RedundantHideInInspectorAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
 
-  <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute" supportsPointer="true">
+  <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute">
     <Parameter type="IAttribute" name="attribute" />
     <Message resourceName="InitializeOnLoadAttributeIsRedundantWhenStaticConstructorIsMissingMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
-  <Warning name="RedundantSerializeFieldAttribute" configurableSeverity="Unity.RedundantSerializeFieldAttribute" supportsPointer="true">
+  <Warning name="RedundantSerializeFieldAttribute" configurableSeverity="Unity.RedundantSerializeFieldAttribute">
     <Parameter type="IAttribute" name="attribute" />
     <Message resourceName="RedundantSerializeFieldAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
