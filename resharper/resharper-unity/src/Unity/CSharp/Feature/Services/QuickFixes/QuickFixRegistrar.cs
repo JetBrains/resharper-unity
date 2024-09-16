@@ -34,11 +34,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         public void Register(IHighlightingCleanupItemsRegistrar registrar)
         {
-            registrar.Register<RedundantInitializeOnLoadAttributeWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
-            registrar.Register<RedundantSerializeFieldAttributeWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
-            registrar.Register<RedundantHideInInspectorAttributeWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
-            registrar.Register<RedundantAttributeOnTargetWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
-            registrar.Register<RedundantFormerlySerializedAsAttributeWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
+            registrar.RegisterQuickFix<RedundantInitializeOnLoadAttributeWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
+            registrar.RegisterQuickFix<RedundantSerializeFieldAttributeWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
+            registrar.RegisterQuickFix<RedundantHideInInspectorAttributeWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
+            registrar.RegisterQuickFix<RedundantAttributeOnTargetWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
+            registrar.RegisterQuickFix<RedundantFormerlySerializedAsAttributeWarning, RemoveRedundantAttributeQuickFix>(REMOVE_REDUNDANCIES, enforceCleanup: false);
         }
     }
 }
