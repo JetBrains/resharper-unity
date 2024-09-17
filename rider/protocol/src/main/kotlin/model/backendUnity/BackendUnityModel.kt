@@ -104,6 +104,10 @@ object BackendUnityModel: Root() {
         +"Normal"
     }
 
+    private val SampleStackInfo = structdef {
+        field("sampleName", string.nullable)
+        field("sampleStack", string.nullable)
+    }
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
@@ -164,7 +168,8 @@ object BackendUnityModel: Root() {
 
         // Actions called from Unity to the backend
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
-
+        callback("openFileBySampleInfo", SampleStackInfo, void).documentation = "Called from Unity to navigate from selected profiler sample"
+        
         // Unit testing
         property("unitTestLaunch", UnitTestLaunch).documentation = "Set the details of the current unit test session"
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
