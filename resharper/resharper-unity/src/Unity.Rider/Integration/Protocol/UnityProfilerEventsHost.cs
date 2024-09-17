@@ -104,6 +104,7 @@ public class UnityProfilerEventsHost
     private void ShowConsoleWithCallstack(FrontendBackendModel frontendBackendModel, string sampleStack, string sampleName)
     {
         frontendBackendModel.ActivateRider();
+        sampleStack = sampleStack.Replace("/", "\n");
         myRiderStackTraceHost.Model.ShowConsole(new StackTraceConsole(sampleName, sampleStack));
     }
 
