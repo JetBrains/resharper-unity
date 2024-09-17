@@ -9,6 +9,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
+using JetBrains.Rider.Unity.Editor.Profiler;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using UnityEditor.Build.Reporting;
@@ -111,6 +112,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       OpenAssetHandler = new OnOpenAssetHandler(AppDomainLifetime, ourRiderPathProvider, SlnFile);
 
+      ProfilerWindowEventsHandler.Initialize(AppDomainLifetime);
       ReportInitialisationDone();
 
       ourInitialised = true;
