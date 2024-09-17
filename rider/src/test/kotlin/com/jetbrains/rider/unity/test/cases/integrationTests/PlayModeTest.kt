@@ -1,16 +1,13 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.annotations.*
-import com.jetbrains.rider.test.unity.Unity
-import com.jetbrains.rider.test.unity.Tuanjie
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.rebuildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.replaceFileContent
-import com.jetbrains.rider.unity.test.framework.EngineVersion
+import com.jetbrains.rider.test.unity.EngineVersion
+import com.jetbrains.rider.test.unity.Unity
+import com.jetbrains.rider.test.unity.Tuanjie
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import org.testng.annotations.Test
@@ -36,25 +33,25 @@ abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithU
     @Test(description="Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process")
     fun checkAttachDebuggerToUnityEditor() {
         attachDebuggerToUnityEditor({},
-            {
-                play()
-                pause()
-                step()
-                unpause()
-                stopPlaying()
-            })
+                                    {
+                                        play()
+                                        pause()
+                                        step()
+                                        unpause()
+                                        stopPlaying()
+                                    })
     }
 
     @Test(description="Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process and Play")
     fun checkAttachDebuggerToUnityEditorAndPlay() {
         attachDebuggerToUnityEditorAndPlay({},
-            {
-                waitForUnityEditorPlayMode()
-                pause()
-                step()
-                unpause()
-                stopPlaying()
-            })
+                                           {
+                                               waitForUnityEditorPlayMode()
+                                               pause()
+                                               step()
+                                               unpause()
+                                               stopPlaying()
+                                           })
     }
 
     @Test(description="Check start, update, quit logs")
@@ -86,14 +83,23 @@ class PlayModeTestUnity2022 : PlayModeTest(Unity.V2022) {
     }
 }
 
-    class TestUnity2023 : PlayModeTestBase(Unity.V2023) {
-        init {
-          addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
-        }
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+class PlayModeTestUnity2023 : PlayModeTest(Unity.V2023) {
+    init {
+        addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
+        addMute(Mute("RIDER-105666"), ::checkAttachDebuggerToUnityEditorAndPlay)
     }
-
-    @Mute("RIDER-113191")
-    class TestUnity6 : PlayModeTestBase(Unity.V6)
-    @Mute("RIDER-113191")
-    class TestTuanjie2022 : PlayModeTestBase(Tuanjie.V2022)
 }
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+class PlayModeTestUnity6 : PlayModeTest(Unity.V6)
+{
+    init {
+        addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
+        addMute(Mute("RIDER-105666"), ::checkAttachDebuggerToUnityEditorAndPlay)
+    }
+}
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@Mute("RIDER-113191")
+class PlayModeTestTuanjie2022 : PlayModeTest(Tuanjie.V2022)

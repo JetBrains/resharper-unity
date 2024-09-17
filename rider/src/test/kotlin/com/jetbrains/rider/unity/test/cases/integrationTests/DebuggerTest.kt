@@ -16,17 +16,15 @@ import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
 import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.unity.test.framework.EngineVersion
-import com.jetbrains.rider.unity.test.framework.Tuanjie
-import com.jetbrains.rider.unity.test.framework.Unity
+import com.jetbrains.rider.test.unity.EngineVersion
+import com.jetbrains.rider.test.unity.Tuanjie
+import com.jetbrains.rider.test.unity.Unity
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import kotlinx.coroutines.launch
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
-import java.io.File
 import kotlin.test.assertNotNull
 import kotlin.test.fail
 

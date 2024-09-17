@@ -4,17 +4,15 @@ import com.jetbrains.rdclient.testFramework.waitForDaemon
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
 import com.jetbrains.rider.test.scriptingApi.changeFileContent
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
-import com.jetbrains.rider.unity.test.framework.EngineVersion
-import com.jetbrains.rider.unity.test.framework.Tuanjie
-import com.jetbrains.rider.unity.test.framework.Unity
+import com.jetbrains.rider.test.unity.EngineVersion
+import com.jetbrains.rider.test.unity.Tuanjie
+import com.jetbrains.rider.test.unity.Unity
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import org.testng.annotations.Test
-import java.io.File
 
 @Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
 @Feature("Unit Testing in Unity solution with started Unity2020")

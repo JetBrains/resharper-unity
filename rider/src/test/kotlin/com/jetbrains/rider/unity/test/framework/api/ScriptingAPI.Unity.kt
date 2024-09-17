@@ -4,19 +4,15 @@ import com.intellij.execution.RunManager
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.components.ComponentManagerEx
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.rd.util.lifetime
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.WaitFor
-import com.intellij.util.text.VersionComparatorUtil
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rd.framework.protocolOrThrow
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
@@ -51,16 +47,11 @@ import com.jetbrains.rider.test.framework.processor.TestProcessor
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.unity.EngineVersion
 import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
-import com.jetbrains.rider.unity.test.framework.EngineVersion
 import com.jetbrains.rider.utils.NullPrintStream
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.PrintStream
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.time.Duration
-import kotlin.io.path.Path
-import kotlin.io.path.notExists
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -476,13 +467,6 @@ fun BaseTestWithSolution.attachDebuggerToUnityEditorAndPlay(
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
     goldFile: File? = null) = attachDebuggerToUnityEditorAndPlay(project, beforeRun, test, goldFile, customGoldSuffixes)
-
-fun attachDebuggerToUnityEditor(
-    project: Project,
-    beforeRun: ExecutionEnvironment.() -> Unit = {},
-    test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null
-) = attachDebuggerToUnityEditor(project, false, beforeRun, test, goldFile)
 
 fun attachDebuggerToUnityEditor(
     project: Project,
