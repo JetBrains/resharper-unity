@@ -117,7 +117,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                                                          ConfigurationTypeUtil.findConfigurationType(
                                                              UnityExeConfigurationType::class.java).factory, params)
             return UnityAttachToEditorProfileState(
-                UnityExeDebugProfileState(exeConfiguration, this, environment), this, environment)
+                UnityExeDebugProfileState(exeConfiguration, this, environment, true), this, environment)
         }
         return null
     }

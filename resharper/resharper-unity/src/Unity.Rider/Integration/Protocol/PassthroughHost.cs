@@ -206,6 +206,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 var version = UnityVersion.Parse(data.ApplicationVersion);
                 return UnityVersion.RequiresRiderPackage(version);
             }, frontendBackendModel.RequiresRiderPackage);
+            
+            backendUnityModel.UnityApplicationData.FlowIntoRdSafe(lifetime, data =>
+            {
+                var version = UnityVersion.Parse(data.ApplicationVersion);
+                return UnityVersion.IsCoreCLR(version);
+            }, frontendBackendModel.IsCoreCLR);
         }
 
         private static void AdviseApplicationSettings(in Lifetime lifetime, BackendUnityModel backendUnityModel,

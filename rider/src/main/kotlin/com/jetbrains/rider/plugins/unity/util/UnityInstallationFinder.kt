@@ -33,6 +33,7 @@ class UnityInstallationFinder {
 
     private var unityApplicationData: UnityApplicationData? = null
     var requiresRiderPackage = Property<Boolean?>(null)
+    var isCoreCLR = Property<Boolean?>(null)
 
     fun getBuiltInPackagesRoot(): Path? {
         return getApplicationContentsPath()?.resolve("Resources/PackageManager/BuiltInPackages")
@@ -116,6 +117,7 @@ class UnityInstallationFinder {
                 getInstance(session.project).unityApplicationData = it
             }
             model.requiresRiderPackage.flowInto(lifetime, getInstance(session.project).requiresRiderPackage)
+            model.isCoreCLR.flowInto(lifetime, getInstance(session.project).isCoreCLR)
         }
     }
 }

@@ -140,6 +140,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("unityEditorState", Library.UnityEditorState)
 
         property("unityApplicationData", Library.UnityApplicationData)
+        property("isCoreCLR", bool).documentation = "Is Unity 7 and newer"
         property("requiresRiderPackage", bool)
         field("unityApplicationSettings", Library.UnityApplicationSettings)
         field("unityProjectSettings", Library.UnityProjectSettings)

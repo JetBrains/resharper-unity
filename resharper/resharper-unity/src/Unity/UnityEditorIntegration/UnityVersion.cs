@@ -269,6 +269,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         {
             return version >= new Version(2019,2);
         }
+        
+        public static bool IsCoreCLR(Version version)
+        {
+            return version >= new Version(7000,0);
+        }
 
         private static readonly ConcurrentDictionary<VirtualFileSystemPath, Version> myUnityPathToVersion = new();
 

@@ -56,6 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                     UnityVersion.VersionToString(info.Version),
                     null, null, null));
                 rd.RequiresRiderPackage.Set(UnityVersion.RequiresRiderPackage(info.Version));
+                rd.IsCoreCLR.Set(UnityVersion.IsCoreCLR(info.Version));
             });
         }
     }

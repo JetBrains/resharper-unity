@@ -6,7 +6,6 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.thisLogger
-import com.intellij.openapi.rd.util.withBackgroundContext
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
@@ -15,9 +14,12 @@ import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
+import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
+import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.WorkerRunInfo
 import kotlinx.coroutines.Dispatchers
@@ -28,12 +30,22 @@ import kotlinx.coroutines.withContext
  *
  * This will use the passed [UnityExeDebugProfileState] to start the Editor if it's not already running.
  */
-class UnityAttachToEditorProfileState(private val exeDebugProfileState: UnityExeDebugProfileState,
-                                      private val remoteConfiguration: UnityAttachToEditorRunConfiguration,
-                                      executionEnvironment: ExecutionEnvironment)
+class UnityAttachToEditorProfileState(
+    private val exeDebugProfileState: UnityExeDebugProfileState,
+    private val remoteConfiguration: UnityAttachToEditorRunConfiguration,
+    executionEnvironment: ExecutionEnvironment
+)
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, "Unity Editor", true) {
 
     private val project = executionEnvironment.project
+
+    private lateinit var corAttachDebugProfileState : UnityCorAttachDebugProfileState
+
+    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
+        if (::corAttachDebugProfileState.isInitialized)
+            return corAttachDebugProfileState.createModelStartInfo(lifetime)
+        return super.createModelStartInfo(lifetime)
+    }
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
         // Make sure we have a pid and port to connect. This requires fetching the OS process list, which must happen
@@ -42,6 +54,11 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState: UnityExe
             if (!remoteConfiguration.updatePidAndPort()) {
                 thisLogger().trace("Have not found Unity, would start a new Unity Editor instead.")
                 exeDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
+            }
+            else if (UnityInstallationFinder.getInstance(project).isCoreCLR.hasTrueValue()) {
+                corAttachDebugProfileState = UnityCorAttachDebugProfileState(remoteConfiguration.pid!!,
+                                                                             exeDebugProfileState.executionEnvironment)
+                corAttachDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
             }
             else {
                 // base class serializes listenPortForConnections, so
@@ -93,9 +110,11 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState: UnityExe
         }
 
         // We couldn't find a running instance, start a new one
-        if (remoteConfiguration.pid == null) {
+        if (remoteConfiguration.pid == null)
             return exeDebugProfileState.execute(executor, runner, workerProcessHandler, lifetime)
-        }
+
+        if (::corAttachDebugProfileState.isInitialized)
+            return corAttachDebugProfileState.execute(executor, runner, workerProcessHandler, lifetime)
 
         return super.execute(executor, runner, workerProcessHandler)
     }
