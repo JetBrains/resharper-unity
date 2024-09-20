@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
@@ -12,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
     public class UnityHighlightingGlobalStage : UnityHighlightingAbstractStage
     {
         public UnityHighlightingGlobalStage(
-            IEnumerable<IUnityDeclarationHighlightingProvider> highlightingProviders,
+            IImmutableEnumerable<IUnityDeclarationHighlightingProvider> highlightingProviders,
             UnityApi api,
             UnityCommonIconProvider commonIconProvider)
             : base(highlightingProviders, api, commonIconProvider)

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
@@ -13,8 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
     {
         public CallGraphLocalStage(
             CallGraphSwaExtensionProvider swaExtensionProvider,
-            IEnumerable<ICallGraphContextProvider> contextProviders, 
-            IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers, 
+            IImmutableEnumerable<ICallGraphContextProvider> contextProviders, 
+            IImmutableEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers, 
             ILogger logger)
             : base(swaExtensionProvider, contextProviders, problemAnalyzers, logger)
         {

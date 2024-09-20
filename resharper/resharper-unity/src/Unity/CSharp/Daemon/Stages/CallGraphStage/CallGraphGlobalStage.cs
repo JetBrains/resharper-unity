@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
         OverridenStages = new[] {typeof(CallGraphLocalStage)})]
     public class CallGraphGlobalStage : CallGraphAbstractStage
     {
-        public CallGraphGlobalStage(CallGraphSwaExtensionProvider swaExtensionProvider, IEnumerable<ICallGraphContextProvider> contextProviders, IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers, ILogger logger)
+        public CallGraphGlobalStage(CallGraphSwaExtensionProvider swaExtensionProvider, IImmutableEnumerable<ICallGraphContextProvider> contextProviders, IImmutableEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers, ILogger logger)
             : base(swaExtensionProvider, contextProviders, problemAnalyzers, logger)
         {
         }

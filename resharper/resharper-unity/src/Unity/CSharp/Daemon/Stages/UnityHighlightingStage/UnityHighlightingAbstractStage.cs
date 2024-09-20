@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Components;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
@@ -21,12 +22,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
 {
     public abstract class UnityHighlightingAbstractStage : CSharpDaemonStageBase
     {
-        protected readonly IEnumerable<IUnityDeclarationHighlightingProvider> HighlightingProviders;
+        protected readonly IImmutableEnumerable<IUnityDeclarationHighlightingProvider> HighlightingProviders;
         protected readonly UnityApi API;
         protected readonly UnityCommonIconProvider CommonIconProvider;
 
         protected UnityHighlightingAbstractStage(
-            IEnumerable<IUnityDeclarationHighlightingProvider> highlightingProviders,
+            IImmutableEnumerable<IUnityDeclarationHighlightingProvider> highlightingProviders,
             UnityApi api,
             UnityCommonIconProvider commonIconProvider)
         {
@@ -49,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
 
     public class UnityHighlightingProcess : CSharpDaemonStageProcessBase
     {
-        private readonly IEnumerable<IUnityDeclarationHighlightingProvider> myDeclarationHighlightingProviders;
+        private readonly IImmutableEnumerable<IUnityDeclarationHighlightingProvider> myDeclarationHighlightingProviders;
         private readonly UnityApi myAPI;
         private readonly UnityCommonIconProvider myCommonIconProvider;
         private readonly ISet<IDeclaredElement> myMarkedDeclarations = new HashSet<IDeclaredElement>();
@@ -59,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
         public UnityHighlightingProcess(
             [NotNull] IDaemonProcess process, 
             [NotNull] ICSharpFile file,
-            IEnumerable<IUnityDeclarationHighlightingProvider> declarationHighlightingProviders,
+            IImmutableEnumerable<IUnityDeclarationHighlightingProvider> declarationHighlightingProviders,
             UnityApi api,
             UnityCommonIconProvider commonIconProvider,
             DaemonProcessKind processKind)

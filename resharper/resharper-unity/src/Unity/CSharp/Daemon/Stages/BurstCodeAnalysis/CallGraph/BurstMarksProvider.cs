@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -22,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent(InstantiationEx.LegacyDefault)]
     public class BurstMarksProvider : CallGraphCommentMarksProvider
     {
-        private readonly IEnumerable<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
+        private readonly IImmutableEnumerable<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
         private readonly BurstStrictlyBannedMarkProvider myStrictlyBannedMarkProvider;
 
         private static readonly HashSet<string> ourSystemBurstableMethods = new()
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public BurstMarksProvider(Lifetime lifetime, ISolution solution,
             UnitySolutionTracker tracker,
             BurstStrictlyBannedMarkProvider strictlyBannedMarkProvider,
-            IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
+            IImmutableEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
             : base(MarkId, MarkId, new BurstPropagator(solution, MarkId))
         {
             myBurstBannedAnalyzers = prohibitedContextAnalyzers;
@@ -241,9 +242,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         private sealed class BurstBannedProcessor : UnityCallGraphCodeProcessor
         {
-            private readonly IEnumerable<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
+            private readonly IImmutableEnumerable<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
 
-            public BurstBannedProcessor(IEnumerable<IBurstBannedAnalyzer> burstBannedAnalyzers, ITreeNode startNode)
+            public BurstBannedProcessor(IImmutableEnumerable<IBurstBannedAnalyzer> burstBannedAnalyzers, ITreeNode startNode)
                 : base(startNode)
             {
                 myBurstBannedAnalyzers = burstBannedAnalyzers;

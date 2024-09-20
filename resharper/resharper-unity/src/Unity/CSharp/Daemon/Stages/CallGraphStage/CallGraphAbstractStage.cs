@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
@@ -18,14 +18,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
     public abstract class CallGraphAbstractStage : CSharpDaemonStageBase
     {
         private readonly CallGraphSwaExtensionProvider mySwaExtensionProvider;
-        private readonly IEnumerable<ICallGraphContextProvider> myContextProviders;
-        private readonly IEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
+        private readonly IImmutableEnumerable<ICallGraphContextProvider> myContextProviders;
+        private readonly IImmutableEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
         private readonly ILogger myLogger;
 
         protected CallGraphAbstractStage(
             CallGraphSwaExtensionProvider swaExtensionProvider,
-            IEnumerable<ICallGraphContextProvider> contextProviders,
-            IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers,
+            IImmutableEnumerable<ICallGraphContextProvider> contextProviders,
+            IImmutableEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers,
             ILogger logger)
         {
             mySwaExtensionProvider = swaExtensionProvider;
@@ -50,8 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
     public class CallGraphProcess : CSharpDaemonStageProcessBase
     {
         private readonly ILogger myLogger;
-        private readonly IEnumerable<ICallGraphContextProvider> myContextProviders;
-        private readonly IEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
+        private readonly IImmutableEnumerable<ICallGraphContextProvider> myContextProviders;
+        private readonly IImmutableEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
         private readonly CallGraphContext myContext;
 
         public CallGraphProcess(
@@ -59,8 +59,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             DaemonProcessKind processKind,
             ICSharpFile file,
             ILogger logger,
-            IEnumerable<ICallGraphContextProvider> contextProviders,
-            IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers)
+            IImmutableEnumerable<ICallGraphContextProvider> contextProviders,
+            IImmutableEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers)
             : base(process, file)
         {
             myContext = new CallGraphContext(processKind, process); 

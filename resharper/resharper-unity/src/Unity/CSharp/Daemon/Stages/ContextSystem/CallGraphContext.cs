@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.Components;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
@@ -80,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             return CallGraphContextTag.NONE;
         }
         
-        public void AdvanceContext([NotNull] ITreeNode node, [NotNull] IEnumerable<ICallGraphContextProvider> providers)
+        public void AdvanceContext([NotNull] ITreeNode node, [NotNull] IImmutableEnumerable<ICallGraphContextProvider> providers)
         {
             var newContext = CallGraphContextTag.NONE;
             var context = myStack.Peek().Context;
