@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         private readonly ModuleReferenceResolveSync myModuleReferenceResolveSync;
         private readonly ChangeManager myChangeManager;
         private readonly IViewableProjectsCollection myProjects;
-        private readonly IImmutableList<IUnityReferenceChangeHandler> myHandlers;
+        private readonly IImmutableEnumerable<IUnityReferenceChangeHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myAllProjectLifetimes;
         private readonly HashSet<IProject> myUnityProjects;
 
@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 
         public UnityReferencesTracker(
             Lifetime lifetime,
-            IImmutableList<IUnityReferenceChangeHandler> handlers,
+            IImmutableEnumerable<IUnityReferenceChangeHandler> handlers,
             ISolution solution,
             ISolutionLoadTasksScheduler scheduler,
             ModuleReferenceResolveSync moduleReferenceResolveSync,
