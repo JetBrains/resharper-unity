@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
     [ScopeCategoryUIProvider(Priority = Priority)]
     public class UnityScopeCategoryUIProvider : ScopeCategoryUIProvider
     {
-        private readonly IReadOnlyList<IUnityAdditionalTemplateScopePointsProvider> myScopePointsProviders; 
+        private readonly IImmutableEnumerable<IUnityAdditionalTemplateScopePointsProvider> myScopePointsProviders; 
         
         // Needs to be less than other priorities in R#'s built in ScopeCategoryUIProvider
         // to push it to the end of the list
