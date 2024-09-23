@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.VCXProj;
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
     public class UnityHlslCppCompilationPropertiesProvider(
         IUnityVersion unityVersion,
         CgIncludeDirectoryProvider cgIncludeDirectoryProvider,
-        IReadOnlyList<IUnityHlslCustomMacrosProvider> customDefinesProviders,
+        IImmutableEnumerable<IUnityHlslCustomMacrosProvider> customDefinesProviders,
         ShaderProgramCache shaderProgramCache,
         UnityDialects dialects)
         : ICppCompilationPropertiesProvider
