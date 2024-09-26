@@ -100,6 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
             public string RelativePath { get; } = string.Empty;
             public int CodePage { get; set; }
             public string? AnalyzerReferencePath { get; } = null;
+            public VirtualFileSystemPath ProjectModelPath { get; } = null!;
 
             public void BindToEmbeddedSourceProjectFile(IProjectFile projectFile)
             {
