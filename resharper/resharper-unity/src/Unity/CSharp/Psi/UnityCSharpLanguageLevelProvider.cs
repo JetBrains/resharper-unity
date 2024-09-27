@@ -24,7 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
         private static readonly Key<CachedProjectLanguageLevel> ourGeneratedProjectLanguageLevelKey = new(nameof(ourGeneratedProjectLanguageLevelKey));
 
         public override ILanguageVersionModifier<CSharpLanguageVersion> LanguageVersionModifier => null; // disable ability to modify language version
-        public override ILanguageLevelOverrider<CSharpLanguageLevel> LanguageLevelOverrider => null; // disable ability to override language level
 
         public override bool IsApplicable(IPsiModule psiModule)
         {
@@ -171,7 +170,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                         var roslynDir = contentPath.Combine("Tools").Combine("Roslyn");
                         if (roslynDir.ExistsDirectory)
                         {
-                            var languageLevelProjectProperty = project.GetComponent<ILanguageLevelProjectProperty<CSharpLanguageLevel, CSharpLanguageVersion>>();
+                            var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();
                             return languageLevelProjectProperty.GetLatestAvailableLanguageLevel(roslynDir);
                         }
                     }
