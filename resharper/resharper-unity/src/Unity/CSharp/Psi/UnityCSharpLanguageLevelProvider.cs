@@ -14,7 +14,6 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
-using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
 {
@@ -22,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
     internal sealed class UnityCSharpLanguageLevelProvider([NotNull] CSharpLanguageLevelProjectProperty projectProperty)
         : CSharpLanguageLevelProvider(projectProperty)
     {
-        private static readonly Key<Boxed<CSharpLanguageLevel?>> ourGeneratedProjectLanguageLevelKey = new(nameof(ourGeneratedProjectLanguageLevelKey));
+        private static readonly Key<CachedProjectLanguageLevel> ourGeneratedProjectLanguageLevelKey = new(nameof(ourGeneratedProjectLanguageLevelKey));
 
         public override ILanguageVersionModifier<CSharpLanguageVersion> LanguageVersionModifier => null; // disable ability to modify language version
         public override ILanguageLevelOverrider<CSharpLanguageLevel> LanguageLevelOverrider => null; // disable ability to override language level
@@ -39,11 +38,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
         {
             var project = (IProject)psiModule.ContainingProjectModule.NotNull();
 
-            return project.GetOrCreateDataNoLock(ourGeneratedProjectLanguageLevelKey, project, static project =>
-            {
-                var cachedProjectLanguageLevel = new CachedProjectLanguageLevel(project);
-                return new Boxed<CSharpLanguageLevel?>(cachedProjectLanguageLevel.GetValue());
-            }).Value ?? base.GetLanguageLevel(psiModule);
+            var cachedProjectLanguageLevel = project.GetOrCreateDataNoLock(
+                ourGeneratedProjectLanguageLevelKey,
+                project,
+                static project => new CachedProjectLanguageLevel(project));
+
+            return cachedProjectLanguageLevel.GetValue() ?? base.GetLanguageLevel(psiModule);
         }
 
         public override bool IsAvailable(CSharpLanguageLevel languageLevel, IPsiModule psiModule)
