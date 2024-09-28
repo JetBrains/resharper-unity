@@ -1,45 +1,27 @@
-using JetBrains.Annotations;
+using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {
-    // TODO remove in 19.2 
-    [ShellComponent(Instantiation.ContainerSyncPrimaryThread)]
-    public class ConfigurableSeverityHacks
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
+    public sealed class UnityCustomSeverityPresentationsProvider : IHighlightingCustomPresentationsForSeverityProvider
     {
-        [NotNull] private static readonly Severity[] ourSeverities = {
-            Severity.HINT,
-            Severity.WARNING,
-        };
-
-        [NotNull] private static readonly string[] ourHighlightingIds = {
-            PerformanceHighlightingAttributeIds.CAMERA_MAIN,
-            PerformanceHighlightingAttributeIds.NULL_COMPARISON,
-            PerformanceHighlightingAttributeIds.COSTLY_METHOD_INVOCATION,
-            PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER,
-            PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE,
-        };
-
-        public ConfigurableSeverityHacks()
+        public IEnumerable<string> GetAttributeIdsForSeverity(Severity severity)
         {
-            var severityIds = HighlightingAttributeIds.ValidHighlightingsForSeverity;
-            lock (severityIds)
+            if (severity is Severity.HINT or Severity.WARNING)
             {
-                foreach (var severity in ourSeverities)
-                {
-                    if (!severityIds.TryGetValue(severity, out var collection)) continue;
-
-                    foreach (var highlightingId in ourHighlightingIds)
-                    {
-                        if (!collection.Contains(highlightingId))
-                        {
-                            collection.Add(highlightingId);
-                        }
-                    }
-                }
+                return [
+                    PerformanceHighlightingAttributeIds.CAMERA_MAIN,
+                    PerformanceHighlightingAttributeIds.NULL_COMPARISON,
+                    PerformanceHighlightingAttributeIds.COSTLY_METHOD_INVOCATION,
+                    PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER,
+                    PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE
+                ];
             }
+
+            return [];
         }
     }
 }
