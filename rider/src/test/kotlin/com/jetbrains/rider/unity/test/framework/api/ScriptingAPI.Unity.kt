@@ -118,7 +118,7 @@ private fun startUnity(args: MutableList<String>,
                        useRiderTestPath: Boolean,
                        batchMode: Boolean,
                        generateSolution: Boolean = false): ProcessHandle {
-    val unityArgs = addArgsForUnityProcess(logPath, resetEditorPrefs, useRiderTestPath, batchMode, generateSolution, true)
+    val unityArgs = addArgsForUnityProcess(logPath, resetEditorPrefs, useRiderTestPath, batchMode, generateSolution)
     args.addAll(unityArgs)
 
     val riderPath = getRiderDevAppPath().canonicalPath
