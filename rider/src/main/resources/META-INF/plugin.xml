@@ -30,9 +30,11 @@
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerInitializer"/>
-    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdaterInitializer"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost"/>
+
+    <workspaceModel.fileIndexContributor implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceFileIndexContributor"/>
+    <workspaceModel.fileIndexContributor implementation="com.jetbrains.rider.plugins.unity.workspace.UnityPackagesWorkspaceFileIndexContributor"/>
 
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
 

@@ -11,8 +11,6 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
 import com.intellij.platform.backend.workspace.WorkspaceModel
-import com.intellij.platform.backend.workspace.toVirtualFileUrl
-import com.intellij.platform.workspace.jps.entities.modifyContentRootEntity
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.util.application
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -25,7 +23,6 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
-import com.jetbrains.rider.workspaceModel.getOrCreateRiderModuleEntity
 import java.nio.file.Paths
 
 @Service(Service.Level.PROJECT)
@@ -88,41 +85,21 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
     private fun addPackage(unityPackage: UnityPackage, packageFolder: VirtualFile?, entityStorage: MutableEntityStorage) {
         logger.trace("Adding Unity package: ${unityPackage.id}")
 
-        val contentRootEntity = if (packageFolder != null && unityPackage.source != UnityPackageSource.Unknown) {
-            entityStorage.addContentRootEntity(
-                packageFolder.toVirtualFileUrl(WorkspaceModel.getInstance(project).getVirtualFileUrlManager()),
-                listOf(),
-                UNITY_EXCLUDED_PATTERNS,
-                entityStorage.getOrCreateRiderModuleEntity(),
-                RiderUnityPackageEntitySource
-            )
-        }
-        else null
-
-        val entity = if (contentRootEntity != null) {
-            val updatedRoot = entityStorage.modifyContentRootEntity(contentRootEntity) {
-                this.unityPackageEntity = UnityPackageEntity(unityPackage, RiderUnityPackageEntitySource) {
-                    this.descriptor = unityPackage
-                }
-            }
-            updatedRoot.unityPackageEntity!!
-        } else {
-            entityStorage addEntity UnityPackageEntity(unityPackage, RiderUnityPackageEntitySource) {
+        if (packageFolder != null && unityPackage.source != UnityPackageSource.Unknown){
+            val entity = entityStorage.addEntity(UnityPackageEntity(unityPackage, RiderUnityPackageEntitySource) {
                 this.descriptor = unityPackage
-                this.contentRootEntity = null
-            }
+            })
+            val mapping = entityStorage.getMutableExternalMapping(UNITY_PACKAGE_ID_MAPPING)
+            mapping.addMapping(entity, unityPackage.id)
         }
-
-        val mapping = entityStorage.getMutableExternalMapping(UNITY_PACKAGE_ID_MAPPING)
-        mapping.addMapping(entity, entity.packageId)
     }
 
-    private fun removePackage(unityPackage: UnityPackage, builder: MutableEntityStorage) {
+    private fun removePackage(unityPackage: UnityPackage, entityStorage: MutableEntityStorage) {
         logger.trace("Removing Unity package: ${unityPackage.id}")
 
-        val mapping = builder.getExternalMapping(UNITY_PACKAGE_ID_MAPPING)
+        val mapping = entityStorage.getExternalMapping(UNITY_PACKAGE_ID_MAPPING)
         for (entity in mapping.getEntities(unityPackage.id)) {
-            builder.removeEntity(entity)
+            entityStorage.removeEntity(entity)
         }
     }
 

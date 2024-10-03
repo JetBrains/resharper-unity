@@ -3,14 +3,10 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.backend.workspace.virtualFile
 import com.intellij.platform.workspace.jps.entities.ContentRootEntity
-import com.intellij.platform.workspace.storage.EntitySource
-import com.intellij.platform.workspace.storage.EntityType
-import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
-import com.intellij.platform.workspace.storage.MutableEntityStorage
-import com.intellij.platform.workspace.storage.WorkspaceEntity
+import com.intellij.platform.workspace.storage.*
 import com.intellij.platform.workspace.storage.annotations.Child
+import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 
@@ -38,10 +34,7 @@ interface UnityPackageEntity : WorkspaceEntity {
         return !isEditable() && descriptor.source != UnityPackageSource.Unknown
     }
 
-    @Child
-    val contentRootEntity: ContentRootEntity?
-
-    val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
+    val packageFolder: VirtualFile? get() = descriptor.packageFolderPath?.toVirtualFile(false)
 
     //region generated code
     @GeneratedCodeApiVersion(3)

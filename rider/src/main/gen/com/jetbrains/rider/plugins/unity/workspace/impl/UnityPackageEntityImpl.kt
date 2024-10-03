@@ -51,9 +51,6 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
       return dataSource.descriptor
     }
 
-  override val contentRootEntity: ContentRootEntity?
-    get() = snapshot.extractOneToOneChild(CONTENTROOTENTITY_CONNECTION_ID, this)
-
   override val entitySource: EntitySource
     get() {
       readField("entitySource")
