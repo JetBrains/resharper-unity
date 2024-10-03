@@ -9,13 +9,16 @@ public class NotAvailableDueToIncorrectSignatureTest : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Cannot resolve method 'RaycastAll()', candidates are:
-  UnityEngine.RaycastHit[] RaycastAll(UnityEngine.Ray) (in class Physics)
-  UnityEngine.RaycastHit[] RaycastAll(UnityEngine.Ray, float) (in class Physics)
-  UnityEngine.RaycastHit[] RaycastAll(UnityEngine.Ray, float, int) (in class Physics)
-  UnityEngine.RaycastHit[] RaycastAll(UnityEngine.Ray, float, int, UnityEngine.QueryTriggerInteraction) (in class Physics)
-  UnityEngine.RaycastHit[] RaycastAll(UnityEngine.Vector3, UnityEngine.Vector3) (in class Physics)
-  UnityEngine.RaycastHit[] RaycastAll(UnityEngine.Vector3, UnityEngine.Vector3, float) (in class Physics)
-  UnityEngine.RaycastHit[] RaycastAll(UnityEngine.Vector3, UnityEngine.Vector3, float, int) (in class Physics)
-  UnityEngine.RaycastHit[] RaycastAll(UnityEngine.Vector3, UnityEngine.Vector3, float, int, UnityEngine.QueryTriggerInteraction) (in class Physics)
+0: Cannot resolve method:
+    RaycastAll()
+Candidates are:
+    RaycastAll(Ray)
+    RaycastAll(Ray, float)
+    RaycastAll(Ray, float, int)
+    RaycastAll(Ray, float, int, QueryTriggerInteraction)
+    RaycastAll(Vector3, Vector3)
+    RaycastAll(Vector3, Vector3, float)
+    RaycastAll(Vector3, Vector3, float, int)
+    RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)
+    all from class Physics
 NO QUICKFIXES

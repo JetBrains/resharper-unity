@@ -9,10 +9,13 @@ public class NotAvailableDueToIncorrectSignatureTest02: MonoBehaviour
 }
 
 ------------------------------------------------
-0: Cannot resolve method 'BoxCastAll(UnityEngine.Ray)', candidates are:
-  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3) (in class Physics)
-  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Quaternion) (in class Physics)
-  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Quaternion, float) (in class Physics)
-  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Quaternion, float, int) (in class Physics)
-  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Quaternion, float, int, UnityEngine.QueryTriggerInteraction) (in class Physics)
+0: Cannot resolve method:
+    BoxCastAll(Ray)
+Candidates are:
+    BoxCastAll(Vector3, Vector3, Vector3)
+    BoxCastAll(Vector3, Vector3, Vector3, Quaternion)
+    BoxCastAll(Vector3, Vector3, Vector3, Quaternion, float)
+    BoxCastAll(Vector3, Vector3, Vector3, Quaternion, float, int)
+    BoxCastAll(Vector3, Vector3, Vector3, Quaternion, float, int, QueryTriggerInteraction)
+    all from class Physics
 NO QUICKFIXES
