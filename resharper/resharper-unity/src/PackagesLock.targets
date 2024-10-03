@@ -14,7 +14,7 @@
         <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
         <PackageLock Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageLock Include="NVelocity" Version="1.0.3" />
-        <PackageLock Include="System.Collections.Immutable" Version="7.0.0" />
+        <PackageLock Include="System.Collections.Immutable" Version="8.0.0" />
         <PackageLock Include="System.Memory" Version="4.5.5" />
     </ItemGroup>
 </Project>

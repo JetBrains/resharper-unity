@@ -7,6 +7,6 @@
     <PackageLock Include="JetBrains.Lifetimes" Version="2024.1.0" />
     <PackageLock Include="JetBrains.RdFramework" Version="2024.1.0" />
     <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
-    <PackageLock Include="System.Collections.Immutable" Version="7.0.0" />
+    <PackageLock Include="System.Collections.Immutable" Version="8.0.0" />
   </ItemGroup>
 </Project>

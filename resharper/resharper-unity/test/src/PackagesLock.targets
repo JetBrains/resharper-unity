@@ -15,6 +15,6 @@
     <PackageLock Include="NUnit.Extension.NUnitV2Driver" Version="3.8.0" />
     <PackageLock Include="Microsoft.CodeCoverage" Version="16.7.1" />
     <PackageLock Include="Lib.Harmony" Version="2.0.0.8" />
-    <PackageLock Include="System.Collections.Immutable" Version="7.0.0" />
+    <PackageLock Include="System.Collections.Immutable" Version="8.0.0" />
   </ItemGroup>
 </Project>
