@@ -28,8 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 [SolutionComponent(InstantiationEx.LegacyDefault)]
 public class UnityProfilerEventsHost
 {
-    private readonly BackendUnityHost myBackendUnityHost;
-    private readonly FrontendBackendHost myFrontendBackendHost;
     private readonly RiderStackTraceHost myRiderStackTraceHost;
     private readonly ILogger myLogger;
     private readonly ISolution mySolution;
@@ -38,8 +36,6 @@ public class UnityProfilerEventsHost
         BackendUnityHost backendUnityHost, FrontendBackendHost frontendBackendHost,
         RiderStackTraceHost riderStackTraceHost, ILogger logger, ISolution solution)
     {
-        myBackendUnityHost = backendUnityHost;
-        myFrontendBackendHost = frontendBackendHost;
         myRiderStackTraceHost = riderStackTraceHost;
         myLogger = logger;
         mySolution = solution;
@@ -49,19 +45,14 @@ public class UnityProfilerEventsHost
         unitySolutionTracker.IsUnityProject.View(lifetime, (unityProjectLifetime, args) =>
         {
             var frontendBackendModel = frontendBackendHost.Model;
-            // Advise the backend/Unity model as high priority so we get called back before other subscribers.
-            // This allows us to populate the protocol on reconnection before other subscribes start to advise
-            using (Signal.PriorityAdviseCookie.Create())
-            {
-                backendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(unityProjectLifetime,
-                    (l, backendUnityModel) =>
+            backendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(unityProjectLifetime,
+                (l, backendUnityModel) =>
+                {
+                    if (args && frontendBackendModel != null && backendUnityModel != null)
                     {
-                        if (args && frontendBackendModel != null && backendUnityModel != null)
-                        {
-                            AdviseOpenFileByMethodName(backendUnityModel, frontendBackendModel);
-                        }
-                    });
-            }
+                        AdviseOpenFileByMethodName(backendUnityModel, frontendBackendModel);
+                    }
+                });
         });
     }
 
@@ -114,31 +105,42 @@ public class UnityProfilerEventsHost
         var parser = new StackTraceParser(profilerCallstack, mySolution,
             mySolution.GetComponent<StackTracePathResolverCache>(), stackTraceOptions.GetState());
 
-        var rootNode = parser.Parse(0, profilerCallstack.Length);
-        IOccurrence? occurrence = null;
-
-        //Attempting to get the most bottom node
-        //callstack example:
-        // PlayerLoop
-        // └─ Update.ScriptRunBehaviourUpdate
-        //   └─ BehaviourUpdate
-        //      └─ Assembly-CSharp.dll!MyNamespace1::HeavyScript1.Update() [Invoke]
-        foreach (var nodeNode in rootNode.Nodes)
+        try
         {
-            if (nodeNode is IdentifierNode identifierNode)
-            {
-                var identifierNodeResolveState = identifierNode.ResolveState;
+            var rootNode = parser.Parse(0, profilerCallstack.Length);
+            IOccurrence? occurrence = null;
 
-                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+            //Attempting to get the most bottom node
+            //callstack example:
+            // PlayerLoop
+            // |- Update.ScriptRunBehaviourUpdate
+            // |-- BehaviourUpdate
+            // |--- Assembly-CSharp.dll!MyNamespace1::HeavyScript1.Update() [Invoke]
+            foreach (var nodeNode in rootNode.Nodes)
+            {
+                if (nodeNode is IdentifierNode identifierNode)
                 {
-                    occurrence = identifierNodeResolveState.MainCandidate?
-                        .GetNavigationDeclarations().FirstOrDefault() ?? occurrence;
+                    var identifierNodeResolveState = identifierNode.ResolveState;
+
+                    using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                    {
+                        occurrence = identifierNodeResolveState.MainCandidate?
+                            .GetNavigationDeclarations().FirstOrDefault() ?? occurrence;
+                    }
                 }
             }
-        }
 
-        if (occurrence != null)
-            occurrence.Navigate(mySolution,
-                mySolution.GetComponent<IMainWindowPopupWindowContext>().Source, true);
+            if (occurrence != null)
+                occurrence.Navigate(mySolution,
+                    mySolution.GetComponent<IMainWindowPopupWindowContext>().Source, true);
+            else
+            {
+                myLogger.Verbose($"No occurrence found for '{profilerCallstack}'");
+            }
+        }
+        catch (Exception e)
+        {
+            myLogger.LogException(e);
+        }
     }
 }
