@@ -88,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         [SettingsEntry(10000, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Timeout_for_Advance_Unity_Evaluation))]
         public int ForcedTimeoutForAdvanceUnityEvaluation;
         
-        [SettingsEntry(10000, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Breakpoint_Trace_Output))]
+        [SettingsEntry(BreakpointTraceOutput.Both, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Breakpoint_Trace_Output))]
         public BreakpointTraceOutput BreakpointTraceOutput;
         
         //Refactoring
