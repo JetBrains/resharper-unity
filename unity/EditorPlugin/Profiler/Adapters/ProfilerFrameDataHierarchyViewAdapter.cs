@@ -39,7 +39,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
 
     //It is null until it is opened once 
     [CanBeNull]
-    public ProfilerFrameDataTreeViewAdapter GetTreeView()
+    public ProfilerFrameDataTreeViewAdapter GetTreeView(ProfilerFrameDataTreeViewReflectionData profilerFrameDataTreeViewReflectionData)
     {
       var treeView = myReflectionData.TreeViewFieldInfo.GetValue(myHierarchyView);
 
@@ -47,7 +47,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
         return null;
 
       return ProfilerFrameDataTreeViewAdapter.Create(treeView,
-        ReflectionDataProvider.OurProfilerFrameDataTreeViewReflectionData);
+        profilerFrameDataTreeViewReflectionData);
     }
 
     public void InitIfNeeded()

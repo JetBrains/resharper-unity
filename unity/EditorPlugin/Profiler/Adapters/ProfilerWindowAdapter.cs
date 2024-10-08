@@ -36,9 +36,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
     }
 
     [CanBeNull]
-    public CPUProfilerModuleAdapter GetCpuProfilerModule()
+    public CPUProfilerModuleAdapter GetCpuProfilerModule(CPUProfilerModuleReflectionData cpuProfilerModuleReflectionData)
     {
-      var cpuProfilerModuleReflectionData = ReflectionDataProvider.OurCPUProfilerModuleReflectionData;
       if (!cpuProfilerModuleReflectionData.IsValid())
       {
         ourLogger.Verbose($"{cpuProfilerModuleReflectionData.GetType().Name} is not valid.");

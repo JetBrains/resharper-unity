@@ -34,11 +34,11 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
     }
 
     [CanBeNull]
-    public ProfilerFrameDataHierarchyViewAdapter GetFrameDataHierarchyView()
+    public ProfilerFrameDataHierarchyViewAdapter GetFrameDataHierarchyView(ProfilerFrameDataHierarchyViewReflectionData profilerFrameDataHierarchyViewReflectionData)
     {
       return ProfilerFrameDataHierarchyViewAdapter.Create(
         myReflectionData.FrameDataHierarchyView.GetValue(myModule),
-        ReflectionDataProvider.OurProfilerFrameDataHierarchyViewReflectionData);
+        profilerFrameDataHierarchyViewReflectionData);
     }
 
     [CanBeNull]

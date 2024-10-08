@@ -8,11 +8,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
   public static class ProfilerWindowEventsHandler
   {
     private static EditorWindow ourProfilerWindow;
-
-    private static IProfilerWindowSelectionDataProvider ProfilerWindowDataProvider =>
-      ProfilerWindowFacade.Instance.IsSupportingCurrentUnityVersion
-        ? ProfilerWindowFacade.Instance
-        : null;
+    private static IProfilerWindowSelectionDataProvider ourProfilerWindowDataProvider; 
+    private static ReflectionDataProvider ourReflectionDataProvider;
 
     private static void InternalUpdate()
     {
@@ -21,31 +18,42 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
 
     private static void UpdateFocusedWindow()
     {
-      if (ProfilerWindowDataProvider == null)
+      if (ourProfilerWindowDataProvider == null)
+      {
+        ourReflectionDataProvider = new ReflectionDataProvider();
+        ourProfilerWindowDataProvider = new ProfilerWindowFacade(ourReflectionDataProvider);
+      }
+      
+      if (!ourProfilerWindowDataProvider.IsSupportingCurrentUnityVersion)
         return;
 
       var profilerWindow = TryGetProfilerWindow();
 
       if (ourProfilerWindow != profilerWindow)
       {
-        if (ourProfilerWindow != null)
-        {
-          ProfilerWindowDataProvider.Deinit(ourProfilerWindow, OnTimeSampleSelected);
-          ourProfilerWindow = null;
-        }
+        DeinitCurrentProfilerWindowEventHandling();
 
         if (profilerWindow != null)
-          ProfilerWindowDataProvider.Init(profilerWindow, OnTimeSampleSelected);
+          ourProfilerWindowDataProvider.Init(profilerWindow, OnTimeSampleSelected);
 
-        if (ProfilerWindowDataProvider.IsInitialized)
+        if (ourProfilerWindowDataProvider.IsInitialized)
           ourProfilerWindow = profilerWindow;
+      }
+    }
+
+    private static void DeinitCurrentProfilerWindowEventHandling()
+    {
+      if (ourProfilerWindow != null)
+      {
+        ourProfilerWindowDataProvider.Deinit(ourProfilerWindow, OnTimeSampleSelected);
+        ourProfilerWindow = null;
       }
     }
 
     private static EditorWindow TryGetProfilerWindow()
     {
       var focusedWindow = EditorWindow.focusedWindow;
-      return focusedWindow?.GetType() == ReflectionDataProvider.OurProfilerWindowReflectionData.ProfilerWindowType
+      return focusedWindow?.GetType() == ourReflectionDataProvider.ProfilerWindowReflectionData.ProfilerWindowType
         ? focusedWindow
         : null;
     }
@@ -69,10 +77,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
 
     public static void Initialize(Lifetime lifetime)
     {
-      if (!ReflectionDataProvider.IsCompatibleWithCurrentUnityVersion)
-        return;
       lifetime.Bracket(() => EditorApplication.update += InternalUpdate,
-        () => { EditorApplication.update -= InternalUpdate; });
+        () =>
+        {
+          EditorApplication.update -= InternalUpdate;
+          DeinitCurrentProfilerWindowEventHandling();
+        });
     }
   }
 }
