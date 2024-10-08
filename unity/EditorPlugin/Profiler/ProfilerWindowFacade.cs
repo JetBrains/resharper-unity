@@ -8,18 +8,20 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
   internal class ProfilerWindowFacade : IProfilerWindowSelectionDataProvider
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(ProfilerWindowFacade));
-    public static readonly IProfilerWindowSelectionDataProvider Instance = new ProfilerWindowFacade();
     
+    private readonly ReflectionDataProvider myReflectionDataProvider; 
     private ProfilerWindowAdapter myProfilerWindowAdapter;
     private CPUProfilerModuleAdapter myCPUProfilerModuleAdapter;
     private ProfilerFrameDataHierarchyViewAdapter myProfilerFrameDataHierarchyViewAdapter;
     private ProfilerFrameDataTreeViewAdapter myProfilerFrameDataTreeViewAdapter;
     private TreeViewControllerAdapter myTreeViewControllerAdapter;
+    private ProfilerDriverAdapter myProfilerDriverAdapter;
     private OnTimeSampleSelected myOnTimeSampleSelected;
 
-    private ProfilerWindowFacade()
+    internal ProfilerWindowFacade(ReflectionDataProvider reflectionDataProvider)
     {
-      IsSupportingCurrentUnityVersion = ReflectionDataProvider.IsCompatibleWithCurrentUnityVersion;
+      myReflectionDataProvider = reflectionDataProvider;
+      IsSupportingCurrentUnityVersion = myReflectionDataProvider.IsCompatibleWithCurrentUnityVersion;
     }
 
     public bool IsInitialized { get; private set; }
@@ -72,21 +74,28 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
     private bool InternalInit(EditorWindow profilerWindow)
     {
       myProfilerWindowAdapter =
-        ProfilerWindowAdapter.Create(profilerWindow, ReflectionDataProvider.OurProfilerWindowReflectionData);
+        ProfilerWindowAdapter.Create(profilerWindow, myReflectionDataProvider.ProfilerWindowReflectionData);
       if (myProfilerWindowAdapter == null)
       {
         ourLogger.Verbose($"Failed to create {nameof(ProfilerWindowAdapter)} for {nameof(ProfilerWindowFacade)}");
         return false;
       }
+      
+      myProfilerDriverAdapter = new ProfilerDriverAdapter(myReflectionDataProvider.ProfilerDriverReflectionData);
+      if (myProfilerDriverAdapter == null)
+      {
+        ourLogger.Verbose($"Failed to create {nameof(ProfilerDriverAdapter)} for {nameof(ProfilerWindowFacade)}");
+        return false;
+      }
 
-      myCPUProfilerModuleAdapter = myProfilerWindowAdapter.GetCpuProfilerModule();
+      myCPUProfilerModuleAdapter = myProfilerWindowAdapter.GetCpuProfilerModule(myReflectionDataProvider.CPUProfilerModuleReflectionData);
       if (myCPUProfilerModuleAdapter == null)
       {
         ourLogger.Verbose($"Failed to create {nameof(CPUProfilerModuleAdapter)} for {nameof(ProfilerWindowFacade)}");
         return false;
       }
 
-      myProfilerFrameDataHierarchyViewAdapter = myCPUProfilerModuleAdapter.GetFrameDataHierarchyView();
+      myProfilerFrameDataHierarchyViewAdapter = myCPUProfilerModuleAdapter.GetFrameDataHierarchyView(myReflectionDataProvider.ProfilerFrameDataHierarchyViewReflectionData);
       if (myProfilerFrameDataHierarchyViewAdapter == null)
       {
         ourLogger.Verbose(
@@ -96,7 +105,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
 
       myProfilerFrameDataHierarchyViewAdapter.InitIfNeeded();
 
-      myProfilerFrameDataTreeViewAdapter = myProfilerFrameDataHierarchyViewAdapter.GetTreeView();
+      myProfilerFrameDataTreeViewAdapter = myProfilerFrameDataHierarchyViewAdapter.GetTreeView(myReflectionDataProvider.ProfilerFrameDataTreeViewReflectionData);
       if (myProfilerFrameDataTreeViewAdapter == null)
       {
         ourLogger.Verbose(
@@ -104,7 +113,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
         return false;
       }
 
-      myTreeViewControllerAdapter = myProfilerFrameDataTreeViewAdapter.GetTreeViewController();
+      myTreeViewControllerAdapter = myProfilerFrameDataTreeViewAdapter.GetTreeViewController(myReflectionDataProvider.TreeViewControllerReflectionData);
       if (myTreeViewControllerAdapter == null)
       {
         ourLogger.Verbose($"Failed to create {nameof(TreeViewControllerAdapter)} for {nameof(ProfilerWindowFacade)}");
@@ -119,7 +128,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
     {
       try
       {
-        var selectedPropertyPath = ProfilerDriverAdapter.GetSelectedPropertyPath();
+        var selectedPropertyPath = myProfilerDriverAdapter.GetSelectedPropertyPath();
         myOnTimeSampleSelected?.Invoke(selectedPropertyPath, selectedPropertyPath);
       }
       catch (Exception e)

@@ -34,10 +34,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
       return new ProfilerFrameDataTreeViewAdapter(treeView, reflectionData);
     }
 
-    public TreeViewControllerAdapter GetTreeViewController()
+    public TreeViewControllerAdapter GetTreeViewController(TreeViewControllerReflectionData treeViewControllerReflectionData)
     {
       return TreeViewControllerAdapter.Create(myReflectionData.TreeViewControllerFieldInfo.GetValue(myTreeView),
-        ReflectionDataProvider.OurTreeViewControllerReflectionData);
+        treeViewControllerReflectionData);
     }
   }
 }

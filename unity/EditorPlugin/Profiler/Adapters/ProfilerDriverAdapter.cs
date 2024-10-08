@@ -2,21 +2,21 @@ using JetBrains.Diagnostics;
 
 namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
 {
-  internal static class ProfilerDriverAdapter
+  internal class ProfilerDriverAdapter
   {
-    private static readonly ProfilerDriverReflectionData ourProfilerDriverReflectionData;
+    private readonly ProfilerDriverReflectionData myProfilerDriverReflectionData;
     private static readonly ILog ourLogger = Log.GetLog(nameof(ProfilerDriverAdapter));
 
-    static ProfilerDriverAdapter()
+    internal ProfilerDriverAdapter(ProfilerDriverReflectionData profilerDriverReflectionData)
     {
-      ourProfilerDriverReflectionData = ReflectionDataProvider.OurProfilerDriverReflectionData;
-      if (!ourProfilerDriverReflectionData.IsValid())
-        ourLogger.Verbose($"{ourProfilerDriverReflectionData.GetType().Name} is not valid.");
+      myProfilerDriverReflectionData = profilerDriverReflectionData;
+      if (!myProfilerDriverReflectionData.IsValid())
+        ourLogger.Verbose($"{myProfilerDriverReflectionData.GetType().Name} is not valid.");
     }
 
-    public static string GetSelectedPropertyPath()
+    public string GetSelectedPropertyPath()
     {
-      return ourProfilerDriverReflectionData.SelectedPropertyPathPropertyInfo.GetValue(null) as string;
+      return myProfilerDriverReflectionData.SelectedPropertyPathPropertyInfo.GetValue(null) as string;
     }
   }
 }

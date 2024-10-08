@@ -1,99 +1,9 @@
 using System;
 using System.Reflection;
-using JetBrains.Diagnostics;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
 {
-  internal interface IReflectionData
-  {
-    bool IsValid();
-  }
-
-  internal static class ReflectionDataProvider
-  {
-    private static readonly ILog ourLogger;
-    public static readonly bool IsCompatibleWithCurrentUnityVersion;
-    internal static readonly ProfilerDriverReflectionData OurProfilerDriverReflectionData;
-    internal static readonly ProfilerWindowReflectionData OurProfilerWindowReflectionData;
-    internal static readonly CPUProfilerModuleReflectionData OurCPUProfilerModuleReflectionData;
-
-    internal static readonly ProfilerFrameDataHierarchyViewReflectionData
-      OurProfilerFrameDataHierarchyViewReflectionData;
-
-    internal static readonly ProfilerFrameDataTreeViewReflectionData OurProfilerFrameDataTreeViewReflectionData;
-    internal static readonly TreeViewControllerReflectionData OurTreeViewControllerReflectionData;
-
-    static ReflectionDataProvider()
-    {
-      ourLogger = Log.GetLog(nameof(ReflectionDataProvider));
-      try
-      {
-        OurProfilerDriverReflectionData = new ProfilerDriverReflectionData();
-        OurProfilerWindowReflectionData = new ProfilerWindowReflectionData();
-        OurCPUProfilerModuleReflectionData = new CPUProfilerModuleReflectionData();
-        OurProfilerFrameDataHierarchyViewReflectionData = new ProfilerFrameDataHierarchyViewReflectionData();
-        OurProfilerFrameDataTreeViewReflectionData = new ProfilerFrameDataTreeViewReflectionData();
-        OurTreeViewControllerReflectionData = new TreeViewControllerReflectionData();
-
-        if (!OurProfilerDriverReflectionData.IsValid())
-        {
-          IsCompatibleWithCurrentUnityVersion = false;
-          ourLogger.Verbose(
-            $"The {nameof(ProfilerDriverReflectionData)} is not compatible with the current Unity version.");
-          return;
-        }
-
-        if (!OurProfilerWindowReflectionData.IsValid())
-        {
-          IsCompatibleWithCurrentUnityVersion = false;
-          ourLogger.Verbose(
-            $"The {nameof(ProfilerWindowReflectionData)} is not compatible with the current Unity version.");
-          return;
-        }
-
-        if (!OurCPUProfilerModuleReflectionData.IsValid())
-        {
-          IsCompatibleWithCurrentUnityVersion = false;
-          ourLogger.Verbose(
-            $"The {nameof(CPUProfilerModuleReflectionData)} is not compatible with the current Unity version.");
-          return;
-        }
-
-        if (!OurProfilerFrameDataHierarchyViewReflectionData.IsValid())
-        {
-          IsCompatibleWithCurrentUnityVersion = false;
-          ourLogger.Verbose(
-            $"The {nameof(ProfilerFrameDataHierarchyViewReflectionData)} is not compatible with the current Unity version.");
-          return;
-        }
-
-        if (!OurProfilerFrameDataTreeViewReflectionData.IsValid())
-        {
-          IsCompatibleWithCurrentUnityVersion = false;
-          ourLogger.Verbose(
-            $"The {nameof(ProfilerFrameDataTreeViewReflectionData)} is not compatible with the current Unity version.");
-          return;
-        }
-
-        if (!OurTreeViewControllerReflectionData.IsValid())
-        {
-          IsCompatibleWithCurrentUnityVersion = false;
-          ourLogger.Verbose(
-            $"The {nameof(TreeViewControllerReflectionData)} is not compatible with the current Unity version.");
-          return;
-        }
-
-        IsCompatibleWithCurrentUnityVersion = true;
-      }
-      catch (Exception e)
-      {
-        IsCompatibleWithCurrentUnityVersion = false;
-        ourLogger.Verbose($"Exception while initializing {nameof(ReflectionDataProvider)}:  {e}");
-      }
-    }
-  }
-
   internal sealed class ProfilerDriverReflectionData : IReflectionData
   {
     public const string ProfilerDriverTypeName = "UnityEditorInternal.ProfilerDriver";

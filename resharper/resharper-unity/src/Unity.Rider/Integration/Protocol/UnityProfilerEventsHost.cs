@@ -96,7 +96,7 @@ public class UnityProfilerEventsHost
     {
         frontendBackendModel.ActivateRider();
         sampleStack = sampleStack.Replace("/", "\n");
-        myRiderStackTraceHost.Model.ShowConsole(new StackTraceConsole(sampleName, sampleStack));
+        myRiderStackTraceHost.ShowConsole(new StackTraceConsole(sampleName, sampleStack));
     }
 
     private void NavigateToCode(string profilerCallstack)
