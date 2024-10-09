@@ -61,6 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         private readonly ILogger myLogger;
         private readonly UnityVersion myUnityVersion;
         private readonly IFileSystemTracker myFileSystemTracker;
+        private readonly UnityPackageProjectResolution myUnityPackageProjectResolution;
         private readonly GroupingEvent myDoRefreshGroupingEvent, myWaitForPackagesLockJsonGroupingEvent;
         private readonly DictionaryEvents<string, PackageData> myPackagesById;
         private readonly Dictionary<string, LifetimeDefinition> myPackageLifetimes;
@@ -76,13 +77,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         public PackageManager(Lifetime lifetime, ISolution solution, ILogger logger,
                               UnitySolutionTracker unitySolutionTracker,
                               UnityVersion unityVersion,
-                              IFileSystemTracker fileSystemTracker)
+                              IFileSystemTracker fileSystemTracker,
+                              UnityPackageProjectResolution unityPackageProjectResolution)
         {
             myLifetime = lifetime;
             mySolution = solution;
             myLogger = logger;
             myUnityVersion = unityVersion;
             myFileSystemTracker = fileSystemTracker;
+            myUnityPackageProjectResolution = unityPackageProjectResolution;
 
             // Refresh the packages in the guarded context, safe from reentrancy
             myDoRefreshGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "Unity::PackageManager",
@@ -547,12 +550,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             if (cacheFolder.IsEmpty)
                 return null;
 
-            // Unity 2018.3 introduced an additional layer of caching for registry based packages, local to the
-            // project, so that any edits to the files in the package only affect this project. This is primarily
-            // for the API updater, which would otherwise modify files in the product wide cache
-            // Starting with Unity 2023.3.0a14, the folder names in the PackageCache no longer include the version
+            // - Starting with Unity 6000.0.22f1, the package installation folder names have been changed from <packageName> to <packageName>@<fingerprint>.substring(0,12)
+            // fingerprint can be obtained from "Library/PackageManager/projectResolution.json",
+            // however this file is prone to future changes, so we plan to add some our own json, written by the Rider package
+            // - Starting with Unity 2023.3.0a14, the folder names in the PackageCache no longer include the version
+            // - Starting with Unity 2018.3 introduced an additional layer of caching for registry based packages,
+            // local to the project, so that any edits to the files in the package only affect this project.
+            // This is primarily for the API updater, which would otherwise modify files in the product wide cache
             var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(cacheFolder), PackageSource.Registry)
-                              ?? GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(id), PackageSource.Registry);
+                              ?? GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(id), PackageSource.Registry)
+                              ?? GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine($"{id}@{myUnityPackageProjectResolution.GetFingerprint(cacheFolder.Name)}"), PackageSource.Registry)
+                              ?? GetPackageDataFromFolderFallbackWithWarning(id);
             if (packageData != null)
                 return packageData;
 
@@ -563,6 +571,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
             var packageFolder = packageCacheFolder.Combine(cacheFolder);
             return GetPackageDataFromFolder(id, packageFolder, PackageSource.Registry);
+        }
+
+        private PackageData? GetPackageDataFromFolderFallbackWithWarning(string id)
+        {
+            var fallback = myLocalPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault();
+            if (fallback == null) return null;
+            myLogger.Warn($"Using relaxed heuristics to determine package data from local cache folder {id}.");
+            return GetPackageDataFromFolder(id, fallback, PackageSource.Registry);
         }
 
         private PackageData? GetBuiltInPackage(string id, string version, VirtualFileSystemPath builtInPackagesFolder)
