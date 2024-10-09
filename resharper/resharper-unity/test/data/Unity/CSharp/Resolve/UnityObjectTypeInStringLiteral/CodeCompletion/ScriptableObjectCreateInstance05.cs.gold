@@ -1,7 +1,7 @@
 ﻿# 385 ITEMS #
 
-+ ADBannerView
-+ ADInterstitialAd
+ADBannerView
+ADInterstitialAd
 AI
 Accessibility
 + AddComponentMenu
@@ -18,7 +18,7 @@ Android
 + AndroidJavaProxy
 + Animation
 + AnimationClip
-+ AnimationClipPair
+AnimationClipPair
 + AnimationCurve
 + AnimationEvent
 + AnimationState
@@ -60,7 +60,7 @@ Audio
 + BillboardAsset
 + BillboardRenderer
 Bindings
-+ BitStream
+BitStream
 + BoxCollider
 + BoxCollider2D
 + BuoyancyEffector2D
@@ -136,8 +136,8 @@ Experimental
 + GL
 + GUI
 + GUIContent
-+ GUIElement
-+ GUILayer
+GUIElement
+GUILayer
 + GUILayout
 + GUILayoutOption
 + GUILayoutUtility
@@ -146,8 +146,8 @@ Experimental
 + GUIStyle
 + GUIStyleState
 + GUITargetAttribute
-+ GUIText
-+ GUITexture
+GUIText
+GUITexture
 + GUIUtility
 + GameObject
 + GeometryUtility
@@ -169,7 +169,7 @@ Experimental
 + HideInInspector
 + HingeJoint
 + HingeJoint2D
-+ HostData
+HostData
 + HumanPoseHandler
 + HumanTrait
 + ImageConversion
@@ -199,13 +199,13 @@ Jobs
 + LightmapSettings
 + LineRenderer
 + LineUtility
-+ LocalNotification
+LocalNotification
 + LocalizationAsset
 + LocationService
 + Logger
 LowLevel
 Lumin
-+ MasterServer
+MasterServer
 + Material
 + MaterialPropertyBlock
 + Mesh
@@ -218,12 +218,12 @@ Lumin
 + MissingReferenceException
 + MonoBehaviour
 + Motion
-+ MovieTexture
+MovieTexture
 + MultilineAttribute
-+ Network
-+ NetworkView
+Network
+NetworkView
 Networking
-+ NotificationServices
+NotificationServices
 + Object
 + OcclusionArea
 + OcclusionPortal
@@ -248,14 +248,14 @@ PlayerLoop
 + PointEffector2D
 + PolygonCollider2D
 + PreferBinarySerialization
-+ ProceduralMaterial
-+ ProceduralPropertyDescription
-+ ProceduralTexture
+ProceduralMaterial
+ProceduralPropertyDescription
+ProceduralTexture
 Profiling
 + Projector
 + PropertyAttribute
 + QualitySettings
-+ RPC
+RPC
 + Random
 + RangeAttribute
 + RectOffset
@@ -264,7 +264,7 @@ Profiling
 + ReflectionProbe
 + RelativeJoint2D
 + RemoteConfigSettings
-+ RemoteNotification
+RemoteNotification
 + RemoteSettings
 + RenderSettings
 + RenderTexture
@@ -288,7 +288,7 @@ Scripting
 + SelectionBaseAttribute
 Serialization
 + SerializeField
-+ SerializePrivateVariables
+SerializePrivateVariables
 + SerializeReference
 + Shader
 + ShaderVariantCollection
@@ -360,7 +360,7 @@ VFX
 VR
 Video
 WSA
-+ WWW
+WWW
 + WWWAudioExtensions
 + WWWForm
 + WaitForEndOfFrame
@@ -379,17 +379,17 @@ XR
 Yoga
 _Scripting
 iOS
-+ iPhone
-+ iPhoneInput
-+ iPhoneKeyboard
+iPhone
+iPhoneInput
+iPhoneKeyboard
 + iPhoneSettings
 + iPhoneUtils
 tvOS
 # AUTOMATIC #
 # 385 ITEMS #
 
-+ ADBannerView
-+ ADInterstitialAd
+ADBannerView
+ADInterstitialAd
 AI
 Accessibility
 + AddComponentMenu
@@ -406,7 +406,7 @@ Android
 + AndroidJavaProxy
 + Animation
 + AnimationClip
-+ AnimationClipPair
+AnimationClipPair
 + AnimationCurve
 + AnimationEvent
 + AnimationState
@@ -448,7 +448,7 @@ Audio
 + BillboardAsset
 + BillboardRenderer
 Bindings
-+ BitStream
+BitStream
 + BoxCollider
 + BoxCollider2D
 + BuoyancyEffector2D
@@ -524,8 +524,8 @@ Experimental
 + GL
 + GUI
 + GUIContent
-+ GUIElement
-+ GUILayer
+GUIElement
+GUILayer
 + GUILayout
 + GUILayoutOption
 + GUILayoutUtility
@@ -534,8 +534,8 @@ Experimental
 + GUIStyle
 + GUIStyleState
 + GUITargetAttribute
-+ GUIText
-+ GUITexture
+GUIText
+GUITexture
 + GUIUtility
 + GameObject
 + GeometryUtility
@@ -557,7 +557,7 @@ Experimental
 + HideInInspector
 + HingeJoint
 + HingeJoint2D
-+ HostData
+HostData
 + HumanPoseHandler
 + HumanTrait
 + ImageConversion
@@ -587,13 +587,13 @@ Jobs
 + LightmapSettings
 + LineRenderer
 + LineUtility
-+ LocalNotification
+LocalNotification
 + LocalizationAsset
 + LocationService
 + Logger
 LowLevel
 Lumin
-+ MasterServer
+MasterServer
 + Material
 + MaterialPropertyBlock
 + Mesh
@@ -606,12 +606,12 @@ Lumin
 + MissingReferenceException
 + MonoBehaviour
 + Motion
-+ MovieTexture
+MovieTexture
 + MultilineAttribute
-+ Network
-+ NetworkView
+Network
+NetworkView
 Networking
-+ NotificationServices
+NotificationServices
 + Object
 + OcclusionArea
 + OcclusionPortal
@@ -636,14 +636,14 @@ PlayerLoop
 + PointEffector2D
 + PolygonCollider2D
 + PreferBinarySerialization
-+ ProceduralMaterial
-+ ProceduralPropertyDescription
-+ ProceduralTexture
+ProceduralMaterial
+ProceduralPropertyDescription
+ProceduralTexture
 Profiling
 + Projector
 + PropertyAttribute
 + QualitySettings
-+ RPC
+RPC
 + Random
 + RangeAttribute
 + RectOffset
@@ -652,7 +652,7 @@ Profiling
 + ReflectionProbe
 + RelativeJoint2D
 + RemoteConfigSettings
-+ RemoteNotification
+RemoteNotification
 + RemoteSettings
 + RenderSettings
 + RenderTexture
@@ -676,7 +676,7 @@ Scripting
 + SelectionBaseAttribute
 Serialization
 + SerializeField
-+ SerializePrivateVariables
+SerializePrivateVariables
 + SerializeReference
 + Shader
 + ShaderVariantCollection
@@ -748,7 +748,7 @@ VFX
 VR
 Video
 WSA
-+ WWW
+WWW
 + WWWAudioExtensions
 + WWWForm
 + WaitForEndOfFrame
@@ -767,9 +767,9 @@ XR
 Yoga
 _Scripting
 iOS
-+ iPhone
-+ iPhoneInput
-+ iPhoneKeyboard
+iPhone
+iPhoneInput
+iPhoneKeyboard
 + iPhoneSettings
 + iPhoneUtils
 tvOS
