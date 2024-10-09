@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
@@ -19,11 +20,11 @@ using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Pr
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityProjectSettingsCache : SimpleICache<ProjectSettingsCacheItem>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly IEnumerable<IProjectSettingsAssetHandler> myProjectSettingsAssetHandlers;
+        private readonly IImmutableEnumerable<IProjectSettingsAssetHandler> myProjectSettingsAssetHandlers;
         private readonly ISolution mySolution;
         private readonly ProjectSettingsCacheItem myLocalCache = new();
 
@@ -35,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                                          IShellLocks shellLocks,
                                          IPersistentIndexManager persistentIndexManager,
                                          AssetSerializationMode assetSerializationMode,
-                                         IEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers,
+                                         IImmutableEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers,
                                          ISolution solution)
             : base(lifetime, shellLocks, persistentIndexManager, ProjectSettingsCacheItem.Marshaller)
         {
