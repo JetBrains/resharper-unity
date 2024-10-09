@@ -28,8 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 
         public UnityPackageManagerMock(Lifetime lifetime, ISolution solution, ILogger logger,
             UnitySolutionTracker unitySolutionTracker, Plugins.Unity.UnityEditorIntegration.UnityVersion unityVersion,
-            IFileSystemTracker fileSystemTracker) : base(lifetime, solution, logger, unitySolutionTracker,
-            unityVersion, fileSystemTracker)
+            IFileSystemTracker fileSystemTracker, UnityPackageProjectResolution resolution) 
+            : base(lifetime, solution, logger, unitySolutionTracker, unityVersion, fileSystemTracker, resolution)
         {
         }
 
