@@ -120,11 +120,13 @@ class UnityPlayerListener {
 
     private fun startListeningUdp(lifetime: Lifetime) {
         for (networkInterface in NetworkInterface.getNetworkInterfaces()) {
+            logger.trace("Examine network interface $networkInterface")
             if (!networkInterface.isUp || !networkInterface.supportsMulticast()
                 || !networkInterface.inetAddresses.asSequence().any { it is Inet4Address }) {
                 continue
             }
 
+            logger.trace("Attempt to open DatagramChannel with $networkInterface")
             multicastPorts.forEach { port ->
                 try {
                     // Setting the network interface will set the first IPv4 address on the socket's fd
