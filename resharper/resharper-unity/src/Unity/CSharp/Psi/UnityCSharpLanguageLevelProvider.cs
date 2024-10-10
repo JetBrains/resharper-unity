@@ -27,8 +27,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
 
         public override bool IsApplicable(IPsiModule psiModule)
         {
-            // applicable only to generated projects (class libraries can use whatever language version they want)
-            return psiModule.ContainingProjectModule is IProject project && project.IsUnityGeneratedProject();
+            // applicable only to generated C# projects (class libraries can use whatever language version they want)
+            return psiModule is IProjectPsiModule projectPsiModule
+#pragma warning disable CS0618 // Type or member is obsolete
+                   && projectPsiModule.PsiLanguage.Is<CSharpLanguage>()
+#pragma warning restore CS0618 // Type or member is obsolete
+                   && psiModule.ContainingProjectModule is IProject project
+                   && project.IsUnityGeneratedProject();
         }
 
         public override CSharpLanguageLevel GetLatestAvailableLanguageLevel(IPsiModule psiModule) => GetLanguageLevel(psiModule);
