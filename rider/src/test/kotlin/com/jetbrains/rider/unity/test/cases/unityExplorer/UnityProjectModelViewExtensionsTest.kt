@@ -40,6 +40,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
+    @Mute("RIDER-117138")
     @Test(description="Rename an script in the project")
     fun testRenameFile() {
         testProjectModel(testGoldFile, project, false) {
@@ -58,6 +59,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
+    @Mute("RIDER-117138")
     @Test(description = "Rename a folder in the project")
     fun testRenameFolder() {
         testProjectModel(testGoldFile, project, false) {
