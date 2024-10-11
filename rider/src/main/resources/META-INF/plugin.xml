@@ -212,6 +212,8 @@
     <rider.completion.csharpIdentifierPartHelper implementation="com.jetbrains.rider.plugins.unity.csharp.completion.OdinLayoutAttributeCSharpIdentifierPartHelper"/>
 
     <toolWindowAllowlist id="Unity" />
+
+    <rider.gotoCustomizer implementation="com.jetbrains.rider.plugins.unity.gotoType.UnityGotoCustomizer"/>
   </extensions>
 
   <applicationListeners>
