@@ -3,7 +3,7 @@
     <ItemGroup>
         <PackageVersion Include="JetBrains.Annotations" Version="2024.2.0" />
         <PackageVersion Include="JetBrains.Build.ILRepack" Version="0.0.5" />
-        <PackageVersion Include="JetBrains.RdFramework" Version="2024.1.0" />
+        <PackageVersion Include="JetBrains.RdFramework" Version="2024.3.0" />
         <PackageVersion Include="JetBrains.Unity.Libs.Ref.2019.2.0f1" Version="2023.10.14" />
         <PackageVersion Include="JetBrains.Unity.Libs.Ref.CorCLR" Version="2024.8.15"/>
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="15.6.1"/>
