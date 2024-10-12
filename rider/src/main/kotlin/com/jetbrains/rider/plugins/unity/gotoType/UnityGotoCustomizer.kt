@@ -16,7 +16,7 @@ class UnityGotoCustomizer : GotoCustomizer {
         if (file.fileType !is UnityYamlFileType) return false
         val solutionDir = project.solutionDirectory.toVirtualFile(false)?:return false
         val assetsFolder = solutionDir.findChild("Assets") ?: return false
-        if (!VfsUtil.isAncestor(assetsFolder, file, false)) return false
+        if (VfsUtil.isAncestor(assetsFolder, file, false)) return true
 
         val localPackagesFolder = solutionDir.findChild("Packages") ?: return false
         return VfsUtil.isAncestor(localPackagesFolder, file, false)
