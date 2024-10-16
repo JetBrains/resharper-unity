@@ -1,4 +1,4 @@
-﻿(parameter) |Collision(ReSharper C# Class Identifier)| other
+﻿(parameter) |Collision(ReSharper C# Class Identifier)| |other(ReSharper C# Parameter Identifier)
 
 The Collision data associated with this collision.
 This parameter is optional: Removing collision parameter avoids unnecessary calculations
