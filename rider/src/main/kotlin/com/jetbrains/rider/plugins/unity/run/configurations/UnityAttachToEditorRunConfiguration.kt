@@ -253,5 +253,9 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             element.setAttribute("ignored-value-for-modified-check", pid.toString())
         }
     }
+
+    override fun useMixedDebugMode(): Boolean {
+        return true
+    }
 }
 
