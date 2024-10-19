@@ -13,7 +13,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShaderLabVariableReferenceAutomaticCompletionStrategy : IAutomaticCodeCompletionStrategy
     {
         private readonly ShaderLabIntellisenseManager myShaderLabIntellisenseManager;
