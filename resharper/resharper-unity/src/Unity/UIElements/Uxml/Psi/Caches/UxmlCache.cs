@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
             return base.IsApplicable(sf) && sf.IsUxml() && sf.IsLanguageSupported<UxmlLanguage>() 
-                   && (mySolution.SolutionDirectory.Combine("Assets").IsPrefixOf(sf.GetLocation()) || myPackageManager.IsLocalPackageCacheFile(sf.GetLocation()));
+                   && (mySolution.SolutionDirectory.Combine("Assets").IsPrefixOf(sf.GetLocation()) || myPackageManager.InPackagesFolder(sf.GetLocation()));
         }
 
         public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
