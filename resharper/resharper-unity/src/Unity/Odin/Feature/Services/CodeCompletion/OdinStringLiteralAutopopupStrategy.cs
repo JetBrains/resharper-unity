@@ -12,7 +12,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeCompletion;
 
-[SolutionComponent(InstantiationEx.LegacyDefault)]
+[SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
 public class OdinStringLiteralAutopopupStrategy : CSharpInStringLiteralAutopopupStrategy
 {
     private readonly UnityTechnologyDescriptionCollector myTechnologyDescriptionCollector;
