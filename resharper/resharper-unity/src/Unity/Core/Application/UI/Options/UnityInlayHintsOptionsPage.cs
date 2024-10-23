@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 
         public UnityInlayHintsOptionsPage(Lifetime lifetime, OptionsPageContext optionsPageContext,
                                           OptionsSettingsSmartContext optionsSettingsSmartContext)
-            : base(lifetime, optionsPageContext, optionsSettingsSmartContext, optionsPageContext.IsReSharper)
+            : base(lifetime, optionsPageContext, optionsSettingsSmartContext)
         {
             AddVisibilityHelpText();
 
