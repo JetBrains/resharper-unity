@@ -14,6 +14,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
+import com.jetbrains.rider.debugger.attach.util.getAvailableRuntimes
+import com.jetbrains.rider.model.ProcessRuntimeInformation
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.isUnityProject
@@ -56,6 +58,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
     @Transient
     var pid: Int? = null
+
+    var runtimes:List<ProcessRuntimeInformation> = emptyList()
 
     @Transient
     override var listenPortForConnections: Boolean = false
@@ -153,7 +157,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         super.checkRunnerSettings(runner, runnerSettings, configurationPerRunnerSettings)
     }
 
-    fun updatePidAndPort(): Boolean {
+    suspend fun updatePidAndPort(): Boolean {
 
         val processList = OSProcessUtil.getProcessList()
 
@@ -168,6 +172,9 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             if (pid == null) {
                 return false
             }
+            val processInfo = processList.firstOrNull { it.pid == pid } ?: return false
+            runtimes = getAvailableRuntimes(processInfo, project)
+
             port = convertPidToDebuggerPort(pid!!)
             return true
         }
