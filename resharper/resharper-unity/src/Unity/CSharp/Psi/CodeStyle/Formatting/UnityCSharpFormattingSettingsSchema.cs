@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.Application.Components;
 using JetBrains.Application.Settings;
+using JetBrains.Application.Settings.Calculated.Interface;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeStyle;
@@ -16,8 +17,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting
             [NotNull] IContextBoundSettingsStoreLive smartContext, 
             [NotNull] IValueEditorViewModelFactory itemViewModelFactory, 
             [NotNull] IComponentContainer container, 
-            [NotNull] ISettingsToHide settingsToHide
-        ) : base(lifetime, smartContext, itemViewModelFactory, container, settingsToHide)
+            [NotNull] ISettingsToHide settingsToHide,
+            [NotNull] ICalculatedSettingsSchema calculatedSettingsSchema
+        ) : base(lifetime, smartContext, itemViewModelFactory, container, settingsToHide, calculatedSettingsSchema)
         {
         }
 

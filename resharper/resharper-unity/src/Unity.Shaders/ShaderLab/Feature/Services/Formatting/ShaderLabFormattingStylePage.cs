@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.Components;
 using JetBrains.Application.Help;
 using JetBrains.Application.Settings;
+using JetBrains.Application.Settings.Calculated.Interface;
 using JetBrains.Application.UI.Components;
 using JetBrains.Application.UI.Options;
 using JetBrains.Lifetimes;
@@ -51,8 +52,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
         public ShaderLabFormattingStylePageSchema(Lifetime lifetime,
                                                   [NotNull] IContextBoundSettingsStoreLive smartContext,
                                                   [NotNull] IValueEditorViewModelFactory itemViewModelFactory,
-                                                  IComponentContainer container, ISettingsToHide settingsToHide)
-            : base(lifetime, smartContext, itemViewModelFactory, container, settingsToHide)
+                                                  IComponentContainer container, ISettingsToHide settingsToHide,
+                                                  [NotNull] ICalculatedSettingsSchema calculatedSettingsSchema)
+            : base(lifetime, smartContext, itemViewModelFactory, container, settingsToHide, calculatedSettingsSchema)
         {
         }
 
