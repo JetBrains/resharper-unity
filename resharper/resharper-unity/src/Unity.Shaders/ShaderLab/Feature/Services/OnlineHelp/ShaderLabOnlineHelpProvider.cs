@@ -14,7 +14,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.OnlineHelp
 {
-    [ShellComponent(InstantiationEx.LegacyDefault)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShaderLabOnlineHelpProvider : IOnlineHelpProvider
     {
         private readonly UnityDocumentation myDocumentation;
