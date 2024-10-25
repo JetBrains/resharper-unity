@@ -18,8 +18,6 @@ import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
-import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.WorkerRunInfo
 import kotlinx.coroutines.Dispatchers
@@ -53,9 +51,11 @@ class UnityAttachToEditorProfileState(
         return withContext(Dispatchers.Default) {
             if (!remoteConfiguration.updatePidAndPort()) {
                 thisLogger().trace("Have not found Unity, would start a new Unity Editor instead.")
+                // todo: support running Unity CoreCLR with debug
                 exeDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
             }
-            else if (UnityInstallationFinder.getInstance(project).isCoreCLR.hasTrueValue()) {
+            else if (remoteConfiguration.runtimes.any {it is com.jetbrains.rider.model.GenericCoreClrRuntime }) {
+                // at the moment runtimes show both GenericCoreClrRuntime and Mono for Unity 7
                 corAttachDebugProfileState = UnityCorAttachDebugProfileState(remoteConfiguration.pid!!,
                                                                              exeDebugProfileState.executionEnvironment)
                 corAttachDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
