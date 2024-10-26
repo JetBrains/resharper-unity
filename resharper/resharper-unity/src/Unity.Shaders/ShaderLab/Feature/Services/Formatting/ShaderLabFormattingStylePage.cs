@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.Application.Components;
 using JetBrains.Application.Help;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Calculated.Interface;
 using JetBrains.Application.UI.Components;
@@ -46,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
         }
     }
 
-    [FormattingSettingsPresentationComponent]
+    [FormattingSettingsPresentationComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class ShaderLabFormattingStylePageSchema : IndentStylePageSchema<ShaderLabFormatSettingsKey, ShaderLabCodeStylePreview>
     {
         public ShaderLabFormattingStylePageSchema(Lifetime lifetime,

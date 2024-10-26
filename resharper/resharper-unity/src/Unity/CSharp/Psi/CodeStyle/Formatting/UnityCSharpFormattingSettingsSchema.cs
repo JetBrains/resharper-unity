@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Application.Components;
+using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Calculated.Interface;
 using JetBrains.Lifetimes;
@@ -9,7 +10,7 @@ using JetBrains.ReSharper.Features.Altering.CodeFormatter.CSharp;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting
 {
-    [FormattingSettingsPresentationComponent]
+    [FormattingSettingsPresentationComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityCSharpFormattingSettingsSchema : OthersPageSchemaPart
     {
         public UnityCSharpFormattingSettingsSchema(
