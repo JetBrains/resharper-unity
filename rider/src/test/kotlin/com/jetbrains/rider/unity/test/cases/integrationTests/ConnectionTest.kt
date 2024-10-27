@@ -20,7 +20,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     override val testSolution: String = "SimpleUnityProjectWithoutPlugin"
 
     @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-        description = "Check connection with Unity after Unity start")
+        description = "Check connection with Unity after Unity start with Simple Unity Project without plugin")
     fun installAndCheckConnectionAfterUnityStart() {
         withUnityProcess {
             waitFirstScriptCompilation(project)
@@ -30,7 +30,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     }
 
     @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-          description = "Check connection with Unity before Unity start")
+          description = "Check connection with Unity before Unity start with Simple Unity Project without plugin")
     fun installAndCheckConnectionBeforeUnityStart() {
         withUnityProcess {
             waitFirstScriptCompilation(project)
@@ -40,7 +40,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     }
 
     @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-          description = "Check external Editor in Unity")
+          description = "Check external Editor in Unity settings")
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
         executeIntegrationTestMethod("DumpExternalEditor")
     }
@@ -74,7 +74,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     fun checkLogWithExecutingMethod() = checkLog { executeIntegrationTestMethod("WriteToLog") }
 
     @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-          description = "Check Unity Log with Unity vodel refresh")
+          description = "Check Unity Log with Unity model refresh")
     fun checkLogWithUnityModelRefresh() = checkLog { executeScript("WriteToLog.cs") }
 
     private fun checkLog(execute: () -> Unit) {

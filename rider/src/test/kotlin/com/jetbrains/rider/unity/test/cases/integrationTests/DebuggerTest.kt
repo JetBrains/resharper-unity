@@ -13,9 +13,9 @@ import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBre
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
 import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
-import com.jetbrains.rider.test.annotations.Mute
-import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.enums.PlatformType
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.unity.EngineVersion
 import com.jetbrains.rider.test.unity.Tuanjie
@@ -28,6 +28,9 @@ import org.testng.annotations.Test
 import kotlin.test.assertNotNull
 import kotlin.test.fail
 
+@Subsystem(SubsystemConstants.UNITY_PLUGIN)
+@Feature("Debug Unity Editor")
+@Severity(SeverityLevel.CRITICAL)
 abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
 
     override val testSolution: String = 
@@ -36,7 +39,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
         else 
             "UnityDebugAndUnitTesting/Project"
 
-    @Test
+    @Test(description = "Check 2 breakpoints in simple Unity App")
     fun checkBreakpoint() {
         attachDebuggerToUnityEditorAndPlay(
             {
@@ -53,7 +56,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
             }, testGoldFile)
     }
 
-    @Test
+    @Test(description = "Check texture debugging in simple Unity App")
     fun checkTextureDebugging() {
         attachDebuggerToUnityEditorAndPlay(
             beforeRun = {
@@ -94,7 +97,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
             }, goldFile = testGoldFile)
     }
 
-    @Test
+    @Test(description = "Check Unity pause point in debugging for simple Unity App")
     fun checkUnityPausePoint() {
         attachDebuggerToUnityEditorAndPlay(
             test = {
@@ -106,7 +109,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
             })
     }
 
-    @Test(description = "RIDER-24651")
+    @Test(description = "Check exception breakpoint with 'Just My Code' for simple Unity App. RIDER-24651")
     fun checkExceptionBreakpointWithJustMyCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
@@ -119,7 +122,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
             }, testGoldFile)
     }
 
-    @Test(description = "RIDER-23087", enabled = false)
+    @Test(description = "Check evaluation after restarting the game. RIDER-23087", enabled = false)
     fun checkEvaluationAfterRestartGame() {
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(

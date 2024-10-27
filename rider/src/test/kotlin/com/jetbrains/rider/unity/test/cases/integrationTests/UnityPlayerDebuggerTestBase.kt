@@ -3,11 +3,8 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rdclient.util.idea.toIOFile
+import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.annotations.Severity
-import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
@@ -18,7 +15,9 @@ import org.testng.annotations.Test
 import java.time.Duration
 import kotlin.test.assertNotNull
 
-
+@Subsystem(SubsystemConstants.UNITY_PLUGIN)
+@Feature("Debug Unity Player")
+@Severity(SeverityLevel.CRITICAL)
 abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNames: Map<String, String>)
     : UnityPlayerTestBase(engineVersion, buildNames) {
 
@@ -30,7 +29,7 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNa
         "SimpleUnityGame.exe"
     else null
 
-    @Test
+    @Test(description = "Check breakpoint for prebuilt Player)")
     fun checkBreakpoint() {
         val gameFileName = getGameFileName()
         assertNotNull(gameFileName)

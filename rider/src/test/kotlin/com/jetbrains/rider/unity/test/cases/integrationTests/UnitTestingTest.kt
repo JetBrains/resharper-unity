@@ -25,7 +25,7 @@ abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWi
         else
             "UnityDebugAndUnitTesting/Project"
 
-    @Test(description="Check run all tests from project with Unity2020")
+    @Test(description="Check run all tests from project")
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
             it.waitForDiscovering()

@@ -25,7 +25,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
 
     override val testSolution = "UnityDotsDebug/Project"
 
-    @Test
+    @Test(description = "Check breakpoint for Unity DOTS code")
     fun checkBreakpointInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
@@ -47,7 +47,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
             }, testGoldFile)
     }
 
-    @Test
+    @Test(description = "Check Ref Presentation in DOTS code for simple app")
     fun checkRefPresentationInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
@@ -68,7 +68,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
         dumpProfile.customRegexToMask["<ResetTransformSystemBase_LambdaJob_Job>"] = Regex("ResetTransformSystemBase_.*_Job")
     }
 
-    @Test
+    @Test(description = "Check Unity pause point in debugging for Unity DOTS")
     fun checkUnityPausePoint() {
         attachDebuggerToUnityEditorAndPlay(
             test = {
