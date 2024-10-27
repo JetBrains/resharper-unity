@@ -46,6 +46,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
             // R# already has a helper method to recognise the SFI project - IsVCXMiscProjectInVs2015
             && project.IsVCXMiscProjectInVs2015();
 
-        public double Order => int.MaxValue;
+        public double Priority => int.MaxValue;
     }
 }
