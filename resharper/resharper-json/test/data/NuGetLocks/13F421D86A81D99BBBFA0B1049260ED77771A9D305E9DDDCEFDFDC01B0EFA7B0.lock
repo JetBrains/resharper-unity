@@ -1,0 +1,15 @@
+﻿# Please commit this file, it's crucial for tests stability. Even if you believe it's not yours, it still needs to be committed.
+# Input (NuGetFramework=net35):
+# JetBrains.Tests.Platform.NETFrameWork [2.0.0.0, 2.0.0.2147483647]
+# JetBrains.Tests.Platform.NETFrameWork [3.0.0.0, 3.0.0.2147483647]
+# JetBrains.Tests.Platform.NETFrameWork [3.5.0.0, 3.5.0.2147483647]
+JetBrains.Tests.Microsoft.Gac 1.1
+JetBrains.Tests.Platform.NETFrameWork 2.0
+JetBrains.Tests.Platform.NETFrameWork 3.0
+JetBrains.Tests.Platform.NETFrameWork 3.5
+JetBrains.Tests.Platform.NetFramework.Binaries 2.0
+JetBrains.Tests.Platform.NetFramework.Binaries 3.0
+JetBrains.Tests.Platform.NetFramework.Binaries 3.5
+JetBrains.Tests.Platform.NetFramework.Profiles 3.5
+JetBrains.Tests.Platform.NetFramework.ReferenceAssemblies 3.0
+JetBrains.Tests.Platform.NetFramework.ReferenceAssemblies 3.5
