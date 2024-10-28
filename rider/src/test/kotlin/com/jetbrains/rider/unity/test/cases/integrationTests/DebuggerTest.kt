@@ -117,7 +117,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
     fun checkExceptionBreakpointWithJustMyCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleExceptionBreakpoint("System.Exception").justMyCode = true
+                toggleSystemExceptionBreakpoint(breakIfHandledByUserCode = true, breakIfHandledByOtherCode = false)
             },
             {
                 waitForPause()
