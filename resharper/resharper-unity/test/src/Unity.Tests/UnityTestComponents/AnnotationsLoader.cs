@@ -10,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
-    [ShellComponent(InstantiationEx.LegacyDefault)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class AnnotationsLoader : IExternalAnnotationsFileProvider
     {
         private readonly OneToSetMap<string, VirtualFileSystemPath> myAnnotations;
