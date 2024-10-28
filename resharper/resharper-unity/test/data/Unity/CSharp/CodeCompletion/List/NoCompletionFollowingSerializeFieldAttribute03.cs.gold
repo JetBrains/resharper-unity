@@ -1,4 +1,4 @@
-﻿# 68 ITEMS #
+﻿# 67 ITEMS #
 
 + RuntimeInitializeOnLoadMethodAttribute
 OnCaptureResourceCreatedCallback (in UnityEngine.Windows.WebCam.PhotoCapture)
@@ -37,7 +37,6 @@ OnVideoModeStartedCallback (in UnityEngine.Windows.WebCam.VideoCapture)
 OnVideoModeStoppedCallback (in UnityEngine.Windows.WebCam.VideoCapture)
 OneWayAttribute (in System.Runtime.Remoting.Messaging)
 OnlineState (in UnityEditor.VersionControl)
-OnSceneFunc (in UnityEditor.SceneView)
 ObjectNames (in UnityEditor)
 ActionOnDotNetUnhandledException (in UnityEditor)
 AndroidShowActivityIndicatorOnLoading (in UnityEditor)
@@ -69,7 +68,7 @@ XboxOneLoggingLevel (in UnityEditor)
 XboxOnePackageUpdateGranularity (in UnityEditor)
 iOSShowActivityIndicatorOnLoading (in UnityEditor)
 # AUTOMATIC #
-# 68 ITEMS #
+# 67 ITEMS #
 
 + RuntimeInitializeOnLoadMethodAttribute
 OnCaptureResourceCreatedCallback (in UnityEngine.Windows.WebCam.PhotoCapture)
@@ -108,7 +107,6 @@ OnVideoModeStartedCallback (in UnityEngine.Windows.WebCam.VideoCapture)
 OnVideoModeStoppedCallback (in UnityEngine.Windows.WebCam.VideoCapture)
 OneWayAttribute (in System.Runtime.Remoting.Messaging)
 OnlineState (in UnityEditor.VersionControl)
-OnSceneFunc (in UnityEditor.SceneView)
 ObjectNames (in UnityEditor)
 ActionOnDotNetUnhandledException (in UnityEditor)
 AndroidShowActivityIndicatorOnLoading (in UnityEditor)

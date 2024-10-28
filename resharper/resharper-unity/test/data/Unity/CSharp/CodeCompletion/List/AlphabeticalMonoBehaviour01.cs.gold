@@ -1,8 +1,6 @@
-﻿# 815 ITEMS #
+﻿# 761 ITEMS #
 
 A
-ADBannerView
-ADInterstitialAd
 AOT
 AccelerationEvent
 AddComponentMenu
@@ -24,7 +22,6 @@ AnimationClipPair
 AnimationCullingType
 AnimationCurve
 AnimationEvent
-AnimationInfo
 AnimationPlayMode
 AnimationState
 Animator
@@ -89,7 +86,6 @@ BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
-BitStream
 BlendWeights
 BodyDof
 BoneWeight
@@ -106,8 +102,6 @@ Cache
 CacheIndex
 CachedAssetBundle
 Caching
-CalendarIdentifier
-CalendarUnit
 Camera
 CameraClearFlags
 CameraType
@@ -154,7 +148,6 @@ ComputeBufferType
 ComputeShader
 ConfigurableJoint
 ConfigurableJointMotion
-ConnectionTesterStatus
 ConstantForce
 ConstantForce2D
 ContactFilter2D
@@ -236,8 +229,6 @@ FullScreenMovieScalingMode
 GL
 GUI
 GUIContent
-GUIElement
-GUILayer
 GUILayout
 GUILayoutOption
 GUILayoutUtility
@@ -246,8 +237,6 @@ GUISkin
 GUIStyle
 GUIStyleState
 GUITargetAttribute
-GUIText
-GUITexture
 GUIUtility
 GameObject
 GeometryUtility
@@ -276,7 +265,6 @@ HideInInspector
 HingeJoint
 HingeJoint2D
 HorizontalWrapMode
-HostData
 HumanBodyBones
 HumanBone
 HumanDescription
@@ -352,7 +340,6 @@ LineAlignment
 LineRenderer
 LineTextureMode
 LineUtility
-LocalNotification
 LocalizationAsset
 LocationInfo
 LocationService
@@ -360,8 +347,6 @@ LocationServiceStatus
 LogOption
 LogType
 Logger
-MasterServer
-MasterServerEvent
 MatchTargetWeightMask
 Material
 MaterialGlobalIlluminationFlags
@@ -383,21 +368,9 @@ MixedLightingMode
 MonoBehaviour
 Motion
 MotionVectorGenerationMode
-MovieTexture
 MultilineAttribute
 NPOTSupport
-Network
-NetworkConnectionError
-NetworkDisconnection
-NetworkLogLevel
-NetworkMessageInfo
-NetworkPeerType
-NetworkPlayer
 NetworkReachability
-NetworkStateSynchronization
-NetworkView
-NetworkViewID
-NotificationServices
 Object
 OcclusionArea
 OcclusionPortal
@@ -525,13 +498,6 @@ PolygonCollider2D
 Pose
 PreferBinarySerialization
 PrimitiveType
-ProceduralCacheSize
-ProceduralLoadingBehavior
-ProceduralMaterial
-ProceduralOutputType
-ProceduralProcessorUsage
-ProceduralPropertyDescription
-ProceduralPropertyType
 ProceduralTexture
 Projector
 PropertyAttribute
@@ -541,8 +507,6 @@ QualitySettings
 Quaternion
 QueryTriggerInteraction
 QueueMode
-RPC
-RPCMode
 Random
 RangeAttribute
 RangeInt
@@ -560,8 +524,6 @@ RectTransformUtility
 ReflectionProbe
 RelativeJoint2D
 RemoteConfigSettings
-RemoteNotification
-RemoteNotificationType
 RemoteSettings
 RenderBuffer
 RenderMode
@@ -764,22 +726,6 @@ event
 explicit
 extern
 float
-iOSActivityIndicatorStyle
-iPhone
-iPhoneAccelerationEvent
-iPhoneGeneration
-iPhoneInput
-iPhoneKeyboard
-iPhoneKeyboardType
-iPhoneMovieControlMode
-iPhoneMovieScalingMode
-iPhoneNetworkReachability
-iPhoneOrientation
-iPhoneScreenOrientation
-iPhoneSettings
-iPhoneTouch
-iPhoneTouchPhase
-iPhoneUtils
 implicit
 int
 interface
@@ -817,11 +763,9 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 815 ITEMS #
+# 761 ITEMS #
 
 A
-ADBannerView
-ADInterstitialAd
 AOT
 AccelerationEvent
 AddComponentMenu
@@ -843,7 +787,6 @@ AnimationClipPair
 AnimationCullingType
 AnimationCurve
 AnimationEvent
-AnimationInfo
 AnimationPlayMode
 AnimationState
 Animator
@@ -908,7 +851,6 @@ BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
-BitStream
 BlendWeights
 BodyDof
 BoneWeight
@@ -925,8 +867,6 @@ Cache
 CacheIndex
 CachedAssetBundle
 Caching
-CalendarIdentifier
-CalendarUnit
 Camera
 CameraClearFlags
 CameraType
@@ -973,7 +913,6 @@ ComputeBufferType
 ComputeShader
 ConfigurableJoint
 ConfigurableJointMotion
-ConnectionTesterStatus
 ConstantForce
 ConstantForce2D
 ContactFilter2D
@@ -1055,8 +994,6 @@ FullScreenMovieScalingMode
 GL
 GUI
 GUIContent
-GUIElement
-GUILayer
 GUILayout
 GUILayoutOption
 GUILayoutUtility
@@ -1065,8 +1002,6 @@ GUISkin
 GUIStyle
 GUIStyleState
 GUITargetAttribute
-GUIText
-GUITexture
 GUIUtility
 GameObject
 GeometryUtility
@@ -1095,7 +1030,6 @@ HideInInspector
 HingeJoint
 HingeJoint2D
 HorizontalWrapMode
-HostData
 HumanBodyBones
 HumanBone
 HumanDescription
@@ -1171,7 +1105,6 @@ LineAlignment
 LineRenderer
 LineTextureMode
 LineUtility
-LocalNotification
 LocalizationAsset
 LocationInfo
 LocationService
@@ -1179,8 +1112,6 @@ LocationServiceStatus
 LogOption
 LogType
 Logger
-MasterServer
-MasterServerEvent
 MatchTargetWeightMask
 Material
 MaterialGlobalIlluminationFlags
@@ -1202,21 +1133,9 @@ MixedLightingMode
 MonoBehaviour
 Motion
 MotionVectorGenerationMode
-MovieTexture
 MultilineAttribute
 NPOTSupport
-Network
-NetworkConnectionError
-NetworkDisconnection
-NetworkLogLevel
-NetworkMessageInfo
-NetworkPeerType
-NetworkPlayer
 NetworkReachability
-NetworkStateSynchronization
-NetworkView
-NetworkViewID
-NotificationServices
 Object
 OcclusionArea
 OcclusionPortal
@@ -1344,13 +1263,6 @@ PolygonCollider2D
 Pose
 PreferBinarySerialization
 PrimitiveType
-ProceduralCacheSize
-ProceduralLoadingBehavior
-ProceduralMaterial
-ProceduralOutputType
-ProceduralProcessorUsage
-ProceduralPropertyDescription
-ProceduralPropertyType
 ProceduralTexture
 Projector
 PropertyAttribute
@@ -1360,8 +1272,6 @@ QualitySettings
 Quaternion
 QueryTriggerInteraction
 QueueMode
-RPC
-RPCMode
 Random
 RangeAttribute
 RangeInt
@@ -1379,8 +1289,6 @@ RectTransformUtility
 ReflectionProbe
 RelativeJoint2D
 RemoteConfigSettings
-RemoteNotification
-RemoteNotificationType
 RemoteSettings
 RenderBuffer
 RenderMode
@@ -1583,22 +1491,6 @@ event
 explicit
 extern
 float
-iOSActivityIndicatorStyle
-iPhone
-iPhoneAccelerationEvent
-iPhoneGeneration
-iPhoneInput
-iPhoneKeyboard
-iPhoneKeyboardType
-iPhoneMovieControlMode
-iPhoneMovieScalingMode
-iPhoneNetworkReachability
-iPhoneOrientation
-iPhoneScreenOrientation
-iPhoneSettings
-iPhoneTouch
-iPhoneTouchPhase
-iPhoneUtils
 implicit
 int
 interface

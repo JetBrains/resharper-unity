@@ -1,4 +1,4 @@
-﻿# 140 ITEMS #
+﻿# 139 ITEMS #
 
 + private FixedUpdate() { ... }
 private LateUpdate() { ... }
@@ -138,10 +138,9 @@ UCOMIConnectionPoint (in System.Runtime.InteropServices)
 UCOMIConnectionPointContainer (in System.Runtime.InteropServices)
 UCOMIEnumConnectionPoints (in System.Runtime.InteropServices)
 UCOMIPersistFile (in System.Runtime.InteropServices)
-UserPresenceState (in UnityEngine.VR)
 UserPresenceState (in UnityEngine.XR)
 # AUTOMATIC #
-# 140 ITEMS #
+# 139 ITEMS #
 
 + private FixedUpdate() { ... }
 private LateUpdate() { ... }
@@ -281,5 +280,4 @@ UCOMIConnectionPoint (in System.Runtime.InteropServices)
 UCOMIConnectionPointContainer (in System.Runtime.InteropServices)
 UCOMIEnumConnectionPoints (in System.Runtime.InteropServices)
 UCOMIPersistFile (in System.Runtime.InteropServices)
-UserPresenceState (in UnityEngine.VR)
 UserPresenceState (in UnityEngine.XR)

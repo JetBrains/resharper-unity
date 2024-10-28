@@ -1,7 +1,5 @@
-﻿# 385 ITEMS #
+﻿# 362 ITEMS #
 
-ADBannerView
-ADInterstitialAd
 AI
 Accessibility
 + AddComponentMenu
@@ -60,7 +58,6 @@ Audio
 + BillboardAsset
 + BillboardRenderer
 Bindings
-BitStream
 + BoxCollider
 + BoxCollider2D
 + BuoyancyEffector2D
@@ -136,8 +133,6 @@ Experimental
 + GL
 + GUI
 + GUIContent
-GUIElement
-GUILayer
 + GUILayout
 + GUILayoutOption
 + GUILayoutUtility
@@ -146,8 +141,6 @@ GUILayer
 + GUIStyle
 + GUIStyleState
 + GUITargetAttribute
-GUIText
-GUITexture
 + GUIUtility
 + GameObject
 + GeometryUtility
@@ -169,7 +162,6 @@ GUITexture
 + HideInInspector
 + HingeJoint
 + HingeJoint2D
-HostData
 + HumanPoseHandler
 + HumanTrait
 + ImageConversion
@@ -199,13 +191,11 @@ Jobs
 + LightmapSettings
 + LineRenderer
 + LineUtility
-LocalNotification
 + LocalizationAsset
 + LocationService
 + Logger
 LowLevel
 Lumin
-MasterServer
 + Material
 + MaterialPropertyBlock
 + Mesh
@@ -218,12 +208,8 @@ MasterServer
 + MissingReferenceException
 + MonoBehaviour
 + Motion
-MovieTexture
 + MultilineAttribute
-Network
-NetworkView
 Networking
-NotificationServices
 + Object
 + OcclusionArea
 + OcclusionPortal
@@ -248,14 +234,11 @@ PlayerLoop
 + PointEffector2D
 + PolygonCollider2D
 + PreferBinarySerialization
-ProceduralMaterial
-ProceduralPropertyDescription
 ProceduralTexture
 Profiling
 + Projector
 + PropertyAttribute
 + QualitySettings
-RPC
 + Random
 + RangeAttribute
 + RectOffset
@@ -264,7 +247,6 @@ RPC
 + ReflectionProbe
 + RelativeJoint2D
 + RemoteConfigSettings
-RemoteNotification
 + RemoteSettings
 + RenderSettings
 + RenderTexture
@@ -379,17 +361,10 @@ XR
 Yoga
 _Scripting
 iOS
-iPhone
-iPhoneInput
-iPhoneKeyboard
-+ iPhoneSettings
-+ iPhoneUtils
 tvOS
 # AUTOMATIC #
-# 385 ITEMS #
+# 362 ITEMS #
 
-ADBannerView
-ADInterstitialAd
 AI
 Accessibility
 + AddComponentMenu
@@ -448,7 +423,6 @@ Audio
 + BillboardAsset
 + BillboardRenderer
 Bindings
-BitStream
 + BoxCollider
 + BoxCollider2D
 + BuoyancyEffector2D
@@ -524,8 +498,6 @@ Experimental
 + GL
 + GUI
 + GUIContent
-GUIElement
-GUILayer
 + GUILayout
 + GUILayoutOption
 + GUILayoutUtility
@@ -534,8 +506,6 @@ GUILayer
 + GUIStyle
 + GUIStyleState
 + GUITargetAttribute
-GUIText
-GUITexture
 + GUIUtility
 + GameObject
 + GeometryUtility
@@ -557,7 +527,6 @@ GUITexture
 + HideInInspector
 + HingeJoint
 + HingeJoint2D
-HostData
 + HumanPoseHandler
 + HumanTrait
 + ImageConversion
@@ -587,13 +556,11 @@ Jobs
 + LightmapSettings
 + LineRenderer
 + LineUtility
-LocalNotification
 + LocalizationAsset
 + LocationService
 + Logger
 LowLevel
 Lumin
-MasterServer
 + Material
 + MaterialPropertyBlock
 + Mesh
@@ -606,12 +573,8 @@ MasterServer
 + MissingReferenceException
 + MonoBehaviour
 + Motion
-MovieTexture
 + MultilineAttribute
-Network
-NetworkView
 Networking
-NotificationServices
 + Object
 + OcclusionArea
 + OcclusionPortal
@@ -636,14 +599,11 @@ PlayerLoop
 + PointEffector2D
 + PolygonCollider2D
 + PreferBinarySerialization
-ProceduralMaterial
-ProceduralPropertyDescription
 ProceduralTexture
 Profiling
 + Projector
 + PropertyAttribute
 + QualitySettings
-RPC
 + Random
 + RangeAttribute
 + RectOffset
@@ -652,7 +612,6 @@ RPC
 + ReflectionProbe
 + RelativeJoint2D
 + RemoteConfigSettings
-RemoteNotification
 + RemoteSettings
 + RenderSettings
 + RenderTexture
@@ -767,9 +726,4 @@ XR
 Yoga
 _Scripting
 iOS
-iPhone
-iPhoneInput
-iPhoneKeyboard
-+ iPhoneSettings
-+ iPhoneUtils
 tvOS
