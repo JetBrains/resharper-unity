@@ -21,7 +21,7 @@ import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.test.waitForDaemon
+import com.jetbrains.rider.test.scriptingApi.waitForDaemon
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
