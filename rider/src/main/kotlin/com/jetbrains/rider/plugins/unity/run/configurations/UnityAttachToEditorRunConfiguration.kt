@@ -26,6 +26,7 @@ import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
+import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
 import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
@@ -34,6 +35,7 @@ import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
 import com.jetbrains.rider.run.configurations.unity.UnityAttachRunConfiguration
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jdom.Element
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: ConfigurationFactory, val play: Boolean = false)
@@ -76,6 +78,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
     override fun getUnityEditorPid(): Int? = pid
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
         val executorId = executor.id
         for (ext in EP_NAME.getExtensions(project)) {

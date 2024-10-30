@@ -23,6 +23,7 @@ import com.jetbrains.rider.runtime.RiderDotNetActiveRuntimeHost
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jetbrains.concurrency.Promise
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class UnityExeConfiguration(name: String,
                             project: Project,
                             factory: ConfigurationFactory,
@@ -40,20 +41,14 @@ class UnityExeConfiguration(name: String,
         return newConfiguration
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getRunProfileStateAsync(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
         val executorId = executor.id
 
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID){
-            if (UnityInstallationFinder.getInstance(project).isCoreCLR.hasTrueValue())
-            {
-                val activeRuntimeHost = RiderDotNetActiveRuntimeHost.getInstance(environment.project)
-                val dotNetCoreRuntime = activeRuntimeHost.dotNetCoreRuntime.value ?: throw CantRunException(
-                    RiderMultiPlatformBundle.message("rider.mac.unable.to.get.runtime.information.message"))
-                return DotNetCoreDebugProfile(dotNetCoreRuntime, toDotNetExecutable(this.parameters), environment, dotNetCoreRuntime.cliExePath)
-            }
+            return if (UnityInstallationFinder.getInstance(project).isCoreCLR.hasTrueValue())
+                getDotNetCoreDebugProfile(environment)
             else{
-                return UnityExeDebugProfileState(this, DotNetRemoteConfiguration(project, ConfigurationTypeUtil.findConfigurationType(
+                UnityExeDebugProfileState(this, DotNetRemoteConfiguration(project, ConfigurationTypeUtil.findConfigurationType(
                     MonoRemoteConfigType::class.java).factory, name), environment)
             }
         }
@@ -61,7 +56,14 @@ class UnityExeConfiguration(name: String,
         return super.getRunProfileStateAsync(executor, environment)
     }
 
-    private fun toDotNetExecutable(parameters: ExeConfigurationParameters): DotNetExecutable {
+    fun getDotNetCoreDebugProfile(environment:ExecutionEnvironment):DotNetCoreDebugProfile{
+        val activeRuntimeHost = RiderDotNetActiveRuntimeHost.getInstance(environment.project)
+        val dotNetCoreRuntime = activeRuntimeHost.dotNetCoreRuntime.value ?: throw CantRunException(
+            RiderMultiPlatformBundle.message("rider.mac.unable.to.get.runtime.information.message"))
+        return DotNetCoreDebugProfile(dotNetCoreRuntime, toDotNetExecutable(), environment, dotNetCoreRuntime.cliExePath)
+    }
+
+    private fun toDotNetExecutable(): DotNetExecutable {
         return DotNetExecutable(parameters.exePath,
                                 null,
                                 parameters.workingDirectory,
