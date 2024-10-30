@@ -1,6 +1,6 @@
 --> UpdateBreakpointScript.cs:8(145,173) // if (Input.GetKey(KeyCode.F))
 UpdateBreakpointScript.Update() in , Assembly-CSharp.dll
-    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity): null
-    +this.gameObject = Directional Light (active: true, layer: 0): null
-    +this = enabled: true, gameObject: Directional Light: UpdateBreakpointScript
+    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
+    +this.gameObject = Directional Light (active: true, layer: 0)
+    +this = {UpdateBreakpointScript} enabled: true, gameObject: Directional Light
 

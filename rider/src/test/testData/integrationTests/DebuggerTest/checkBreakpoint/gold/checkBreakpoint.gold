@@ -1,13 +1,13 @@
 --> NewBehaviourScript.cs:8(110,129) // Debug.Log("Start");
 NewBehaviourScript.Start() in , Assembly-CSharp.dll
-    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity): null
-    +this.gameObject = Main Camera (active: true, layer: 0): null
-    +this = enabled: true, gameObject: Main Camera: NewBehaviourScript
+    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
+    +this.gameObject = Main Camera (active: true, layer: 0)
+    +this = {NewBehaviourScript} enabled: true, gameObject: Main Camera
 
 --> NewBehaviourScript.cs:15(310,336) // Debug.Log(binaryNotation);
 NewBehaviourScript.Update() in , Assembly-CSharp.dll
-    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity): null
-    +this.gameObject = Main Camera (active: true, layer: 0): null
-    +this = enabled: true, gameObject: Main Camera: NewBehaviourScript
-    binaryNotation = 2000000: int
+    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
+    +this.gameObject = Main Camera (active: true, layer: 0)
+    +this = {NewBehaviourScript} enabled: true, gameObject: Main Camera
+    binaryNotation = {int} 2000000
 
