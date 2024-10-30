@@ -15,7 +15,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.util.Key
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
 import com.jetbrains.rd.framework.RdTaskResult
@@ -39,15 +39,12 @@ import com.jetbrains.rider.util.NetUtils
 /**
  * [RunProfileState] to launch a Unity executable (player or editor) and attach the debugger
  */
-class UnityExeDebugProfileState(private val exeConfiguration: UnityExeConfiguration,
+class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
                                 private val remoteConfiguration: RemoteConfiguration,
                                 executionEnvironment: ExecutionEnvironment,
                                 isEditor: Boolean = false)
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, "Unity Executable", isEditor) {
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
-
-    private val logger = Logger.getInstance(UnityExeDebugProfileState::class.java)
-
     override val consoleKind: ConsoleKind = ConsoleKind.Normal
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
@@ -87,7 +84,7 @@ class UnityExeDebugProfileState(private val exeConfiguration: UnityExeConfigurat
             val res = frontendBackendModel.getScriptingBackend.start(lifetime, Unit)
             res.result.adviseNotNullOnce(lifetime) {
                 if (it is RdTaskResult.Fault) {
-                    logger.warn("getScriptingBackend failed with ${it.error}")
+                    thisLogger().warn("getScriptingBackend failed with ${it.error}")
                     return@adviseNotNullOnce
                 }
                 if (it.unwrap() == 1) {

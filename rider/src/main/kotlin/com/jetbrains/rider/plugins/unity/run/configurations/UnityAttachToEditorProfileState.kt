@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.ExecutionResult
@@ -18,9 +20,13 @@ import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
+import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.WorkerRunInfo
+import com.jetbrains.rider.run.dotNetCore.DotNetCoreDebugProfile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.withContext
 
 /**
@@ -38,10 +44,13 @@ class UnityAttachToEditorProfileState(
     private val project = executionEnvironment.project
 
     private lateinit var corAttachDebugProfileState : UnityCorAttachDebugProfileState
+    private lateinit var corRunDebugProfileState: DotNetCoreDebugProfile
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
         if (::corAttachDebugProfileState.isInitialized)
             return corAttachDebugProfileState.createModelStartInfo(lifetime)
+        else if (::corRunDebugProfileState.isInitialized)
+            return corRunDebugProfileState.createModelStartInfo(lifetime)
         return super.createModelStartInfo(lifetime)
     }
 
@@ -51,8 +60,13 @@ class UnityAttachToEditorProfileState(
         return withContext(Dispatchers.Default) {
             if (!remoteConfiguration.updatePidAndPort()) {
                 thisLogger().trace("Have not found Unity, would start a new Unity Editor instead.")
-                // todo: support running Unity CoreCLR with debug
-                exeDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
+
+                if (UnityInstallationFinder.getInstance(project).isCoreCLR.hasTrueValue()){
+                    corRunDebugProfileState = exeDebugProfileState.exeConfiguration.getDotNetCoreDebugProfile(executionEnvironment)
+                    corRunDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
+                }
+                else
+                    exeDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
             }
             else if (remoteConfiguration.runtimes.any {it is com.jetbrains.rider.model.GenericCoreClrRuntime }) {
                 // at the moment runtimes show both GenericCoreClrRuntime and Mono for Unity 7
@@ -110,8 +124,11 @@ class UnityAttachToEditorProfileState(
         }
 
         // We couldn't find a running instance, start a new one
-        if (remoteConfiguration.pid == null)
+        if (remoteConfiguration.pid == null) {
+            if (::corRunDebugProfileState.isInitialized)
+                return corRunDebugProfileState.execute(executor, runner, workerProcessHandler, lifetime)
             return exeDebugProfileState.execute(executor, runner, workerProcessHandler, lifetime)
+        }
 
         if (::corAttachDebugProfileState.isInitialized)
             return corAttachDebugProfileState.execute(executor, runner, workerProcessHandler, lifetime)
