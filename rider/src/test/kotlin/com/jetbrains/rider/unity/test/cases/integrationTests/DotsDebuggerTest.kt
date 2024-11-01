@@ -26,6 +26,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
     override val testSolution = "UnityDotsDebug/Project"
 
     @Test(description = "Check breakpoint for Unity DOTS code")
+    @ChecklistItems(["Breakpoints", "Breakpoint in DOTS"])
     fun checkBreakpointInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
@@ -48,6 +49,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
     }
 
     @Test(description = "Check Ref Presentation in DOTS code for simple app")
+    @ChecklistItems(["Breakpoints", "Ref Presentation in DOTS"])
     fun checkRefPresentationInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
@@ -69,6 +71,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
     }
 
     @Test(description = "Check Unity pause point in debugging for Unity DOTS")
+    @ChecklistItems(["Breakpoints", "Unity Pause Points in DOTS"])
     fun checkUnityPausePoint() {
         attachDebuggerToUnityEditorAndPlay(
             test = {
@@ -120,6 +123,7 @@ class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@ChecklistItems(["","", "Unity2023"])
 class DotsDebuggerTestUnity2023 : DotsDebuggerTest(Unity.V2023) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)

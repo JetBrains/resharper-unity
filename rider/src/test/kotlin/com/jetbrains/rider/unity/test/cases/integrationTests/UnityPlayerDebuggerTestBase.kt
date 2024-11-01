@@ -15,7 +15,7 @@ import org.testng.annotations.Test
 import java.time.Duration
 import kotlin.test.assertNotNull
 
-@Subsystem(SubsystemConstants.UNITY_PLUGIN)
+@Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Player")
 @Severity(SeverityLevel.CRITICAL)
 abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNames: Map<String, String>)
@@ -30,6 +30,7 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNa
     else null
 
     @Test(description = "Check breakpoint for prebuilt Player)")
+    @ChecklistItems(["Debug prebuilt Unity Player"])
     fun checkBreakpoint() {
         val gameFileName = getGameFileName()
         assertNotNull(gameFileName)

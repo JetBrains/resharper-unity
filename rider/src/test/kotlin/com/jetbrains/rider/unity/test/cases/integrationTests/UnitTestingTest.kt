@@ -26,6 +26,7 @@ abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWi
             "UnityDebugAndUnitTesting/Project"
 
     @Test(description="Check run all tests from project")
+    @ChecklistItems(["Run all tests from the Project"])
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
             it.waitForDiscovering()
@@ -42,6 +43,7 @@ abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWi
 
     //@Mute("RIDER-95762")
     @Test(description = "RIDER-54359. Check refresh assets before Test")
+    @ChecklistItems(["Refresh assets before test"])
     fun checkRefreshBeforeTest() {
         val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
         withOpenedEditor(project, file.absolutePath) { // the nature of exploration for Unity requires file to be opened
@@ -84,6 +86,7 @@ class UnitTestingTestUnity2020 : UnitTestingTest(Unity.V2020)
 class UnitTestingTestUnity2022 : UnitTestingTest(Unity.V2022)
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@ChecklistItems(["", "Unity2023"])
 class UnitTestingTestUnity2023 : UnitTestingTest(Unity.V2023)
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
