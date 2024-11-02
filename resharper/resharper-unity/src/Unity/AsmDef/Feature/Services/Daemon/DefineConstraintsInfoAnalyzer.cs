@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using JetBrains.Application.Parts;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
@@ -17,7 +18,8 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     // Note that problem analysers for NonUserCode will still show Severity.INFO
-    [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe,
+        typeof(IJsonNewLiteralExpression),
         HighlightingTypes = new[] { typeof(UnmetDefineConstraintInfo) })]
     public class DefineConstraintsInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {

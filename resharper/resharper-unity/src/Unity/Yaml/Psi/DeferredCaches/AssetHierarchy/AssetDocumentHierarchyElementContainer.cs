@@ -22,7 +22,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class AssetDocumentHierarchyElementContainer : IUnityAssetDataElementContainer
     {
         private readonly IPersistentIndexManager myManager;

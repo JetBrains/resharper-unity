@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         SerializedFieldStatus GetSerializableStatus(ITypeElement? type, bool useSwea);
     }
 
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnitySerializedReferenceProvider : SwaExtensionProviderBase, IAssemblyCache,
         IUnitySerializedReferenceProvider
     {
