@@ -1,27 +1,27 @@
 --> ResetTransformSystem.cs:24$(595) //             transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
 ResetTransformSystemBase.ResetTransformSystemBase_59E97586_LambdaJob_0_Job.OriginalLambdaBody() in , Assembly-CSharp.dll
-    +Current Entity = '' Entity<id>: Entity_
-        +Archetype = (Unity.Entities.Entity, Unity.Transforms.LocalToWorld, Unity.Transforms.LocalTransform, Unity.Transforms.PostTransformMatrix, RotationSpeed, Unity.Entities.Simulate, Unity.Entities.SceneTag, Unity.Entities.EditorRenderData, Unity.Entities.SceneSection): EntityArchetype
-        +Chunk = ArchetypeChunk: null
-        +[0] = LocalToWorld: null
-        +[1] = Position=float3(<float_value>, <float_value>, <float_value>) Rotation=quaternion(<float_value>, <float_value>, <float_value>, <float_value>) Scale=0: LocalTransform
-        +[2] = PostTransformMatrix: null
-        +[3] = RotationSpeed: null
-        +[4] = Unity.Entities.Simulate (Enabled): Component_E
-        +[5] = SubSceneTag: Entity<id>: SceneTag
-        +[6] = EditorRenderData: null
-        +[7] = SceneSection: null
-        +World = Default World - Game (#0): World
+    +Current Entity = {Entity_} '' Entity<id>
+        +Archetype = {EntityArchetype} (Unity.Entities.Entity, Unity.Transforms.LocalToWorld, Unity.Transforms.LocalTransform, Unity.Transforms.PostTransformMatrix, RotationSpeed, Unity.Entities.Simulate, Unity.Entities.SceneTag, Unity.Entities.EditorRenderData, Unity.Entities.SceneSection)
+        +Chunk = ArchetypeChunk
+        +[0] = LocalToWorld
+        +[1] = {LocalTransform} Position=float3(<float_value>, <float_value>, <float_value>) Rotation=quaternion(<float_value>, <float_value>, <float_value>, <float_value>) Scale=0
+        +[2] = PostTransformMatrix
+        +[3] = RotationSpeed
+        +[4] = {Component_E} Unity.Entities.Simulate (Enabled)
+        +[5] = {SceneTag} SubSceneTag: Entity<id>
+        +[6] = EditorRenderData
+        +[7] = SceneSection
+        +World = {World} Default World - Game (#0)
         +[Static members]
-    +this = ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>: null
-        +__speedTypeHandle = ComponentTypeHandle<RotationSpeed>: null
-        +__transformTypeHandle = ComponentTypeHandle<LocalTransform>: null
+    +this = ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>
+        +__speedTypeHandle = ComponentTypeHandle<RotationSpeed>
+        +__transformTypeHandle = ComponentTypeHandle<LocalTransform>
         +[Static members]
-    +speed = RotationSpeed: null
-        RadiansPerSecond = 4.45058966: float
-    +transform = Position=float3(<float_value>, <float_value>, <float_value>) Rotation=quaternion(<float_value>, <float_value>, <float_value>, <float_value>) Scale=0: LocalTransform
-        +Position = float3(<float_value>, <float_value>, <float_value>): float3
-        +Rotation = quaternion(<float_value>, <float_value>, <float_value>, <float_value>): quaternion
-        Scale = 0: float
+    +speed = RotationSpeed
+        RadiansPerSecond = {float} 4.45058966
+    +transform = {LocalTransform} Position=float3(<float_value>, <float_value>, <float_value>) Rotation=quaternion(<float_value>, <float_value>, <float_value>, <float_value>) Scale=0
+        +Position = {float3} float3(<float_value>, <float_value>, <float_value>)
+        +Rotation = {quaternion} quaternion(<float_value>, <float_value>, <float_value>, <float_value>)
+        Scale = {float} 0
         +[Static members]
 
