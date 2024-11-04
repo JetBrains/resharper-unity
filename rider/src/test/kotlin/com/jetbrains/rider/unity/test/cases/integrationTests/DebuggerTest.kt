@@ -176,7 +176,6 @@ class DebuggerTestUnity2020 : DebuggerTest(Unity.V2020)  {
 class DebuggerTestUnity2022 : DebuggerTest(Unity.V2022)
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@ChecklistItems(["", "", "Unity2023"])
 class DebuggerTestUnity2023 : DebuggerTest(Unity.V2023)
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])

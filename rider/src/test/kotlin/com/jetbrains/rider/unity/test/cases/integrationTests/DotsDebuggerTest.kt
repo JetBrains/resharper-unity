@@ -123,7 +123,6 @@ class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@ChecklistItems(["","", "Unity2023"])
 class DotsDebuggerTestUnity2023 : DotsDebuggerTest(Unity.V2023) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)

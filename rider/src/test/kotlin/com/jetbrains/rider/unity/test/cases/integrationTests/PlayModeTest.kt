@@ -89,7 +89,6 @@ class PlayModeTestUnity2022 : PlayModeTest(Unity.V2022) {
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@ChecklistItems(["", "", "Unity2023"])
 class PlayModeTestUnity2023 : PlayModeTest(Unity.V2023) {
     init {
         addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
