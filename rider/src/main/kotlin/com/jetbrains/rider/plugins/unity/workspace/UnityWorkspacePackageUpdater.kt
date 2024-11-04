@@ -2,6 +2,7 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -13,16 +14,19 @@ import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.util.application
+import com.intellij.util.concurrency.ThreadingAssertions
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
+import com.jetbrains.rd.util.threading.coroutines.async
 import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
+import kotlinx.coroutines.Dispatchers
 import java.nio.file.Paths
 
 @Service(Service.Level.PROJECT)
@@ -37,7 +41,6 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
     val sourceRootsTree = VirtualFilePrefixTreeFactory.createSet()
 
     init {
-        application.assertIsDispatchThread()
         val assets = project.solutionDirectory.toVirtualFile(false)?.findChild("Assets")
         if (assets != null) sourceRootsTree.add(assets)
         else logger.warn("No `Assets` folder in the Unity project")
@@ -53,17 +56,21 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
             // point, we sync the cached changes, and switch to updating the workspace model directly. We then expect
             // Unity to only add/remove a single package at a time.
             model.packages.adviseAddRemove(lifetime) { action, _, unityPackage ->
-                application.assertIsDispatchThread()
+                ThreadingAssertions.assertEventDispatchThread()
                 val updater = getInstance(session.project)
-                val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
-                when (action) {
-                    AddRemove.Add -> getInstance(session.project).updateWorkspaceModel { entityStorage ->
-                        if (packageFolder != null) updater.sourceRootsTree.add(packageFolder)
-                        updater.addPackage(unityPackage, packageFolder, entityStorage)
-                    }
-                    AddRemove.Remove -> getInstance(session.project).updateWorkspaceModel { entityStorage ->
-                        if (packageFolder != null) updater.sourceRootsTree.remove(packageFolder)
-                        updater.removePackage(unityPackage, entityStorage)
+                lifetime.async(Dispatchers.IO) {
+                    val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
+                    lifetime.async(Dispatchers.EDT) {
+                        when (action) {
+                            AddRemove.Add -> getInstance(session.project).updateWorkspaceModel { entityStorage ->
+                                if (packageFolder != null) updater.sourceRootsTree.add(packageFolder)
+                                updater.addPackage(unityPackage, packageFolder, entityStorage)
+                            }
+                            AddRemove.Remove -> getInstance(session.project).updateWorkspaceModel { entityStorage ->
+                                if (packageFolder != null) updater.sourceRootsTree.remove(packageFolder)
+                                updater.removePackage(unityPackage, entityStorage)
+                            }
+                        }
                     }
                 }
             }

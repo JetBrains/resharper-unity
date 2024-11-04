@@ -5,14 +5,14 @@ import com.intellij.openapi.rd.util.startOnUiAsync
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.util.application
+import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 
 class UnityUIMinimizer : ProjectActivity {
     companion object {
+        @RequiresEdt
         fun ensureMinimizedUI(project: Project) {
-            application.assertIsDispatchThread()
             if (project.isDisposed)
                 return
 
@@ -28,8 +28,8 @@ class UnityUIMinimizer : ProjectActivity {
             }
         }
 
+        @RequiresEdt
         fun recoverFullUI(project: Project) {
-            application.assertIsDispatchThread()
             if (project.isDisposed)
                 return
 

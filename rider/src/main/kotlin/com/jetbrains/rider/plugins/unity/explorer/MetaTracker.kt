@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
 import com.intellij.util.application
+import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.jetbrains.rd.platform.util.getLogger
 import com.jetbrains.rd.util.addUnique
 import com.jetbrains.rd.util.reactive.adviseUntil
@@ -156,8 +157,8 @@ class MetaTracker : VfsBackendRequester {
         return "meta".equals(extension, true)
     }
 
+    @RequiresEdt
     private fun isApplicableForProject(event: VFileEvent, project: Project): Boolean {
-        application.assertIsDispatchThread()
         val file = event.file ?: return false
         return UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree.getAncestors(file).any()
     }
@@ -177,11 +178,11 @@ class MetaTracker : VfsBackendRequester {
 
     private fun getMetaFileName(fileName: String) = "$fileName.meta"
 
+    @RequiresEdt
     private fun shouldCreateMetaFile(project: Project, assetFile: VirtualFile?, parent: VirtualFile): Boolean {
         // avoid adding a meta file for:
         // a hidden Asset (like `Documentation~`), but not its children
         // if parent folder (except SourceRoots) doesn't have meta file, this would cover children of the HiddenAssetFolder, see RIDER-93037
-        application.assertIsDispatchThread()
         val roots = UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree
         if (UnityExplorerFileSystemNode.isHiddenAsset(assetFile) || (!roots.contains(parent) && getMetaFile(parent) == null)) {
             logger.info("avoid adding meta file for $assetFile.")
@@ -215,8 +216,8 @@ class MetaTracker : VfsBackendRequester {
             })
         }
 
+        @RequiresEdt
         private fun clear() {
-            application.assertIsDispatchThread()
             changedMetaFiles.clear()
             actions.clear()
         }

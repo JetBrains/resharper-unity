@@ -15,7 +15,7 @@ import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
-import com.intellij.util.application
+import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.*
@@ -38,9 +38,8 @@ class UnityAutoSaveConfigureNotification : ProjectActivity {
         private const val settingName = "do_not_show_unity_auto_save_notification"
     }
 
+    @RequiresEdt
     fun showNotification(lifetimeDefinition: LifetimeDefinition, editor: Editor) {
-        application.assertIsDispatchThread()
-
         val lifetime = lifetimeDefinition.lifetime
 
         if (!lifetime.isAlive) return
