@@ -22,7 +22,7 @@ abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithU
         else "UnityDebugAndUnitTesting/Project"
 
     @Test(description="Check play, pause, step, unpause, stop actions for Unity")
-    @ChecklistItems(["Play Mode", "PlayMode actions (play, stop. etc.)"])
+    @ChecklistItems(["Play Mode/PlayMode actions (play, stop. etc.)"])
     fun checkPlayingPauseModesAndSteps() {
         play()
         pause()
@@ -32,7 +32,7 @@ abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 
     @Test(description="Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process")
-    @ChecklistItems(["Play Mode", "PlayMode actions (play, stop. etc.) while debugger attached"])
+    @ChecklistItems(["Play Mode/PlayMode actions (play, stop. etc.) while debugger attached"])
     fun checkAttachDebuggerToUnityEditor() {
         attachDebuggerToUnityEditor({},
                                     {
@@ -45,7 +45,7 @@ abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 
     @Test(description="Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process and Play")
-    @ChecklistItems(["Play Mode", "PlayMode actions (play, stop. etc.) while debugger attached and play"])
+    @ChecklistItems(["Play Mode/PlayMode actions (play, stop. etc.) while debugger attached and play"])
     fun checkAttachDebuggerToUnityEditorAndPlay() {
         attachDebuggerToUnityEditorAndPlay({},
                                            {
@@ -58,7 +58,7 @@ abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 
     @Test(description="Check start, update, quit logs")
-    @ChecklistItems(["Play Mode", "PlayMode logs"])
+    @ChecklistItems(["Play Mode/PlayMode logs"])
     fun checkPlayModeLogs() {
         replaceFileContent(project, "NewBehaviourScript.cs",)
         rebuildSolutionWithReSharperBuild()

@@ -40,7 +40,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
             "UnityDebugAndUnitTesting/Project"
 
     @Test(description = "Check 2 breakpoints in simple Unity App")
-    @ChecklistItems(["Breakpoints", "Simple breakpoint"])
+    @ChecklistItems(["Breakpoints/Simple breakpoint", "test/test2" ])
     fun checkBreakpoint() {
         attachDebuggerToUnityEditorAndPlay(
             {
@@ -58,7 +58,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 
     @Test(description = "Check texture debugging in simple Unity App")
-    @ChecklistItems(["Breakpoints", "Texture breakpoint"])
+    @ChecklistItems(["Breakpoints/Texture breakpoint"])
     fun checkTextureDebugging() {
         attachDebuggerToUnityEditorAndPlay(
             beforeRun = {
@@ -100,7 +100,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 
     @Test(description = "Check Unity pause point in debugging for simple Unity App")
-    @ChecklistItems(["Breakpoints", "Unity Pause Points"])
+    @ChecklistItems(["Breakpoints/Unity Pause Points"])
     fun checkUnityPausePoint() {
         attachDebuggerToUnityEditorAndPlay(
             test = {
@@ -113,7 +113,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 
     @Test(description = "Check exception breakpoint with 'Just My Code' for simple Unity App. RIDER-24651")
-    @ChecklistItems(["Breakpoints", "Exception Breakpoint"])
+    @ChecklistItems(["Breakpoints/Exception Breakpoint"])
     fun checkExceptionBreakpointWithJustMyCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
@@ -127,7 +127,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 
     @Test(description = "Check evaluation after restarting the game. RIDER-23087", enabled = false)
-    @ChecklistItems(["Evaluation", "Evaluation After Restart Game"])
+    @ChecklistItems(["Evaluation/Evaluation After Restart Game"])
     fun checkEvaluationAfterRestartGame() {
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(
