@@ -4,6 +4,7 @@ using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers.Transactions.ProjectHostActions.SharedProjects;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
@@ -14,14 +15,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Docum
     {
         private const string PlayerProjectSuffix = ".Player";
         private readonly ISolution mySolution;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
 
-        public UnityPlayerProjectOperations(ISolution solution)
+        public UnityPlayerProjectOperations(ISolution solution, UnitySolutionTracker unitySolutionTracker)
         {
             mySolution = solution;
+            myUnitySolutionTracker = unitySolutionTracker;
         }
 
         public IList<IProjectItem> GetProjectItemInSharedProjects(IProjectItem projectItem)
         {
+            if (!myUnitySolutionTracker.IsUnityProject.Value) return EmptyList<IProjectItem>.InstanceList;
+
             var playerProject = projectItem.GetProject().NotNull();
             if (!playerProject.Name.EndsWith(PlayerProjectSuffix)) // todo: check that define `UNITY_EDITOR` is not be present
                 return EmptyList<IProjectItem>.InstanceList;
@@ -49,6 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Docum
 
         public IList<IProjectItem> GetSharedProjectItemsInReferencedProjects(IProjectItem projectItem)
         {
+            if (!myUnitySolutionTracker.IsUnityProject.Value) return EmptyList<IProjectItem>.InstanceList;
+            
             var project = projectItem.GetProject().NotNull();
             var playerProject = mySolution
                 .GetProjectsByName(project.Name + PlayerProjectSuffix)
