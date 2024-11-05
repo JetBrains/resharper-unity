@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             if (!solutionTracker.IsUnityProject.Value)
                 return;
 
-            var localPackageCacheFolder = UnityCachesFinder.GetLocalPackageCacheFolder(solution.SolutionDirectory);
+            var packageCacheFolder = UnityCachesFinder.GetPackageCacheFolder(solution.SolutionDirectory);
 
             solution.GetComponent<ITextControlHost>().ViewHostTextControls(lifetime, (lt, id, textControl) =>
             {
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 if (solution.SolutionDirectory.Combine("Packages").IsPrefixOf(projectFile.Location))
                     return;
                 
-                if (localPackageCacheFolder.IsPrefixOf(projectFile.Location))
+                if (packageCacheFolder.IsPrefixOf(projectFile.Location))
                 {
                     message = Strings.ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Unity_Package_Cache__Any_changes_made_will_be_lost_;
                 }
