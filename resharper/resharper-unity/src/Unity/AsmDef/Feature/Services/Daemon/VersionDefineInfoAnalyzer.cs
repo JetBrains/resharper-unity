@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     // Note that problem analysers for NonUserCode will still show Severity.INFO
     [ElementProblemAnalyzer(
-        Instantiation.DemandAnyThreadUnsafe,
+        Instantiation.DemandAnyThreadSafe,
         typeof(IJsonNewLiteralExpression),
         HighlightingTypes = new[]
         {
