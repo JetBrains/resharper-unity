@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
                 {
                     if (ShouldBeExcluded(prevProperties, project, sourceFile))
                         return ExcludedProjectPsiSourceFilePropertiesProvider.ExcludedProjectPsiSourceFileProperties.Instance;
-                    if (project.GetSolution().TryGetComponent<PackageManager>() is {} packageManager && packageManager.IsLocalPackageCacheFile(sourceFile.GetLocation()))
+                    if (project.GetSolution().TryGetComponent<PackageManager>() is {} packageManager && packageManager.IsPackageCacheFile(sourceFile.GetLocation()))
                         return ShaderFilesProperties.ShaderLabPackageLocalCacheFileProperties;
                 }
             }

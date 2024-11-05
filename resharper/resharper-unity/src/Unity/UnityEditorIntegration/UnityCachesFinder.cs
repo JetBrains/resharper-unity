@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         }
         
         [NotNull]
-        public static VirtualFileSystemPath GetLocalPackageCacheFolder(VirtualFileSystemPath solutionDirectory)
+        public static VirtualFileSystemPath GetPackageCacheFolder(VirtualFileSystemPath solutionDirectory)
         {
             return solutionDirectory.Combine("Library/PackageCache");
         }

@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         private readonly VirtualFileSystemPath myPackagesFolder;
         private readonly VirtualFileSystemPath myPackagesLockPath;
         private readonly VirtualFileSystemPath myManifestPath;
-        private readonly VirtualFileSystemPath myLocalPackageCacheFolder;
+        private readonly VirtualFileSystemPath myPackageCacheFolder;
 
         private VirtualFileSystemPath? myLastReadGlobalManifestPath;
         private EditorManifestJson? myGlobalManifest;
@@ -100,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             myPackagesFolder = mySolution.SolutionDirectory.Combine("Packages");
             myPackagesLockPath = myPackagesFolder.Combine("packages-lock.json");
             myManifestPath = myPackagesFolder.Combine("manifest.json");
-            myLocalPackageCacheFolder = UnityCachesFinder.GetLocalPackageCacheFolder(mySolution.SolutionDirectory);
+            myPackageCacheFolder = UnityCachesFinder.GetPackageCacheFolder(mySolution.SolutionDirectory);
 
             Updating = new Property<bool?>("PackageManager::Update");
 
@@ -152,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             myFileSystemPathTrie.FindLongestPrefix(path);
 
         public bool InPackagesFolder(VirtualFileSystemPath path) => path.StartsWith(myPackagesFolder);
-        public bool IsLocalPackageCacheFile(VirtualFileSystemPath path) => path.StartsWith(myLocalPackageCacheFolder);
+        public bool IsPackageCacheFile(VirtualFileSystemPath path) => path.StartsWith(myPackageCacheFolder);
 
         public void RefreshPackages() => ScheduleRefresh();
 
@@ -558,9 +558,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // - Starting with Unity 2018.3 introduced an additional layer of caching for registry based packages,
             // local to the project, so that any edits to the files in the package only affect this project.
             // This is primarily for the API updater, which would otherwise modify files in the product wide cache
-            var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(cacheFolder), PackageSource.Registry)
-                              ?? GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(id), PackageSource.Registry)
-                              ?? GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine($"{id}@{myUnityPackageProjectResolution.GetFingerprint(cacheFolder.Name)}"), PackageSource.Registry)
+            var packageData = GetPackageDataFromFolder(id, myPackageCacheFolder.Combine(cacheFolder), PackageSource.Registry)
+                              ?? GetPackageDataFromFolder(id, myPackageCacheFolder.Combine(id), PackageSource.Registry)
+                              ?? GetPackageDataFromFolder(id, myPackageCacheFolder.Combine($"{id}@{myUnityPackageProjectResolution.GetFingerprint(cacheFolder.Name)}"), PackageSource.Registry)
                               ?? GetPackageDataFromFolderFallbackWithWarning(id);
             if (packageData != null)
                 return packageData;
@@ -576,7 +576,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private PackageData? GetPackageDataFromFolderFallbackWithWarning(string id)
         {
-            var fallback = myLocalPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault();
+            var fallback = myPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault();
             if (fallback == null) return null;
             myLogger.Warn($"Using relaxed heuristics to determine package data from local cache folder {id}.");
             return GetPackageDataFromFolder(id, fallback, PackageSource.Registry);
@@ -591,8 +591,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // updater can run on them, or users can make (dangerously transient) changes. But built in packages are,
             // well, built in, and should be up to date as far as the script updater is concerned.
             // Starting with Unity 2023.3.0a14, the folder names in PackageCache no longer include the version.
-            var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine($"{id}@{version}"), PackageSource.BuiltIn) ??
-                              GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(id), PackageSource.BuiltIn);
+            var packageData = GetPackageDataFromFolder(id, myPackageCacheFolder.Combine($"{id}@{version}"), PackageSource.BuiltIn) ??
+                              GetPackageDataFromFolder(id, myPackageCacheFolder.Combine(id), PackageSource.BuiltIn);
             if (packageData == null && builtInPackagesFolder.IsNotEmpty)
                 packageData = GetPackageDataFromFolder(id, builtInPackagesFolder.Combine(id), PackageSource.BuiltIn);
             if (packageData != null)
@@ -625,20 +625,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // This must be a git package, make sure we return something
             try
             {
-                var packageFolder = myLocalPackageCacheFolder.Combine(id);
+                var packageFolder = myPackageCacheFolder.Combine(id);
                 if (hash != null && !packageFolder.ExistsDirectory)
                 {
-                    packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}");
+                    packageFolder = myPackageCacheFolder.Combine($"{id}@{hash}");
                 }
 
                 if (hash != null && !packageFolder.ExistsDirectory)
                 {
                     var shortHash = hash.Substring(0, Math.Min(hash.Length, 10));
-                    packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{shortHash}");
+                    packageFolder = myPackageCacheFolder.Combine($"{id}@{shortHash}");
                 }
 
                 if (!packageFolder.ExistsDirectory)
-                    packageFolder = myLocalPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault();
+                    packageFolder = myPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault();
 
                 if (packageFolder != null && packageFolder.ExistsDirectory)
                 {
@@ -694,10 +694,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
             // This is a package installed from a package.tgz file. The original file is referenced, but not touched.
             // It is expanded into Library/PackageCache, folder name can differ
-            // just myLocalPackageCacheFolder.Combine(id)
-            // or myLocalPackageCacheFolder.Combine($"{id}@{hash}"), where hash is GetMD5HashOfFileContents(tarballPath.FullPath).Substring(0, 12).ToLowerInvariant()
-            // or even myLocalPackageCacheFolder.Combine($"{id}@{hash}-{timestamp}"
-            // we don't care much about it, since there is no way to have multiple versions in the myLocalPackageCacheFolder
+            // just myPackageCacheFolder.Combine(id)
+            // or myPackageCacheFolder.Combine($"{id}@{hash}"), where hash is GetMD5HashOfFileContents(tarballPath.FullPath).Substring(0, 12).ToLowerInvariant()
+            // or even myPackageCacheFolder.Combine($"{id}@{hash}-{timestamp}"
+            // we don't care much about it, since there is no way to have multiple versions in the myPackageCacheFolder
             try
             {
                 var path = version.Substring(5);
@@ -711,13 +711,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 // Also, once it's been imported, we'll refresh and all will be good
 
                 // UPM 8.0.0+, in Unity 2023.3+ no longer include the @... suffix in the project's PackageCache
-                var packageFolder = myLocalPackageCacheFolder.Combine(id);
+                var packageFolder = myPackageCacheFolder.Combine(id);
                     
                 // previous UPM
                 if (!packageFolder.ExistsDirectory)
                 {
                     // use simple fallback
-                    packageFolder = myLocalPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault() ?? packageFolder;
+                    packageFolder = myPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault() ?? packageFolder;
                 }
                     
                 var tarballLocation = tarballPath.StartsWith(mySolution.SolutionDirectory)
@@ -795,7 +795,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             {
                 if (version > GetResolvedVersion(id, resolvedPackages))
                 {
-                    cachedPackages ??= myLocalPackageCacheFolder.GetChildDirectories();
+                    cachedPackages ??= myPackageCacheFolder.GetChildDirectories();
 
                     // We know this is a registry package, so try to get it from the local cache. It might be missing:
                     // 1) the cache hasn't been built yet
