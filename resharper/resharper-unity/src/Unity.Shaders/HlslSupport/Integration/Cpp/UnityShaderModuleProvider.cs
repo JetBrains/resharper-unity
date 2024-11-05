@@ -228,12 +228,12 @@ public class UnityShaderModuleHandlerAndDecorator : DelegatingProjectPsiModuleHa
 
     private ShaderFilesProperties GetFileProperties(IPsiSourceFile sourceFile)
     {
-        var isLocalPackageCacheFile = myPackageManager.IsLocalPackageCacheFile(sourceFile.GetLocation());
+        var isPackageCacheFile = myPackageManager.IsPackageCacheFile(sourceFile.GetLocation());
         var location = sourceFile.GetLocation();
         if (UnityShaderFileUtils.IsShaderLabFile(location))
-            return isLocalPackageCacheFile ? ShaderFilesProperties.ShaderLabPackageLocalCacheFileProperties : ShaderFilesProperties.ShaderLabUserFileProperties;
+            return isPackageCacheFile ? ShaderFilesProperties.ShaderLabPackageLocalCacheFileProperties : ShaderFilesProperties.ShaderLabUserFileProperties;
         if (UnityShaderFileUtils.IsComputeShaderFile(location))
-            return isLocalPackageCacheFile ? ShaderFilesProperties.ComputeShaderPackageLocalCacheFilesProperties : ShaderFilesProperties.ComputeShaderFilesProperties;
-        return isLocalPackageCacheFile ? ShaderFilesProperties.HlslPackageLocalCacheFileProperties : ShaderFilesProperties.HlslUserFileProperties;
+            return isPackageCacheFile ? ShaderFilesProperties.ComputeShaderPackageLocalCacheFilesProperties : ShaderFilesProperties.ComputeShaderFilesProperties;
+        return isPackageCacheFile ? ShaderFilesProperties.HlslPackageLocalCacheFileProperties : ShaderFilesProperties.HlslUserFileProperties;
     }
 }
