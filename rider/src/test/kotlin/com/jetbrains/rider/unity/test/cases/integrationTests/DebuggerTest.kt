@@ -40,7 +40,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
             "UnityDebugAndUnitTesting/Project"
 
     @Test(description = "Check 2 breakpoints in simple Unity App")
-    @ChecklistItems(["Breakpoints/Simple breakpoint", "test/test2" ])
+    @ChecklistItems(["Breakpoints/Simple breakpoint"])
     fun checkBreakpoint() {
         attachDebuggerToUnityEditorAndPlay(
             {
