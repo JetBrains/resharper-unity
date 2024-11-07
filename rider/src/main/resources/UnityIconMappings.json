@@ -45,6 +45,7 @@
             },
             "common": {
                 "unityEditMode.svg": "unityIcons/common/unityEditMode.svg",
+                "unityLogo.svg": "unityIcons/common/unityLogo.svg",
                 "unityPlayMode.svg": "unityIcons/common/unityPlayMode.svg",
                 "unityToolWindow.svg": "unityIcons/common/unityToolWindow.svg"
             },
