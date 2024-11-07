@@ -5,6 +5,7 @@ using System.Text;
 using JetBrains.Diagnostics;
 using JetBrains.Text;
 using JetBrains.Util;
+using JetBrains.Util.DataStructures.Specialized;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils
 {
@@ -50,9 +51,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils
             }
         }
 
+        public int GetFNVHashCode(int prefixSeed, TextRange range)
+        {
+            var hashCode = prefixSeed;
+
+            for (var index = range.StartOffset; index < range.EndOffset; index++)
+            {
+                hashCode = unchecked((hashCode ^ this[index]) * StringTable.FnvPrime);
+            }
+
+            return hashCode;
+        }
+
         public void CopyTo(int sourceIndex, char[] destinationArray, int destinationIndex, int length)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public char this[int index]
