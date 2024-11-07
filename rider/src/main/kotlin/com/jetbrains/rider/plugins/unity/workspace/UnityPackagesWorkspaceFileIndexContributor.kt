@@ -26,7 +26,8 @@ class UnityPackagesWorkspaceFileIndexContributor: WorkspaceFileIndexContributor<
         val url = entity.packageFolder?.toVirtualFileUrl(virtualFileManager)
         if (url == null ) return
 
-        registrar.registerFileSet(url, WorkspaceFileKind.EXTERNAL_SOURCE, entity, UnityModulesFileSetData())
+        if (!entity.isEditable()) // RIDER-119623
+            registrar.registerFileSet(url, WorkspaceFileKind.EXTERNAL_SOURCE, entity, UnityModulesFileSetData())
     }
     private class UnityModulesFileSetData : ModuleOrLibrarySourceRootData
 }
