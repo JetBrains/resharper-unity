@@ -1,4 +1,3 @@
-using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -43,11 +42,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi
 
         public virtual IFile ParseFile()
         {
-            return myCommonIdentifierIntern.DoWithIdentifierIntern(intern =>
-            {
-                var builder = new XmlTreeBuilder(ElementFactory, DefaultXmlElementFactoryContext.Instance, intern);
-                return builder.BuildXml(Lexer);
-            });
+            using var identifierIntern = myCommonIdentifierIntern.GetOrCreateIntern();
+
+            var builder = new XmlTreeBuilder(ElementFactory, DefaultXmlElementFactoryContext.Instance, identifierIntern.Intern);
+            return builder.BuildXml(Lexer);
         }
     }
 }

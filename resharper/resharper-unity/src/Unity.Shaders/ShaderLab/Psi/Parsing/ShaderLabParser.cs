@@ -35,26 +35,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             SetLexer(new ShaderLabFilteringLexer(lexer, myPreProcessor));
         }
 
-        public ITokenIntern TokenIntern => myTokenIntern ?? (myTokenIntern = new LexerTokenIntern(10));
+        public ITokenIntern TokenIntern => myTokenIntern ??= CommonIdentifierIntern.CreateStandaloneIntern(10);
 
         public IFile ParseFile()
         {
-            return myIntern.DoWithIdentifierIntern(intern =>
-            {
-                var element = ParseShaderLabFile();
-                InsertMissingTokens(element, intern);
-                return (IFile) element;
-            });
+            using var identifierIntern = myIntern.GetOrCreateIntern();
+
+            var element = ParseShaderLabFile();
+            InsertMissingTokens(element, identifierIntern.Intern);
+            return (IFile)element;
         }
 
         IVectorLiteral IShaderLabParser.ParseVectorLiteral()
         {
-            return myIntern.DoWithIdentifierIntern(intern =>
-            {
-                var element = ParseVectorLiteral();
-                InsertMissingTokens(element, intern);
-                return (IVectorLiteral) element;
-            });
+            using var identifierIntern = myIntern.GetOrCreateIntern();
+
+            var element = ParseVectorLiteral();
+            InsertMissingTokens(element, identifierIntern.Intern);
+            return (IVectorLiteral)element;
         }
 
         protected override TreeElement CreateToken()
