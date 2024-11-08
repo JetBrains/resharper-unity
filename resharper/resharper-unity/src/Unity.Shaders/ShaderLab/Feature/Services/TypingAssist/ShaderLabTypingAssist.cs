@@ -11,6 +11,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Options;
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
+using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services.TypingAssists;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
