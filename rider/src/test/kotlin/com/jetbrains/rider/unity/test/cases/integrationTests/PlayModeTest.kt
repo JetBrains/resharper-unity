@@ -92,6 +92,7 @@ class PlayModeTestUnity2022 : PlayModeTest(Unity.V2022) {
 class PlayModeTestUnity2023 : PlayModeTest(Unity.V2023) {
     init {
         addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
+        addMute(Mute("RIDER-119062", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkAttachDebuggerToUnityEditor)
         addMute(Mute("RIDER-105666"), ::checkAttachDebuggerToUnityEditorAndPlay)
     }
 }

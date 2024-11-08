@@ -48,6 +48,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
             }, testGoldFile)
     }
 
+    @Mute("RIDER-118536", platforms = [PlatformType.MAC_OS_ALL])
     @Test(description = "Check Ref Presentation in DOTS code for simple app")
     @ChecklistItems(["Breakpoints/Ref Presentation in DOTS"])
     fun checkRefPresentationInDOTSCode() {
@@ -119,6 +120,8 @@ class DotsDebuggerestUnity2020 : DotsDebuggerTest(Unity.V2020) {
 class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-118536", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkRefPresentationInDOTSCode)
+        addMute(Mute("RIDER-119059", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpointInDOTSCode)
     }
 }
 
@@ -134,6 +137,7 @@ class DotsDebuggerTestUnity6 : DotsDebuggerTest(Unity.V6) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
         addMute(Mute("RIDER-71776", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkRefPresentationInDOTSCode)
+        addMute(Mute("RIDER-118536", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpointInDOTSCode)
     }
 }
 

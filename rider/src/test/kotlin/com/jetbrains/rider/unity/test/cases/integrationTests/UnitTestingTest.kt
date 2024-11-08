@@ -89,7 +89,12 @@ class UnitTestingTestUnity2022 : UnitTestingTest(Unity.V2022)
 class UnitTestingTestUnity2023 : UnitTestingTest(Unity.V2023)
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTestUnity6 : UnitTestingTest(Unity.V6)
+class UnitTestingTestUnity6 : UnitTestingTest(Unity.V6) {
+    init {
+      addMute(Mute("RIDER-119616"), ::checkRunAllTestsFromProject)
+        addMute(Mute("RIDER-119616"), ::checkRefreshBeforeTest)
+    }
+}
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
