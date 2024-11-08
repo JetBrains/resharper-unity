@@ -46,5 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Services.CodeStructure
         /// It may be used to suppress further hierarchy processing or to define custom structure sorting order.
         /// </summary>
         protected virtual CodeStructureElement? CreateDeclarationElement(CodeStructureElement parent, IStructuralDeclaration declaration, CodeStructureOptions options) => new CodeStructureDeclarationElement(parent, declaration);
+
+        public bool SupportsBackgroundUpdate => true;
     }
 }
