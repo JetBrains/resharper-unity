@@ -1,15 +1,14 @@
 package com.jetbrains.rider.plugins.unity.ui.vcs
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.ui.Messages
+import com.intellij.ide.BrowserUtil
+import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.project.DumbAware
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CheckinProjectPanel
 import com.intellij.openapi.vcs.changes.CommitContext
-import com.intellij.openapi.vcs.changes.CommitExecutor
-import com.intellij.openapi.vcs.changes.ui.BooleanCommitOption
-import com.intellij.openapi.vcs.checkin.CheckinHandler
-import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
+import com.intellij.openapi.vcs.changes.ui.BooleanCommitOption.Companion.create
+import com.intellij.openapi.vcs.checkin.*
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent
-import com.intellij.util.PairConsumer
 import com.jetbrains.rd.framework.impl.RpcTimeouts
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -22,32 +21,18 @@ import java.util.concurrent.CancellationException
  */
 class UnsavedSceneCheckinHandlerFactory : CheckinHandlerFactory() {
     override fun createHandler(panel: CheckinProjectPanel, commitContext: CommitContext): CheckinHandler =
-        UnresolvedMergeCheckHandler(panel)
+        UnresolvedMergeCheckHandler(panel.project)
 }
 
-private val logger = Logger.getInstance(UnsavedSceneCheckinHandlerFactory::class.java)
-
-private class UnresolvedMergeCheckHandler(
-    private val panel: CheckinProjectPanel
-) : CheckinHandler() {
-
-    private val project = panel.project
+private class UnresolvedMergeCheckHandler(private val project: Project) : CheckinHandler(), CommitCheck, DumbAware {
+    override fun getExecutionOrder(): CommitCheck.ExecutionOrder = CommitCheck.ExecutionOrder.LATE
     private val settings = UnsavedCheckinState.getService(project)
 
-    override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent? {
-        if (!project.isUnityProject.value)
-            return null
-
-        return BooleanCommitOption(
-            panel, UnityUIBundle.message("commitOption.check.unsaved.unity.state"), false,
-            settings::checkUnsavedState
-        )
+    override fun isEnabled(): Boolean {
+        return settings.checkUnsavedState && project.isUnityProject.value
     }
 
-    override fun beforeCheckin(
-        executor: CommitExecutor?,
-        additionalDataConsumer: PairConsumer<Any, Any>
-    ): ReturnResult {
+    override suspend fun runCheck(commitInfo: CommitInfo): CommitProblem? {
         if (settings.checkUnsavedState && project.isUnityProject.value) {
             var providerResult = false
             try {
@@ -55,29 +40,35 @@ private class UnresolvedMergeCheckHandler(
                     .sync(Unit, RpcTimeouts(200L, 200L))
             }
             catch (t: CancellationException) {
-                logger.info("Unable to fetch hasUnsavedScenes", t)
+                thisLogger().info("Unable to fetch hasUnsavedScenes", t)
             }
             catch (t: Throwable) {
-                logger.warn("Unable to fetch hasUnsavedScenes", t)
+                thisLogger().warn("Unable to fetch hasUnsavedScenes", t)
             }
 
-            if (providerResult) return askUser()
+            if (providerResult) return UnsavedSceneCommitProblem(UnityUIBundle.message("dialog.unsaved.message.changes.in.unity.state.will.not.be.included.in.commit"))
         }
-
-        return ReturnResult.COMMIT
+        return null
     }
 
-    private fun askUser(): ReturnResult {
-        val dialogResult = Messages.showOkCancelDialog(
-            project,
-            UnityUIBundle.message("dialog.unsaved.message.changes.in.unity.state.will.not.be.included.in.commit"),
-            UnityUIBundle.message("dialog.unsaved.title.unity.state"),
-            UnityUIBundle.message("dialog.unsaved.button.commit.anyway"),
-            UnityUIBundle.message("dialog.unsaved.button.cancel"),
-            Messages.getWarningIcon()
-        )
+    override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent? {
+        if (!project.isUnityProject.value)
+            return null
+        return create(project, this, false, UnityUIBundle.message("commitOption.check.unsaved.unity.state"),
+                      settings::checkUnsavedState)
+    }
 
-        if (dialogResult == Messages.OK) return ReturnResult.COMMIT
-        return ReturnResult.CANCEL
+    class UnsavedSceneCommitProblem(message: String) : CommitProblemWithDetails {
+        override val showDetailsAction: String = UnityUIBundle.message("unity.before.check.in.show.details")
+
+        override val text: String = message
+
+        override fun showDetails(project: Project) {
+            BrowserUtil.browse(UNSAVED_SCENE_HELP_LINK)
+        }
+    }
+
+    companion object{
+        private const val UNSAVED_SCENE_HELP_LINK = "https://youtrack.jetbrains.com/issue/RIDER-60824"
     }
 }
