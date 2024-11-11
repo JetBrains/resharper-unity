@@ -8,7 +8,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "https://github.com/van800/com.unity.ide.rider.git?path=/Packages/com.unity.ide.rider#3.0.27",
+      "version": "{{VERSION}}",
       "depth": 0,
       "source": "git",
       "dependencies": {

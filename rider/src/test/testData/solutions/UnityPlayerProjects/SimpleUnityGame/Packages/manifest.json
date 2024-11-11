@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "com.unity.ide.rider": "https://github.com/van800/com.unity.ide.rider.git?path=/Packages/com.unity.ide.rider#3.0.27"
+    "com.unity.ide.rider": "{{VERSION}}"
   }
 }

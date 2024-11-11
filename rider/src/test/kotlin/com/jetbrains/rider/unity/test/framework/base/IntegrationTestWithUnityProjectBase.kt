@@ -20,8 +20,6 @@ abstract class IntegrationTestWithUnityProjectBase(open val engineVersion: Engin
     private lateinit var unityProjectPath: File
 
     private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
-    private val packageManifestPath = "/Packages/manifest.json"
-    private val riderPackageTag = "{{VERSION}}"
 
     override val customGoldSuffixes: List<String>
         get() = listOf("_${engineVersion.version.lowercase()}")
@@ -39,8 +37,8 @@ abstract class IntegrationTestWithUnityProjectBase(open val engineVersion: Engin
 
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
-        setRiderPackageVersion(File(solutionSourceRootDirectory, testSolution), riderPackageVersion)
         unityProjectPath = putUnityProjectToTempTestDir(testSolution, null, testWorkDirectory,solutionSourceRootDirectory, testDataDirectory)
+        setRiderPackageVersion(unityProjectPath, riderPackageVersion)
         val unityProcessHandle = startUnity(
             executable = unityExecutable.canonicalPath,
             projectPath = unityProjectPath.canonicalPath,
