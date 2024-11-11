@@ -15,7 +15,7 @@ import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityPro
 import org.testng.annotations.Test
 
 @Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
-@Feature("Unit Testing in Unity solution with started Unity2020")
+@Feature("Unit Testing in Unity solution with started Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
@@ -90,10 +90,6 @@ class UnitTestingTestUnity2023 : UnitTestingTest(Unity.V2023)
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTestUnity6 : UnitTestingTest(Unity.V6) {
-    init {
-      addMute(Mute("RIDER-119616"), ::checkRunAllTestsFromProject)
-        addMute(Mute("RIDER-119616"), ::checkRefreshBeforeTest)
-    }
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
