@@ -92,6 +92,6 @@ private class MetaFilesCommitCheck(private val project: Project) : CheckinHandle
     }
 
     companion object{
-        private const val EMPTY_FOLDERS_HELP_LINK = "https://youtrack.jetbrains.com/issue/RIDER-75587"
+        private const val EMPTY_FOLDERS_HELP_LINK = "https://github.com/JetBrains/resharper-unity/wiki/Pre%E2%80%90commit-checks-for-Unity#empty-folder-with-meta-file-check"
     }
 }

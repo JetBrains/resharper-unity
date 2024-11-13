@@ -69,6 +69,6 @@ private class UnresolvedMergeCheckHandler(private val project: Project) : Checki
     }
 
     companion object{
-        private const val UNSAVED_SCENE_HELP_LINK = "https://youtrack.jetbrains.com/issue/RIDER-60824"
+        private const val UNSAVED_SCENE_HELP_LINK = "https://github.com/JetBrains/resharper-unity/wiki/Pre%E2%80%90commit-checks-for-Unity#unsaved-changes-check"
     }
 }
