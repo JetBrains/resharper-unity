@@ -28,11 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
             myDialects = dialects;
         }
 
-        public CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer(ITextControl textControl)
+        public CachingLexer GetCachingLexer(ITextControl textControl)
         {
-            var dialect = myDialects.ShaderLabHlslDialect;
-            var cachingLexer = new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
-            return new CppCachingKeywordResolvingLexer(cachingLexer, dialect);
+            return new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
         }
 
         public override string CalculateInjectionIndent(CppDummyFormatterContext context, CachingLexer lexer)
@@ -98,10 +96,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
             {
             }
 
-            public override CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer()
+            public override CachingLexer GetCachingLexer()
             {
-                var cachingLexer = new ShaderLabLexerGenerated(Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
-                return new CppCachingKeywordResolvingLexer(cachingLexer, Dialect);
+                return new ShaderLabLexerGenerated(Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
             }
         }
 

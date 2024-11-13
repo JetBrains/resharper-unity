@@ -272,7 +272,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
 
         public override CachingLexer GetCachingLexer(ITextControl textControl)
         {
-            return myInjectedHlslDummyFormatter.ComposeKeywordResolvingLexer(textControl);
+            return myInjectedHlslDummyFormatter.GetCachingLexer(textControl);
         }
 
         protected override IndentTypingHelper<ShaderLabLanguage> GetIndentTypingHelper() => new ShaderLabIndentTypingHelper(this);

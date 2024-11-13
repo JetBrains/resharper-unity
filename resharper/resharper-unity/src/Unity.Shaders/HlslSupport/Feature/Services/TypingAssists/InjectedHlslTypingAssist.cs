@@ -125,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
 
     public override CachingLexer GetCachingLexer(ITextControl textControl)
     {
-      return myDummyFormatter.ComposeKeywordResolvingLexer(textControl);
+      return myDummyFormatter.GetCachingLexer(textControl);
     }
   }
 }
