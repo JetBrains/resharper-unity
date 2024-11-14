@@ -23,7 +23,7 @@ public class UnityObjectNullComparisonHintHighlighting(IEqualityExpression expre
     public const double DefaultOrder = 2;
 
     public IEqualityExpression Expression => expression;
-    public IconId Icon => PsiSymbolsThemedIcons.InterceptedCall.Id;
+    public IconId Icon => PsiSymbolsThemedIcons.UnityHint.Id;
     public /*Localized*/ string ToolTip => Strings.UnityObjectNullComparisonHint_Message;
     public /*Localized*/ string ErrorStripeToolTip => ToolTip;
     public bool IsValid() => expression.IsValid();
