@@ -20,14 +20,14 @@ public class Test : MonoBehaviour
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(1): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(2): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(3): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(4): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(5): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(6): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(7): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(8): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(9): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
-(10): ReSharper Parameter Name Hint: 🖼️InterceptedCall|🏷️|📖Implicit check for Unity object lifetime
+(0): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(1): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(2): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(3): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(4): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(5): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(6): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(7): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(8): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(9): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
+(10): ReSharper Parameter Name Hint: 🖼️UnityHint|🏷️|📖Implicit check for Unity object lifetime
