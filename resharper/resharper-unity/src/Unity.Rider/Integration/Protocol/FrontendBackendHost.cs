@@ -19,7 +19,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class FrontendBackendHost : IFrontendBackendHost
     {
         private readonly ISolution mySolution;
@@ -44,7 +44,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
             // This will throw in tests, as GetProtocolSolution will return null
             var model = solution.GetProtocolSolution().GetFrontendBackendModel();
-            AdviseModel(lifetime, model, technologyDescriptionCollector, packageManager, deferredCacheController, shellLocks);
+            shellLocks.ExecuteOrQueueEx(lifetime, GetType().Name, () =>
+                AdviseModel(lifetime, model, technologyDescriptionCollector, packageManager, deferredCacheController, shellLocks));
             Model = model;
         }
 

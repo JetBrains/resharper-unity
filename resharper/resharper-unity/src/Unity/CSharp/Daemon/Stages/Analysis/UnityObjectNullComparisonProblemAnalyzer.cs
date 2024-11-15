@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
 [ElementProblemAnalyzer(
-    Instantiation.DemandAnyThreadUnsafe,
+    Instantiation.DemandAnyThreadSafe,
     typeof(IEqualityExpression),
     HighlightingTypes =
     [

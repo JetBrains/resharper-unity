@@ -18,7 +18,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public sealed class RiderUnityCommonIconProvider : UnityCommonIconProvider
     {
         private readonly UnityCodeInsightProvider myCodeInsightProvider;

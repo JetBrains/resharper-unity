@@ -15,7 +15,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class BurstGutterMarkProvider: BurstProblemAnalyzerBase<IMethodDeclaration>
     {
         private readonly BurstCodeInsights myBurstCodeInsights;

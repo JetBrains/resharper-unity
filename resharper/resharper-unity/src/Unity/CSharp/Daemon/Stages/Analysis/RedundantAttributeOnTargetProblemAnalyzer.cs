@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IAttribute), HighlightingTypes = new[] { typeof(RedundantAttributeOnTargetWarning) })]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IAttribute), HighlightingTypes = new[] { typeof(RedundantAttributeOnTargetWarning) })]
     public class RedundantAttributeOnTargetProblemAnalyzer : UnityElementProblemAnalyzer<IAttribute>
     {
         private static readonly Dictionary<IClrTypeName, AttributeTargets> ourAttributeData =

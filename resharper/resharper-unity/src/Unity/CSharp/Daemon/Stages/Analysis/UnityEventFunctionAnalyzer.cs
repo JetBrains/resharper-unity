@@ -14,7 +14,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IMemberOwnerDeclaration),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IMemberOwnerDeclaration),
         HighlightingTypes =
         [
             typeof(DuplicateEventFunctionWarning)

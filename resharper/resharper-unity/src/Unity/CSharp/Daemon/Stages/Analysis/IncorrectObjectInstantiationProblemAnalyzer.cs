@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IObjectCreationExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IObjectCreationExpression),
         HighlightingTypes = new[]
         {
             typeof(IncorrectMonoBehaviourInstantiationWarning),

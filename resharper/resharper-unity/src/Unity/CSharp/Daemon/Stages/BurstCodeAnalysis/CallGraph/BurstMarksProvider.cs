@@ -20,7 +20,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class BurstMarksProvider : CallGraphCommentMarksProvider
     {
         private readonly IImmutableEnumerable<IBurstBannedAnalyzer> myBurstBannedAnalyzers;

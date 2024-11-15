@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Collections.Viewable;
@@ -11,7 +12,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsights
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityCodeInsightProvider : AbstractUnityCodeInsightProvider
     {
         public override string ProviderId => "Unity implicit usage";
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         public override ICollection<CodeVisionRelativeOrdering> RelativeOrderings { get; }
 
         public UnityCodeInsightProvider(IFrontendBackendHost frontendBackendHost,
-                                        BulbMenuComponent bulbMenu, UnitySolutionTracker tracker)
+                                        ILazy<BulbMenuComponent> bulbMenu, UnitySolutionTracker tracker)
             : base(frontendBackendHost, bulbMenu)
         {
             RelativeOrderings = tracker.IsUnityProject.HasTrueValue()

@@ -10,7 +10,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class AddDiscardBulbItemsProvider : BurstBulbItemsProvider
     {
         public AddDiscardBulbItemsProvider(ISolution solution, BurstContextProvider burstContextProvider)

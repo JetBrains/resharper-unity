@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IAttribute),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IAttribute),
         HighlightingTypes = new[] { typeof(RedundantInitializeOnLoadAttributeWarning) })]
     public class RedundantInitializeOnLoadAttributeProblemAnalyzer : UnityElementProblemAnalyzer<IAttribute>
     {

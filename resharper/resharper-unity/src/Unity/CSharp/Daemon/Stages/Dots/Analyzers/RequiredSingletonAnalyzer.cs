@@ -13,7 +13,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IClassLikeDeclaration), HighlightingTypes = new[] { typeof(SingletonMustBeRequestedWarning) }
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IClassLikeDeclaration), HighlightingTypes = new[] { typeof(SingletonMustBeRequestedWarning) }
     )]
     public class RequiredSingletonAnalyzer : UnityElementProblemAnalyzer<IClassLikeDeclaration>
     {

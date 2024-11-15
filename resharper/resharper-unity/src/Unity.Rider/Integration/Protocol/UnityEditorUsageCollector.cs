@@ -17,7 +17,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityEditorUsageCollector : SolutionUsagesCollector
     {
         private readonly UnitySolutionTracker mySolutionTracker;

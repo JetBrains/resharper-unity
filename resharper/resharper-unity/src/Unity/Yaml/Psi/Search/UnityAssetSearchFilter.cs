@@ -16,7 +16,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
-    [PsiComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [PsiComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityYamlSearchFilter : ISearchFilter
     {
         [NotNull, ItemNotNull] private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;

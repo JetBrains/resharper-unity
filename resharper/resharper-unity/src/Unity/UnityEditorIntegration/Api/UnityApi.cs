@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         SerializedReferenceSerializedField = 32,
     }
 
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe /* not safe cause of UnitySerializedReferenceProvider */)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe /* not safe cause of UnitySerializedReferenceProvider */)]
     public class UnityApi
     {
         // https://docs.unity3d.com/Documentation/Manual/script-Serialization.html

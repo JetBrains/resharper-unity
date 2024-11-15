@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.Application;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
@@ -29,20 +30,20 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityAssetsCache : DeferredCacheBase<UnityAssetData> , IUnityAssetDataElementPointer
     {
-        private readonly AssetDocumentHierarchyElementContainer myHierarchyElementContainer;
+        private readonly Lazy<AssetDocumentHierarchyElementContainer> myHierarchyElementContainer;
         private readonly DocumentToProjectFileMappingStorage myDocumentToProjectFileMappingStorage;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly PrefabImportCache myPrefabImportCache;
         private readonly IShellLocks myShellLocks;
-        private readonly List<IUnityAssetDataElementContainer> myOrderedContainers;
-        private readonly List<IUnityAssetDataElementContainer> myOrderedIncreasingContainers;
+        private readonly Lazy<List<IUnityAssetDataElementContainer>> myOrderedContainers;
+        private readonly Lazy<List<IUnityAssetDataElementContainer>> myOrderedIncreasingContainers;
         private readonly ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)> myDocumentNumber = new ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)>();
         private readonly ConcurrentDictionary<IPsiSourceFile, long> myCurrentTimeStamp = new ConcurrentDictionary<IPsiSourceFile, long>();
         public UnityAssetsCache(Lifetime lifetime, DocumentToProjectFileMappingStorage documentToProjectFileMappingStorage, AssetIndexingSupport assetIndexingSupport,
-            PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers,
+            PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IImmutableEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers,
             IShellLocks shellLocks, ILogger logger)
             : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate), logger)
         {
@@ -50,10 +51,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             myAssetIndexingSupport = assetIndexingSupport;
             myPrefabImportCache = prefabImportCache;
             myShellLocks = shellLocks;
-            myOrderedContainers = unityAssetDataElementContainers.OrderByDescending(t => t.Order).ToList();
-            myOrderedIncreasingContainers = myOrderedContainers.OrderBy(t => t.Order).ToList();
+            myOrderedContainers = Lazy.Of(() => unityAssetDataElementContainers.OrderByDescending(t => t.Order).ToList(), true);
+            myOrderedIncreasingContainers = Lazy.Of(() => unityAssetDataElementContainers.OrderBy(t => t.Order).ToList(), true);
 
-            myHierarchyElementContainer = myOrderedContainers.First(t => t is AssetDocumentHierarchyElementContainer) as AssetDocumentHierarchyElementContainer;
+            myHierarchyElementContainer = Lazy.Of(() => unityAssetDataElementContainers.First(t => t is AssetDocumentHierarchyElementContainer) as AssetDocumentHierarchyElementContainer, true);
             
             Map.Cache = new DirectMappedCache<IPsiSourceFile, UnityAssetData>(10);
         }
@@ -87,10 +88,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             myDocumentNumber.TryRemove(sourceFile, out _);
             myCurrentTimeStamp.TryRemove(sourceFile, out _);
 
-            if (!data.UnityAssetDataElements.TryGetValue(myHierarchyElementContainer.Id, out var hierarchyElement))
+            if (!data.UnityAssetDataElements.TryGetValue(myHierarchyElementContainer.Value.Id, out var hierarchyElement))
                 return;
             
-            foreach (var container in myOrderedContainers)
+            foreach (var container in myOrderedContainers.Value)
             {
                 if (!container.IsApplicable(sourceFile)) continue;
                 
@@ -178,10 +179,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private (UnityAssetData, int) GetAlreadyBuildDocId(IPsiSourceFile psiSourceFile)
         {
             if (!myCurrentTimeStamp.TryGetValue(psiSourceFile, out var timeStamp))
-                return (new UnityAssetData(psiSourceFile, myOrderedContainers), 0);
+                return (new UnityAssetData(psiSourceFile, myOrderedContainers.Value), 0);
 
             if (psiSourceFile.GetAggregatedTimestamp() != timeStamp)
-                return (new UnityAssetData(psiSourceFile, myOrderedContainers), 0);
+                return (new UnityAssetData(psiSourceFile, myOrderedContainers.Value), 0);
             
             return myDocumentNumber[psiSourceFile];
         }
@@ -190,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         {
             var assetDocument = new AssetDocument(start, buffer, null);
             var results = new LocalList<(string, object)>();
-            foreach (var unityAssetDataElementContainer in myOrderedContainers)
+            foreach (var unityAssetDataElementContainer in myOrderedContainers.Value)
             {
                 Interruption.Current.CheckAndThrow();
                 
@@ -225,10 +226,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             myDocumentNumber.TryRemove(sourceFile, out _);
             myCurrentTimeStamp.TryRemove(sourceFile, out _);
 
-            if (!data.UnityAssetDataElements.TryGetValue(myHierarchyElementContainer.Id, out var hierarchyElement))
+            if (!data.UnityAssetDataElements.TryGetValue(myHierarchyElementContainer.Value.Id, out var hierarchyElement))
                 return;
             
-            foreach (var container in myOrderedIncreasingContainers)
+            foreach (var container in myOrderedIncreasingContainers.Value)
             {
                 if (data.UnityAssetDataElements.TryGetValue(container.Id, out var element))
                 {
@@ -258,7 +259,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         protected override void InvalidateData()
         {
-            foreach (var increasingContainer in myOrderedIncreasingContainers)
+            foreach (var increasingContainer in myOrderedIncreasingContainers.Value)
             {
                 increasingContainer.Invalidate();
             }
@@ -271,7 +272,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             myShellLocks.AssertReadAccessAllowed();
             var restoredElement = Map[assetSourceFile].UnityAssetDataElements[containerId];
             if (restoredElement is AssetDocumentHierarchyElement hierarchy)
-                hierarchy.RestoreHierarchy(myHierarchyElementContainer, assetSourceFile);
+                hierarchy.RestoreHierarchy(myHierarchyElementContainer.Value, assetSourceFile);
             
             return restoredElement;
 

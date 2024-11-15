@@ -14,7 +14,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IClassLikeDeclaration), HighlightingTypes = new[]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IClassLikeDeclaration), HighlightingTypes = new[]
     {
         typeof(InconsistentModifiersForDotsInheritorWarning),
         typeof(MustBeStructForDotsInheritorWarning),

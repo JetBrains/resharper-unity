@@ -28,9 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
     // * Use PassthroughHost to set up subscriptions between frontend and Unity
     // * Avoid using BackendUnityModel for subscriptions. It should be used to get values and start tasks
     // These guidelines help avoid introducing circular dependencies. Subscriptions should be handled by the host
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
     public class BackendUnityHost : IBackendUnityHost
     {
+        private readonly Lifetime myLifetime;
         private readonly UnityEditorUsageCollector myUnityEditorUsageCollector;
 
         private UnityEditorState myEditorState;
@@ -43,16 +44,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
         // TODO: Remove FrontendBackendHost. It's too easy to get circular dependencies
         public BackendUnityHost(Lifetime lifetime, ILogger logger,
-                                FrontendBackendHost frontendBackendHost,
-                                IThreading threading,
-                                IIsApplicationActiveState isApplicationActiveState,
-                                PackageManager packageManager,
-                                UnityEditorUsageCollector unityEditorUsageCollector)
+            FrontendBackendHost frontendBackendHost,
+            IThreading threading,
+            IIsApplicationActiveState isApplicationActiveState,
+            PackageManager packageManager,
+            UnityEditorUsageCollector unityEditorUsageCollector)
         {
+            myLifetime = lifetime;
             myUnityEditorUsageCollector = unityEditorUsageCollector;
 
             myEditorState = UnityEditorState.Disconnected;
 
+            threading.ExecuteOrQueueEx(lifetime, GetType().Name, () => MainThreadInit(lifetime, threading, packageManager, logger, frontendBackendHost, isApplicationActiveState));
+        }
+
+        private void MainThreadInit(Lifetime lifetime, IThreading threading, PackageManager packageManager,
+            ILogger logger, FrontendBackendHost frontendBackendHost, IIsApplicationActiveState isApplicationActiveState)
+        {
             // TODO: ReactiveEx.ViewNotNull isn't NRT ready
             BackendUnityModel!.ViewNotNull<BackendUnityModel>(lifetime, (modelLifetime, backendUnityModel) =>
             {

@@ -7,12 +7,12 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
-    [DaemonStage(Instantiation.DemandAnyThreadUnsafe, GlobalAnalysisStage = true,
+    [DaemonStage(Instantiation.DemandAnyThreadSafe, GlobalAnalysisStage = true,
         StagesBefore = new[] {typeof(SolutionAnalysisFileStructureCollectorStage)},
         OverridenStages = new[] {typeof(CallGraphLocalStage)})]
     public class CallGraphGlobalStage : CallGraphAbstractStage
     {
-        public CallGraphGlobalStage(CallGraphSwaExtensionProvider swaExtensionProvider, IImmutableEnumerable<ICallGraphContextProvider> contextProviders, IImmutableEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers, ILogger logger)
+        public CallGraphGlobalStage(ILazy<CallGraphSwaExtensionProvider> swaExtensionProvider, IImmutableEnumerable<ICallGraphContextProvider> contextProviders, IImmutableEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers, ILogger logger)
             : base(swaExtensionProvider, contextProviders, problemAnalyzers, logger)
         {
         }

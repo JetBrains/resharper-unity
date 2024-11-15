@@ -13,7 +13,7 @@ using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IMethodDeclaration),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IMethodDeclaration),
         HighlightingTypes = new[] {typeof(UnityEventFunctionInheritanceMarkOnGutter)})]
     public class HiddenEventFunctionProblemAnalyzer : UnityElementProblemAnalyzer<IMethodDeclaration>
     {

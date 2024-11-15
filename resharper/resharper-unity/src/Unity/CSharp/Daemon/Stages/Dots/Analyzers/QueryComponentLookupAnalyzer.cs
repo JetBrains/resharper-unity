@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IClassLikeDeclaration),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IClassLikeDeclaration),
         HighlightingTypes = new[] { typeof(NotUpdatedComponentLookupWarning) })
     ]
     public class QueryComponentLookupAnalyzer : UnityElementProblemAnalyzer<IClassLikeDeclaration>

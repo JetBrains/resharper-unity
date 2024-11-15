@@ -15,7 +15,7 @@ using MethodSignature = JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IAttribute))]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IAttribute))]
     public class AttributedMethodSignatureProblemAnalyzer : MethodSignatureProblemAnalyzerBase<IAttribute>
     {
         // These attributes either don't have RequiredSignatureAttribute, or only added it later, in which case, we

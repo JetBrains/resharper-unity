@@ -11,7 +11,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.ShowBurstCalls
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShowBurstCallsBulbItemsProvider : BurstBulbItemsProvider
     {
         private readonly SolutionAnalysisConfiguration myConfiguration;

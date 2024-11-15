@@ -19,7 +19,7 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
         protected readonly UnityEventsElementContainer UnityEventsElementContainer;

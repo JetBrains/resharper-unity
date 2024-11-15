@@ -12,7 +12,7 @@ using JetBrains.TextControl.CodeWithMe;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class BurstCodeInsights
     {
         private readonly ITextControlManager myTextControlManager;

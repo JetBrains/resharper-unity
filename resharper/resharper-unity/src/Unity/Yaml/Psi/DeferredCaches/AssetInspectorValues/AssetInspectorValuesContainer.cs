@@ -21,7 +21,7 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class AssetInspectorValuesContainer : IUnityAssetDataElementContainer
     {
         private readonly IShellLocks myShellLocks;

@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IInvocationExpression), HighlightingTypes = new[] {typeof(PreferNonAllocApiWarning)})]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IInvocationExpression), HighlightingTypes = new[] {typeof(PreferNonAllocApiWarning)})]
     public class PreferNonAllocApiAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private static readonly IDictionary<string, string> ourPhysicsKnownMethods =

@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
-[ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IIsExpression), HighlightingTypes = [typeof(UnityObjectNullPatternMatchingWarning)])]
+[ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IIsExpression), HighlightingTypes = [typeof(UnityObjectNullPatternMatchingWarning)])]
 public class UnityObjectNullPatternMatchingProblemAnalyzer(UnityApi unityApi, UnityLifetimeChecksHelper helper) : UnityElementProblemAnalyzer<IIsExpression>(unityApi)
 {
     protected override void Analyze(IIsExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

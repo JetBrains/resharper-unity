@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.PopupLayout;
@@ -19,9 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         public static string StartUnityActionId => "startUnity";
 
         private readonly IFrontendBackendHost myFrontendBackendHost;
-        private readonly BulbMenuComponent myBulbMenu;
+        private readonly ILazy<BulbMenuComponent> myBulbMenu;
 
-        protected AbstractUnityCodeInsightProvider(IFrontendBackendHost frontendBackendHost, BulbMenuComponent bulbMenu)
+        protected AbstractUnityCodeInsightProvider(IFrontendBackendHost frontendBackendHost, ILazy<BulbMenuComponent> bulbMenu)
         {
             myFrontendBackendHost = frontendBackendHost;
             myBulbMenu = bulbMenu;
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             if (highlightInfo.CodeInsightsHighlighting is UnityCodeInsightsHighlighting unityCodeInsightsHighlighting)
             {
                 if (unityCodeInsightsHighlighting.MenuItems.Count > 0)
-                    myBulbMenu.ShowBulbMenu(unityCodeInsightsHighlighting.MenuItems, windowContextSource);
+                    myBulbMenu.Value.ShowBulbMenu(unityCodeInsightsHighlighting.MenuItems, windowContextSource);
             }
         }
 

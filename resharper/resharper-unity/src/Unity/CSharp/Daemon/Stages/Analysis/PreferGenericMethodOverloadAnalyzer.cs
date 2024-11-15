@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IInvocationExpression), HighlightingTypes =
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IInvocationExpression), HighlightingTypes =
         new[] {typeof(PreferGenericMethodOverloadWarning)})]
     public class PreferGenericMethodOverloadAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {

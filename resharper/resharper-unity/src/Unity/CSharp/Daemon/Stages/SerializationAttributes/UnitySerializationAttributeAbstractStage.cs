@@ -14,7 +14,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.SerializationAttributes
 {
-    [DaemonStage(Instantiation.DemandAnyThreadUnsafe, GlobalAnalysisStage = true, StagesBefore = [typeof(SolutionAnalysisFileStructureCollectorStage)])]
+    [DaemonStage(Instantiation.DemandAnyThreadSafe, GlobalAnalysisStage = true, StagesBefore = [typeof(SolutionAnalysisFileStructureCollectorStage)])]
     public class UnitySerializationAttributeGlobalStage : CSharpDaemonStageBase
     {
         private readonly UnityApi myUnityApi;

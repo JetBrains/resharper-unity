@@ -24,7 +24,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class PrefabImportCache
     {
         private readonly MetaFileGuidCache myMetaFileGuidCache;
@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             myUnityExternalFilesPsiModule = unityExternalFilesModuleFactory.PsiModule;
 
             myCacheEnabled = settingStore.BoundSettingsStore
-                .GetValueProperty(lifetime, (UnitySettings key) => key.IsPrefabCacheEnabled);
+                .GetValueProperty2(lifetime, (UnitySettings key) => key.IsPrefabCacheEnabled, ApartmentForNotifications.Primary(shellLocks));
         }
 
         public void OnHierarchyCreated(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)
@@ -88,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         private void InvalidateImportCache(Guid deps, HashSet<Guid> visited)
         {
-            myShellLocks.IsWriteAccessAllowed();
+            myShellLocks.AssertWriteAccessAllowed();
             visited.Add(deps);
             myCache.RemoveFromCache(deps);
             foreach (var d in myDependencies.GetValuesSafe(deps))

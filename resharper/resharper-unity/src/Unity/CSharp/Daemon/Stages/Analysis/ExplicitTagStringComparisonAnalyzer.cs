@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IEqualityExpression), 
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IEqualityExpression), 
         HighlightingTypes = new[] { typeof(ExplicitTagStringComparisonWarning), typeof(UnknownTagWarning) })]
     public class ExplicitTagStringComparisonAnalyzer : ProjectSettingsRelatedProblemAnalyzerBase<IEqualityExpression>
     {

@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IAttribute), HighlightingTypes = new[] { typeof(SyncVarUsageError) })]
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IAttribute), HighlightingTypes = new[] { typeof(SyncVarUsageError) })]
     public class SyncVarUsageProblemAnalyzer : UnityElementProblemAnalyzer<IAttribute>
     {
         public SyncVarUsageProblemAnalyzer(UnityApi unityApi)

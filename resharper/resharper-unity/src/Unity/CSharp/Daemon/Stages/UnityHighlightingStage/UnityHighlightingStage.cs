@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlightingStage
 {
-    [DaemonStage(Instantiation.DemandAnyThreadUnsafe, StagesBefore = new[] {typeof(CSharpErrorStage), typeof(SmartResolverStage)})]
+    [DaemonStage(Instantiation.DemandAnyThreadSafe, StagesBefore = new[] {typeof(CSharpErrorStage), typeof(SmartResolverStage)})]
     public class UnityHighlightingStage : UnityHighlightingAbstractStage
     {
         public UnityHighlightingStage(

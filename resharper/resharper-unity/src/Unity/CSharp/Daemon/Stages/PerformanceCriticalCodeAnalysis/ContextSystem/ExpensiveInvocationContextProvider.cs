@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public sealed class ExpensiveInvocationContextProvider : CallGraphContextProviderBase
     {
         private readonly IProperty<bool> myIsPerformanceAnalysisEnabledProperty;

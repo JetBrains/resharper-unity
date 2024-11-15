@@ -6,7 +6,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class AssetSerializationMode
     {
         public AssetSerializationMode(ISolution solution, ILogger logger)

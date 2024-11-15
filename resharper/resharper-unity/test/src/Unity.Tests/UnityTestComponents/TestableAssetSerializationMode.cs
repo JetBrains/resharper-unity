@@ -5,7 +5,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class TestableAssetSerializationMode : AssetSerializationMode
     {
         public TestableAssetSerializationMode(ISolution solution, ILogger logger)

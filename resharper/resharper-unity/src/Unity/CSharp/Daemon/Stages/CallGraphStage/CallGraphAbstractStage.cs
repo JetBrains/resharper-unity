@@ -17,13 +17,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
     public abstract class CallGraphAbstractStage : CSharpDaemonStageBase
     {
-        private readonly CallGraphSwaExtensionProvider mySwaExtensionProvider;
+        private readonly ILazy<CallGraphSwaExtensionProvider> mySwaExtensionProvider;
         private readonly IImmutableEnumerable<ICallGraphContextProvider> myContextProviders;
         private readonly IImmutableEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
         private readonly ILogger myLogger;
 
         protected CallGraphAbstractStage(
-            CallGraphSwaExtensionProvider swaExtensionProvider,
+            ILazy<CallGraphSwaExtensionProvider> swaExtensionProvider,
             IImmutableEnumerable<ICallGraphContextProvider> contextProviders,
             IImmutableEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers,
             ILogger logger)
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
         {
             var sourceFile = file.GetSourceFile();
 
-            if (!file.GetProject().IsUnityProject() || !mySwaExtensionProvider.IsApplicable(sourceFile))
+            if (!file.GetProject().IsUnityProject() || !mySwaExtensionProvider.Value.IsApplicable(sourceFile))
                 return null;
 
             return new CallGraphProcess(process, processKind, file, myLogger, myContextProviders, myProblemAnalyzers);

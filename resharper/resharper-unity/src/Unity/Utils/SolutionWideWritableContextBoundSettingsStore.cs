@@ -7,7 +7,7 @@ using JetBrains.ProjectModel.DataContext;
 namespace JetBrains.ReSharper.Plugins.Unity.Utils
 {
     // Amortise the cost of BindToContextLive across any component that wants to write purely to the Solution layer
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class SolutionWideWritableContextBoundSettingsStore
     {
         public SolutionWideWritableContextBoundSettingsStore(Lifetime lifetime, ISolution solution,

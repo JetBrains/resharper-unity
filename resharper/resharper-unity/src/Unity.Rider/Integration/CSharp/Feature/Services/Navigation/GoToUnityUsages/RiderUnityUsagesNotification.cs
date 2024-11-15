@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Services.Navigation.GoToUnityUsages
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class RiderUnityUsagesNotification(FrontendBackendHost frontendBackendHost, DeferredCacheController controller, Lifetime lifetime, IShellLocks locks) : UnityUsagesDeferredCachesNotification(controller)
     {
         protected override void ShowNotification()

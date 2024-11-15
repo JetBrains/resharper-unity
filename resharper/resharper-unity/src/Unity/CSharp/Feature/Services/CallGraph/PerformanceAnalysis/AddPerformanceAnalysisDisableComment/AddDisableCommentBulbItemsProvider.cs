@@ -10,7 +10,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddPerformanceAnalysisDisableComment
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public sealed class AddDisableCommentBulbItemsProvider : PerformanceCriticalBulbItemsProvider
     {
         public AddDisableCommentBulbItemsProvider(ISolution solution, PerformanceCriticalContextProvider performanceCriticalContextProvider)

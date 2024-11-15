@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
-[ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(INullCoalescingExpression), HighlightingTypes = [typeof(UnityObjectNullCoalescingWarning)])]
+[ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(INullCoalescingExpression), HighlightingTypes = [typeof(UnityObjectNullCoalescingWarning)])]
 public class UnityObjectNullCoalescingProblemAnalyzer(UnityApi unityApi, UnityLifetimeChecksHelper helper) : UnityElementProblemAnalyzer<INullCoalescingExpression>(unityApi)
 {
     protected override void Analyze(INullCoalescingExpression expression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)

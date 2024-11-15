@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Modules;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnitySerializedReferenceProviderMock : UnitySerializedReferenceProvider
     {
         public UnitySerializedReferenceProviderMock(Lifetime lifetime, IUnityElementIdProvider provider,

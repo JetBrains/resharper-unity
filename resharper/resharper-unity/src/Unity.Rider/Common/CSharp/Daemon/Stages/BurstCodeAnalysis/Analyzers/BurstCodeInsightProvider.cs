@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Collections.Viewable;
@@ -12,11 +13,11 @@ using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class BurstCodeInsightProvider : AbstractUnityCodeInsightProvider
     {
         public BurstCodeInsightProvider(IFrontendBackendHost frontendBackendHost,
-                                        BulbMenuComponent bulbMenu,
+                                        ILazy<BulbMenuComponent> bulbMenu,
                                         UnitySolutionTracker tracker)
             : base(frontendBackendHost, bulbMenu)
         {

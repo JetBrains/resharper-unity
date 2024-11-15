@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IInvocationExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IInvocationExpression),
         HighlightingTypes = new[] {typeof(UnknownAnimatorStateNameWarning)})]
     public class PlayAnimatorStateAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {

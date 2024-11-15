@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IInvocationExpression), HighlightingTypes =
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IInvocationExpression), HighlightingTypes =
         new[] {typeof(PropertyDrawerOnGUIBaseWarning)})]
     public class PropertyDrawerOnGUIBaseProblemAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {

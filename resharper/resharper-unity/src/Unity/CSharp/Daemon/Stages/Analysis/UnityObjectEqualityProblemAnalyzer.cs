@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IEqualityExpression),
+    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadSafe, typeof(IEqualityExpression),
         HighlightingTypes = new[] { typeof(SuspiciousComparisonWarning) })]
     public class UnityObjectEqualityProblemAnalyzer : UnityElementProblemAnalyzer<IEqualityExpression>
     {

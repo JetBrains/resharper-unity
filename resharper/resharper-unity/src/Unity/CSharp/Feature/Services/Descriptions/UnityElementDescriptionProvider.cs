@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Descriptions;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
@@ -13,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
     // various places, usually as a fallback if there is no XML documentation. Can be seen when e.g. generating event
     // functions (provides the descriptions for the dialog or code completion). Also provides the descriptions in
     // QuickDoc, but only because of a custom QuickDoc provider.
-    [DeclaredElementDescriptionProvider]
+    [DeclaredElementDescriptionProvider(Instantiation.DemandAnyThreadSafe)]
     public class UnityElementDescriptionProvider : IDeclaredElementDescriptionProvider
     {
         private readonly UnityApi myUnityApi;

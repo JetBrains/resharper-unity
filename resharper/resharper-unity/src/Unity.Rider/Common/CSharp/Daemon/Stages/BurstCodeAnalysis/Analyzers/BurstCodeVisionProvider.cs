@@ -14,7 +14,7 @@ using JetBrains.Rider.Backend.Platform.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public sealed class BurstCodeVisionProvider : BurstGutterMarkProvider
     {
         private readonly IApplicationWideContextBoundSettingStore mySettingsStore;

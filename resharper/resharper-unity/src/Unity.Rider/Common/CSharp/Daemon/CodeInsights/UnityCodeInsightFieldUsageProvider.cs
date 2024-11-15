@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Components;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
@@ -45,7 +46,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsights
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityCodeInsightFieldUsageProvider : AbstractUnityCodeInsightProvider
     {
         private readonly DeferredCacheController myDeferredCacheController;
@@ -62,17 +63,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             new[] {new CodeVisionRelativeOrderingLast()};
 
         public UnityCodeInsightFieldUsageProvider(IFrontendBackendHost frontendBackendHost,
-                                                  BulbMenuComponent bulbMenu,
+                                                  ILazy<BulbMenuComponent> bulbMenu,
                                                   DeferredCacheController deferredCacheController,
                                                   AssetInspectorValuesContainer inspectorValuesContainer,
-                                                  UnityEventsElementContainer unityEventsElementContainer)
+                                                  UnityEventsElementContainer unityEventsElementContainer,
+                                                  DataContexts dataContexts,
+                                                  IActionManager actionManager)
             : base(frontendBackendHost, bulbMenu)
         {
             myDeferredCacheController = deferredCacheController;
             myInspectorValuesContainer = inspectorValuesContainer;
             myUnityEventsElementContainer = unityEventsElementContainer;
-            myActionManager = Shell.Instance.GetComponent<IActionManager>();
-            myContexts = Shell.Instance.GetComponent<DataContexts>();
+            myActionManager = actionManager;
+            myContexts = dataContexts;
         }
 
         private static (Guid? guid, string[] propertyNames) GetAssetGuidAndPropertyName(ISolution solution, ITypeOwner declaredElement, ITypeElement typeElement)

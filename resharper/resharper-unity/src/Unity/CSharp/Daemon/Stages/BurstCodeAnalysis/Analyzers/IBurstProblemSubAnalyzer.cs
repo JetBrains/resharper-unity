@@ -1,16 +1,12 @@
+using JetBrains.Application.Components;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    public interface IBurstProblemSubAnalyzer<in T> where T : ITreeNode
+    public interface IBurstProblemSubAnalyzer<in T> : IComponentWithAscIntPriority where T : ITreeNode
     {
         BurstProblemSubAnalyzerStatus CheckAndAnalyze(T t, IHighlightingConsumer consumer);
-
-        /// <summary>
-        /// Analyzer execution priority.
-        /// </summary>
-        int Priority { get; }
     }
 
     public enum BurstProblemSubAnalyzerStatus : byte

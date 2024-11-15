@@ -20,7 +20,7 @@ using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Pr
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityProjectSettingsCache : SimpleICache<ProjectSettingsCacheItem>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;

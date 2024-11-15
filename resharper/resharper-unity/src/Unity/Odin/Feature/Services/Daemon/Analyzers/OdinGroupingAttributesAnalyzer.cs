@@ -20,7 +20,7 @@ using JetBrains.Util.Extension;
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.Daemon.Analyzers;
 
 [ElementProblemAnalyzer(
-    Instantiation.DemandAnyThreadUnsafe,
+    Instantiation.DemandAnyThreadSafe,
     typeof(IClassLikeDeclaration),
     HighlightingTypes =
     [

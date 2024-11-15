@@ -23,7 +23,7 @@ using QualifierEqualityComparer = JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlo
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(
-        Instantiation.DemandAnyThreadUnsafe,
+        Instantiation.DemandAnyThreadSafe,
         ElementTypes: new [] { typeof(IParametersOwnerDeclaration), typeof(IPropertyDeclaration)},
         HighlightingTypes = new[] {typeof(InefficientPropertyAccessWarning)})]
     public class ComponentPropertyAccessProblemAnalyzer : UnityElementProblemAnalyzer<ITreeNode>
