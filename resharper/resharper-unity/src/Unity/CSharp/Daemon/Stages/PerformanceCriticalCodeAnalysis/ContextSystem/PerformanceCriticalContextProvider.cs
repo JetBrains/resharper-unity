@@ -1,5 +1,6 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -12,13 +13,14 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public sealed class PerformanceCriticalContextProvider : CallGraphContextProviderBase
     {
         private readonly IProperty<bool> myIsPerformanceAnalysisEnabledProperty;
 
         public PerformanceCriticalContextProvider(
             Lifetime lifetime,
+            IShellLocks shellLocks,
             IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             IElementIdProvider elementIdProvider,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
@@ -26,8 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
             myIsPerformanceAnalysisEnabledProperty =
-                applicationWideContextBoundSettingStore.BoundSettingsStore.GetValueProperty(lifetime,
-                    (UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
+                applicationWideContextBoundSettingStore.BoundSettingsStore.GetValueProperty2(lifetime,
+                    (UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting, ApartmentForNotifications.Primary(shellLocks));
         }
 
         public override CallGraphContextTag ContextTag => CallGraphContextTag.PERFORMANCE_CRITICAL_CONTEXT;

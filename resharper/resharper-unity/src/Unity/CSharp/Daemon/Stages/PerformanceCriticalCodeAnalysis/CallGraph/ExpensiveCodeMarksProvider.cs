@@ -12,7 +12,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class ExpensiveCodeMarksProvider : PerformanceAnalysisRootMarksProviderBase
     {
         public const string MarkId = "Unity.ExpensiveCode";

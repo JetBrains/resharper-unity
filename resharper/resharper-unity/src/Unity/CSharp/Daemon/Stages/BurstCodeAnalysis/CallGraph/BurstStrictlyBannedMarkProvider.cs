@@ -13,7 +13,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class BurstStrictlyBannedMarkProvider : CallGraphCommentMarksProvider
     {
         public const string MarkId = "Unity.BustContextStrictMarks";

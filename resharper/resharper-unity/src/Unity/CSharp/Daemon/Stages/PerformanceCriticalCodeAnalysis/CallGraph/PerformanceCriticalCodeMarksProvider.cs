@@ -15,7 +15,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class PerformanceCriticalCodeMarksProvider : PerformanceAnalysisRootMarksProviderBase
     {
         public const string MarkId = "Unity.PerformanceCriticalContext";
