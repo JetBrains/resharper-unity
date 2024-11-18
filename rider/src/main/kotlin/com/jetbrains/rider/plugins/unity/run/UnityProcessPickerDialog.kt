@@ -173,8 +173,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                     .focused()
             }
             row(UnityBundle.message("port.colon")) {
-                cell(PortField(0)).bindIntValue(model::port)
-                    .errorOnApply(UnityBundle.message("dialog.message.port.number.must.be.positive")) { it.number <= 0 }
+                cell(PortField()).bindIntValue(model::port)
             }
         }
 
