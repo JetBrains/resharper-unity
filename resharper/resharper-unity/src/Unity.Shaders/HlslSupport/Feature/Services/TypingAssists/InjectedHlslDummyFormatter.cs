@@ -4,9 +4,7 @@ using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
-using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
@@ -18,14 +16,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
     public class InjectedHlslDummyFormatter : CppDummyFormatterBase
     {
         private readonly ISolution mySolution;
-        private readonly UnityDialects myDialects;
 
         public InjectedHlslDummyFormatter(ISolution solution,
-            DocumentToProjectFileMappingStorage projectFileMappingStorage, UnityDialects dialects)
+            DocumentToProjectFileMappingStorage projectFileMappingStorage)
             : base(solution, projectFileMappingStorage)
         {
             mySolution = solution;
-            myDialects = dialects;
         }
 
         public CachingLexer GetCachingLexer(ITextControl textControl)
@@ -91,8 +87,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
 
         private class HlslDummyFormatterContext : CppDummyFormatterContext
         {
-            public HlslDummyFormatterContext(ISolution solution, ITextControl textControl, CppLanguageDialect dialect)
-                : base(solution, textControl, dialect)
+            public HlslDummyFormatterContext(ISolution solution, ITextControl textControl)
+                : base(solution, textControl, isHlsl: true)
             {
             }
 
@@ -104,8 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
 
         public override CppDummyFormatterContext CreateContext(ITextControl textControl)
         {
-            var dialect = myDialects.ShaderLabHlslDialect;
-            return new HlslDummyFormatterContext(mySolution, textControl, dialect);
+            return new HlslDummyFormatterContext(mySolution, textControl);
         }
     }
 }
