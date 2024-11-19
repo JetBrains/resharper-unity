@@ -268,9 +268,8 @@ namespace JetBrains.Rider.Unity.Editor
           var userProfile = Environment.GetEnvironmentVariable("USERPROFILE");
           if (!string.IsNullOrEmpty(userProfile))
           {
-            playerLogPath = Path.Combine(
-              Path.Combine(Path.Combine(Path.Combine(userProfile, @"AppData\LocalLow"), PlayerSettings.companyName),
-                PlayerSettings.productName), "output_log.txt");
+            var folder = Path.Combine(userProfile, @"AppData\LocalLow", PlayerSettings.companyName, PlayerSettings.productName);
+            playerLogPath = Path.Combine(folder, File.Exists(Path.Combine(folder, "output_log.txt")) ? "output_log.txt" : "Player.log");
           }
 
           break;
@@ -281,7 +280,7 @@ namespace JetBrains.Rider.Unity.Editor
           if (!string.IsNullOrEmpty(home))
           {
             editorLogPath = Path.Combine(home, "Library/Logs/Unity/Editor.log");
-            playerLogPath = Path.Combine(home, "Library/Logs/Unity/Player.log");
+            playerLogPath = Path.Combine(home, "Library/Logs", PlayerSettings.companyName, PlayerSettings.productName, "Player.log");
           }
 
           break;
@@ -292,8 +291,7 @@ namespace JetBrains.Rider.Unity.Editor
           if (!string.IsNullOrEmpty(home))
           {
             editorLogPath = Path.Combine(home, ".config/unity3d/Editor.log");
-            playerLogPath = Path.Combine(home,
-              $".config/unity3d/{PlayerSettings.companyName}/{PlayerSettings.productName}/Player.log");
+            playerLogPath = Path.Combine(home, ".config/unity3d", PlayerSettings.companyName, PlayerSettings.productName, "Player.log");
           }
 
           break;
