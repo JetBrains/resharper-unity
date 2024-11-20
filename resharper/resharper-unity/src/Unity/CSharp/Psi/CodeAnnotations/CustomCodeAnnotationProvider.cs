@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
@@ -34,14 +35,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
         private readonly KnownTypesCache myKnownTypesCache;
         private readonly UnityApi myUnityApi;
-        private readonly IEnumerable<IUnityRangeAttributeProvider> myUnityRangeAttributeProviders;
+        private readonly IImmutableEnumerable<IUnityRangeAttributeProvider> myUnityRangeAttributeProviders;
 
         private readonly DirectMappedCache<ITypeElement, bool> myCompiledElementsCache = new(10);
         private readonly DirectMappedCache<ITypeElement, bool> mySourceElementsCache = new(10);
 
         public CustomCodeAnnotationProvider(ExternalAnnotationsModuleFactory externalAnnotationsModuleFactory,
             IPredefinedTypeCache predefinedTypeCache, KnownTypesCache knownTypesCache, UnityApi unityApi,
-            IEnumerable<IUnityRangeAttributeProvider> unityRangeAttributeProviders)
+            IImmutableEnumerable<IUnityRangeAttributeProvider> unityRangeAttributeProviders)
         {
             myPredefinedTypeCache = predefinedTypeCache;
             myKnownTypesCache = knownTypesCache;
