@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
@@ -6,6 +7,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.CSharp;
+using JetBrains.ProjectModel.Propoerties;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -36,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                    && project.IsUnityGeneratedProject();
         }
 
-        public override CSharpLanguageLevel GetLatestAvailableLanguageLevel(IPsiModule psiModule )=> GetCachedProjectLanguageLevel(psiModule).GetValue().latestAvailableLanguageValue ?? base.GetLatestAvailableLanguageLevel(psiModule);
+        public override CSharpLanguageLevel GetLatestAvailableLanguageLevel(IPsiModule psiModule )=> GetCachedProjectLanguageLevel(psiModule).GetValue().previewAvailableLanguageValue ?? base.GetLatestAvailableLanguageLevel(psiModule);
 
         public override CSharpLanguageLevel GetLanguageLevel(IPsiModule psiModule) => GetCachedProjectLanguageLevel(psiModule).GetValue().languageLevel ?? base.GetLanguageLevel(psiModule);
 
@@ -67,31 +69,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
 
         public override CSharpLanguageLevel ConvertToLanguageLevel(CSharpLanguageVersion languageVersion, IPsiModule psiModule)
         {
-            if (languageVersion
-                is CSharpLanguageVersion.Default
-                or CSharpLanguageVersion.Latest
-                or CSharpLanguageVersion.LatestMajor
-                or CSharpLanguageVersion.Preview)
-            {
-                return GetLanguageLevel(psiModule);
-            }
+            if (languageVersion is CSharpLanguageVersion.Default or CSharpLanguageVersion.Latest or CSharpLanguageVersion.LatestMajor)
+                return GetCachedProjectLanguageLevel(psiModule).GetValue().latestAvailableLanguageValue ?? base.ConvertToLanguageLevel(languageVersion, psiModule);
+
+            if (languageVersion is CSharpLanguageVersion.Preview)
+                return GetCachedProjectLanguageLevel(psiModule).GetValue().previewAvailableLanguageValue ?? base.ConvertToLanguageLevel(languageVersion, psiModule);
 
             return base.ConvertToLanguageLevel(languageVersion, psiModule);
         }
 
         private sealed class CachedProjectLanguageLevel([NotNull] IProject project)
-            : CachedProjectItemValue<IProject, (CSharpLanguageLevel? languageLevel, CSharpLanguageLevel? latestAvailableLanguageValue)>(project.GetSolution().Timestamps, project, Evaluate)
+            : CachedProjectItemAnyChange<IProject, (CSharpLanguageLevel? languageLevel, CSharpLanguageLevel? latestAvailableLanguageValue, CSharpLanguageLevel? previewAvailableLanguageValue)>(project.GetSolution().Timestamps, project, Evaluate)
         {
-            private static readonly Version ourVersion46 = new(4, 6);
-
-            protected override int ModificationTimestamp()
-            {
-                return Timestamps.ProjectItemLocations;
-            }
-
-            private static (CSharpLanguageLevel? languageLevel, CSharpLanguageLevel? latestAvailableLanguageValue) Evaluate(IProject project)
+            private static (CSharpLanguageLevel? languageLevel, CSharpLanguageLevel? latestAvailableLanguageValue, CSharpLanguageLevel? previewAvailableLanguageValue) Evaluate(IProject project)
             {
                 #region Explanation
+                // In Unity 2019.2 - Unity 6
+                // LangVersion is specified, can be modified by csc.rsp
+                // There is a certain amount of C# lang features which don't respect LangVersion, but depend on Roslyn capabilities,
+                // thus we need latestAvailableLanguageValue.
+                // see: RIDER-119992 Incorrect not initialized variable errors
+                //
+                // Older Unity versions:
                 // Make sure we don't suggest code changes that won't compile in Unity due to mismatched C# language levels
                 // (e.g. C#6 "elvis" operator)
                 //
@@ -146,9 +145,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                 //   Order of post-processing is non-deterministic, so Rider's LangVersion might be removed
                 #endregion
 
-                CSharpLanguageLevel? languageLevel = null;
-                CSharpLanguageLevel? latestAvailableLanguageValue = null;
                 var unityProjectFileCacheProvider = project.GetComponent<UnityProjectFileCacheProvider>();
+                var appPath = unityProjectFileCacheProvider.GetAppPath(project);
+                var contentPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
+                if (!contentPath.IsNullOrEmpty())
+                {
+                    var roslynDir = contentPath.Combine("Tools").Combine("Roslyn"); // older location
+                    if (!roslynDir.ExistsDirectory)
+                        roslynDir = contentPath.Combine("DotNetSdkRoslyn"); // Unity 6 location and maybe others
+
+                    if (roslynDir.ExistsDirectory)
+                    {
+                        var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();
+                        var langVersion = project.ProjectProperties.ActiveConfigurations.Configurations
+                            .OfType<CSharpProjectConfiguration>()
+                            .Select(configuration => configuration.LanguageVersion)
+                            .FirstOrDefault(CSharpLanguageVersion.Default);
+                        var languageLevel = languageLevelProjectProperty.ConvertToLanguageLevel(langVersion, roslynDir);
+                        return (languageLevel, languageLevelProjectProperty.ConvertToLanguageLevel(CSharpLanguageVersion.Latest, roslynDir), languageLevelProjectProperty.ConvertToLanguageLevel(CSharpLanguageVersion.Preview, roslynDir));
+                    }
+                }
+                
+                return DetermineCSharpLanguageLevelOldUnity(project, unityProjectFileCacheProvider);
+            }
+
+            private static readonly Version ourVersion46 = new(4, 6);
+            private static (CSharpLanguageLevel? languageLevel, CSharpLanguageLevel? latestAvailableLanguageValue,CSharpLanguageLevel? previewAvailableLanguageValue)
+                DetermineCSharpLanguageLevelOldUnity(IProject project, UnityProjectFileCacheProvider unityProjectFileCacheProvider)
+            {
+                
+                CSharpLanguageLevel? languageLevel = null;
                 if (!unityProjectFileCacheProvider.IsLangVersionExplicitlySpecified(project) || IsLangVersionDefault())
                 {
                     // Support for https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration
@@ -159,39 +185,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                         languageLevel = CSharpLanguageLevel.CSharp60;
                     else 
                         languageLevel = IsTargetFrameworkAtLeast46()
-                        ? CSharpLanguageLevel.CSharp60
-                        : CSharpLanguageLevel.CSharp40;
+                            ? CSharpLanguageLevel.CSharp60
+                            : CSharpLanguageLevel.CSharp40;
                 }
-
-                var isLatest = IsLangVersionLatest();
                 
                 // https://forum.unity.com/threads/would-the-roslyn-compiler-compile-c-8-0-preview.598069/
                 if (project.Location.CombineWithShortName("CSharp80Support").ExistsDirectory)
                 {
-                    if (isLatest) languageLevel ??= CSharpLanguageLevel.CSharp80;
-                    latestAvailableLanguageValue = CSharpLanguageLevel.CSharp80;
+                    if (IsLangVersionLatest()) languageLevel ??= CSharpLanguageLevel.CSharp80;
                 }
-                else
-                {
-                    var appPath = unityProjectFileCacheProvider.GetAppPath(project);
-                    var contentPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
-                    if (!contentPath.IsNullOrEmpty())
-                    {
-                        var roslynDir = contentPath.Combine("Tools").Combine("Roslyn"); // older location
-                        if (!roslynDir.ExistsDirectory)
-                            roslynDir = contentPath.Combine("DotNetSdkRoslyn"); // Unity 6 location and maybe others
-                        
-                        if (roslynDir.ExistsDirectory)
-                        {
-                            var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();
-                            latestAvailableLanguageValue = languageLevelProjectProperty.GetLatestAvailableLanguageLevel(roslynDir);
-                            if (isLatest) languageLevel ??= latestAvailableLanguageValue;
-                        }
-                    }
-                }
-
-                latestAvailableLanguageValue ??= languageLevel;
-                return (languageLevel, latestAvailableLanguageValue);
 
                 bool IsLangVersionDefault()
                 {
@@ -206,10 +208,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                                 return false;
                         }
                     }
-
+                    
                     return true;
                 }
-                
+
                 bool IsLangVersionLatest()
                 {
                     foreach (var configuration in project.ProjectProperties.ActiveConfigurations.Configurations)
@@ -228,6 +230,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                 {
                     return project.GetCurrentTargetFrameworkId().Version >= ourVersion46;
                 }
+
+                return (languageLevel, languageLevel, languageLevel);
             }
         }
     }

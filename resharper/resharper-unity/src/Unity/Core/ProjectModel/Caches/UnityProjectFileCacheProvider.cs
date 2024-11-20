@@ -33,15 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
             myCache.RegisterCache(lifetime, this);
             myCallbacks = new Dictionary<VirtualFileSystemPath, Action>();
         }
-
-        public void RegisterDataChangedCallback(Lifetime lifetime, VirtualFileSystemPath projectLocation, Action action)
-        {
-            // Make sure we have a valid project file location to key off. This will be empty for e.g. solution folders,
-            // Misc project and most importantly, tests
-            if (!projectLocation.IsEmpty)
-                myCallbacks.Add(lifetime, projectLocation, action);
-        }
-
+        
         public bool IsLangVersionExplicitlySpecified(IProject project)
         {
             var data = myCache.GetData(this, project);
