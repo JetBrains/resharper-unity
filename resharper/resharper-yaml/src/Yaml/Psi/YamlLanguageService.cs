@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.Components;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
@@ -12,13 +13,9 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi
 {
   [Language(typeof(YamlLanguage))]
-  public class YamlLanguageService : LanguageService
+  public class YamlLanguageService([NotNull] PsiLanguageType psiLanguageType, [NotNull] ILazy<IConstantValueService> constantValueService)
+    : LanguageService(psiLanguageType, constantValueService)
   {
-    public YamlLanguageService([NotNull] PsiLanguageType psiLanguageType, [NotNull] IConstantValueService constantValueService)
-      : base(psiLanguageType, constantValueService)
-    {
-    }
-
     public override ILexerFactory GetPrimaryLexerFactory()
     {
       return new YamlLexerFactory();

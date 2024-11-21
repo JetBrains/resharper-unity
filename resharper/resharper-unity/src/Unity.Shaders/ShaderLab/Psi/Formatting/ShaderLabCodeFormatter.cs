@@ -1,4 +1,4 @@
-using JetBrains.Application.Parts;
+using JetBrains.Application.Components;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
@@ -19,16 +19,10 @@ using JetBrains.Util.Text;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 {
   [Language(typeof(ShaderLabLanguage))]
-  public class ShaderLabCodeFormatter : CodeFormatterBase<ShaderLabFormatSettingsKey>
+  public class ShaderLabCodeFormatter(PsiLanguageType languageType, CodeFormatterRequirements requirements, ILazy<ShaderLabFormattingInfoProvider> shaderLabFormattingInfo)
+      : CodeFormatterBase<ShaderLabFormatSettingsKey>(languageType, requirements)
   {
-    private readonly ShaderLabFormattingInfoProvider myShaderLabFormattingInfo;
-
-    public ShaderLabCodeFormatter(PsiLanguageType languageType, CodeFormatterRequirements requirements, ShaderLabFormattingInfoProvider shaderLabFormattingInfo) : base(languageType, requirements)
-    {
-      myShaderLabFormattingInfo = shaderLabFormattingInfo;
-    }
-    
-    public override string OverridenSettingPrefix => "// @formatter:";
+      public override string OverridenSettingPrefix => "// @formatter:";
 
     protected override CodeFormattingContext CreateFormatterContext(
         AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider, int tabWidth, SingleLangChangeAccu changeAccu, FormatTask[] formatTasks)
@@ -64,13 +58,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 
       //ASSERT(!IsWhitespaceToken(lastNode), "Whitespace node on the right side of the range");
 
-      var settings = GetFormattingSettings(task.FirstElement, parameters, myShaderLabFormattingInfo);
+      var settings = GetFormattingSettings(task.FirstElement, parameters, shaderLabFormattingInfo.Value);
       settings.Settings.SetValue((key => key.WRAP_LINES), false);
 
       // TODO: this is a hack to warmup injected CPP nodes in PSI to avoid problems with parsing under write lock during formatting, we need more robust solution for that problem 
       if (firstElement.GetSourceFile() is {} sourceFile)
         _ = sourceFile.GetPsiFiles<CppLanguage>().Count;
-      DoDeclarativeFormat(settings, myShaderLabFormattingInfo, null, new[] { task }, parameters,
+      DoDeclarativeFormat(settings, shaderLabFormattingInfo.Value, null, new[] { task }, parameters,
         null, FormatChildren);
 
       return FormatterImplHelper.PointerToRange(pointer, firstElement, lastElement);

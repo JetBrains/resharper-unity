@@ -1,3 +1,4 @@
+using JetBrains.Application.Components;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -12,8 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi
     [Language(typeof(UxmlLanguage))]
     internal class UxmlLanguageService : XmlLanguageService
     {
-        public UxmlLanguageService(XmlLanguage languageType, IConstantValueService constantValueService,
-            XmlTokenTypes tokenTypes, IXmlElementFactory elementFactory, IXmlCodeFormatter codeFormatter,
+        public UxmlLanguageService(XmlLanguage languageType, ILazy<IConstantValueService> constantValueService,
+            ILazy<XmlTokenTypes> tokenTypes, ILazy<IXmlElementFactory> elementFactory, ILazy<IXmlCodeFormatter> codeFormatter,
             CommonIdentifierIntern commonIdentifierIntern) : base(languageType, constantValueService, tokenTypes,
             elementFactory, codeFormatter, commonIdentifierIntern)
         {

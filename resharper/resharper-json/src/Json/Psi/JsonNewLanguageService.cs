@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Json.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
@@ -7,23 +8,15 @@ using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Json.Psi
 {
     [Language(typeof(JsonNewLanguage))]
-    public class JsonNewLanguageService : LanguageService
+    public class JsonNewLanguageService(PsiLanguageType psiLanguageType, ILazy<IConstantValueService> constantValueService)
+        : LanguageService(psiLanguageType, constantValueService)
     {
-        private readonly CommonIdentifierIntern myIntern;
-
-        public JsonNewLanguageService(PsiLanguageType psiLanguageType, IConstantValueService constantValueService, CommonIdentifierIntern intern)
-            : base(psiLanguageType, constantValueService)
-        {
-            myIntern = intern;
-        }
-
         public override ILexerFactory GetPrimaryLexerFactory()
         {
             return new JsonNewLexerFactory();
