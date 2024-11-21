@@ -17,6 +17,9 @@ import com.jetbrains.rider.test.annotations.Severity
 import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
+import com.jetbrains.rider.test.facades.TestApiScopes
+import com.jetbrains.rider.test.facades.editor.EditorApiFacade
+import com.jetbrains.rider.test.facades.editor.RiderEditorApiFacade
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
@@ -30,7 +33,9 @@ import java.time.Duration
 @Feature("Unity Asset Database Autocompletion")
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
-class AssetDatabaseCompletionTest : BaseTestWithSolution() {
+class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor {
+    override val editorApiFacade: EditorApiFacade by lazy { RiderEditorApiFacade(solutionApiFacade, testDataStorage) }
+
     override val testSolution: String = "AssetDatabasePathCompletionProject"
 
     override val traceCategories: List<String>

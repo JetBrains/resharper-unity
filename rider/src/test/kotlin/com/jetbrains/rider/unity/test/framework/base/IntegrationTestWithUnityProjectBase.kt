@@ -1,6 +1,6 @@
 package com.jetbrains.rider.unity.test.framework.base
 
-import com.jetbrains.rider.test.facades.RiderExistingSolutionApiFacade
+import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.framework.testData.InheritanceBasedTestDataStorage

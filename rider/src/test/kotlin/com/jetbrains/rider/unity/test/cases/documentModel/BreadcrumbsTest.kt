@@ -18,7 +18,7 @@ class BreadcrumbsTest : BaseTestWithSolution() {
 
     @Test(description="Test Breadcrumbs in .shader files")
     fun simpleCheck() {
-        withOpenedEditor(project, "Assets/Shaders/MyShader.shader") {
+        withOpenedEditor("Assets/Shaders/MyShader.shader") {
             setCaretToPosition(12, 20)
 
             checkCrumbs("Shader \"MyShader\"", "SubShader", "Pass", "CGPROGRAM", "hsv2rgb")

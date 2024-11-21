@@ -16,7 +16,7 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
-import com.jetbrains.rider.test.facades.RiderExistingSolutionApiFacade
+import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
