@@ -8,7 +8,7 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
   <PropertyGroup>
     <AssemblyName>JetBrains.ReSharper.Plugins.Yaml</AssemblyName>
-    <LangVersion>9</LangVersion>
+    <LangVersion>12</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
     <RootNamespace>JetBrains.ReSharper.Plugins.Yaml</RootNamespace>
     <TargetFramework>net472</TargetFramework>
