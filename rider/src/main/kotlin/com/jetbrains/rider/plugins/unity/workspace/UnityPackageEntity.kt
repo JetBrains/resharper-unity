@@ -3,9 +3,7 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.workspace.jps.entities.ContentRootEntity
 import com.intellij.platform.workspace.storage.*
-import com.intellij.platform.workspace.storage.annotations.Child
 import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
@@ -41,7 +39,6 @@ interface UnityPackageEntity : WorkspaceEntity {
     interface Builder : WorkspaceEntity.Builder<UnityPackageEntity> {
         override var entitySource: EntitySource
         var descriptor: UnityPackage
-        var contentRootEntity: ContentRootEntity.Builder?
     }
 
     companion object : EntityType<UnityPackageEntity, Builder>() {
@@ -70,10 +67,4 @@ fun MutableEntityStorage.modifyUnityPackageEntity(
 ): UnityPackageEntity {
     return modifyEntity(UnityPackageEntity.Builder::class.java, entity, modification)
 }
-
-var ContentRootEntity.Builder.unityPackageEntity: UnityPackageEntity.Builder?
-    by WorkspaceEntity.extensionBuilder(UnityPackageEntity::class.java)
 //endregion
-
-@Suppress("unused")
-internal val ContentRootEntity.unityPackageEntity: UnityPackageEntity? by WorkspaceEntity.extension()

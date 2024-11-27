@@ -1,10 +1,8 @@
 package com.jetbrains.rider.plugins.unity.workspace.impl
 
-import com.intellij.platform.workspace.storage.ConnectionId
 import com.intellij.platform.workspace.storage.WorkspaceEntityInternalApi
 import com.intellij.platform.workspace.storage.metadata.impl.MetadataStorageBase
 import com.intellij.platform.workspace.storage.metadata.model.EntityMetadata
-import com.intellij.platform.workspace.storage.metadata.model.ExtPropertyMetadata
 import com.intellij.platform.workspace.storage.metadata.model.FinalClassMetadata
 import com.intellij.platform.workspace.storage.metadata.model.OwnPropertyMetadata
 import com.intellij.platform.workspace.storage.metadata.model.StorageTypeMetadata
@@ -17,11 +15,6 @@ internal object MetadataStorageImpl: MetadataStorageBase() {
         val primitiveTypeStringNullable = ValueTypeMetadata.SimpleType.PrimitiveType(isNullable = true, type = "String")
         
         var typeMetadata: StorageTypeMetadata
-        
-        typeMetadata = FinalClassMetadata.ObjectMetadata(fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdater\$RiderUnityEntitySource", properties = listOf(OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "virtualFileUrl", valueType = ValueTypeMetadata.SimpleType.CustomType(isNullable = true, typeMetadata = FinalClassMetadata.KnownClass(fqName = "com.intellij.platform.workspace.storage.url.VirtualFileUrl")), withDefault = false)), supertypes = listOf("com.jetbrains.rider.projectView.workspace.RiderEntitySource",
-"com.intellij.platform.workspace.storage.EntitySource"))
-        
-        addMetadata(typeMetadata)
         
         typeMetadata = FinalClassMetadata.ObjectMetadata(fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater\$RiderUnityPackageEntitySource", properties = listOf(OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "virtualFileUrl", valueType = ValueTypeMetadata.SimpleType.CustomType(isNullable = true, typeMetadata = FinalClassMetadata.KnownClass(fqName = "com.intellij.platform.workspace.storage.url.VirtualFileUrl")), withDefault = false)), supertypes = listOf("com.jetbrains.rider.projectView.workspace.RiderEntitySource",
 "com.intellij.platform.workspace.storage.EntitySource"))
@@ -47,19 +40,17 @@ OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = 
 OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "tarballLocation", valueType = primitiveTypeStringNullable, withDefault = false),
 OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "gitDetails", valueType = ValueTypeMetadata.SimpleType.CustomType(isNullable = true, typeMetadata = FinalClassMetadata.ClassMetadata(fqName = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityGitDetails", properties = listOf(OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "url", valueType = primitiveTypeStringNotNullable, withDefault = false),
 OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "hash", valueType = primitiveTypeStringNullable, withDefault = false),
-OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "revision", valueType = primitiveTypeStringNullable, withDefault = false)), supertypes = listOf("com.jetbrains.rd.util.string.IPrintable"))), withDefault = false)), supertypes = listOf("com.jetbrains.rd.util.string.IPrintable"))), withDefault = false),
-OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "contentRootEntity", valueType = ValueTypeMetadata.EntityReference(connectionType = ConnectionId.ConnectionType.ONE_TO_ONE, entityFqName = "com.intellij.platform.workspace.jps.entities.ContentRootEntity", isChild = true, isNullable = true), withDefault = false)), extProperties = listOf(ExtPropertyMetadata(isComputable = false, isOpen = false, name = "unityPackageEntity", receiverFqn = "com.intellij.platform.workspace.jps.entities.ContentRootEntity", valueType = ValueTypeMetadata.EntityReference(connectionType = ConnectionId.ConnectionType.ONE_TO_ONE, entityFqName = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity", isChild = false, isNullable = true), withDefault = false)), isAbstract = false)
+OwnPropertyMetadata(isComputable = false, isKey = false, isOpen = false, name = "revision", valueType = primitiveTypeStringNullable, withDefault = false)), supertypes = listOf("com.jetbrains.rd.util.string.IPrintable"))), withDefault = false)), supertypes = listOf("com.jetbrains.rd.util.string.IPrintable"))), withDefault = false)), extProperties = listOf(), isAbstract = false)
         
         addMetadata(typeMetadata)
     }
 
     override fun initializeMetadataHash() {
-        addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity", metadataHash = -234672301)
+        addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity", metadataHash = 193016699)
         addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage", metadataHash = -572504383)
         addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource", metadataHash = -217023979)
         addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityGitDetails", metadataHash = -55238709)
-        addMetadataHash(typeFqn = "com.intellij.platform.workspace.storage.EntitySource", metadataHash = 393303271)
-        addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdater\$RiderUnityEntitySource", metadataHash = -514482210)
+        addMetadataHash(typeFqn = "com.intellij.platform.workspace.storage.EntitySource", metadataHash = -1030321237)
         addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater\$RiderUnityPackageEntitySource", metadataHash = -1748851553)
     }
 
