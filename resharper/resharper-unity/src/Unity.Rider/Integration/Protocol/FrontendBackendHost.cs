@@ -109,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                         var packageDetails = packageData.PackageDetails;
                         var source = ToProtocolPackageSource(packageData.Source);
                         var dependencies = (from d in packageDetails.Dependencies
-                            select new UnityPackageDependency(d.Key, d.Value)).ToArray();
+                            select new UnityPackageDependency(d.Key, d.Value)).ToList();
                         var gitDetails = packageData.GitDetails != null
                             ? new UnityGitDetails(packageData.GitDetails.Url, packageData.GitDetails.Hash,
                                 packageData.GitDetails.Revision)

@@ -64,7 +64,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("source", UnityPackageSource)
         field("displayName", string)
         field("description", string.nullable)
-        field("dependencies", array(structdef("unityPackageDependency") {
+        field("dependencies", immutableList(structdef("unityPackageDependency") {
             field("id", string)
             field("version", string)
         }))
