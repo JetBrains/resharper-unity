@@ -24,28 +24,6 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
     }
   }
 
-  internal sealed class ProfilerWindowReflectionData : IReflectionData
-  {
-    public const string UnityEditorProfilerWindowType = "UnityEditor.ProfilerWindow";
-    public readonly FieldInfo ProfilerModulesFieldInfo;
-    public readonly Type ProfilerWindowType;
-
-    public ProfilerWindowReflectionData()
-    {
-      ProfilerWindowType = Assembly.GetAssembly(typeof(EditorWindow)).GetType(UnityEditorProfilerWindowType);
-      ProfilerModulesFieldInfo =
-        ProfilerWindowType?.GetField("m_ProfilerModules", BindingFlags.Instance | BindingFlags.NonPublic)
-        ?? ProfilerWindowType?.GetField("m_AllModules", BindingFlags.Instance | BindingFlags.NonPublic);
-    }
-
-    public bool IsValid()
-    {
-      return ProfilerWindowType != null
-             && ProfilerModulesFieldInfo != null
-        ;
-    }
-  }
-
   internal sealed class CPUProfilerModuleReflectionData : IReflectionData
   {
     public const string CpuProfilerModuleTypeName = "UnityEditorInternal.Profiling.CPUProfilerModule";
