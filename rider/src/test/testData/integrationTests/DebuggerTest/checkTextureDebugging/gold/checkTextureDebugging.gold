@@ -1,6 +1,7 @@
 --> TextureDebuggingScript.cs:13(447,468) // Debug.Log(texture2D);
 TextureDebuggingScript.Update() in Src.Scripts, Assembly-CSharp.dll
     +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
+    +DontDestroyOnLoad Scene = DontDestroyOnLoad (DontDestroyOnLoad)
     +this.gameObject = Main Camera (active: true, layer: 0)
     +this = {TextureDebuggingScript} enabled: true, gameObject: Main Camera
     +texture2D = {Texture2D} Temporary texture for debugging (UnityEngine.Texture2D)
