@@ -26,9 +26,9 @@ public class UnityProfilerEventsHost(
     ILogger logger,
     ISolution solution)
 {
-    public void AdviseOpenFileByMethodName(BackendUnityModel backendUnityModel, FrontendBackendHost frontendBackendHost)
+    public void AdviseOpenFileByMethodName(UnityProfilerModel unityProfilerModel, FrontendBackendHost frontendBackendHost)
     {
-        backendUnityModel.OpenFileBySampleInfo.SetAsync((_, sampleStackInfo) =>
+        unityProfilerModel.OpenFileBySampleInfo.SetAsync((_, sampleStackInfo) =>
         {
             var result = new RdTask<Unit>();
             if (string.IsNullOrEmpty(sampleStackInfo.SampleStack) || string.IsNullOrEmpty(sampleStackInfo.SampleName))

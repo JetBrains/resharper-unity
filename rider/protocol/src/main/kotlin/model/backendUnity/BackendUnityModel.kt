@@ -104,10 +104,6 @@ object BackendUnityModel: Root() {
         +"Normal"
     }
 
-    private val SampleStackInfo = structdef {
-        field("sampleName", string.nullable)
-        field("sampleStack", string.nullable)
-    }
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
@@ -168,8 +164,7 @@ object BackendUnityModel: Root() {
 
         // Actions called from Unity to the backend
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
-        callback("openFileBySampleInfo", SampleStackInfo, void).documentation = "Called from Unity to navigate from selected profiler sample"
-        
+
         // Unit testing
         property("unitTestLaunch", UnitTestLaunch).documentation = "Set the details of the current unit test session"
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
@@ -179,5 +174,39 @@ object BackendUnityModel: Root() {
         // profiler
         call ("startProfiling", ProfilingData, void).documentation = "Start profiling and enter PlayMode, depending on the param"
         call ("stopProfiling", ProfilingData, void)
+    }
+}
+
+object UnityProfilerModel : Ext(BackendUnityModel) {
+
+    private val SampleStackInfo = structdef {
+        field("sampleName", string.nullable)
+        field("sampleStack", string.nullable)
+    }
+    private val SampleInfo = structdef {
+        field("duration", double)
+        field("markerId", int)
+        field("childrenCount", int)
+    }
+    private val MarkerToNamePair = structdef {
+        field("markerId", int)
+        field("name", string)
+    }
+    private val UnityProfilerSnapshot = structdef {
+        field("frameIndex", int)
+        field("startTimeMs", double)
+        field("frameTimeMs", float)
+        field("threadIndex", int)
+        field("threadName", string)
+        field("markerIdToName", immutableList(MarkerToNamePair))
+        field("samples", immutableList(SampleInfo))
+        field("status", Library.UnityProfilerSnapshotStatus)
+    }
+
+    init {
+        //Unity profiler integration
+        callback("openFileBySampleInfo", SampleStackInfo, void).documentation = "Called from Unity to navigate from selected profiler sample"
+        call("getUnityProfilerSnapshot", Library.ProfilerSnapshotRequest, UnityProfilerSnapshot.nullable).async.documentation = "Polled from the backend to get current frame profiler snapshot data"
+        property("profilerSnapshotStatus", Library.UnityProfilerSnapshotStatus).async
     }
 }

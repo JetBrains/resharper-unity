@@ -45,7 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         // Do not use for subscriptions! Should only be used to read values and start tasks.
         // The property's value will be null when the backend/Unity protocol is not available
         public readonly ViewableProperty<BackendUnityModel?> BackendUnityModel = new(null);
-
+        public readonly ViewableProperty<UnityProfilerModel?> BackendUnityProfilerModel  = new(null);
+        
         // TODO: Remove FrontendBackendHost. It's too easy to get circular dependencies
         public BackendUnityHost(Lifetime lifetime, 
             ILogger logger,
@@ -77,7 +78,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 InitialiseModel(backendUnityModel);
                 AdvisePackages(backendUnityModel, modelLifetime, myPackageManager);
                 ReportUnityEditorInformationToFus(backendUnityModel, modelLifetime);
-                myUnityProfilerEventsHost.AdviseOpenFileByMethodName(backendUnityModel, frontendBackendHost);
                 StartPollingUnityEditorState(backendUnityModel, modelLifetime, frontendBackendHost);
             });
             BackendUnityModel!.ViewNull<BackendUnityModel>(lifetime, _ =>
@@ -85,6 +85,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 myEditorState = UnityEditorState.Disconnected;
                 if (frontendBackendHost.IsAvailable)
                     UpdateFrontendEditorState(frontendBackendHost);
+            });
+            
+            BackendUnityProfilerModel.ViewNotNull(lifetime, (_, backendProfilerModel) =>
+            {
+                myUnityProfilerEventsHost.AdviseOpenFileByMethodName(backendProfilerModel, frontendBackendHost);
             });
 
             // Are we testing?

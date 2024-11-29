@@ -141,9 +141,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                     myLogger.Info("WireConnected.");
 
                     var backendUnityModel = new BackendUnityModel(connectionLifetime, protocol);
+                    var unityProfilerModel = new UnityProfilerModel(connectionLifetime, protocol);
 
-                    SafeExecuteOrQueueEx("setModel",
-                        () => myBackendUnityHost.BackendUnityModel.SetValue(backendUnityModel));
+                    SafeExecuteOrQueueEx("setModel", () => myBackendUnityHost.BackendUnityModel.SetValue(backendUnityModel));
+                    SafeExecuteOrQueueEx("setProfilerModel", () => myBackendUnityHost.BackendUnityProfilerModel.SetValue(unityProfilerModel));
 
                     connectionLifetime.OnTermination(() =>
                     {
@@ -153,6 +154,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                             // Clear model
                             myBackendUnityHost.BackendUnityModel.SetValue(null);
+                            myBackendUnityHost.BackendUnityProfilerModel.SetValue(null);
 
                             if (thisSessionLifetime.IsAlive)
                             {

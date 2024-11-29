@@ -222,5 +222,14 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         // debug
         call("getScriptingBackend", void, int).documentation = "Mono, IL2CPP, WinRTDotNET"
+        
+    }
+}
+
+//Separate model for the Unity profiler integration 
+object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
+    init {
+        property("profilerSnapshotStatus", Library.UnityProfilerSnapshotStatus).async
+        signal("updateUnityProfilerSnapshotData", Library.ProfilerSnapshotRequest).async
     }
 }
