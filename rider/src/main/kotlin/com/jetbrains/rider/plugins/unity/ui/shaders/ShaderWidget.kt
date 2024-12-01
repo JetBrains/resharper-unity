@@ -1,11 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Editor
@@ -28,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
 
-class ShaderWidgetActionProvider : InspectionWidgetActionProvider {
+internal class ShaderWidgetActionProvider : InspectionWidgetActionProvider {
     override fun createAction(editor: Editor): AnAction? {
         editor.project ?: return null
         return ActionManager.getInstance().getAction("ShaderWidgetAction")
