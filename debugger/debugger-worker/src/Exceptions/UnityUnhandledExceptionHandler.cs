@@ -6,7 +6,7 @@ using Mono.Debugging.Soft.Exceptions;
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Exceptions
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class UnityUnhandledExceptionHandler : ISoftDebuggerUnhandledExceptionHandler
+    public class UnityUnhandledExceptionHandler : ISoftDebuggerUnhandledExceptionHandler, ISoftDebuggerNonUserHandledExceptionHandler
     {
         private readonly IUnityOptions myUnityOptions;
 
@@ -15,7 +15,17 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Exceptions
             myUnityOptions = unityOptions;
         }
 
-        public bool ShouldContinueOnException(ObjectMirror exception)
+        bool ISoftDebuggerUnhandledExceptionHandler.ShouldContinueOnException(ObjectMirror exception)
+        {
+            return ShouldContinueOnExitGuiException_Internal(exception);
+        }
+
+        bool ISoftDebuggerNonUserHandledExceptionHandler.ShouldContinueOnException(ObjectMirror exception)
+        {
+            return ShouldContinueOnExitGuiException_Internal(exception);
+        }
+
+        private bool ShouldContinueOnExitGuiException_Internal(ObjectMirror exception)
         {
             if (!myUnityOptions.ExtensionsEnabled)
                 return false;
