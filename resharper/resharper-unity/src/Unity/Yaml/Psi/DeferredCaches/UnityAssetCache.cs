@@ -83,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             });
         }
 
-        protected override void MergeData(IPsiSourceFile sourceFile, UnityAssetData data)
+        protected override void MergeData(IPsiSourceFile sourceFile, UnityAssetData data, bool mergeLoaded = false)
         {
             myDocumentNumber.TryRemove(sourceFile, out _);
             myCurrentTimeStamp.TryRemove(sourceFile, out _);
