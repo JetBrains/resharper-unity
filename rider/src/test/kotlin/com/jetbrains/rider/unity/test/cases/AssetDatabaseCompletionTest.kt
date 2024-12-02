@@ -20,6 +20,7 @@ import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.facades.TestApiScopes
 import com.jetbrains.rider.test.facades.editor.EditorApiFacade
 import com.jetbrains.rider.test.facades.editor.RiderEditorApiFacade
+import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
@@ -56,7 +57,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
             "JetBrains.ReSharper.Psi.Files",
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
-    @Test(description="Test empty path for asset database")
+    @Test(description = "Test empty path for asset database")
     fun test_EmptyPath() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "EmptyPathTest.cs") {
@@ -69,7 +70,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
         }
     }
 
-    @Test(description="Test not full path for asset database")
+    @Test(description = "Test not full path for asset database")
     fun test_NotFullAssetsPathTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "NotFullAssetsPathTest.cs") {
@@ -81,7 +82,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
         }
     }
 
-    @Test(description="Test Assets folder path for asset database")
+    @Test(description = "Test Assets folder path for asset database")
     fun test_AssetsFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
@@ -96,7 +97,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
         }
     }
 
-    @Test(description="Test Assets folder path for asset database with caret inside")
+    @Test(description = "Test Assets folder path for asset database with caret inside")
     fun test_AssetsFolderCaretInside() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
@@ -108,7 +109,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
         }
     }
 
-    @Test(description="Test Assets internal folder path for asset database")
+    @Test(description = "Test Assets internal folder path for asset database")
     fun test_AssetsInternalFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsInternalFolderTest.cs") {
@@ -120,7 +121,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
         }
     }
 
-    @Test(description="Test Package folder path for asset database")
+    @Test(description = "Test Package folder path for asset database")
     fun test_PackagesFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesFolderTest.cs") {
@@ -136,7 +137,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
         }
     }
 
-    @Test(description="Test Package internal folder path for asset database")
+    @Test(description = "Test Package internal folder path for asset database")
     fun test_PackagesInternalFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesInternalFolderTest.cs") {
@@ -169,7 +170,8 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
         persistAllFilesOnDisk()
     }
 
-    private fun BaseTestWithSolution.waitForUnityPackagesCache(action: BaseTestWithSolution.() -> Unit): Unit {
+    context(SolutionApiFacade)
+    private fun waitForUnityPackagesCache(action: SolutionApiFacade.() -> Unit) {
         waitAndPump(project.lifetime,
                     { project.solution.frontendBackendModel.isUnityPackageManagerInitiallyIndexFinished.valueOrDefault(false) },
                     Duration.ofSeconds(10), { "Deferred caches are not completed" })

@@ -22,8 +22,6 @@ import java.io.File
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     override val testSolution: String = "ProjectSettingsTestData"
-    override val editorGoldFile: File
-        get() = File(testCaseGoldDirectory,  testMethod.name)
 
     @Test(description="Quick fix for adding to build settings")
     fun testAddToBuildSettings() {
@@ -70,7 +68,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     }
 
     private fun writeProjectSettingsToGold() {
-        executeWithGold(editorGoldFile) {
+        executeWithGold(testGoldFile) {
             it.print(getProjectSettingsFromSolution(activeSolutionDirectory).readText())
         }
     }

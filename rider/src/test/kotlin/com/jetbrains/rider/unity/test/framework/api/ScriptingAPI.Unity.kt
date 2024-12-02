@@ -42,8 +42,11 @@ import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
+import com.jetbrains.rider.test.facades.editor.EditorApiFacade
+import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.framework.processor.TestProcessor
+import com.jetbrains.rider.test.framework.testData.TestDataStorage
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.unity.EngineVersion
 import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
@@ -197,7 +200,8 @@ fun TestProcessor<*>.startUnity(executable: String,
                       generateSolution)
 }
 
-fun BaseTestWithSolution.startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
+context(SolutionApiFacade, TestProcessor<*>)
+fun startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
     startUnity(project, withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 
 fun killUnity(processHandle: ProcessHandle) {
@@ -219,7 +223,8 @@ fun killUnity(processHandle: ProcessHandle) {
 
 fun killUnity(project: Project) = killUnity(getUnityProcessHandle(project))
 
-fun BaseTestWithSolution.withUnityProcess(
+context(SolutionApiFacade, TestProcessor<*>)
+fun withUnityProcess(
     withCoverage: Boolean = false,
     resetEditorPrefs: Boolean = false,
     useRiderTestPath: Boolean = false,
@@ -235,7 +240,8 @@ fun BaseTestWithSolution.withUnityProcess(
     }
 }
 
-fun BaseTestWithSolution.executeScript(file: String) {
+context(SolutionApiFacade, TestDataStorage)
+fun executeScript(file: String) {
     val script = testCaseSourceDirectory.combine(file)
     script.copyTo(project.solutionDirectory.combine("Assets", file))
 
@@ -276,7 +282,8 @@ fun checkSweaInSolution(project: Project) {
     checkSwea(project, 0)
 }
 
-fun BaseTestWithSolution.checkSweaInSolution() = checkSweaInSolution(project)
+context(SolutionApiFacade)
+fun checkSweaInSolution() = checkSweaInSolution(project)
 
 fun IntegrationTestWithFrontendBackendModel.executeIntegrationTestMethod(methodName: String) =
     executeMethod(RunMethodData("Assembly-CSharp-Editor", "Editor.IntegrationTestHelper", methodName))
@@ -463,7 +470,8 @@ fun attachDebuggerToUnityEditorAndPlay(
     customSuffixes: List<String> = emptyList()
 ) = attachDebuggerToUnityEditor(project, true, beforeRun, test, goldFile, customSuffixes)
 
-fun BaseTestWithSolution.attachDebuggerToUnityEditorAndPlay(
+context(SolutionApiFacade, TestDataStorage)
+fun attachDebuggerToUnityEditorAndPlay(
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
     goldFile: File? = null) = attachDebuggerToUnityEditorAndPlay(project, beforeRun, test, goldFile, customGoldSuffixes)
@@ -475,7 +483,8 @@ fun attachDebuggerToUnityEditor(
     goldFile: File? = null
 ) = attachDebuggerToUnityEditor(project, false, beforeRun, test, goldFile)
 
-fun BaseTestWithSolution.attachDebuggerToUnityEditor(
+context(SolutionApiFacade)
+fun attachDebuggerToUnityEditor(
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
     goldFile: File? = null) = attachDebuggerToUnityEditor(project, beforeRun, test, goldFile)

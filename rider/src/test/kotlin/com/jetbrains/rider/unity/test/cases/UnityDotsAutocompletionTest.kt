@@ -19,6 +19,7 @@ import com.jetbrains.rider.test.annotations.SeverityLevel
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
+import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.scriptingApi.waitForDaemon
@@ -100,7 +101,8 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
         persistAllFilesOnDisk()
     }
 
-    private fun BaseTestWithSolution.waitForUnityPackagesCache(action: BaseTestWithSolution.() -> Unit): Unit {
+    context(SolutionApiFacade)
+    private fun waitForUnityPackagesCache(action: SolutionApiFacade.() -> Unit) {
         waitAndPump(project.lifetime,
                     { project.solution.frontendBackendModel.isUnityPackageManagerInitiallyIndexFinished.valueOrDefault(false) },
                     Duration.ofSeconds(10), { "Deferred caches are not completed" })

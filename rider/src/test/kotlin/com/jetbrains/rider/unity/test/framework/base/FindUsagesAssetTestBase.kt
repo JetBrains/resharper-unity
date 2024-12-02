@@ -6,6 +6,7 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
@@ -48,8 +49,11 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
         unityComponentGrouping(false)
     }
 
-    private fun BaseTestWithSolution.unityGameObjectGrouping(enable: Boolean) = setGroupingEnabled("UnityGameObject", enable)
-    private fun BaseTestWithSolution.unityComponentGrouping(enable: Boolean) = setGroupingEnabled("UnityComponent", enable)
+    context(SolutionApiFacade)
+    private fun unityGameObjectGrouping(enable: Boolean) = setGroupingEnabled("UnityGameObject", enable)
+
+    context(SolutionApiFacade)
+    private fun unityComponentGrouping(enable: Boolean) = setGroupingEnabled("UnityComponent", enable)
 
     override val waitForCaches = true
 }
