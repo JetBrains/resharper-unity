@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
@@ -13,7 +12,6 @@ using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.Settings.Storages;
 using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.RdBackend.Common.Features.TextControls;
@@ -58,7 +56,6 @@ public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider
         ShaderProgramCache shaderProgramCache,
         IPreferredRootFileProvider preferredRootFileProvider,
         ISettingsStore settingsStore,
-        [UsedImplicitly] SolutionSettingsReadyForSolutionInstanceComponent _,
         ChangeManager changeManager,
         ILogger logger,
         IDocumentHost documentHost,
