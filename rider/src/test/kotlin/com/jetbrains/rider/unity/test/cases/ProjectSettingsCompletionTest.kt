@@ -6,6 +6,7 @@ import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.inTests.TestHost
 import com.jetbrains.rider.protocol.protocolHost
+import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Mute
@@ -53,6 +54,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Psi.Files")
 
     @Test(description="Test scene primitive completion")
+    @ChecklistItems(["Project Settings Completion/Scene primitive"])
     fun testScene_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             typeWithLatency("\"")
@@ -69,6 +71,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     }
 
     @Test(description="Test Animator state primitive completion")
+    @ChecklistItems(["Project Settings Completion/Animator state primitive"])
     fun testAnimatorState_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "AnimatorStateCompletionTest.cs") {
             typeWithLatency("\"")
@@ -78,6 +81,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     }
 
     @Test(description="Test Input primitive completion")
+    @ChecklistItems(["Project Settings Completion/Input primitive"])
     fun testInput_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "InputCompletionTest.cs") {
             typeWithLatency("\"")
@@ -106,6 +110,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         "\"TransparentFX\"")
 
     @Test(description="Test Layer primitive completion")
+    @ChecklistItems(["Project Settings Completion/Layer primitive"])
     fun testLayer_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -119,6 +124,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     }
 
     @Test(description="Test Layer primitive completion with turned off Yaml")
+    @ChecklistItems(["Project Settings Completion/Layer primitive with turned off Yaml"])
     fun testLayer_PrimitiveCompletion_YamlOff() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -128,6 +134,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
 
     @Test(description = "Test Layer completion after modification")
     @Mute("RIDER-84785")
+    @ChecklistItems(["Project Settings Completion/Layer completion after modification"])
     fun testLayer_CompletionAfterModification() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")

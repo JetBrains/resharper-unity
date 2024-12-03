@@ -17,6 +17,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
     override val testSolution: String = "FindUsages_event_handlers_2017"
 
     @Test(description = "Find script usages with Unity2017 scene model", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Find usages for Assets/Unity2017/Script usages"])
     fun findScript_2017(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -25,6 +26,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
     }
 
     @Test(description = "Find EventHandler usages with Unity2017 scene model", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Find usages for Assets/Unity2017/EventHandler usages"])
     fun findEventHandler_2017(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -34,6 +36,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
     @Test(description = "Find script usages with Unity2017 scene model", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_02_2017")
+    @ChecklistItems(["Find usages for Assets/Unity2017/Script usages"])
     fun findScript_02_2017(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -43,6 +46,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
     @Test(description = "Find script usages with Unity2017 scene model", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_03_2017")
+    @ChecklistItems(["Find usages for Assets/Unity2017/Script usages"])
     fun findScript_03_2017(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -52,6 +56,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
     @Test(description = "Find script usages with Unity2017 scene model", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_04_2017")
+    @ChecklistItems(["Find usages for Assets/Unity2017/Script usages"])
     fun findScript_04_2017(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -60,6 +65,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
     }
 
     @Test(description = "Find script usages with Unity2018 scene model", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Find usages for Assets/Unity2018/Script usages"])
     fun findScript_2018(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -68,6 +74,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
     }
 
     @Test(description = "Find EventHandler usages with Unity2018 scene model", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Find usages for Assets/Unity2018/EventHandler usages"])
     fun findEventHandler_2018(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -77,6 +84,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
     @Test(description = "Find EventHandlerPrefabs usages with Unity2018 scene model", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_event_handlers_prefabs_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/EventHandlerPrefabs usages"])
     fun findEventHandlerPrefabs_2018(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -87,6 +95,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
     @Test(description = "Find script usages with Unity2018 scene model", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_02_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/Script usages"])
     fun findScript_02_2018(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -96,6 +105,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
     @Test(description = "Find script usages with Unity2018 scene model", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_03_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/Script usages"])
     fun findScript_03_2018(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -105,6 +115,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
     @Test(description = "Find script usages with Unity2018 scene model", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_04_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/Script usages"])
     fun findScript_04_2018(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -114,6 +125,7 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
     @Test(description = "Find script usages with Unity2018 scene model", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_05_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/Script usages"])
     fun findScript_05_2018(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -123,48 +135,56 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
     @Test(description = "Find VoidHandler usages", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_event_handlers_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/VoidHandler usages"])
     fun findVoidHandler(caseName: String, groups: List<String>?) {
         doTest(11, 17, groups)
     }
 
     @Test(description = "Find IntHandler usages", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_event_handlers_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/IntHandler usages"])
     fun findIntHandler(caseName: String, groups: List<String>?) {
         doTest(14, 17, groups)
     }
 
     @Test(description = "Find FloatHandler usages", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_event_handlers_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/FloatHandler usages"])
     fun findFloatHandler(caseName: String, groups: List<String>?) {
         doTest(17, 17, groups)
     }
 
     @Test(description = "Find BoolHandler usages", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_event_handlers_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/BoolHandler usages"])
     fun findBoolHandler(caseName: String, groups: List<String>?) {
         doTest(20, 17, groups)
     }
 
     @Test(description = "Find ObjectHandler usages", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_event_handlers_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/ObjectHandler usages"])
     fun findObjectHandler(caseName: String, groups: List<String>?) {
         doTest(23, 17, groups)
     }
 
     @Test(description = "Find UnityEventHandler usages", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_event_handlers_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/UnityEventHandler usages"])
     fun findUnityEventHandler(caseName: String, groups: List<String>?) {
         doTest(26, 17, groups)
     }
 
     @Test(description = "Find UnityEventHandler usages", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_event_handlers_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/UnityEventHandler usages"])
     fun findPropertyHandler(caseName: String, groups: List<String>?) {
         doTest(29, 16, groups)
     }
 
     @Test(description = "Find PropertyHandler usages", dataProvider = "findUsagesGrouping")
     @Solution("FindUsages_event_handlers_2018")
+    @ChecklistItems(["Find usages for Assets/Unity2018/PropertyHandler usages"])
     fun findPropertyHandler2(caseName: String, groups: List<String>?) {
         doTest(33, 16, groups)
     }

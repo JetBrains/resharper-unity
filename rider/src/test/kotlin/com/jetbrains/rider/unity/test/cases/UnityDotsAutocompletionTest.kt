@@ -10,6 +10,7 @@ import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Mute
@@ -57,6 +58,7 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
 
     @Mute("RIDER-95438")
     @Test(description="DOTS Source GenCompletion")
+    @ChecklistItems(["DOTS Source GenCompletion"])
     fun test_DotsSourceGenCompletion() {
         waitForRoslynReady()
         buildSolutionWithReSharperBuild()

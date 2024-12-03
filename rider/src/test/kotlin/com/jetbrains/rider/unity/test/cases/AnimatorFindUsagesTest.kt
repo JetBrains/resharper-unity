@@ -1,4 +1,5 @@
 package com.jetbrains.rider.unity.test.cases
+import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -19,6 +20,7 @@ open class AnimatorFindUsagesTest : FindUsagesAssetTestBase() {
     override val testSolution: String = "AnimatorFindUsages"
 
     @Test(description = "Test animator find usages", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Animator Find Usages/on Class"])
     fun animatorFindUsages(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -26,6 +28,7 @@ open class AnimatorFindUsagesTest : FindUsagesAssetTestBase() {
     }
 
     @Test(description = "Test animation find usages for common BehaviorMethod", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Animator Find Usages/on Method"])
     fun animationFindUsagesForCommonBehaviorMethod(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -33,6 +36,7 @@ open class AnimatorFindUsagesTest : FindUsagesAssetTestBase() {
     }
 
     @Test(description = "Test animation find usages for common BehaviorFieldValue", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Animator Find Usages/on Field"])
     fun animationFindUsagesForCommonBehaviorFieldValue(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }

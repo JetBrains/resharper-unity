@@ -1,5 +1,6 @@
 package com.jetbrains.rider.unity.test.cases
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
+import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Severity
@@ -24,6 +25,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     override val testSolution: String = "ProjectSettingsTestData"
 
     @Test(description="Quick fix for adding to build settings")
+    @ChecklistItems(["Quick Fix Project Settings/Adding to build settings"])
     fun testAddToBuildSettings() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
@@ -37,6 +39,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     }
 
     @Test(description="Quick fix for enabling scene at build settings")
+    @ChecklistItems(["Quick Fix Project Settings/Enabling scene at build settings"])
     fun testEnableSceneAtBuildSettings() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
@@ -50,6 +53,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     }
 
     @Test(description="Quick fix for specifying full scene name")
+    @ChecklistItems(["Quick Fix Project Settings/Specifying full scene name"])
     fun testSpecifyFullSceneName() {
         doTestWithDumpDocument {
             withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {

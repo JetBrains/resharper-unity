@@ -3,6 +3,7 @@ import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
+import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -57,6 +58,7 @@ class TagsCompletionTest : BaseTestWithSolution() {
         "\"Würzburg\"")
 
     @Test(description="Check completion for basic tags (Finish, PLayer, Respawn, EditorOnly and etc.)")
+    @ChecklistItems(["Tags Completion/Basic tags (Finish, Player, Respawn, EditorOnly)"])
     fun testTag_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest1.cs") {
             typeWithLatency("\"")

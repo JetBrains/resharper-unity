@@ -25,6 +25,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     // todo: add test with solution, where one of the asmdef-s doesn't target Editor, this would cause only .Player project without normal one
 
     @Test(description="Add a new script to the project")
+    @ChecklistItems(["Unity explorer/Add new script"])
     fun testAddNewItem() {
         testProjectModel(testGoldFile, project, false) {
             //dump("Init", project, activeSolutionDirectory) {}
@@ -42,6 +43,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     @Mute("RIDER-117138")
     @Test(description="Rename an script in the project")
+    @ChecklistItems(["Unity explorer/Rename script"])
     fun testRenameFile() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename file", project, activeSolutionDirectory) {
@@ -61,6 +63,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     @Mute("RIDER-117138")
     @Test(description = "Rename a folder in the project")
+    @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -78,6 +81,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test(description = "Rename a folder in the project")
+    @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder2() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -90,6 +94,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test(description = "Rename a folder in the project")
+    @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder3() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -102,6 +107,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test(description="Delete a script in the project")
+    @ChecklistItems(["Unity explorer/Delete script"])
     fun testDeleteFile() {
         val metaFile = project.solutionDirectory.resolve("Assets/AsmdefResponse/NewBehaviourScript.cs.meta")
         Assert.assertTrue(metaFile.exists(), "We expect meta file exists.")
@@ -119,6 +125,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     @Test(description = "Move a script in the project")
     @Issues([Issue("RIDER-41182"), Issue("RIDER-91321")])
+    @ChecklistItems(["Unity explorer/Move script"])
     fun testMoveFile() {
         val originFile = project.solutionDirectory.resolve("Assets").resolve("Class1.cs")
         val originMetaFile = File(originFile.absolutePath + ".meta")
@@ -151,6 +158,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     @Test(description = "Move a script in the project")
     @Issue("RIDER-63575")
+    @ChecklistItems(["Unity explorer/Move script"])
     fun testMoveFile2() {
         val originFile = project.solutionDirectory.resolve("Assets/AsmdefResponse/SS/rrr.cs")
         val originMetaFile = File(originFile.absolutePath + ".meta")

@@ -11,7 +11,7 @@ import org.testng.annotations.Test
 @Test
 @Subsystem(SubsystemConstants.UNITY_SHADERS)
 @Feature("Breadcrumbs in Shader files")
-@ChecklistItems(["Breadcrumbs/Breadcrumbs in .shader"])
+@ChecklistItems(["Breadcrumbs in .shader"])
 @Severity(SeverityLevel.NORMAL)
 class BreadcrumbsTest : BaseTestWithSolution() {
     override val testSolution = "SimpleUnityProjectWithShaders"

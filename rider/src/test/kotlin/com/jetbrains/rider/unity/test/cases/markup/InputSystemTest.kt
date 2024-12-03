@@ -9,11 +9,14 @@ import com.jetbrains.rdclient.daemon.util.backendAttributeIdOrThrow
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.BeforeMethod
@@ -23,6 +26,7 @@ import java.time.Duration
 
 @Mute("RIDER-114854")
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 class InputSystemTest : BaseTestWithSolution() {
     override val testSolution: String = "InputSystemTestData"
 
@@ -47,6 +51,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Script usages"])
     fun findUsagesTest() {
         // PlayerInput is attached to Cube
         // NewBehaviourScript is attached Cube
@@ -54,6 +59,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Prefab usages"])
     fun findUsagesWithPrefab1Test() {
         // Cube1 is a prefab
         // PlayerInput is attached to the Cube1 prefab
@@ -62,16 +68,19 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Prefab usages"])
     fun findUsagesWithPrefab2Test() {
         doFindUsagesTest("Assets/NewBehaviourScript2.cs", "OnJump1WithPrefab2")
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Prefab usages"])
     fun findUsagesWithPrefab3Test() {
         doFindUsagesTest("Assets/NewBehaviourScript3.cs", "OnJump1WithPrefab3")
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Prefab usages"])
     fun findUsagesWithPrefab4Test() {
         // Cube4 is a prefab
         // PlayerInput is attached to Cube4 on the scene
@@ -80,6 +89,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test(enabled = false) // broadcast support is not yet implemented
+    @ChecklistItems(["Find Usages in Input system/BroadcastScript usages"])
     fun findUsagesBroadcastScriptTest() {
         doFindUsagesTest("Assets/BroadcastScript1.cs", "OnBroadcastScript1")
     }
@@ -101,6 +111,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Used code by script"])
     fun usedCodeTest() {
         // PlayerInput is attached to Cube
         // NewBehaviourScript is attached Cube
@@ -108,6 +119,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Used code by prefab"])
     fun usedCodeTestWithPrefab1() {
         // Cube1 is a prefab
         // PlayerInput is attached to the Cube1 prefab
@@ -116,6 +128,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Used code by prefab"])
     fun usedCodeTestWithPrefab2() {
         // Cube2 is a prefab, but everything is attached on the scene:
         // PlayerInput is attached to Cube2 on the scene
@@ -124,6 +137,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Used code by prefab"])
     fun usedCodeTestWithPrefab3() {
         // Cube3 is a prefab, everything is attached to the prefab:
         // PlayerInput is attached to Cube2 on the prefab
@@ -132,6 +146,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Used code by prefab"])
     fun usedCodeTestWithPrefab4() {
         // Cube4 is a prefab
         // PlayerInput is attached to Cube4 on the scene
@@ -140,6 +155,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @ChecklistItems(["Find Usages in Input system/Used code by BroadcastScript"])
     fun usedCodeTestBroadcastScript1() {
         // PlayerInput is attached to root (Cube)
         // BroadcastScript1 is attached to child (Cube2)

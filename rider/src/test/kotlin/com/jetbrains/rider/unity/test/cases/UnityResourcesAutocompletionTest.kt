@@ -8,6 +8,7 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -52,6 +53,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
     @Test(description="Unity Resources Completion for Load")
+    @ChecklistItems(["Unity Resources Completion/Load"])
     fun test_UnityResourcesLoadCompletion() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadCompletion.cs") {
@@ -74,6 +76,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     }
 
     @Test(description="Unity Resources Completion for LoadAll")
+    @ChecklistItems(["Unity Resources Completion/LoadAll"])
     fun test_UnityResourcesLoadAllCompletion() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAllCompletion.cs") {
@@ -96,6 +99,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     }
 
     @Test(description="Unity Resources Completion for LoadAsync")
+    @ChecklistItems(["Unity Resources Completion/LoadAsync"])
     fun test_UnityResourcesLoadAsyncCompletion() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAsyncCompletion.cs") {

@@ -44,17 +44,20 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     )
 
     @Test(description = "Unity base code vision test", dataProvider = "assetSettings")
+    @ChecklistItems(["Code vision/Base code vision"])
     @Solution("FindUsages_05_2018")
     fun baseTest(caseName: String, showProperties: String) = doUnityTest(showProperties,
             "Assets/NewBehaviourScript.cs") { false }
 
     @Test(description = "Unity property code vision test", dataProvider = "assetSettings")
     @Solution("RiderSample")
+    @ChecklistItems(["Code vision/Property code vision"])
     fun propertyCodeVision(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
     @Test(description = "Unity property code vision test with typing", dataProvider = "assetSettings")
     @Solution("RiderSample")
+    @ChecklistItems(["Code vision/Property code vision with typing"])
     fun propertyCodeVisionWithTyping(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") {
         typeFromOffset("1", 577)
@@ -64,16 +67,19 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(description = "Unity base code vision  test with yaml off", dataProvider = "assetSettings")
     @Solution("FindUsages_05_2018")
+    @ChecklistItems(["Code vision/Base code vision with yaml off"])
     fun baseTestYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/NewBehaviourScript.cs") { false }
 
     @Test(description = "Unity property code vision test with yaml off", dataProvider = "assetSettings")
     @Solution("RiderSample")
+    @ChecklistItems(["Code vision/Property code vision with yaml off"])
     fun propertyCodeVisionYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
     @Test(description = "Unity property code vision test with yaml off and typing", dataProvider = "assetSettings")
     @Solution("RiderSample")
+    @ChecklistItems(["Code vision/Property code vision with yaml off and typing"])
     fun propertyCodeVisionWithTypingYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") {
         typeFromOffset("1", 577)
@@ -82,6 +88,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(description = "Unity property scriptable object code vision test", dataProvider = "assetSettings")
     @Solution("RiderSample")
+    @ChecklistItems(["Code vision/Property scriptable object code vision"])
     fun propertyCodeVisionScriptableObject(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/TestScriptableObject.cs") {
         true
@@ -91,6 +98,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     // Tests for fixing current behaviour only
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @Solution("PrefabModificationTestSolution")
+    @ChecklistItems(["Code vision/Prefab modification code vision"])
     fun prefabModifications01(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script1.cs") {
         true
@@ -98,6 +106,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @Solution("PrefabModificationTestSolution")
+    @ChecklistItems(["Code vision/Prefab modification code vision"])
     fun prefabModifications02(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script2.cs") {
         true
@@ -105,6 +114,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @Solution("PrefabModificationTestSolution")
+    @ChecklistItems(["Code vision/Prefab modification code vision"])
     fun prefabModifications03(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script3.cs") {
         true
@@ -112,6 +122,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @Solution("PrefabModificationTestSolution")
+    @ChecklistItems(["Code vision/Prefab modification code vision"])
     fun prefabModifications04(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script4.cs") {
         true
@@ -119,6 +130,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(description = "Unity prefab modification code vision test", dataProvider = "assetSettings")
     @Solution("PrefabModificationTestSolution")
+    @ChecklistItems(["Code vision/Prefab modification code vision"])
     fun prefabModifications05(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script5.cs") {
         true

@@ -26,6 +26,7 @@ class UnityExplorerTest : BaseTestWithShell() {
     @Mute("RIDER-101228")
     @Issue("RIDER-70098 Rider adds Unity meta files in a non-Unity project")
     @TestEnvironment(allowMultipleBackends = true)
+    @ChecklistItems(["Unity explorer/Add script with multiple backends"])
     fun testMultipleBackendsAddNewItem() {
         val params = OpenSolutionParams()
         params.waitForCaches = true
@@ -47,6 +48,7 @@ class UnityExplorerTest : BaseTestWithShell() {
     }
 
     @Test(description="Add a new folder and script to the project")
+    @ChecklistItems(["Unity explorer/Add folder and script"])
     fun testUnityExplorer01() {
         val params = OpenSolutionParams()
         withSolution("SimpleUnityProject", params) {
@@ -81,6 +83,7 @@ class UnityExplorerTest : BaseTestWithShell() {
     @Test(description = "Test project loading with a special folder")
     @Issue("RIDER-92886")
     @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6, platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
+    @ChecklistItems(["Unity explorer/Loading with a special folder"])
     fun test_project_loading_with_special_folder() { // infinite loading caused by a "..\\" folder
         withSolution("AnimImplicitUsageTest", OpenSolutionParams().apply {
             preprocessTempDirectory = {

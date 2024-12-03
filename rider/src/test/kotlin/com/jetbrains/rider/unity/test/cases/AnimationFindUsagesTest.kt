@@ -1,4 +1,5 @@
 package com.jetbrains.rider.unity.test.cases
+import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -17,7 +18,8 @@ import org.testng.annotations.Test
 open class AnimationFindUsagesTest : FindUsagesAssetTestBase() {
     override val testSolution: String = "AnimationFindUsages"
 
-    @Test(description = "Test animation find usagesfor method", dataProvider = "findUsagesGrouping")
+    @Test(description = "Test animation find usages for method", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Animation Find Usages/on Method"])
     fun animationFindUsagesForMethod(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -25,6 +27,7 @@ open class AnimationFindUsagesTest : FindUsagesAssetTestBase() {
     }
 
     @Test(description = "Test animation find usages in base class", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Animation Find Usages/on Base Class"])
     fun animationFindUsagesInBaseClass(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -32,6 +35,7 @@ open class AnimationFindUsagesTest : FindUsagesAssetTestBase() {
     }
 
     @Test(description = "Test animation find usages for property getter", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Animation Find Usages/on Property Getter"])
     fun animationFindUsagesForPropertyGetter(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
@@ -39,6 +43,7 @@ open class AnimationFindUsagesTest : FindUsagesAssetTestBase() {
     }
 
     @Test(description = "Test animation find usages for property setter", dataProvider = "findUsagesGrouping")
+    @ChecklistItems(["Animation Find Usages/on Property Setter"])
     fun animationFindUsagesForPropertySetter(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }

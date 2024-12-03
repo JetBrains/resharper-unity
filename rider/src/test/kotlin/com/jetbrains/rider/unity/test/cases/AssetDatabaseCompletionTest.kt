@@ -9,6 +9,7 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -58,6 +59,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
     @Test(description = "Test empty path for asset database")
+    @ChecklistItems(["Asset Database Completion/Empty path"])
     fun test_EmptyPath() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "EmptyPathTest.cs") {
@@ -71,6 +73,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
     }
 
     @Test(description = "Test not full path for asset database")
+    @ChecklistItems(["Asset Database Completion/Not full path"])
     fun test_NotFullAssetsPathTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "NotFullAssetsPathTest.cs") {
@@ -83,6 +86,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
     }
 
     @Test(description = "Test Assets folder path for asset database")
+    @ChecklistItems(["Asset Database Completion/Assets folder path"])
     fun test_AssetsFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
@@ -98,6 +102,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
     }
 
     @Test(description = "Test Assets folder path for asset database with caret inside")
+    @ChecklistItems(["Asset Database Completion/Assets folder path with caret inside"])
     fun test_AssetsFolderCaretInside() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
@@ -110,6 +115,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
     }
 
     @Test(description = "Test Assets internal folder path for asset database")
+    @ChecklistItems(["Asset Database Completion/Assets internal folder path"])
     fun test_AssetsInternalFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsInternalFolderTest.cs") {
@@ -122,6 +128,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
     }
 
     @Test(description = "Test Package folder path for asset database")
+    @ChecklistItems(["Asset Database Completion/Package folder path"])
     fun test_PackagesFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesFolderTest.cs") {
@@ -138,6 +145,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution(), TestApiScopes.Editor
     }
 
     @Test(description = "Test Package internal folder path for asset database")
+    @ChecklistItems(["Asset Database Completion/Package internal folder path"])
     fun test_PackagesInternalFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesInternalFolderTest.cs") {
