@@ -19,7 +19,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test01(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification01(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -28,7 +28,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test02(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification02(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -37,7 +37,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test03(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification03(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -46,7 +46,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test04(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification04(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -55,7 +55,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test05(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification05(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -64,7 +64,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test06(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification06(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -73,7 +73,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test07(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification07(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -82,7 +82,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test08(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification08(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -91,7 +91,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test09(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification09(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -100,7 +100,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test10(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification10(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -109,7 +109,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test11(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification11(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -118,7 +118,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test12(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification12(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -127,7 +127,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test13(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification13(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -136,7 +136,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test14(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification14(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -145,7 +145,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test15(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification15(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -154,7 +154,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test16(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification16(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -163,7 +163,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test17(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification17(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -172,7 +172,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test18(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification18(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -181,7 +181,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test19(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification19(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -190,7 +190,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test20(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification20(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -199,7 +199,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(dataProvider = "findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
-    fun test21(caseName: String, groups: List<String>?) {
+    fun findUsagesInPrefabModification21(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 

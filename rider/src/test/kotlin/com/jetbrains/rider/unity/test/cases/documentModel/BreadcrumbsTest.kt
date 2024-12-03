@@ -17,7 +17,7 @@ class BreadcrumbsTest : BaseTestWithSolution() {
     override val testSolution = "SimpleUnityProjectWithShaders"
 
     @Test(description="Test Breadcrumbs in .shader files")
-    fun simpleCheck() {
+    fun simpleBreadcrumbsCheck() {
         withOpenedEditor("Assets/Shaders/MyShader.shader") {
             setCaretToPosition(12, 20)
 

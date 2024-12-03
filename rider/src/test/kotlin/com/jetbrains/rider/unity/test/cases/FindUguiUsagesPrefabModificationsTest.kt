@@ -24,49 +24,49 @@ class FindUguiUsagesPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(description="Find Usages for event OnClickFromPrefabModification")
     @ChecklistItems(["Find Ugui Usages Prefab Modifications/for event OnClickFromPrefabModification"])
-    fun test01() {
+    fun findUguiUsagesPrefab01() {
         disableAllGroups()
         doTest(5, 20, "PlayerInput.cs")
     }
 
     @Test(description="Find Usages for event OnClickFromPrefab")
     @ChecklistItems(["Find Ugui Usages Prefab Modifications/for event OnClickFromPrefab"])
-    fun test02() {
+    fun findUguiUsagesPrefab02() {
         disableAllGroups()
         doTest(10, 20, "PlayerInput.cs")
     }
 
     @Test(description="Find Usages for event")
     @ChecklistItems(["Find Ugui Usages Prefab Modifications/for event"])
-    fun test03() {
+    fun findUguiUsagesPrefab03() {
         disableAllGroups()
         doTest(6, 20, "EventTrigger/even.cs")
     }
 
     @Test(description="Find Usages for event")
     @ChecklistItems(["Find Ugui Usages Prefab Modifications/for event"])
-    fun test031() {
+    fun findUguiUsagesPrefab031() {
         disableAllGroups()
         doTest(11, 20, "EventTrigger/even.cs")
     }
 
     @Test(description="Find Usages for event")
     @ChecklistItems(["Find Ugui Usages Prefab Modifications/for event"])
-    fun test032() {
+    fun findUguiUsagesPrefab032() {
         disableAllGroups()
         doTest(16, 20, "EventTrigger/even.cs")
     }
 
     @Test(description="Find Usages for event")
     @ChecklistItems(["Find Ugui Usages Prefab Modifications/for event"])
-    fun test033() {
+    fun findUguiUsagesPrefab033() {
         disableAllGroups()
         doTest(21, 30, "EventTrigger/even.cs")
     }
 
     @Test(description="Find Usages for event")
     @ChecklistItems(["Find Ugui Usages Prefab Modifications/for event"])
-    fun test04() {
+    fun findUguiUsagesPrefab04() {
         disableAllGroups()
         doTest(6, 20, "EventTrigger/NewBehaviourScript.cs")
         //doTest(11, 20, "EventTrigger/NewBehaviourScript.cs")
@@ -74,7 +74,7 @@ class FindUguiUsagesPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @Test(description="Find Usages for event")
     @ChecklistItems(["Find Ugui Usages Prefab Modifications/for event"])
-    fun test041() {
+    fun findUguiUsagesPrefab041() {
         disableAllGroups()
         doTest(11, 25, "EventTrigger/NewBehaviourScript.cs")
     }
