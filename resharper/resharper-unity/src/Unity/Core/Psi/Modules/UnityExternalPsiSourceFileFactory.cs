@@ -10,7 +10,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityExternalPsiSourceFileFactory
     {
         private readonly IProjectFileExtensions myProjectFileExtensions;

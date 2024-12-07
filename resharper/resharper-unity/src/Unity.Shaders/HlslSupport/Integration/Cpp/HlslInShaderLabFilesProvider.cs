@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi.Modules;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class InjectedHlslInitialFilesProvider : ICppInitialFilesProvider
     {
         private readonly PsiModules myPsiModules;
