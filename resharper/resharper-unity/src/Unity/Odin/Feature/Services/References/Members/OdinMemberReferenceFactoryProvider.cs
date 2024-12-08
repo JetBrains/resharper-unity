@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.References.Members;
 
-[ReferenceProviderFactory(Instantiation.DemandAnyThreadSafe)]
+[ReferenceProviderFactory]
 public class OdinMemberReferenceFactoryProvider : IReferenceProviderFactory
 {
     private readonly UnityTechnologyDescriptionCollector myCollector;

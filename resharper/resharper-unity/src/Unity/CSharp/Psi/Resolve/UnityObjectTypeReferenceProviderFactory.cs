@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
-    [ReferenceProviderFactory(Instantiation.DemandAnyThreadSafe)]
+    [ReferenceProviderFactory]
     public class UnityObjectTypeReferenceProviderFactory : IReferenceProviderFactory
     {
         public UnityObjectTypeReferenceProviderFactory()

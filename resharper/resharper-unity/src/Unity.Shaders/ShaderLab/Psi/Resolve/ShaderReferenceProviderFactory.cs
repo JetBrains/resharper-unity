@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve
 {
     // Creates references from the "references" array to the "name" declaration
-    [ReferenceProviderFactory(Instantiation.DemandAnyThreadSafe)]
+    [ReferenceProviderFactory]
     public class ShaderReferenceProviderFactory : IReferenceProviderFactory
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
