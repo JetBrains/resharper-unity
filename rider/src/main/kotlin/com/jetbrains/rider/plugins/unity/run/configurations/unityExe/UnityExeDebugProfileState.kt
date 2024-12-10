@@ -33,6 +33,7 @@ import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.*
+import com.jetbrains.rider.shared.run.withRawParameters
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.util.NetUtils
 import java.nio.file.Path
