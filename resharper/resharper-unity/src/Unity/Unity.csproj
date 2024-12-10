@@ -8,7 +8,7 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
   <PropertyGroup>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
-    <LangVersion>12</LangVersion>
+    <LangVersion>latest</LangVersion>
     <NoWarn Condition="$(InternalBuild)">8002</NoWarn>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>

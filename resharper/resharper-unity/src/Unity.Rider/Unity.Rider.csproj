@@ -8,7 +8,7 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
   <PropertyGroup>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider</AssemblyName>
-    <LangVersion>12</LangVersion>
+    <LangVersion>latest</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider</RootNamespace>
     <TargetFramework>net472</TargetFramework>

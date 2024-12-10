@@ -11,7 +11,7 @@
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Tests</AssemblyName>
     <DefineConstants Condition="!$(InternalBuild)">$(DefineConstants);INDEPENDENT_BUILD</DefineConstants>
     <JetTestProject>True</JetTestProject>
-    <LangVersion>11</LangVersion>
+    <LangVersion>latest</LangVersion>
     <NoWarn>CS8002</NoWarn>
     <Nullable>enable</Nullable>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider.Tests</RootNamespace>

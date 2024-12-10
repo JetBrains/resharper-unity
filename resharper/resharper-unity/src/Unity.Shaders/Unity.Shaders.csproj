@@ -9,7 +9,7 @@
   <PropertyGroup>
     <!-- We still have lots of obsolete warnings from ParserGen, and disabling obsolete warnings totally is too broad -->
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Shaders</AssemblyName>
-    <LangVersion>12</LangVersion>
+    <LangVersion>latest</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Shaders</RootNamespace>
     <TargetFramework>net472</TargetFramework>
