@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 // We're all set up, terminate the advise
                 return true;
             });
-            myFileSystemPathTrie = new FileSystemPathTrie<PackageData>(false);
+            myFileSystemPathTrie = new FileSystemPathTrie<PackageData>(StringSlice.DefaultComparer);
 
             Packages.AddRemove.Advise(lifetime, args =>
             {
@@ -281,6 +281,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             return myLogger.WhenVerbose().DoCalculation("GetPackages", null,
                 () =>
                 {
+                    // UPM 9, nno need to manually go through dependencies
+                    var packages = myUnityPackageProjectResolution.GetPackages();
+                    if (packages != null) return packages;
+                    
+                    // older approach
                     if (!myManifestPath.ExistsFile)
                     {
                         // This is not really expected, unless we're on an older Unity that doesn't support package manager
@@ -337,9 +342,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 var packagesLockJson = PackagesLockJson.FromJson(packageLockJson);
 
                 var packages = new List<PackageData>();
-                foreach (var (id, details) in packagesLockJson.Dependencies)
-                    packages.Add(GetPackageData(id, details, builtInPackagesFolder));
-
+                if (packagesLockJson != null)
+                {
+                    foreach (var (id, details) in packagesLockJson.Dependencies)
+                        packages.Add(GetPackageData(id, details, builtInPackagesFolder));
+                }
                 return packages;
             });
         }
@@ -386,7 +393,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     // The folder name is not reliable to act as ID, so we'll use the ID from package.json. All other
                     // packages get the ID from manifest.json or packages-lock.json. This is assumed to be the same as
                     // the ID in package.json
-                    var packageData = GetPackageDataFromFolder(null, child, PackageSource.Embedded);
+                    var packageData = PackageData.GetFromFolder(null, child, PackageSource.Embedded);
                     if (packageData != null)
                         packages[packageData.Id] = packageData;
                 }
@@ -426,7 +433,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 // This is an unlikely edge case, as it means we'd have to resolve the old version correctly as well as
                 // the new one. And the worst that can happen is we show an extra package in the UI
 
-                return new List<PackageData>(packages.Values);
+                return [..packages.Values];
             }
             catch (Exception e)
             {
@@ -457,7 +464,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             }
         }
 
-        private EditorManifestJson SafelyReadGlobalManifestFile(VirtualFileSystemPath globalManifestPath)
+        private EditorManifestJson? SafelyReadGlobalManifestFile(VirtualFileSystemPath globalManifestPath)
         {
             try
             {
@@ -477,27 +484,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             try
             {
                 PackageData? packageData = null;
-                switch (details.Source)
+                var packageSource = PackageSourceExtensions.ToPackageSource(details.Source);
+                packageData = packageSource switch
                 {
-                    case "embedded":
-                        packageData = GetEmbeddedPackage(id, details.Version);
-                        break;
-                    case "registry":
-                        packageData = GetRegistryPackage(id, details.Version, details.Url ?? DefaultRegistryUrl);
-                        break;
-                    case "builtin":
-                        packageData = GetBuiltInPackage(id, details.Version, builtInPackagesFolder);
-                        break;
-                    case "git":
-                        packageData = GetGitPackage(id, details.Version, details.Hash);
-                        break;
-                    case "local":
-                        packageData = GetLocalPackage(id, details.Version);
-                        break;
-                    case "local-tarball":
-                        packageData = GetLocalTarballPackage(id, details.Version);
-                        break;
-                }
+                    PackageSource.Embedded => GetEmbeddedPackage(id, details.Version),
+                    PackageSource.Registry => GetRegistryPackage(id, details.Version,
+                        details.Url ?? DefaultRegistryUrl),
+                    PackageSource.BuiltIn => GetBuiltInPackage(id, details.Version, builtInPackagesFolder),
+                    PackageSource.Git => GetGitPackage(id, details.Version, details.Hash),
+                    PackageSource.Local => GetLocalPackage(id, details.Version),
+                    PackageSource.LocalTarball => GetLocalTarballPackage(id, details.Version),
+                    _ => packageData
+                };
 
                 return packageData ?? PackageData.CreateUnknown(id, details.Version);
             }
@@ -540,7 +538,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // ID. When reading from packages-lock.json, we already know it's an embedded folder, and use the version,
             // which has a 'file:' prefix
             var packageFolder = myPackagesFolder.Combine(filePath.TrimFromStart("file:"));
-            return GetPackageDataFromFolder(id, packageFolder, PackageSource.Embedded);
+            return PackageData.GetFromFolder(id, packageFolder, PackageSource.Embedded);
         }
 
         private PackageData? GetRegistryPackage(string id, string version, string registryUrl)
@@ -558,9 +556,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // - Starting with Unity 2018.3 introduced an additional layer of caching for registry based packages,
             // local to the project, so that any edits to the files in the package only affect this project.
             // This is primarily for the API updater, which would otherwise modify files in the product wide cache
-            var packageData = GetPackageDataFromFolder(id, myPackageCacheFolder.Combine(cacheFolder), PackageSource.Registry)
-                              ?? GetPackageDataFromFolder(id, myPackageCacheFolder.Combine(id), PackageSource.Registry)
-                              ?? GetPackageDataFromFolder(id, myPackageCacheFolder.Combine($"{id}@{myUnityPackageProjectResolution.GetFingerprint(cacheFolder.Name)}"), PackageSource.Registry)
+            var packageData = PackageData.GetFromFolder(id, myPackageCacheFolder.Combine(cacheFolder), PackageSource.Registry)
+                              ?? PackageData.GetFromFolder(id, myPackageCacheFolder.Combine(id), PackageSource.Registry)
                               ?? GetPackageDataFromFolderFallbackWithWarning(id);
             if (packageData != null)
                 return packageData;
@@ -571,7 +568,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 return null;
 
             var packageFolder = packageCacheFolder.Combine(cacheFolder);
-            return GetPackageDataFromFolder(id, packageFolder, PackageSource.Registry);
+            return PackageData.GetFromFolder(id, packageFolder, PackageSource.Registry);
         }
 
         private PackageData? GetPackageDataFromFolderFallbackWithWarning(string id)
@@ -579,7 +576,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             var fallback = myPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault();
             if (fallback == null) return null;
             myLogger.Warn($"Using relaxed heuristics to determine package data from local cache folder {id}.");
-            return GetPackageDataFromFolder(id, fallback, PackageSource.Registry);
+            return PackageData.GetFromFolder(id, fallback, PackageSource.Registry);
         }
 
         private PackageData? GetBuiltInPackage(string id, string version, VirtualFileSystemPath builtInPackagesFolder)
@@ -591,10 +588,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // updater can run on them, or users can make (dangerously transient) changes. But built in packages are,
             // well, built in, and should be up to date as far as the script updater is concerned.
             // Starting with Unity 2023.3.0a14, the folder names in PackageCache no longer include the version.
-            var packageData = GetPackageDataFromFolder(id, myPackageCacheFolder.Combine($"{id}@{version}"), PackageSource.BuiltIn) ??
-                              GetPackageDataFromFolder(id, myPackageCacheFolder.Combine(id), PackageSource.BuiltIn);
+            var packageData = PackageData.GetFromFolder(id, myPackageCacheFolder.Combine($"{id}@{version}"), PackageSource.BuiltIn) ??
+                              PackageData.GetFromFolder(id, myPackageCacheFolder.Combine(id), PackageSource.BuiltIn);
             if (packageData == null && builtInPackagesFolder.IsNotEmpty)
-                packageData = GetPackageDataFromFolder(id, builtInPackagesFolder.Combine(id), PackageSource.BuiltIn);
+                packageData = PackageData.GetFromFolder(id, builtInPackagesFolder.Combine(id), PackageSource.BuiltIn);
             if (packageData != null)
                 return packageData;
 
@@ -642,7 +639,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
                 if (packageFolder != null && packageFolder.ExistsDirectory)
                 {
-                    return GetPackageDataFromFolder(id, packageFolder, PackageSource.Git,
+                    return PackageData.GetFromFolder(id, packageFolder, PackageSource.Git,
                         new GitDetails(version, hash, revision));
                 }
 
@@ -677,7 +674,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 var path = version.Substring(5);
                 var packageFolder = myPackagesFolder.Combine(path);
                 return packageFolder.ExistsDirectory
-                    ? GetPackageDataFromFolder(id, packageFolder, PackageSource.Local)
+                    ? PackageData.GetFromFolder(id, packageFolder, PackageSource.Local)
                     : null;
             }
             catch (Exception e)
@@ -723,7 +720,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 var tarballLocation = tarballPath.StartsWith(mySolution.SolutionDirectory)
                     ? tarballPath.RemovePrefix(mySolution.SolutionDirectory.Parent)
                     : tarballPath;
-                return GetPackageDataFromFolder(id, packageFolder, PackageSource.LocalTarball,
+                return PackageData.GetFromFolder(id, packageFolder, PackageSource.LocalTarball,
                     tarballLocation: tarballLocation);
 
             }
@@ -732,36 +729,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 myLogger.Error(e, $"Error resolving local tarball package {version}");
                 return null;
             }
-        }
-
-        private PackageData? GetPackageDataFromFolder(string? id,
-                                                      VirtualFileSystemPath packageFolder,
-                                                      PackageSource packageSource,
-                                                      GitDetails? gitDetails = null,
-                                                      VirtualFileSystemPath? tarballLocation = null)
-        {
-            if (packageFolder.ExistsDirectory)
-            {
-                var packageJsonFile = packageFolder.Combine("package.json");
-                if (packageJsonFile.ExistsFile)
-                {
-                    try
-                    {
-                        var packageJson = PackageJson.FromJson(packageJsonFile.ReadAllText2().Text);
-                        var packageDetails = PackageDetails.FromPackageJson(packageJson, packageFolder);
-                        return new PackageData(id ?? packageDetails.CanonicalName, packageFolder,
-                            packageJsonFile.FileModificationTimeUtc, packageDetails, packageSource, gitDetails,
-                            tarballLocation);
-                    }
-                    catch (Exception e)
-                    {
-                        myLogger.LogExceptionSilently(e);
-                        return null;
-                    }
-                }
-            }
-
-            return null;
         }
 
         private List<PackageData> GetPackagesFromDependencies(string registry,
@@ -816,7 +783,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                         if (packageFolder.Name.Equals(exact, StringComparison.InvariantCultureIgnoreCase)
                             || packageFolder.Name.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            packageData = GetPackageDataFromFolder(id, packageFolder, PackageSource.Registry);
+                            packageData = PackageData.GetFromFolder(id, packageFolder, PackageSource.Registry);
                             if (packageData != null)
                                 break;
                         }
@@ -826,7 +793,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     {
                         var packageFolder = UnityCachesFinder.GetPackagesCacheFolder(registry)?.Combine(exact);
                         if (packageFolder != null)
-                            packageData = GetPackageDataFromFolder(id, packageFolder, PackageSource.Registry);
+                            packageData = PackageData.GetFromFolder(id, packageFolder, PackageSource.Registry);
                     }
 
                     if (packageData != null)
