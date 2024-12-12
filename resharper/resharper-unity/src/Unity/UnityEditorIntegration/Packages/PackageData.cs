@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
@@ -14,21 +15,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
     {
         private static readonly ILogger ourLogger = Logger.GetLogger<PackageData>();
         
-        [NotNull] public readonly string Id;
-        [CanBeNull] public readonly VirtualFileSystemPath PackageFolder;
+        public readonly string Id;
+        public readonly VirtualFileSystemPath? PackageFolder;
         public readonly DateTime PackageJsonTimestamp;
         public readonly PackageDetails PackageDetails;
         public readonly PackageSource Source;
-        [CanBeNull] public readonly GitDetails GitDetails;
-        [CanBeNull] public readonly VirtualFileSystemPath TarballLocation;
+        public readonly GitDetails? GitDetails;
+        public readonly VirtualFileSystemPath? TarballLocation;
 
-        public PackageData([NotNull] string id,
-                           [CanBeNull] VirtualFileSystemPath packageFolder,
+        public PackageData(string id,
+                           VirtualFileSystemPath? packageFolder,
                            DateTime packageJsonTimestamp,
                            PackageDetails packageDetails,
                            PackageSource source,
-                           [CanBeNull] GitDetails gitDetails,
-                           [CanBeNull] VirtualFileSystemPath tarballLocation)
+                           GitDetails? gitDetails,
+                           VirtualFileSystemPath? tarballLocation)
         {
             Id = id;
             PackageFolder = packageFolder;
@@ -53,6 +54,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     null,
                     new Dictionary<string, string>()), packageSource, null, null);
         }
+        
+        internal static PackageData? GetFromFolder(string? id,
+            VirtualFileSystemPath packageFolder,
+            PackageSource packageSource,
+            GitDetails? gitDetails = null,
+            VirtualFileSystemPath? tarballLocation = null)
+        {
+            if (packageFolder.ExistsDirectory)
+            {
+                var packageJsonFile = packageFolder.Combine("package.json");
+                if (packageJsonFile.ExistsFile)
+                {
+                    try
+                    {
+                        var packageJson = PackageJson.FromJson(packageJsonFile.ReadAllText2().Text);
+                        var packageDetails = PackageDetails.FromPackageJson(packageJson, packageFolder);
+                        return new PackageData(id ?? packageDetails.CanonicalName, packageFolder,
+                            packageJsonFile.FileModificationTimeUtc, packageDetails, packageSource, gitDetails,
+                            tarballLocation);
+                    }
+                    catch (Exception e)
+                    {
+                        ourLogger.LogExceptionSilently(e);
+                        return null;
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 
     public class PackageDetails
@@ -60,20 +91,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         // Note that canonical name is the name field from package.json. It is the truth about the name of the package.
         // The id field in PackageData is the ID used to reference the package in manifest.json or packages-lock.json.
         // The assumption is that these values are always the same.
-        [NotNull] public readonly string CanonicalName;
-        [NotNull] public readonly string DisplayName;
-        [NotNull] public readonly string Version;
-        [CanBeNull] public readonly string Description;
-        [CanBeNull] public readonly string DocumentationUrl;
+        public readonly string CanonicalName;
+        public readonly string DisplayName;
+        public readonly string Version;
+        public readonly string? Description;
+        public readonly string? DocumentationUrl;
         // [CanBeNull] public readonly string Author;  // Author might actually be a dictionary
-        [NotNull] public readonly Dictionary<string, string> Dependencies;
+        public readonly Dictionary<string, string> Dependencies;
 
-        public PackageDetails([NotNull] string canonicalName,
-                              [NotNull] string displayName,
-                              [NotNull] string version,
-                              [CanBeNull] string description, 
-                              [CanBeNull] string documentationUrl,
-                              [NotNull] Dictionary<string, string> dependencies)
+        public PackageDetails(string canonicalName,
+                              string displayName,
+                              string version,
+                              string? description, 
+                              string? documentationUrl,
+                              Dictionary<string, string> dependencies)
         {
             CanonicalName = canonicalName;
             DisplayName = displayName;
@@ -83,22 +114,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             DocumentationUrl = documentationUrl;
         }
 
-        [NotNull]
-        internal static PackageDetails FromPackageJson([NotNull] PackageJson packageJson, VirtualFileSystemPath packageFolder)
+        internal static PackageDetails FromPackageJson(PackageJson? packageJson, VirtualFileSystemPath packageFolder)
         {
-            var name = packageJson.Name ?? packageFolder.Name;
-            return new PackageDetails(name, packageJson.DisplayName ?? name, packageJson.Version ?? string.Empty,
-                packageJson.Description, packageJson.DocumentationUrl, packageJson.Dependencies);
+            var name = packageJson?.Name ?? packageFolder.Name;
+            return new PackageDetails(name, packageJson?.DisplayName ?? name, packageJson?.Version ?? string.Empty,
+                packageJson?.Description, packageJson?.DocumentationUrl, packageJson?.Dependencies ?? new Dictionary<string, string>());
         }
     }
 
     public class GitDetails
     {
-        [NotNull] public readonly string Url;
-        [CanBeNull] public readonly string Hash;
-        [CanBeNull] public readonly string Revision;
+        public readonly string Url;
+        public readonly string? Hash;
+        public readonly string? Revision;
 
-        public GitDetails([NotNull] string url, [CanBeNull] string hash, [CanBeNull] string revision)
+        public GitDetails(string url, string? hash, string? revision)
         {
             Url = url;
             Hash = hash;
@@ -130,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             Dependencies = dependencies;
         }
 
-        public static PackagesLockJson FromJson(string json)
+        public static PackagesLockJson? FromJson(string json)
         {
             return JsonConvert.DeserializeObject<PackagesLockJson>(json);
         }
@@ -141,14 +171,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
     {
         public readonly string Version;
         public readonly int? Depth;
-        [CanBeNull] public readonly string Source;
-        [NotNull] public readonly Dictionary<string, string> Dependencies;
-        [CanBeNull] public readonly string Url;
-        [CanBeNull] public readonly string Hash;
+        public readonly string? Source;
+        public readonly Dictionary<string, string> Dependencies;
+        public readonly string? Url;
+        public readonly string? Hash;
 
-        public PackagesLockDependency(string version, int? depth, [CanBeNull] string source,
-                                      [NotNull] Dictionary<string, string> dependencies, [CanBeNull] string url,
-                                      [CanBeNull] string hash)
+        public PackagesLockDependency(string version, int? depth, string? source,
+                                      Dictionary<string, string> dependencies, string? url,
+                                      string? hash)
         {
             Version = version;
             Depth = depth;
@@ -161,21 +191,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
     internal class PackageJson
     {
-        [CanBeNull] public readonly string Name;
-        [CanBeNull] public readonly string DisplayName;
-        [CanBeNull] public readonly string Version;
-        [CanBeNull] public readonly string Description;
-        [CanBeNull] public readonly string DocumentationUrl;
-        // [CanBeNull] public readonly string Author; // TODO: Author might be a map<string, string>, e.g. author[name]
-        [NotNull] public readonly Dictionary<string, string> Dependencies;
+        public readonly string? Name;
+        public readonly string? DisplayName;
+        public readonly string? Version;
+        public readonly string? Description;
+        public readonly string? DocumentationUrl;
+        // public readonly string? Author; // TODO: Author might be a map<string, string>, e.g. author[name]
+        public readonly Dictionary<string, string> Dependencies;
 
         [JsonConstructor]
-        private PackageJson([CanBeNull] string name,
-                            [CanBeNull] string displayName,
-                            [CanBeNull] string version,
-                            [CanBeNull] string description,
-                            [CanBeNull] string documentationUrl,
-                            [CanBeNull] Dictionary<string, string> dependencies)
+        private PackageJson(string? name,
+                            string? displayName,
+                            string? version,
+                            string? description,
+                            string? documentationUrl,
+                            Dictionary<string, string>? dependencies)
         {
             Name = name;
             DisplayName = displayName;
@@ -185,7 +215,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             Dependencies = dependencies ?? new Dictionary<string, string>();
         }
 
-        public static PackageJson FromJson(string json)
+        public static PackageJson? FromJson(string json)
         {
             return JsonConvert.DeserializeObject<PackageJson>(json);
         }
@@ -193,14 +223,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
     internal class ManifestJson
     {
-        [NotNull] public readonly IDictionary<string, string> Dependencies;
-        [CanBeNull] public readonly string Registry;
-        [NotNull] public readonly IDictionary<string, ManifestLockDetails> Lock;
+        public readonly IDictionary<string, string> Dependencies;
+        public readonly string? Registry;
+        public readonly IDictionary<string, ManifestLockDetails> Lock;
         public readonly bool? EnableLockFile;
 
         [JsonConstructor]
-        private ManifestJson([CanBeNull] IDictionary<string, string> dependencies, [CanBeNull] string registry,
-                             [CanBeNull] IDictionary<string, ManifestLockDetails> @lock, bool? enableLockFile)
+        private ManifestJson(IDictionary<string, string>? dependencies, string? registry,
+                             IDictionary<string, ManifestLockDetails>? @lock, bool? enableLockFile)
         {
             Dependencies = dependencies ?? EmptyDictionary<string, string>.InstanceDictionary;
             Registry = registry;
@@ -208,7 +238,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             EnableLockFile = enableLockFile;
         }
 
-        public static ManifestJson FromJson(string json)
+        public static ManifestJson? FromJson(string json)
         {
             return JsonConvert.DeserializeObject<ManifestJson>(json);
         }
@@ -217,11 +247,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     internal class ManifestLockDetails
     {
-        [CanBeNull] public readonly string Hash;
-        [CanBeNull] public readonly string Revision;
+        public readonly string? Hash;
+        public readonly string? Revision;
 
         [JsonConstructor]
-        private ManifestLockDetails([CanBeNull] string hash, [CanBeNull] string revision)
+        private ManifestLockDetails(string? hash, string? revision)
         {
             Hash = hash;
             Revision = revision;
@@ -230,21 +260,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
     internal class EditorManifestJson
     {
-        [CanBeNull] public readonly IDictionary<string, string> Recommended;
-        [CanBeNull] public readonly IDictionary<string, string> DefaultDependencies;
-        [NotNull] public readonly IDictionary<string, EditorPackageDetails> Packages;
+        public readonly IDictionary<string, string>? Recommended;
+        public readonly IDictionary<string, string>? DefaultDependencies;
+        public readonly IDictionary<string, EditorPackageDetails> Packages;
 
         [JsonConstructor]
-        private EditorManifestJson([CanBeNull] IDictionary<string, string> recommended,
-                                   [CanBeNull] IDictionary<string, string> defaultDependencies,
-                                   [CanBeNull] IDictionary<string, EditorPackageDetails> packages)
+        private EditorManifestJson(IDictionary<string, string>? recommended,
+                                   IDictionary<string, string>? defaultDependencies,
+                                   IDictionary<string, EditorPackageDetails>? packages)
         {
             Recommended = recommended;
             DefaultDependencies = defaultDependencies;
             Packages = packages ?? EmptyDictionary<string, EditorPackageDetails>.InstanceDictionary;
         }
 
-        public static EditorManifestJson FromJson(string json)
+        public static EditorManifestJson? FromJson(string json)
         {
             return JsonConvert.DeserializeObject<EditorManifestJson>(json);
         }
@@ -258,13 +288,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     internal class EditorPackageDetails
     {
-        [CanBeNull] public readonly string Introduced;
-        [CanBeNull] public readonly string MinimumVersion;
-        [NotNull] public readonly string Version;
+        public readonly string? Introduced;
+        public readonly string? MinimumVersion;
+        public readonly string Version;
 
         [JsonConstructor]
-        public EditorPackageDetails([CanBeNull] string introduced, [CanBeNull] string minimumVersion,
-                                    [CanBeNull] string version)
+        public EditorPackageDetails(string? introduced, string? minimumVersion,
+                                    string? version)
         {
             Introduced = introduced;
             MinimumVersion = minimumVersion;
