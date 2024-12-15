@@ -25,7 +25,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 {
-    [PsiComponent(InstantiationEx.LegacyDefault)]
+    [PsiComponent(Instantiation.DemandAnyThreadSafe)]
     public class AsmDefCache : SimpleICache<AsmDefCacheItem>
     {
         private readonly ILogger myLogger;

@@ -2,8 +2,10 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Application.changes;
 using JetBrains.Application.Parts;
+using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
@@ -43,9 +45,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
     // * ReSharper will only add a valid module, so we won't get circular references
     // * If we have Player projects and use Alt+Enter to add a reference from a QF, the reference is only added to the
     //   current project context. We could update the other context's project?
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
-    public class AsmDefModuleReferenceChangeListener : IChangeProvider
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    public class AsmDefModuleReferenceChangeListener : IChangeProvider, ISolutionLoadListenerOnDone
     {
+        private readonly Lifetime myLifetime;
+        private readonly ISolution mySolution;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly ChangeManager myChangeManager;
         private readonly AsmDefCache myAsmDefCache;
@@ -57,22 +61,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                                                    UnitySolutionTracker unitySolutionTracker,
                                                    ChangeManager changeManager,
                                                    AsmDefCache asmDefCache, MetaFileGuidCache metaFileGuidCache,
-                                                   ISolutionLoadTasksScheduler solutionLoadTasksScheduler,
                                                    IPsiServices psiServices, ILogger logger)
         {
+            myLifetime = lifetime;
+            mySolution = solution;
             myUnitySolutionTracker = unitySolutionTracker;
             myChangeManager = changeManager;
             myAsmDefCache = asmDefCache;
             myMetaFileGuidCache = metaFileGuidCache;
             myPsiServices = psiServices;
             myLogger = logger;
+        }
 
-            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask(GetType(),
-                SolutionLoadTaskKinds.Done, () =>
-                {
-                    changeManager.RegisterChangeProvider(lifetime, this);
-                    changeManager.AddDependency(lifetime, this, solution);
-                }));
+        public async Task OnSolutionLoadDone()
+        {
+            await mySolution.Locks.Tasks.YieldToIfNeeded(myLifetime, Scheduling.MainGuard);
+            myChangeManager.RegisterChangeProvider(myLifetime, this);
+            myChangeManager.AddDependency(myLifetime, this, mySolution);
         }
 
         public object? Execute(IChangeMap changeMap)

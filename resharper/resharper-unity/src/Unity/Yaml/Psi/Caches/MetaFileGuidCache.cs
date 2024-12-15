@@ -17,7 +17,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [PsiComponent(InstantiationEx.LegacyDefault)]
+    [PsiComponent(Instantiation.DemandAnyThreadSafe)]
     public class MetaFileGuidCache : SimpleICache<MetaFileCacheItem>
     {
         private readonly ILogger myLogger;
