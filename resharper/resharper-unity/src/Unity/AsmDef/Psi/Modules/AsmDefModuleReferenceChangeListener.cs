@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Application.changes;
 using JetBrains.Application.Parts;
+using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
@@ -72,11 +73,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             myLogger = logger;
         }
 
-        public Task OnSolutionLoadDone(OuterLifetime lifetime)
+        public async Task OnSolutionLoadDone(OuterLifetime lifetime, ISolutionLoadTasksSchedulerThreading threading)
         {
+            await threading.YieldToIfNeeded(lifetime, Scheduling.MainGuard);
             myChangeManager.RegisterChangeProvider(myLifetime, this);
             myChangeManager.AddDependency(myLifetime, this, mySolution);
-            return Task.CompletedTask;
         }
 
         public object? Execute(IChangeMap changeMap)
