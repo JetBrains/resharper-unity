@@ -10,7 +10,7 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import javax.swing.JPanel
 
-class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) {
+internal class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) {
     private var rootPanel: JPanel? = null
     private lateinit var commentRow: Row
     private lateinit var usingProcessRow: Row
