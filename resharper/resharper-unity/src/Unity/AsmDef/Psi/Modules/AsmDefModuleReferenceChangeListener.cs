@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             myLogger = logger;
         }
 
-        public Task OnSolutionLoadDone()
+        public Task OnSolutionLoadDone(OuterLifetime lifetime)
         {
             myChangeManager.RegisterChangeProvider(myLifetime, this);
             myChangeManager.AddDependency(myLifetime, this, mySolution);
