@@ -21,7 +21,7 @@ using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class AnimatorScriptUsagesElementContainer : IScriptUsagesElementContainer
     {
         [NotNull] private readonly IPersistentIndexManager myManager;
