@@ -14,13 +14,12 @@ import com.intellij.ui.ExperimentalUI
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginActionsBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
-import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.actions.SolutionViewToggleAction
 import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
 import icons.UnityIcons
 import org.jdom.Element
 
-class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRootNode(project)) {
+class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplorerRootNode(project)) {
 
     companion object {
         const val ID = "UnityExplorer"
@@ -40,10 +39,6 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
 
         fun tryGetInstance(project: Project): UnityExplorer? {
             return ProjectView.getInstance(project).getProjectViewPaneById(ID) as? UnityExplorer
-        }
-
-        private fun createRootNode(project: Project): UnityExplorerRootNode {
-            return UnityExplorerRootNode(project)
         }
     }
 
@@ -126,9 +121,9 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
     override fun addPrimaryToolbarActions(actionGroup: DefaultActionGroup) {
         if (!ExperimentalUI.isNewUI()) {
             actionGroup.addAction(ActionManager.getInstance().getAction("ShowAllInUnityExplorer"))
+            actionGroup.addSeparator()
         }
 
-        actionGroup.addSeparator()
         super.addPrimaryToolbarActions(actionGroup)
     }
 }

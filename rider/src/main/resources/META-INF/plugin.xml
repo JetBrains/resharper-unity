@@ -331,7 +331,7 @@
     </action>
 
     <action id="ShowAllInUnityExplorer" class="com.jetbrains.rider.plugins.unity.explorer.UnityShowAllFilesAction">
-      <add-to-group group-id="ProjectViewTabToolbar" anchor="first"/>
+      <add-to-group group-id="ProjectViewToolbar" anchor="before" relative-to-action="FindInSolutionView"/>
     </action>
 
     <action id="AddPauseBreakpoint" class="com.jetbrains.rider.plugins.unity.debugger.actions.handlers.AddPauseBreakpoint">
