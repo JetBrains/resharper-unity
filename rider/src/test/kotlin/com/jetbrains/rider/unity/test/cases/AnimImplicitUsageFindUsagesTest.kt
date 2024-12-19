@@ -1,30 +1,24 @@
 package com.jetbrains.rider.unity.test.cases
-import com.jetbrains.rider.unity.test.framework.api.doFindUsagesTest
 import com.jetbrains.rd.ide.model.findUsagesHost
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.test.annotations.ChecklistItems
-import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.Feature
-import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.annotations.Severity
-import com.jetbrains.rider.test.annotations.SeverityLevel
-import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.OpenSolutionParams
+import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.base.PerClassSolutionTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
+import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.unity.test.framework.api.doFindUsagesTest
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
-import java.io.File
 
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Feature("Unity AnimImplicitUsage Find Usages")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
-class AnimImplicitUsageFindUsagesTest : BaseTestWithSolution() {
-    override val testSolution: String = "AnimImplicitUsageTest"
-
-    override fun preprocessTempDirectory(tempDir: File) {
-        prepareAssemblies(tempDir)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@Solution("AnimImplicitUsageTest")
+class AnimImplicitUsageFindUsagesTest : PerClassSolutionTestBase() {
+    override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
+        params.preprocessTempDirectory = { prepareAssemblies(it) }
     }
 
     override val traceCategories: List<String>

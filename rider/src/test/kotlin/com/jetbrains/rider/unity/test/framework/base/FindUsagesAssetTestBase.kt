@@ -49,11 +49,9 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
         unityComponentGrouping(false)
     }
 
-    context(SolutionApiFacade)
-    private fun unityGameObjectGrouping(enable: Boolean) = setGroupingEnabled("UnityGameObject", enable)
+    private fun SolutionApiFacade.unityGameObjectGrouping(enable: Boolean) = setGroupingEnabled("UnityGameObject", enable)
 
-    context(SolutionApiFacade)
-    private fun unityComponentGrouping(enable: Boolean) = setGroupingEnabled("UnityComponent", enable)
+    private fun SolutionApiFacade.unityComponentGrouping(enable: Boolean) = setGroupingEnabled("UnityComponent", enable)
 
     override val waitForCaches = true
 }

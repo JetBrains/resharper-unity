@@ -40,9 +40,7 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
-import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
-import com.jetbrains.rider.test.facades.editor.EditorApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.framework.processor.TestProcessor
@@ -282,8 +280,7 @@ fun checkSweaInSolution(project: Project) {
     checkSwea(project, 0)
 }
 
-context(SolutionApiFacade)
-fun checkSweaInSolution() = checkSweaInSolution(project)
+fun SolutionApiFacade.checkSweaInSolution() = checkSweaInSolution(project)
 
 fun IntegrationTestWithFrontendBackendModel.executeIntegrationTestMethod(methodName: String) =
     executeMethod(RunMethodData("Assembly-CSharp-Editor", "Editor.IntegrationTestHelper", methodName))
@@ -483,8 +480,7 @@ fun attachDebuggerToUnityEditor(
     goldFile: File? = null
 ) = attachDebuggerToUnityEditor(project, false, beforeRun, test, goldFile)
 
-context(SolutionApiFacade)
-fun attachDebuggerToUnityEditor(
+fun SolutionApiFacade.attachDebuggerToUnityEditor(
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
     goldFile: File? = null) = attachDebuggerToUnityEditor(project, beforeRun, test, goldFile)
@@ -590,3 +586,9 @@ interface IntegrationTestWithFrontendBackendModel {
 }
 
 //endregion
+
+fun SolutionApiFacade.waitForUnityPackagesCache() {
+    waitAndPump(project.lifetime,
+                { project.solution.frontendBackendModel.isUnityPackageManagerInitiallyIndexFinished.valueOrDefault(false) },
+                Duration.ofSeconds(10), { "Deferred caches are not completed" })
+}

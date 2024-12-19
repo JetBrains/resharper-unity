@@ -1,31 +1,24 @@
 package com.jetbrains.rider.unity.test.cases
+
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
-import com.intellij.openapi.rd.util.lifetime
-import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.test.annotations.ChecklistItems
-import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.Feature
-import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.Severity
-import com.jetbrains.rider.test.annotations.SeverityLevel
-import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
-import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.scriptingApi.assertLookupContains
+import com.jetbrains.rider.test.scriptingApi.assertLookupNotContains
+import com.jetbrains.rider.test.scriptingApi.typeWithLatency
+import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
+import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
-import java.time.Duration
 
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Resources Autocompletion")
@@ -55,69 +48,66 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     @Test(description="Unity Resources Completion for Load")
     @ChecklistItems(["Unity Resources Completion/Load"])
     fun test_UnityResourcesLoadCompletion() {
-        waitForUnityPackagesCache {
-            withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadCompletion.cs") {
-                typeWithLatency("\"")
-                assertLookupNotContains("\"EscapeFromRider\"")
-                assertLookupNotContains("\"ImpossibleResourceName\"")
-                assertLookupContains(
-                    "\"from_git__RUNTIME\"",
-                    "\"from_git__EDITOR\"",
-                    "\"from_disk__EDITOR\"",
-                    "\"from_disk__RUNTIME\"",
-                    "\"from_pack_folder__RUNTIME\"",
-                    "\"from_pack_folder__EDITOR\"",
-                    "\"from_res__RUNTIME\"",
-                    "\"from_res__EDITOR\"",
-                    "\"Folder\"",
-                    checkFocus = false)
-            }
+        waitForUnityPackagesCache()
+        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadCompletion.cs") {
+            typeWithLatency("\"")
+            assertLookupNotContains("\"EscapeFromRider\"")
+            assertLookupNotContains("\"ImpossibleResourceName\"")
+            assertLookupContains(
+                "\"from_git__RUNTIME\"",
+                "\"from_git__EDITOR\"",
+                "\"from_disk__EDITOR\"",
+                "\"from_disk__RUNTIME\"",
+                "\"from_pack_folder__RUNTIME\"",
+                "\"from_pack_folder__EDITOR\"",
+                "\"from_res__RUNTIME\"",
+                "\"from_res__EDITOR\"",
+                "\"Folder\"",
+                checkFocus = false)
         }
     }
 
     @Test(description="Unity Resources Completion for LoadAll")
     @ChecklistItems(["Unity Resources Completion/LoadAll"])
     fun test_UnityResourcesLoadAllCompletion() {
-        waitForUnityPackagesCache {
-            withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAllCompletion.cs") {
-                typeWithLatency("\"")
-                assertLookupNotContains("\"EscapeFromRider\"")
-                assertLookupNotContains("\"ImpossibleResourceName\"")
-                assertLookupContains(
-                    "\"from_git__RUNTIME\"",
-                    "\"from_git__EDITOR\"",
-                    "\"from_disk__EDITOR\"",
-                    "\"from_disk__RUNTIME\"",
-                    "\"from_pack_folder__RUNTIME\"",
-                    "\"from_pack_folder__EDITOR\"",
-                    "\"from_res__RUNTIME\"",
-                    "\"from_res__EDITOR\"",
-                    "\"Folder\"",
-                    checkFocus = false)
-            }
+        waitForUnityPackagesCache()
+        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAllCompletion.cs") {
+            typeWithLatency("\"")
+            assertLookupNotContains("\"EscapeFromRider\"")
+            assertLookupNotContains("\"ImpossibleResourceName\"")
+            assertLookupContains(
+                "\"from_git__RUNTIME\"",
+                "\"from_git__EDITOR\"",
+                "\"from_disk__EDITOR\"",
+                "\"from_disk__RUNTIME\"",
+                "\"from_pack_folder__RUNTIME\"",
+                "\"from_pack_folder__EDITOR\"",
+                "\"from_res__RUNTIME\"",
+                "\"from_res__EDITOR\"",
+                "\"Folder\"",
+                checkFocus = false)
         }
     }
 
     @Test(description="Unity Resources Completion for LoadAsync")
     @ChecklistItems(["Unity Resources Completion/LoadAsync"])
     fun test_UnityResourcesLoadAsyncCompletion() {
-        waitForUnityPackagesCache {
-            withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAsyncCompletion.cs") {
-                typeWithLatency("\"")
-                assertLookupNotContains("\"EscapeFromRider\"")
-                assertLookupNotContains("\"ImpossibleResourceName\"")
-                assertLookupContains(
-                    "\"from_git__RUNTIME\"",
-                    "\"from_git__EDITOR\"",
-                    "\"from_disk__EDITOR\"",
-                    "\"from_disk__RUNTIME\"",
-                    "\"from_pack_folder__RUNTIME\"",
-                    "\"from_pack_folder__EDITOR\"",
-                    "\"from_res__RUNTIME\"",
-                    "\"from_res__EDITOR\"",
-                    "\"Folder\"",
-                    checkFocus = false)
-            }
+        waitForUnityPackagesCache()
+        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAsyncCompletion.cs") {
+            typeWithLatency("\"")
+            assertLookupNotContains("\"EscapeFromRider\"")
+            assertLookupNotContains("\"ImpossibleResourceName\"")
+            assertLookupContains(
+                "\"from_git__RUNTIME\"",
+                "\"from_git__EDITOR\"",
+                "\"from_disk__EDITOR\"",
+                "\"from_disk__RUNTIME\"",
+                "\"from_pack_folder__RUNTIME\"",
+                "\"from_pack_folder__EDITOR\"",
+                "\"from_res__RUNTIME\"",
+                "\"from_res__EDITOR\"",
+                "\"Folder\"",
+                checkFocus = false)
         }
     }
 
@@ -125,7 +115,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
-        CodeInsightSettings.getInstance().COMPLETION_CASE_SENSITIVE = CodeInsightSettings.NONE
+        CodeInsightSettings.getInstance().completionCaseSensitive = CodeInsightSettings.NONE
         CodeInsightSettings.getInstance().isSelectAutopopupSuggestionsByChars = true
         CodeInsightSettings.getInstance().AUTO_POPUP_JAVADOC_INFO = false
 
@@ -138,12 +128,5 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     @AfterMethod
     fun saveDocuments() {
         persistAllFilesOnDisk()
-    }
-
-    context(SolutionApiFacade)
-    private fun waitForUnityPackagesCache (action: SolutionApiFacade.() -> Unit) {
-        waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isUnityPackageManagerInitiallyIndexFinished.valueOrDefault(false) },
-                    Duration.ofSeconds(10), { "Deferred caches are not completed" })
-        action()
     }
 }

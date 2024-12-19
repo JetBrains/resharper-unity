@@ -46,7 +46,7 @@ abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWi
     @ChecklistItems(["Refresh assets before test"])
     fun checkRefreshBeforeTest() {
         val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-        withOpenedEditor(project, file.absolutePath) { // the nature of exploration for Unity requires file to be opened
+        withOpenedEditor(file.absolutePath) { // the nature of exploration for Unity requires file to be opened
             withUtFacade(project!!) {
                 it.waitForDiscovering()
                 it.runAllTestsInProject(

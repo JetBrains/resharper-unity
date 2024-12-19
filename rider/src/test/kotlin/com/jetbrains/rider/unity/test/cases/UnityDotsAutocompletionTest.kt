@@ -3,32 +3,19 @@ package com.jetbrains.rider.unity.test.cases
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
-import com.intellij.openapi.rd.util.lifetime
-import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.test.annotations.ChecklistItems
-import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.Feature
-import com.jetbrains.rider.test.annotations.Mute
-import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.Severity
-import com.jetbrains.rider.test.annotations.SeverityLevel
-import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
-import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.test.scriptingApi.waitForDaemon
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
+import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
-import java.time.Duration
 
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity DOTS Autocompletion")
@@ -62,25 +49,24 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
     fun test_DotsSourceGenCompletion() {
         waitForRoslynReady()
         buildSolutionWithReSharperBuild()
-        waitForUnityPackagesCache {
-            withOpenedEditor("DotsUserStructures.cs") {
-                waitForDaemon()
-                waitForNextRoslynReady()
-                setCaretAfterWord("//typing_position")
-                startNewLine()
+        waitForUnityPackagesCache()
+        withOpenedEditor("DotsUserStructures.cs") {
+            waitForDaemon()
+            waitForNextRoslynReady()
+            setCaretAfterWord("//typing_position")
+            startNewLine()
 
-                callBasicCompletion()
-                assertLookupNotContains("PublicStaticMethod")
-                assertLookupNotContains("PublicVoidMethod")
-                assertLookupNotContains("__codegen_PublicCodeGenMethod")
-                assertLookupNotContains("UserAspect___userComponentData")
-                assertLookupContains(
-                    "StaticCodeGenClass", //to check if code gen works
-                    "Entity",
-                    "Foo",
-                    "_userComponentData",
-                    checkFocus = false)
-            }
+            callBasicCompletion()
+            assertLookupNotContains("PublicStaticMethod")
+            assertLookupNotContains("PublicVoidMethod")
+            assertLookupNotContains("__codegen_PublicCodeGenMethod")
+            assertLookupNotContains("UserAspect___userComponentData")
+            assertLookupContains(
+                "StaticCodeGenClass", //to check if code gen works
+                "Entity",
+                "Foo",
+                "_userComponentData",
+                checkFocus = false)
         }
     }
 
@@ -88,7 +74,7 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
     fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
-        CodeInsightSettings.getInstance().COMPLETION_CASE_SENSITIVE = CodeInsightSettings.NONE
+        CodeInsightSettings.getInstance().completionCaseSensitive = CodeInsightSettings.NONE
         CodeInsightSettings.getInstance().isSelectAutopopupSuggestionsByChars = true
         CodeInsightSettings.getInstance().AUTO_POPUP_JAVADOC_INFO = false
 
@@ -102,13 +88,4 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
     fun saveDocuments() {
         persistAllFilesOnDisk()
     }
-
-    context(SolutionApiFacade)
-    private fun waitForUnityPackagesCache(action: SolutionApiFacade.() -> Unit) {
-        waitAndPump(project.lifetime,
-                    { project.solution.frontendBackendModel.isUnityPackageManagerInitiallyIndexFinished.valueOrDefault(false) },
-                    Duration.ofSeconds(10), { "Deferred caches are not completed" })
-        action()
-    }
-
 }

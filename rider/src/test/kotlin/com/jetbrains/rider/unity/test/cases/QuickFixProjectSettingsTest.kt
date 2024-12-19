@@ -1,10 +1,12 @@
 package com.jetbrains.rider.unity.test.cases
+
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Severity
 import com.jetbrains.rider.test.annotations.SeverityLevel
+import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.RefactoringsTestBase
@@ -21,9 +23,8 @@ import java.io.File
 @Feature("Unity quick fix project settings")
 @Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@Solution("ProjectSettingsTestData")
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
-    override val testSolution: String = "ProjectSettingsTestData"
-
     @Test(description="Quick fix for adding to build settings")
     @ChecklistItems(["Quick Fix Project Settings/Adding to build settings"])
     fun testAddToBuildSettings() {
