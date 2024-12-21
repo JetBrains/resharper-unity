@@ -9,8 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.JsonTestEnvComponents
     // disabled/re-enabled at the start and end of each test. But re-enabling reinitialises the watchers, which is very
     // slow on Mono - killing performance in tests. It also means we initialise the watchers at the end of a test only
     // to dispose at the start of the next test, which is completely unnecessary.
-    [EnvironmentComponent(InstantiationEx.LegacyDefault)]
-    public class MonoFileSystemTrackerDisabler
+    [EnvironmentComponent]
+    public class MonoFileSystemTrackerDisabler : IEnvLifecycleAutoStartSooner, IEnvLifecycleRequiredForStartingShell
     {
         public MonoFileSystemTrackerDisabler(IFileSystemTracker fileSystemTracker)
         {
