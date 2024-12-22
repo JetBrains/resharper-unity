@@ -123,13 +123,13 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
             }, testGoldFile)
     }
 
-    @Test(description = "Check evaluation after restarting the game. RIDER-23087", enabled = false)
+    @Test(description = "Check evaluation after restarting the game. RIDER-23087")
     @ChecklistItems(["Evaluation/Evaluation After Restart Game"])
     fun checkEvaluationAfterRestartGame() {
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(
             {
-                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 8)
+                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 15)
             },
             {
                 val toEvaluate = "binaryNotation / 25"
@@ -147,6 +147,42 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
                 waitForPause()
                 printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
                 dumpFullCurrentData()
+                resumeSession()
+            }, testGoldFile)
+    }
+
+    @Test(description = "Simple Stepping test")
+    @ChecklistItems(["Stepping/Simple Stepping"])
+    fun checkSimpleStepping() {
+        var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
+        attachDebuggerToUnityEditorAndPlay(
+            {
+                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 14)
+            },
+            {
+                waitForPause()
+                stepInto()
+                stepOver()
+                dumpFullCurrentData()
+                resumeSession()
+            }, testGoldFile)
+    }
+
+    @Test(description = "Check simple evaluation")
+    @ChecklistItems(["Evaluation/Simple evaluation"])
+    fun checkSimpleEvaluation() {
+        var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
+        attachDebuggerToUnityEditorAndPlay(
+            {
+                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 15)
+            },
+            {
+                val toEvaluate = "binaryNotation / 25"
+
+                waitForPause()
+                printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
+                dumpFullCurrentData()
+                resumeSession()
             }, testGoldFile)
     }
 

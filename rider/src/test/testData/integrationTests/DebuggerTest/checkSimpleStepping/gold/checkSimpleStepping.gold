@@ -1,0 +1,8 @@
+--> NewBehaviourScript.cs:16(341,342) // }
+NewBehaviourScript.Update() in , Assembly-CSharp.dll
+    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
+    +DontDestroyOnLoad Scene = DontDestroyOnLoad (DontDestroyOnLoad)
+    +this.gameObject = Main Camera (active: true, layer: 0)
+    +this = {NewBehaviourScript} enabled: true, gameObject: Main Camera
+    binaryNotation = {int} 2000000
+
