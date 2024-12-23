@@ -204,6 +204,7 @@
     <iw.actionProvider id="ShaderVariantWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantWidgetActionProvider"/>
     <iw.actionProvider id="ShaderWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetActionProvider"/>
 
+    <iw.actionProvider id="ProfilerIntegrationWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.profilerIntegration.ProfilerIntegrationWidgetActionProvider"/>
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantEventLogger"/>
 
     <rider.completion.csharpIdentifierPartHelper implementation="com.jetbrains.rider.plugins.unity.csharp.completion.OdinLayoutAttributeCSharpIdentifierPartHelper"/>
@@ -255,6 +256,9 @@
     <action id="ShaderWidgetAction"
             class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetAction" />
 
+    <action id="ProfilerIntegrationWidgetAction"
+            class="com.jetbrains.rider.plugins.unity.ui.profilerIntegration.ProfilerIntegrationWidgetAction" />
+    
     <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionBar" anchor="after" />
       <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionBar" anchor="after" />

@@ -162,5 +162,15 @@ class UnityIcons {
             val UnityExplorer = Common.UnityToolWindow
         }
     }
+    
+    class Profiler {
+        companion object {
+            val Disabled = IconLoader.getIcon("/unityIcons/profiler/snapshotStatusDisabled.svg", UnityIcons::class.java)
+            val FetchInProgress = IconLoader.getIcon("/unityIcons/profiler/snapshotStatusFetchInProgress.svg", UnityIcons::class.java)
+            val HasNewData = IconLoader.getIcon("/unityIcons/profiler/snapshotStatusHasNewData.svg", UnityIcons::class.java)
+            val NoDataAvailable = IconLoader.getIcon("/unityIcons/profiler/snapshotStatusNoDataAvailable.svg", UnityIcons::class.java)
+            val UpToDate = IconLoader.getIcon("/unityIcons/profiler/snapshotStatusUpToDate.svg", UnityIcons::class.java)
+        }
+    }
 }
 
