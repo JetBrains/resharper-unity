@@ -68,7 +68,7 @@ Linux)
 *) echo "Unknown platform: $(uname)" >&2; exit 1;;
 esac
 
-DOTNET_URL=https://cache-redirector.jetbrains.com/dotnetcli.azureedge.net/dotnet/Sdk/$DOTNET_VERSION/dotnet-sdk-$DOTNET_VERSION-$DOTNET_OS-$DOTNET_ARCH.tar.gz
+DOTNET_URL=https://cache-redirector.jetbrains.com/builds.dotnet.microsoft.com/dotnet/Sdk/$DOTNET_VERSION/dotnet-sdk-$DOTNET_VERSION-$DOTNET_OS-$DOTNET_ARCH.tar.gz
 DOTNET_TARGET_DIR=$TARGET_DIR/s$DOTNET_SHORT_VERSION-$DOTNET_ARCH
 DOTNET_TEMP_FILE=$TARGET_DIR/temp.tar.gz
 
@@ -162,7 +162,7 @@ goto fail
 
 ))))
 
-set DOTNET_URL=https://cache-redirector.jetbrains.com/dotnetcli.azureedge.net/dotnet/Sdk/%DOTNET_VERSION%/dotnet-sdk-%DOTNET_VERSION%-win-%DOTNET_ARCH%.zip
+set DOTNET_URL=https://cache-redirector.jetbrains.com/builds.dotnet.microsoft.com/dotnet/Sdk/%DOTNET_VERSION%/dotnet-sdk-%DOTNET_VERSION%-win-%DOTNET_ARCH%.zip
 set DOTNET_TARGET_DIR=%TARGET_DIR%s%DOTNET_SHORT_VERSION%-%DOTNET_ARCH%\
 set DOTNET_TEMP_FILE=%TARGET_DIR%temp.zip
 set DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true
