@@ -7,6 +7,7 @@ import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.base.CodeLensTestBase
@@ -24,18 +25,18 @@ import java.time.Duration
 @Feature("Unity code vision")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@Solution("CodeLensTestSolution")
 class PropertyCodeVisionAssetTest : CodeLensTestBase() {
-
-    override fun preprocessTempDirectory(tempDir: File) {
-        prepareAssemblies(tempDir)
-        if (testMethod.name.contains("YamlOff")) {
-            SettingsHelper.disableIsAssetIndexingEnabledSetting(tempDir.name, tempDir)
+    override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
+        super.modifyOpenSolutionParams(params)
+        params.waitForCaches = true
+        params.preprocessTempDirectory = {
+            prepareAssemblies(it)
+            if (testMethod.name.contains("YamlOff")) {
+                SettingsHelper.disableIsAssetIndexingEnabledSetting(it.name, it)
+            }
         }
     }
-
-    override val waitForCaches = true
-
-    override val testSolution = "CodeLensTestSolution"
 
     @DataProvider(name = "assetSettings")
     fun assetSettings() = arrayOf(

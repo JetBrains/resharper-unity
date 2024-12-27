@@ -18,13 +18,8 @@ import org.testng.annotations.Test
 @Feature("Unit Testing in Unity solution with started Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@Solution("UnityDebugAndUnitTesting/Project")
 abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
-    override val testSolution: String =
-        if (engineVersion.isTuanjie())
-            "TuanjieDebugAndUnitTesting/Project"
-        else
-            "UnityDebugAndUnitTesting/Project"
-
     @Test(description="Check run all tests from project")
     @ChecklistItems(["Run all tests from the Project"])
     fun checkRunAllTestsFromProject() {
@@ -94,4 +89,5 @@ class UnitTestingTestUnity6 : UnitTestingTest(Unity.V6) {
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
+@Solution("TuanjieDebugAndUnitTesting/Project")
 class UnitTestingTestTuanjie2022 : UnitTestingTest(Tuanjie.V2022)

@@ -16,9 +16,8 @@ import org.testng.annotations.Test
 @Feature("Connection with Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL]) // todo: allow Linux
+@Solution("SimpleUnityProjectWithoutPlugin")
 class ConnectionTest : IntegrationTestWithSolutionBase() {
-    override val testSolution: String = "SimpleUnityProjectWithoutPlugin"
-
     @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
         description = "Check connection with Unity after Unity start with Simple Unity Project without plugin")
     fun installAndCheckConnectionAfterUnityStart() {

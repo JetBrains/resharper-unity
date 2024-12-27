@@ -18,10 +18,9 @@ import kotlin.test.assertNotNull
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Player")
 @Severity(SeverityLevel.CRITICAL)
+@Solution("UnityPlayerProjects/SimpleUnityGame")
 abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNames: Map<String, String>)
     : UnityPlayerTestBase(engineVersion, buildNames) {
-
-    override val testSolution = "UnityPlayerProjects/SimpleUnityGame"
 
     private fun getExecutionFileName() = if (SystemInfo.isMac)
         "SimpleUnityGame.app"

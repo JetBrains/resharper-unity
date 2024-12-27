@@ -1,37 +1,40 @@
 package com.jetbrains.rider.unity.test.cases.markup
 
-import com.jetbrains.rider.unity.test.framework.api.doFindUsagesTest
-import com.jetbrains.rd.ide.model.findUsagesHost
 import com.intellij.openapi.rd.util.lifetime
+import com.jetbrains.rd.ide.model.findUsagesHost
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.daemon.util.annotateDocumentWithHighlighterTags
 import com.jetbrains.rdclient.daemon.util.backendAttributeIdOrThrow
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.annotations.ChecklistItems
 import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.markupContributor
+import com.jetbrains.rider.test.scriptingApi.runSweaAndGetResults
+import com.jetbrains.rider.test.scriptingApi.waitForLenses
+import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import com.jetbrains.rider.unity.test.framework.api.doFindUsagesTest
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
-import java.io.File
 import java.time.Duration
 
 @Mute("RIDER-114854")
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
-class InputSystemTest : BaseTestWithSolution() {
-    override val testSolution: String = "InputSystemTestData"
-
-    override fun preprocessTempDirectory(tempDir: File) {
-        prepareAssemblies(tempDir)
+@Solution("InputSystemTestData")
+class InputSystemTest : PerTestSolutionTestBase() {
+    override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
+        params.preprocessTempDirectory = { prepareAssemblies(it) }
     }
 
     override val traceCategories: List<String>

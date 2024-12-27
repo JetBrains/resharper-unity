@@ -21,10 +21,8 @@ import org.testng.annotations.Test
 @Feature("Debug Unity Dots")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@Solution("UnityDotsDebug/Project")
 abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
-
-    override val testSolution = "UnityDotsDebug/Project"
-
     @Test(description = "Check breakpoint for Unity DOTS code")
     @ChecklistItems(["Breakpoints/Breakpoint in DOTS"])
     fun checkBreakpointInDOTSCode() {

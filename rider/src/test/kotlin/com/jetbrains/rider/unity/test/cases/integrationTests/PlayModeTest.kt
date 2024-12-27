@@ -16,11 +16,8 @@ import org.testng.annotations.Test
 @Feature("PlayMode Action for Unity")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@Solution("UnityDebugAndUnitTesting/Project")
 abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
-    override val testSolution
-        get() = if (engineVersion.isTuanjie()) "TuanjieDebugAndUnitTesting/Project"
-        else "UnityDebugAndUnitTesting/Project"
-
     @Test(description="Check play, pause, step, unpause, stop actions for Unity")
     @ChecklistItems(["Play Mode/PlayMode actions (play, stop. etc.)"])
     fun checkPlayingPauseModesAndSteps() {
@@ -109,4 +106,5 @@ class PlayModeTestUnity6 : PlayModeTest(Unity.V6)
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
+@Solution("TuanjieDebugAndUnitTesting/Project")
 class PlayModeTestTuanjie2022 : PlayModeTest(Tuanjie.V2022)

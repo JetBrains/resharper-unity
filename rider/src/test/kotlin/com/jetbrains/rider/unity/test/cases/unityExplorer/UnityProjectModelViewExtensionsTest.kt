@@ -1,6 +1,7 @@
 package com.jetbrains.rider.unity.test.cases.unityExplorer
 
 import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
@@ -17,10 +18,12 @@ import java.io.File
 @Feature("Unity Project Model View Extensions")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@Solution("UnityProjectModelViewExtensionsTest")
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
-    override val testSolution = "UnityProjectModelViewExtensionsTest"
-    override val persistCaches: Boolean
-        get() = true
+    override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
+        super.modifyOpenSolutionParams(params)
+        params.persistCaches = true
+    }
 
     // todo: add test with solution, where one of the asmdef-s doesn't target Editor, this would cause only .Player project without normal one
 

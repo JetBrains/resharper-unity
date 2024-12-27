@@ -5,24 +5,25 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.OpenSolutionParams
+import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.DataProvider
-import java.io.File
 import java.time.Duration
 
-abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
+abstract class FindUsagesAssetTestBase : PerTestSolutionTestBase() {
     @DataProvider(name = "findUsagesGrouping")
     fun test1() = arrayOf(
         arrayOf("allGroupsEnabled", listOf("SolutionFolder", "Project", "Directory", "File", "Namespace", "Type", "Member", "UnityComponent", "UnityGameObject"))
     )
 
-    override fun preprocessTempDirectory(tempDir: File) {
-        super.preprocessTempDirectory(tempDir)
-        prepareAssemblies(tempDir)
+    override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
+        super.modifyOpenSolutionParams(params)
+        params.preprocessTempDirectory = { prepareAssemblies(it) }
+        params.waitForCaches = true
     }
 
     protected fun doTest(line : Int, column : Int, groups: List<String>?, fileName : String = "NewBehaviourScript.cs") {
@@ -52,6 +53,4 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
     private fun SolutionApiFacade.unityGameObjectGrouping(enable: Boolean) = setGroupingEnabled("UnityGameObject", enable)
 
     private fun SolutionApiFacade.unityComponentGrouping(enable: Boolean) = setGroupingEnabled("UnityComponent", enable)
-
-    override val waitForCaches = true
 }

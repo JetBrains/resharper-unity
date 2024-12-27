@@ -5,6 +5,7 @@ import com.jetbrains.rider.test.annotations.Feature
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.Severity
 import com.jetbrains.rider.test.annotations.SeverityLevel
+import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.unity.test.framework.base.FindUsagesAssetTestBase
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
@@ -14,13 +15,12 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Feature("Unity Find Usages with prefab modifications")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.DOT_NET_6)
+@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.LATEST_STABLE)
+@Solution("UI_PrefabModifications" )
 class FindUguiUsagesPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     override val traceCategories: List<String>
         get() = super.traceCategories + "JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents"
-
-    override val testSolution: String = "UI_PrefabModifications" 
 
     @Test(description="Find Usages for event OnClickFromPrefabModification")
     @ChecklistItems(["Find Ugui Usages Prefab Modifications/for event OnClickFromPrefabModification"])

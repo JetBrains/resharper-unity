@@ -37,7 +37,7 @@ abstract class IntegrationTestWithUnityProjectBase(open val engineVersion: Engin
 
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
-        unityProjectPath = putUnityProjectToTempTestDir(testSolution, null, testWorkDirectory,solutionSourceRootDirectory, testDataDirectory)
+        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null, testWorkDirectory, solutionSourceRootDirectory, testDataDirectory)
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
         val unityProcessHandle = startUnity(
             executable = unityExecutable.canonicalPath,

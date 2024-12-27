@@ -1,6 +1,8 @@
 package com.jetbrains.rider.unity.test.framework.base
 
+import com.jetbrains.rdclient.client.frontendProjectSession
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.unity.unityEnvironment
 import com.jetbrains.rider.test.scriptingApi.waitFirstScriptCompilation
@@ -29,13 +31,16 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
 
     private lateinit var unityProcessHandle: ProcessHandle
 
-    override fun preprocessTempDirectory(tempDir: File) {
-        super.preprocessTempDirectory(tempDir)
-
-        val newBehaviourScript = "NewBehaviourScript.cs"
-        val sourceScript = testCaseSourceDirectory.resolve(newBehaviourScript)
-        if (sourceScript.exists()) {
-            sourceScript.copyTo(tempDir.resolve("Assets").resolve(newBehaviourScript), true)
+    override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
+        super.modifyOpenSolutionParams(params)
+        val oldPreprocessTempDirectory = params.preprocessTempDirectory
+        params.preprocessTempDirectory = {
+            oldPreprocessTempDirectory?.invoke(it)
+            val newBehaviourScript = "NewBehaviourScript.cs"
+            val sourceScript = testCaseSourceDirectory.resolve(newBehaviourScript)
+            if (sourceScript.exists()) {
+                sourceScript.copyTo(it.resolve("Assets").resolve(newBehaviourScript), true)
+            }
         }
     }
 
@@ -86,7 +91,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
         // workaround the situation, when at first assemblies are not compiled, so discovery returns nothing
         // later Unity compiles assemblies, but discovery would not start again, till solution reload
         withOpenedEditor(file.absolutePath) {
-            FrontendTextControlHost.getInstance(project!!)
+            FrontendTextControlHost.getInstance(project!!.frontendProjectSession.appSession)
             waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
 
             it.waitForDiscovering()

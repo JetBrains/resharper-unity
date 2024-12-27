@@ -8,13 +8,11 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
-import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.asserts.shouldBeTrue
-import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
@@ -23,16 +21,28 @@ import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
 import com.jetbrains.rider.test.scriptingApi.createLibraryFolderIfNotExist
 import com.jetbrains.rider.test.scriptingApi.refreshFileSystem
 import com.jetbrains.rider.test.unity.EngineVersion
-import com.jetbrains.rider.unity.test.framework.api.*
+import com.jetbrains.rider.unity.test.framework.api.activateRiderFrontendTest
+import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
+import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import kotlinx.coroutines.CompletableDeferred
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File
 import kotlin.test.assertNotNull
 
-abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,
-                                   private val buildNames: Map<String, String>) : BaseTestWithSolution(), IntegrationTestWithFrontendBackendModel {
-    override val waitForCaches = true
+abstract class UnityPlayerTestBase(
+    private val engineVersion: EngineVersion,
+    private val buildNames: Map<String, String>
+) : PerTestSolutionTestBase() {
+    override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
+        super.modifyOpenSolutionParams(params)
+        params.waitForCaches = true
+        params.preprocessTempDirectory = {
+            lifetimeDefinition = LifetimeDefinition()
+            allowUnityPathVfsRootAccess(lifetimeDefinition)
+            createLibraryFolderIfNotExist(it)
+        }
+    }
     private val unityMajorVersion = this.engineVersion
     private lateinit var unityProjectPath: File
     private lateinit var lifetimeDefinition: LifetimeDefinition
@@ -43,8 +53,6 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,
         get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTest::class.simpleName!!)
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
-    override val frontendBackendModel: FrontendBackendModel
-        get() = project.solution.frontendBackendModel
 
     protected fun getGameFileName(): String? {
         if (SystemInfo.isMac)
@@ -80,15 +88,9 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,
         return workDirectory
     }
 
-    override fun preprocessTempDirectory(tempDir: File) {
-        lifetimeDefinition = LifetimeDefinition()
-        allowUnityPathVfsRootAccess(lifetimeDefinition)
-        createLibraryFolderIfNotExist(tempDir)
-    }
-
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
-        unityProjectPath = putUnityProjectToTempTestDir(testSolution, null)
+        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null)
         super.setUpTestCaseSolution()
         prepareAssemblies(project, activeSolutionDirectory)
         downloadGameFiles(project, activeSolutionDirectory)

@@ -95,7 +95,7 @@ fun replaceUnityVersionOnCurrent(project: Project) {
     projectVersionFile.writeText("m_EditorVersion: $newVersion")
 }
 
-fun IntegrationTestWithFrontendBackendModel.activateRiderFrontendTest() {
+fun SolutionApiFacade.activateRiderFrontendTest() {
     frameworkLogger.info("Set frontendBackendModel.riderFrontendTests = true")
     if (!frontendBackendModel.riderFrontendTests.valueOrDefault(false)) {
         frontendBackendModel.riderFrontendTests.set(true)
@@ -252,9 +252,9 @@ fun FrontendBackendModel.refreshUnityModel() {
     refresh.fire(true)
 }
 
-fun IntegrationTestWithFrontendBackendModel.refreshUnityModel() = frontendBackendModel.refreshUnityModel()
+fun SolutionApiFacade.refreshUnityModel() = frontendBackendModel.refreshUnityModel()
 
-private fun IntegrationTestWithFrontendBackendModel.executeMethod(runMethodData: RunMethodData): RunMethodResult {
+private fun SolutionApiFacade.executeMethod(runMethodData: RunMethodData): RunMethodResult {
     frameworkLogger.info(
         "Executing method ${runMethodData.methodName} from ${runMethodData.typeName} (assembly: ${runMethodData.assemblyName})")
     val runMethodResult = frontendBackendModel.runMethodInUnity.callSynchronously(runMethodData, frontendBackendModel.protocolOrThrow)!!
@@ -282,7 +282,7 @@ fun checkSweaInSolution(project: Project) {
 
 fun SolutionApiFacade.checkSweaInSolution() = checkSweaInSolution(project)
 
-fun IntegrationTestWithFrontendBackendModel.executeIntegrationTestMethod(methodName: String) =
+fun SolutionApiFacade.executeIntegrationTestMethod(methodName: String) =
     executeMethod(RunMethodData("Assembly-CSharp-Editor", "Editor.IntegrationTestHelper", methodName))
 
 fun printEditorLogEntry(stream: PrintStream, logEvent: LogEvent) {
@@ -296,20 +296,20 @@ fun printEditorLogEntry(stream: PrintStream, logEvent: LogEvent) {
 
 //region Playing
 
-fun IntegrationTestWithFrontendBackendModel.play(waitForPlay: Boolean = true) {
+fun SolutionApiFacade.play(waitForPlay: Boolean = true) {
     frameworkLogger.info("Start playing in unity editor")
     frontendBackendModel.playControls.play.set(true)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
-fun IntegrationTestWithFrontendBackendModel.pause(waitForPause: Boolean = true) {
+fun SolutionApiFacade.pause(waitForPause: Boolean = true) {
     frameworkLogger.info("Pause unity editor")
     frontendBackendModel.playControls.pause.set(true)
     if (waitForPause) waitForUnityEditorPauseMode()
 }
 
 // "2000000" is default log message in NewBehaviourScript.Update() in test solutions
-fun IntegrationTestWithFrontendBackendModel.step(waitForStep: Boolean = true, logMessageAfterStep: String = "2000000") {
+fun SolutionApiFacade.step(waitForStep: Boolean = true, logMessageAfterStep: String = "2000000") {
     frameworkLogger.info("Make step in unity editor")
     if (waitForStep) {
         waitForEditorLogsAfterAction(logMessageAfterStep) { frontendBackendModel.playControls.step.fire(Unit) }
@@ -319,25 +319,25 @@ fun IntegrationTestWithFrontendBackendModel.step(waitForStep: Boolean = true, lo
     }
 }
 
-fun IntegrationTestWithFrontendBackendModel.stopPlaying(waitForIdle: Boolean = true) {
+fun SolutionApiFacade.stopPlaying(waitForIdle: Boolean = true) {
     frameworkLogger.info("Stop playing in unity editor")
     frontendBackendModel.playControls.play.set(false)
     if (waitForIdle) waitForUnityEditorIdleMode()
 }
 
-fun IntegrationTestWithFrontendBackendModel.unpause(waitForPlay: Boolean = true) {
+fun SolutionApiFacade.unpause(waitForPlay: Boolean = true) {
     frameworkLogger.info("Unpause unity editor")
     frontendBackendModel.playControls.pause.set(false)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPlayMode() = waitForUnityEditorState(UnityEditorState.Play)
+fun SolutionApiFacade.waitForUnityEditorPlayMode() = waitForUnityEditorState(UnityEditorState.Play)
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPauseMode() = waitForUnityEditorState(UnityEditorState.Pause)
+fun SolutionApiFacade.waitForUnityEditorPauseMode() = waitForUnityEditorState(UnityEditorState.Pause)
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(UnityEditorState.Idle)
+fun SolutionApiFacade.waitForUnityEditorIdleMode() = waitForUnityEditorState(UnityEditorState.Idle)
 
-fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg expectedMessages: String,
+fun SolutionApiFacade.waitForEditorLogsAfterAction(vararg expectedMessages: String,
                                                                          action: () -> Unit): List<LogEvent> {
     val logLifetime = Lifetime.Eternal.createNested()
     val setOfMessages = expectedMessages.toHashSet()
@@ -358,13 +358,13 @@ fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg 
     return editorLogEntries
 }
 
-private fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorState(editorState: UnityEditorState) {
+private fun SolutionApiFacade.waitForUnityEditorState(editorState: UnityEditorState) {
     frameworkLogger.info("Waiting for unity editor in state '$editorState'")
     waitAndPump(unityActionsTimeout, { frontendBackendModel.unityEditorState.valueOrNull == editorState })
     { "Unity editor isn't in state '$editorState', actual state '${frontendBackendModel.unityEditorState.valueOrNull}'" }
 }
 
-fun IntegrationTestWithFrontendBackendModel.restart() {
+fun SolutionApiFacade.restart() {
     stopPlaying()
     play()
 }
@@ -543,16 +543,16 @@ fun toggleUnityPausepoint(project: Project,
 
 //region UnitTesting
 
-fun IntegrationTestWithFrontendBackendModel.preferStandaloneNUnitLauncherInTests() =
+fun SolutionApiFacade.preferStandaloneNUnitLauncherInTests() =
     selectUnitTestLaunchPreference(UnitTestLaunchPreference.NUnit)
 
-fun IntegrationTestWithFrontendBackendModel.preferEditModeInTests() =
+fun SolutionApiFacade.preferEditModeInTests() =
     selectUnitTestLaunchPreference(UnitTestLaunchPreference.EditMode)
 
-fun IntegrationTestWithFrontendBackendModel.preferPlayModeInTests() =
+fun SolutionApiFacade.preferPlayModeInTests() =
     selectUnitTestLaunchPreference(UnitTestLaunchPreference.PlayMode)
 
-private fun IntegrationTestWithFrontendBackendModel.selectUnitTestLaunchPreference(preference: UnitTestLaunchPreference) {
+private fun SolutionApiFacade.selectUnitTestLaunchPreference(preference: UnitTestLaunchPreference) {
     frameworkLogger.info("Selecting unit test launch preference '$preference'")
     frontendBackendModel.unitTestPreference.set(preference)
 }
@@ -580,11 +580,8 @@ fun getUnityDependentGoldFile(engineVersion: EngineVersion, testFile: File): Fil
 
 //region Interface
 
-//Needed to use extensions in all base classes
-interface IntegrationTestWithFrontendBackendModel {
-    val frontendBackendModel: FrontendBackendModel
-}
-
+val SolutionApiFacade.frontendBackendModel: FrontendBackendModel
+    get() = project.solution.frontendBackendModel
 //endregion
 
 fun SolutionApiFacade.waitForUnityPackagesCache() {

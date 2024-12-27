@@ -1,23 +1,19 @@
 package com.jetbrains.rider.unity.test.cases
-import com.jetbrains.rider.unity.test.framework.SettingsHelper
+
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
+import com.jetbrains.rdclient.client.frontendProjectSession
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.inTests.TestHost
-import com.jetbrains.rider.protocol.protocolHost
-import com.jetbrains.rider.test.annotations.ChecklistItems
-import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.Feature
-import com.jetbrains.rider.test.annotations.Mute
-import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.Severity
-import com.jetbrains.rider.test.annotations.SeverityLevel
-import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.OpenSolutionParams
+import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.unity.test.framework.SettingsHelper
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
@@ -27,12 +23,14 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity project settings completion")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
-class ProjectSettingsCompletionTest : BaseTestWithSolution() {
-    override val testSolution: String = "ProjectSettingsTestData"
-    override fun preprocessTempDirectory(tempDir: File) {
-        if (testMethod.name.contains("YamlOff")) {
-            SettingsHelper.disableIsAssetIndexingEnabledSetting(tempDir.name, tempDir)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@Solution("ProjectSettingsTestData")
+class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
+    override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
+        params.preprocessTempDirectory = {
+            if (testMethod.name.contains("YamlOff")) {
+                SettingsHelper.disableIsAssetIndexingEnabledSetting(it.name, it)
+            }
         }
     }
 
@@ -53,7 +51,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Psi.Caches",
             "JetBrains.ReSharper.Psi.Files")
 
-    @Test(description="Test scene primitive completion")
+    @Test(description = "Test scene primitive completion")
     @ChecklistItems(["Project Settings Completion/Scene primitive"])
     fun testScene_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
@@ -70,7 +68,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test(description="Test Animator state primitive completion")
+    @Test(description = "Test Animator state primitive completion")
     @ChecklistItems(["Project Settings Completion/Animator state primitive"])
     fun testAnimatorState_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "AnimatorStateCompletionTest.cs") {
@@ -80,7 +78,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test(description="Test Input primitive completion")
+    @Test(description = "Test Input primitive completion")
     @ChecklistItems(["Project Settings Completion/Input primitive"])
     fun testInput_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "InputCompletionTest.cs") {
@@ -109,7 +107,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         "\"PostProcessing\"",
         "\"TransparentFX\"")
 
-    @Test(description="Test Layer primitive completion")
+    @Test(description = "Test Layer primitive completion")
     @ChecklistItems(["Project Settings Completion/Layer primitive"])
     fun testLayer_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
@@ -123,7 +121,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test(description="Test Layer primitive completion with turned off Yaml")
+    @Test(description = "Test Layer primitive completion with turned off Yaml")
     @ChecklistItems(["Project Settings Completion/Layer primitive with turned off Yaml"])
     fun testLayer_PrimitiveCompletion_YamlOff() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
@@ -147,7 +145,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
 
         replaceFileContent(project, File("ProjectSettings").resolve("TagManager.asset").path, "TagManager.asset")
-        TestHost.getInstance(project.protocolHost).backendWaitForCaches("waitForAllAnalysisFinished")
+        TestHost.getInstance(project.frontendProjectSession.appSession).backendWaitForCaches("waitForAllAnalysisFinished")
 
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -164,7 +162,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
-        CodeInsightSettings.getInstance().COMPLETION_CASE_SENSITIVE = CodeInsightSettings.NONE
+        CodeInsightSettings.getInstance().completionCaseSensitive = CodeInsightSettings.NONE
         CodeInsightSettings.getInstance().isSelectAutopopupSuggestionsByChars = true
         CodeInsightSettings.getInstance().AUTO_POPUP_JAVADOC_INFO = false
 

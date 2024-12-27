@@ -31,14 +31,8 @@ import kotlin.test.fail
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
+@Solution("UnityDebugAndUnitTesting/Project")
 abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
-
-    override val testSolution: String = 
-        if (engineVersion.isTuanjie())
-            "TuanjieDebugAndUnitTesting/Project"
-        else 
-            "UnityDebugAndUnitTesting/Project"
-
     @Test(description = "Check 2 breakpoints in simple Unity App")
     @ChecklistItems(["Breakpoints/Simple breakpoint"])
     fun checkBreakpoint() {
@@ -186,4 +180,5 @@ class DebuggerTestUnity6 : DebuggerTest(Unity.V6)
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
+@Solution("TuanjieDebugAndUnitTesting/Project")
 class DebuggerTestTuanjie2022 : DebuggerTest (Tuanjie.V2022)

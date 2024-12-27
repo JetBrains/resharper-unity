@@ -1,7 +1,12 @@
+package com.jetbrains.rider.unity.test.cases.uss
+
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.annotations.ChecklistItems
+import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
@@ -10,15 +15,14 @@ import com.jetbrains.rider.test.scriptingApi.getHighlighters
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.Test
-import java.io.File
 
-@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.DOT_NET_6)
+@Mute("Test wasn't in te right package, so it never run")
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
-class UssTest : BaseTestWithSolution() {
-    override val testSolution: String = "SimpleUnityProject"
-
-    override fun preprocessTempDirectory(tempDir: File) {
-        prepareAssemblies(tempDir)
+@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.DOT_NET_6)
+@Solution("SimpleUnityProject")
+class UssTest : PerTestSolutionTestBase() {
+    override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
+        params.preprocessTempDirectory = { prepareAssemblies(it) }
     }
 
     @Test

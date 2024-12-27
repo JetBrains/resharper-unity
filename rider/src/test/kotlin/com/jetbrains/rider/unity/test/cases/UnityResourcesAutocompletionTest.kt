@@ -5,7 +5,7 @@ import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.test.annotations.*
-import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -23,10 +23,9 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Resources Autocompletion")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
-class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
-    override val testSolution: String = "ResourcesAutocompletionTestData"
-
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@Solution("ResourcesAutocompletionTestData")
+class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
     override val traceCategories: List<String>
         get() = listOf(
             "#com.jetbrains.rdclient.completion",

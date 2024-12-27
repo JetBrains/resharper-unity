@@ -1,18 +1,14 @@
 package com.jetbrains.rider.unity.test.cases
+
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
-import com.jetbrains.rider.test.annotations.ChecklistItems
-import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.Feature
-import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.Severity
-import com.jetbrains.rider.test.annotations.SeverityLevel
-import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.assertLookupContains
 import com.jetbrains.rider.test.scriptingApi.typeWithLatency
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
@@ -25,10 +21,9 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Tags Autocompletion")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
-class TagsCompletionTest : BaseTestWithSolution() {
-    override val testSolution: String = "ProjectSettingsTestData"
-
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@Solution("ProjectSettingsTestData")
+class TagsCompletionTest : PerTestSolutionTestBase() {
     override val traceCategories: List<String>
         get() = listOf(
             "#com.jetbrains.rdclient.completion",
@@ -46,6 +41,7 @@ class TagsCompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Psi.Caches",
             "JetBrains.ReSharper.Psi.Files")
 
+    @Suppress("NonAsciiCharacters")
     val basicTags = arrayOf(
         "\"Finish\"",
         "\"Player\"",
@@ -96,7 +92,7 @@ class TagsCompletionTest : BaseTestWithSolution() {
     fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
-        CodeInsightSettings.getInstance().COMPLETION_CASE_SENSITIVE = CodeInsightSettings.NONE
+        CodeInsightSettings.getInstance().completionCaseSensitive = CodeInsightSettings.NONE
         CodeInsightSettings.getInstance().isSelectAutopopupSuggestionsByChars = true
         CodeInsightSettings.getInstance().AUTO_POPUP_JAVADOC_INFO = false
 

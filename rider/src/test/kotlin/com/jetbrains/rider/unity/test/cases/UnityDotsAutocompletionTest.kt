@@ -6,7 +6,7 @@ import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.test.annotations.*
-import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -20,10 +20,9 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity DOTS Autocompletion")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_7)
-class UnityDotsAutocompletionTest : BaseTestWithSolution() {
-    override val testSolution: String = "UnityDotsAutocompletionTestData"
-
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@Solution("UnityDotsAutocompletionTestData")
+class UnityDotsAutocompletionTest : PerTestSolutionTestBase() {
     override val traceCategories: List<String>
         get() = listOf(
             "#com.jetbrains.rdclient.completion",
