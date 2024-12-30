@@ -96,7 +96,7 @@ class PackageNode(project: Project, packageFolder: VirtualFile, private val pack
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(icon)
-        presentation.addNonIndexedMark(myProject, virtualFile)
+        presentation.addAdditionalMark(myProject, virtualFile)
 
         // Note that this might also set the tooltip if we have too many projects underneath
         if (UnityExplorer.getInstance(myProject).showProjectNames) {
@@ -320,7 +320,7 @@ class BuiltinPackageNode(project: Project, private val packageEntity: UnityPacka
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.BuiltInPackage)
         if (SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
-            presentation.addNonIndexedMark(myProject, virtualFile)
+            presentation.addAdditionalMark(myProject, virtualFile)
         }
 
         val tooltip = getPackageTooltip(name, packageEntity)
