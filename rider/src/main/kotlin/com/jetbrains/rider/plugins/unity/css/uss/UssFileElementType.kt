@@ -6,7 +6,7 @@ import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.IStubFileElementType
 
-class UssFileElementType : IStubFileElementType<PsiFileStub<PsiFile>>("USS_FILE", UssLanguage) {
+internal class UssFileElementType : IStubFileElementType<PsiFileStub<PsiFile>>("USS_FILE", UssLanguage) {
     override fun getStubVersion(): Int {
         return super.getStubVersion() + CssFileElementType.BASE_VERSION
     }
