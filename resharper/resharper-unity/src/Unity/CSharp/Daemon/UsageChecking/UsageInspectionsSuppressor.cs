@@ -18,6 +18,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
@@ -46,11 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             new ClrTypeName("UnityEngine.UIElements.UxmlFactory`2"),
         };
 
-        public bool SuppressUsageInspectionsOnElement(IDeclaredElement element, out ImplicitUseKindFlags flags)
+        public ImplicitUseFlags SuppressUsageInspectionsOnElement(IDeclaredElement element)
         {
-            flags = ImplicitUseKindFlags.Default;
-
-            if (!element.IsFromUnityProject()) return false;
+            if (!element.IsFromUnityProject()) return ImplicitUseFlags.Empty;
 
             var solution = element.GetSolution();
             var unityApi = solution.GetComponent<UnityApi>();
@@ -61,21 +60,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                                      cls.IsDotsImplicitlyUsedType() ||
                                      IsUxmlFactory(cls) ||
                                      unityApi.IsOdinType(cls):
-                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                    return true;
+                    return new ImplicitUseFlags(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature);
+
                 case IStruct @struct when unityApi.IsUnityType(@struct) ||
                                      @struct.IsDotsImplicitlyUsedType() :
-                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                    return true;
+                    return new ImplicitUseFlags(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature);
+
                 case ITypeElement typeElement when unityApi.IsSerializableTypeDeclaration(typeElement).HasFlag(SerializedFieldStatus.SerializedField):
                     // TODO: We should only really mark it as in use if it's actually used somewhere
                     // That is, it should be used as a field in a Unity type, or another serializable type
-                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                    return true;
+                    return new ImplicitUseFlags(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature);
 
                 case ITypeElement typeElement when IsImplicitlyUsedInterfaceType(typeElement):
-                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                    return true;
+                    return new ImplicitUseFlags(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature);
 
                 case IMethod method:
                     var function = unityApi.GetUnityEventFunction(method, out var match);
@@ -83,13 +80,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     {
                         if (match == MethodSignatureMatch.ExactMatch)
                         {
-                            flags = HasOptionalParameter(function)
-                                ? ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature
-                                : ImplicitUseKindFlags.Access;
-                            return true;
+                            return HasOptionalParameter(function)
+                                ? new ImplicitUseFlags(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)
+                                : new ImplicitUseFlags(ImplicitUseKindFlags.Access);
                         }
 
-                        return false;
+                        return ImplicitUseFlags.Empty;
                     }
 
                     if (IsEventHandler(unityApi, method) ||
@@ -98,37 +94,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                         IsImplicitlyUsedInterfaceMethod(method) ||
                         IsImplicitlyUsedByInputActions(solution, method))
                     {
-                        flags = ImplicitUseKindFlags.Access;
-                        return true;
+                        return new ImplicitUseFlags(ImplicitUseKindFlags.Access);
                     }
                     break;
 
                 case IField field when unityApi.IsSerialisedField(field).HasFlag(SerializedFieldStatus.SerializedField):
-                    flags = ImplicitUseKindFlags.Assign;
-                    return true;
-                
+                    return new ImplicitUseFlags(ImplicitUseKindFlags.Assign);
+
                 case IField field when unityApi.IsOdinInspectorField(field):
-                    flags = ImplicitUseKindFlags.Assign;
-                    return true;
+                    return new ImplicitUseFlags(ImplicitUseKindFlags.Assign);
 
                 case IProperty property when IsEventHandler(unityApi, property.Setter) ||
                                              IsImplicitlyUsedInterfaceProperty(property) ||
                                              IsAnimationEvent(solution, property) ||
                                              unityApi.IsSerialisedAutoProperty(property, useSwea:true).HasFlag(SerializedFieldStatus.SerializedField):
-                    flags = ImplicitUseKindFlags.Assign;
-                    return true;
+                    return new ImplicitUseFlags(ImplicitUseKindFlags.Assign);
+
                 case IProperty property when unityApi.IsOdinInspectorProperty(property):
-                    flags = ImplicitUseKindFlags.Assign;
-                    return true;
-                
+                    return new ImplicitUseFlags(ImplicitUseKindFlags.Assign);
+
                 case IParameter parameter
                     when parameter.IsRefMember() && parameter.GetContainingType().IsDotsImplicitlyUsedType():
-                    flags = ImplicitUseKindFlags.Assign;
-                    return true;
+                    return new ImplicitUseFlags(ImplicitUseKindFlags.Assign);
             }
 
-            flags = ImplicitUseKindFlags.Default; // Value not used if we return false
-            return false;
+            return ImplicitUseFlags.Empty;
         }
 
         private static bool IsImplicitlyUsedByInputActions(ISolution solution, IMethod method)
