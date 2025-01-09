@@ -16,12 +16,14 @@ import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityPro
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+import java.util.concurrent.TimeUnit
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Dots")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDotsDebug/Project")
+@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
     @Test(description = "Check breakpoint for Unity DOTS code")
     @ChecklistItems(["Breakpoints/Breakpoint in DOTS"])
