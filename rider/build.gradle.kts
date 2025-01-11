@@ -372,24 +372,13 @@ tasks {
             logger.info("Building $buildFile ($buildConfiguration)")
 
             val dotNetCliPath = projectDir.parentFile.resolve("dotnet-sdk.cmd")
-            val verbosity = if (isAutomatedBuild) {
-                "normal"
-            } else {
-                when (project.gradle.startParameter.logLevel) {
-                    LogLevel.QUIET -> "quiet"
-                    LogLevel.LIFECYCLE -> "minimal"
-                    LogLevel.INFO -> "normal"
-                    LogLevel.DEBUG -> "detailed"
-                    else -> "normal"
-                }
-            }
             val buildArguments = listOf(
                 "build",
                 resharperHostPluginSolution.canonicalPath,
+                "-consoleLoggerParameters:ErrorsOnly",
                 "/p:Configuration=$buildConfiguration",
                 "/p:Version=${project.version}",
                 "/p:TreatWarningsAsErrors=$warningsAsErrors",
-                "/v:$verbosity",
                 "/bl:${resharperHostPluginSolution.name + ".binlog"}",
                 "/nologo"
             )
