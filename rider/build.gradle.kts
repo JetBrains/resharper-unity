@@ -221,6 +221,7 @@ tasks {
     }
 
     buildSearchableOptions {
+        jvmArgs("-Djava.security.manager=com.intellij.platform.core.nio.fs.CoreBootstrapSecurityManager")
         enabled = isReleaseBuild
     }
 
