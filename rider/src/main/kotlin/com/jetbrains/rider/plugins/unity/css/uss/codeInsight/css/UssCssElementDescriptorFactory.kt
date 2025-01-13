@@ -14,7 +14,7 @@ import java.lang.ref.Reference
 import java.lang.ref.SoftReference
 
 @Service(Service.Level.APP)
-class UssCssElementDescriptorFactory {
+internal class UssCssElementDescriptorFactory {
     companion object {
         fun getInstance(): UssCssElementDescriptorFactory = service()
     }
