@@ -1,9 +1,10 @@
 using System;
 using JetBrains.Diagnostics;
 using JetBrains.Rider.Unity.Editor.Profiler.Adapters;
+using JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation;
 using UnityEditor;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler
+namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotNavigation
 {
   internal class ProfilerWindowFacade : IProfilerWindowSelectionDataProvider
   {

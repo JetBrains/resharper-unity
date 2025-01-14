@@ -1,6 +1,6 @@
 using JetBrains.Diagnostics;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
+namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
 {
   internal class ProfilerDriverAdapter
   {

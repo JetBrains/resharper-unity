@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler
+namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotNavigation
 {
   public delegate void OnTimeSampleSelected(string sampleName, string callStack);
 

@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using UnityEditor;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
+namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
 {
   internal sealed class ProfilerDriverReflectionData : IReflectionData
   {

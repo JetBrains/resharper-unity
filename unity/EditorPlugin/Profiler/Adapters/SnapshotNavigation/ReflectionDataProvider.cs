@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Diagnostics;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
+namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
 {
   internal class ReflectionDataProvider
   {
@@ -29,7 +29,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
         {
           IsCompatibleWithCurrentUnityVersion = false;
           ourLogger.Verbose(
-            $"The {nameof(Adapters.ProfilerDriverReflectionData)} is not compatible with the current Unity version.");
+            $"The {nameof(SnapshotNavigation.ProfilerDriverReflectionData)} is not compatible with the current Unity version.");
           return;
         }
 
@@ -37,7 +37,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
         {
           IsCompatibleWithCurrentUnityVersion = false;
           ourLogger.Verbose(
-            $"The {nameof(Adapters.ProfilerWindowReflectionData)} is not compatible with the current Unity version.");
+            $"The {nameof(SnapshotNavigation.ProfilerWindowReflectionData)} is not compatible with the current Unity version.");
           return;
         }
 
@@ -45,7 +45,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
         {
           IsCompatibleWithCurrentUnityVersion = false;
           ourLogger.Verbose(
-            $"The {nameof(Adapters.CPUProfilerModuleReflectionData)} is not compatible with the current Unity version.");
+            $"The {nameof(SnapshotNavigation.CPUProfilerModuleReflectionData)} is not compatible with the current Unity version.");
           return;
         }
 
@@ -53,7 +53,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
         {
           IsCompatibleWithCurrentUnityVersion = false;
           ourLogger.Verbose(
-            $"The {nameof(Adapters.ProfilerFrameDataHierarchyViewReflectionData)} is not compatible with the current Unity version.");
+            $"The {nameof(SnapshotNavigation.ProfilerFrameDataHierarchyViewReflectionData)} is not compatible with the current Unity version.");
           return;
         }
 
@@ -61,7 +61,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
         {
           IsCompatibleWithCurrentUnityVersion = false;
           ourLogger.Verbose(
-            $"The {nameof(Adapters.ProfilerFrameDataTreeViewReflectionData)} is not compatible with the current Unity version.");
+            $"The {nameof(SnapshotNavigation.ProfilerFrameDataTreeViewReflectionData)} is not compatible with the current Unity version.");
           return;
         }
 
@@ -69,7 +69,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters
         {
           IsCompatibleWithCurrentUnityVersion = false;
           ourLogger.Verbose(
-            $"The {nameof(Adapters.TreeViewControllerReflectionData)} is not compatible with the current Unity version.");
+            $"The {nameof(SnapshotNavigation.TreeViewControllerReflectionData)} is not compatible with the current Unity version.");
           return;
         }
 
