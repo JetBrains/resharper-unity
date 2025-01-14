@@ -15,7 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages
 {
-    [ContextNavigationProvider(Instantiation.DemandAnyThreadUnsafe)]
+    [ContextNavigationProvider(Instantiation.DemandAnyThreadSafe)]
     public class GoToUnityUsagesProvider : UsagesContextSearchProviderBase<UnityUsagesContextSearch>,
         INavigateFromHereProvider
     {
