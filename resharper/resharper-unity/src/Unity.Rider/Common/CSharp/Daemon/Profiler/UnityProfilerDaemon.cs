@@ -1,0 +1,343 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Application.Parts;
+using JetBrains.Application.Settings;
+using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
+using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.CSharp;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Rider.Backend.Platform.Icons;
+using JetBrains.TextControl;
+using JetBrains.TextControl.CodeWithMe;
+using JetBrains.Util;
+using JetBrains.Util.DataStructures.Collections;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
+
+[DaemonStage(Instantiation.DemandAnyThreadSafe,
+    StagesBefore = [typeof(GlobalFileStructureCollectorStage)],
+    StagesAfter = [typeof(LanguageSpecificDaemonStage)]
+)]
+public class UnityProfilerDaemon(
+    IUnityProfilerSnapshotDataProvider snapshotDataProvider,
+    ISolution solution,
+    UnityProfilerInsightProvider codeInsightProvider,
+    IconHost myIconHost,
+    ILogger logger)
+    : CSharpDaemonStageBase
+{
+    protected override bool IsSupported(IPsiSourceFile sourceFile)
+    {
+        if (!solution.HasUnityReference())
+            return false;
+
+        var projectFile = sourceFile.ToProjectFile();
+        var project = projectFile?.GetProject();
+        if (project != null && !project.IsUnityProject() && !project.IsMiscFilesProject())
+            return false;
+
+        return sourceFile.IsLanguageSupported<CSharpLanguage>();
+    }
+
+    protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
+        DaemonProcessKind processKind, ICSharpFile file)
+    {
+        return new Process(file, solution, process, settings, snapshotDataProvider, codeInsightProvider, logger,
+            myIconHost);
+    }
+
+    private class Process(
+        ICSharpFile file,
+        ISolution solution,
+        IDaemonProcess process,
+        IContextBoundSettingsStore settingsStore,
+        IUnityProfilerSnapshotDataProvider snapshotDataProvider,
+        UnityProfilerInsightProvider codeInsightProvider,
+        ILogger logger,
+        IconHost myIconHost)
+        : IDaemonStageProcess
+    {
+        private static readonly HighlightingString ourMethodCallSingle =
+            new(Strings.UnityProfilerSnapshot_Single_Method_Highlighting_display_name,
+                Strings.UnityProfilerSnapshot_Single_Method_Highlighting_tooltip,
+                Strings.UnityProfilerSnapshot_Single_Method_Highlighting_moreinfo);
+
+        private static readonly HighlightingString ourMethodCallMultiple =
+            new(Strings.UnityProfilerSnapshot_Multiple_Method_Highlighting_display_name,
+                Strings.UnityProfilerSnapshot_Multiple_Method_Highlighting_tooltip,
+                Strings.UnityProfilerSnapshot_Multiple_Method_Highlighting_moreinfo);
+
+        private static readonly HighlightingString ourClassSingle =
+            new(Strings.UnityProfilerSnapshot_Single_Class_Highlighting_display_name,
+                Strings.UnityProfilerSnapshot_Single_Class_Highlighting_tooltip,
+                Strings.UnityProfilerSnapshot_Single_Class_Highlighting_moreinfo);
+
+        private static readonly HighlightingString ourClassMultiple =
+            new(Strings.UnityProfilerSnapshot_Multiple_Class_Highlighting_display_name,
+                Strings.UnityProfilerSnapshot_Multiple_Class_Highlighting_tooltip,
+                Strings.UnityProfilerSnapshot_Multiple_Class_Highlighting_moreinfo);
+
+        private static readonly HighlightingString ourInternalCall =
+            new(Strings.UnityProfilerSnapshot_Internal_Call_Highlighting_display_name,
+                Strings.UnityProfilerSnapshot_Internal_Call_Highlighting_tooltip,
+                Strings.UnityProfilerSnapshot_Internal_Call_Highlighting_moreinfo);
+
+        private readonly struct HighlightingString(string displayName, string tooltip, string moreText)
+        {
+            public readonly string DisplayName = displayName;
+            public readonly string Tooltip = tooltip;
+            public readonly string MoreText = moreText;
+        }
+
+        public void Execute(Action<DaemonStageResult> committer)
+        {
+            var textControl = solution.GetComponent<ITextControlManager>().LastFocusedTextControlPerClient
+                .ForCurrentClient();
+
+            var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, file, settingsStore);
+            using var samples = PooledList<PooledSample>.GetInstance();
+            using var childrenSamples = PooledList<PooledSample>.GetInstance();
+
+            foreach (var classLikeDeclaration in file.Descendants<IClassLikeDeclaration>())
+            {
+                IList<PooledSample> readOnlyList = samples;
+                readOnlyList.Clear();
+
+                var classCLRName = GetCLRName(classLikeDeclaration);
+                snapshotDataProvider.TryGetTypeSamples(classCLRName, ref readOnlyList);
+                if (readOnlyList.Count == 0)
+                    continue;
+
+                CreateHighlightingForDeclaration(samples, textControl, consumer, classLikeDeclaration);
+
+                foreach (var descendant in classLikeDeclaration.Descendants<ICSharpDeclaration>())
+                {
+                    samples.Clear();
+                    switch (descendant)
+                    {
+                        case IPropertyDeclaration propertyDeclaration:
+                        {
+                            foreach (var accessorDeclaration in propertyDeclaration.AccessorDeclarationsEnumerable)
+                            {
+                                using var accessorSamples = PooledList<PooledSample>.GetInstance();
+                                IList<PooledSample> accessorListSamples = accessorSamples;
+                                var clrName = GetCLRName(accessorDeclaration);
+                                snapshotDataProvider.TryGetSamplesByQualifiedName(clrName, ref accessorListSamples);
+
+                                if (accessorListSamples.Count == 0)
+                                    continue;
+
+                                CreateHighlightingForDeclaration(accessorSamples, textControl, consumer,
+                                    accessorDeclaration);
+                                ProcessInternalExpressions(childrenSamples, accessorListSamples, accessorDeclaration,
+                                    consumer);
+
+                                //collect samples from getters and setters for the property
+                                samples.AddRange(accessorListSamples);
+                            }
+
+                            if (readOnlyList.Count == 0)
+                                continue;
+
+                            CreateHighlightingForDeclaration(samples, textControl, consumer, descendant);
+                            continue;
+                        }
+                        case IMethodDeclaration:
+                        {
+                            var clrName = GetCLRName(descendant);
+                            if (!snapshotDataProvider.TryGetSamplesByQualifiedName(clrName, ref readOnlyList))
+                                continue;
+                            if (readOnlyList.Count == 0)
+                                continue;
+
+                            CreateHighlightingForDeclaration(samples, textControl, consumer, descendant);
+                            ProcessInternalExpressions(childrenSamples, readOnlyList, descendant, consumer);
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            committer(new DaemonStageResult(consumer.CollectHighlightings()));
+        }
+
+        private void ProcessInternalExpressions(PooledList<PooledSample> pooledChildrenSamples,
+            IList<PooledSample> parentSamplesList, ICSharpDeclaration declaration,
+            FilteringHighlightingConsumer consumer)
+        {
+            pooledChildrenSamples.Clear();
+            foreach (var sample in parentSamplesList)
+                pooledChildrenSamples.AddRange(sample.Children);
+
+            if (pooledChildrenSamples.Count == 0)
+                return;
+
+            //If this sample has children - go into the declaration and find invocations
+            foreach (var sharpExpression in declaration.Descendants<ICSharpExpression>())
+            {
+                //process methods calls
+                if (sharpExpression is IInvocationExpression invocationExpression)
+                {
+                    if (invocationExpression.IsProfilerBeginSampleMethod())
+                    {
+                        var beginSampleArgument = invocationExpression.Arguments.FirstOrDefault();
+                        var name = beginSampleArgument?.Value?.GetText()?.Trim('"');
+                        ExtractSamplesAndAddHighlighting(pooledChildrenSamples, sharpExpression, declaration,
+                            codeInsightProvider, consumer, name ?? string.Empty, ourInternalCall);
+                        continue;
+                    }
+
+                    var (declaredElement, substitution, resolveErrorType) =
+                        invocationExpression.InvocationExpressionReference.Resolve();
+
+                    if (declaredElement != null && resolveErrorType == ResolveErrorType.OK)
+                    {
+                        ExtractHighlightingInformation(pooledChildrenSamples, declaredElement, sharpExpression,
+                            declaration,
+                            codeInsightProvider, consumer);
+                    }
+
+                    continue;
+                }
+
+                //process property calls
+                if (sharpExpression is IReferenceExpression referenceExpression)
+                {
+                    var (declaredElement, substitution) = referenceExpression.Reference.Resolve();
+                    if (declaredElement is IProperty property)
+                    {
+                        ExtractHighlightingInformation(pooledChildrenSamples, property.Getter, sharpExpression,
+                            declaration, codeInsightProvider, consumer);
+                        ExtractHighlightingInformation(pooledChildrenSamples, property.Setter, sharpExpression,
+                            declaration, codeInsightProvider, consumer);
+                    }
+                }
+            }
+        }
+
+        private static string GetCLRName(ICSharpDeclaration declaration)
+        {
+            if (declaration is IClassLikeDeclaration classLikeDeclaration)
+                return classLikeDeclaration.CLRName;
+
+            var cSharpTypeDeclaration = declaration.GetContainingTypeDeclaration()?.CLRName;
+            var declarationDeclaredName = declaration.DeclaredName;
+            var clrName = StringUtil.Combine(cSharpTypeDeclaration, declarationDeclaredName);
+            return clrName;
+        }
+
+        private void CreateHighlightingForDeclaration(IReadOnlyList<PooledSample> samples, ITextControl textControl,
+            FilteringHighlightingConsumer consumer, ICSharpDeclaration declaration)
+        {
+            var info = declaration is IClassLikeDeclaration
+                ? CalculateDeclarationText(samples, ourClassSingle, ourClassMultiple)
+                : CalculateDeclarationText(samples, ourMethodCallSingle, ourMethodCallMultiple);
+
+            var bulbMenuItems = new List<BulbMenuItem>();
+            using var pooledHashSet = PooledHashSet<PooledSample>.GetInstance();
+
+            foreach (var s in samples)
+            {
+                if (s.Parent == null)
+                    continue;
+                pooledHashSet.Add(s.Parent);
+            }
+
+            foreach (var sample in pooledHashSet)
+            {
+                var bulb = new ShowProfilerCallsBulbAction(sample, logger);
+                var bulbMenuItem =
+                    new IntentionAction(bulb, null, BulbMenuAnchors.FirstClassContextItems)
+                        .ToBulbMenuItem(solution, textControl);
+
+                bulbMenuItems.Add(bulbMenuItem);
+            }
+
+            codeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement,
+                info.DisplayName,
+                info.Tooltip,
+                info.MoreText,
+                null, bulbMenuItems, new());
+        }
+
+        private readonly struct FunctionDeclarationSnapshotInfo(string displayName, string tooltip, string moreText)
+        {
+            public readonly string DisplayName = displayName;
+            public readonly string Tooltip = tooltip;
+            public readonly string MoreText = moreText;
+        }
+
+        private static FunctionDeclarationSnapshotInfo CalculateDeclarationText(IReadOnlyList<PooledSample> samples,
+            HighlightingString single, HighlightingString multiple)
+        {
+            var totalDuration = samples.Sum(s => s.Duration);
+            var totalPercentage = samples.Sum(s => s.FramePercentage);
+            if (samples.Count == 1)
+            {
+                return new FunctionDeclarationSnapshotInfo(
+                    string.Format(single.DisplayName, totalDuration, totalPercentage),
+                    string.Format(single.Tooltip, totalDuration, totalPercentage),
+                    string.Format(single.MoreText, totalDuration, totalPercentage));
+            }
+
+
+            var min = samples.Min(s => s.Duration);
+            var max = samples.Max(s => s.Duration);
+            var avg = samples.Average(s => s.Duration);
+            return new(
+                string.Format(multiple.DisplayName, totalDuration, totalPercentage, samples.Count),
+                string.Format(multiple.Tooltip, totalDuration, totalPercentage, min, max, avg, samples.Count),
+                string.Format(multiple.MoreText, totalDuration, totalPercentage, min, max, avg, samples.Count)
+            );
+        }
+
+        private void ExtractHighlightingInformation(List<PooledSample> children,
+            IDeclaredElement declaredElement, ICSharpExpression sharpExpression, ICSharpDeclaration declaration,
+            UnityProfilerInsightProvider insightProvider, FilteringHighlightingConsumer consumer)
+        {
+            if (declaredElement is not IClrDeclaredElement clrDeclaredElement)
+                return;
+            var qualifiedName =
+                $"{clrDeclaredElement.GetContainingType()?.GetClrName()}.{clrDeclaredElement.ShortName}";
+
+            ExtractSamplesAndAddHighlighting(children, sharpExpression, declaration, insightProvider, consumer,
+                qualifiedName, ourInternalCall);
+        }
+
+        private static void ExtractSamplesAndAddHighlighting(List<PooledSample> children,
+            ICSharpExpression sharpExpression,
+            ICSharpDeclaration declaration, UnityProfilerInsightProvider insightProvider,
+            FilteringHighlightingConsumer consumer, string qualifiedName, HighlightingString highlightingString)
+        {
+            var samples = children.Where(ch => ch.QualifiedName.Equals(qualifiedName)).ToList();
+            if (samples.Count == 0)
+                return;
+            var durationSum = samples.Sum(s => s.Duration);
+            var percentageSum = samples.Sum(s => s.FramePercentage);
+
+            var displayName = string.Format(highlightingString.DisplayName, durationSum, percentageSum, samples.Count);
+            var tooltip = string.Format(highlightingString.Tooltip, qualifiedName, durationSum, percentageSum,
+                samples.Count);
+            var moreText = string.Format(highlightingString.MoreText, qualifiedName, durationSum, percentageSum,
+                samples.Count);
+            insightProvider.AddHighlighting(consumer, sharpExpression.GetDocumentRange(), declaration.DeclaredElement,
+                displayName, tooltip, moreText, null
+                , EmptyList<BulbMenuItem>.Instance, []);
+        }
+
+        public IDaemonProcess DaemonProcess { get; } = process;
+    }
+}

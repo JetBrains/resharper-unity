@@ -3,6 +3,7 @@ using JetBrains.Application.Components;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.PopupLayout;
+using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features.Services;
 using JetBrains.ReSharper.Daemon.CodeInsights;
@@ -55,7 +56,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             IDeclaredElement declaredElement, string displayName, string tooltip, string moreText, IconModel iconModel,
             IEnumerable<BulbMenuItem> items, List<CodeVisionEntryExtraActionModel> extraActions)
         {
-            consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.GetNameDocumentRange(),
+            var documentRange = element.GetNameDocumentRange();
+            AddHighlighting(consumer, documentRange, declaredElement, displayName, tooltip, moreText, iconModel, items, extraActions);
+        }
+
+        public virtual void AddHighlighting(IHighlightingConsumer consumer,
+            DocumentRange documentRange, IDeclaredElement declaredElement, string displayName,
+            string tooltip, string moreText, IconModel iconModel, IEnumerable<BulbMenuItem> items,
+            List<CodeVisionEntryExtraActionModel> extraActions)
+        {
+            consumer.AddHighlighting(new UnityCodeInsightsHighlighting(documentRange,
                 displayName, tooltip, moreText, this, declaredElement, iconModel, items,
                 extraActions));
         }

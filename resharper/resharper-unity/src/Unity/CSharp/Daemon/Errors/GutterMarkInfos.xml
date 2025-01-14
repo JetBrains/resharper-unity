@@ -40,4 +40,12 @@
     </Message>
     <Range>Declaration.GetNameDocumentRange()</Range>
   </Info>
+  <Info name="UnityProfilerGutterMark" staticGroup="UnityGutterMarks">
+    <Parameter type="IDeclaration" name="declaration" />
+    <Parameter type="string" name="text" />
+    <Message value="{0}">
+      <Argument>Text</Argument>
+    </Message>
+    <Range>Declaration.GetNameDocumentRange()</Range>
+  </Info>
 </Errors>
