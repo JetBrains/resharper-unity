@@ -149,6 +149,74 @@
     <data name="UnityImplicitUsage_Text" xml:space="preserve">
         <value>Unity implicit usage</value>
     </data>
+    
+    <!-- Unit profiler -->
+    <data name="UnityProfilerSnapshot_Text" xml:space="preserve">
+        <value>Unity profiler snapshot</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Fetching_Profiler_snapshot_header" xml:space="preserve">
+        <value>Fetching Unity profiler snapshot</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Update_Profiler_Snapshot_Cache_header" xml:space="preserve">
+        <value>Updating local profiler snapshot cache</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Fetching_Profiler_snapshot_description" xml:space="preserve">
+        <value>Frame index:{0}, {1}</value>
+        <comment>parameter 1 - stands for the thread name</comment>
+    </data>
+    <!-- Method declarations -->
+    <data name="UnityProfilerSnapshot_Single_Method_Highlighting_display_name" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1})</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Single_Method_Highlighting_tooltip" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1} of frame) called once in this frame</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Single_Method_Highlighting_moreinfo" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1} of frame) called once in this frame</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Multiple_Method_Highlighting_display_name" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1}) x{2}</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Multiple_Method_Highlighting_tooltip" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] called {5} times in this frame</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Multiple_Method_Highlighting_moreinfo" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] called {5} times in this frame</value>
+    </data>
+    <!-- class declaration -->
+    <data name="UnityProfilerSnapshot_Single_Class_Highlighting_display_name" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1})</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Single_Class_Highlighting_tooltip" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1} of frame) used once in this frame</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Single_Class_Highlighting_moreinfo" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1} of frame) used once in this frame</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Multiple_Class_Highlighting_display_name" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1}) x{2}</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Multiple_Class_Highlighting_tooltip" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] used {5} times in this frame</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Multiple_Class_Highlighting_moreinfo" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] used {5} times in this frame</value>
+    </data>
+    <!-- Internal calls -->
+    <data name="UnityProfilerSnapshot_Internal_Call_Highlighting_display_name" xml:space="preserve">
+        <value>{0:F2}ms ({1:P1}) x{2}</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Internal_Call_Highlighting_tooltip" xml:space="preserve">
+        <value>{0} {1:F2}ms ({2:P1}) called {3} times in this function</value>
+    </data>
+    <data name="UnityProfilerSnapshot_Internal_Call_Highlighting_moreinfo" xml:space="preserve">
+        <value>{0} {1:F2}ms ({2:P1}) called {3} times in this function</value>
+    </data>
+    <!-- Parent calls -->
+    <data name="UnityProfilerSnapshot_Parent_Sample_Information" xml:space="preserve">
+        <value>{0} {1:F2}ms ({2:P1})</value>
+    </data>
+    
     <data name="UnityIsNotRunning_Text" xml:space="preserve">
         <value>Unity is not running</value>
     </data>

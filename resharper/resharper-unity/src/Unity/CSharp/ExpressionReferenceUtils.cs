@@ -72,6 +72,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
                    && declaredType.GetClrName().Equals(KnownTypes.TransformUsageFlags);
         }
         
+        public static bool IsProfilerBeginSampleMethod(this IInvocationExpression invocationExpression)
+        {
+            return IsSpecificMethod(invocationExpression, KnownTypes.Profiler, "BeginSample");
+        }
+        
         public static bool IsCompareTagMethod(this IInvocationExpression expr)
         {
             return IsSpecificMethod(expr, KnownTypes.Component, "CompareTag")
