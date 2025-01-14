@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.Text;
@@ -29,6 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.CodeCompleti
             {
                 return false;
             }
+
+            if (!context.BasicContext.Solution.GetComponent<UnitySolutionTracker>().IsUnityProject.Value) return false;
 
             var literal = context.UnterminatedContext.TreeNode?.GetContainingNode<IJsonNewLiteralExpression>();
             return literal?.IsDefineConstraintsArrayEntry() == true;

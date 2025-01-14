@@ -32,7 +32,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Services.Navigation
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
     public class UnityEditorFindUsageResultCreator
     {
         private readonly Lifetime myLifetime;

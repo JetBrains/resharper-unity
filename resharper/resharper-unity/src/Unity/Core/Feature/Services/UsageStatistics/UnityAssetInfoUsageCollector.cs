@@ -18,7 +18,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityAssetInfoCollector : SolutionUsagesCollector
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;

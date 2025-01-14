@@ -8,6 +8,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
+using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
@@ -24,7 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
     {
         private readonly ISolution mySolution;
         private readonly ILogger myLogger;
-        private readonly bool myIsInTests;
 
         // This will only ever be null when running tests. The value does not change for the lifetime of the solution.
         // Prefer using this field over calling GetFrontendBackendModel(), as that method will throw in tests
@@ -33,14 +33,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         public FrontendBackendHost(Lifetime lifetime, ISolution solution, IShellLocks shellLocks, ILogger logger,
                                    PackageManager packageManager,
                                    DeferredCacheController deferredCacheController,
-                                   UnityTechnologyDescriptionCollector technologyDescriptionCollector,
-                                   bool isInTests = false)
+                                   UnityTechnologyDescriptionCollector technologyDescriptionCollector)
         {
             mySolution = solution;
             myLogger = logger;
-            myIsInTests = isInTests;
-            if (myIsInTests)
-                return;
 
             // This will throw in tests, as GetProtocolSolution will return null
             var model = solution.GetProtocolSolution().GetFrontendBackendModel();
@@ -49,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             Model = model;
         }
 
-        public bool IsAvailable => !myIsInTests && Model != null;
+        public bool IsAvailable => Model != null;
 
         // Convenience method to fire and forget an action on the model (e.g. set a value, fire a signal, etc). Fire and
         // forget means it's safe to use during testing, when there won't be a frontend model available, and Model will
@@ -58,9 +54,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         // Model directly in this case, check for null and do whatever is appropriate for the callsite.
         public void Do(Action<FrontendBackendModel> action)
         {
-            if (myIsInTests)
-                return;
-
             action(Model);
         }
 
@@ -74,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             AdviseTechnologies(lifetime, frontendBackendModel, technologyDescriptionCollector);
             AdvisePackages(lifetime, frontendBackendModel, packageManager);
             AdviseIntegrationTestHelpers(lifetime, frontendBackendModel, deferredCacheController, shellLocks);
-            frontendBackendModel.GetScriptingBackend.Set((_, _) => ProjectSettingsAsset.GetScriptingBackend(mySolution, myLogger));
+            frontendBackendModel.GetScriptingBackend.SetAsync((_, _) => ProjectSettingsAsset.GetScriptingBackend(mySolution, myLogger));
         }
 
         private void AdviseTechnologies(Lifetime lifetime, FrontendBackendModel frontendBackendModel,

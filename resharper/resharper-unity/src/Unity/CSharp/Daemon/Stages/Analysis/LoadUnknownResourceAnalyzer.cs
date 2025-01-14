@@ -19,8 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     {
         private readonly ResourceLoadCache myResourceLoadCache;
 
-        public LoadUnknownResourceAnalyzer(UnityApi unityApi,
-            ResourceLoadCache resourceLoadCache)
+        public LoadUnknownResourceAnalyzer(UnityApi unityApi, ResourceLoadCache resourceLoadCache)
             : base(unityApi)
         {
             myResourceLoadCache = resourceLoadCache;

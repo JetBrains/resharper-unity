@@ -26,7 +26,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityProjectInformationUsageCollector : SolutionUsagesCollector
     {
         private readonly ISolution mySolution;

@@ -3,6 +3,7 @@ using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
 using JetBrains.ReSharper.Features.Navigation.Features.FindUsages;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
@@ -22,6 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Navigation.FindUsages
 
         public override string GetNotFoundMessage(SearchRequest request)
         {
+            var unityTracker = mySolutionsManager.Solution?.GetComponent<UnitySolutionTracker>();
+            if (unityTracker == null || !unityTracker.IsUnityProject.Value) return base.GetNotFoundMessage(request);
+            
             var i = 0;
             IDeclaredElement declaredElement = null;
             foreach (var searchTarget in request.SearchTargets)

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Application.changes;
 using JetBrains.Application.Parts;
-using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.DocumentManagers;
@@ -16,6 +15,7 @@ using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.RdBackend.Common.Features.TextControls;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts;
@@ -33,8 +33,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderVariants;
 
-[SolutionComponent(InstantiationEx.LegacyDefault)]
-public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider
+[SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider, IUnityLazyComponent
 {
     private readonly ISolution mySolution;
     private readonly CppExternalModule myCppExternalModule;
@@ -55,7 +55,6 @@ public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider
         ISolution solution,
         ShaderProgramCache shaderProgramCache,
         IPreferredRootFileProvider preferredRootFileProvider,
-        ISettingsStore settingsStore,
         ChangeManager changeManager,
         ILogger logger,
         IDocumentHost documentHost,
@@ -78,19 +77,22 @@ public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider
         myLogger = logger;
         myFrontendBackendHost = frontendBackendHost;
 
-        myFrontendBackendHost?.Do(model =>
+        solution.Locks.ExecuteOrQueueEx(lifetime, "ShaderVariantsHost", () =>
         {
-            model.CreateShaderVariantInteraction.SetAsync(HandleCreateShaderVariantInteraction);
-            model.ShaderVariantExtensions.Advise(lifetime, mapEvent => OnShaderVariantExtensionsModified(lifetime, mapEvent));
-            myShaderVariantsManager.AllEnabledKeywords.Advise(lifetime, OnEnabledKeywordsChange);
+            myFrontendBackendHost?.Do(model =>
+            {
+                model.CreateShaderVariantInteraction.SetAsync(HandleCreateShaderVariantInteraction);
+                model.ShaderVariantExtensions.Advise(lifetime, mapEvent => OnShaderVariantExtensionsModified(lifetime, mapEvent));
+                myShaderVariantsManager.AllEnabledKeywords.Advise(lifetime, OnEnabledKeywordsChange);
             
-            myTextControlHost.ViewHostTextControls(lifetime, OnTextControlAdded);
+                myTextControlHost.ViewHostTextControls(lifetime, OnTextControlAdded);
             
-            changeManager.RegisterChangeProvider(lifetime, this);
-            changeManager.AddDependency(lifetime, this, psiModules);         // aware of UnityShadersModule load event 
-            changeManager.AddDependency(lifetime, this, shaderContextCache); // aware of shader context changes 
+                changeManager.RegisterChangeProvider(lifetime, this);
+                changeManager.AddDependency(lifetime, this, psiModules);         // aware of UnityShadersModule load event 
+                changeManager.AddDependency(lifetime, this, shaderContextCache); // aware of shader context changes 
 
-            myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => RevalidateAll());
+                myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => RevalidateAll());
+            });
         });
     }
 

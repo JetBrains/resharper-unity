@@ -1,12 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
+using JetBrains.Collections.Viewable;
 using JetBrains.DocumentModel;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
@@ -20,21 +24,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
     // Note that problem analysers for NonUserCode will still show Severity.INFO
     [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe,
         typeof(IJsonNewLiteralExpression),
-        HighlightingTypes = new[] { typeof(UnmetDefineConstraintInfo) })]
+        HighlightingTypes = [typeof(UnmetDefineConstraintInfo)])]
     public class DefineConstraintsInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
-        private readonly PreProcessingDirectiveCache myPreProcessingDirectiveCache;
-        private readonly UnityExternalFilesPsiModule myExternalFilesPsiModule;
+        private PreProcessingDirectiveCache? myPreProcessingDirectiveCache;
+        private UnityExternalFilesPsiModule? myExternalFilesPsiModule;
 
-        public DefineConstraintsInfoAnalyzer(PreProcessingDirectiveCache preProcessingDirectiveCache,
-                                             UnityExternalFilesModuleFactory externalFilesPsiModuleFactory)
+        public DefineConstraintsInfoAnalyzer(Lifetime lifetime,
+            ILazy<PreProcessingDirectiveCache> preProcessingDirectiveCache,
+            ILazy<UnityExternalFilesModuleFactory> externalFilesPsiModuleFactory,
+            UnitySolutionTracker solutionTracker)
         {
-            myPreProcessingDirectiveCache = preProcessingDirectiveCache;
-            myExternalFilesPsiModule = externalFilesPsiModuleFactory.PsiModule;
+            solutionTracker.IsUnityProject.AdviseUntil(lifetime, res =>
+            {
+                if (!res) return false;
+                myPreProcessingDirectiveCache = preProcessingDirectiveCache.GetValueAsync(lifetime).Result;
+                myExternalFilesPsiModule = externalFilesPsiModuleFactory.Value.PsiModule;
+                return true;
+            });
         }
 
-        public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) =>
-            base.ShouldRun(file, data) && IsProjectFileOrKnownExternalFile(data.SourceFile, myExternalFilesPsiModule);
+        public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
+        {
+            if (!base.ShouldRun(file, data)) return false;
+            return myExternalFilesPsiModule != null && IsProjectFileOrKnownExternalFile(data.SourceFile, myExternalFilesPsiModule);
+        }
 
         protected override void Run(IJsonNewLiteralExpression element,
                                     ElementProblemAnalyzerData data,
@@ -92,6 +106,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 
         private ICollection<PreProcessingDirective> GetPreProcessingDirectives(IJsonNewFile file)
         {
+            if (myPreProcessingDirectiveCache == null) return EmptyList<PreProcessingDirective>.Instance;
+            
             // Get the defines for the currently edited file. The file might belong to a project, so we could get the
             // actual defines for the project, but that would ignore any changes made to the versionDefines section of
             // the current .asmdef. We also need to use the name from the current .asmdef, as it is the key to the cache

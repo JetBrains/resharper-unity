@@ -10,6 +10,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Resources.Shell;
@@ -21,8 +22,8 @@ using FrontendOpenArgs = JetBrains.Rider.Model.Unity.FrontendBackend.RdOpenFileA
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
-    public class PassthroughHost
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
+    public class PassthroughHost : IUnityLazyComponent
     {
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
@@ -38,35 +39,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             myFrontendBackendHost = frontendBackendHost;
             myLogger = logger;
 
-            if (!frontendBackendHost.IsAvailable)
-                return;
+            if (!frontendBackendHost.IsAvailable) return;
+            var model = frontendBackendHost.Model;
+            if (model == null) return; // only tests
 
-            unitySolutionTracker.IsUnityProject.View(lifetime, (unityProjectLifetime , args) =>
+            unitySolutionTracker.IsUnityProject.AdviseUntil(lifetime, args =>
             {
-                var model = frontendBackendHost.Model;
-                if (args && model != null)
+                if (!args) return false;
+
+                AdviseFrontendToUnityModel(lifetime, model);
+
+                // Advise the backend/Unity model as high priority so we get called back before other subscribers.
+                // This allows us to populate the protocol on reconnection before other subscribes start to advise
+                using (Signal.PriorityAdviseCookie.Create())
                 {
-                    AdviseFrontendToUnityModel(unityProjectLifetime, model);
-
-                    // Advise the backend/Unity model as high priority so we get called back before other subscribers.
-                    // This allows us to populate the protocol on reconnection before other subscribes start to advise
-                    using (Signal.PriorityAdviseCookie.Create())
-                    {
-                        // TODO: ReactiveEx.ViewNotNull isn't NRT ready
-                        backendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(unityProjectLifetime,
-                            (l, backendUnityModel) =>
-                            {
-                                Assertion.AssertNotNull(backendUnityModel);
-                                AdviseUnityToFrontendModel(l, backendUnityModel);
-                            });
-                    }
-
-                    backendUnityHost.BackendUnityModel.Advise(lifetime, backendUnityModel =>
-                    {
-                        // https://github.com/JetBrains/resharper-unity/pull/2023
-                        if (backendUnityModel == null) frontendBackendHost.Model?.PlayControlsInitialized.SetValue(false);
-                    });
+                    // TODO: ReactiveEx.ViewNotNull isn't NRT ready
+                    backendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(lifetime,
+                        (l, backendUnityModel) =>
+                        {
+                            Assertion.AssertNotNull(backendUnityModel);
+                            AdviseUnityToFrontendModel(l, backendUnityModel);
+                        });
                 }
+
+                backendUnityHost.BackendUnityModel.Advise(lifetime, backendUnityModel =>
+                {
+                    // https://github.com/JetBrains/resharper-unity/pull/2023
+                    if (backendUnityModel == null) frontendBackendHost.Model?.PlayControlsInitialized.SetValue(false);
+                });
+                
+                return true;
             });
         }
 

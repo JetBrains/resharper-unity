@@ -6,12 +6,14 @@ using JetBrains.Application.CommandProcessing;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.ActionSystem.Text;
+using JetBrains.Collections.Viewable;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Options;
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
 using JetBrains.ReSharper.Feature.Services.Util;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services.TypingAssists;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
@@ -31,7 +33,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.TypingAssist
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadUnsafe)]
     public class ShaderLabTypingAssist : TypingAssistForCLikeSyntax<ShaderLabLanguage>, ITypingHandler
     {
         private static readonly Pair<TokenNodeType, TokenNodeType>[] ourBracketPairs = {
@@ -45,16 +47,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
         
         private readonly ISolution mySolution;
         private readonly InjectedHlslDummyFormatter myInjectedHlslDummyFormatter;
-        
+
         public ShaderLabTypingAssist(
             Lifetime lifetime,
             TypingAssistDependencies dependencies,
-            InjectedHlslDummyFormatter injectedHlslDummyFormatter)
+            InjectedHlslDummyFormatter injectedHlslDummyFormatter,
+            UnitySolutionTracker unitySolutionTracker)
             : base(ShaderLabSyntax.CLike, dependencies)
         {
             mySolution = dependencies.Solution;
             myInjectedHlslDummyFormatter = injectedHlslDummyFormatter;
 
+            unitySolutionTracker.IsUnityProjectFolder.AdviseUntil(lifetime, res =>
+            {
+                if (res)
+                {
+                    RegisterTypingAssistHandlers(lifetime, dependencies);
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        private void RegisterTypingAssistHandlers(Lifetime lifetime, TypingAssistDependencies dependencies)
+        {
             var typingAssistManager = dependencies.TypingAssistManager;
             typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.Enter, this, HandleEnterAction, IsActionHandlerAvailable);
             typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.Backspace, this, HandleBackspaceAction, IsActionHandlerAvailable);

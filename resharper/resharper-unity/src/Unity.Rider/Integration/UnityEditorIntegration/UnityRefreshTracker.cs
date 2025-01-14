@@ -14,6 +14,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.ProjectsHost.SolutionHost.Progress;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Feature.Services.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
@@ -28,7 +29,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityRefresher
     {
         private readonly IShellLocks myLocks;
@@ -211,8 +212,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         }
     }
 
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
-    public class UnityRefreshTracker
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    public class UnityRefreshTracker : IUnityLazyComponent
     {
         private readonly ILogger myLogger;
         private GroupingEvent myGroupingEvent;
@@ -227,19 +228,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             if (!solution.HasProtocolSolution())
                 return;
 
-            unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
+            solution.Locks.ExecuteOrQueueEx(lifetime, "UnityRefreshTracker", () =>
             {
-                if (!args) return;
+                unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
+                {
+                    if (!args) return;
 
-                // Rgc.Guarded - beware RIDER-15577
-                myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherGroupingEvent",
-                    TimeSpan.FromMilliseconds(500),
-                    Rgc.Guarded, () =>
-                    {
-                        refresher.StartRefresh(RefreshType.Normal);
-                    });
+                    // Rgc.Guarded - beware RIDER-15577
+                    myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherGroupingEvent",
+                        TimeSpan.FromMilliseconds(500),
+                        Rgc.Guarded, () =>
+                        {
+                            refresher.StartRefresh(RefreshType.Normal);
+                        });
 
-                host.Do(rd => rd.Refresh.Advise(lifetime, force =>
+                    host.Do(rd => rd.Refresh.Advise(lifetime, force =>
                     {
                         if (force)
                             refresher.StartRefresh(RefreshType.ForceRequestScriptReload);
@@ -247,7 +250,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                             myGroupingEvent.FireIncoming();
                     }));
 
-                fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
+                    fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
+                });
             });
         }
 

@@ -19,7 +19,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityShortcutCache : SimpleICache<CountingSet<string>>
     {
         private readonly CountingSet<string> myLocalCache = new();

@@ -68,7 +68,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
                                                  UnityAssetInfoCollector usageStatistics,
-                                                 AssetIndexingSupport assetIndexingSupport, UnityExternalProjectFileTypes externalProjectFileTypes)
+                                                 AssetIndexingSupport assetIndexingSupport, 
+                                                 UnityExternalProjectFileTypes externalProjectFileTypes)
         {
             myLifetime = lifetime;
             myLogger = logger;

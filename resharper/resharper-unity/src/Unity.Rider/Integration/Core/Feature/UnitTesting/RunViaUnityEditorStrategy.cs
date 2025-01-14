@@ -31,7 +31,6 @@ using JetBrains.Rider.Model.Notifications;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
-using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using JetBrains.Util.Extension;
 using JetBrains.Util.Threading;
 using IUnitTestLaunch = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IUnitTestLaunch;
@@ -41,7 +40,7 @@ using UnitTestLaunch = JetBrains.Rider.Model.Unity.BackendUnity.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class RunViaUnityEditorStrategy : IExternalRunnerUnitTestRunStrategy
     {
         private static readonly Key<CancellationTokenSource> ourCancellationTokenSourceKey =

@@ -15,7 +15,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [PsiComponent(InstantiationEx.LegacyDefault)]
+    [PsiComponent(Instantiation.DemandAnyThreadSafe)]
     internal class ResourceLoadCache : SimpleICache<ResourcesCacheItem>
     {
         private readonly object myCachedResourcesLock = new();

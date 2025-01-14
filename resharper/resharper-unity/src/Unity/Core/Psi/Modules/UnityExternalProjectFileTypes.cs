@@ -10,7 +10,7 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
-    [ShellComponent(InstantiationEx.LegacyDefault)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityExternalProjectFileTypes
     {
         public static readonly Key<ExternalModuleFileFlags> ExternalModuleFileFlagsKey = new("ExternalModuleFileFlags");

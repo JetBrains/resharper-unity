@@ -26,7 +26,7 @@ using Newtonsoft.Json;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class BackendUnityProtocol
     {
         private readonly Lifetime myLifetime;
@@ -67,15 +67,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             if (!solution.HasProtocolSolution())
                 return;
 
-            unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) =>
+            unitySolutionTracker.IsUnityProject.AdviseUntil(lifetime, args =>
             {
-                if (!args) return;
+                if (!args) return false;
 
                 var solFolder = mySolution.SolutionDirectory;
 
                 // todo: consider non-Unity Solution with Unity-generated projects
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
-                fileSystemTracker.AdviseFileChanges(lf, protocolInstancePath, delta =>
+                fileSystemTracker.AdviseFileChanges(lifetime, protocolInstancePath, delta =>
                 {
                     // Connect when ProtocolInstance.json is updated (AppDomain start/reload in Unity editor)
                     if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
@@ -83,11 +83,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                     if (delta.NewPath.FileModificationTimeUtc == myLastChangeTime) return;
                     myLastChangeTime = delta.NewPath.FileModificationTimeUtc;
             
-                    CreateProtocol(lf, protocolInstancePath);
+                    CreateProtocol(lifetime, protocolInstancePath);
                 });
 
                 // connect on start of Rider
-                CreateProtocol(lf, protocolInstancePath);
+                CreateProtocol(lifetime, protocolInstancePath);
+                return true;
             });
         }
 

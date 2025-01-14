@@ -1,4 +1,7 @@
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
+using JetBrains.Collections.Viewable;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Core;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
@@ -32,17 +35,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityPackageDefinesProvider : IExternalSourcesDefinesProvider
     {
-        private readonly PreProcessingDirectiveCache myPreProcessingDirectiveCache;
+        private PreProcessingDirectiveCache? myPreProcessingDirectiveCache;
 
-        public UnityPackageDefinesProvider(PreProcessingDirectiveCache preProcessingDirectiveCache)
+        public UnityPackageDefinesProvider(Lifetime lifetime, ILazy<PreProcessingDirectiveCache> preProcessingDirectiveCache, UnitySolutionTracker solutionTracker)
         {
-            myPreProcessingDirectiveCache = preProcessingDirectiveCache;
+            solutionTracker.IsUnityProject.AdviseUntil(lifetime, res =>
+            {
+                if (!res) return false;
+                myPreProcessingDirectiveCache = preProcessingDirectiveCache.GetValueAsync(lifetime).Result;
+                return true;
+            });
         }
 
         public PreProcessingDirective[] GetPreProcessingDirectives(IPsiModule psiModule)
         {
-            var solution = psiModule.GetSolution();
-            if (solution.HasUnityReference() && psiModule is IAssemblyPsiModule assemblyPsiModule)
+            if (myPreProcessingDirectiveCache != null && psiModule is IAssemblyPsiModule assemblyPsiModule)
                 return myPreProcessingDirectiveCache.GetPreProcessingDirectives(assemblyPsiModule.Assembly);
             return EmptyArray<PreProcessingDirective>.Instance;
         }

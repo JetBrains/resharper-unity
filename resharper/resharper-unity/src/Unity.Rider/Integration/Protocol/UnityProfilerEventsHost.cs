@@ -14,7 +14,7 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.StackTraces.StackTrace;
 using JetBrains.ReSharper.Feature.Services.StackTraces.StackTrace.Nodes;
 using JetBrains.ReSharper.Feature.Services.StackTraces.StackTrace.Parsers;
-using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.StackTrace;
@@ -25,41 +25,34 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 
-[SolutionComponent(InstantiationEx.LegacyDefault)]
-public class UnityProfilerEventsHost
+[SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+public class UnityProfilerEventsHost : IUnityLazyComponent
 {
     private readonly RiderStackTraceHost myRiderStackTraceHost;
     private readonly ILogger myLogger;
     private readonly ISolution mySolution;
 
-    public UnityProfilerEventsHost(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker,
+    public UnityProfilerEventsHost(Lifetime lifetime,
         BackendUnityHost backendUnityHost, FrontendBackendHost frontendBackendHost,
         RiderStackTraceHost riderStackTraceHost, ILogger logger, ISolution solution)
     {
         myRiderStackTraceHost = riderStackTraceHost;
         myLogger = logger;
         mySolution = solution;
-        if (!frontendBackendHost.IsAvailable)
-            return;
+        if (!frontendBackendHost.IsAvailable) return;
 
-        unitySolutionTracker.IsUnityProject.View(lifetime, (unityProjectLifetime, args) =>
+        var frontendBackendModel = frontendBackendHost.Model;
+        if (frontendBackendModel == null) return; // can only happen in tests
+        backendUnityHost.BackendUnityModel.AdviseNotNull(lifetime, backendUnityModel =>
         {
-            var frontendBackendModel = frontendBackendHost.Model;
-            backendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(unityProjectLifetime,
-                (l, backendUnityModel) =>
-                {
-                    if (args && frontendBackendModel != null && backendUnityModel != null)
-                    {
-                        AdviseOpenFileByMethodName(backendUnityModel, frontendBackendModel);
-                    }
-                });
+            AdviseOpenFileByMethodName(backendUnityModel, frontendBackendModel);
         });
     }
 
     private void AdviseOpenFileByMethodName(BackendUnityModel backendUnityModel,
         FrontendBackendModel frontendBackendModel)
     {
-        backendUnityModel.OpenFileBySampleInfo.Set((lifetime, sampleStackInfo) =>
+        backendUnityModel.OpenFileBySampleInfo.SetAsync((_, sampleStackInfo) =>
         {
             var result = new RdTask<Unit>();
             if (string.IsNullOrEmpty(sampleStackInfo.SampleStack) || string.IsNullOrEmpty(sampleStackInfo.SampleName))

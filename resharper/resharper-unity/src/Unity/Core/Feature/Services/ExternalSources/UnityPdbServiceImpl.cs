@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Feature.Services.ExternalSources;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Core;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Pdb;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Pdb.Cache;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.Symbols;
 using JetBrains.Symbols.SourceLinks;
@@ -17,9 +18,9 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSources
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     [ZoneMarker(typeof(ExternalSourcesZone))]
-    public class UnityPdbServiceImpl : PdbServiceImpl
+    public class UnityPdbServiceImpl : PdbServiceImpl, IUnityLazyComponent
     {
         private readonly UnitySolutionTracker mySolutionTracker;
 

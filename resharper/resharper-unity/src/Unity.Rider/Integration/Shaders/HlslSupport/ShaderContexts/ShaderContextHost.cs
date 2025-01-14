@@ -16,6 +16,7 @@ using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.RdBackend.Common.Features.TextControls;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Core;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
@@ -32,8 +33,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
-    public class ShaderContextHost
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    public class ShaderContextHost : IUnityLazyComponent
     {
         private readonly AutoShaderContextData myAutoContext = new();
         private readonly ISolution mySolution;
@@ -79,7 +80,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                     {
                         var sourceFile = GetSourceFile(id);
                         if (sourceFile == null)
-                            return Task.FromResult(new SelectShaderContextDataInteraction(new List<ShaderContextData>()));
+                            return Task.FromResult(
+                                new SelectShaderContextDataInteraction(new List<ShaderContextData>()));
                         return CreateSelectShaderContextInteraction(lt, id, sourceFile);
                     }
                 });
@@ -89,26 +91,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
         private void OnTextControlAdded(Lifetime textControlLifetime, TextControlId textControlId, ITextControl textControl)
         {
             // State modifications only allowed from main thread  
-            mySolution.Locks.AssertMainThread();
-
-            var sourceFile = textControl.Document.GetPsiSourceFile(mySolution);
-            if (sourceFile == null)
-                return;
-            var location = sourceFile.GetLocation();
-            if (UnityShaderFileUtils.IsComputeShaderFile(location) || !PsiSourceFileUtil.IsHlslFile(sourceFile))
-                return;
-
-            var documentId = textControlId.DocumentId;
-            if (!myActiveContexts.TryGetValue(documentId, out var context))
+            mySolution.Locks.ExecuteOrQueueEx(textControlLifetime, "OnTextControlAdded", () =>
             {
-                context = new ShaderContext(documentId, sourceFile);
-                myActiveContexts.Add(context.Lifetime, documentId, context);
-                QueryCurrentContextDataAsync(context).NoAwait();
-            }
-            else
-                context.IncrementRefCount();
-
-            textControlLifetime.OnTermination(context.DecrementRefCount);
+                IPsiSourceFile? sourceFile;
+                using (ReadLockCookie.Create())
+                { 
+                    sourceFile = textControl.Document.GetPsiSourceFile(mySolution);
+                }
+                    
+                if (sourceFile == null)
+                    return;
+            
+                var location = sourceFile.GetLocation();
+                if (UnityShaderFileUtils.IsComputeShaderFile(location) || !PsiSourceFileUtil.IsHlslFile(sourceFile))
+                    return;
+                
+                var documentId = textControlId.DocumentId;
+                if (!myActiveContexts.TryGetValue(documentId, out var context))
+                {
+                    context = new ShaderContext(documentId, sourceFile);
+                    myActiveContexts.Add(context.Lifetime, documentId, context);
+                    QueryCurrentContextDataAsync(context).NoAwait();
+                }
+                else
+                    context.IncrementRefCount();
+                
+                textControlLifetime.OnTermination(context.DecrementRefCount);
+            });
         }
 
         private void UpdateRoot(ShaderContext context, IPsiSourceFile? rootFile, IRangeMarker? rootRangeMarker)

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Application.changes;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
@@ -14,6 +15,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
@@ -29,7 +31,8 @@ public class ShaderVariantsManager : ICppChangeProvider, ISolutionChangeProvider
 {
     private readonly Lifetime myLifetime;
     private readonly ISolution mySolution;
-    private readonly ShaderProgramCache myShaderProgramCache;
+    private readonly ILazy<ShaderProgramCache> myLazyShaderProgramCache;
+    private ShaderProgramCache MyShaderProgramCache => myLazyShaderProgramCache.Value;
     private readonly ChangeManager myChangeManager;
 
     private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -44,11 +47,11 @@ public class ShaderVariantsManager : ICppChangeProvider, ISolutionChangeProvider
     private readonly ViewableProperty<int> myTotalKeywordsCount = new(0);
     private readonly ViewableProperty<int> myTotalEnabledKeywordsCount = new(0);
 
-    public ShaderVariantsManager(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, ShaderProgramCache shaderProgramCache, ChangeManager changeManager)
+    public ShaderVariantsManager(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, ILazy<ShaderProgramCache> shaderProgramCache, ChangeManager changeManager, UnitySolutionTracker unitySolutionTracker)
     {
         myLifetime = lifetime;
         mySolution = solution;
-        myShaderProgramCache = shaderProgramCache;
+        myLazyShaderProgramCache = shaderProgramCache;
         myChangeManager = changeManager;
 
         myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
@@ -62,7 +65,17 @@ public class ShaderVariantsManager : ICppChangeProvider, ISolutionChangeProvider
         UrtCompilationMode = GetUrtCompilationMode(myUrtCompilationModeEntry); 
         
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
-        myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderKeywords(myEnabledKeywords));
+        unitySolutionTracker.IsUnityProjectFolder.AdviseUntil(lifetime, res =>
+        {
+            if (res)
+            {
+                MyShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderKeywords(myEnabledKeywords));
+                return true;
+            }
+
+            return false;
+        });
+        
     }
 
     Lifetime ISolutionChangeProvider.Lifetime => myLifetime;
@@ -89,7 +102,7 @@ public class ShaderVariantsManager : ICppChangeProvider, ISolutionChangeProvider
             else if (descriptor is UrtCompilationModeDefineSymbolDescriptor urtModeDescriptor)
                 SetUrtCompilationMode(enabled ? urtModeDescriptor.GetValue(symbol) : UrtCompilationModeDefineSymbolDescriptor.DefaultValue);
         }
-        else if (myShaderProgramCache.HasShaderKeyword(symbol))
+        else if (MyShaderProgramCache.HasShaderKeyword(symbol))
             SetKeywordEnabled(symbol, enabled);
     }
     
@@ -176,7 +189,7 @@ public class ShaderVariantsManager : ICppChangeProvider, ISolutionChangeProvider
         
         using var readLockCookie = ReadLockCookie.Create();
         var unprocessedKeywords = myAllKeywords.ToSet();
-        myShaderProgramCache.ForEachKeyword(keyword =>
+        MyShaderProgramCache.ForEachKeyword(keyword =>
         {
             if (!unprocessedKeywords.Remove(keyword))
                 myAllKeywords.Add(keyword);
@@ -220,9 +233,9 @@ public class ShaderVariantsManager : ICppChangeProvider, ISolutionChangeProvider
 
         void IValueAction<CppFileLocation>.Invoke(CppFileLocation location) => myOutdatedLocations.Add(location);
 
-        public void MarkShaderKeywordDirty(string shaderKeyword) => manager.myShaderProgramCache.ForEachKeywordLocation(shaderKeyword, ref this);
+        public void MarkShaderKeywordDirty(string shaderKeyword) => manager.MyShaderProgramCache.ForEachKeywordLocation(shaderKeyword, ref this);
 
-        public void MarkAllDirty() => manager.myShaderProgramCache.CollectLocationsTo(myOutdatedLocations);
+        public void MarkAllDirty() => manager.MyShaderProgramCache.CollectLocationsTo(myOutdatedLocations);
 
         public void Dispose()
         {

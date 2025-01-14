@@ -12,7 +12,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
-    [SolutionComponent(Instantiation.DemandAnyThread)]
+     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class TestUnityExternalFilesModuleProcessor : UnityExternalFilesModuleProcessor
     {
         public TestUnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,

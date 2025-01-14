@@ -6,7 +6,7 @@ using JetBrains.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Common.ProjectModel
 {
-    [ShellComponent(InstantiationEx.LegacyDefault)]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UserDataPerProjectFileType
     {
         private readonly Dictionary<ProjectFileType, ReadonlyUserData> myUserDataByProjectFileType;
@@ -19,8 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.ProjectModel
 
             myUserDataByProjectFileType = builder.Build();
         }
-
-        public bool TryGetUserData(ProjectFileType projectFileType, out ReadonlyUserData data) => myUserDataByProjectFileType.TryGetValue(projectFileType, out data);
 
         public Dictionary<ProjectFileType, ReadonlyUserData>.Enumerator GetEnumerator() => myUserDataByProjectFileType.GetEnumerator();
     }

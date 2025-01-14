@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Application.Parts;
+using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
@@ -14,16 +17,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
     [MiscFilesProjectPsiModuleProvider(Instantiation.DemandAnyThreadSafe)]
     public class UnityMiscFilesProjectPsiModuleProvider : IMiscFilesProjectPsiModuleProvider
     {
-        private readonly UnityExternalFilesModuleFactory myModuleFactory;
+        private UnityExternalFilesModuleFactory? myModuleFactory;
 
-        public UnityMiscFilesProjectPsiModuleProvider(UnityExternalFilesModuleFactory moduleFactory)
+        public UnityMiscFilesProjectPsiModuleProvider(Lifetime lifetime, Lazy<UnityExternalFilesModuleFactory> moduleFactory, UnitySolutionTracker solutionTracker)
         {
-            myModuleFactory = moduleFactory;
+            solutionTracker.IsUnityProject.AdviseUntil(lifetime, res =>
+            {
+                if (!res) return false;
+                myModuleFactory = moduleFactory.Value;
+                return true;
+            });
         }
 
         public void Dispose() { }
 
-        public IEnumerable<IPsiModule> GetModules() => new[] { myModuleFactory.PsiModule };
+        public IEnumerable<IPsiModule> GetModules()
+        {
+            if (myModuleFactory != null)
+                return [myModuleFactory.PsiModule];
+            return EmptyList<IPsiModule>.Instance;
+        }
 
         public IEnumerable<IPsiSourceFile> GetPsiSourceFilesFor(IProjectFile projectFile)
         {
@@ -31,8 +44,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 throw new ArgumentNullException(nameof(projectFile));
             Assertion.Assert(projectFile.IsValid());
 
-            if (myModuleFactory.PsiModule.TryGetFileByPath(projectFile.Location, out var file))
-                return new[] {file};
+            if (myModuleFactory != null && myModuleFactory.PsiModule.TryGetFileByPath(projectFile.Location, out var file))
+                return [file];
 
             return EmptyList<IPsiSourceFile>.Instance;
         }
@@ -41,6 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                          PsiModuleChangeBuilder changeBuilder, VirtualFileSystemPath oldLocation)
         {
             if (projectFile == null)
+                return;
+            
+            if (myModuleFactory == null)
                 return;
 
             var module = myModuleFactory.PsiModule;

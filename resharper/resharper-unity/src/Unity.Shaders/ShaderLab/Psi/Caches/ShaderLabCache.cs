@@ -14,8 +14,8 @@ using JetBrains.ReSharper.Psi.Files;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 
-[PsiComponent(InstantiationEx.LegacyDefault)]
-public class ShaderLabCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, ISolution solution)
+[PsiComponent(Instantiation.DemandAnyThreadSafe)]
+public class ShaderLabCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager)
     : SimplePsiSourceFileCacheWithLocalCache<ShaderLabCacheItem, IDeclaredElement>(lifetime, locks, persistentIndexManager, ShaderLabCacheItem.Marshaller, "Unity::Shaders::ShaderLabCacheUpdated")
 {
     protected override bool IsApplicable(IPsiSourceFile sourceFile) => base.IsApplicable(sourceFile) && sourceFile.LanguageType.Is<ShaderLabProjectFileType>();

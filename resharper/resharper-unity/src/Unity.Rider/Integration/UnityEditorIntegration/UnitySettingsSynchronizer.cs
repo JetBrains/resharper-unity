@@ -14,7 +14,9 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    // can't make it IUnityLazyComponent, when working with a class lib, there is a chance that lib is later used in Unity project 
+    // ideally we should init this component, only when backendSettings is asked on the frontend
+    [SolutionComponent(Instantiation.LaterAsyncAnyThreadSafe)]
     public class UnitySettingsSynchronizer
     {
         public UnitySettingsSynchronizer(Lifetime lifetime, ISolution solution, FrontendBackendHost host,
@@ -54,7 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         {
             var name = entry.GetInstanceMemberName();
             var setting = boundStore.Schema.GetScalarEntry(entry);
-            boundStore.GetValueProperty<TEntryMemberType>(lifetime, setting, null).Change.Advise_HasNew(lifetime,
+            var apartmentForNotifications = ApartmentForNotifications.Primary(solution.Locks);
+            boundStore.GetValueProperty2<TEntryMemberType>(lifetime, setting, null, apartmentForNotifications).Change.Advise_HasNew(lifetime,
                 args =>
                 {
                     solution.Locks.ExecuteOrQueueEx(lifetime, name, () =>

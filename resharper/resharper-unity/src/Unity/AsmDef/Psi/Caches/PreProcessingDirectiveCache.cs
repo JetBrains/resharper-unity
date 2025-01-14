@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Application.Parts;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -20,7 +21,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class PreProcessingDirectiveCache
     {
         private readonly ISolution mySolution;
@@ -50,10 +51,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
             myScriptAssembliesPath = solution.SolutionDirectory.Combine("Library/ScriptAssemblies");
 
-            changeManager.Changed.Advise(lifetime, OnChange);
-            packageManager.Updating.Change.Advise_NoAcknowledgement(lifetime, OnPackagesUpdated);
-            asmDefCache.CacheUpdated.Advise(lifetime, OnAsmDefCacheUpdated);
-            myUnityVersion.ActualVersionForSolution.Advise(lifetime, OnApplicationVersionChanged);
+            mySolution.Locks.ExecuteOrQueueEx(lifetime, "PreProcessingDirectiveCache.Init", () =>
+            {
+                changeManager.Changed.Advise(lifetime, OnChange);
+                packageManager.Updating.Change.Advise_NoAcknowledgement(lifetime, OnPackagesUpdated);
+                asmDefCache.CacheUpdated.Advise(lifetime, OnAsmDefCacheUpdated);
+                myUnityVersion.ActualVersionForSolution.Advise(lifetime, OnApplicationVersionChanged);
+            });
         }
 
         public PreProcessingDirective[] GetPreProcessingDirectives(IPsiAssembly assembly)
@@ -186,7 +190,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
         private void OnAsmDefCacheUpdated(bool _) => Invalidate("AsmDefCache updated");
 
-        private void OnApplicationVersionChanged(Version _) => Invalidate("Application version changed");
+        private void OnApplicationVersionChanged(Version version)
+        {
+            if (version.Major > 0) Invalidate("Application version changed");
+        }
 
         private void Invalidate(string reason)
         {
@@ -194,16 +201,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
             myAssemblyNameToDirectiveCache.Clear();
 
-            IList<IProjectFile> projectFiles;
+            IProjectFile[] projectFiles;
             using (ReadLockCookie.Create())
-                projectFiles = myPsiServices.Solution.MiscFilesProject.GetAllProjectFiles().ToList();
-
+                projectFiles = myPsiServices.Solution.MiscFilesProject.GetAllProjectFiles()
+                    .Where(file => file.LanguageType.Is<CSharpProjectFileType>()).ToArray();
+            
+            if (!projectFiles.Any()) return;
             using (WriteLockCookie.Create())
             {
                 foreach (var projectFile in projectFiles)
-                {
-                    if (projectFile.LanguageType.Is<CSharpProjectFileType>())
-                        myPsiServices.MarkAsDirty(projectFile);
+                { 
+                    myPsiServices.MarkAsDirty(projectFile);
                 }
             }
         }
