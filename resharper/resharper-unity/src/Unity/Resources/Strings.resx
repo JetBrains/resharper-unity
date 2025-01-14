@@ -1362,6 +1362,21 @@ a plugin to be installed to a project.</value>
     <data name="UnityOptionsPage_AddTextBasedAssetsSection_Text_based_assets" xml:space="preserve">
         <value>Text-based assets</value>
     </data>
+    <data name="UnityOptionsPage_Profiler_Integration" xml:space="preserve">
+        <value>Profiler Integration (Experimental)</value>
+    </data>
+    <data name="UnityOptionsPage_Profiler_Integration_Snapshot_Fetching" xml:space="preserve">
+        <value>Profiler snapshot fetching settings</value>
+    </data>
+    <data name="UnityOptionsPage_Profiler_Integration_Fetching_Disabled" xml:space="preserve">
+        <value>Disabled</value>
+    </data>
+    <data name="UnityOptionsPage_Profiler_Integration_Auto_Fetching" xml:space="preserve">
+        <value>Auto fetch</value>
+    </data>
+    <data name="UnityOptionsPage_Profiler_Integration_Manual_Fetching" xml:space="preserve">
+        <value>Manual fetch</value>
+    </data>
     <data name="UnityPerformanceCriticalCodeLineMarker_Performance_critical_context" xml:space="preserve">
         <value>Performance-critical context</value>
     </data>
@@ -1466,6 +1481,9 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="UnitySettings_Dots_Header" xml:space="preserve">
         <value>DOTS</value>
+    </data>
+    <data name="UnitySettings_Profiler_Integration_Snapshot_Fetching" xml:space="preserve">
+        <value>Unity profiler integration</value>
     </data>
     <data name="UnitySettings_Dots_Hide_generated_code_from_navigation" xml:space="preserve">
         <value>Exclude DOTS-generated code from navigation results</value>

@@ -98,5 +98,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         //Dots
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Dots_Hide_generated_code_from_navigation))]
         public bool HideGeneratedCodeFromNavigation;
+        
+        // Profiler snapshot fetching settings
+        [SettingsEntry(Settings.ProfilerSnapshotFetchingSettings.Disabled, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Profiler_Integration_Snapshot_Fetching))]
+        public ProfilerSnapshotFetchingSettings ProfilerSnapshotFetchingSettings;
+
     }
 }

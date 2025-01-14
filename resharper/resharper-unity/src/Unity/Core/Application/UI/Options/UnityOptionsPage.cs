@@ -52,7 +52,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddTextBasedAssetsSection();
             AddShadersSection();
             AddDebuggingSection();
+            AddProfilerSection();
             AddInternalSection(productConfigurations);
+        }
+
+        private void AddProfilerSection()
+        {
+            if (!OptionsPageContext.IsRider) return;
+            AddHeader(Strings.UnityOptionsPage_Profiler_Integration);
+            AddComboOption((UnitySettings s) => s.ProfilerSnapshotFetchingSettings,
+                Strings.UnityOptionsPage_Profiler_Integration_Snapshot_Fetching, string.Empty, string.Empty,
+                new RadioOptionPoint(ProfilerSnapshotFetchingSettings.Disabled, Strings.UnityOptionsPage_Profiler_Integration_Fetching_Disabled),
+                new RadioOptionPoint(ProfilerSnapshotFetchingSettings.AutoFetch, Strings.UnityOptionsPage_Profiler_Integration_Auto_Fetching),
+                new RadioOptionPoint(ProfilerSnapshotFetchingSettings.ManualFetch, Strings.UnityOptionsPage_Profiler_Integration_Manual_Fetching)
+                    );
         }
 
         private void AddGeneralSection()
