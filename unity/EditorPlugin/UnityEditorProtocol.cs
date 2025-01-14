@@ -18,6 +18,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Rider.PathLocator;
 using JetBrains.Rider.Unity.Editor.FindUsages;
+using JetBrains.Rider.Unity.Editor.Profiler;
 using JetBrains.Rider.Unity.Editor.UnitTesting;
 using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
@@ -212,6 +213,7 @@ namespace JetBrains.Rider.Unity.Editor
 
 #if UNITY_2019_2_OR_NEWER
           PackageManagerModelHelper.Advise(connectionLifetime, model);
+          ProfilerWindowEventsHandler.Advise(connectionLifetime, new UnityProfilerModel(connectionLifetime, protocol));
 #endif
 
           Models.AddLifetimed(connectionLifetime, model);
