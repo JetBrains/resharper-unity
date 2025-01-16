@@ -24,9 +24,10 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 
-[SolutionComponent(InstantiationEx.LegacyDefault)]
-public class ShaderVariantsManager : ICppChangeProvider
+[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
+public class ShaderVariantsManager : ICppChangeProvider, ISolutionChangeProvider
 {
+    private readonly Lifetime myLifetime;
     private readonly ISolution mySolution;
     private readonly ShaderProgramCache myShaderProgramCache;
     private readonly ChangeManager myChangeManager;
@@ -45,12 +46,11 @@ public class ShaderVariantsManager : ICppChangeProvider
 
     public ShaderVariantsManager(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, ShaderProgramCache shaderProgramCache, ChangeManager changeManager)
     {
+        myLifetime = lifetime;
         mySolution = solution;
         myShaderProgramCache = shaderProgramCache;
         myChangeManager = changeManager;
 
-        myChangeManager.RegisterChangeProvider(lifetime, this);
-        
         myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
         myDefaultEnabledKeywordsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.EnabledKeywords);
         myDefaultShaderApiEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (ShaderVariantsSettings s) => s.ShaderApi);
@@ -64,7 +64,9 @@ public class ShaderVariantsManager : ICppChangeProvider
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
         myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderKeywords(myEnabledKeywords));
     }
-    
+
+    Lifetime ISolutionChangeProvider.Lifetime => myLifetime;
+
     public ShaderApi ShaderApi { get; private set; }
 
     public ShaderPlatform ShaderPlatform { get; private set; }
