@@ -18,7 +18,7 @@ using JetBrains.ReSharper.Psi.Cpp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
-    [CppCompilationPropertiesProvider(CppCompilationPropertiesProviderAttribute.NORMAL_PRIORITY)]
+    [CppCompilationPropertiesProvider(Priority = CppCompilationPropertiesProviderAttribute.NORMAL_PRIORITY)]
     public class UnityHlslCppCompilationPropertiesProvider(
         IUnityVersion unityVersion,
         CgIncludeDirectoryProvider cgIncludeDirectoryProvider,
