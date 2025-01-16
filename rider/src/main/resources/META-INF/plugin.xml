@@ -151,9 +151,6 @@
     <intentionsOrderProvider language="UXML" implementationClass="com.jetbrains.rider.spellChecker.BackendLanguageIntentionsOrderProvider"/>
     <lang.inspectionSuppressor language="UXML" order="first" implementationClass="com.jetbrains.rider.inspections.suppression.BackendXmlInspectionSuppressor"/>
 
-    <!-- JSON support -->
-    <fileType name="JSON" extensions="inputactions"/>
-
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UssDisabledEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
