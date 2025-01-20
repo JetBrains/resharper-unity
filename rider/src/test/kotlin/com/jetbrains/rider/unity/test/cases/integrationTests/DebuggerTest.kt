@@ -20,6 +20,7 @@ import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.unity.EngineVersion
 import com.jetbrains.rider.test.unity.Tuanjie
 import com.jetbrains.rider.test.unity.Unity
+import com.jetbrains.rider.test.unity.UnityTestEnvironment
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import kotlinx.coroutines.launch
@@ -38,8 +39,8 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
     fun checkBreakpoint() {
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleBreakpoint("NewBehaviourScript.cs", 8)
-                toggleBreakpoint("NewBehaviourScript.cs", 15)
+                toggleBreakpoint("NewBehaviourScript.cs", 8) //Debug.Log("Start");
+                toggleBreakpoint("NewBehaviourScript.cs", 15) // int binaryNotation = 0b_0001_1110_1000_0100_1000_0000;
             },
             {
                 waitForPause()
@@ -56,7 +57,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
     fun checkTextureDebugging() {
         attachDebuggerToUnityEditorAndPlay(
             beforeRun = {
-                toggleBreakpoint("TextureDebuggingScript.cs", 13)
+                toggleBreakpoint("TextureDebuggingScript.cs", 13) //  Debug.Log(texture2D);
             },
             test = {
                 waitForPause()
@@ -99,7 +100,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
         attachDebuggerToUnityEditorAndPlay(
             test = {
                 waitForUnityEditorPlayMode()
-                toggleUnityPausepoint(project, "NewBehaviourScript.cs", 14)
+                toggleUnityPausepoint(project, "NewBehaviourScript.cs", 14) //  int binaryNotation = 0b_0001_1110_1000_0100_1000_0000;
                 waitForUnityEditorPauseMode()
                 removeAllUnityPausepoints()
                 unpause()
@@ -129,7 +130,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(
             {
-                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 15)
+                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 15) //  Debug.Log(binaryNotation);
             },
             {
                 val toEvaluate = "binaryNotation / 25"
@@ -157,12 +158,16 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(
             {
-                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 14)
+                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 14) // int binaryNotation = 0b_0001_1110_1000_0100_1000_0000;
             },
             {
+                val toEvaluate = "binaryNotation / 25"
                 waitForPause()
                 stepInto()
+                printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
+                dumpFullCurrentData()
                 stepOver()
+                printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
                 dumpFullCurrentData()
                 resumeSession()
             }, testGoldFile)
@@ -174,7 +179,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(
             {
-                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 15)
+                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 15) //  Debug.Log(binaryNotation);
             },
             {
                 val toEvaluate = "binaryNotation / 25"
