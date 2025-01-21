@@ -221,7 +221,7 @@ tasks {
     }
 
     buildSearchableOptions {
-        enabled = isReleaseBuild
+        enabled = false // TODO: isReleaseBuild
     }
 
     runIde {
