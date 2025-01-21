@@ -165,6 +165,11 @@ dependencies {
         bundledPlugin("com.jetbrains.dotCover")
         bundledPlugin("org.intellij.intelliLang")
         bundledPlugin("com.intellij.platform.images")
+
+        // TODO: Temporary I hope hope hope
+        bundledLibrary(provider {
+            project.intellijPlatform.platformPath.resolve("lib/testFramework.jar").pathString
+        })
     }
 }
 
@@ -218,6 +223,10 @@ tasks {
 
         println("SDK path: $sdkPath")
         return@lazy sdkPath
+    }
+
+    instrumentCode {
+        enabled = false
     }
 
     buildSearchableOptions {
