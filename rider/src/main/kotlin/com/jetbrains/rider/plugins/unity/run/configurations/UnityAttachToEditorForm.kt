@@ -5,9 +5,11 @@ import com.intellij.ui.dsl.builder.Align
 import com.intellij.ui.dsl.builder.Row
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.selected
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
+import com.jetbrains.rider.run.RiderRunBundle
 import javax.swing.JPanel
 
 internal class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) {
@@ -40,6 +42,16 @@ internal class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) 
 
             usingProcessRow = row {
                 label(UnityBundle.message("using.process")).bindText(processIdInfo)
+            }
+
+            row {
+                checkBox(RiderRunBundle.message("rider.use.mixed.mode.debug"))
+                    .onChanged { viewModel.useMixedMode.value = it.isSelected}
+                    .also { checkBox ->
+                        viewModel.useMixedMode.advise(viewModel.lifetime) {
+                            checkBox.selected(it)
+                        }
+                    }
             }
 
             row {

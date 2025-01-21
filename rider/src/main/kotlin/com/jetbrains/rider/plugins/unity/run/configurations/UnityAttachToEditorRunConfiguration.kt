@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
+import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunConfiguration
 import com.jetbrains.rider.debugger.attach.util.getAvailableRuntimes
 import com.jetbrains.rider.model.ProcessRuntimeInformation
 import com.jetbrains.rider.plugins.unity.UnityBundle
@@ -42,7 +43,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
       RunConfigurationWithSuppressedDefaultRunAction,
       RemoteConfiguration,
       WithoutOwnBeforeRunSteps,
-      UnityAttachRunConfiguration {
+      UnityAttachRunConfiguration,
+      IMixedModeDebugAwareRunConfiguration {
 
     // TEMP, will be removed in 19.2
     companion object {
@@ -60,6 +62,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     @Transient
     var pid: Int? = null
 
+    var useMixedMode : Boolean = false
+
     var runtimes:List<ProcessRuntimeInformation> = emptyList()
 
     @Transient
@@ -68,6 +72,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     override fun clone(): RunConfiguration {
         val configuration = super.clone() as UnityAttachToEditorRunConfiguration
         configuration.pid = pid
+        configuration.useMixedMode = useMixedMode
         return configuration
     }
 
@@ -254,8 +259,6 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         }
     }
 
-    override fun useMixedDebugMode(): Boolean {
-        return true
-    }
+    override fun useMixedDebugMode(): Boolean = useMixedMode
 }
 

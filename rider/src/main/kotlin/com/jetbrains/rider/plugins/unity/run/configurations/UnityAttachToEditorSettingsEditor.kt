@@ -21,10 +21,12 @@ class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<Unity
 
     override fun checkEditorData(configuration: UnityAttachToEditorRunConfiguration) {
         configuration.pid = viewModel.pid.value
+        configuration.useMixedMode = viewModel.useMixedMode.value
     }
 
     override fun resetEditorFrom(configuration: UnityAttachToEditorRunConfiguration) {
         viewModel.pid.value = configuration.pid
+        viewModel.useMixedMode.value = configuration.useMixedMode
     }
 
     override fun applyEditorTo(configuration: UnityAttachToEditorRunConfiguration) {

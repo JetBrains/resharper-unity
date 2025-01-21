@@ -22,6 +22,7 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
     val editorProcesses: ViewableList<UnityLocalProcess> = ViewableList()
     val pid: IProperty<Int?> = Property(null)
     private val editorInstanceJson = EditorInstanceJson.getInstance(project)
+    var useMixedMode: Property<Boolean> = Property(false)
 
     init {
         refreshProcessList()

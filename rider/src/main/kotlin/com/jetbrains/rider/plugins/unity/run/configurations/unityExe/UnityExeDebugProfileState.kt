@@ -23,6 +23,7 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
+import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunConfiguration
 import com.jetbrains.rider.debugger.tryWriteMessageToConsoleView
 import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
@@ -104,47 +105,57 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
             }
         }
 
+        fun runUnityEditor() {
+            val targetProcessHandler = if (exeConfiguration.parameters.useExternalConsole)
+                ExternalConsoleMediator.createProcessHandler(runCommandLine)
+            else
+                KillableProcessHandler(runCommandLine)
+
+            // need to set the pid for mono mixed debug
+            workerProcessHandler.putUserData(DebuggerWorkerProcessHandler.PID_KEY, checkNotNull(targetProcessHandler.pid()).toInt())
+
+            lifetime.onTermination {
+                if (!targetProcessHandler.isProcessTerminated) {
+                    (targetProcessHandler as KillableProcess).killProcess()
+                }
+            }
+
+            targetProcessHandler.addProcessListener(object : ProcessListener {
+                override fun onTextAvailable(processEvent: ProcessEvent, key: Key<*>) {
+                    ansiEscapeDecoder.escapeText(processEvent.text, ProcessOutputTypes.STDOUT) { textChunk, attributes ->
+                        val chunkContentType = ConsoleViewContentType.getConsoleViewType(attributes)
+                        (monoConnectResult.executionConsole as? ConsoleView)?.print(textChunk, chunkContentType)
+                    }
+                }
+
+                override fun processTerminated(processEvent: ProcessEvent) {
+                    monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(
+                        output = UnityBundle.message("process.0.terminated.with.exit.code.1", commandLineString,
+                                                     processEvent.exitCode.toString()) + "\r\n", type = OutputType.Warning,
+                        subject = OutputSubject.Default))
+                }
+
+                override fun startNotified(processEvent: ProcessEvent) {
+                    monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(
+                        UnityBundle.message("process.0.started", commandLineString) + "\r\n", OutputType.Info, OutputSubject.Default))
+                }
+            })
+            targetProcessHandler.startNotify()
+        }
+
         // Once the frontend starts the debugger worker process, we'll start the Unity exe, and terminate it when the
         // debug session ends
         workerProcessHandler.addProcessListener(object : ProcessAdapter() {
             override fun startNotified(event: ProcessEvent) {
-                workerProcessHandler.workerModel.activeSession.adviseNotNullOnce(lifetime){
-                    it.initialized.adviseNotNullOnce(lifetime){
-                        val targetProcessHandler = if (exeConfiguration.parameters.useExternalConsole)
-                            ExternalConsoleMediator.createProcessHandler(runCommandLine)
-                        else
-                            KillableProcessHandler(runCommandLine)
-
-
-                        lifetime.onTermination {
-                            if (!targetProcessHandler.isProcessTerminated) {
-                                (targetProcessHandler as KillableProcess).killProcess()
-                            }
+                if ((executionEnvironment.runProfile as? IMixedModeDebugAwareRunConfiguration)?.useMixedDebugMode() == true)
+                // in mixed mode cidr needs pid to start debugging
+                    runUnityEditor()
+                else
+                    workerProcessHandler.workerModel.activeSession.adviseNotNullOnce(lifetime) {
+                        it.initialized.adviseNotNullOnce(lifetime) {
+                            runUnityEditor()
                         }
-
-                        targetProcessHandler.addProcessListener(object : ProcessListener {
-                            override fun onTextAvailable(processEvent: ProcessEvent, key: Key<*>) {
-                                ansiEscapeDecoder.escapeText(processEvent.text, ProcessOutputTypes.STDOUT) { textChunk, attributes ->
-                                    val chunkContentType = ConsoleViewContentType.getConsoleViewType(attributes)
-                                    (monoConnectResult.executionConsole as? ConsoleView)?.print(textChunk, chunkContentType)
-                                }
-                            }
-
-                            override fun processTerminated(processEvent: ProcessEvent) {
-                                monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(
-                                    output = UnityBundle.message("process.0.terminated.with.exit.code.1", commandLineString,
-                                                                 processEvent.exitCode.toString()) + "\r\n", type = OutputType.Warning,
-                                    subject = OutputSubject.Default))
-                            }
-
-                            override fun startNotified(processEvent: ProcessEvent) {
-                                monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(
-                                    UnityBundle.message("process.0.started", commandLineString) + "\r\n", OutputType.Info, OutputSubject.Default))
-                            }
-                        })
-                        targetProcessHandler.startNotify()
                     }
-                }
 
                 // might be worth to add the following line to let platform handle the target process, but it doesn't work, so we manually terminate targetProcessHandler by lifetime
                 // see also RIDER-3800 Add possibility to detach/attach from process, which was Run in Rider
