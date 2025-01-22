@@ -81,6 +81,13 @@
             "logView": {
                 "filterBeforePlay.svg": "unityIcons/logView/filterBeforePlay.svg",
                 "filterBeforeRefresh.svg": "unityIcons/logView/filterBeforeRefresh.svg"
+            },
+            "profiler": {
+                "snapshotStatusDisabled.svg": "unityIcons/profiler/snapshotStatusDisabled.svg",
+                "snapshotStatusNoDataAvailable.svg": "unityIcons/profiler/snapshotStatusNoDataAvailable.svg",
+                "snapshotStatusHasNewData.svg": "unityIcons/profiler/snapshotStatusHasNewData.svg",
+                "snapshotStatusFetchInProgress.svg": "unityIcons/profiler/snapshotStatusFetchInProgress.svg",
+                "snapshotStatusUpToDate.svg": "unityIcons/profiler/snapshotStatusUpToDate.svg"
             }
         }
     }
