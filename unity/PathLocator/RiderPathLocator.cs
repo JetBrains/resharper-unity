@@ -267,17 +267,27 @@ namespace JetBrains.Rider.PathLocator
     }
 
     [PublicAPI]
-    public Version GetBuildNumber(string path)
+    public Version GetBuildNumber(string riderPath)
     {
-      var buildTxtFileInfo = new FileInfo(Path.Combine(path, GetRelativePathToBuildTxt()));
-      return GetBuildNumberWithBuildTxt(buildTxtFileInfo) ?? GetBuildNumberFromInput(path);
+      Version buildNum = null;
+      try
+      {
+        buildNum = GetBuildNumberWithBuildTxt(riderPath);
+      }
+      catch (Exception e)
+      {
+        RiderLocatorEnvironment.Warn($"Failed to get buildNum from {riderPath}", e);
+      }
+
+      return buildNum ?? GetBuildNumberFromInput(riderPath);
     }
 
-    private Version GetBuildNumberWithBuildTxt(FileInfo file)
+    private Version GetBuildNumberWithBuildTxt(string riderPath)
     {
-      if (!file.Exists)
+      var buildTxtFileInfo = new FileInfo(Path.Combine(riderPath, GetRelativePathToBuildTxt()));
+      if (!buildTxtFileInfo.Exists)
         return null;
-      var text = File.ReadAllText(file.FullName);
+      var text = File.ReadAllText(buildTxtFileInfo.FullName);
       var index = text.IndexOf("-", StringComparison.Ordinal) + 1; // RD-191.7141.355
       if (index <= 0)
         return null;
