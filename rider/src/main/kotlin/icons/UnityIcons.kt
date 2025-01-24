@@ -157,6 +157,7 @@ class UnityIcons {
 
     class ToolWindows {
         companion object {
+            @JvmField
             val UnityLog = Common.UnityToolWindow
             val UnityExplorer = Common.UnityToolWindow
         }

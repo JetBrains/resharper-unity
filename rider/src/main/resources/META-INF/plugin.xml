@@ -208,7 +208,11 @@
 
     <rider.completion.csharpIdentifierPartHelper implementation="com.jetbrains.rider.plugins.unity.csharp.completion.OdinLayoutAttributeCSharpIdentifierPartHelper"/>
 
-    <toolWindowAllowlist id="Unity" />
+    <toolWindow id="Unity"
+                anchor="bottom"
+                secondary="false"
+                icon="UnityIcons.ToolWindows.UnityLog"
+                factoryClass="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
 
     <rider.gotoCustomizer implementation="com.jetbrains.rider.plugins.unity.gotoType.UnityGotoCustomizer"/>
   </extensions>
