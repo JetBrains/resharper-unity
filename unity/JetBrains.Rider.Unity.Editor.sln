@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.SinceUnity.201
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathLocator", "PathLocator\PathLocator.csproj", "{4528C456-6A70-43EA-982B-8269B591A6C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.SinceUnity.CorCLR", "EditorPlugin\EditorPlugin.SinceUnity.CorCLR.csproj", "{8C51DF1E-339E-4C94-AB0F-B8585AB07C26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{4528C456-6A70-43EA-982B-8269B591A6C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4528C456-6A70-43EA-982B-8269B591A6C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4528C456-6A70-43EA-982B-8269B591A6C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C51DF1E-339E-4C94-AB0F-B8585AB07C26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C51DF1E-339E-4C94-AB0F-B8585AB07C26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C51DF1E-339E-4C94-AB0F-B8585AB07C26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C51DF1E-339E-4C94-AB0F-B8585AB07C26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
