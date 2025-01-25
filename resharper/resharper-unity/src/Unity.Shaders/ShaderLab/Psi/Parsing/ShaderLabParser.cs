@@ -14,14 +14,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
     {
         [NotNull]
         private readonly ILexer<int> myOriginalLexer;
-        private readonly CommonIdentifierIntern myIntern;
+        private readonly CommonIdentifierIntern myCommonIdentifierIntern;
         private readonly ShaderLabPreProcessor myPreProcessor;
         private ITokenIntern myTokenIntern;
 
-        public ShaderLabParser([NotNull] ILexer<int> lexer, CommonIdentifierIntern intern)
+        public ShaderLabParser([NotNull] ILexer<int> lexer, CommonIdentifierIntern commonIdentifierIntern)
         {
             myOriginalLexer = lexer;
-            myIntern = intern;
+            myCommonIdentifierIntern = commonIdentifierIntern;
 
             // Create the pre-processor elements, using the unfiltered lexer, so we'll see the
             // preprocessor tokens!
@@ -35,31 +35,52 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             SetLexer(new ShaderLabFilteringLexer(lexer, myPreProcessor));
         }
 
+        [MustDisposeResource]
+        private GlobalInternCookie WithGlobalIntern()
+        {
+            // ReSharper disable once NotDisposedResource
+            myTokenIntern = myCommonIdentifierIntern.GetOrCreateIntern();
+
+            return new GlobalInternCookie(this);
+        }
+
+        private readonly ref struct GlobalInternCookie(ShaderLabParser parser)
+        {
+            public void Dispose()
+            {
+                ref var intern = ref parser.myTokenIntern;
+                ((IPooledTokenIntern)intern).Dispose();
+                intern = null;
+            }
+        }
+
         public ITokenIntern TokenIntern => myTokenIntern ??= CommonIdentifierIntern.CreateStandaloneIntern(10);
 
         public IFile ParseFile()
         {
-            using var identifierIntern = myIntern.GetOrCreateIntern();
-
-            var element = ParseShaderLabFile();
-            InsertMissingTokens(element, identifierIntern.Intern);
-            return (IFile)element;
+            using (WithGlobalIntern())
+            {
+                var element = ParseShaderLabFile();
+                InsertMissingTokens(element, myTokenIntern);
+                return (IFile)element;
+            }
         }
 
         IVectorLiteral IShaderLabParser.ParseVectorLiteral()
         {
-            using var identifierIntern = myIntern.GetOrCreateIntern();
-
-            var element = ParseVectorLiteral();
-            InsertMissingTokens(element, identifierIntern.Intern);
-            return (IVectorLiteral)element;
+            using (WithGlobalIntern())
+            {
+                var element = ParseVectorLiteral();
+                InsertMissingTokens(element, myTokenIntern);
+                return (IVectorLiteral)element;
+            }
         }
 
         protected override TreeElement CreateToken()
         {
             var tokenType = myLexer.TokenType;
 
-            Assertion.Assert(tokenType != null, "tokenType != null");
+            Assertion.Assert(tokenType != null);
 
             // Node offsets aren't stored during parsing. However, we need the absolute file
             // offset position so we can re-insert filtered tokens, so call SetOffset here.
@@ -81,7 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 SetOffset(leaf, tokenStart);
             return element;
         }
-        
+
         public override TreeElement ParseErrorElement()
         {
             // NOTE: Doesn't Advance
@@ -146,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 
         private TreeElement CreateToken(TokenNodeType tokenType)
         {
-            Assertion.Assert(tokenType != null, "tokenType != null");
+            Assertion.Assert(tokenType != null);
 
             LeafElementBase element;
             if (tokenType == ShaderLabTokenType.NUMERIC_LITERAL

@@ -43,9 +43,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi
 
         public virtual IFile ParseFile()
         {
-            using var identifierIntern = myCommonIdentifierIntern.GetOrCreateIntern();
+            using var intern = myCommonIdentifierIntern.GetOrCreateIntern();
 
-            var builder = new XmlTreeBuilder(ElementFactory, DefaultXmlElementFactoryContext.Instance, identifierIntern.Intern);
+            var builder = new XmlTreeBuilder(ElementFactory, DefaultXmlElementFactoryContext.Instance, intern);
             return builder.BuildXml(Lexer);
         }
     }
