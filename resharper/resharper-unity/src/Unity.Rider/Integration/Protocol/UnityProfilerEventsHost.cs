@@ -12,6 +12,8 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.StackTraces.StackTrace;
 using JetBrains.ReSharper.Feature.Services.StackTraces.StackTrace.Nodes;
 using JetBrains.ReSharper.Feature.Services.StackTraces.StackTrace.Parsers;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.StackTrace;
@@ -24,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
 public class UnityProfilerEventsHost(
     ILogger logger,
-    ISolution solution)
+    ISolution solution,
+    UnityProfilerInfoCollector unityProfilerInfoCollector)
 {
     public void AdviseOpenFileByMethodName(UnityProfilerModel unityProfilerModel, FrontendBackendHost frontendBackendHost)
     {
@@ -36,6 +39,7 @@ public class UnityProfilerEventsHost(
 
             using (ReadLockCookie.Create())
             {
+                unityProfilerInfoCollector.OnOpenFileBySampleInfo();
                 try
                 {
                     NavigateToCode(sampleStackInfo.SampleStack);

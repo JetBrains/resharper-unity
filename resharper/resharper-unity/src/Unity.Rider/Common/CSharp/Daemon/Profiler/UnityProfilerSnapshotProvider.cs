@@ -56,6 +56,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
     private readonly SettingsScalarEntry mySnapshotFetchingScalarEntry;
 
     private readonly BackgroundProgressManager myBackgroundProgressManager;
+    private readonly UnityProfilerInfoCollector myUnityProfilerInfoCollector;
     private FrontendBackendProfilerModel FrontendBackendProfilerModel => myFrontendBackendHost.Model.GetFrontendBackendProfilerModel().NotNull();
     
     public UnityProfilerSnapshotProvider(Lifetime lifetime,
@@ -65,6 +66,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         ISettingsStore settingsStore,
         IShellLocks shellLocks,
         BackgroundProgressManager backgroundProgressManager,
+        UnityProfilerInfoCollector unityProfilerInfoCollector,
         ILogger logger)
     {
         myLifetime = lifetime;
@@ -74,6 +76,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         myShellLocks = shellLocks;
         myLogger = logger;
         myBackgroundProgressManager = backgroundProgressManager;
+        myUnityProfilerInfoCollector = unityProfilerInfoCollector;
         mySolution = solution;
         mySettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.ApplicationWide);
 
@@ -167,8 +170,8 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 
                 var currentProfilerFrameSnapshot =
                     await getUnityProfilerSnapshotCall.Start(myLifetime, snapshotRequest);
-                myLogger.Verbose("Succesfully recived snapthot information, samples count {0}",
-                    currentProfilerFrameSnapshot?.Samples.Count ?? -1);
+                var samplesCount = currentProfilerFrameSnapshot?.Samples.Count ?? -1;
+                myLogger.Verbose($"Succesfully recived snapthot information, samples count {samplesCount}");
 
                 try
                 {
@@ -233,6 +236,9 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
     {
         myLogger.Verbose($"Updated snapshot status: {snapshotStatus}");
 
+        if(snapshotStatus.Status == SnapshotStatus.HasNewSnapshotDataToFetch)
+            myUnityProfilerInfoCollector.OnUnityProfilerFrameSelected(snapshotStatus.SamplesCount);
+        
         if (GetSnapshotFetchingSettings() == ProfilerSnapshotFetchingSettings.Disabled)
         {
             FrontendBackendProfilerModel.ProfilerSnapshotStatus.Set(ourUnityProfilerSnapshotStatusDisabled);
