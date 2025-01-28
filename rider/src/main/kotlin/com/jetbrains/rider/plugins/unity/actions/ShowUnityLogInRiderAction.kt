@@ -9,7 +9,8 @@ class ShowUnityLogInRiderAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         e.getFrontendBackendModel() ?: return
-        UnityToolWindowFactory.activateToolWindowIfNotActive(project)
+        val context = UnityToolWindowFactory.getInstance(project).getOrCreateContext()
+        context.activateToolWindowIfNotActive()
     }
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
