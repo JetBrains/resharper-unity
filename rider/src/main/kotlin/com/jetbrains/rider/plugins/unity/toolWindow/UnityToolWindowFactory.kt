@@ -1,53 +1,51 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.status.StatusBarUtil
-import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
-import com.jetbrains.rider.plugins.unity.model.LogEvent
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
-import com.jetbrains.rider.ui.RiderToolWindowFactory
+import icons.UnityIcons
 
-class UnityToolWindowFactory : RiderToolWindowFactory() {
+//there's an API for registering tool windows in the IJ Platform
+@Service(Service.Level.PROJECT)
+class UnityToolWindowFactory(private val project: Project) {
 
     companion object {
-        const val TOOLWINDOW_ID = "Unity"
+        const val TOOL_WINDOW_ID = "Unity"
         const val ACTION_PLACE = "Unity"
 
-        lateinit var logModel :UnityLogPanelModel
-
-        fun getToolWindow(project: Project) = ToolWindowManager.getInstance(project).getToolWindow(TOOLWINDOW_ID)
+        fun getInstance(project: Project): UnityToolWindowFactory = project.getService(UnityToolWindowFactory::class.java)
 
         fun show(project: Project) {
-            getToolWindow(project)?.show()
-        }
-
-        fun activateToolWindowIfNotActive(project: Project) {
-            val toolWindow = getToolWindow(project)
-            if (toolWindow?.isActive != null && toolWindow.isActive == false) {
-                toolWindow.activate {}
-            }
-        }
-
-        fun addEvent(project: Project, event: LogEvent) {
-            getToolWindow(project)
-            logModel.events.addEvent(event)
+            ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID)?.show(null)
         }
     }
 
-    override fun shouldBeAvailable(project: Project): Boolean {
-        return false
+    private val lock = Object()
+    private var context: UnityToolWindowContext? = null
+
+    fun getOrCreateContext(): UnityToolWindowContext {
+        synchronized(lock) {
+            return context ?: create()
+        }
     }
 
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow, lifetime: Lifetime) {
-        toolWindow.isAvailable = true
-        logModel = UnityLogPanelModel(UnityProjectLifetimeService.getLifetime(project), project, toolWindow)
-        val logView = UnityLogPanelView(UnityProjectLifetimeService.getLifetime(project), project, logModel, toolWindow)
+    // TODO: Use ToolWindowFactory/RiderNuGetToolWindowFactory and toolWindow extension points
+    @Suppress("DEPRECATION")
+    private fun create(): UnityToolWindowContext {
+        val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project,
+                                                                                   true, false)
         val contentManager = toolWindow.contentManager
+        toolWindow.title = ""
+        toolWindow.setIcon(UnityIcons.ToolWindows.UnityLog)
+
+        val logModel = UnityLogPanelModel(UnityProjectLifetimeService.getLifetime(project), project, toolWindow)
+        val logView = UnityLogPanelView(UnityProjectLifetimeService.getLifetime(project), project, logModel, toolWindow)
         val toolWindowContent = contentManager.factory.createContent(null, UnityBundle.message("tab.title.log"), true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel
@@ -55,5 +53,8 @@ class UnityToolWindowFactory : RiderToolWindowFactory() {
         }
 
         contentManager.addContent(toolWindowContent)
+        val twContext = UnityToolWindowContext(toolWindow, logModel)
+        context = twContext
+        return twContext
     }
 }

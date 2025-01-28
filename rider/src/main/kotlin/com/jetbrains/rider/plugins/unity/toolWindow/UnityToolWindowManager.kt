@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -11,19 +11,30 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 
 @Service(Service.Level.PROJECT)
 class UnityToolWindowManager {
+    companion object {
+        private val myLogger = Logger.getInstance(UnityToolWindowManager::class.java)
+    }
+
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.unityEditorConnected.whenTrue(lifetime) {
-                thisLogger().info("new session")
-                UnityToolWindowFactory.activateToolWindowIfNotActive(session.project)
+                myLogger.info("new session")
+                val context = UnityToolWindowFactory.getInstance(session.project).getOrCreateContext()
+                val shouldReactivateBuildToolWindow = context.isActive
+
+                if (shouldReactivateBuildToolWindow) {
+                    context.activateToolWindowIfNotActive()
+                }
             }
 
             model.consoleLogging.onConsoleLogEvent.adviseNotNull(lifetime) {
-                UnityToolWindowFactory.addEvent(session.project, it)
+                val context = UnityToolWindowFactory.getInstance(session.project).getOrCreateContext()
+                context.addEvent(it)
             }
 
             model.activateUnityLogView.advise(lifetime) {
-                UnityToolWindowFactory.activateToolWindowIfNotActive(session.project)
+                val context = UnityToolWindowFactory.getInstance(session.project).getOrCreateContext()
+                context.activateToolWindowIfNotActive()
             }
         }
     }
