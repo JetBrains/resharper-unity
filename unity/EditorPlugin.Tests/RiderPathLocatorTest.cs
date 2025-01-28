@@ -18,6 +18,9 @@ namespace JetBrains.Rider.Unity.Editor.Tests
       var infos = myRiderPathLocator.GetAllRiderPaths();
       
       // Assert.Equal(3, infos.Length);
+      // var paths = infos.Select(x => x.Presentation + " " + x.Path);
+      // var res = string.Join(Environment.NewLine, paths.ToArray());
+      // Assert.True(infos.Length == 3, res);
     }
   }
 }

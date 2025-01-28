@@ -62,7 +62,7 @@ namespace JetBrains.Rider.PathLocator
       var installInfos = new List<RiderInfo>();
       var appsPath = GetAppsInstallLocation();
 
-      installInfos.AddRange(CollectToolbox20Linux(appsPath, "*rider*", "bin/rider.sh"));
+      installInfos.AddRange(CollectToolbox20Linux(appsPath, "*rider*", "bin/rider"));
       installInfos.AddRange(CollectToolbox20Linux(appsPath, "*fleet*", "bin/Fleet"));
 
       var riderRootPath = Path.Combine(appsPath, "Rider");
