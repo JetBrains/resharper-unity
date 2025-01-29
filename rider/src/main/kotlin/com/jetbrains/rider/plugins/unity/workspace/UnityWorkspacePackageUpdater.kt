@@ -10,7 +10,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
+import com.intellij.openapi.vfs.VirtualFilePrefixTree
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.util.application
@@ -38,7 +38,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
     }
 
     private var initialEntityStorage: MutableEntityStorage? = MutableEntityStorage.create()
-    val sourceRootsTree = VirtualFilePrefixTreeFactory.createSet()
+    val sourceRootsTree = VirtualFilePrefixTree.createSet()
 
     init {
         val assets = project.solutionDirectory.toVirtualFile(false)?.findChild("Assets")
