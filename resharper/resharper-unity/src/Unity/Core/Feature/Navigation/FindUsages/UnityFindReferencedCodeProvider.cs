@@ -23,8 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Navigation.FindUsages
 
         public override string GetNotFoundMessage(SearchRequest request)
         {
-            var unityTracker = mySolutionsManager.Solution?.GetComponent<UnitySolutionTracker>();
-            if (unityTracker == null || !unityTracker.IsUnityProject.Value) return base.GetNotFoundMessage(request);
+            if (mySolutionsManager.Solution == null)  return base.GetNotFoundMessage(request);
+            if (!mySolutionsManager.Solution.GetComponent<UnitySolutionTracker>().IsUnityProject.Value) return base.GetNotFoundMessage(request);
             
             var i = 0;
             IDeclaredElement declaredElement = null;

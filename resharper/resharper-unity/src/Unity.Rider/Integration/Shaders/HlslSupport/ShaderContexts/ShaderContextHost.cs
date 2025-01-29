@@ -34,7 +34,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts
 {
     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
-    public class ShaderContextHost : IUnityLazyComponent
+    public class ShaderContextHost : IUnityProjectFolderLazyComponent
     {
         private readonly AutoShaderContextData myAutoContext = new();
         private readonly ISolution mySolution;
@@ -80,8 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                     {
                         var sourceFile = GetSourceFile(id);
                         if (sourceFile == null)
-                            return Task.FromResult(
-                                new SelectShaderContextDataInteraction(new List<ShaderContextData>()));
+                            return Task.FromResult(new SelectShaderContextDataInteraction(new List<ShaderContextData>()));
                         return CreateSelectShaderContextInteraction(lt, id, sourceFile);
                     }
                 });

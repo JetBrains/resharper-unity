@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
     // 10. Refresh assets database/recompile
 #endregion
 
-    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class PackageManager
     {
         private const string DefaultRegistryUrl = "https://packages.unity.com";

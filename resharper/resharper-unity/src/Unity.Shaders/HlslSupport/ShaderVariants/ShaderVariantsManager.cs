@@ -65,7 +65,7 @@ public class ShaderVariantsManager : ICppChangeProvider, ISolutionChangeProvider
         UrtCompilationMode = GetUrtCompilationMode(myUrtCompilationModeEntry); 
         
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
-        unitySolutionTracker.IsUnityProjectFolder.AdviseUntil(lifetime, res =>
+        unitySolutionTracker.IsUnityProject.AdviseUntil(lifetime, res =>
         {
             if (res)
             {

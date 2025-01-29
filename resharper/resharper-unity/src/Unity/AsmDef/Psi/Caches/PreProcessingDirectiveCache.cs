@@ -8,6 +8,7 @@ using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
@@ -22,7 +23,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 {
     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
-    public class PreProcessingDirectiveCache
+    public class PreProcessingDirectiveCache : IUnityProjectLazyComponent
     {
         private readonly ISolution mySolution;
         private readonly AsmDefCache myAsmDefCache;

@@ -11,7 +11,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve;
 
 [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
-public class ShaderSymbolTableProvider(ShaderLabCache shaderLabCache, IPsiServices psiServices) : IUnityLazyComponent
+public class ShaderSymbolTableProvider(ShaderLabCache shaderLabCache, IPsiServices psiServices) : IUnityProjectFolderLazyComponent
 {
     private readonly BuiltinShadersSymbolTable myBuiltinShadersSymbolTable = new(psiServices);
 

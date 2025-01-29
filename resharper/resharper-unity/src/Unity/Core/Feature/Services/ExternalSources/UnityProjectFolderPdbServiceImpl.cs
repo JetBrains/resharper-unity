@@ -20,11 +20,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSource
 {
     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     [ZoneMarker(typeof(ExternalSourcesZone))]
-    public class UnityPdbServiceImpl : PdbServiceImpl, IUnityLazyComponent
+    public class UnityProjectFolderPdbServiceImpl : PdbServiceImpl, IUnityProjectFolderLazyComponent
     {
         private readonly UnitySolutionTracker mySolutionTracker;
 
-        public UnityPdbServiceImpl(Lifetime lifetime, ISolution solution, SrcSrvSourcesCache srcSrvSourcesCache,
+        public UnityProjectFolderPdbServiceImpl(Lifetime lifetime, ISolution solution, SrcSrvSourcesCache srcSrvSourcesCache,
             SourceLinkOrEmbeddedSourcesCache sourceLinkOrEmbeddedSourcesCache, ISourcesDownloader sourcesDownloader,
             PdbCache pdbCache, IExternalSourcesMappingChangeManager externalSourcesMappingChangeManager,
             AssemblyCollection assemblyCollection, ExternalSourcesActivation externalSourcesActivation,

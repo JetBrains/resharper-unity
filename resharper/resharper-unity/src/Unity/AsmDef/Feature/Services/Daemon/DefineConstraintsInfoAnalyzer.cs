@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
-using JetBrains.Collections.Viewable;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -27,27 +26,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         HighlightingTypes = [typeof(UnmetDefineConstraintInfo)])]
     public class DefineConstraintsInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
-        private PreProcessingDirectiveCache? myPreProcessingDirectiveCache;
-        private UnityExternalFilesPsiModule? myExternalFilesPsiModule;
+        private readonly ILazy<PreProcessingDirectiveCache> myPreProcessingDirectiveCache;
+        private readonly ILazy<UnityExternalFilesModuleFactory> myExternalFilesPsiModuleFactory;
+        private readonly UnitySolutionTracker mySolutionTracker;
 
         public DefineConstraintsInfoAnalyzer(Lifetime lifetime,
             ILazy<PreProcessingDirectiveCache> preProcessingDirectiveCache,
             ILazy<UnityExternalFilesModuleFactory> externalFilesPsiModuleFactory,
             UnitySolutionTracker solutionTracker)
         {
-            solutionTracker.IsUnityProject.AdviseUntil(lifetime, res =>
-            {
-                if (!res) return false;
-                myPreProcessingDirectiveCache = preProcessingDirectiveCache.GetValueAsync(lifetime).Result;
-                myExternalFilesPsiModule = externalFilesPsiModuleFactory.Value.PsiModule;
-                return true;
-            });
+            myPreProcessingDirectiveCache = preProcessingDirectiveCache;
+            myExternalFilesPsiModuleFactory = externalFilesPsiModuleFactory;
+            mySolutionTracker = solutionTracker;
         }
 
         public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
         {
             if (!base.ShouldRun(file, data)) return false;
-            return myExternalFilesPsiModule != null && IsProjectFileOrKnownExternalFile(data.SourceFile, myExternalFilesPsiModule);
+            if (!mySolutionTracker.IsUnityProject.Value) return false;
+            return IsProjectFileOrKnownExternalFile(data.SourceFile, myExternalFilesPsiModuleFactory.Value.PsiModule);
         }
 
         protected override void Run(IJsonNewLiteralExpression element,
@@ -106,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 
         private ICollection<PreProcessingDirective> GetPreProcessingDirectives(IJsonNewFile file)
         {
-            if (myPreProcessingDirectiveCache == null) return EmptyList<PreProcessingDirective>.Instance;
+            if (!mySolutionTracker.IsUnityProject.Value) return EmptyList<PreProcessingDirective>.Instance;
             
             // Get the defines for the currently edited file. The file might belong to a project, so we could get the
             // actual defines for the project, but that would ignore any changes made to the versionDefines section of
@@ -117,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             if (assemblyName == null || string.IsNullOrWhiteSpace(assemblyName))
                 return EmptyList<PreProcessingDirective>.Instance;
 
-            return myPreProcessingDirectiveCache.GetPreProcessingDirectives(assemblyName);
+            return myPreProcessingDirectiveCache.Value.GetPreProcessingDirectives(assemblyName);
         }
 
         private static bool HasDefine(IEnumerable<PreProcessingDirective> defines, string symbol) =>

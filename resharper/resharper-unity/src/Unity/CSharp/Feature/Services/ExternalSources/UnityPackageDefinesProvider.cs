@@ -1,7 +1,4 @@
-using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
-using JetBrains.Collections.Viewable;
-using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Core;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
@@ -33,24 +30,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
     // This class also won't be called for source files that are part of assembly definitions that aren't compiled, such
     // as tests
     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
-    public class UnityPackageDefinesProvider : IExternalSourcesDefinesProvider
+    public class UnityPackageDefinesProvider(
+        PreProcessingDirectiveCache preProcessingDirectiveCache,
+        UnitySolutionTracker solutionTracker)
+        : IExternalSourcesDefinesProvider
     {
-        private PreProcessingDirectiveCache? myPreProcessingDirectiveCache;
-
-        public UnityPackageDefinesProvider(Lifetime lifetime, ILazy<PreProcessingDirectiveCache> preProcessingDirectiveCache, UnitySolutionTracker solutionTracker)
-        {
-            solutionTracker.IsUnityProject.AdviseUntil(lifetime, res =>
-            {
-                if (!res) return false;
-                myPreProcessingDirectiveCache = preProcessingDirectiveCache.GetValueAsync(lifetime).Result;
-                return true;
-            });
-        }
-
         public PreProcessingDirective[] GetPreProcessingDirectives(IPsiModule psiModule)
         {
-            if (myPreProcessingDirectiveCache != null && psiModule is IAssemblyPsiModule assemblyPsiModule)
-                return myPreProcessingDirectiveCache.GetPreProcessingDirectives(assemblyPsiModule.Assembly);
+            if (solutionTracker.IsUnityProject.Value)
+            {
+                if (psiModule is IAssemblyPsiModule assemblyPsiModule)
+                    return preProcessingDirectiveCache.GetPreProcessingDirectives(assemblyPsiModule.Assembly);    
+            }
+            
             return EmptyArray<PreProcessingDirective>.Instance;
         }
     }

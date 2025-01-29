@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Application.changes;
+using JetBrains.Application.Components;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
         private readonly BackendUnityHost myBackendUnityHost;
-        private readonly BackendUnityProtocol myBackendUnityProtocol;
+        private readonly ILazy<BackendUnityProtocol> myBackendUnityProtocol;
         private readonly ILogger myLogger;
         private readonly UnityVersion myUnityVersion;
         private readonly UnityProcessTracker myUnityProcessTracker;
@@ -44,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
             BackendUnityHost backendUnityHost,
-            BackendUnityProtocol backendUnityProtocol,
+            ILazy<BackendUnityProtocol> backendUnityProtocol,
             IApplicationWideContextBoundSettingStore settingsStore,
             ILogger logger, UnityVersion unityVersion, UnityProcessTracker unityProcessTracker)
         {
@@ -156,7 +157,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 finally
                 {
                     await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
-                    await myBackendUnityProtocol.Connected.NextTrueValueAsync(lifetimeDef.Lifetime);
+                    await myBackendUnityProtocol.Value.Connected.NextTrueValueAsync(lifetimeDef.Lifetime);
                     myLogger.Trace("await Connected finished.");
                     await myBackendUnityHost.BackendUnityModel.NextValueAsync(lifetimeDef.Lifetime);
                     myLogger.Trace("await for BackendUnityModel finished.");
@@ -197,13 +198,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 Rgc.Guarded, () =>
                 {
                     // wait interval after the last Connected and end only if connection is still present
-                    if (myBackendUnityProtocol.Connected.HasTrueValue())
+                    if (myBackendUnityProtocol.Value.Connected.HasTrueValue())
                     {
                         tcs.SetResult(true);
                         def.Terminate();
                     }
                 });
-            myBackendUnityProtocol.Connected.Advise(def.Lifetime, connected =>
+            myBackendUnityProtocol.Value.Connected.Advise(def.Lifetime, connected =>
             {
                 myLogger.Trace($"Connected value: {connected}.");
                 if (connected) groupingEvent.FireIncoming();
@@ -213,7 +214,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
     }
 
     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
-    public class UnityRefreshTracker : IUnityLazyComponent
+    public class UnityRefreshTracker : IUnityProjectLazyComponent
     {
         private readonly ILogger myLogger;
         private GroupingEvent myGroupingEvent;
@@ -221,8 +222,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher,
             ILogger logger,
             IFileSystemTracker fileSystemTracker,
-            FrontendBackendHost host,
-            UnitySolutionTracker unitySolutionTracker)
+            FrontendBackendHost host)
         {
             myLogger = logger;
             if (!solution.HasProtocolSolution())
@@ -230,28 +230,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
             solution.Locks.ExecuteOrQueueEx(lifetime, "UnityRefreshTracker", () =>
             {
-                unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
+                // Rgc.Guarded - beware RIDER-15577
+                myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherGroupingEvent",
+                    TimeSpan.FromMilliseconds(500),
+                    Rgc.Guarded, () => { refresher.StartRefresh(RefreshType.Normal); });
+
+                host.Do(rd => rd.Refresh.Advise(lifetime, force =>
                 {
-                    if (!args) return;
+                    if (force)
+                        refresher.StartRefresh(RefreshType.ForceRequestScriptReload);
+                    else
+                        myGroupingEvent.FireIncoming();
+                }));
 
-                    // Rgc.Guarded - beware RIDER-15577
-                    myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherGroupingEvent",
-                        TimeSpan.FromMilliseconds(500),
-                        Rgc.Guarded, () =>
-                        {
-                            refresher.StartRefresh(RefreshType.Normal);
-                        });
-
-                    host.Do(rd => rd.Refresh.Advise(lifetime, force =>
-                    {
-                        if (force)
-                            refresher.StartRefresh(RefreshType.ForceRequestScriptReload);
-                        else
-                            myGroupingEvent.FireIncoming();
-                    }));
-
-                    fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
-                });
+                fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
             });
         }
 

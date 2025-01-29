@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using JetBrains.Application.Parts;
+using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Diagnostics;
@@ -11,7 +12,6 @@ using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
-using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity;
@@ -23,17 +23,17 @@ using FrontendOpenArgs = JetBrains.Rider.Model.Unity.FrontendBackend.RdOpenFileA
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 {
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-    public class PassthroughHost : IUnityLazyComponent
+    public class PassthroughHost : IUnityProjectLazyComponent
     {
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly ILogger myLogger;
 
         public PassthroughHost(Lifetime lifetime,
-                               UnitySolutionTracker unitySolutionTracker,
-                               BackendUnityHost backendUnityHost,
-                               FrontendBackendHost frontendBackendHost,
-                               ILogger logger)
+            BackendUnityHost backendUnityHost,
+            FrontendBackendHost frontendBackendHost,
+            ILogger logger,
+            IThreading threading)
         {
             myBackendUnityHost = backendUnityHost;
             myFrontendBackendHost = frontendBackendHost;
@@ -43,10 +43,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             var model = frontendBackendHost.Model;
             if (model == null) return; // only tests
 
-            unitySolutionTracker.IsUnityProject.AdviseUntil(lifetime, args =>
+            threading.ExecuteOrQueueEx(lifetime, "PassthroughHost.ctor", () =>
             {
-                if (!args) return false;
-
                 AdviseFrontendToUnityModel(lifetime, model);
 
                 // Advise the backend/Unity model as high priority so we get called back before other subscribers.
@@ -67,8 +65,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                     // https://github.com/JetBrains/resharper-unity/pull/2023
                     if (backendUnityModel == null) frontendBackendHost.Model?.PlayControlsInitialized.SetValue(false);
                 });
-                
-                return true;
             });
         }
 
@@ -96,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             frontendBackendModel.PlayControls.Step.Advise(lifetime, () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Step.Fire());
 
             // Called from frontend to generate the UIElements schema files
-            frontendBackendModel.GenerateUIElementsSchema.Set((l, u) =>
+            frontendBackendModel.GenerateUIElementsSchema.SetAsync((l, u) =>
             {
                 var model = backendUnityModelProperty.Maybe.ValueOrDefault;
                 return model != null
@@ -119,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 backendUnityModelProperty.Maybe.ValueOrDefault?.ShowPreferences.Fire());
 
             // Called from frontend to run a method in unity
-            frontendBackendModel.RunMethodInUnity.Set((l, data) =>
+            frontendBackendModel.RunMethodInUnity.SetAsync((l, data) =>
             {
                 var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
                 return backendUnityModel == null
@@ -127,7 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                     : backendUnityModel.RunMethodInUnity.Start(l, data).ToRdTask(l);
             });
 
-            frontendBackendModel.HasUnsavedState.Set((l, u) =>
+            frontendBackendModel.HasUnsavedState.SetAsync((l, u) =>
             {
                 var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
                 return backendUnityModel == null
@@ -135,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                     : backendUnityModel.HasUnsavedState.Start(l, u).ToRdTask(l);
             });
 
-            frontendBackendModel.StartProfiling.Set((l, play) =>
+            frontendBackendModel.StartProfiling.SetAsync((l, play) =>
             {
                 var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
                 var profilerApiPath = GetProfilerApiPath();
@@ -250,7 +246,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
         private void AdviseOpenFile(BackendUnityModel backendUnityModel, FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.OpenFileLineCol.Set((lf, args) =>
+            backendUnityModel.OpenFileLineCol.SetAsync((lf, args) =>
             {
                 RdTask<bool> result = new RdTask<bool>();
                 using (ReadLockCookie.Create())

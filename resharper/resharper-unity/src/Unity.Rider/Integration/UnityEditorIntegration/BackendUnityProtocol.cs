@@ -13,7 +13,7 @@ using JetBrains.Rd;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
 using JetBrains.ReSharper.Feature.Services.Protocol;
-using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
@@ -27,7 +27,7 @@ using Newtonsoft.Json;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration
 {
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-    public class BackendUnityProtocol
+    public class BackendUnityProtocol : IUnityProjectLazyComponent
     {
         private readonly Lifetime myLifetime;
         private readonly SequentialLifetimes mySessionLifetimes;
@@ -45,13 +45,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly SequentialScheduler myBackgroundScheduler;
 
         public BackendUnityProtocol(Lifetime lifetime,
-                                    ILogger logger,
-                                    BackendUnityHost backendUnityHost,
-                                    IScheduler dispatcher,
-                                    IShellLocks locks,
-                                    ISolution solution,
-                                    UnitySolutionTracker unitySolutionTracker,
-                                    IFileSystemTracker fileSystemTracker)
+            ILogger logger,
+            BackendUnityHost backendUnityHost,
+            IScheduler dispatcher,
+            IShellLocks locks,
+            ISolution solution,
+            IFileSystemTracker fileSystemTracker)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -67,29 +66,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             if (!solution.HasProtocolSolution())
                 return;
 
-            unitySolutionTracker.IsUnityProject.AdviseUntil(lifetime, args =>
+            var solFolder = mySolution.SolutionDirectory;
+
+            // todo: consider non-Unity Solution with Unity-generated projects
+            var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
+            fileSystemTracker.AdviseFileChanges(lifetime, protocolInstancePath, delta =>
             {
-                if (!args) return false;
+                // Connect when ProtocolInstance.json is updated (AppDomain start/reload in Unity editor)
+                if (delta.ChangeType != FileSystemChangeType.ADDED &&
+                    delta.ChangeType != FileSystemChangeType.CHANGED) return;
+                if (!delta.NewPath.ExistsFile) return;
+                if (delta.NewPath.FileModificationTimeUtc == myLastChangeTime) return;
+                myLastChangeTime = delta.NewPath.FileModificationTimeUtc;
 
-                var solFolder = mySolution.SolutionDirectory;
-
-                // todo: consider non-Unity Solution with Unity-generated projects
-                var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
-                fileSystemTracker.AdviseFileChanges(lifetime, protocolInstancePath, delta =>
-                {
-                    // Connect when ProtocolInstance.json is updated (AppDomain start/reload in Unity editor)
-                    if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
-                    if (!delta.NewPath.ExistsFile) return;
-                    if (delta.NewPath.FileModificationTimeUtc == myLastChangeTime) return;
-                    myLastChangeTime = delta.NewPath.FileModificationTimeUtc;
-            
-                    CreateProtocol(lifetime, protocolInstancePath);
-                });
-
-                // connect on start of Rider
                 CreateProtocol(lifetime, protocolInstancePath);
-                return true;
             });
+
+            // connect on start of Rider
+            CreateProtocol(lifetime, protocolInstancePath);
         }
 
         private void CreateProtocol(Lifetime lf, VirtualFileSystemPath protocolInstancePath)

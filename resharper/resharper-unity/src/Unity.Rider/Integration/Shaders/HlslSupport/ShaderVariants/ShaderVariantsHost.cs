@@ -34,7 +34,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderVariants;
 
 [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
-public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider, IUnityLazyComponent
+public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider, IUnityProjectFolderLazyComponent
 {
     private readonly ISolution mySolution;
     private readonly CppExternalModule myCppExternalModule;
