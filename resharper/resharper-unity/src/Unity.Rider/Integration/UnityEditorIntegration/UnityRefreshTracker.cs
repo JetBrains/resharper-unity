@@ -157,7 +157,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 finally
                 {
                     await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
-                    await myBackendUnityProtocol.Value.Connected.NextTrueValueAsync(lifetimeDef.Lifetime);
+                    var protocol = await myBackendUnityProtocol.GetValueAsync(lifetimeDef.Lifetime);
+                    await protocol.Connected.NextTrueValueAsync(lifetimeDef.Lifetime);
                     myLogger.Trace("await Connected finished.");
                     await myBackendUnityHost.BackendUnityModel.NextValueAsync(lifetimeDef.Lifetime);
                     myLogger.Trace("await for BackendUnityModel finished.");
