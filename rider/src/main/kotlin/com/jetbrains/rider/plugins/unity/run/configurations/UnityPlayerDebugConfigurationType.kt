@@ -26,7 +26,7 @@ import org.jetbrains.concurrency.Promise
 import javax.swing.JComponent
 import javax.swing.JLabel
 
-class UnityPlayerDebugConfigurationType : ConfigurationTypeBase(
+internal class UnityPlayerDebugConfigurationType : ConfigurationTypeBase(
     ID,
     UnityBundle.message("configuration.type.name.attach.to.unity.player"),
     UnityBundle.message("configuration.type.description.attach.to.unity.player.and.debug"),
