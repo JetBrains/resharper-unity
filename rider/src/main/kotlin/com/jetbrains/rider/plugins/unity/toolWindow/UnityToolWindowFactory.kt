@@ -1,51 +1,45 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
-import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindowAnchor
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.impl.status.StatusBarUtil
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
-import icons.UnityIcons
+import com.jetbrains.rider.ui.RiderToolWindowFactory
 
-//there's an API for registering tool windows in the IJ Platform
-@Service(Service.Level.PROJECT)
-class UnityToolWindowFactory(private val project: Project) {
+class UnityToolWindowFactory : RiderToolWindowFactory() {
 
     companion object {
-        const val TOOL_WINDOW_ID = "Unity"
+        const val TOOLWINDOW_ID = "Unity"
         const val ACTION_PLACE = "Unity"
 
-        fun getInstance(project: Project): UnityToolWindowFactory = project.getService(UnityToolWindowFactory::class.java)
+        fun getToolWindow(project: Project): ToolWindow? = ToolWindowManager.getInstance(project).getToolWindow(TOOLWINDOW_ID)
 
         fun show(project: Project) {
-            ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID)?.show(null)
+            getToolWindow(project)?.show()
+        }
+
+        fun activateToolWindowIfNotActive(project: Project) {
+            val toolWindow = getToolWindow(project) ?: return
+            if (!toolWindow.isActive) {
+                toolWindow.activate {}
+            }
         }
     }
 
-    private val lock = Object()
-    private var context: UnityToolWindowContext? = null
-
-    fun getOrCreateContext(): UnityToolWindowContext {
-        synchronized(lock) {
-            return context ?: create()
-        }
+    override fun shouldBeAvailable(project: Project): Boolean {
+        return false
     }
 
-    // TODO: Use ToolWindowFactory/RiderNuGetToolWindowFactory and toolWindow extension points
-    @Suppress("DEPRECATION")
-    private fun create(): UnityToolWindowContext {
-        val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project,
-                                                                                   true, false)
-        val contentManager = toolWindow.contentManager
-        toolWindow.title = ""
-        toolWindow.setIcon(UnityIcons.ToolWindows.UnityLog)
-
-        val logModel = UnityLogPanelModel(UnityProjectLifetimeService.getLifetime(project), project, toolWindow)
+    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow, lifetime: Lifetime) {
+        toolWindow.isAvailable = true
+        val logModel = UnityLogPanelModel.getInstance(project)
         val logView = UnityLogPanelView(UnityProjectLifetimeService.getLifetime(project), project, logModel, toolWindow)
+        val contentManager = toolWindow.contentManager
         val toolWindowContent = contentManager.factory.createContent(null, UnityBundle.message("tab.title.log"), true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel
@@ -53,8 +47,5 @@ class UnityToolWindowFactory(private val project: Project) {
         }
 
         contentManager.addContent(toolWindowContent)
-        val twContext = UnityToolWindowContext(toolWindow, logModel)
-        context = twContext
-        return twContext
     }
 }

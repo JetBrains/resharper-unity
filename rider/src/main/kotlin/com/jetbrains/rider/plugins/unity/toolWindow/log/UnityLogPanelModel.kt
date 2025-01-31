@@ -1,30 +1,40 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.fire
 import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.LogEvent
 import com.jetbrains.rider.plugins.unity.model.LogEventMode
 import com.jetbrains.rider.plugins.unity.model.LogEventType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.projectView.solution
 
-class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: ToolWindow) {
+@Service(Service.Level.PROJECT)
+class UnityLogPanelModel(val project: Project) {
+    companion object {
+        fun getInstance(project: Project): UnityLogPanelModel = project.service()
+    }
+    private val toolWindow = UnityToolWindowFactory.getToolWindow(project)
+    private val lifetime = UnityProjectLifetimeService.getLifetime(project)
+
     private val lock = Object()
     val maxItemsCount = 10000
 
     private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelModel->onChanged", 250, true,
-                                                        toolWindow.component).setRestartTimerOnAdd(false)
+                                                        toolWindow?.component).setRestartTimerOnAdd(false)
     private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->onChanged") {
         override fun run() {
-            if (toolWindow.isVisible)
+            if (toolWindow != null && toolWindow.isVisible)
                 onChanged.fire(getVisibleEvents())
         }
     }
@@ -194,6 +204,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
         mergeSimilarItems.advise(lifetime) { queueUpdate() }
         project.solution.frontendBackendModel.consoleLogging.lastInitTime.advise(lifetime) { queueUpdate() }
         project.solution.frontendBackendModel.consoleLogging.lastPlayTime.advise(lifetime) { queueUpdate() }
+        if (toolWindow != null)
         project.messageBus.connect(toolWindow.contentManager).subscribe(ToolWindowManagerListener.TOPIC,
                                                                         createToolWindowManagerListener(toolWindow.id))
     }

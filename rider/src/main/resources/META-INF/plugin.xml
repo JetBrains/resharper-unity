@@ -49,7 +49,7 @@
     <rd.solutionExtListener endpoint="IDE Frontend"
                             listener="com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator$ProtocolListener"/>
     <rd.solutionExtListener endpoint="IDE Frontend"
-                            listener="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager$ProtocolListener"/>
+                            listener="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManagerProtocolListener"/>
     <rd.solutionExtListener endpoint="IDE Frontend"
                             listener="com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState$ProtocolListener"/>
     <rd.solutionExtListener endpoint="IDE Frontend"
@@ -208,7 +208,11 @@
 
     <rider.completion.csharpIdentifierPartHelper implementation="com.jetbrains.rider.plugins.unity.csharp.completion.OdinLayoutAttributeCSharpIdentifierPartHelper"/>
 
-    <toolWindowAllowlist id="Unity" />
+    <toolWindow id="Unity"
+                anchor="bottom"
+                secondary="false"
+                icon="UnityIcons.ToolWindows.UnityLog"
+                factoryClass="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
 
     <rider.gotoCustomizer implementation="com.jetbrains.rider.plugins.unity.gotoType.UnityGotoCustomizer"/>
   </extensions>
