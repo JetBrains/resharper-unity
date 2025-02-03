@@ -4,8 +4,8 @@ import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.XValuePlace
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.debugger.IDotNetValue
+import com.jetbrains.rider.debugger.dotnetDebugProcess
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluatorFactory
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
@@ -40,7 +40,7 @@ class UnityTextureCustomComponentEvaluatorFactory : RiderCustomComponentEvaluato
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesBase, session: XDebugSession): Boolean {
         if (properties is ObjectPropertiesProxy)
-            return (session.debugProcess as? DotNetDebugProcess)?.isIl2Cpp == false
+            return session.dotnetDebugProcess?.isIl2Cpp == false
                    && !properties.valueFlags.contains(ValueFlags.IsNull)
                    && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
                        || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")

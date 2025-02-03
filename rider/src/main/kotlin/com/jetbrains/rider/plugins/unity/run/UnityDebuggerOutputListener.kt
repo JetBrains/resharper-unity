@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.text.VersionComparatorUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
-import com.jetbrains.rider.debugger.DotNetDebugProcess
+import com.jetbrains.rider.debugger.dotnetDebugProcess
 import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
@@ -62,7 +62,7 @@ class UnityDebuggerOutputListener(val project: Project,
             debugNotification.notify(project)
 
             val debuggerManager = XDebuggerManager.getInstance(project)
-            val debugProcess = debuggerManager.currentSession?.debugProcess as? DotNetDebugProcess
+            val debugProcess = debuggerManager.currentSession?.dotnetDebugProcess
 
             if (debugProcess != null) {
                 val console = debugProcess.console
