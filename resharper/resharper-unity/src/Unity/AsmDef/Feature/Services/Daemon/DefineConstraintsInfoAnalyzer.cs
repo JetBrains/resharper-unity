@@ -21,7 +21,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     // Note that problem analysers for NonUserCode will still show Severity.INFO
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe,
+    [ElementProblemAnalyzer(
         typeof(IJsonNewLiteralExpression),
         HighlightingTypes = [typeof(UnmetDefineConstraintInfo)])]
     public class DefineConstraintsInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>

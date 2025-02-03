@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
 
-    [ElementProblemAnalyzer(Instantiation.DemandAnyThreadUnsafe, typeof(IAttribute), HighlightingTypes = new[] {typeof(DuplicateShortcutWarning)})]
+    [ElementProblemAnalyzer(typeof(IAttribute), HighlightingTypes = new[] {typeof(DuplicateShortcutWarning)})]
     public class DuplicateMenuItemShortCutProblemAnalyzer : UnityElementProblemAnalyzer<IAttribute>
     {
         private readonly UnityShortcutCache myCache;

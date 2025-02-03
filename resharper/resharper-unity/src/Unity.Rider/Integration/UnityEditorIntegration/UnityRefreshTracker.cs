@@ -30,7 +30,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityRefresher
     {
         private readonly IShellLocks myLocks;
@@ -214,7 +214,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         }
     }
 
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityRefreshTracker : IUnityProjectLazyComponent
     {
         private readonly ILogger myLogger;

@@ -19,7 +19,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class ShaderContextDataPresentationCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager)
         : SimplePsiSourceFileCacheWithLocalCache<List<ShaderContextDataPresentationCache.CacheItem>, ShaderContextDataPresentationCache.ShaderFileInfo>(lifetime, shellLocks, persistentIndexManager,
             UnsafeMarshallers.GetCollectionMarshaller(Read, Write, c => new List<CacheItem>(c)), "Unity::Shaders::ShaderContextDataPresentationCacheUpdated")

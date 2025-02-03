@@ -13,7 +13,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityProcessTracker
     {
         public readonly IProperty<int?> UnityProcessId;
