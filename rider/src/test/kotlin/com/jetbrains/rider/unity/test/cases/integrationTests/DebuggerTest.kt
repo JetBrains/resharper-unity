@@ -20,7 +20,6 @@ import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.unity.EngineVersion
 import com.jetbrains.rider.test.unity.Tuanjie
 import com.jetbrains.rider.test.unity.Unity
-import com.jetbrains.rider.test.unity.UnityTestEnvironment
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import kotlinx.coroutines.launch

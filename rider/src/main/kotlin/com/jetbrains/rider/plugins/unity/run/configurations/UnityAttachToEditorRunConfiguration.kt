@@ -26,7 +26,6 @@ import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
-import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
 import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory

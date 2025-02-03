@@ -4,7 +4,6 @@ import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolder
-import com.intellij.openapi.util.getOrCreateUserData
 import com.intellij.openapi.util.getOrCreateUserDataUnsafe
 import com.intellij.xdebugger.attach.*
 import com.jetbrains.rider.debugger.attach.mono.MonoDebuggersProvider

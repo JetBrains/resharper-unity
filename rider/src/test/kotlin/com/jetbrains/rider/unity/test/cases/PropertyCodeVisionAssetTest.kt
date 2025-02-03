@@ -18,7 +18,6 @@ import com.jetbrains.rider.unity.test.framework.SettingsHelper
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
-import java.io.File
 import java.time.Duration
 
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)

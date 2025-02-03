@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.awt.RelativePoint
-import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rider.editors.resolveContextWidget.ResolveContextWidgetTheme
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
