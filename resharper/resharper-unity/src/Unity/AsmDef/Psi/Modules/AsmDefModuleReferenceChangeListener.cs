@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
     // * If we have Player projects and use Alt+Enter to add a reference from a QF, the reference is only added to the
     //   current project context. We could update the other context's project?
     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
-    public class AsmDefModuleReferenceChangeListener : IChangeProvider, ISolutionLoadListenerOnDone
+    public class AsmDefModuleReferenceChangeListener : IChangeProvider, ISolutionLoadTasksDoneListener
     {
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
@@ -73,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             myLogger = logger;
         }
 
-        public async Task OnSolutionLoadDone(OuterLifetime lifetime, ISolutionLoadTasksSchedulerThreading threading)
+        public async Task OnSolutionLoadDoneAsync(OuterLifetime lifetime, ISolutionLoadTasksSchedulerThreading threading)
         {
             await threading.YieldToIfNeeded(lifetime, Scheduling.MainGuard);
             myChangeManager.RegisterChangeProvider(myLifetime, this);
