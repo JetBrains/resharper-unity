@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
@@ -16,8 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 {
     // can't make it IUnityLazyComponent, when working with a class lib, there is a chance that lib is later used in Unity project 
     // ideally we should init this component, only when backendSettings is asked on the frontend
-    [SolutionComponent(Instantiation.LaterAsyncAnyThreadSafe)]
-    public class UnitySettingsSynchronizer
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
+    public class UnitySettingsSynchronizer : IStartupActivity
     {
         public UnitySettingsSynchronizer(Lifetime lifetime, ISolution solution, FrontendBackendHost host,
                                          IApplicationWideContextBoundSettingStore settingsStore)
