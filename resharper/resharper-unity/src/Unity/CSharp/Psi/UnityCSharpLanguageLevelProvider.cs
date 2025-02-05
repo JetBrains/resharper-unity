@@ -6,6 +6,7 @@ using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers.PropertyModifiers;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
+using JetBrains.ProjectModel.MSBuild;
 using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ProjectModel.Propoerties;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -162,7 +163,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                             .Select(configuration => configuration.LanguageVersion)
                             .FirstOrDefault(CSharpLanguageVersion.Default);
                         var languageLevel = languageLevelProjectProperty.ConvertToLanguageLevel(langVersion, roslynDir);
-                        return (languageLevel, languageLevelProjectProperty.ConvertToLanguageLevel(CSharpLanguageVersion.Latest, roslynDir), languageLevelProjectProperty.ConvertToLanguageLevel(CSharpLanguageVersion.Preview, roslynDir));
+                        
+                        var roslynVersion = RoslynUtil.GetRoslynVersion(roslynDir);
+                        if (roslynVersion != null && roslynVersion.Major == 4 && roslynVersion.Minor == 3 && roslynVersion.Revision == 0 && roslynVersion.Build == 0)
+                        {
+                            // Approximately Unity 2022.3 till Unity 6
+                            // RIDER-122524 Rider shows CS0618 for required members in referenced assemblies within Unity projects
+                            return (languageLevel, CSharpLanguageLevel.CSharp110, CSharpLanguageLevel.CSharp110);    
+                        }
+                        
+                        return (languageLevel, languageLevelProjectProperty.ConvertToLanguageLevel(CSharpLanguageVersion.Latest, roslynDir), 
+                            languageLevelProjectProperty.ConvertToLanguageLevel(CSharpLanguageVersion.Preview, roslynDir));
                     }
                 }
                 
