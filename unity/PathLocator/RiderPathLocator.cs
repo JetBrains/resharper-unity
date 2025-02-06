@@ -29,32 +29,49 @@ namespace JetBrains.Rider.PathLocator
       var results = new List<RiderInfo>();
       try
       {
-        var toolboxPath = GetToolboxPath();
-        var jsonFile = Path.Combine(toolboxPath, "state.json");
-        if (File.Exists(jsonFile))
-          results.AddRange(ToolboxState.GetStateFromJson(this, File.ReadAllText(jsonFile)));
-        
-        switch (RiderLocatorEnvironment.CurrentOS)
-        {
-          case OS.Windows:
-            results.AddRange(CollectRiderInfosWindows());
-            break;
-          case OS.MacOSX:
-            results.AddRange(CollectRiderInfosMac());
-            break;
-          case OS.Linux:
-            results.AddRange(CollectAllRiderPathsLinux());
-            break;
-          default:
-            throw new ArgumentOutOfRangeException();
-        }
+        AddToolboxSpecificRiderPaths(results);
       }
       catch (Exception e)
       {
-        RiderLocatorEnvironment.Error("GetAllRiderPaths failed", e);
+        RiderLocatorEnvironment.Error("Error retrieving Rider installations from the JetBrains Toolbox.", e);
+      }
+      
+      try
+      {
+        AddOsSpecificRiderPaths(results);
+      }
+      catch (Exception e)
+      {
+        RiderLocatorEnvironment.Error("Error retrieving OS specific Rider installations.", e);
       }
 
       return results.Distinct().ToArray();
+    }
+    
+    private void AddToolboxSpecificRiderPaths(List<RiderInfo> results)
+    {
+      var toolboxPath = GetToolboxPath();
+      var jsonFile = Path.Combine(toolboxPath, "state.json");
+      if (File.Exists(jsonFile))
+        results.AddRange(ToolboxState.GetStateFromJson(this, File.ReadAllText(jsonFile)));
+    }
+    
+    private void AddOsSpecificRiderPaths(List<RiderInfo> results)
+    {
+      switch (RiderLocatorEnvironment.CurrentOS)
+      {
+        case OS.Windows:
+          results.AddRange(CollectRiderInfosWindows());
+          break;
+        case OS.MacOSX:
+          results.AddRange(CollectRiderInfosMac());
+          break;
+        case OS.Linux:
+          results.AddRange(CollectAllRiderPathsLinux());
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
+      }
     }
 
     private RiderInfo[] CollectAllRiderPathsLinux()
