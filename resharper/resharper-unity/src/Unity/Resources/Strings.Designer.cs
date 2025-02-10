@@ -505,6 +505,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string UnityOptionsPage_Profiler_Integration_Fetching_Disabled => ResourceManager.GetString("UnityOptionsPage_Profiler_Integration_Fetching_Disabled");
     public static string UnityOptionsPage_Profiler_Integration_Auto_Fetching => ResourceManager.GetString("UnityOptionsPage_Profiler_Integration_Auto_Fetching");
     public static string UnityOptionsPage_Profiler_Integration_Manual_Fetching => ResourceManager.GetString("UnityOptionsPage_Profiler_Integration_Manual_Fetching");
+    public static string UnityOptionsPage_Profiler_Integration_Help_Link_Text => ResourceManager.GetString("UnityOptionsPage_Profiler_Integration_Help_Link_Text");
     public static string UnityPerformanceCriticalCodeLineMarker_Performance_critical_context => ResourceManager.GetString("UnityPerformanceCriticalCodeLineMarker_Performance_critical_context");
     public static string UnityProjects_Text => ResourceManager.GetString("UnityProjects_Text");
     public static string UnityRuntimeFolder_Text => ResourceManager.GetString("UnityRuntimeFolder_Text");

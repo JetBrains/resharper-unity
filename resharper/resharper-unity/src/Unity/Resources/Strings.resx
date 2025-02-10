@@ -1377,6 +1377,9 @@ a plugin to be installed to a project.</value>
     <data name="UnityOptionsPage_Profiler_Integration_Manual_Fetching" xml:space="preserve">
         <value>Manual fetch</value>
     </data>
+    <data name="UnityOptionsPage_Profiler_Integration_Help_Link_Text" xml:space="preserve">
+        <value>More information about Unity Profiler integration</value>
+    </data>
     <data name="UnityPerformanceCriticalCodeLineMarker_Performance_critical_context" xml:space="preserve">
         <value>Performance-critical context</value>
     </data>

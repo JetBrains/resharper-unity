@@ -6,6 +6,7 @@ using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.Help;
 using JetBrains.Application.Settings;
+using JetBrains.Application.UI.Help;
 using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions;
@@ -21,6 +22,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
 using JetBrains.ReSharper.Psi.Naming.Settings;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.UIAutomation;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
@@ -66,6 +68,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
                 new RadioOptionPoint(ProfilerSnapshotFetchingSettings.AutoFetch, Strings.UnityOptionsPage_Profiler_Integration_Auto_Fetching),
                 new RadioOptionPoint(ProfilerSnapshotFetchingSettings.ManualFetch, Strings.UnityOptionsPage_Profiler_Integration_Manual_Fetching)
                     );
+            AddLinkButton("UnityProfilerIntegration", Strings.UnityOptionsPage_Profiler_Integration_Help_Link_Text,
+                () => { Shell.Instance.GetComponent<HelpSystem>().ShowProductHelp(HelpId.Settings_Unity_Engine_Profiler_Integration); });
         }
 
         private void AddGeneralSection()
