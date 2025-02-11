@@ -17,7 +17,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity Project Model View Extensions")
 @Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("UnityProjectModelViewExtensionsTest")
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {

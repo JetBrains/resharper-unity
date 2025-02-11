@@ -22,7 +22,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity quick fix project settings")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("ProjectSettingsTestData")
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     @Test(description="Quick fix for adding to build settings")

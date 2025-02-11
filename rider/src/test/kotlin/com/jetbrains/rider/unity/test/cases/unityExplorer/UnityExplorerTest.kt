@@ -19,7 +19,7 @@ import java.time.Duration
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity Explorer")
 @Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
 class UnityExplorerTest : BaseTestWithShell() {
 
     @Test(description = "Add a new item with multiple backends")
@@ -82,7 +82,7 @@ class UnityExplorerTest : BaseTestWithShell() {
 
     @Test(description = "Test project loading with a special folder")
     @Issue("RIDER-92886")
-    @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6, platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
+    @TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE, platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
     @ChecklistItems(["Unity explorer/Loading with a special folder"])
     fun test_project_loading_with_special_folder() { // infinite loading caused by a "..\\" folder
         withSolution("AnimImplicitUsageTest", OpenSolutionParams().apply {

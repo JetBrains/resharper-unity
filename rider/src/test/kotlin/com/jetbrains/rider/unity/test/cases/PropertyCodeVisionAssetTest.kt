@@ -24,7 +24,7 @@ import java.time.Duration
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity code vision")
 @Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("CodeLensTestSolution")
 class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {

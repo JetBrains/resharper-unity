@@ -18,7 +18,7 @@ import org.testng.annotations.Test
 
 @Mute("Test wasn't in te right package, so it never run")
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
-@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.DOT_NET_6)
+@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("SimpleUnityProject")
 class UssTest : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
