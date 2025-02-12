@@ -3,8 +3,10 @@ using System;
 using System.Linq;
 using JetBrains.Application.Parts;
 using JetBrains.Application.UI.PopupLayout;
+using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.IDE.StackTrace;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Feature.Services.Navigation;
@@ -12,7 +14,6 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.StackTraces.StackTrace;
 using JetBrains.ReSharper.Feature.Services.StackTraces.StackTrace.Nodes;
 using JetBrains.ReSharper.Feature.Services.StackTraces.StackTrace.Parsers;
-using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
@@ -27,9 +28,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 public class UnityProfilerEventsHost(
     ILogger logger,
     ISolution solution,
-    UnityProfilerInfoCollector unityProfilerInfoCollector)
+    UnityProfilerInfoCollector unityProfilerInfoCollector,
+    Lifetime componentLifetime)
 {
-    public void AdviseOpenFileByMethodName(UnityProfilerModel unityProfilerModel, FrontendBackendHost frontendBackendHost)
+    public void AdviseOpenFileByMethodName(UnityProfilerModel unityProfilerModel,
+        FrontendBackendHost frontendBackendHost, Lifetime lifetime)
     {
         unityProfilerModel.OpenFileBySampleInfo.SetAsync((_, sampleStackInfo) =>
         {
@@ -52,7 +55,7 @@ public class UnityProfilerEventsHost(
 
                 try
                 {
-                    ShowConsoleWithCallstack(frontendBackendHost, sampleStackInfo.SampleStack, sampleStackInfo.SampleName);
+                    ShowConsoleWithCallstack(frontendBackendHost, sampleStackInfo.SampleStack, sampleStackInfo.SampleName, lifetime);
                 }
                 catch (Exception e)
                 {
@@ -65,9 +68,12 @@ public class UnityProfilerEventsHost(
         });
     }
 
-    private void ShowConsoleWithCallstack(FrontendBackendHost frontendBackendHost, string sampleStack, string sampleName)
+    private void ShowConsoleWithCallstack(FrontendBackendHost frontendBackendHost, string sampleStack,
+        string sampleName, Lifetime lifetime)
     {
-        frontendBackendHost.Do(model => { model.ActivateRider(); });
+        frontendBackendHost.Do(model => model.AllowSetForegroundWindow
+            .Start(lifetime, Unit.Instance).Result
+            .AdviseOnce(componentLifetime, _ => model.ActivateRider()));
         sampleStack = sampleStack.Replace("/", "\n");
         solution.GetComponent<RiderStackTraceHost>().ShowConsole(new StackTraceConsole(sampleName, sampleStack));
     }

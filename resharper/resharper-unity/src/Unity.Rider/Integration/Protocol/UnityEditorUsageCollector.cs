@@ -8,7 +8,6 @@ using JetBrains.ReSharper.Feature.Services.FeaturesStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UsageStatistics.FUS.EventLog;
 using JetBrains.UsageStatistics.FUS.EventLog.Events;

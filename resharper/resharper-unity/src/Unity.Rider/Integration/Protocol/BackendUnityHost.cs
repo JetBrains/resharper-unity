@@ -89,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             
             BackendUnityProfilerModel.ViewNotNull(lifetime, (_, backendProfilerModel) =>
             {
-                myUnityProfilerEventsHost.AdviseOpenFileByMethodName(backendProfilerModel, frontendBackendHost);
+                myUnityProfilerEventsHost.AdviseOpenFileByMethodName(backendProfilerModel, frontendBackendHost, lifetime);
             });
 
             // Are we testing?
