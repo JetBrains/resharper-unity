@@ -314,7 +314,7 @@
 
     <action id="DumpUnityExplorerAction" class="com.jetbrains.rider.plugins.unity.actions.internal.DumpUnityExplorerAction" internal="true" />
 
-    <group id="RiderInternal.Unity" popup="true" internal="true">
+    <group id="RiderInternal.Unity" popup="true" internal="true" searchable="false">
       <add-to-group group-id="RiderInternal" anchor="last" />
 
       <action id="Unity_Internal_DumpDuplicateTypeNames"
