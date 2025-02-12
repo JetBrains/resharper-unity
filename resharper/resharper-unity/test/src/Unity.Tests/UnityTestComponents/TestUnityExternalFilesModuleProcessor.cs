@@ -1,4 +1,5 @@
 using JetBrains.Application.changes;
+using JetBrains.Application.Components;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                                                      UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                      UnityExternalFilesModuleFactory moduleFactory,
                                                      UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
-                                                     UnityAssetInfoCollector usageStatistics,
+                                                     ILazy<UnityAssetInfoCollector> usageStatistics,
                                                      AssetIndexingSupport assetIndexingSupport,
                                                      UnityExternalProjectFileTypes externalProjectFileTypes)
             : base(lifetime, logger, solution, changeManager, psiModules, packageManager, locks, fileSystemTracker,

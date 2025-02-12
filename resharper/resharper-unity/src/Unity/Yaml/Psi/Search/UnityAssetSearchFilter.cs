@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -20,17 +21,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     public class UnityYamlSearchFilter : ISearchFilter
     {
         [NotNull, ItemNotNull] private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
-        private readonly UnityEventsElementContainer myUnityEventsElementContainer;
-        private readonly AnimExplicitUsagesContainer myAnimExplicitUsagesContainer;
-        private readonly AnimImplicitUsagesContainer myAnimImplicitUsagesContainer;
-        private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
+        private readonly ILazy<UnityEventsElementContainer> myUnityEventsElementContainer;
+        private readonly ILazy<AnimExplicitUsagesContainer> myAnimExplicitUsagesContainer;
+        private readonly ILazy<AnimImplicitUsagesContainer> myAnimImplicitUsagesContainer;
+        private readonly ILazy<AssetInspectorValuesContainer> myInspectorValuesContainer;
 
         public UnityYamlSearchFilter(UnityApi unityApi,
                                    [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
-                                   UnityEventsElementContainer unityEventsElementContainer,
-                                   AnimExplicitUsagesContainer animExplicitUsagesContainer,
-                                   AnimImplicitUsagesContainer animImplicitUsagesContainer,
-                                   AssetInspectorValuesContainer container)
+                                   ILazy<UnityEventsElementContainer> unityEventsElementContainer,
+                                   ILazy<AnimExplicitUsagesContainer> animExplicitUsagesContainer,
+                                   ILazy<AnimImplicitUsagesContainer> animImplicitUsagesContainer,
+                                   ILazy<AssetInspectorValuesContainer> container)
         {
             myScriptsUsagesElementContainers = scriptsUsagesElementContainers;
             myUnityEventsElementContainer = unityEventsElementContainer;
@@ -59,22 +60,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     break;
                 case IProperty _:
                 case IMethod _:
-                    foreach (var file in myAnimExplicitUsagesContainer.GetPossibleFilesWithUsage(element))
+                    foreach (var file in myAnimExplicitUsagesContainer.Value.GetPossibleFilesWithUsage(element))
                         set.Add(file);
-                    foreach (var file in myAnimImplicitUsagesContainer.GetPossibleFilesWithUsage(element))
+                    foreach (var file in myAnimImplicitUsagesContainer.Value.GetPossibleFilesWithUsage(element))
                         set.Add(file);
-                    foreach (var sourceFile in myUnityEventsElementContainer.GetPossibleFilesWithUsage(element))
+                    foreach (var sourceFile in myUnityEventsElementContainer.Value.GetPossibleFilesWithUsage(element))
                         set.Add(sourceFile);
                     break;
                 case IField field:
                     if (field.Type.GetTypeElement().DerivesFromUnityEvent())
                     {
-                        foreach (var sourceFile in myUnityEventsElementContainer.GetPossibleFilesWithUsage(element))
+                        foreach (var sourceFile in myUnityEventsElementContainer.Value.GetPossibleFilesWithUsage(element))
                             set.Add(sourceFile);
                     }
                     else
                     {
-                        foreach (var sourceFile in myInspectorValuesContainer.GetPossibleFilesWithUsage(field))
+                        foreach (var sourceFile in myInspectorValuesContainer.Value.GetPossibleFilesWithUsage(field))
                             set.Add(sourceFile);
                     }
 

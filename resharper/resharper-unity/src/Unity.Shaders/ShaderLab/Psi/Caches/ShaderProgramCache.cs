@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
@@ -31,7 +32,7 @@ using JetBrains.Util.PersistentMap;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 {
     [PsiComponent(Instantiation.DemandAnyThreadSafe)]
-    public class ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, UnityDialects dialects)
+    public class ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, ILazy<UnityDialects> dialects)
         : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, VirtualFileSystemPath>(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
     {
         // Multiple source files may have same virtual file system path and so may have clashing CppFileLocations which are path based. We have to count how many times path used and invalidate locations on any of source file change 
@@ -48,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             return sourceFile.GetPrimaryPsiFile() switch
             {
                 ShaderLabFile shaderLabFile => BuildForShaderLabFile(shaderLabFile),
-                _ when UnityShaderFileUtils.IsComputeShaderFile(sourceFile.GetLocation()) => BuildForHlslFile(sourceFile, dialects.ComputeHlslDialect), 
+                _ when UnityShaderFileUtils.IsComputeShaderFile(sourceFile.GetLocation()) => BuildForHlslFile(sourceFile, dialects.Value.ComputeHlslDialect), 
                 _ => null
             };
         }
@@ -67,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             {
                 var content = cgContent.Content;
                 var textRange = TextRange.FromLength(content.GetTreeStartOffset().Offset, content.GetTextLength());
-                var programInfo = ReadProgramInfo(new CppDocumentBuffer(buffer, textRange), dialects.ShaderLabHlslDialect);
+                var programInfo = ReadProgramInfo(new CppDocumentBuffer(buffer, textRange), dialects.Value.ShaderLabHlslDialect);
                 entries.Add(new Item.Entry(textRange, programInfo));
             }
 
@@ -215,9 +216,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 
                 var location = cppFileLocation.Location;
                 if (UnityShaderFileUtils.IsComputeShaderFile(location))
-                    shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer), dialects.ComputeHlslDialect);
+                    shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer), dialects.Value.ComputeHlslDialect);
                 else if (cppFileLocation.RootRange is { IsValid: true } range)
-                    shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer, range), dialects.ShaderLabHlslDialect);
+                    shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer, range), dialects.Value.ShaderLabHlslDialect);
                 else
                 {
                     shaderProgramInfo = null;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Components;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
@@ -50,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private readonly UnityExternalPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityExternalFilesIndexDisablingStrategy myIndexDisablingStrategy;
-        private readonly UnityAssetInfoCollector myUsageStatistics;
+        private readonly ILazy<UnityAssetInfoCollector> myUsageStatistics;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly Dictionary<VirtualFileSystemPath, LifetimeDefinition> myRootPathLifetimes;
         private readonly VirtualFileSystemPath mySolutionDirectory;
@@ -67,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                                  UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
-                                                 UnityAssetInfoCollector usageStatistics,
+                                                 ILazy<UnityAssetInfoCollector> usageStatistics,
                                                  AssetIndexingSupport assetIndexingSupport, 
                                                  UnityExternalProjectFileTypes externalProjectFileTypes)
         {
@@ -179,7 +180,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             SubscribeToPackageUpdates();
             SubscribeToProjectModelUpdates();
             
-            myUsageStatistics.FinishInitialUpdate();
+            myUsageStatistics.Value.FinishInitialUpdate();
         }
 
         private ExternalFiles CollectInitialFiles(bool initialRun)
@@ -559,6 +560,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         private void UpdateStatistics(ExternalFiles externalFiles)
         {
+            var usageStatistics = myUsageStatistics.Value;
             foreach (var externalFile in externalFiles.AssetFiles)
             {
                 UnityAssetInfoCollector.FileType? fileType = null;
@@ -575,14 +577,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
                 if (fileType.HasValue)
                 {
-                    myUsageStatistics.AddStatistic(fileType.Value, externalFile.FileSystemData.FileLength,
+                    usageStatistics.AddStatistic(fileType.Value, externalFile.FileSystemData.FileLength,
                         externalFile.IsUserEditable);
                 }
             }
 
             foreach (var externalFile in externalFiles.MetaFiles)
             {
-                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.Meta,
+                usageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.Meta,
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
@@ -597,18 +599,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     fileType = UnityAssetInfoCollector.FileType.InputActions;
                 else
                     continue;
-                myUsageStatistics.AddStatistic(fileType, externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
+                usageStatistics.AddStatistic(fileType, externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.KnownBinaryAssetFiles)
             {
-                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.KnownBinary,
+                usageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.KnownBinary,
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.ExcludedByNameAssetFiles)
             {
-                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.ExcludedByName,
+                usageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.ExcludedByName,
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
         }
