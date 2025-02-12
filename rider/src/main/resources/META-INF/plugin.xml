@@ -306,7 +306,7 @@
       </group>
     </group>
 
-    <group id="Rider.UnitTesting.TopToolbar.MiscOptions.Unity">
+    <group id="Rider.UnitTesting.TopToolbar.MiscOptions.Unity" searchable="false">
       <add-to-group group-id="Rider.UnitTesting.TopToolbar.MiscOptions.Plugin" anchor="last"/>
       <action id="UnityTestLauncher"
               class="com.jetbrains.rider.plugins.unity.ui.unitTesting.SwitchUnitTestLauncherComboBoxAction" />
