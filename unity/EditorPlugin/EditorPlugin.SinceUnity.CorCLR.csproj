@@ -6,7 +6,7 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_CORCLR_OR_NEWER;UNITY_2019_2;UNITY_2019_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_4_7_OR_NEWER;UNITY_5_6_OR_NEWER;RIDER_EDITOR_PLUGIN</DefineConstants>
+    <DefineConstants>UNITY_CORCLR_OR_NEWER;UNITY_2019_2_OR_NEWER</DefineConstants>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>

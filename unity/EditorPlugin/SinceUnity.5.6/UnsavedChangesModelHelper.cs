@@ -6,7 +6,6 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,9 +15,6 @@ namespace JetBrains.Rider.Unity.Editor
   internal static class UnsavedChangesModelHelper
   {
     private static readonly ILog ourLogger = Log.GetLog("Initialization");
-#if !UNITY_2019_2_OR_NEWER
-    private static MethodInfo ourIsDirtyMethodInfo;
-#endif
 
     public static void Advise(Lifetime modelLifetime, BackendUnityModel model)
     {
@@ -92,6 +88,8 @@ public Vector3[] spawnPoints;
 
       // from 2021.2
       // return UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage().scene.isDirty;
+      
+      // todo: test with Unity 7+
 
       try
       {
@@ -144,31 +142,7 @@ public Vector3[] spawnPoints;
 
     private static bool IsDirty(UnityEngine.Object unityObject)
     {
-      // EditorUtility.IsDirty is internal until 2019.1
-#if UNITY_2019_2_OR_NEWER
       return EditorUtility.IsDirty(unityObject);
-#else
-      try
-      {
-        ourIsDirtyMethodInfo = typeof(EditorUtility).GetMethod("IsDirty",
-          BindingFlags.Static
-          | BindingFlags.Public
-          | BindingFlags.NonPublic, null, new[] { typeof(int) }, null);
-        if (ourIsDirtyMethodInfo == null)
-        {
-          ourLogger.Error("IsDirty method not found of type='{0}'", typeof(EditorUtility));
-          return false;
-        }
-
-        return (bool)ourIsDirtyMethodInfo.Invoke(null, new object[] { unityObject.GetInstanceID() });
-      }
-      catch (Exception e)
-      {
-        ourLogger.Error("Failed to invoke EditorUtility.IsDirty method with exception {0}", e);
-      }
-
-      return false;
-#endif
     }
   }
 }

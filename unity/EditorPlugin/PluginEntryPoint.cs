@@ -14,7 +14,7 @@ using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using UnityEditor.Build.Reporting;
 
-#if !UNITY_CORCLR_OR_NEWER
+#if UNITY_2019_2
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 {
   // DO NOT CHANGE NAME OR NAMESPACE!

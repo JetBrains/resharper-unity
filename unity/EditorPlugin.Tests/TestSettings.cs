@@ -4,7 +4,7 @@ namespace JetBrains.Rider.Unity.Editor.Tests
 {
   internal class TestPluginSettings : IPluginSettings
   {
-    public OS OSRider => OS.Windows;
+    public OS OSRider => PluginSettings.SystemInfoRiderPlugin.OS;
 
     public string RiderPath { get; set; }
   }

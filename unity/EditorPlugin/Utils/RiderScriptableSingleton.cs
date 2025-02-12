@@ -1,3 +1,4 @@
+#if UNITY_2019_2
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -29,3 +30,4 @@ namespace JetBrains.Rider.Unity.Editor.Utils
     }
   }
 }
+#endif

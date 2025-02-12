@@ -1,4 +1,5 @@
-﻿/*
+﻿#if UNITY_2019_2
+/*
  * MIT License
 
 Copyright (c) 2016-2018 GitHub
@@ -127,3 +128,4 @@ namespace JetBrains.Rider.Unity.Editor.Utils
     }
   }
 }
+#endif

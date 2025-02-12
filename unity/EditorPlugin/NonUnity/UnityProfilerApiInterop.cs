@@ -31,11 +31,10 @@ namespace JetBrains.Rider.Unity.Editor.Utils
 
         private static void ReloadScripts()
         {
-            // TODO: This symbol isn't defined anywhere...
-#if UNITY_2019_3_OR_NEWER
-            EditorUtility.RequestScriptReload(); // EditorPlugin would get loaded
+#if UNITY_CORCLR_OR_NEWER
+          UnityEditor.EditorUtility.RequestScriptReload();
 #else
-            UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
+          UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
 #endif
         }
 

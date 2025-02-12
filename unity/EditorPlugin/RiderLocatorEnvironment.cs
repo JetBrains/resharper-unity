@@ -10,11 +10,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public T FromJson<T>(string json)
     {
-#if UNITY_4_7
-      return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
-#else
       return (T)UnityEngine.JsonUtility.FromJson(json, typeof(T));
-#endif 
     }
     
     public void Info(string message, Exception e = null)

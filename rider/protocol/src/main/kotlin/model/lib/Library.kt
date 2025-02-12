@@ -44,7 +44,6 @@ object Library : Root() {
     }
 
     val UnityProjectSettings = aggregatedef("UnityProjectSettings") {
-        property("scriptingRuntime", int).documentation = "Refers to ScriptingRuntimeVersion enum. Obsolete since 2019.3 when legacy Mono was removed"
         property("buildLocation", string).documentation = "Path to the executable of the last built Standalone player, if it exists. Can be empty"
     }
 

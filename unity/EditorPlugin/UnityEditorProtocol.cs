@@ -204,17 +204,11 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseLoggingStateChangeTimes(connectionLifetime, model);
 
           BuildPipelineModelHelper.Advise(connectionLifetime, model);
-
-#if UNITY_5_6_OR_NEWER
           UnitTestingModelHelper.Advise(appDomainLifetime, connectionLifetime, model);
           FindUsagesModelHelper.Advise(connectionLifetime, model);
           UnsavedChangesModelHelper.Advise(connectionLifetime, model);
-#endif
-
-#if UNITY_2019_2_OR_NEWER
           PackageManagerModelHelper.Advise(connectionLifetime, model);
           ProfilerWindowEventsHandler.Advise(connectionLifetime, new UnityProfilerModel(connectionLifetime, protocol));
-#endif
 
           Models.AddLifetimed(connectionLifetime, model);
 
@@ -246,7 +240,7 @@ namespace JetBrains.Rider.Unity.Editor
         paths[0], paths[1],
         Process.GetCurrentProcess().Id);
 
-      model.UnityApplicationSettings.ScriptCompilationDuringPlay.Value = UnityUtils.SafeScriptCompilationDuringPlay;
+      model.UnityApplicationSettings.ScriptCompilationDuringPlay.Value = EditorPrefsWrapper.ScriptCompilationDuringPlay;
     }
 
     private static string[] GetLogPaths()
@@ -305,7 +299,6 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void SetProjectSettings(BackendUnityModel model)
     {
-      model.UnityProjectSettings.ScriptingRuntime.Value = UnityUtils.ScriptingRuntime;
       var path = EditorUserBuildSettings.GetBuildLocation(EditorUserBuildSettings.selectedStandaloneTarget);
       if (PluginSettings.SystemInfoRiderPlugin.OS == OS.MacOSX)
         path = Path.Combine(Path.Combine(Path.Combine(path, "Contents"), "MacOS"), PlayerSettings.productName);

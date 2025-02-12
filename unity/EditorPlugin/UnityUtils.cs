@@ -52,40 +52,6 @@ namespace JetBrains.Rider.Unity.Editor
         }
     }
 
-    private static int ourScriptingRuntimeCached = -1;
-
-    internal static int ScriptingRuntime
-    {
-      get
-      {
-        if (ourScriptingRuntimeCached >= 0)
-          return ourScriptingRuntimeCached;
-
-        ourScriptingRuntimeCached = 0; // legacy runtime
-        try
-        {
-          // not available in earlier runtime versions
-          var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
-          if (property != null)
-          {
-            ourScriptingRuntimeCached = (int) property.GetValue(null, null);
-            if (ourScriptingRuntimeCached > 0)
-              ourLogger.Verbose("Latest runtime detected.");
-          }
-        }
-        catch (Exception)
-        {
-        }
-
-        return ourScriptingRuntimeCached;
-      }
-    }
-
-    internal static ScriptCompilationDuringPlay SafeScriptCompilationDuringPlay =>
-        UnityVersion >= new Version(2018, 2)
-            ? EditorPrefsWrapper.ScriptCompilationDuringPlay
-            : PluginSettings.AssemblyReloadSettings;
-
     internal static ScriptCompilationDuringPlay ToScriptCompilationDuringPlay(int value)
     {
       switch (value)
