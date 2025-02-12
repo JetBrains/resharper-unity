@@ -1366,19 +1366,19 @@ a plugin to be installed to a project.</value>
         <value>Profiler Integration (Experimental)</value>
     </data>
     <data name="UnityOptionsPage_Profiler_Integration_Snapshot_Fetching" xml:space="preserve">
-        <value>Profiler snapshot fetching settings</value>
+        <value>Fetch profiler snapshot:</value>
     </data>
     <data name="UnityOptionsPage_Profiler_Integration_Fetching_Disabled" xml:space="preserve">
         <value>Disabled</value>
     </data>
     <data name="UnityOptionsPage_Profiler_Integration_Auto_Fetching" xml:space="preserve">
-        <value>Auto fetch</value>
+        <value>Automatically</value>
     </data>
     <data name="UnityOptionsPage_Profiler_Integration_Manual_Fetching" xml:space="preserve">
-        <value>Manual fetch</value>
+        <value>Manually</value>
     </data>
     <data name="UnityOptionsPage_Profiler_Integration_Help_Link_Text" xml:space="preserve">
-        <value>More information about Unity Profiler integration</value>
+        <value>Learn more</value>
     </data>
     <data name="UnityPerformanceCriticalCodeLineMarker_Performance_critical_context" xml:space="preserve">
         <value>Performance-critical context</value>
