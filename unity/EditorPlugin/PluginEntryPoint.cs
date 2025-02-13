@@ -14,33 +14,6 @@ using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using UnityEditor.Build.Reporting;
 
-#if UNITY_2019_2
-namespace JetBrains.Rider.Unity.Editor.AfterUnity56
-{
-  // DO NOT CHANGE NAME OR NAMESPACE!
-  // Accessed from the package via reflection
-  // When the package explicitly loads the plugin from the product install folder, it will execute this class constructor.
-  [PublicAPI]
-  public static class EntryPoint
-  {
-    // DO NOT REMOVE OR REFACTOR!
-    // When loaded by Unity from the Assets folder, Unity will automatically run this static class constructor. When the
-    // package loads the type, the package explicitly invokes it via reflection.
-    [PublicAPI] static EntryPoint()
-    {
-      var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
-      AppDomain.CurrentDomain.DomainUnload += (_, __) =>
-      {
-        Log.GetLog("RiderPlugin").Verbose("AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate");
-        lifetimeDefinition.Terminate();
-      };
-      
-      PluginEntryPoint.Initialize(lifetimeDefinition.Lifetime);
-    }
-  }
-}
-#endif
-
 namespace JetBrains.Rider.Unity.Editor
 {
   // DO NOT CHANGE NAME OR NAMESPACE!
