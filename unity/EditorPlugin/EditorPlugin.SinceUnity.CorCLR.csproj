@@ -41,8 +41,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="SinceUnity.5.6\FindUsages\Window\FindUsagesTreeView.cs" />
+    <Compile Remove="Unity.2019.2/**" />
   </ItemGroup>
+  
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
 </Project>

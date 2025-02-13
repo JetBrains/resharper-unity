@@ -33,7 +33,7 @@
   </Target>
 
   <ItemGroup>
-    <Compile Remove="SinceUnity.5.6\FindUsages\Window\FindUsagesTreeViewCorCLR.cs" />
+    <Compile Remove="SinceUnity.7000.0/**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +43,7 @@
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Rider.PathLocator.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
+
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
 </Project>

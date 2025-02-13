@@ -4,7 +4,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
 {
     internal class CommandLineParser
     {
-        public Dictionary<string, string> Options = new Dictionary<string, string>();
+        public Dictionary<string, string> Options = new();
 
         public CommandLineParser(string[] args)
         {

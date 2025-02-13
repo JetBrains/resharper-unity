@@ -8,7 +8,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
   {
     private readonly int myMaxSize;
     private readonly Queue<T> myQueue;
-    private readonly object myLockObject = new object();
+    private readonly object myLockObject = new();
 
     public BoundedSynchronizedQueue(int maxSize)
     {
