@@ -151,11 +151,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
         private void ReportUnityEditorInformationToFus(BackendUnityModel backendUnityModel, Lifetime modelLifetime)
         {
-            backendUnityModel.UnityProjectSettings.ScriptingRuntime.AdviseOnce(modelLifetime, runtime =>
+            backendUnityModel.UnityApplicationData.AdviseUntil(modelLifetime, data =>
             {
-                // eventual consistency
-                Assertion.Assert(backendUnityModel.UnityApplicationData.HasValue());
-                myUnityEditorUsageCollector.SetInformation(backendUnityModel.UnityApplicationData.Value.ApplicationVersion, runtime);
+                if (data == null) return false;
+                myUnityEditorUsageCollector.SetInformation(data.ApplicationVersion);
+                return true;
             });
         }
 

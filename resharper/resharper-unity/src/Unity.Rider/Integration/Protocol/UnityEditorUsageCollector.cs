@@ -20,16 +20,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
     public class UnityEditorUsageCollector : SolutionUsagesCollector
     {
         private readonly UnitySolutionTracker mySolutionTracker;
-
-        private enum ScriptingRuntime
-        {
-            Net35,
-            Net46
-        }
         
         private EventLogGroup myGroup;
         
-        private readonly EventId3<string, bool, ScriptingRuntime> myConnectedUnityEvent;
+        private readonly EventId2<string, bool> myConnectedUnityEvent;
 
         private IViewableProperty<bool> IsReady { get; } = new ViewableProperty<bool>(false);
 
@@ -40,8 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             
             myConnectedUnityEvent = myGroup.RegisterEvent("version", "Project Unity Version", 
                 EventFields.StringValidatedByRegexp("version", "Unity Version", UnityVersion.VersionRegex),
-                EventFields.Boolean("isCustom", "Custom Unity Build"),
-                EventFields.Enum<ScriptingRuntime>("scriptingRuntime", "Scripting Runtime")); 
+                EventFields.Boolean("isCustom", "Custom Unity Build")); 
         }
         
         public override EventLogGroup GetGroup()
@@ -51,17 +44,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
         private string myUnityVersion;
         private bool myUnityVersionCustom;
-        private ScriptingRuntime myScriptingRuntime;
         
-        public void SetInformation(string unityVersion, int scriptingRuntime)
+        public void SetInformation(string unityVersion)
         {
             if (IsReady.Value)
                 return;
-            
-            if (scriptingRuntime == 0)
-                myScriptingRuntime = ScriptingRuntime.Net35;
-            else
-                myScriptingRuntime = ScriptingRuntime.Net46;
             
             (myUnityVersion, myUnityVersionCustom) = UnityVersionUtils.GetUnityVersion(unityVersion);
 
@@ -78,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 await IsReady.NextTrueValueAsync(lifetime);
                 var hashSet = new HashSet<MetricEvent>
                 {
-                    myConnectedUnityEvent.Metric(myUnityVersion, myUnityVersionCustom, myScriptingRuntime)
+                    myConnectedUnityEvent.Metric(myUnityVersion, myUnityVersionCustom)
                 };
                 
                 return hashSet;
