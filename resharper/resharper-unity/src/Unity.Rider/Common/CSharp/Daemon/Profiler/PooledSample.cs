@@ -38,6 +38,7 @@ public class PooledSample : IDisposable
     public double Duration { get; private set; }
     public double FramePercentage { get; private set; }
     public int Id { get; private set; }
+    public bool IsProfilerMarker => Id < 0; //Unity marks BeginSample/EndSample with negative Id
 
     protected bool Equals(PooledSample other)
     {

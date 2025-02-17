@@ -180,7 +180,14 @@ public class UnityProfilerDaemon(
         {
             pooledChildrenSamples.Clear();
             foreach (var sample in parentSamplesList)
-                pooledChildrenSamples.AddRange(sample.Children);
+            {
+                foreach (var child in sample.Children)
+                {
+                    pooledChildrenSamples.Add(child);
+                    if (child.IsProfilerMarker)
+                        pooledChildrenSamples.AddRange(child.Children);
+                }
+            }
 
             if (pooledChildrenSamples.Count == 0)
                 return;
@@ -322,7 +329,13 @@ public class UnityProfilerDaemon(
             ICSharpDeclaration declaration, UnityProfilerInsightProvider insightProvider,
             FilteringHighlightingConsumer consumer, string qualifiedName, HighlightingString highlightingString)
         {
-            var samples = children.Where(ch => ch.QualifiedName.Equals(qualifiedName)).ToList();
+            using var samples = PooledList<PooledSample>.GetInstance();
+            foreach (var child in children)
+            {
+                if (child.QualifiedName.Equals(qualifiedName))
+                   samples.Add(child); 
+            }
+            
             if (samples.Count == 0)
                 return;
             var durationSum = samples.Sum(s => s.Duration);

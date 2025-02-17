@@ -26,8 +26,11 @@ public class ShowProfilerCallsBulbAction(PooledSample sampleParent, ILogger logg
     public void Execute(ISolution solution, ITextControl textControl)
     {
         var stackTraceOptions = solution.GetComponent<StackTraceOptions>();
-        if (sampleParent == null) return;
-        var parentQualifiedName = sampleParent.QualifiedName;
+        var parentSample = sampleParent;
+        if (parentSample == null) return;
+        if(parentSample.IsProfilerMarker)
+            parentSample = parentSample.Parent;
+        var parentQualifiedName = parentSample.QualifiedName;
         var parser = new StackTraceParser(parentQualifiedName, solution,
             solution.GetComponent<StackTracePathResolverCache>(), stackTraceOptions.GetState());
 
