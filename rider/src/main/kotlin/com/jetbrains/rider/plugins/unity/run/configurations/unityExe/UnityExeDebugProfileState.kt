@@ -23,8 +23,8 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
-import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunConfiguration
 import com.jetbrains.rider.debugger.tryWriteMessageToConsoleView
+import com.jetbrains.rider.debugger.useMixedDebugMode
 import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
@@ -147,7 +147,7 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         // debug session ends
         workerProcessHandler.addProcessListener(object : ProcessAdapter() {
             override fun startNotified(event: ProcessEvent) {
-                if ((executionEnvironment.runProfile as? IMixedModeDebugAwareRunConfiguration)?.useMixedDebugMode() == true)
+                if (executionEnvironment.runProfile.useMixedDebugMode())
                 // in mixed mode cidr needs pid to start debugging
                     runUnityEditor()
                 else

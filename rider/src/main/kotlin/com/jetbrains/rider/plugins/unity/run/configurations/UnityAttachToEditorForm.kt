@@ -7,6 +7,7 @@ import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
+import com.jetbrains.rider.debugger.mixed.mode.isMixedModeDebugFeatureEnabled
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.run.RiderRunBundle
@@ -44,15 +45,16 @@ internal class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) 
                 label(UnityBundle.message("using.process")).bindText(processIdInfo)
             }
 
-            row {
-                checkBox(RiderRunBundle.message("rider.use.mixed.mode.debug"))
-                    .onChanged { viewModel.useMixedMode.value = it.isSelected}
-                    .also { checkBox ->
-                        viewModel.useMixedMode.advise(viewModel.lifetime) {
-                            checkBox.selected(it)
+            if (isMixedModeDebugFeatureEnabled())
+                row {
+                    checkBox(RiderRunBundle.message("rider.use.mixed.mode.debug"))
+                        .onChanged { viewModel.useMixedMode.value = it.isSelected }
+                        .also { checkBox ->
+                            viewModel.useMixedMode.advise(viewModel.lifetime) {
+                                checkBox.selected(it)
+                            }
                         }
-                    }
-            }
+                }
 
             row {
                 cell(processesList)
