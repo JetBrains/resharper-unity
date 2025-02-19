@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Progress;
-using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.Application.UI.Help;
 using JetBrains.Application.UI.Icons.CommonThemedIcons;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
@@ -38,12 +37,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         private readonly UnityApi myUnityApi;
         private readonly ISolution mySolution;
         private readonly ITextControlManager myTextControlManager;
-        private readonly IEnumerable<IPerformanceAnalysisBulbItemsProvider> myMenuItemProviders;
+        private readonly IImmutableEnumerable<IPerformanceAnalysisBulbItemsProvider> myMenuItemProviders;
 
         public UnityCommonIconProvider(ISolution solution, UnityApi unityApi,
                                        IApplicationWideContextBoundSettingStore settingsStore,
                                        PerformanceCriticalContextProvider performanceContextProvider,
-                                       IEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders,
+                                       IImmutableEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders,
                                        ITextControlManager textControlManager)
         {
             mySolution = solution;

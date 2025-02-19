@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
                                             UnitySolutionTracker solutionTracker,
                                             IBackendUnityHost backendUnityHost,
                                             IconHost iconHost, PerformanceCriticalContextProvider contextProvider,
-                                            IEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders,
+                                            IImmutableEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders,
                                             ITextControlManager textControlManager)
             : base(solution, api, settingsStore, contextProvider, menuItemProviders, textControlManager)
         {
