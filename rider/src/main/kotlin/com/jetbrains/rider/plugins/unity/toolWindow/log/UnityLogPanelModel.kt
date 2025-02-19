@@ -205,17 +205,19 @@ class UnityLogPanelModel(val project: Project) {
         project.solution.frontendBackendModel.consoleLogging.lastInitTime.advise(lifetime) { queueUpdate() }
         project.solution.frontendBackendModel.consoleLogging.lastPlayTime.advise(lifetime) { queueUpdate() }
         if (toolWindow != null)
-        project.messageBus.connect(toolWindow.contentManager).subscribe(ToolWindowManagerListener.TOPIC,
-                                                                        createToolWindowManagerListener(toolWindow.id))
-    }
+            project.messageBus
+                .connect(toolWindow.disposable)
+                .subscribe(
+                    ToolWindowManagerListener.TOPIC,
+                    object : ToolWindowManagerListener {
+                        override fun toolWindowShown(tw: ToolWindow) {
+                            super.toolWindowShown(tw)
 
-    private fun createToolWindowManagerListener(toolWindowId: String): ToolWindowManagerListener {
-        return object : ToolWindowManagerListener {
-            override fun toolWindowShown(tw: ToolWindow) {
-                if (tw.id == toolWindowId) {
-                    mergingUpdateQueueAction.run()
-                }
-            }
-        }
+                            if (tw.id == toolWindow.id) {
+                                mergingUpdateQueueAction.run()
+                            }
+                        }
+                    }
+                )
     }
 }

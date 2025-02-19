@@ -19,6 +19,11 @@ class UnityToolWindowFactory : RiderToolWindowFactory() {
 
         fun getToolWindow(project: Project): ToolWindow? = ToolWindowManager.getInstance(project).getToolWindow(TOOLWINDOW_ID)
 
+        fun makeAvailable(project: Project) {
+            val toolWindow = getToolWindow(project) ?: return
+            toolWindow.isAvailable = true
+        }
+
         fun show(project: Project) {
             getToolWindow(project)?.show()
         }
