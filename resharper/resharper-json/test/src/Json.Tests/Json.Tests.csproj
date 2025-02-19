@@ -7,7 +7,6 @@
   <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
   <PropertyGroup>
-    <!-- LibHarmony is not signed -->
     <AssemblyName>JetBrains.ReSharper.Plugins.Json.Tests</AssemblyName>
     <DefineConstants Condition="!$(InternalBuild)">$(DefineConstants);INDEPENDENT_BUILD</DefineConstants>
     <JetTestProject>True</JetTestProject>
@@ -19,17 +18,11 @@
   </PropertyGroup>
   <ItemGroup Label="PackageReference">
     <PackageReference Include="JetBrains.Lifetimes" />
-    <PackageReference Include="Lib.Harmony" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
-    <PackageReference Include="System.IO.Packaging" />
   </ItemGroup>
   <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\..\src\Json\Json.csproj" />
-  </ItemGroup>
-  <ItemGroup Label="Reference">
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
     <RemoveDir Directories="obj" />

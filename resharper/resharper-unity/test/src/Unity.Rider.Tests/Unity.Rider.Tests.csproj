@@ -34,7 +34,6 @@
   <ItemGroup Label="PackageReference">
     <PackageReference Include="JetBrains.Lifetimes" />
     <PackageReference Include="JetBrains.NuGet.Packaging" />
-    <PackageReference Include="Lib.Harmony" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Console" />

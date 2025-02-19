@@ -23,16 +23,11 @@
   </PropertyGroup>
   <ItemGroup Label="PackageReference">
     <PackageReference Include="JetBrains.Lifetimes" />
-    <PackageReference Include="Lib.Harmony" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
   </ItemGroup>
   <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\..\src\Yaml\Yaml.csproj" />
-  </ItemGroup>
-  <ItemGroup Label="Reference">
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
     <RemoveDir Directories="obj" />

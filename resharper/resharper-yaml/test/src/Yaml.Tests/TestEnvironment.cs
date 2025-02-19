@@ -76,7 +76,6 @@ namespace JetBrains.ReSharper.Plugins.Tests
         ConfigureLoggingFolderPath();
         // ConfigureStartupLogging();
         SetJetTestPackagesDir();
-        HackTestDataInNugets.ApplyPatches();
 
         if (PlatformUtil.IsRunningOnMono)
         {

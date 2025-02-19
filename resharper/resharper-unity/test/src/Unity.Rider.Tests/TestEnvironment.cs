@@ -83,7 +83,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests
                 ConfigureLoggingFolderPath();
                 // ConfigureStartupLogging();
                 SetJetTestPackagesDir();
-                HackTestDataInNugets.ApplyPatches();
 
                 if (PlatformUtil.IsRunningOnMono)
                 {
