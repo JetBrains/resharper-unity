@@ -240,6 +240,9 @@
             class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction"
             icon="AllIcons.General.Settings" />
 
+    <action id="EnableAutoProfilerSnapshotFetching"
+            class="com.jetbrains.rider.plugins.unity.actions.EnableAutoProfilerSnapshotFetchingSettings" />
+
     <action id="RiderUnityOpenEditorLogAction"
             class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction"
             icon="UnityIcons.Actions.OpenEditorLog" />
