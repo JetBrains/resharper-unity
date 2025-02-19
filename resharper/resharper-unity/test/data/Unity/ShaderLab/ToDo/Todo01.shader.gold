@@ -9,7 +9,7 @@
     SubShader
     {
         /* |TODO: This is in a multiline comment|(1)
-           And another line */
+           |And another line |(2)*/
         Pass
         {
             CGPROGRAM
@@ -41,6 +41,8 @@
 ---------------------------------------------------------
 (0): ReSharper Todo Item Normal: (T) '' (E) 'TODO: Single line comment'
 (1): ReSharper Todo Item Normal: (T) '' (E) 'TODO: This is in a multiline comment'
+(2):<secondary> ReSharper Todo Item Normal: (T) '' (E) 'TODO: This is in a multiline comment'
 ---------------------------------------------------------
 (0) Todo: "TODO: Single line comment" {@ None  }
 (1) Todo: "TODO: This is in a multiline comment" {@ None  }
+(2) Todo: "TODO: This is in a multiline comment" {@ None  }
