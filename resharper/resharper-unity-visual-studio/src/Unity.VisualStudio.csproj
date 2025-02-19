@@ -15,9 +15,6 @@
   </PropertyGroup>
   <ItemGroup Label="PackageReference">
     <PackageReference Include="JetBrains.Lifetimes" />
-    <PackageReference Include="VSSDK.CoreUtility" />
-    <PackageReference Include="VSSDK.IDE.10" />
-    <PackageReference Include="VSSDK.Text" />
   </ItemGroup>
   <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\resharper-unity\src\Unity.Shaders\Unity.Shaders.csproj" />
