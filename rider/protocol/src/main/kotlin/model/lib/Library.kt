@@ -41,6 +41,7 @@ object Library : Root() {
             +"RecompileAfterFinishedPlaying"
             +"StopPlayingAndRecompile"
         })
+        signal("profilerSnapshotFetchingSettings", int).async.documentation = "What's new action to enable Unity Profiler integration feature"
     }
 
     val UnityProjectSettings = aggregatedef("UnityProjectSettings") {

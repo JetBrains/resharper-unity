@@ -90,6 +90,20 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 
     private void AdviseOnSettingsChanges()
     {
+        myFrontendBackendHost.Model.NotNull().UnityApplicationSettings.ProfilerSnapshotFetchingSettings.Advise(myLifetime,
+            settings =>
+            {
+                try
+                {
+                    var profilerSnapshotFetchingSettings = settings.ToEnum<ProfilerSnapshotFetchingSettings>();
+                    mySettingsStore.SetValue(mySnapshotFetchingScalarEntry, profilerSnapshotFetchingSettings, null);
+                }
+                catch (Exception e)
+                {
+                    myLogger.LogException(e);
+                }
+            });
+        
         mySettingsStore.AdviseAsyncChanged(myLifetime, (lt, change) =>
         {
             if (!change.ChangedEntries.Contains(mySnapshotFetchingScalarEntry))
