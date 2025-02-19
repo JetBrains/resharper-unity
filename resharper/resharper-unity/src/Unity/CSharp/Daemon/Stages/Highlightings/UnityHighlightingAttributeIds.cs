@@ -1,8 +1,10 @@
 ﻿using Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
 
 using System.Drawing;
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.TextControl.DocumentMarkup;
+using JetBrains.TextControl.DocumentMarkup.VisualStudio;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {
@@ -32,6 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         FontStyle = FontStyle.Bold,
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.ImplicitlyUsedIdentifier_RiderPresentableName),
+        FallbackAttributeId = DefaultLanguageAttributeIds.IDENTIFIER,
+        VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
         Layer = HighlighterLayer.SYNTAX + 1)]
     public static class UnityHighlightingAttributeIds
     {
