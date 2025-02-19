@@ -1,12 +1,11 @@
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.BuildScript.Application.Zones;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Feature.Services;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
@@ -35,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
         private readonly UnityUsagesCodeVisionProvider myUsagesCodeVisionProvider;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         [NotNull, ItemNotNull]
-        private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
+        private readonly IImmutableEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly IBackendUnityHost myBackendUnityHost;
@@ -48,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
                                  AssetIndexingSupport assetIndexingSupport,
                                  UnityUsagesCodeVisionProvider usagesCodeVisionProvider,
                                  UnityCodeInsightProvider codeInsightProvider,
-                                 [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
+                                 [NotNull, ItemNotNull] IImmutableEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
                                  DeferredCacheController deferredCacheController, UnitySolutionTracker solutionTracker,
                                  IBackendUnityHost backendUnityHost,
                                  IconHost iconHost, AssetSerializationMode assetSerializationMode,
