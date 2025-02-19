@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
@@ -31,13 +32,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private readonly PrefabImportCache myPrefabImportCache;
         private readonly IShellLocks myShellLocks;
-        private readonly IEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
+        private readonly IImmutableEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
 
         private readonly ConcurrentDictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myAssetDocumentsHierarchy =
             new();
 
         public AssetDocumentHierarchyElementContainer(IPersistentIndexManager manager, PrefabImportCache prefabImportCache, IShellLocks shellLocks,
-            UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
+            UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IImmutableEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
         {
             myManager = manager;
             myPrefabImportCache = prefabImportCache;
