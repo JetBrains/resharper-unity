@@ -11,7 +11,7 @@ import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 class UnityToolWindowManagerProtocolListener : SolutionExtListener<FrontendBackendModel> {
     override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
         model.unityEditorConnected.whenTrue(lifetime) {
-            UnityToolWindowFactory.activateToolWindowIfNotActive(session.project)
+            UnityToolWindowFactory.makeAvailable(session.project)
         }
 
         model.consoleLogging.onConsoleLogEvent.adviseNotNull(lifetime) {
