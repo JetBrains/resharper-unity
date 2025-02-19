@@ -2,6 +2,7 @@
 
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.TextControl.DocumentMarkup;
+using JetBrains.TextControl.DocumentMarkup.VisualStudio;
 
 #nullable enable
 
@@ -17,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         NotRecyclable = true,
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.ExpensiveMethodInvocation_RiderPresentableName),
+        VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(NULL_COMPARISON,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
@@ -26,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         NotRecyclable = true,
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.ExpensiveNullComparison_RiderPresentableName),
+        VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(CAMERA_MAIN,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
@@ -35,6 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         EffectType = EffectType.SOLID_UNDERLINE,
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.ExpensiveCameraMainUsage_RiderPresentableName),
+        VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
@@ -44,6 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         EffectType = EffectType.SOLID_UNDERLINE,
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.InefficientMultidimensionalArrayUsage_RiderPresentableName),
+        VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(INEFFICIENT_MULTIPLICATION_ORDER,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
@@ -53,6 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         EffectType = EffectType.SOLID_UNDERLINE,
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.InefficientMultiplicationOrder_RiderPresentableName),
+        VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     // Note that PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER is registered separately for Rider and ReSharper, because VS/R#
     // don't support EffectType.LINE_MARKER
