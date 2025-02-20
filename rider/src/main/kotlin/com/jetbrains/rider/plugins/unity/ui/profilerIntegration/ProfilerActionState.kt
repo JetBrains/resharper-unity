@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.ui.profilerIntegration
 
 import com.jetbrains.rider.plugins.unity.model.UnityProfilerSnapshotStatus
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
-import icons.RiderIcons
 import icons.UnityIcons
 import javax.swing.Icon
 
