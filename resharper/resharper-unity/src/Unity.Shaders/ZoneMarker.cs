@@ -3,7 +3,7 @@
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders
 {
     [ZoneMarker]
-    public class ZoneMarker : IRequire<IUnityShaderZone>
+    public class ZoneMarker : IRequire<IUnityShaderZone>, IRequire<IUnityPluginZone>
     {
     }
 }

@@ -1,6 +1,5 @@
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.ReSharper.Plugins.Unity;
-using JetBrains.ReSharper.Plugins.Unity.Shaders;
 using JetBrains.ReSharper.TestFramework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRider
