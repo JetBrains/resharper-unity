@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     // IMPORTANT! Do not add any requirements to this zone that aren't satisfied by IInspectCodeZone, otherwise we won't
     // be able to run in CLT
     [ZoneDefinition(ZoneFlags.AutoEnable)]
+    [ZoneDefinitionConfigurableFeature("Unity Plugin", "Game development with Unity", true)]
     public interface IUnityPluginZone : IZone,
         IRequire<DaemonZone>,
         IRequire<ILanguageJsonNewZone>,
