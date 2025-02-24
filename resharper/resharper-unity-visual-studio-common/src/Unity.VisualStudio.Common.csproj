@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <InternalBuild Condition="'$(SolutionFileName)' != 'resharper-unity.sln' AND '$(SolutionFileName)' != 'JetBrains.Rider.Unity.Editor.sln' AND '$(SolutionFileName)' != 'tools.sln' AND '$(SolutionFileName)' != 'resharper-unity-fleet.sln' AND '$(SolutionFileName)' != 'DebuggerTools.sln'">True</InternalBuild>
+    <InternalBuild Condition="$(InternalBuild) == ''">False</InternalBuild>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
+  <PropertyGroup>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.VisualStudio.Common</AssemblyName>
+    <LangVersion>9</LangVersion>
+    <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.VisualStudio</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup Label="PackageReference">
+    <PackageReference Include="JetBrains.Lifetimes" />
+  </ItemGroup>
+  <ItemGroup Label="ProjectReference">
+    <ProjectReference Include="..\..\resharper-unity\src\Unity\Unity.csproj" />
+  </ItemGroup>
+  <ItemGroup Label="Reference">
+    <Reference Include="PresentationCore" />
+    <Reference Include="System.ComponentModel.Composition" />
+  </ItemGroup>
+  <Target Name="DropObjFromIndependentBuild" Condition="$(InternalBuild)" BeforeTargets="Build">
+    <RemoveDir Directories="obj" />
+  </Target>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio_SinceVs10.Props" Condition="!$(InternalBuild)" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio_ReSpeller.Props" Condition="!$(InternalBuild)" />
+  <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.targets" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
+</Project>
