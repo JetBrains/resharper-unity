@@ -6,7 +6,6 @@ using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
 using JetBrains.ReSharper.Features.ReSpeller;
 using JetBrains.ReSharper.FeaturesTestFramework.SpellEngineStub;
-using JetBrains.ReSharper.Plugins.Unity.Shaders;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
@@ -54,6 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests
         IRequire<PsiFeatureTestZone>,
         IRequire<IRiderUnityPluginZone>,
         IRequire<IUnityShaderZone>,
+        IRequire<IUnityPluginZone>,
         IRequire<IReSpellerZone>,
         IRequire<IReSpellerTestStubZone>
     {

@@ -1,10 +1,12 @@
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Shaders
+// NOTE: The namespace intentionally does not contain ".Shaders" part so that IUnityShaderZone is not marked by IUnityPluginZone (from the root ZoneMarker).
+// ReSharper disable CheckNamespace
+namespace JetBrains.ReSharper.Plugins.Unity
 {
     [ZoneDefinition]
-    public interface IUnityShaderZone : IZone, IRequire<IUnityPluginZone>, IRequire<ILanguageCppZone>
+    public interface IUnityShaderZone : IZone, IRequire<ILanguageCppZone>
     {
     }
 }

@@ -5,7 +5,6 @@ using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
 using JetBrains.ReSharper.Plugins.Unity;
-using JetBrains.ReSharper.Plugins.Unity.Shaders;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
