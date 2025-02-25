@@ -7,13 +7,14 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve
 {
     // Creates references from the "references" array to the "name" declaration
-    [ReferenceProviderFactory]
+    [ReferenceProviderFactory(ReferenceTypes = [typeof(ShaderReference<ICSharpLiteralExpression>)])]
     public class ShaderReferenceProviderFactory : IReferenceProviderFactory
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
