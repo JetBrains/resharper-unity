@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 {
     // Creates references from the "reference" property value to a "name" declaration
-    [ReferenceProviderFactory]
+    [ReferenceProviderFactory(ReferenceTypes = [typeof(AsmDefNameReference)])]
     public class AsmRefNameReferenceProviderFactory : IReferenceProviderFactory
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
