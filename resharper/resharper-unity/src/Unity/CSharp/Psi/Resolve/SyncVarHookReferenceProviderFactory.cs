@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
-    [ReferenceProviderFactory]
+    [ReferenceProviderFactory(ReferenceTypes = [typeof(SyncVarHookReference)])]
     public class SyncVarHookReferenceProviderFactory : IReferenceProviderFactory
     {
         public SyncVarHookReferenceProviderFactory()

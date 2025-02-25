@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {
-    [ReferenceProviderFactory]
+    [ReferenceProviderFactory(ReferenceTypes = [typeof(UnityEventFunctionReference)])]
     public class UnityEventFunctionReferenceProviderFactory : IReferenceProviderFactory
     {
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
