@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils
     /// <summary>
     /// NOTE: bufferSize must be larger than number of look ahead characters
     /// </summary>
-    public class StreamReaderBuffer : IBuffer
+    public sealed class StreamReaderBuffer : IBuffer
     {
         private readonly StreamReader myStreamReader;
         private readonly int myBufferSize;
@@ -41,6 +41,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils
             AppendTextTo(sb, range);
 
             return sb.ToString();
+        }
+
+        public bool TryGetReadOnlySpan(out ReadOnlySpan<char> span)
+        {
+            span = default;
+            return false;
         }
 
         public void AppendTextTo(StringBuilder builder, TextRange range)
