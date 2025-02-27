@@ -139,7 +139,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("playControlsInitialized", bool).documentation = "Have we got playControls state from Unity?"
         property("unityEditorState", Library.UnityEditorState)
 
-        property("unityApplicationData", Library.UnityApplicationData)
+        property("unityApplicationData", Library.UnityApplicationData).async
         property("isCoreCLR", bool).documentation = "Is Unity 7 and newer"
         property("requiresRiderPackage", bool)
         field("unityApplicationSettings", Library.UnityApplicationSettings)
