@@ -1,0 +1,42 @@
+before change
+Inline 232 InlineCodeVisionInlayRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=221, endOffset=231) Changed in 2 assets
+    Hidden
+Inline 262 InlineCodeVisionInlayRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=255, endOffset=261) "PrimitiveText"
+    Hidden
+Inline 314 InlineCodeVisionInlayRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=295, endOffset=313) Test 1.asset
+    Hidden
+Block 156 BlockCodeVisionInlayRenderer
+Top
+    Visible
+        Text RdTextRange(startOffset=156, endOffset=176) 2 asset usages
+    Hidden
+after change
+Inline 232 InlineCodeVisionInlayRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=221, endOffset=231) Changed in 2 assets
+    Hidden
+Inline 262 InlineCodeVisionInlayRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=255, endOffset=261) "PrimitiveText"
+    Hidden
+Inline 314 InlineCodeVisionInlayRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=295, endOffset=313) Test 1.asset
+    Hidden
+Block 156 BlockCodeVisionInlayRenderer
+Top
+    Visible
+        Text RdTextRange(startOffset=156, endOffset=176) 2 asset usages
+    Hidden
