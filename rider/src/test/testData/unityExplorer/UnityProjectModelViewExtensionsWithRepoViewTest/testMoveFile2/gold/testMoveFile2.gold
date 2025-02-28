@@ -1,0 +1,112 @@
+===================
+Move file
+
+-Project
+ -Assets
+  References
+  -AsmdefResponse, tooltip=Contains files from multiple projects:<br/>AsmdefResponse<br/>AsmdefResponse.Player<br/>AsmdefResponse2<br/>AsmdefResponse2.Player
+   -NewDirectory1
+    zero
+   -SS
+    AsmdefResponse2.asmdef
+   AsmdefResponse.asmdef
+   NewBehaviourScript.cs
+  -Dir1
+   ClassInDir1.cs
+  -NewDirectory1
+   zero
+  -Scripts
+   -Editor
+    -NewDirectory1
+     zero
+    XMLUtilities.cs
+   -NewDirectory1
+    zero
+  Class1.cs
+  rrr.cs
+
+
+
+Project [Name:&, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : UnityProjectModelViewExtensionsTest.sln)[]
+
+Project [Name:AsmdefResponse, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : AsmdefResponse.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        Folder [Name:AsmdefResponse]
+          Child items:
+            ProjectFileImpl(Path : AsmdefResponse.asmdef)[NONE ]
+            ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
+
+Project [Name:AsmdefResponse.Player, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : AsmdefResponse.Player.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        Folder [Name:AsmdefResponse]
+          Child items:
+            ProjectFileImpl(Path : AsmdefResponse.asmdef)[NONE ]
+            ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
+
+Project [Name:AsmdefResponse2, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : AsmdefResponse2.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        Folder [Name:AsmdefResponse]
+          Child items:
+            Folder [Name:SS]
+              Child items:
+                ProjectFileImpl(Path : AsmdefResponse2.asmdef)[NONE ]
+
+Project [Name:AsmdefResponse2.Player, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : AsmdefResponse2.Player.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        Folder [Name:AsmdefResponse]
+          Child items:
+            Folder [Name:SS]
+              Child items:
+                ProjectFileImpl(Path : AsmdefResponse2.asmdef)[NONE ]
+
+Project [Name:Assembly-CSharp, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : Assembly-CSharp.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        ProjectFileImpl(Path : Class1.cs)[COMPILE ]
+        Folder [Name:Dir1]
+          Child items:
+            ProjectFileImpl(Path : ClassInDir1.cs)[COMPILE ]
+        ProjectFileImpl(Path : rrr.cs)[COMPILE ]
+
+Project [Name:Assembly-CSharp-Editor, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : Assembly-CSharp-Editor.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        Folder [Name:Scripts]
+          Child items:
+            Folder [Name:Editor]
+              Child items:
+                ProjectFileImpl(Path : XMLUtilities.cs)[COMPILE ]
+
+Project [Name:Assembly-CSharp.Player, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : Assembly-CSharp.Player.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        ProjectFileImpl(Path : Class1.cs)[COMPILE ]
+        Folder [Name:Dir1]
+          Child items:
+            ProjectFileImpl(Path : ClassInDir1.cs)[COMPILE ]
+        ProjectFileImpl(Path : rrr.cs)[COMPILE ]
+
+Project [Name:Miscellaneous Files, GUID:GUID]
+
+
+
