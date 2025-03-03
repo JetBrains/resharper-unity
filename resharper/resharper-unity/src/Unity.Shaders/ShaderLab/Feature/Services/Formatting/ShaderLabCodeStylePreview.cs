@@ -24,8 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
         case PreviewParseType.None:
           return null;
 
+        case PreviewParseType.Statement:
+          return null;  // TODO (DK) to be implemented
+
         default:
-          throw new NotImplementedException();
+          throw new NotImplementedException($"PreviewParseType = {parseType}");
       }
     }
 
