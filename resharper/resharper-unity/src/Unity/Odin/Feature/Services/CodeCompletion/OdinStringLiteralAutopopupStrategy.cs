@@ -12,7 +12,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeCompletion;
 
-[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
+//[SolutionComponent(Instantiation.DemandAnyThreadSafe)]    // TODO RIDER-123530 OdinStringLiteralAutopopupStrategy should not break CSharpInStringLiteralAutopopupStrategy
 public class OdinStringLiteralAutopopupStrategy : CSharpInStringLiteralAutopopupStrategy
 {
     private readonly UnityTechnologyDescriptionCollector myTechnologyDescriptionCollector;
