@@ -1,7 +1,6 @@
 <idea-plugin>
     <dependencies>
         <plugin id="com.intellij.resharper.unity"/>
-        <module name="intellij.platform.debugger"/>
         <module name="intellij.rider.test.framework"/>
         <module name="intellij.rider.test.framework._test"/>
         <module name="intellij.rider.test.framework.core"/>
