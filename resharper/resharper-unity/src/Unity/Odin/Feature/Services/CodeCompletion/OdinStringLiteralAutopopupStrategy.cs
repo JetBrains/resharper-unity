@@ -1,34 +1,49 @@
-using JetBrains.Annotations;
+#nullable enable
+
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Settings;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Settings;
-using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.AutomaticStrategies;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeCompletion;
 
-//[SolutionComponent(Instantiation.DemandAnyThreadSafe)]    // TODO RIDER-123530 OdinStringLiteralAutopopupStrategy should not break CSharpInStringLiteralAutopopupStrategy
-public class OdinStringLiteralAutopopupStrategy : CSharpInStringLiteralAutopopupStrategy
+[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
+public class OdinStringLiteralAutopopupStrategy : IAutomaticCodeCompletionStrategy
 {
     private readonly UnityTechnologyDescriptionCollector myTechnologyDescriptionCollector;
+    private readonly CSharpCodeCompletionManager myCodeCompletionManager;
+    private readonly SettingsScalarEntry mySettingsEntry;
 
-    public OdinStringLiteralAutopopupStrategy(UnityTechnologyDescriptionCollector technologyDescriptionCollector, [NotNull] CSharpCodeCompletionManager codeCompletionManager, [NotNull] ISettingsSchema settingsSchema) : base(codeCompletionManager, settingsSchema)
+    public OdinStringLiteralAutopopupStrategy(UnityTechnologyDescriptionCollector technologyDescriptionCollector, CSharpCodeCompletionManager codeCompletionManager, ISettingsSchema settingsSchema)
     {
         myTechnologyDescriptionCollector = technologyDescriptionCollector;
+        myCodeCompletionManager = codeCompletionManager;
+        mySettingsEntry = settingsSchema.GetScalarEntry((CSharpAutopopupEnabledSettingsKey key) => key.InStringLiterals);
     }
-    
+
+    public PsiLanguageType Language => CSharpLanguage.Instance.NotNull();
+
+    public AutopopupType IsEnabledInSettings(IContextBoundSettingsStore settingsStore, ITextControl textControl)
+    {
+        return (AutopopupType)settingsStore.GetValue(mySettingsEntry, null);
+    }
+
     // TODO check for ODIN
-    public override bool AcceptsFile(IFile file, ITextControl textControl)
+    public bool AcceptsFile(IFile file, ITextControl textControl)
     {
         if (!myTechnologyDescriptionCollector.DiscoveredTechnologies.ContainsKey("Odin"))
             return false;
         
-        return base.AcceptsFile(file, textControl) && this.MatchToken(file, textControl, node =>
+        return this.MatchTokenType(file, textControl, type => type.IsStringLiteral) && this.MatchToken(file, textControl, node =>
         {
             var expression = node.Parent as ICSharpLiteralExpression;
             var argument = CSharpArgumentNavigator.GetByValue(expression);
@@ -37,12 +52,15 @@ public class OdinStringLiteralAutopopupStrategy : CSharpInStringLiteralAutopopup
         });
     }
 
-    
-    public override bool AcceptTyping(char c, ITextControl textControl, IContextBoundSettingsStore settingsStore)
+    public bool AcceptTyping(char c, ITextControl textControl, IContextBoundSettingsStore settingsStore)
     {
-        if (c == '$')
-            return true;
-        
-        return base.AcceptTyping(c, textControl, settingsStore);
+        if (!myCodeCompletionManager.GetAutopopupEnabled(settingsStore))
+            return false;
+
+        return c == '$';
     }
+
+    public bool ProcessSubsequentTyping(char c, ITextControl textControl) => char.IsLetterOrDigit(c);
+
+    public bool ForceHideCompletion => false;
 }
