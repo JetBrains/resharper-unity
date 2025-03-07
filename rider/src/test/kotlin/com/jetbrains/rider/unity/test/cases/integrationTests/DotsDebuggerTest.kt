@@ -107,6 +107,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
     }
 }
 
+@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerestUnity2020 : DotsDebuggerTest(Unity.V2020) {
     init {
@@ -116,6 +117,7 @@ class DotsDebuggerestUnity2020 : DotsDebuggerTest(Unity.V2020) {
     }
 }
 
+@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
     init {
@@ -125,6 +127,7 @@ class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
     }
 }
 
+@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTestUnity2023 : DotsDebuggerTest(Unity.V2023) {
     init {
@@ -133,6 +136,7 @@ class DotsDebuggerTestUnity2023 : DotsDebuggerTest(Unity.V2023) {
     }
 }
 
+@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTestUnity6 : DotsDebuggerTest(Unity.V6) {
     init {
