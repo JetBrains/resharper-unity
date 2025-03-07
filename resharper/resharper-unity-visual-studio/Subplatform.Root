@@ -7,6 +7,7 @@
         <SubplatformReference Name="Platform\VisualStudio\SinceVs10" />
         <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src\Unity" />
         <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src\Unity.Shaders" />
-		<SubplatformReference Name="Plugins\_Unity.Pregenerated\BackendModel" />
+        <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity-visual-studio-common" />
+        <SubplatformReference Name="Plugins\_Unity.Pregenerated\BackendModel" />
     </SubplatformInfo.SubplatformReferences>
 </SubplatformInfo>

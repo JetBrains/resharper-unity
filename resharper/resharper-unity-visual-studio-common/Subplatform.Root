@@ -5,6 +5,6 @@
         <SubplatformReference Name="Psi.Features\VisualStudio\ReSpeller" />
         <SubplatformReference Name="Platform\VisualStudio\SinceVs10" />
         <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src\Unity" />
-		<SubplatformReference Name="Plugins\_Unity.Pregenerated\BackendModel" />
+        <SubplatformReference Name="Plugins\_Unity.Pregenerated\BackendModel" />
     </SubplatformInfo.SubplatformReferences>
 </SubplatformInfo>
