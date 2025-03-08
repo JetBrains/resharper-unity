@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         public ViewableProperty<Version> ActualVersionForSolution { get; } = new(new Version(0,0));
 
-        private readonly ViewableProperty<VirtualFileSystemPath> myActualAppPathForSolution = new();
+        public readonly ViewableProperty<VirtualFileSystemPath> ActualAppPathForSolution = new();
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
             ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
@@ -123,8 +123,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             if (mySolution.IsVirtualSolution())
                 return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
 
-            if (myActualAppPathForSolution.HasValue() && !myActualAppPathForSolution.Value.IsNullOrEmpty())
-                return myActualAppPathForSolution.Value;
+            if (ActualAppPathForSolution.HasValue() && !ActualAppPathForSolution.Value.IsNullOrEmpty())
+                return ActualAppPathForSolution.Value;
 
             ourLogger.Verbose(
                 "UnityVersion.GetActualAppPathForSolution is empty path. May happen for a regular project with a reference to UnityEditor.dll outside of Unity installation.");
@@ -352,7 +352,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         {
             var path = myUnityProjectFileCache.GetAppPath(project);
             if (path != null)
-                myActualAppPathForSolution.SetValue(path);
+                ActualAppPathForSolution.SetValue(path);
         }
     }
 }

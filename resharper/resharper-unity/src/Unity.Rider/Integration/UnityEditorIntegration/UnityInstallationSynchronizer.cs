@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Threading.Tasks;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
@@ -30,6 +31,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myBackendUnityHost = backendUnityHost;
             unityVersion.ActualVersionForSolution.Advise(lifetime,
                 version => NotifyFrontend(frontendBackendHost, unityVersion, version).NoAwait());
+            // update front again once, when we know the path better
+            unityVersion.ActualAppPathForSolution.AdviseOnce(lifetime,
+                version => NotifyFrontend(frontendBackendHost, unityVersion,
+                    unityVersion.ActualVersionForSolution.Value).NoAwait());
         }
 
         private async Task NotifyFrontend(FrontendBackendHost host, UnityVersion unityVersion, Version version)
