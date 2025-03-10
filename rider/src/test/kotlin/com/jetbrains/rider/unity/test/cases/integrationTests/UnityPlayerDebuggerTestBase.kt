@@ -13,12 +13,14 @@ import com.jetbrains.rider.test.unity.Unity
 import com.jetbrains.rider.unity.test.framework.api.*
 import org.testng.annotations.Test
 import java.time.Duration
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertNotNull
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Player")
 @Severity(SeverityLevel.CRITICAL)
 @Solution("UnityPlayerProjects/SimpleUnityGame")
+@RiderTestTimeout(5, TimeUnit.MINUTES)
 abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNames: Map<String, String>)
     : UnityPlayerTestBase(engineVersion, buildNames) {
 
