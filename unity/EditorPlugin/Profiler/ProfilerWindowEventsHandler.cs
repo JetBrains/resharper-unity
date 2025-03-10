@@ -1,56 +1,63 @@
+#nullable enable
+using System;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.PathLocator;
-using JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis;
-using JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation;
+using JetBrains.Rider.Unity.Editor.Profiler.Adapters.Interfaces;
 using JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis;
 using JetBrains.Rider.Unity.Editor.Profiler.SnapshotNavigation;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace JetBrains.Rider.Unity.Editor.Profiler
 {
   public static class ProfilerWindowEventsHandler
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(ProfilerWindowEventsHandler));
-    private static ReflectionDataProvider ourReflectionDataProvider;
-    private static SnapshotReflectionDataProvider ourSnapshotReflectionDataProvider;
 
-    private static EditorWindow ourLastProfilerWindow;
-    private static EditorWindow ourProfilerWindow;
+    private static IProfilerAdaptersFactory? ourProfilerAdaptersFactory;
+    private static IProfilerWindowTypeChecker? ourProfilerWindwowTypeChecker;
 
-    private static IProfilerWindowSelectionDataProvider ourProfilerWindowDataProvider;
-    private static ISnapshotCollectorDaemon ourSnapshotCollectorDaemon;
+    private static EditorWindow? ourLastProfilerWindow;
+    private static EditorWindow? ourProfilerWindow;
+
+    private static IProfilerWindowSelectionDataProvider? ourProfilerWindowDataProvider;
+    private static ISnapshotCollectorDaemon? ourSnapshotCollectorDaemon;
 
     private static readonly ISignal<SampleStackInfo> ourOnTimeSampleSelectedSignal = new SignalBase<SampleStackInfo>();
 
     private static void InternalUpdate()
     {
-      if (!ourProfilerWindowDataProvider.IsSupportingCurrentUnityVersion)
+      if (ourProfilerWindowDataProvider is not { IsSupportingCurrentUnityVersion: true })
         return;
 
       UpdateFocusedProfilerWindow();
-
-      if (!ourSnapshotReflectionDataProvider.IsCompatibleWithCurrentUnityVersion)
-        return;
 
       ourSnapshotCollectorDaemon?.Update(ourLastProfilerWindow);
     }
 
     private static void UpdateFocusedProfilerWindow()
     {
-      var profilerWindow = TryGetProfilerWindow();
+      var profilerWindow = TryGetProfilerWindow(EditorWindow.focusedWindow);
+#if UNITY_2022_3_OR_NEWER
+      if (!EditorApplication.isFocused && ourProfilerWindow == null)
+        return;
+#else
+      if(EditorWindow.focusedWindow == null && ourProfilerWindow == null)
+        return;
+#endif
 
       if (ourProfilerWindow != profilerWindow)
       {
         DeinitCurrentProfilerWindowEventHandling();
 
         if (profilerWindow != null)
-          ourProfilerWindowDataProvider.Init(profilerWindow, OnTimeSampleSelected);
+          ourProfilerWindowDataProvider?.Init(profilerWindow, OnTimeSampleSelected);
 
-        if (ourProfilerWindowDataProvider.IsInitialized)
+        if (ourProfilerWindowDataProvider is { IsInitialized: true })
           ourProfilerWindow = profilerWindow;
       }
 
@@ -60,17 +67,17 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
 
     private static void DeinitCurrentProfilerWindowEventHandling()
     {
+      ourLogger.Verbose("DeinitCurrentProfilerWindowEventHandling");
       if (ourProfilerWindow != null)
       {
-        ourProfilerWindowDataProvider.Deinit(ourProfilerWindow, OnTimeSampleSelected);
+        ourProfilerWindowDataProvider?.Deinit(ourProfilerWindow, OnTimeSampleSelected);
         ourProfilerWindow = null;
       }
     }
 
-    private static EditorWindow TryGetProfilerWindow()
+    private static EditorWindow? TryGetProfilerWindow(EditorWindow? focusedWindow)
     {
-      var focusedWindow = EditorWindow.focusedWindow;
-      return focusedWindow?.GetType() == ourReflectionDataProvider.ProfilerWindowReflectionData.ProfilerWindowType
+      return ourProfilerWindwowTypeChecker?.IsProfilerWindow(focusedWindow) == true
         ? focusedWindow
         : null;
     }
@@ -84,19 +91,24 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
       // PluginEntryPoint.OpenAssetHandler.OnOpenedAsset("", 0);
     }
 
-
     public static void Initialize(Lifetime appDomainLifetime)
     {
       appDomainLifetime.Bracket(() =>
         {
+          ourProfilerAdaptersFactory =
+#if UNITY_2022_3_OR_NEWER
+            new JetBrains.Rider.Unity.Editor.Profiler.Adapters.UnityApiBasedAdapters.UnityApiBasedFactory();
+#else
+            new JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters.ReflectionBasedAdaptersFactory();
+#endif
           ourLogger.Verbose("ProfilerWindowEventsHandler.Initialize");
-          ourReflectionDataProvider = new ReflectionDataProvider();
-          ourProfilerWindowDataProvider = new ProfilerWindowFacade(ourReflectionDataProvider);
-          ourSnapshotReflectionDataProvider = new SnapshotReflectionDataProvider();
-          ourSnapshotCollectorDaemon = new SnapshotCollectorDaemon(ourSnapshotReflectionDataProvider, ourReflectionDataProvider, appDomainLifetime);
+          ourProfilerWindowDataProvider = ourProfilerAdaptersFactory!.CreateProfilerWindowFacade();
+          ourProfilerWindwowTypeChecker = ourProfilerAdaptersFactory!.CreateProfilerWindowTypeChecker();
+
+          ourSnapshotCollectorDaemon = new SnapshotCollectorDaemon(ourProfilerAdaptersFactory, appDomainLifetime);
 
           //find an already opened profiler window
-          var profilerWindowObjects = Resources.FindObjectsOfTypeAll(ourReflectionDataProvider.ProfilerWindowReflectionData.ProfilerWindowType);
+          var profilerWindowObjects = ourProfilerWindwowTypeChecker?.FindProfilerWindows() ?? Array.Empty<Object>();
           ourLastProfilerWindow = profilerWindowObjects.Length > 0 ? profilerWindowObjects[0] as EditorWindow : null;
 
           EditorApplication.update += InternalUpdate;

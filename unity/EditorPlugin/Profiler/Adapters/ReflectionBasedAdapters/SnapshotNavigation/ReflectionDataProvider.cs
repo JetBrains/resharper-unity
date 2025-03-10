@@ -1,18 +1,19 @@
+#nullable enable
 using System;
 using JetBrains.Diagnostics;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
+namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters.SnapshotNavigation
 {
   internal class ReflectionDataProvider
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(ReflectionDataProvider));
+    internal readonly CPUProfilerModuleReflectionData? CPUProfilerModuleReflectionData;
+    internal readonly ProfilerDriverReflectionData? ProfilerDriverReflectionData;
+    internal readonly ProfilerFrameDataHierarchyViewReflectionData? ProfilerFrameDataHierarchyViewReflectionData;
+    internal readonly ProfilerFrameDataTreeViewReflectionData? ProfilerFrameDataTreeViewReflectionData;
+    internal readonly ProfilerWindowReflectionData? ProfilerWindowReflectionData;
+    internal readonly TreeViewControllerReflectionData? TreeViewControllerReflectionData;
     public readonly bool IsCompatibleWithCurrentUnityVersion;
-    internal readonly ProfilerDriverReflectionData ProfilerDriverReflectionData;
-    internal readonly ProfilerWindowReflectionData ProfilerWindowReflectionData;
-    internal readonly CPUProfilerModuleReflectionData CPUProfilerModuleReflectionData;
-    internal readonly ProfilerFrameDataHierarchyViewReflectionData ProfilerFrameDataHierarchyViewReflectionData;
-    internal readonly ProfilerFrameDataTreeViewReflectionData ProfilerFrameDataTreeViewReflectionData;
-    internal readonly TreeViewControllerReflectionData TreeViewControllerReflectionData;
 
     internal ReflectionDataProvider()
     {
@@ -37,7 +38,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
         {
           IsCompatibleWithCurrentUnityVersion = false;
           ourLogger.Verbose(
-            $"The {nameof(SnapshotNavigation.ProfilerWindowReflectionData)} is not compatible with the current Unity version.");
+            $"The {nameof(ReflectionBasedAdapters.ProfilerWindowReflectionData)} is not compatible with the current Unity version.");
           return;
         }
 

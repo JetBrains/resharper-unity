@@ -1,16 +1,17 @@
+#nullable enable
 using System;
 using System.Reflection;
 using UnityEditor;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
+namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
 {
   internal sealed class ProfilerWindowReflectionData : IReflectionData
   {
     public const string UnityEditorProfilerWindowType = "UnityEditor.ProfilerWindow";
     private const string SelectedFrameIndexPropertyName = "GetActiveVisibleFrameIndex";
-    public readonly FieldInfo ProfilerModulesFieldInfo;
-    public readonly MethodInfo SelectedFrameIndexMethodInfo;
-    public readonly Type ProfilerWindowType;
+    public readonly FieldInfo? ProfilerModulesFieldInfo;
+    public readonly Type? ProfilerWindowType;
+    public readonly MethodInfo? SelectedFrameIndexMethodInfo;
 
     public ProfilerWindowReflectionData()
     {
@@ -19,7 +20,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
         ProfilerWindowType?.GetField("m_ProfilerModules", BindingFlags.Instance | BindingFlags.NonPublic)
         ?? ProfilerWindowType?.GetField("m_AllModules", BindingFlags.Instance | BindingFlags.NonPublic);
       SelectedFrameIndexMethodInfo = ProfilerWindowType?.GetMethod(SelectedFrameIndexPropertyName,
-        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | BindingFlags.Public);
+        BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
     }
 
     public bool IsValid()

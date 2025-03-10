@@ -1,15 +1,16 @@
+#nullable enable
 using System;
 using JetBrains.Diagnostics;
-using JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation;
+using JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters.SnapshotNavigation;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
+namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters.SnapshotAnalysis
 {
   internal class SnapshotReflectionDataProvider
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(ReflectionDataProvider));
     public readonly bool IsCompatibleWithCurrentUnityVersion;
-    internal readonly ProfilerSnapshotDriverReflectionData MyProfilerSnapshotDriverReflectionData;
-    internal readonly RawFrameDataViewReflectionData MyRawFrameDataViewReflectionData;
+    internal readonly ProfilerSnapshotDriverReflectionData? MyProfilerSnapshotDriverReflectionData;
+    internal readonly RawFrameDataViewReflectionData? MyRawFrameDataViewReflectionData;
 
     internal SnapshotReflectionDataProvider()
     {

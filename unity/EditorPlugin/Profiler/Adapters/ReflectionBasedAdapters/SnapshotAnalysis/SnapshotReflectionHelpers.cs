@@ -1,16 +1,16 @@
+#nullable enable
 using System;
 using System.Reflection;
 using UnityEditor;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
+namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters.SnapshotAnalysis
 {
   internal sealed class ProfilerSnapshotDriverReflectionData : IReflectionData
   {
-    public const string ProfilerDriverTypeName = "UnityEditorInternal.ProfilerDriver";
-    public readonly Type ProfilerDriverType;
-
-    public const string GetRawFrameDataViewMethodName = "GetRawFrameDataView";
+    private const string ProfilerDriverTypeName = "UnityEditorInternal.ProfilerDriver";
+    private const string GetRawFrameDataViewMethodName = "GetRawFrameDataView";
     public readonly MethodInfo GetRawFrameDataViewMethod;
+    private readonly Type ProfilerDriverType;
 
     public ProfilerSnapshotDriverReflectionData()
     {
@@ -28,36 +28,28 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
 
   internal sealed class RawFrameDataViewReflectionData : IReflectionData
   {
-    public const string RawFrameDataViewTypeName = "UnityEditor.Profiling.RawFrameDataView";
-    public readonly Type RawFrameDataViewType;
-
-    public const string GetSampleTimeMsMethodName = "GetSampleTimeMs";
-    public readonly MethodInfo GetSampleTimeMsMethod;
-
-    public const string GetSampleMarkerIdMethodName = "GetSampleMarkerId";
-    public readonly MethodInfo GetSampleMarkerIdMethod;
-
-    public const string GetSampleChildrenCountMethodName = "GetSampleChildrenCount";
-    public readonly MethodInfo GetSampleChildrenCountMethod;
-
-    public const string GetSampleNameMethodName = "GetSampleName";
-    public readonly MethodInfo GetSampleNameMethod;
-
-    // New property constants and PropertyInfo
-    public const string FrameStartTimeMsPropertyName = "frameStartTimeMs";
-    public readonly PropertyInfo FrameStartTimeMsProperty;
-
-    public const string FrameTimeMsPropertyName = "frameTimeMs";
-    public readonly PropertyInfo FrameTimeMsProperty;
-
-    public const string SampleCountPropertyName = "sampleCount";
-    public readonly PropertyInfo SampleCountProperty;
-
-    public const string ThreadNamePropertyName = "threadName";
-    public readonly PropertyInfo ThreadNameProperty;
+    private const string RawFrameDataViewTypeName = "UnityEditor.Profiling.RawFrameDataView";
+    private const string GetSampleTimeMsMethodName = "GetSampleTimeMs";
+    private const string GetSampleMarkerIdMethodName = "GetSampleMarkerId";
+    private const string GetSampleChildrenCountMethodName = "GetSampleChildrenCount";
+    private const string GetSampleNameMethodName = "GetSampleName";
+    private const string FrameStartTimeMsPropertyName = "frameStartTimeMs";
+    private const string FrameTimeMsPropertyName = "frameTimeMs";
+    private const string SampleCountPropertyName = "sampleCount";
+    private const string ThreadNamePropertyName = "threadName";
+    private const string ThreadIndexPropertyName = "threadIndex";
     
-    public const string ThreadIndexPropertyName = "threadIndex";
+    public readonly PropertyInfo FrameStartTimeMsProperty;
+    public readonly PropertyInfo FrameTimeMsProperty;
+    public readonly MethodInfo GetSampleChildrenCountMethod;
+    public readonly MethodInfo GetSampleMarkerIdMethod;
+    public readonly MethodInfo GetSampleNameMethod;
+    public readonly MethodInfo GetSampleTimeMsMethod;
+    public readonly Type RawFrameDataViewType;
+    public readonly PropertyInfo SampleCountProperty;
     public readonly PropertyInfo ThreadIndexProperty;
+    public readonly PropertyInfo ThreadNameProperty;
+
     public RawFrameDataViewReflectionData()
     {
       RawFrameDataViewType = Assembly.GetAssembly(typeof(EditorWindow)).GetType(RawFrameDataViewTypeName);

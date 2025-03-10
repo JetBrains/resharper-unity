@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -5,50 +6,58 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis;
+using JetBrains.Rider.Unity.Editor.Profiler.Adapters.Interfaces;
 
 namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 {
   internal class ProfilerSnapshotCrawler
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(ProfilerSnapshotCrawler));
-    private readonly ProfilerSnapshotDriverAdapter myProfilerSnapshotDriverAdapter;
+    private readonly IProfilerSnapshotDriverAdapter myProfilerSnapshotDriverAdapter;
 
-    public ProfilerSnapshotCrawler(ProfilerSnapshotDriverAdapter profilerSnapshotDriverAdapter)
+    public ProfilerSnapshotCrawler(IProfilerSnapshotDriverAdapter profilerSnapshotDriverAdapter)
     {
       myProfilerSnapshotDriverAdapter = profilerSnapshotDriverAdapter;
     }
 
     public UnityProfilerSnapshotStatus GetCurrentProfilerSnapshotStatusInfo(int selectedFrameIndex, int threadIndex)
     {
-      ourLogger.Trace( $"GetCurrentProfilerSnapshotStatusInfo: {nameof(selectedFrameIndex)}:{selectedFrameIndex} {nameof(threadIndex)}:{threadIndex}");
+      ourLogger.Trace(
+        $"GetCurrentProfilerSnapshotStatusInfo: {nameof(selectedFrameIndex)}:{selectedFrameIndex} {nameof(threadIndex)}:{threadIndex}");
       using var rawFrameDataView = myProfilerSnapshotDriverAdapter.GetRawFrameDataView(selectedFrameIndex, threadIndex);
-      return rawFrameDataView.ToSnapshotStatus(selectedFrameIndex, rawFrameDataView?.SampleCount > 0 ? SnapshotStatus.HasNewSnapshotDataToFetch : SnapshotStatus.NoSnapshotDataAvailable);
+      return rawFrameDataView.ToSnapshotStatus(selectedFrameIndex,
+        rawFrameDataView?.SampleCount > 0
+          ? SnapshotStatus.HasNewSnapshotDataToFetch
+          : SnapshotStatus.NoSnapshotDataAvailable);
     }
 
     //No task needed
-    public Task<UnityProfilerSnapshot> GetUnityProfilerSnapshot(ProfilerSnapshotRequest snapshotRequestInfo, Lifetime lifetime, IProgress<UnityProfilerSnapshotStatus> progress = null)
+    public Task<UnityProfilerSnapshot?> GetUnityProfilerSnapshot(ProfilerSnapshotRequest snapshotRequestInfo,
+      Lifetime lifetime, IProgress<UnityProfilerSnapshotStatus>? progress = null)
     {
       ourLogger.Verbose($"GetUnityProfilerSnapshot: {nameof(snapshotRequestInfo.FrameIndex)}:{snapshotRequestInfo.FrameIndex} {nameof(snapshotRequestInfo.ThreadIndex)}:{snapshotRequestInfo.ThreadIndex}");
       if (snapshotRequestInfo.FrameIndex < 0 || snapshotRequestInfo.ThreadIndex < 0)
       {
         ourLogger.Verbose($"GetUnityProfilerSnapshot: {nameof(snapshotRequestInfo.FrameIndex)}:{snapshotRequestInfo.FrameIndex} {nameof(snapshotRequestInfo.ThreadIndex)}:{snapshotRequestInfo.ThreadIndex} is invalid");
-        return Task.FromResult<UnityProfilerSnapshot>(null);
+        return Task.FromResult<UnityProfilerSnapshot?>(null);
       }
 
-      using var rawFrameDataView = myProfilerSnapshotDriverAdapter.GetRawFrameDataView(snapshotRequestInfo.FrameIndex, snapshotRequestInfo.ThreadIndex);
-      
+      using var rawFrameDataView =
+        myProfilerSnapshotDriverAdapter.GetRawFrameDataView(snapshotRequestInfo.FrameIndex,
+          snapshotRequestInfo.ThreadIndex);
+
       if (rawFrameDataView == null)
       {
         ourLogger.Verbose($"GetUnityProfilerSnapshot: {nameof(rawFrameDataView)} is null");
-        return Task.FromResult<UnityProfilerSnapshot>(null);
+        return Task.FromResult<UnityProfilerSnapshot?>(null);
       }
-      
+
       var sampleCount = rawFrameDataView.SampleCount;
       var threadName = rawFrameDataView.ThreadName;
       var threadId = rawFrameDataView.ThreadIndex;
 
-      var snapshotStatus = rawFrameDataView.ToSnapshotStatus(snapshotRequestInfo.FrameIndex, SnapshotStatus.SnapshotDataFetchingInProgress);
+      var snapshotStatus = rawFrameDataView.ToSnapshotStatus(snapshotRequestInfo.FrameIndex,
+        SnapshotStatus.SnapshotDataFetchingInProgress);
       progress?.Report(snapshotStatus);
 
       var currentProfilerFrameSnapshot = new UnityProfilerSnapshot(
@@ -72,9 +81,11 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         var sampleInfo = new SampleInfo(duration, markerId, childrenCount);
         currentProfilerFrameSnapshot.Samples.Add(sampleInfo);
 
-        if(i % batchSize == 0)
-          progress?.Report( rawFrameDataView.ToSnapshotStatus(snapshotRequestInfo.FrameIndex, SnapshotStatus.SnapshotDataFetchingInProgress, i / (float) sampleCount));
-        
+        if (i % batchSize == 0)
+          progress?.Report(rawFrameDataView.ToSnapshotStatus(snapshotRequestInfo.FrameIndex,
+            SnapshotStatus.SnapshotDataFetchingInProgress,
+            i / (float)sampleCount));
+
         lifetime.ThrowIfNotAlive();
 
         if (knownMarkerIds.Contains(markerId))
@@ -86,7 +97,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       }
 
       ourLogger.Verbose($"GetUnityProfilerSnapshot: {nameof(currentProfilerFrameSnapshot)} is ready");
-      return Task.FromResult(currentProfilerFrameSnapshot);
+      return Task.FromResult<UnityProfilerSnapshot?>(currentProfilerFrameSnapshot);
     }
   }
 }

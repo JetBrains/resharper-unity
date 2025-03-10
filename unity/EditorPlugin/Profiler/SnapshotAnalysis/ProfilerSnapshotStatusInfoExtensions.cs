@@ -1,14 +1,17 @@
 #nullable enable
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis;
+using JetBrains.Rider.Unity.Editor.Profiler.Adapters.Interfaces;
 
 namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 {
   internal static class ProfilerSnapshotStatusInfoExtensions
   {
-    private static readonly UnityProfilerSnapshotStatus ourUnavailableStatusInfo = new(-1, -1, string.Empty, -1, SnapshotStatus.NoSnapshotDataAvailable, 0f);
-    public static UnityProfilerSnapshotStatus ToSnapshotStatus(this UnityProfilerSnapshot? profilerFrameSnapshot, SnapshotStatus snapshotStatus)
+    private static readonly UnityProfilerSnapshotStatus ourUnavailableStatusInfo =
+      new(-1, -1, string.Empty, -1, SnapshotStatus.NoSnapshotDataAvailable, 0f);
+
+    public static UnityProfilerSnapshotStatus ToSnapshotStatus(this UnityProfilerSnapshot? profilerFrameSnapshot,
+      SnapshotStatus snapshotStatus)
     {
       return profilerFrameSnapshot == null
         ? ourUnavailableStatusInfo
@@ -18,10 +21,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
           profilerFrameSnapshot.Samples.Count, snapshotStatus, 1f);
     }
 
-    public static UnityProfilerSnapshotStatus ToSnapshotStatus(this RawFrameDataViewAdapter? rawFrameDataView,
+    public static UnityProfilerSnapshotStatus ToSnapshotStatus(this IRawFrameDataViewAdapter? rawFrameDataView,
       int frameIndex, SnapshotStatus snapshotStatus, float progress = 0f)
     {
-      if(rawFrameDataView == null)
+      if (rawFrameDataView == null)
         return ourUnavailableStatusInfo;
 
       return new UnityProfilerSnapshotStatus(frameIndex, rawFrameDataView.ThreadIndex,

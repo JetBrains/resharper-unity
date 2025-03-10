@@ -1,40 +1,28 @@
 #nullable enable
 using System;
 using JetBrains.Diagnostics;
+using JetBrains.Rider.Unity.Editor.Profiler.Adapters.Interfaces;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
+namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters.SnapshotAnalysis
 {
-  internal class RawFrameDataViewAdapter : IDisposable
+  internal class RawFrameDataViewAdapter : IRawFrameDataViewAdapter
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(RawFrameDataViewAdapter));
-    private readonly RawFrameDataViewReflectionData myReflectionData;
     private readonly object? myRawFrameDataViewObject;
+    private readonly RawFrameDataViewReflectionData? myReflectionData;
 
-    private RawFrameDataViewAdapter(object? rawFrameDataViewObject, RawFrameDataViewReflectionData reflectionData)
+    internal RawFrameDataViewAdapter(object? rawFrameDataViewObject, RawFrameDataViewReflectionData? reflectionData)
     {
       myRawFrameDataViewObject = rawFrameDataViewObject;
-      this.myReflectionData = reflectionData;
-
-      if (!this.myReflectionData.IsValid())
-        ourLogger.Verbose($"{this.myReflectionData.GetType().Name} is not valid.");
-    }
-
-    public static RawFrameDataViewAdapter? Create(object? rawFrameDataViewObject,
-      RawFrameDataViewReflectionData reflectionData)
-    {
-      if (!reflectionData.IsValid())
+      myReflectionData = reflectionData;
+      if (myReflectionData == null)
       {
-        ourLogger.Verbose($"{reflectionData.GetType().Name} is not valid.");
-        return null;
+        ourLogger.Verbose($"{nameof(myReflectionData)} is null.");
+        return;
       }
 
-      if (rawFrameDataViewObject == null)
-      {
-        ourLogger.Verbose($"{reflectionData.GetType().Name} object is null");
-        return null;
-      }
-
-      return new RawFrameDataViewAdapter(rawFrameDataViewObject, reflectionData);
+      if (!myReflectionData.IsValid())
+        ourLogger.Verbose($"{myReflectionData.GetType().Name} is not valid.");
     }
 
     public void Dispose()
@@ -52,6 +40,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
 
     public double GetSampleTimeMs(int sampleIndex)
     {
+      if (myReflectionData == null)
+      {
+        ourLogger.Verbose($"Can't get {nameof(GetSampleTimeMs)}: {nameof(myReflectionData)} is null.");
+        return -1;
+      }
+
       try
       {
         return (float)myReflectionData.GetSampleTimeMsMethod.Invoke(myRawFrameDataViewObject,
@@ -64,22 +58,14 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
       }
     }
 
-    // Property invocations
-    public float GetFrameStartTimeMs()
-    {
-      try
-      {
-        return (float)myReflectionData.FrameStartTimeMsProperty.GetValue(myRawFrameDataViewObject);
-      }
-      catch (Exception ex)
-      {
-        ourLogger.Verbose($"Error retrieving {nameof(myReflectionData.FrameStartTimeMsProperty)}: {ex}");
-        return -1;
-      }
-    }
-
     public int GetSampleMarkerId(int index)
     {
+      if (myReflectionData == null)
+      {
+        ourLogger.Verbose($"Can't get {nameof(GetSampleMarkerId)}: {nameof(myReflectionData)} is null.");
+        return -1;
+      }
+
       try
       {
         return (int)myReflectionData.GetSampleMarkerIdMethod.Invoke(myRawFrameDataViewObject, new object[] { index });
@@ -93,6 +79,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
 
     public int GetSampleChildrenCount(int index)
     {
+      if (myReflectionData == null)
+      {
+        ourLogger.Verbose($"Can't get {nameof(GetSampleChildrenCount)}: {nameof(myReflectionData)} is null.");
+        return -1;
+      }
+
       try
       {
         return (int)myReflectionData.GetSampleChildrenCountMethod.Invoke(myRawFrameDataViewObject,
@@ -107,6 +99,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
 
     public string GetSampleName(int index)
     {
+      if (myReflectionData == null)
+      {
+        ourLogger.Verbose($"Can't get {nameof(GetSampleName)}: {nameof(myReflectionData)} is null.");
+        return string.Empty;
+      }
+
       try
       {
         return (string)myReflectionData.GetSampleNameMethod.Invoke(myRawFrameDataViewObject, new object[] { index });
@@ -122,6 +120,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
     {
       get
       {
+        if (myReflectionData == null)
+        {
+          ourLogger.Verbose($"Can't get {nameof(FrameStartTimeMs)}:  {nameof(myReflectionData)} is null.");
+          return -1;
+        }
+
         try
         {
           return (double)myReflectionData.FrameStartTimeMsProperty.GetValue(myRawFrameDataViewObject);
@@ -133,10 +137,17 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
         }
       }
     }
+
     public float FrameTimeMs
     {
       get
       {
+        if (myReflectionData == null)
+        {
+          ourLogger.Verbose($"Can't get {nameof(FrameTimeMs)}: {nameof(myReflectionData)} is null.");
+          return -1;
+        }
+
         try
         {
           return (float)myReflectionData.FrameTimeMsProperty.GetValue(myRawFrameDataViewObject);
@@ -153,6 +164,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
     {
       get
       {
+        if (myReflectionData == null)
+        {
+          ourLogger.Verbose($"Can't get {nameof(SampleCount)}: {nameof(myReflectionData)} is null.");
+          return -1;
+        }
+
         try
         {
           return (int)myReflectionData.SampleCountProperty.GetValue(myRawFrameDataViewObject);
@@ -164,10 +181,17 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
         }
       }
     }
+
     public string ThreadName
     {
       get
       {
+        if (myReflectionData == null)
+        {
+          ourLogger.Verbose($"Can't get {nameof(ThreadName)}: {nameof(myReflectionData)} is null.");
+          return string.Empty;
+        }
+
         try
         {
           return (string)myReflectionData.ThreadNameProperty.GetValue(myRawFrameDataViewObject);
@@ -179,10 +203,17 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
         }
       }
     }
+
     public int ThreadIndex
     {
       get
       {
+        if (myReflectionData == null)
+        {
+          ourLogger.Verbose($"Can't get {nameof(ThreadIndex)}: {nameof(myReflectionData)} is null.");
+          return -1;
+        }
+
         try
         {
           return (int)myReflectionData.ThreadIndexProperty.GetValue(myRawFrameDataViewObject);
@@ -192,6 +223,26 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
           ourLogger.Verbose($"Failed to access {nameof(myReflectionData.ThreadIndexProperty)}", ex);
           return -1;
         }
+      }
+    }
+
+    // Property invocations
+    public float GetFrameStartTimeMs()
+    {
+      if (myReflectionData == null)
+      {
+        ourLogger.Verbose($"Can't get {nameof(GetFrameStartTimeMs)}: {nameof(myReflectionData)} is null.");
+        return -1;
+      }
+
+      try
+      {
+        return (float)myReflectionData.FrameStartTimeMsProperty.GetValue(myRawFrameDataViewObject);
+      }
+      catch (Exception ex)
+      {
+        ourLogger.Verbose($"Error retrieving {nameof(myReflectionData.FrameStartTimeMsProperty)}: {ex}");
+        return -1;
       }
     }
   }

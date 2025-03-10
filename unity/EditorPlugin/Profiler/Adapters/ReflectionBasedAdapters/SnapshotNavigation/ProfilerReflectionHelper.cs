@@ -1,14 +1,15 @@
+#nullable enable
 using System;
 using System.Reflection;
 using UnityEditor;
 
-namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
+namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters.SnapshotNavigation
 {
   internal sealed class ProfilerDriverReflectionData : IReflectionData
   {
-    public const string ProfilerDriverTypeName = "UnityEditorInternal.ProfilerDriver";
-    public readonly Type ProfilerDriverType;
-    public readonly PropertyInfo SelectedPropertyPathPropertyInfo;
+    private const string ProfilerDriverTypeName = "UnityEditorInternal.ProfilerDriver";
+    private readonly Type? ProfilerDriverType;
+    public readonly PropertyInfo? SelectedPropertyPathPropertyInfo;
 
     public ProfilerDriverReflectionData()
     {
@@ -27,9 +28,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
   internal sealed class CPUProfilerModuleReflectionData : IReflectionData
   {
     public const string CpuProfilerModuleTypeName = "UnityEditorInternal.Profiling.CPUProfilerModule";
-    public readonly Type CPUProfilerModuleType;
-    public readonly FieldInfo FrameDataHierarchyView;
-    public readonly FieldInfo TimeLineGUIFieldInfo;
+    public readonly Type? CPUProfilerModuleType;
+    public readonly FieldInfo? FrameDataHierarchyView;
+    public readonly FieldInfo? TimeLineGUIFieldInfo;
 
 
     public CPUProfilerModuleReflectionData()
@@ -53,10 +54,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
     public const string FrameDataHierarchyViewTypeName =
       "UnityEditorInternal.Profiling.ProfilerFrameDataHierarchyView";
 
-    public readonly MethodInfo InitIfNeededMethodInfo;
+    public readonly MethodInfo? InitIfNeededMethodInfo;
 
-    public readonly Type ProfilerFrameDataHierarchyViewType;
-    public readonly FieldInfo TreeViewFieldInfo;
+    public readonly Type? ProfilerFrameDataHierarchyViewType;
+    public readonly FieldInfo? TreeViewFieldInfo;
 
     public ProfilerFrameDataHierarchyViewReflectionData()
     {
@@ -82,8 +83,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
   internal sealed class ProfilerFrameDataTreeViewReflectionData : IReflectionData
   {
     public const string ProfilerFrameDataTreeViewTypeName = "UnityEditorInternal.ProfilerFrameDataTreeView";
-    public readonly Type ProfilerFrameDataTreeViewType;
-    public readonly FieldInfo TreeViewControllerFieldInfo;
+    public readonly Type? ProfilerFrameDataTreeViewType;
+    public readonly FieldInfo? TreeViewControllerFieldInfo;
 
     public ProfilerFrameDataTreeViewReflectionData()
     {
@@ -103,9 +104,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation
   internal sealed class TreeViewControllerReflectionData : IReflectionData
   {
     public const string TreeViewControllerTypeName = "UnityEditor.IMGUI.Controls.TreeViewController";
-    public readonly PropertyInfo ContextClickItemCallback;
-    public readonly PropertyInfo ItemDoubleClickedCallbackPropertyInfo;
-    public readonly Type TreeViewControllerType;
+    public readonly PropertyInfo? ContextClickItemCallback;
+    public readonly PropertyInfo? ItemDoubleClickedCallbackPropertyInfo;
+    public readonly Type? TreeViewControllerType;
 
     public TreeViewControllerReflectionData()
     {
