@@ -2,6 +2,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.Rider.PathLocator;
 using JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis;
 using JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotNavigation;
 using JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis;
@@ -112,10 +113,18 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
     }
 
     //There could be multiple connections from different rider instances to single Unity editor
-    public static void Advise(Lifetime connectionLifetime, UnityProfilerModel model)
+    public static void Advise(Lifetime connectionLifetime, UnityProfilerModel model,
+      BackendUnityModel backendUnityModel)
     {
       ourLogger.Verbose("ProfilerWindowEventsHandler.Advise");
-      ourOnTimeSampleSelectedSignal.Advise(connectionLifetime, info => model.OpenFileBySampleInfo.Start(connectionLifetime, info));
+      ourOnTimeSampleSelectedSignal.Advise(connectionLifetime, info =>
+      {
+        var myOpener = new RiderFileOpener(RiderPathProvider.RiderPathLocator.RiderLocatorEnvironment);
+        int? processId = backendUnityModel.RiderProcessId.HasValue() ? backendUnityModel.RiderProcessId.Value : null;
+        myOpener.AllowSetForegroundWindow(processId);
+          
+        model.OpenFileBySampleInfo.Start(connectionLifetime, info);
+      });
       ourSnapshotCollectorDaemon?.Advise(connectionLifetime, model);
     }
   }

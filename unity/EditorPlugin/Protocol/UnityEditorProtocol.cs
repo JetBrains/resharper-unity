@@ -208,7 +208,7 @@ namespace JetBrains.Rider.Unity.Editor
           FindUsagesModelHelper.Advise(connectionLifetime, model);
           UnsavedChangesModelHelper.Advise(connectionLifetime, model);
           PackageManagerModelHelper.Advise(connectionLifetime, model);
-          ProfilerWindowEventsHandler.Advise(connectionLifetime, new UnityProfilerModel(connectionLifetime, protocol));
+          ProfilerWindowEventsHandler.Advise(connectionLifetime, new UnityProfilerModel(connectionLifetime, protocol), model);
 
           Models.AddLifetimed(connectionLifetime, model);
 
