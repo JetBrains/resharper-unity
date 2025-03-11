@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Net46</AssemblyName>
+    <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.2022.3.Net46</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_2019_2;UNITY_2019_2_OR_NEWER</DefineConstants>
+    <DefineConstants>UNITY_2019_2_OR_NEWER;UNITY_2022_3;UNITY_2022_3_OR_NEWER</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
@@ -14,8 +14,8 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Unity.Libs.Ref.2019.2.0f1" />
     <PackageReference Include="JetBrains.Build.ILRepack" />
+    <PackageReference Include="JetBrains.Unity.Libs.Ref.2022.3.58f1"/>
     <PackageReference Include="NUnit" />
   </ItemGroup>
   <ItemGroup>
@@ -34,17 +34,24 @@
 
   <ItemGroup>
     <Compile Remove="SinceUnity.7000.0/**" />
-    <Compile Remove="SinceUnity.2022.3/**"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- This one should be the first - it provides version to resulting assembly-->
-    <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Rider.PathLocator.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-  </ItemGroup>
-
+    <ItemGroup>
+        <!-- This one should be the first - it provides version to resulting assembly-->
+        <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll">
+            <Visible>false</Visible>
+        </ILRepackInputAssemblies>
+        <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll">
+            <Visible>false</Visible>
+        </ILRepackInputAssemblies>
+        <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll">
+            <Visible>false</Visible>
+        </ILRepackInputAssemblies>
+        <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Rider.PathLocator.dll">
+            <Visible>false</Visible>
+        </ILRepackInputAssemblies>
+    </ItemGroup>
+   
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
 </Project>
