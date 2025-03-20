@@ -10,6 +10,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.Interfaces
     string ThreadName { get; }
     double FrameStartTimeMs { get; }
     float FrameTimeMs { get; }
+    bool Valid { get; }
     double GetSampleTimeMs(int sampleIndex);
     int GetSampleMarkerId(int index);
     int GetSampleChildrenCount(int index);

@@ -38,7 +38,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     private const string SampleCountPropertyName = "sampleCount";
     private const string ThreadNamePropertyName = "threadName";
     private const string ThreadIndexPropertyName = "threadIndex";
-    
+    private const string ValidPropertyName = "valid";
+
     public readonly PropertyInfo FrameStartTimeMsProperty;
     public readonly PropertyInfo FrameTimeMsProperty;
     public readonly MethodInfo GetSampleChildrenCountMethod;
@@ -49,6 +50,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     public readonly PropertyInfo SampleCountProperty;
     public readonly PropertyInfo ThreadIndexProperty;
     public readonly PropertyInfo ThreadNameProperty;
+    public readonly PropertyInfo ValidProperty;
 
     public RawFrameDataViewReflectionData()
     {
@@ -73,6 +75,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
         RawFrameDataViewType.GetProperty(ThreadNamePropertyName, BindingFlags.Instance | BindingFlags.Public);
       ThreadIndexProperty =
         RawFrameDataViewType.GetProperty(ThreadIndexPropertyName, BindingFlags.Instance | BindingFlags.Public);
+      ValidProperty = RawFrameDataViewType.GetProperty(ValidPropertyName, BindingFlags.Instance | BindingFlags.Public);
     }
 
     public bool IsValid()

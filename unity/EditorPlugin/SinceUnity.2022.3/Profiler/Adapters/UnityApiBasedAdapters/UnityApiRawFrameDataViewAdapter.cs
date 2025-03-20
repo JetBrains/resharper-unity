@@ -18,6 +18,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.UnityApiBasedAdapters
       myRawFrameDataView?.Dispose();
     }
 
+    public bool Valid => myRawFrameDataView.valid;
+
     public double GetSampleTimeMs(int sampleIndex)
     {
       return myRawFrameDataView.GetSampleTimeMs(sampleIndex);

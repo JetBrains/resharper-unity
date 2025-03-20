@@ -226,6 +226,28 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       }
     }
 
+    public bool Valid
+    {
+      get
+      {
+        if (myReflectionData == null)
+        {
+          ourLogger.Verbose($"Can't get {nameof(Valid)}: {nameof(myReflectionData)} is null.");
+          return false;
+        }
+
+        try
+        {
+          return (bool)myReflectionData.ValidProperty.GetValue(myRawFrameDataViewObject);
+        }
+        catch (Exception ex)
+        {
+          ourLogger.Verbose($"Failed to access {nameof(myReflectionData.ValidProperty)}", ex);
+          return false;
+        }
+      }
+    }
+
     // Property invocations
     public float GetFrameStartTimeMs()
     {
