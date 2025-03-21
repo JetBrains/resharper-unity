@@ -133,6 +133,7 @@ class DotsDebuggerTestUnity2023 : DotsDebuggerTest(Unity.V2023) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
         addMute(Mute("RIDER-119059"), ::checkRefPresentationInDOTSCode)
+        addMute(Mute("RIDER-119059"), ::checkBreakpointInDOTSCode)
     }
 }
 
