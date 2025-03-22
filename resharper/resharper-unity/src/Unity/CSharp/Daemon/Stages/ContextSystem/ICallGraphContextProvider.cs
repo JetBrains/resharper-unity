@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
@@ -10,6 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
+    [DerivedComponentsInstantiationRequirement(InstantiationRequirement.DeadlockSafe)]
     public interface ICallGraphContextProvider
     {
         CallGraphContextTag ContextTag { get; }

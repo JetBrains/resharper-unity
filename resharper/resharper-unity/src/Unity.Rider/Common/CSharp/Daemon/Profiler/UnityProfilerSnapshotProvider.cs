@@ -27,6 +27,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
 
+[DerivedComponentsInstantiationRequirement(InstantiationRequirement.DeadlockSafe)]
 public interface IUnityProfilerSnapshotDataProvider
 {
     public bool TryGetSamplesByQualifiedName(string qualifiedName, ref IList<PooledSample> samples);

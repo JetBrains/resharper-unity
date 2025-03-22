@@ -1,10 +1,12 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
+    [DerivedComponentsInstantiationRequirement(InstantiationRequirement.DeadlockSafe)]
     public interface IUnityAssetDataElementContainer
     {
         [NotNull]

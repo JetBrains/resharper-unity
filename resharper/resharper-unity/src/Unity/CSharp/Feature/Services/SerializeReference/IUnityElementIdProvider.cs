@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Psi;
@@ -6,6 +7,7 @@ using JetBrains.ReSharper.Psi.Caches;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference
 {
+    [DerivedComponentsInstantiationRequirement(InstantiationRequirement.DeadlockSafe)]
     public interface IUnityElementIdProvider
     {
         ElementId? GetElementId(IDeclaredElement? element, ITypeElement? ownerType = null, int index = -1);

@@ -28,6 +28,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference
 {
+    [DerivedComponentsInstantiationRequirement(InstantiationRequirement.DeadlockSafe)]
     public interface IUnitySerializedReferenceProvider
     {
         void DumpFull(TextWriter writer, ISolution solution);

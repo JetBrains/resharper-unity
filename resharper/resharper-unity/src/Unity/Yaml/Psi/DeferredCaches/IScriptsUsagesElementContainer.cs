@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
+    [DerivedComponentsInstantiationRequirement(InstantiationRequirement.DeadlockSafe)]
     public interface IScriptUsagesElementContainer : IUnityAssetDataElementContainer
     {
         [NotNull, ItemNotNull]
