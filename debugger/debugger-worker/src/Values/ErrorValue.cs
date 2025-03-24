@@ -1,23 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using JetBrains.Rider.Model.DebuggerWorker;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.API;
+using ValueFlags = Mono.Debugging.Client.Values.Render.ValueFlags;
+using ValueOriginKind = Mono.Debugging.Client.Values.Render.ValueOriginKind;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
 {
     public class ErrorValue : IValue
     {
         private readonly string myMessage;
-        private readonly ValueResultKind myResultKind;
 
-        public ErrorValue(string name, string message, ValueResultKind resultKind = ValueResultKind.Error)
+        public ErrorValue(string name, string message)
         {
             myMessage = message;
-            myResultKind = resultKind;
             SimpleName = name;
         }
 
@@ -30,7 +31,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
         public IValuePresentation GetValuePresentation(IPresentationOptions options,
                                                        CancellationToken token = new())
         {
-            return SimplePresentation.Create(PresentationBuilder.New().Error(myMessage), myResultKind,
+            return SimplePresentation.Create(PresentationBuilder.New().Error(myMessage), ValueResultKind.Error, ErrorKind.Other,
                 ValueFlags.NoChildren, DeclaredType);
         }
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
+using JetBrains.Rider.Model.DebuggerWorker;
 using JetBrains.Util;
 using Mono.Debugging.Autofac;
-using Mono.Debugging.Backend;
 using Mono.Debugging.Backend.Values.Render.ValuePresenters;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.DebuggerOptions;
@@ -13,6 +13,8 @@ using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
+using ValueFlags = Mono.Debugging.Client.Values.Render.ValueFlags;
+using ValuePresentationPart = Mono.Debugging.Backend.ValuePresentationPart;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
@@ -183,6 +185,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
             public string DisplayValue => myValuePresentationImplementation.DisplayValue;
             public IMetadataTypeLite? Type => myValuePresentationImplementation.Type;
             public ValueResultKind ResultKind => myValuePresentationImplementation.ResultKind;
+            public ErrorKind ErrorKind => myValuePresentationImplementation.ErrorKind;
             public object? PrimitiveValue => myValuePresentationImplementation.PrimitiveValue;
         }
     }
