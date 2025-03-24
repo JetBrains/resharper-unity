@@ -89,7 +89,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             {
                 // GameObject[] Scene.GetRootObjects()
                 var gameObjectArray = new SimpleValueReference<TValue>(
-                        mySceneValueRole.CallInstanceMethod(myGetRootObjectsMethod),
+                        mySceneValueRole.CallInstanceMethod(options, myGetRootObjectsMethod),
                         mySceneValueRole.ValueReference.OriginatingFrame, myValueServices.RoleFactory)
                     .GetExactPrimaryRoleSafe<TValue, IArrayValueRole<TValue>>(options);
                 if (gameObjectArray == null)

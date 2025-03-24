@@ -390,7 +390,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 {
                     var frame = mySerializedPropertyRole.ValueReference.OriginatingFrame;
                     var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
-                    var childSerializedPropertyValue = collection.CallInstanceMethod(myGetElementMethod!, indexValue);
+                    var childSerializedPropertyValue = collection.CallInstanceMethod(options, myGetElementMethod!, indexValue);
                     var valueReference = new SimpleValueReference<TValue>(childSerializedPropertyValue,
                         mySerializedPropertyRole.ReifiedType.MetadataType, name, ValueOriginKind.ArrayElement,
                         ValueFlags.None | ValueFlags.IsReadOnly, frame, myValueServices.RoleFactory);
@@ -536,7 +536,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
 
                 // CallInstanceMethod always returns not null (VoidValue if it fails)
                 copiedSerializedPropertyRole = new SimpleValueReference<TValue>(
-                        serializedPropertyRole.CallInstanceMethod(copyMethod),
+                        serializedPropertyRole.CallInstanceMethod(options, copyMethod),
                         mySerializedPropertyRole.ValueReference.OriginatingFrame, myValueServices.RoleFactory)
                     .AsObjectSafe(options);
                 if (copiedSerializedPropertyRole == null)
@@ -557,7 +557,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 returnValue = false;
 
                 var returnValueRole = new SimpleValueReference<TValue>(
-                        serializedPropertyRole.CallInstanceMethod(nextMethod, boolArg),
+                        serializedPropertyRole.CallInstanceMethod(options, nextMethod, boolArg),
                         mySerializedPropertyRole.ValueReference.OriginatingFrame,
                         myValueServices.RoleFactory)
                     .AsPrimitiveSafe(options);

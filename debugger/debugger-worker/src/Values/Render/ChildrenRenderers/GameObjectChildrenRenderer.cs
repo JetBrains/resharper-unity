@@ -176,7 +176,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 // Call Component[] GameObject.GetComponents(typeof(Component))
                 var typeObject = (IValueReference<TValue>) componentType.GetTypeObject(frame);
                 var componentsArray =
-                    myGameObjectRole.CallInstanceMethod(getComponentsMethod, typeObject.GetValue(options));
+                    myGameObjectRole.CallInstanceMethod(options, getComponentsMethod, typeObject.GetValue(options));
                 return new SimpleValueReference<TValue>(componentsArray, frame, myValueServices.RoleFactory)
                         .GetExactPrimaryRoleSafe<TValue, IArrayValueRole<TValue>>(options);
             }
@@ -294,7 +294,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 {
                     var frame = myGameObjectRole.ValueReference.OriginatingFrame;
                     var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
-                    var childTransformValue = collection.CallInstanceMethod(myGetChildMethod!, indexValue);
+                    var childTransformValue = collection.CallInstanceMethod(options, myGetChildMethod!, indexValue);
                     var childTransform = new SimpleValueReference<TValue>(childTransformValue,
                         frame, myValueServices.RoleFactory).AsObjectSafe(options);
                     var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)

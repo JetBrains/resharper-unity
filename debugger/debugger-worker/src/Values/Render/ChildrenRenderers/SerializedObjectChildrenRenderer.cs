@@ -114,7 +114,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 }
 
                 returnedSerializedPropertyRole = new SimpleValueReference<TValue>(
-                        serializedObjectRole.CallInstanceMethod(method),
+                        serializedObjectRole.CallInstanceMethod(options, method),
                         serializedObjectRole.ValueReference.OriginatingFrame, myValueServices.RoleFactory)
                     .AsObjectSafe(options);
                 if (returnedSerializedPropertyRole == null)
