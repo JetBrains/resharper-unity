@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
-using JetBrains.Rider.Model.DebuggerWorker;
 using JetBrains.Util;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend;
@@ -11,8 +10,6 @@ using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
-using ValueFlags = Mono.Debugging.Client.Values.Render.ValueFlags;
-using ValuePresentationPart = Mono.Debugging.Backend.ValuePresentationPart;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
@@ -132,7 +129,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 
                     // Hide the default type presentation if we've been asked to
                     var flags = !showTypeName ? ValueFlags.IsDefaultTypePresentation : 0;
-                    return SimplePresentation.Create(parts.Result(), ValueResultKind.Success, ErrorKind.None, ValueFlags.None | flags,
+                    return SimplePresentation.Create(parts.Result(), ValueResultKind.Success, ValueFlags.None | flags,
                         instanceType);
                 },
                 exception =>
