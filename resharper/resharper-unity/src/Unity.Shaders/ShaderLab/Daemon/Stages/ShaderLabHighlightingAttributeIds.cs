@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Presentation;
 using JetBrains.TextControl.DocumentMarkup;
+using JetBrains.TextControl.DocumentMarkup.VisualStudio;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
 {
@@ -104,6 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.ImplicitlyEnabledShaderKeyword_RiderPresentableName),
         FallbackAttributeId = ENABLED_SHADER_KEYWORD,
+        VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
     )]
     [RegisterHighlighter(ENABLED_SHADER_KEYWORD,
@@ -112,6 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.EnabledShaderKeyword_RiderPresentableName),
         FallbackAttributeId = CppHighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE,
+        VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
     )]
     [RegisterHighlighter(DISABLED_SHADER_KEYWORD,
@@ -120,6 +123,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.DisabledShaderKeyword_RiderPresentableName),
         FallbackAttributeId = IdeaHighlightingAttributeIds.NOT_USED_ELEMENT_ATTRIBUTES,
+        VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
+        VsBaseClassificationType = VsPredefinedClassificationType.Text,
         ForegroundColor = "LightGray", 
         DarkForegroundColor = "DarkGray",
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
