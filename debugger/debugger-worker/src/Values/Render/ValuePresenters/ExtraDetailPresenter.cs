@@ -41,7 +41,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
         {
             var extraDetail = (ExtraDetailValueReferenceDecorator<TValue>) valueRole.ValueReference;
             var presentation = extraDetail.UnderlyingValueReference.ToValue(ValueServices).GetValuePresentation(options, token);
-            if (presentation.ResultKind == ValueResultKind.Success)
+            if (presentation.PresentationKind == PresentationKind.Success)
             {
                 var presentationBuilder = PresentationBuilder.New(presentation.Value.ToArray())
                     .Add(ValuePresentationPart.Space)

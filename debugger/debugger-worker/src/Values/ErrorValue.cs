@@ -28,7 +28,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
         public IValuePresentation GetValuePresentation(IPresentationOptions options,
                                                        CancellationToken token = new())
         {
-            return SimplePresentation.Create(PresentationBuilder.New().Error(myMessage), ValueResultKind.Error, 
+            return SimplePresentation.Create(PresentationBuilder.New().Error(myMessage), PresentationKind.FailedObject, StatisticsKind.Error, 
                 ValueFlags.NoChildren, DeclaredType);
         }
 
