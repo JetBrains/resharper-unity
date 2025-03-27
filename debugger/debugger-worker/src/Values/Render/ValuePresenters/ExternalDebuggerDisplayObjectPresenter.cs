@@ -185,7 +185,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
             public string DisplayValue => myValuePresentationImplementation.DisplayValue;
             public IMetadataTypeLite? Type => myValuePresentationImplementation.Type;
             public PresentationKind PresentationKind => myValuePresentationImplementation.PresentationKind;
-            public StatisticsKind StatisticKind => myValuePresentationImplementation.StatisticKind;
+            public StatisticsKind StatisticsKind => myValuePresentationImplementation.StatisticsKind;
             public object? PrimitiveValue => myValuePresentationImplementation.PrimitiveValue;
         }
     }
