@@ -158,16 +158,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
         private ITypeElement GetColorType()
         {
             var referenceExpression = myOwningExpression as IReferenceExpression;
-            var qualifier = referenceExpression?.QualifierExpression as IReferenceExpression;
-            if (qualifier != null)
+            if (referenceExpression?.QualifierExpression is IReferenceExpression qualifier)
                 return qualifier.Reference.Resolve().DeclaredElement as ITypeElement;
 
-            var invocationExpression = myOwningExpression as IInvocationExpression;
-            if (invocationExpression != null)
+            if (myOwningExpression is IInvocationExpression invocationExpression)
                 return invocationExpression.Reference?.Resolve().DeclaredElement as ITypeElement;
 
             var objectCreationExpression = myOwningExpression as IObjectCreationExpression;
-            return objectCreationExpression?.TypeReference?.Resolve().DeclaredElement as ITypeElement;
+            // Handle explicit `new T(...)`
+            if (objectCreationExpression?.TypeReference?.Resolve().DeclaredElement is ITypeElement explicitTypeElement) 
+                return explicitTypeElement;
+            
+            // Handle target-typed `new(...)`
+            var typeMember = objectCreationExpression?.ConstructorReference.Resolve().DeclaredElement as ITypeMember;
+            return typeMember?.ContainingType;
         }
     }
 }
