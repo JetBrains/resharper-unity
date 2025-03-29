@@ -44,7 +44,6 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
-    @Mute("RIDER-117138")
     @Test(description="Rename an script in the project")
     @ChecklistItems(["Unity explorer/Rename script"])
     fun testRenameFile() {
@@ -64,7 +63,6 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
-    @Mute("RIDER-117138")
     @Test(description = "Rename a folder in the project")
     @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder() {
