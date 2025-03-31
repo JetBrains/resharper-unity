@@ -30,7 +30,7 @@ class ProfilerIntegrationWidgetActionProvider : InspectionWidgetActionProvider {
     }
 }
 
-private const val unitySettingsPageId = "preferences.build.unityPlugin"
+internal const val unitySettingsPageId = "preferences.build.unityPlugin"
 
 /**
  * Action that handles the Unity Profiler integration widget functionality.
