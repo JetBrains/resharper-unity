@@ -71,7 +71,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
 
     @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
     open fun buildSolutionAfterUnityStarts() {
-        buildSolutionWithReSharperBuild(project, ignoreReferencesResolve = true)
+        buildSolutionWithReSharperBuild(ignoreReferencesResolve = true)
     }
 
     @AfterMethod(alwaysRun = true)
