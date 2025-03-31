@@ -21,7 +21,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
     public static UnityProfilerSnapshotStatus ToSnapshotStatus(this RawFrameDataViewAdapter? rawFrameDataView,
       int frameIndex, SnapshotStatus snapshotStatus, float progress = 0f)
     {
-      if(rawFrameDataView == null)
+      if (rawFrameDataView is not { Valid: true })
         return ourUnavailableStatusInfo;
 
       return new UnityProfilerSnapshotStatus(frameIndex, rawFrameDataView.ThreadIndex,

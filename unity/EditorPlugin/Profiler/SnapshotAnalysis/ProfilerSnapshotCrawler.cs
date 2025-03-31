@@ -23,7 +23,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
     {
       ourLogger.Trace( $"GetCurrentProfilerSnapshotStatusInfo: {nameof(selectedFrameIndex)}:{selectedFrameIndex} {nameof(threadIndex)}:{threadIndex}");
       using var rawFrameDataView = myProfilerSnapshotDriverAdapter.GetRawFrameDataView(selectedFrameIndex, threadIndex);
-      return rawFrameDataView.ToSnapshotStatus(selectedFrameIndex, rawFrameDataView?.SampleCount > 0 ? SnapshotStatus.HasNewSnapshotDataToFetch : SnapshotStatus.NoSnapshotDataAvailable);
+      return rawFrameDataView.ToSnapshotStatus(selectedFrameIndex,
+        rawFrameDataView is { SampleCount: > 0, Valid: true }
+          ? SnapshotStatus.HasNewSnapshotDataToFetch
+          : SnapshotStatus.NoSnapshotDataAvailable);
     }
 
     //No task needed

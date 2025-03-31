@@ -194,5 +194,20 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
         }
       }
     }
+    public bool Valid
+    {
+      get
+      {
+        try
+        {
+          return (bool)myReflectionData.ValidProperty.GetValue(myRawFrameDataViewObject);
+        }
+        catch (Exception ex)
+        {
+          ourLogger.Verbose($"Failed to access {nameof(myReflectionData.ValidProperty)}", ex);
+          return false;
+        }
+      }
+    }
   }
 }

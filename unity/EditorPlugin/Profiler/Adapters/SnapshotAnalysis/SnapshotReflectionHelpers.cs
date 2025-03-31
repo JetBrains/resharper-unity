@@ -58,6 +58,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
     
     public const string ThreadIndexPropertyName = "threadIndex";
     public readonly PropertyInfo ThreadIndexProperty;
+    
+    public const string ValidPropertyName = "valid";
+    public readonly PropertyInfo ValidProperty;
+    
     public RawFrameDataViewReflectionData()
     {
       RawFrameDataViewType = Assembly.GetAssembly(typeof(EditorWindow)).GetType(RawFrameDataViewTypeName);
@@ -81,6 +85,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
         RawFrameDataViewType.GetProperty(ThreadNamePropertyName, BindingFlags.Instance | BindingFlags.Public);
       ThreadIndexProperty =
         RawFrameDataViewType.GetProperty(ThreadIndexPropertyName, BindingFlags.Instance | BindingFlags.Public);
+      ValidProperty =
+        RawFrameDataViewType.GetProperty(ValidPropertyName, BindingFlags.Instance | BindingFlags.Public);
     }
 
     public bool IsValid()
@@ -94,6 +100,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.SnapshotAnalysis
              && FrameTimeMsProperty != null
              && SampleCountProperty != null
              && ThreadNameProperty != null
+             && ValidProperty != null
              && ThreadIndexProperty != null;
     }
   }
