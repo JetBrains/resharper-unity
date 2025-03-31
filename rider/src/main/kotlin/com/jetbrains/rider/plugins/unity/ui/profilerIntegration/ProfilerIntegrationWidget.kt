@@ -37,7 +37,7 @@ private const val unitySettingsPageId = "preferences.build.unityPlugin"
  * Manages the widget's state and appearance based on the Unity connection status and profiling data availability.
  */
 class ProfilerIntegrationWidgetAction : AnAction() {
-    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 
     /**
      * Handles the action when the widget is clicked.
