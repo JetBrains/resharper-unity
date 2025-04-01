@@ -85,7 +85,7 @@ open class UnityExplorerFileSystemNode(project: Project,
             .toList()
 
     public override fun hasProblemFileBeneath(): Boolean {
-        return Registry.`is`("unityExplorer.showHierarchyErrors") && entities.any {
+        return Registry.`is`("projectView.showHierarchyErrors") && entities.any {
             WorkspaceEntityErrorsSupport.getInstance(myProject).hasErrors(it)
         }
     }
