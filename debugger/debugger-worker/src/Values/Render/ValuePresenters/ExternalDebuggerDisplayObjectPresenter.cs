@@ -13,7 +13,6 @@ using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
-using StatisticsKind = Mono.Debugging.Client.Values.Render.StatisticsKind;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
@@ -178,14 +177,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
                 Flags = flags;
             }
 
-            public Refresh Refresh => myValuePresentationImplementation.Refresh;
             public ValueFlags Flags { get; }
 
             public ImmutableArray<ValuePresentationPart> Value => myValuePresentationImplementation.Value;
+            public PresentationFlags PresentationFlags => myValuePresentationImplementation.PresentationFlags;
             public string DisplayValue => myValuePresentationImplementation.DisplayValue;
             public IMetadataTypeLite? Type => myValuePresentationImplementation.Type;
-            public PresentationKind PresentationKind => myValuePresentationImplementation.PresentationKind;
-            public StatisticsKind StatisticsKind => myValuePresentationImplementation.StatisticsKind;
             public object? PrimitiveValue => myValuePresentationImplementation.PrimitiveValue;
         }
     }

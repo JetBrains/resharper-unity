@@ -7,6 +7,7 @@ using Mono.Debugging.Backend.Values.Render.ValuePresenters;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.Evaluation;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
 
@@ -41,7 +42,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
         {
             var extraDetail = (ExtraDetailValueReferenceDecorator<TValue>) valueRole.ValueReference;
             var presentation = extraDetail.UnderlyingValueReference.ToValue(ValueServices).GetValuePresentation(options, token);
-            if (presentation.PresentationKind == PresentationKind.Success)
+            if (presentation.PresentationFlags == PresentationFlags.Success)
             {
                 var presentationBuilder = PresentationBuilder.New(presentation.Value.ToArray())
                     .Add(ValuePresentationPart.Space)

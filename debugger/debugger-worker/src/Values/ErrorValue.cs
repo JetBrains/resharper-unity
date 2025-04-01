@@ -5,6 +5,7 @@ using Mono.Debugging.Backend;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.Evaluation;
 using Mono.Debugging.MetadataLite.API;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
@@ -28,8 +29,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
         public IValuePresentation GetValuePresentation(IPresentationOptions options,
                                                        CancellationToken token = new())
         {
-            return SimplePresentation.Create(PresentationBuilder.New().Error(myMessage), PresentationKind.FailedObject, StatisticsKind.Error, 
-                ValueFlags.NoChildren, DeclaredType);
+            return SimplePresentation.Create(PresentationBuilder.New().Error(myMessage), PresentationFlags.Error, ValueFlags.NoChildren, DeclaredType);
         }
 
         public IEnumerable<IValueEntity> GetChildren(IPresentationOptions options, CancellationToken token = new())

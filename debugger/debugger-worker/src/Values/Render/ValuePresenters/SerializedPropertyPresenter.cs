@@ -8,6 +8,7 @@ using Mono.Debugging.Backend.Values.Render.ValuePresenters;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.Evaluation;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
 
@@ -129,7 +130,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 
                     // Hide the default type presentation if we've been asked to
                     var flags = !showTypeName ? ValueFlags.IsDefaultTypePresentation : 0;
-                    return SimplePresentation.Create(parts.Result(), PresentationKind.Success, StatisticsKind.Success, ValueFlags.None | flags,
+                    return SimplePresentation.Create(parts.Result(), PresentationFlags.Success, ValueFlags.None | flags,
                         instanceType);
                 },
                 exception =>
