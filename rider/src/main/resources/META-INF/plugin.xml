@@ -216,7 +216,6 @@
                 factoryClass="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
 
     <rider.gotoCustomizer implementation="com.jetbrains.rider.plugins.unity.gotoType.UnityGotoCustomizer"/>
-    <registryKey key="unityExplorer.showHierarchyErrors" defaultValue="false" description="Propagate errors up in the UnityExplorer"/>
   </extensions>
 
   <applicationListeners>
