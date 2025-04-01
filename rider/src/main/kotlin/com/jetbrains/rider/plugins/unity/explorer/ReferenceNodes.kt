@@ -48,6 +48,10 @@ class ReferenceRootNode(project: Project) : AbstractTreeNode<Any>(project, key) 
         }
         return children
     }
+
+    override fun hasProblemFileBeneath(): Boolean {
+        return false // RIDER-123607 Text-lag-while-typing
+    }
 }
 
 class ReferenceItemNode(
@@ -78,4 +82,8 @@ class ReferenceItemNode(
     // Don't show references with weird file statuses. They are files, and some will be in ignored folders
     // (e.g. Library/PackageCache)
     override fun getFileStatus(): FileStatus = FileStatus.NOT_CHANGED
+
+    override fun hasProblemFileBeneath(): Boolean {
+        return false // RIDER-123607 Text-lag-while-typing
+    }
 }
