@@ -103,6 +103,11 @@ object BackendUnityModel: Root() {
         +"Force"
         +"Normal"
     }
+    val UnityPlatformInfo = structdef {
+        field("activeBuildTarget", string)
+        field("installedModules", immutableList(string))
+        field("buildTargetGroupsWithIcons", immutableList(string))
+    }
 
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
@@ -140,6 +145,7 @@ object BackendUnityModel: Root() {
         property ("riderPackagePotentialUpdateVersion", string).documentation = "Version of the latest compatible update for the Rider package"
         field("unityApplicationSettings", Library.UnityApplicationSettings)
         field("unityProjectSettings", Library.UnityProjectSettings)
+        property("unityPlatformInfo", UnityPlatformInfo)
 
         // Rider application settings (frontend)
         property("riderProcessId", int).documentation = "The process ID of the frontend, set by the backend. Unity uses this in a call to AllowSetForegroundWindow, so that Rider can bring itself to the foreground when opening a file"
