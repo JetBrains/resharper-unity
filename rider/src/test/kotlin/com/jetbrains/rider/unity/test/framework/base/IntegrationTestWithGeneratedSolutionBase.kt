@@ -3,6 +3,7 @@ package com.jetbrains.rider.unity.test.framework.base
 import com.jetbrains.rdclient.client.frontendProjectSession
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.test.OpenSolutionParams
+import com.jetbrains.rider.test.facades.build.BuildApiFacade.BuildSettings
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.unity.unityEnvironment
 import com.jetbrains.rider.test.scriptingApi.waitFirstScriptCompilation
@@ -71,7 +72,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
 
     @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
     open fun buildSolutionAfterUnityStarts() {
-        buildSolutionWithReSharperBuild(ignoreReferencesResolve = true)
+        buildSolutionWithReSharperBuild(BuildSettings(ignoreReferencesResolve = true))
     }
 
     @AfterMethod(alwaysRun = true)
