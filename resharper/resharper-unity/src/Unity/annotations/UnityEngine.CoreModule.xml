@@ -764,6 +764,13 @@
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
 
+  <!-- N:UnityEngine.Serialization -->
+  <member name="M:UnityEngine.Serialization.FormerlySerializedAsAttribute.#ctor(System.String)">
+    <parameter name="oldName">
+      <attribute ctor="M:JetBrains.Annotations.IgnoreSpellingAndGrammarErrorsAttribute.#ctor"/>
+    </parameter>
+  </member>
+  
   <!-- N:AOT -->
   <member name="T:AOT.MonoPInvokeCallbackAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
