@@ -105,7 +105,7 @@ private fun tryGetEditor(project: Project, providedEditor: Editor?): Editor? {
 private fun tryGetGutterIconRenderer(breakpoint: XBreakpoint<*>, providedIconRenderer: GutterIconRenderer?): GutterIconRenderer? {
     if (providedIconRenderer != null) return providedIconRenderer
 
-    return XBreakpointUtil.PANEL_PROVIDER.getBreakpointGutterIconRenderer(breakpoint)
+    return XBreakpointUtil.getBreakpointGutterIconRenderer(breakpoint)
 }
 
 private fun tryEditBreakpoint(project: Project, breakpoint: XBreakpoint<*>, whereToShow: Point?, providedEditor: Editor?) {
