@@ -1,6 +1,5 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
@@ -13,14 +12,15 @@ import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
-import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
 import com.jetbrains.rider.test.scriptingApi.createLibraryFolderIfNotExist
-import com.jetbrains.rider.test.scriptingApi.refreshFileSystem
+import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
+import com.jetbrains.rider.test.scriptingApi.setRiderPackageVersion
 import com.jetbrains.rider.test.unity.EngineVersion
+import com.jetbrains.rider.test.unity.riderPackageVersion
 import com.jetbrains.rider.unity.test.framework.api.activateRiderFrontendTest
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
@@ -30,10 +30,7 @@ import org.testng.annotations.BeforeMethod
 import java.io.File
 import kotlin.test.assertNotNull
 
-abstract class UnityPlayerTestBase(
-    private val engineVersion: EngineVersion,
-    private val buildNames: Map<String, String>
-) : PerTestSolutionTestBase() {
+abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
         params.waitForCaches = true
@@ -43,6 +40,8 @@ abstract class UnityPlayerTestBase(
             createLibraryFolderIfNotExist(it)
         }
     }
+
+    private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
     private val unityMajorVersion = this.engineVersion
     private lateinit var unityProjectPath: File
     private lateinit var lifetimeDefinition: LifetimeDefinition
@@ -54,14 +53,34 @@ abstract class UnityPlayerTestBase(
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
 
-    protected fun getGameFileName(): String? {
-        if (SystemInfo.isMac)
-            return buildNames[UnityPlayerDebuggerTestBase.macOS]
-        if (SystemInfo.isWindows)
-            return buildNames[UnityPlayerDebuggerTestBase.winOS]
-        return null
+    private fun buildUnityPlayer() {
+        val buildDir = File(unityProjectPath, "Builds")
+        val process = ProcessBuilder(
+            unityExecutable.absolutePath,
+            "-batchmode", "-quit",
+            "-projectPath", unityProjectPath.absolutePath,
+            "-executeMethod", "BuildScript.Build",
+            "-logFile", File(testMethod.logDirectory, "PlayerBuild.log").absolutePath,
+            "-buildTarget", if (SystemInfo.isMac) "OSXUniversal" else "Win64"
+        ).start()
+
+        process.waitFor()
+        assert(process.exitValue() == 0) { "Unity Build failed! Check logs at: ${buildDir.absolutePath}/build.log" }
     }
 
+    protected fun getPlayerFile(): File? {
+        val buildDir = File(unityProjectPath, "Builds")
+        val gameFilePath = if (SystemInfo.isMac) "SimpleUnityGame.app" else "SimpleUnityGame.exe"
+        val gameFullPath = if (SystemInfo.isMac) {
+            buildDir
+                .resolve(gameFilePath)
+                .resolve("Contents/MacOS")
+                .resolve(gameFilePath.removeSuffix(".app"))
+        } else {
+            buildDir.resolve(gameFilePath)
+        }
+        return if (gameFullPath.exists()) gameFullPath else null
+    }
 
     override val testGoldFile: File
         get() {
@@ -91,9 +110,10 @@ abstract class UnityPlayerTestBase(
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution() {
         unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null)
+        setRiderPackageVersion(unityProjectPath, riderPackageVersion)
         super.setUpTestCaseSolution()
         prepareAssemblies(project, activeSolutionDirectory)
-        downloadGameFiles(project, activeSolutionDirectory)
+        buildUnityPlayer()
     }
 
     @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
@@ -106,18 +126,6 @@ abstract class UnityPlayerTestBase(
         if (::lifetimeDefinition.isInitialized && lifetimeDefinition.isAlive) {
             lifetimeDefinition.terminate()
         }
-    }
-
-    private fun downloadGameFiles(project: Project, activeSolutionDirectory: File) {
-        val zipFileName = getGameFileName()
-        assertNotNull(zipFileName)
-        val zipFilePackage by ZipFilePackagePreparer(zipFileName)
-        //moving all UnityEngine* and UnityEditor*, netstandard and mscorlib ref-asm dlls to test solution folder
-        for (file in zipFilePackage.root.listFiles()!!) {
-            val target = activeSolutionDirectory.combine(file.name)
-            file.copyRecursively(target, true)
-        }
-        refreshFileSystem(project)
     }
 
     suspend fun discoverDebuggableUnityProcess(lifetime: Lifetime, filter: (UnityProcess) -> Boolean): UnityProcess {
@@ -145,23 +153,18 @@ abstract class UnityPlayerTestBase(
         return result.await()
     }
 
-    fun startGameExecutable(file: File, logPath: File): Process? {
-        assert(file.exists())
-        try {
-            logger.info("Starting game process:$file")
-            file.setExecutable(true)
-            val process: Process? = ProcessBuilder(mutableListOf(file.path, "-logfile", logPath.toString(), "-batchMode")).start()
-            if (process != null) {
-                logger.info("Game process started:${process.info()}")
-                return process
-            }
+    fun startGameExecutable(playerFile: File, logPath: File): Process? {
+        assertNotNull(playerFile, "Game executable not found after build!")
 
-            logger.error("Failed to start game process$file")
-            return null
-        }
-        catch (exception: Throwable) {
-            logger.error("Failed to start game process$file", exception)
-            return null
+        return try {
+            logger.info("Starting game process: $playerFile")
+            playerFile.setExecutable(true)
+            val process = ProcessBuilder(mutableListOf(playerFile.path, "-logfile", logPath.toString(), "-batchMode")).start()
+            logger.info("Game process started: ${process.info()}")
+            process
+        } catch (exception: Throwable) {
+            logger.error("Failed to start game process $playerFile", exception)
+            null
         }
     }
 }

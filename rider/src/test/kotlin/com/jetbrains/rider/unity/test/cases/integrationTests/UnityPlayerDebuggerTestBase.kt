@@ -1,12 +1,8 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-
-import com.intellij.openapi.util.SystemInfo
-import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.unity.EngineVersion
 import com.jetbrains.rider.test.unity.Unity
@@ -21,30 +17,16 @@ import kotlin.test.assertNotNull
 @Severity(SeverityLevel.CRITICAL)
 @Solution("UnityPlayerProjects/SimpleUnityGame")
 @RiderTestTimeout(5, TimeUnit.MINUTES)
-abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNames: Map<String, String>)
-    : UnityPlayerTestBase(engineVersion, buildNames) {
-
-    private fun getExecutionFileName() = if (SystemInfo.isMac)
-        "SimpleUnityGame.app"
-    else if (SystemInfo.isWindows)
-        "SimpleUnityGame.exe"
-    else null
+abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion)
+    : UnityPlayerTestBase(engineVersion) {
 
     @Test(description = "Check breakpoint for prebuilt Player)")
     @ChecklistItems(["Debug prebuilt Unity Player"])
     fun checkBreakpoint() {
-        val gameFileName = getGameFileName()
-        assertNotNull(gameFileName)
+        val playerFile = getPlayerFile()
+        assertNotNull(playerFile, "Player file was not found or does not exist")
 
-        val exeName = getExecutionFileName()
-        assertNotNull(exeName)
-        val folderName = gameFileName.toIOFile().nameWithoutExtension
-        var gameFullPath = activeSolutionDirectory.combine(folderName).combine(exeName)
-
-        if(SystemInfo.isMac)
-           gameFullPath = gameFullPath.combine("Contents/MacOS").combine(exeName.removeSuffix(".app"))
-
-        runUnityPlayerAndAttachDebugger(gameFullPath, {
+        runUnityPlayerAndAttachDebugger(playerFile, {
             toggleBreakpoint(project, "UpdateBreakpointScript.cs", 8)
             /*
             This is a workaround due to an existing constraint in our Debugger:
@@ -71,8 +53,6 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNa
 
     companion object {
         val collectTimeout: Duration = Duration.ofSeconds(60)
-        const val macOS = "osx"
-        const val winOS = "win"
     }
 }
 
@@ -80,12 +60,5 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, buildNa
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnityPlayerDebuggerTest {
-    class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022, mapOf(
-        winOS to "UnityPlayerDebuggerTest_StandaloneWindows64_2022.3.17f1_2024-Feb-20.zip",
-        macOS to "UnityPlayerDebuggerTest_StandaloneOSX_2022.3.20f1_2024-Feb-26.zip")) {
-        init {
-          addMute(Mute("RIDER-123706", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
-        }
+    class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022)
     }
-}
-

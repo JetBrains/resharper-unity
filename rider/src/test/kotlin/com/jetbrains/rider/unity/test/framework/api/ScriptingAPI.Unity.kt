@@ -394,7 +394,7 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
             XDebuggerManager.getInstance(project).debugSessions.firstOrNull()
         }
 
-        assertNotNull(session)
+        assertNotNull(session, "Debug session is null after waiting for its initialization")
 
         if (goldFile != null) {
             executeWithGold(goldFile) {
@@ -424,7 +424,7 @@ private fun UnityPlayerDebuggerTestBase.startUnityStandaloneProject(playerFile: 
     : Pair<UnityProcess?, Process?> {
 
     val startGameExecutable = startGameExecutable(playerFile, logPath)
-    assertNotNull(startGameExecutable)
+    assertNotNull(startGameExecutable,"Failed to start game executable")
 
     var unityProcess: UnityProcess? = null
     val job = (project as ComponentManagerEx).getCoroutineScope().launch {
