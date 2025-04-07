@@ -509,9 +509,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string UnityPerformanceCriticalCodeLineMarker_Performance_critical_context => ResourceManager.GetString("UnityPerformanceCriticalCodeLineMarker_Performance_critical_context");
     public static string UnityProjects_Text => ResourceManager.GetString("UnityProjects_Text");
     public static string UnityRuntimeFolder_Text => ResourceManager.GetString("UnityRuntimeFolder_Text");
-    public static string UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property => ResourceManager.GetString("UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property");
-    public static string UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property => ResourceManager.GetString("UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property");
-    public static string UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property => ResourceManager.GetString("UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property");
+    public static string UnitySettings_Refactoring_Serialized_Field_Refactoring_Settings => ResourceManager.GetString("UnitySettings_Refactoring_Serialized_Field_Refactoring_Settings");
+    public static string UnitySettings_Refactoring_Always_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property => ResourceManager.GetString("UnitySettings_Refactoring_Always_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property");
+    public static string UnitySettings_Refactoring_Never_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property => ResourceManager.GetString("UnitySettings_Refactoring_Never_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property");
+    public static string UnitySettings_Refactoring_Never_Show_Serialized_Refactoring_Popup_For_Each_Case => ResourceManager.GetString("UnitySettings_Refactoring_Never_Show_Serialized_Refactoring_Popup_For_Each_Case");
+    public static string UnitySettings_Refactoring_Popup_Should_Add_Attribute => ResourceManager.GetString("UnitySettings_Refactoring_Popup_Should_Add_Attribute");
+    public static string UnitySettings_Refactoring_Popup_Remember_Selected_Options_And_Never_Show_Popup => ResourceManager.GetString("UnitySettings_Refactoring_Popup_Remember_Selected_Options_And_Never_Show_Popup");
+    public static string UnitySettings_Refactoring_Popup_Add => ResourceManager.GetString("UnitySettings_Refactoring_Popup_Add");
+    public static string UnitySettings_Refactoring_Popup_Dont_Add => ResourceManager.GetString("UnitySettings_Refactoring_Popup_Dont_Add");
     public static string UnitySettings_Refactoring_Refactoring_Settings_Header => ResourceManager.GetString("UnitySettings_Refactoring_Refactoring_Settings_Header");
     public static string UnitySettings_t_Enable_analysis_for_Burst_compiler_issues => ResourceManager.GetString("UnitySettings_t_Enable_analysis_for_Burst_compiler_issues");
     public static string UnitySettings_t_Enable_debugger_extensions => ResourceManager.GetString("UnitySettings_t_Enable_debugger_extensions");

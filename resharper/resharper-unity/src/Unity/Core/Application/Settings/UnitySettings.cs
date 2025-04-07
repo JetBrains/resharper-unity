@@ -89,11 +89,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         public BreakpointTraceOutput BreakpointTraceOutput;
         
         //Refactoring
-        [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property))]
-        public bool AddFormallySerializedAttributeOnRenaming;
-        
-        [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property))]
-        public bool ShowPopupForAddingFormallySerializedAttributeOnRenaming;
+        [SettingsEntry(SerializedFieldRefactoringSettings.ShowPopup, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Refactoring_Serialized_Field_Refactoring_Settings))]
+        public SerializedFieldRefactoringSettings SerializedFieldRefactoringSettings;
         
         //Dots
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Dots_Hide_generated_code_from_navigation))]

@@ -41,17 +41,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         {
             // hide confirmation page only, refactoring should update shared document too otherwise
             // we will get inconsistent change modification message box
-            if (myModel.DontShowPopup)
+            if (myModel.SerializedFieldRefactoringBehavior 
+                is SerializedFieldRefactoringBehavior.AddAndRemember
+                or SerializedFieldRefactoringBehavior.DontAddAndRemember)
                 return null;
 
             return new FormerlySerializedAsRefactoringPage(
-                ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, myModel);
+                ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, myModel, OldName);
         }
 
         public override void Rename(IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations,
             IRefactoringDriver driver)
         {
-            if (!myModel.ShouldAddFormerlySerializedAs)
+            if (myModel.SerializedFieldRefactoringBehavior
+                is SerializedFieldRefactoringBehavior.DontAdd
+                or SerializedFieldRefactoringBehavior.DontAddAndRemember)
                 return;
 
             var fieldDeclaration = GetFieldDeclaration(myPointer.FindDeclaredElement() as IField);

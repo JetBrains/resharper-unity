@@ -3,32 +3,53 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
+    public enum SerializedFieldRefactoringBehavior
+    {
+        Add,
+        DontAdd,
+        AddAndRemember,
+        DontAddAndRemember,
+    }
+
     public class SerializedFieldRenameModel
     {
         private readonly ISettingsStore mySettingsStore;
 
-        public bool ShouldAddFormerlySerializedAs { get; private set; }
-        public bool DontShowPopup { get; private set; }
+        public SerializedFieldRefactoringBehavior SerializedFieldRefactoringBehavior { get; private set; }
 
         public SerializedFieldRenameModel(ISettingsStore settingsStore)
         {
             mySettingsStore = settingsStore;
             var store = settingsStore.BindToContextTransient(ContextRange.ApplicationWide);
-            ShouldAddFormerlySerializedAs =
-                store.GetValue((UnitySettings s) => s.AddFormallySerializedAttributeOnRenaming);
-            DontShowPopup = !store.GetValue((UnitySettings s) => s.ShowPopupForAddingFormallySerializedAttributeOnRenaming);
+            var settings = store.GetValue((UnitySettings s) => s.SerializedFieldRefactoringSettings);
+
+            SerializedFieldRefactoringBehavior = settings switch
+            {
+                SerializedFieldRefactoringSettings.AlwaysAdd => SerializedFieldRefactoringBehavior.AddAndRemember,
+                SerializedFieldRefactoringSettings.NeverAdd => SerializedFieldRefactoringBehavior.DontAddAndRemember,
+                _ => SerializedFieldRefactoringBehavior.Add
+            };
         }
 
-        public void Commit(bool shouldAddFormerlySerializedAs, bool dontShowPopup)
+        public void Commit(bool shouldAddFormerlySerializedAs, bool rememberSelectedOptionAndNeverShowPopup)
         {
-            ShouldAddFormerlySerializedAs = shouldAddFormerlySerializedAs;
-            DontShowPopup = dontShowPopup;
-
+            SerializedFieldRefactoringBehavior = shouldAddFormerlySerializedAs 
+                ? rememberSelectedOptionAndNeverShowPopup 
+                    ? SerializedFieldRefactoringBehavior.AddAndRemember 
+                    : SerializedFieldRefactoringBehavior.Add 
+                : rememberSelectedOptionAndNeverShowPopup 
+                    ? SerializedFieldRefactoringBehavior.DontAddAndRemember
+                    : SerializedFieldRefactoringBehavior.DontAdd;
+            
             var store = mySettingsStore.BindToContextTransient(ContextRange.ApplicationWide);
-            store.SetValue((UnitySettings s) => s.AddFormallySerializedAttributeOnRenaming,
-                ShouldAddFormerlySerializedAs);
-            store.SetValue((UnitySettings s) => s.ShowPopupForAddingFormallySerializedAttributeOnRenaming,
-                !DontShowPopup);
+            var settings = SerializedFieldRefactoringBehavior switch
+            {
+                SerializedFieldRefactoringBehavior.AddAndRemember => SerializedFieldRefactoringSettings.AlwaysAdd,
+                SerializedFieldRefactoringBehavior.DontAddAndRemember => SerializedFieldRefactoringSettings.NeverAdd,
+                _ => SerializedFieldRefactoringSettings.ShowPopup
+            };
+
+            store.SetValue((UnitySettings s) => s.SerializedFieldRefactoringSettings, settings);
         }
     }
 }

@@ -116,12 +116,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         private void AddRefactoringSection()
         {
             AddHeader(Strings.UnitySettings_Refactoring_Refactoring_Settings_Header);
-
-            AddBoolOption((UnitySettings s) => s.ShowPopupForAddingFormallySerializedAttributeOnRenaming,
-                Strings.UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property);
-
-            AddBoolOption((UnitySettings s) => s.AddFormallySerializedAttributeOnRenaming,
-                Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property);
+                AddComboOption((UnitySettings s) => s.SerializedFieldRefactoringSettings,
+                    Strings.UnitySettings_Refactoring_Serialized_Field_Refactoring_Settings, string.Empty, string.Empty,
+                    new RadioOptionPoint(SerializedFieldRefactoringSettings.ShowPopup, Strings.UnitySettings_Refactoring_Never_Show_Serialized_Refactoring_Popup_For_Each_Case),
+                    new RadioOptionPoint(SerializedFieldRefactoringSettings.AlwaysAdd, Strings.UnitySettings_Refactoring_Always_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property),
+                    new RadioOptionPoint(SerializedFieldRefactoringSettings.NeverAdd, Strings.UnitySettings_Refactoring_Never_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property)
+                );
         }
 
         private void AddPerformanceAnalysisSubSection()
