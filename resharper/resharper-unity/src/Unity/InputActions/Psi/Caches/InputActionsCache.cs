@@ -18,7 +18,7 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
 {
-    [PsiComponent(InstantiationEx.LegacyDefault)]
+    [PsiComponent(Instantiation.DemandAnyThreadSafe)]
     public class InputActionsCache : SimpleICache<List<InputActionsCacheItem>>
     {
         private readonly IShellLocks myShellLocks;

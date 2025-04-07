@@ -19,7 +19,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
 {
-    [PsiComponent(InstantiationEx.LegacyDefault)]
+    [PsiComponent(Instantiation.DemandAnyThreadSafe)]
     public class UxmlCache : SimpleICache<List<UxmlCacheItem>>
     {
         private readonly ISolution mySolution;
