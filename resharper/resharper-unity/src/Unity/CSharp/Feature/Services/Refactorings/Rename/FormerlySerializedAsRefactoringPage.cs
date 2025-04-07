@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Collections.Generic;
 using JetBrains.DataFlow;
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.Lifetimes;
@@ -14,18 +15,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         private readonly SerializedFieldRenameModel myModel;
         private readonly BeGrid myContent;
         private readonly IProperty<bool> myShouldAddFormerlySerializedAs;
-        private readonly IProperty<bool> myDontShowPopup;
+        private readonly IProperty<bool> myRememberSelectedOptionAndNeverShowPopup;
 
-        public FormerlySerializedAsRefactoringPage(Lifetime lifetime, SerializedFieldRenameModel model)
+        public FormerlySerializedAsRefactoringPage(Lifetime lifetime, SerializedFieldRenameModel model,
+            string fieldName)
             : base(lifetime)
         {
             myModel = model;
-            myShouldAddFormerlySerializedAs = new Property<bool>(Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property, myModel.ShouldAddFormerlySerializedAs);
-            myContent = myShouldAddFormerlySerializedAs.GetBeCheckBox(lifetime, Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property).InAutoGrid();
 
-            myDontShowPopup = new Property<bool>(Strings.UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property, myModel.DontShowPopup);
-            myContent.AddElement(myDontShowPopup
-                .GetBeCheckBox(lifetime, Strings.UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property));
+            myShouldAddFormerlySerializedAs = new Property<bool>(lifetime, "Should add attribute action",
+                model.SerializedFieldRefactoringBehavior is SerializedFieldRefactoringBehavior.Add
+                    or SerializedFieldRefactoringBehavior.AddAndRemember);
+
+            myContent = myShouldAddFormerlySerializedAs.GetBeRadioGroup(lifetime,
+                string.Format(Strings.UnitySettings_Refactoring_Popup_Should_Add_Attribute, fieldName),
+                new List<bool> { true, false },
+                present: (settings, properties) => settings
+                    ? Strings.UnitySettings_Refactoring_Popup_Add
+                    : Strings.UnitySettings_Refactoring_Popup_Dont_Add,
+                horizontal: false
+            ).InAutoGrid();
+
+
+            myRememberSelectedOptionAndNeverShowPopup = new Property<bool>(lifetime, "Never show popup",
+                model.SerializedFieldRefactoringBehavior
+                    is SerializedFieldRefactoringBehavior.AddAndRemember
+                    or SerializedFieldRefactoringBehavior.DontAddAndRemember);
+
+            myContent.AddElement(new BeSpacer());
+            myContent.AddElement(myRememberSelectedOptionAndNeverShowPopup.GetBeCheckBox(lifetime,
+                Strings.UnitySettings_Refactoring_Popup_Remember_Selected_Options_And_Never_Show_Popup));
         }
 
 #if RESHARPER
@@ -43,7 +62,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         public override void Commit()
         {
-            myModel.Commit(myShouldAddFormerlySerializedAs.Value, myDontShowPopup.Value);
+            var shouldAdd = myShouldAddFormerlySerializedAs.Value;
+            var rememberSelectedOption = myRememberSelectedOptionAndNeverShowPopup.Value;
+
+            myModel.Commit(shouldAdd, rememberSelectedOption);
         }
     }
 }

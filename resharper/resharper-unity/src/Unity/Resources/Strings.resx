@@ -1389,14 +1389,29 @@ a plugin to be installed to a project.</value>
     <data name="UnityRuntimeFolder_Text" xml:space="preserve">
         <value>Unity runtime folder</value>
     </data>
-    <data name="UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
-        <value>Add 'FormerlySerializedAs' when renaming serialized fields</value>
+    <data name="UnitySettings_Refactoring_Serialized_Field_Refactoring_Settings" xml:space="preserve">
+        <value>Serialized field refactoring settings:</value>
     </data>
-    <data name="UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property" xml:space="preserve">
-        <value>Ask whether to add 'FormerlySerializedAs' when renaming serialized fields</value>
+    <data name="UnitySettings_Refactoring_Always_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
+        <value>Always add 'FormerlySerializedAs' when renaming serialized fields</value>
     </data>
-    <data name="UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
-        <value>Don't show this dialog next time</value>
+    <data name="UnitySettings_Refactoring_Never_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
+        <value>Never add 'FormerlySerializedAs' when renaming serialized fields</value>
+    </data>
+    <data name="UnitySettings_Refactoring_Never_Show_Serialized_Refactoring_Popup_For_Each_Case" xml:space="preserve">
+        <value>Show popup confirmation popup for each case</value>
+    </data>
+    <data name="UnitySettings_Refactoring_Popup_Should_Add_Attribute" xml:space="preserve">
+        <value>Should add 'FormerlySerializedAs' to {0}</value>
+    </data>
+    <data name="UnitySettings_Refactoring_Popup_Remember_Selected_Options_And_Never_Show_Popup" xml:space="preserve">
+        <value>Remember selected option and never show this popup</value>
+    </data>
+    <data name="UnitySettings_Refactoring_Popup_Add" xml:space="preserve">
+        <value>Add</value>
+    </data>
+    <data name="UnitySettings_Refactoring_Popup_Dont_Add" xml:space="preserve">
+        <value>Don't Add</value>
     </data>
     <data name="UnitySettings_Refactoring_Refactoring_Settings_Header" xml:space="preserve">
         <value>Refactoring</value>

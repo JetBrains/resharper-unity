@@ -6,3 +6,10 @@ public enum ProfilerSnapshotFetchingSettings
     AutoFetch,
     ManualFetch
 }
+
+public enum SerializedFieldRefactoringSettings
+{
+    ShowPopup,
+    AlwaysAdd,
+    NeverAdd,
+}
