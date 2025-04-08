@@ -2,6 +2,7 @@
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -41,13 +42,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         {
             // hide confirmation page only, refactoring should update shared document too otherwise
             // we will get inconsistent change modification message box
-            if (myModel.SerializedFieldRefactoringBehavior 
+            if (myModel.SerializedFieldRefactoringBehavior
                 is SerializedFieldRefactoringBehavior.AddAndRemember
                 or SerializedFieldRefactoringBehavior.DontAddAndRemember)
                 return null;
 
             return new FormerlySerializedAsRefactoringPage(
-                ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, myModel, OldName);
+                ((RefactoringWorkflowBase)renameWorkflow).WorkflowExecuterLifetime, myModel, OldName);
         }
 
         public override void Rename(IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations,
@@ -58,29 +59,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 or SerializedFieldRefactoringBehavior.DontAddAndRemember)
                 return;
 
-            var fieldDeclaration = GetFieldDeclaration(myPointer.FindDeclaredElement() as IField);
-            if (fieldDeclaration == null)
+            var classMemberDeclaration = GetDeclaration(myPointer.FindDeclaredElement() as ITypeMember);
+            if (classMemberDeclaration == null)
                 return;
 
-            RemoveExistingAttributesWithNewName(fieldDeclaration);
+            RemoveExistingAttributesWithNewName(classMemberDeclaration);
 
-            if (HasExistingFormerlySerializedAsAttribute(fieldDeclaration))
+            if (HasExistingFormerlySerializedAsAttribute(classMemberDeclaration))
             {
                 // Make sure textual occurrence rename doesn't rename the existing attribute parameter
-                RemoveFromTextualOccurrences(executer, fieldDeclaration);
+                RemoveFromTextualOccurrences(executer, classMemberDeclaration);
                 return;
             }
 
-            var attribute = CreateFormerlySerializedAsAttribute(fieldDeclaration);
+            var attribute = CreateFormerlySerializedAsAttribute(classMemberDeclaration);
             if (attribute != null)
-                fieldDeclaration.AddAttributeAfter(attribute, null);
+                classMemberDeclaration.AddAttributeAfter(attribute, null);
         }
 
-        private static IFieldDeclaration? GetFieldDeclaration(IField? field)
+        private static IClassMemberDeclaration? GetDeclaration(ITypeMember? typeMember)
         {
-            var declarations = field?.GetDeclarations();
+            var declarations = typeMember?.GetDeclarations();
             if (declarations?.Count == 1)
-                return declarations[0] as IFieldDeclaration;
+                return declarations[0] as IClassMemberDeclaration;
             return null;
         }
 
@@ -93,21 +94,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         public override IList<IDeclaredElement>? SecondaryDeclaredElements => null;
 
-        private void RemoveExistingAttributesWithNewName(IFieldDeclaration fieldDeclaration)
+        private void RemoveExistingAttributesWithNewName(IClassMemberDeclaration classMemberDeclaration)
         {
-            var attributes = GetExistingFormerlySerializedAsAttributes(fieldDeclaration, NewName);
+            var attributes = GetExistingFormerlySerializedAsAttributes(classMemberDeclaration, NewName);
             foreach (var attribute in attributes)
-                fieldDeclaration.RemoveAttribute(attribute);
+                classMemberDeclaration.RemoveAttribute(attribute);
         }
 
-        private bool HasExistingFormerlySerializedAsAttribute(IFieldDeclaration fieldDeclaration)
+        private bool HasExistingFormerlySerializedAsAttribute(IClassMemberDeclaration classMemberDeclaration)
         {
-            var attributes = GetExistingFormerlySerializedAsAttributes(fieldDeclaration, OldName);
+            var attributes = GetExistingFormerlySerializedAsAttributes(classMemberDeclaration, OldName);
             return attributes.Count > 0;
         }
 
         private FrugalLocalList<IAttribute> GetExistingFormerlySerializedAsAttributes(
-            IFieldDeclaration fieldDeclaration, string nameArgument)
+            IClassMemberDeclaration fieldDeclaration, string nameArgument)
         {
             var list = new FrugalLocalList<IAttribute>();
             foreach (var attribute in fieldDeclaration.AttributesEnumerable)
@@ -131,9 +132,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             return list;
         }
 
-        private void RemoveFromTextualOccurrences(IRenameRefactoring executor, IFieldDeclaration fieldDeclaration)
+        private void RemoveFromTextualOccurrences(IRenameRefactoring executor, IClassMemberDeclaration fieldDeclaration)
         {
-            if (!(executor.Workflow is RenameWorkflow workflow))
+            if (executor.Workflow is not RenameWorkflow workflow)
                 return;
 
             var attributes = fieldDeclaration.Attributes;
@@ -147,7 +148,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
             var attributesRange = attributeSectionList.GetDocumentRange();
 
-            foreach (var occurrence in workflow.DataModel.ActualOccurrences ?? EmptyList<TextOccurrenceRenameMarker>.InstanceList)
+            foreach (var occurrence in workflow.DataModel.ActualOccurrences ??
+                                       EmptyList<TextOccurrenceRenameMarker>.InstanceList)
             {
                 if (!occurrence.Included)
                     continue;
@@ -162,7 +164,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             }
         }
 
-        private IAttribute? CreateFormerlySerializedAsAttribute(ITreeNode owningNode)
+        private IAttribute? CreateFormerlySerializedAsAttribute(IClassMemberDeclaration owningNode)
         {
             var module = owningNode.GetPsiModule();
             var elementFactory = CSharpElementFactory.GetInstance(owningNode);
@@ -171,11 +173,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             if (attributeTypeElement == null)
                 return null;
 
-            return elementFactory.CreateAttribute(attributeTypeElement, new[]
-                {
-                    new AttributeValue(ConstantValue.String(OldName, module))
-                },
+            var oldName = OldName;
+            if (owningNode is IPropertyDeclaration)
+                oldName = $"{StandardMemberNames.BackingFieldPrefix}{oldName}{StandardMemberNames.BackingFieldSuffix}";
+            
+            var formerlySerializedAsAttribute = elementFactory.CreateAttribute(attributeTypeElement,
+                [new AttributeValue(ConstantValue.String(oldName, module))],
                 EmptyArray<Pair<string, AttributeValue>>.Instance);
+            
+            if(owningNode is IPropertyDeclaration)
+                formerlySerializedAsAttribute.SetTarget(AttributeTarget.Field);
+            
+            return formerlySerializedAsAttribute;
         }
     }
 }

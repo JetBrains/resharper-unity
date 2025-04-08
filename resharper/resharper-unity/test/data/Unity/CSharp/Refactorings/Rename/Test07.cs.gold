@@ -1,0 +1,7 @@
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test : MonoBehaviour
+{
+    [field: FormerlySerializedAs("<Value1>k__BackingField")] [field: SerializeField] public int zzz {get; set;}
+}
