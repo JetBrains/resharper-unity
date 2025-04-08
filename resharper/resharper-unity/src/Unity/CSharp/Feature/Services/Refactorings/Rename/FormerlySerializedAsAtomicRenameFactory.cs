@@ -18,7 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 return false;
 
             var unityApi = declaredElement.GetSolution().GetComponent<UnityApi>();
-            return unityApi.IsSerialisedField(declaredElement as IField).HasFlag(SerializedFieldStatus.UnitySerializedField);
+            return 
+                unityApi.IsSerialisedField(declaredElement as IField).HasFlag(SerializedFieldStatus.UnitySerializedField)
+                || unityApi.IsSerialisedAutoProperty(declaredElement as IProperty, true).HasFlag(SerializedFieldStatus.UnitySerializedField);
         }
 
         public RenameAvailabilityCheckResult CheckRenameAvailability(IDeclaredElement element)
@@ -31,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         {
             var settingsStore = declaredElement.GetSolution().GetComponent<ISettingsStore>();
             var knownTypesCache = declaredElement.GetSolution().GetComponent<KnownTypesCache>();
-            return new[] {new FormerlySerializedAsAtomicRename(declaredElement, newName, settingsStore, knownTypesCache)};
+            return [new FormerlySerializedAsAtomicRename(declaredElement, newName, settingsStore, knownTypesCache)];
         }
     }
 }
