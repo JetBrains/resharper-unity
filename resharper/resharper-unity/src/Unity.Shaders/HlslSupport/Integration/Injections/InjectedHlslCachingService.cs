@@ -13,6 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
     {
         public IEnumerable<IFile> GetInjectedFiles(Type injectedLanguageType, IFile dominantFile,
             IReadOnlyCollection<IInjectedPsiProvider> providersToBuild,
+            int providersTimestamp,
             Func<IFile, IReadOnlyList<IFile>> injectedFilesCalculator)
         {
             // Default implementation ignores white space changes and does not invalidate cache, for shader lab whitespace changes are significant, because
