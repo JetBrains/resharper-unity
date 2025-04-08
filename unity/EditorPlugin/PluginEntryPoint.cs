@@ -39,12 +39,11 @@ namespace JetBrains.Rider.Unity.Editor
     
     // DO NOT RENAME OR REFACTOR!
     // Accessed by package via reflection
-    [PublicAPI]
+    [PublicAPI, Obsolete("Remove it later")]
     internal static string GenerateAdditionalLinkXmlFile(BuildReport report, object data,
       bool preserveUnityEngineDlls, bool preservePlayerDlls)
     {
-      return Il2CppDebugProvider.GenerateAdditionalLinkXmlFile(report,  data,
-         preserveUnityEngineDlls,  preservePlayerDlls);
+      return string.Empty;
     }
 
     internal static string SlnFile;
