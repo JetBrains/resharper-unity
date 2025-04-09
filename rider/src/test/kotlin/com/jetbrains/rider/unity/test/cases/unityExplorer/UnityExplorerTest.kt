@@ -7,11 +7,14 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.annotations.*
-import com.jetbrains.rider.test.base.BaseTestWithShell
+import com.jetbrains.rider.test.base.PerTestProtocolTestBase
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.TemplateType
+import com.jetbrains.rider.test.scriptingApi.prepareProjectView
+import com.jetbrains.rider.test.scriptingApi.testProjectModel
+import com.jetbrains.rider.test.scriptingApi.withSolution
 import com.jetbrains.rider.unity.test.framework.api.*
 import org.testng.annotations.Test
 import java.time.Duration
@@ -20,7 +23,7 @@ import java.time.Duration
 @Feature("Unity Explorer")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
-class UnityExplorerTest : BaseTestWithShell() {
+class UnityExplorerTest : PerTestProtocolTestBase() {
 
     @Test(description = "Add a new item with multiple backends")
     @Mute("RIDER-101228")
