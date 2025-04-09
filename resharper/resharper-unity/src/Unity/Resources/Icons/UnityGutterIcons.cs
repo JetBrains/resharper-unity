@@ -179,86 +179,62 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
                         new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("GrayDark", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_GrayDark))};
             }
         }
-        #endregion
-
-
-		#region UnityLogo
-		/// <summary>
-		///	<para>
-		///		<para>UnityLogo Themed Icon generated identifiers:</para>
-		///		<para>— <see cref="UnityLogo"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
-		///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
-		///		<para>
-		///			<code>
-		///             `_+Cur"`            
-		///          -;7yTyyyy)ei!-         
-		///      `_ruu+,` kkkk  :+C2?"`     
-		///   -;JEi!-     EEEE     -;vkl!-  
-		///   hh^`    `,ruhhhhj?"`    `_hh  
-		///   66      :*36666662r:      66  
-		///   99`````````-;Jz!-`````````99  
-		///   bb````wY!-````````-;i9````bb  
-		///   dd````ddddar````r2dddd````dd  
-		///   AA`.~|AAAAAA````AAAAAA7;'`AA  
-		///   RRuGRRRRRRRR....RRRRRRRRRoRR  
-		///   DDDDAt=::!}A....mC/:-!ldDDDD  
-		///   :?KDa?_--------------,+2D6|_  
-		///      `!f#Hl;:-------;JwD2*.     
-		///          _)9DSc"_roDpv"`        
-		///             .=58War-            
-		///</code>
-		///		</para>
-		///	</para>
-		///</summary>
-		///<remarks>
-		///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
-		///</remarks>
-		///<example>
-		///	<code>&lt;Image Source="{icons:ThemedIcon myres:XavosinThemedIconsThemedIcons+UnityLogo}" /&gt;        &lt;!-- XAML --&gt;</code>
-		///</example>
-		///<example>
-		///	<code>[Item(Name="Sample", Icon=typeof(XavosinThemedIconsThemedIcons.UnityLogo))]        // C# Type attribute</code>
-		///</example>
-		///<example>
-		///	<code>IconId iconid = XavosinThemedIconsThemedIcons.UnityLogo.Id;        // IconId identifier object</code>
-		///</example>
-		///<example>
-		///	<code>themediconmanager.GetIcon&lt;XavosinThemedIconsThemedIcons.UnityLogo&gt;()        // Icon image for rendering</code>
-		///</example>
-		[global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
-		public sealed class UnityLogo : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
-		{
-			
-			/// <inheritdoc cref="UnityLogo">identifier class</inheritdoc>
-			public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(UnityLogo));
-			
-			/// <summary>Loads the image for Themed Icon UnityLogo theme aspect Color.</summary>
-			public global::JetBrains.Util.Icons.TiImage Load_Color()
-			{
-				return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><linearGradient id='F0' x1='0.5' y1='0.0101875' x2='0.5' y2='1.004625'><stop offset='0' stop-color='#226E6E'/><stop offset='1' stop-color='#12344D'/></linearGradient><path d='M7.732,15.944L8.268,15.944L14.989,12.063L15,12.069L15,3.83L8.268,-0.056L7.732,-0.056L1,3.83L1,12.069L1.011,12.063L7.732,15.944ZM7.732,15.944' fill='url(#F0)'/><linearGradient id='F1' x1='0.5' y1='0' x2='0.5' y2='0.99999999999999989'><stop offset='0' stop-color='#DDFFFE'/><stop offset='1' stop-color='#B4D1E3'/></linearGradient><path d='M14,10.319L14,4.408L9,1.521L9,3.831L11.025,5L8,6.783L4.975,5L7,3.831L7,1.521L2,4.408L2,10.319L4,9.141L4,6.747L7,8.515L7,12.057L4.975,10.887L2.995,12.054L8,14.944L13.005,12.054L11.025,10.887L9,12.057L9,8.515L12,6.747L12,9.141L14,10.319ZM14,10.319' fill='url(#F1)'/></g></svg>");
-			}
-			
-			/// <summary>Loads the image for Themed Icon UnityLogo theme aspect Gray.</summary>
-			public global::JetBrains.Util.Icons.TiImage Load_Gray()
-			{
-				return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M7.732,15.944L8.268,15.944L14.989,12.063L15,12.069L15,3.83L8.268,-0.056L7.732,-0.056L1,3.83L1,12.069L1.011,12.063L7.732,15.944ZM7.732,15.944' fill='#F4F4F4'/><path d='M14,10.319L14,4.408L9,1.521L9,3.831L11.025,5L8,6.783L4.975,5L7,3.831L7,1.521L2,4.408L2,10.319L4,9.141L4,6.747L7,8.515L7,12.057L4.975,10.887L2.995,12.054L8,14.944L13.005,12.054L11.025,10.887L9,12.057L9,8.515L12,6.747L12,9.141L14,10.319ZM14,10.319' fill='#323232'/></g></svg>");
-			}
-			
-			/// <summary>Loads the image for Themed Icon UnityLogo theme aspect GrayDark.</summary>
-			public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
-			{
-				return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M7.732,15.944L8.268,15.944L14.989,12.063L15,12.069L15,3.83L8.268,-0.056L7.732,-0.056L1,3.83L1,12.069L1.011,12.063L7.732,15.944ZM7.732,15.944' fill='#252525'/><path d='M14,10.319L14,4.408L9,1.521L9,3.831L11.025,5L8,6.783L4.975,5L7,3.831L7,1.521L2,4.408L2,10.319L4,9.141L4,6.747L7,8.515L7,12.057L4.975,10.887L2.995,12.054L8,14.944L13.005,12.054L11.025,10.887L9,12.057L9,8.515L12,6.747L12,9.141L14,10.319ZM14,10.319' fill='#C4C4C4'/></g></svg>");
-			}
-			
-			/// <summary>Returns the set of theme images for Themed Icon UnityLogo.</summary>
-			public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
-			{
-				return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
-						new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Color", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Color)),
-						new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Gray", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Gray)),
-						new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("GrayDark", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_GrayDark))};
-			}
-		}
-		#endregion
+#endregion
+    /// <summary>
+    ///	<para>
+    ///		<para>UnityLogo Themed Icon generated identifiers:</para>
+    ///		<para>— <see cref = "UnityLogo"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
+    ///		<para>— <see cref = "Id"></see> identifier object, as a field in the identifier class, for use where an <see cref = "JetBrains.UI.Icons.IconId"></see> value is expected.</para>
+    ///		<para>
+    ///			<code>
+    ///             `_+Cur"`            
+    ///          -;7yTyyyy)ei!-         
+    ///      `_ruu+,` kkkk  :+C2?"`     
+    ///   -;JEi!-     EEEE     -;vkl!-  
+    ///   hh^`    `,ruhhhhj?"`    `_hh  
+    ///   66      :*36666662r:      66  
+    ///   99`````````-;Jz!-`````````99  
+    ///   bb````wY!-````````-;i9````bb  
+    ///   dd````ddddar````r2dddd````dd  
+    ///   AA`.~|AAAAAA````AAAAAA7;'`AA  
+    ///   RRuGRRRRRRRR....RRRRRRRRRoRR  
+    ///   DDDDAt=::!}A....mC/:-!ldDDDD  
+    ///   :?KDa?_--------------,+2D6|_  
+    ///      `!f#Hl;:-------;JwD2*.     
+    ///          _)9DSc"_roDpv"`        
+    ///             .=58War-            
+    ///</code>
+    ///		</para>
+    ///	</para>
+    ///</summary>
+    ///<remarks>
+    ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
+    ///</remarks>
+    ///<example>
+    ///	<code>&lt;Image Source="{icons:ThemedIcon myres:XavosinThemedIconsThemedIcons+UnityLogo}" /&gt;        &lt;!-- XAML --&gt;</code>
+    ///</example>
+    ///<example>
+    ///	<code>[Item(Name="Sample", Icon=typeof(XavosinThemedIconsThemedIcons.UnityLogo))]        // C# Type attribute</code>
+    ///</example>
+    ///<example>
+    ///	<code>IconId iconid = XavosinThemedIconsThemedIcons.UnityLogo.Id;        // IconId identifier object</code>
+    ///</example>
+    ///<example>
+    ///	<code>themediconmanager.GetIcon&lt;XavosinThemedIconsThemedIcons.UnityLogo&gt;()        // Icon image for rendering</code>
+    ///</example>
+    [JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute]
+    public sealed class UnityLogo : JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
+    {
+      public static JetBrains.UI.Icons.IconId Id = new JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(UnityLogo));
+      private const string Image_Color = "<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M11.11,10.65L9.29,11.7C9.2099999999999991,11.75,9.1,11.69,9.1,11.59L9.1,8.49C9.1,8.4,9.15,8.31,9.23,8.27L11.91,6.72C11.99,6.67,12.1,6.7299999999999995,12.1,6.83L12.1,8.93L14.309999999999999,10.2L14.309999999999999,4.06L8.99,0.99L8.99,3.54L10.81,4.59C10.89,4.64,10.89,4.76,10.81,4.81L8.13,6.36C8.05,6.41,7.9500000000000011,6.4,7.8800000000000008,6.36L5.2,4.81C5.12,4.77,5.12,4.64,5.2,4.59L7.0200000000000005,3.54L7.0200000000000005,1L1.69,4.07L1.69,10.21L3.9,8.94L3.9,6.84C3.9,6.75,4.01,6.68,4.09,6.7299999999999995L6.77,8.28C6.85,8.33,6.8999999999999995,8.41,6.8999999999999995,8.5L6.8999999999999995,11.6C6.8999999999999995,11.69,6.7899999999999991,11.76,6.7099999999999991,11.709999999999999L4.8899999999999988,10.659999999999998L2.6799999999999988,11.929999999999998L8,15L13.32,11.93L11.11,10.66ZM11.11,10.65' fill='#000000'/></g></svg>";
+      private const string Image_FluentDark = "<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M11.11,10.65L9.29,11.7C9.2099999999999991,11.75,9.1,11.69,9.1,11.59L9.1,8.49C9.1,8.4,9.15,8.31,9.23,8.27L11.91,6.72C11.99,6.67,12.1,6.7299999999999995,12.1,6.83L12.1,8.93L14.309999999999999,10.2L14.309999999999999,4.06L8.99,0.99L8.99,3.54L10.81,4.59C10.89,4.64,10.89,4.76,10.81,4.81L8.13,6.36C8.05,6.41,7.9500000000000011,6.4,7.8800000000000008,6.36L5.2,4.81C5.12,4.77,5.12,4.64,5.2,4.59L7.0200000000000005,3.54L7.0200000000000005,1L1.69,4.07L1.69,10.21L3.9,8.94L3.9,6.84C3.9,6.75,4.01,6.68,4.09,6.7299999999999995L6.77,8.28C6.85,8.33,6.8999999999999995,8.41,6.8999999999999995,8.5L6.8999999999999995,11.6C6.8999999999999995,11.69,6.7899999999999991,11.76,6.7099999999999991,11.709999999999999L4.8899999999999988,10.659999999999998L2.6799999999999988,11.929999999999998L8,15L13.32,11.93L11.11,10.66ZM11.11,10.65' fill='#FFFFFF'/></g></svg>";
+      private const string Image_FluentLight = "<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M11.11,10.65L9.29,11.7C9.2099999999999991,11.75,9.1,11.69,9.1,11.59L9.1,8.49C9.1,8.4,9.15,8.31,9.23,8.27L11.91,6.72C11.99,6.67,12.1,6.7299999999999995,12.1,6.83L12.1,8.93L14.309999999999999,10.2L14.309999999999999,4.06L8.99,0.99L8.99,3.54L10.81,4.59C10.89,4.64,10.89,4.76,10.81,4.81L8.13,6.36C8.05,6.41,7.9500000000000011,6.4,7.8800000000000008,6.36L5.2,4.81C5.12,4.77,5.12,4.64,5.2,4.59L7.0200000000000005,3.54L7.0200000000000005,1L1.69,4.07L1.69,10.21L3.9,8.94L3.9,6.84C3.9,6.75,4.01,6.68,4.09,6.7299999999999995L6.77,8.28C6.85,8.33,6.8999999999999995,8.41,6.8999999999999995,8.5L6.8999999999999995,11.6C6.8999999999999995,11.69,6.7899999999999991,11.76,6.7099999999999991,11.709999999999999L4.8899999999999988,10.659999999999998L2.6799999999999988,11.929999999999998L8,15L13.32,11.93L11.11,10.66ZM11.11,10.65' fill='#000000'/></g></svg>";
+      private const string Image_Gray = "<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M14.81,3.21L9.49,0.13C9.3376083457936989,0.043625931447609179,9.1651634451378783,-0.0012097427229043715,8.99,0L7.01,0C6.84,0,6.66,0.04,6.51,0.13L1.19,3.21C0.87999999999999989,3.39,0.69,3.7199999999999998,0.69,4.08L0.69,10.219999999999999C0.69,10.399999999999999,0.74,10.569999999999999,0.82,10.719999999999999L1.81,12.43C1.9000000000000001,12.58,2.02,12.709999999999999,2.18,12.799999999999999L7.5,15.87C7.65,15.959999999999999,7.83,16,8,16C8.17,16,8.35,15.96,8.5,15.87L13.82,12.799999999999999C13.97,12.709999999999999,14.1,12.579999999999998,14.19,12.43L15.18,10.719999999999999C15.27,10.569999999999999,15.31,10.399999999999999,15.31,10.219999999999999L15.31,4.08C15.31,3.72,15.120000000000001,3.39,14.81,3.21Z' fill='#F4F4F4'/><path d='M11.11,10.65L9.29,11.7C9.2099999999999991,11.75,9.1,11.69,9.1,11.59L9.1,8.49C9.1,8.4,9.15,8.31,9.23,8.27L11.91,6.72C11.99,6.67,12.1,6.7299999999999995,12.1,6.83L12.1,8.93L14.309999999999999,10.2L14.309999999999999,4.06L8.99,0.99L8.99,3.54L10.81,4.59C10.89,4.64,10.89,4.76,10.81,4.81L8.13,6.36C8.05,6.41,7.9500000000000011,6.4,7.8800000000000008,6.36L5.2,4.81C5.12,4.77,5.12,4.64,5.2,4.59L7.0200000000000005,3.54L7.0200000000000005,1L1.69,4.07L1.69,10.21L3.9,8.94L3.9,6.84C3.9,6.75,4.01,6.68,4.09,6.7299999999999995L6.77,8.28C6.85,8.33,6.8999999999999995,8.41,6.8999999999999995,8.5L6.8999999999999995,11.6C6.8999999999999995,11.69,6.7899999999999991,11.76,6.7099999999999991,11.709999999999999L4.8899999999999988,10.659999999999998L2.6799999999999988,11.929999999999998L8,15L13.32,11.93L11.11,10.66ZM11.11,10.65' fill='#323232'/></g></svg>";
+      private const string Image_GrayDark = "<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M14.81,3.21L9.49,0.13C9.3376083457936989,0.043625931447609179,9.1651634451378783,-0.0012097427229043715,8.99,0L7.01,0C6.84,0,6.66,0.04,6.51,0.13L1.19,3.21C0.87999999999999989,3.39,0.69,3.7199999999999998,0.69,4.08L0.69,10.219999999999999C0.69,10.399999999999999,0.74,10.569999999999999,0.82,10.719999999999999L1.81,12.43C1.9000000000000001,12.58,2.02,12.709999999999999,2.18,12.799999999999999L7.5,15.87C7.65,15.959999999999999,7.83,16,8,16C8.17,16,8.35,15.96,8.5,15.87L13.82,12.799999999999999C13.97,12.709999999999999,14.1,12.579999999999998,14.19,12.43L15.18,10.719999999999999C15.27,10.569999999999999,15.31,10.399999999999999,15.31,10.219999999999999L15.31,4.08C15.31,3.72,15.120000000000001,3.39,14.81,3.21Z' fill='#252525'/><path d='M11.11,10.65L9.29,11.7C9.2099999999999991,11.75,9.1,11.69,9.1,11.59L9.1,8.49C9.1,8.4,9.15,8.31,9.23,8.27L11.91,6.72C11.99,6.67,12.1,6.7299999999999995,12.1,6.83L12.1,8.93L14.309999999999999,10.2L14.309999999999999,4.06L8.99,0.99L8.99,3.54L10.81,4.59C10.89,4.64,10.89,4.76,10.81,4.81L8.13,6.36C8.05,6.41,7.9500000000000011,6.4,7.8800000000000008,6.36L5.2,4.81C5.12,4.77,5.12,4.64,5.2,4.59L7.0200000000000005,3.54L7.0200000000000005,1L1.69,4.07L1.69,10.21L3.9,8.94L3.9,6.84C3.9,6.75,4.01,6.68,4.09,6.7299999999999995L6.77,8.28C6.85,8.33,6.8999999999999995,8.41,6.8999999999999995,8.5L6.8999999999999995,11.6C6.8999999999999995,11.69,6.7899999999999991,11.76,6.7099999999999991,11.709999999999999L4.8899999999999988,10.659999999999998L2.6799999999999988,11.929999999999998L8,15L13.32,11.93L11.11,10.66ZM11.11,10.65' fill='#EFEFEF'/></g></svg>";
+      private const string Image_RiderDark = "<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M11.11,10.65L9.29,11.7C9.2099999999999991,11.75,9.1,11.69,9.1,11.59L9.1,8.49C9.1,8.4,9.15,8.31,9.23,8.27L11.91,6.72C11.99,6.67,12.1,6.7299999999999995,12.1,6.83L12.1,8.93L14.309999999999999,10.2L14.309999999999999,4.06L8.99,0.99L8.99,3.54L10.81,4.59C10.89,4.64,10.89,4.76,10.81,4.81L8.13,6.36C8.05,6.41,7.9500000000000011,6.4,7.8800000000000008,6.36L5.2,4.81C5.12,4.77,5.12,4.64,5.2,4.59L7.0200000000000005,3.54L7.0200000000000005,1L1.69,4.07L1.69,10.21L3.9,8.94L3.9,6.84C3.9,6.75,4.01,6.68,4.09,6.7299999999999995L6.77,8.28C6.85,8.33,6.8999999999999995,8.41,6.8999999999999995,8.5L6.8999999999999995,11.6C6.8999999999999995,11.69,6.7899999999999991,11.76,6.7099999999999991,11.709999999999999L4.8899999999999988,10.659999999999998L2.6799999999999988,11.929999999999998L8,15L13.32,11.93L11.11,10.66ZM11.11,10.65' fill='#E6E7E8'/></g></svg>";
+      private const string Image_RiderDay = "<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M11.11,10.65L9.29,11.7C9.2099999999999991,11.75,9.1,11.69,9.1,11.59L9.1,8.49C9.1,8.4,9.15,8.31,9.23,8.27L11.91,6.72C11.99,6.67,12.1,6.7299999999999995,12.1,6.83L12.1,8.93L14.309999999999999,10.2L14.309999999999999,4.06L8.99,0.99L8.99,3.54L10.81,4.59C10.89,4.64,10.89,4.76,10.81,4.81L8.13,6.36C8.05,6.41,7.9500000000000011,6.4,7.8800000000000008,6.36L5.2,4.81C5.12,4.77,5.12,4.64,5.2,4.59L7.0200000000000005,3.54L7.0200000000000005,1L1.69,4.07L1.69,10.21L3.9,8.94L3.9,6.84C3.9,6.75,4.01,6.68,4.09,6.7299999999999995L6.77,8.28C6.85,8.33,6.8999999999999995,8.41,6.8999999999999995,8.5L6.8999999999999995,11.6C6.8999999999999995,11.69,6.7899999999999991,11.76,6.7099999999999991,11.709999999999999L4.8899999999999988,10.659999999999998L2.6799999999999988,11.929999999999998L8,15L13.32,11.93L11.11,10.66ZM11.11,10.65' fill='#27282E'/></g></svg>";
+      private const string Image_RiderLight = "<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M11.11,10.65L9.29,11.7C9.2099999999999991,11.75,9.1,11.69,9.1,11.59L9.1,8.49C9.1,8.4,9.15,8.31,9.23,8.27L11.91,6.72C11.99,6.67,12.1,6.7299999999999995,12.1,6.83L12.1,8.93L14.309999999999999,10.2L14.309999999999999,4.06L8.99,0.99L8.99,3.54L10.81,4.59C10.89,4.64,10.89,4.76,10.81,4.81L8.13,6.36C8.05,6.41,7.9500000000000011,6.4,7.8800000000000008,6.36L5.2,4.81C5.12,4.77,5.12,4.64,5.2,4.59L7.0200000000000005,3.54L7.0200000000000005,1L1.69,4.07L1.69,10.21L3.9,8.94L3.9,6.84C3.9,6.75,4.01,6.68,4.09,6.7299999999999995L6.77,8.28C6.85,8.33,6.8999999999999995,8.41,6.8999999999999995,8.5L6.8999999999999995,11.6C6.8999999999999995,11.69,6.7899999999999991,11.76,6.7099999999999991,11.709999999999999L4.8899999999999988,10.659999999999998L2.6799999999999988,11.929999999999998L8,15L13.32,11.93L11.11,10.66ZM11.11,10.65' fill='#2D2D2D'/></g></svg>";
+      private const string Image_RiderNight = "<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M11.11,10.65L9.29,11.7C9.2099999999999991,11.75,9.1,11.69,9.1,11.59L9.1,8.49C9.1,8.4,9.15,8.31,9.23,8.27L11.91,6.72C11.99,6.67,12.1,6.7299999999999995,12.1,6.83L12.1,8.93L14.309999999999999,10.2L14.309999999999999,4.06L8.99,0.99L8.99,3.54L10.81,4.59C10.89,4.64,10.89,4.76,10.81,4.81L8.13,6.36C8.05,6.41,7.9500000000000011,6.4,7.8800000000000008,6.36L5.2,4.81C5.12,4.77,5.12,4.64,5.2,4.59L7.0200000000000005,3.54L7.0200000000000005,1L1.69,4.07L1.69,10.21L3.9,8.94L3.9,6.84C3.9,6.75,4.01,6.68,4.09,6.7299999999999995L6.77,8.28C6.85,8.33,6.8999999999999995,8.41,6.8999999999999995,8.5L6.8999999999999995,11.6C6.8999999999999995,11.69,6.7899999999999991,11.76,6.7099999999999991,11.709999999999999L4.8899999999999988,10.659999999999998L2.6799999999999988,11.929999999999998L8,15L13.32,11.93L11.11,10.66ZM11.11,10.65' fill='#F0F1F2'/></g></svg>";
     }
+		    }
 }
