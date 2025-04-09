@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         // IconHost is optional so that we don't fail if we're in tests
         public UnityYamlExtraGroupingRulesProvider(MetaFileGuidCache metaFileGuidCache = null, UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
         {
-            if (unitySolutionTracker != null && unitySolutionTracker.IsUnityProject.HasValue() && unitySolutionTracker.IsUnityProject.Value
+            if (unitySolutionTracker != null && unitySolutionTracker.IsUnityProject.HasTrueValue()
                 && iconHost != null && metaFileGuidCache != null)
             {
                 ExtraRules = new IRiderUsageGroupingRule[]

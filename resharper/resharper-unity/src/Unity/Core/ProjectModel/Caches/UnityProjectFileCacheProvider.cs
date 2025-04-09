@@ -34,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
             myCallbacks = new Dictionary<VirtualFileSystemPath, Action>();
         }
         
+        // be  aware that LangVersion can also be in a custom NET SDK or Directory.Build.props
         public bool IsLangVersionExplicitlySpecified(IProject project)
         {
             var data = myCache.GetData(this, project);
