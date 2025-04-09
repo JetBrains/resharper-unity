@@ -1,15 +1,15 @@
-using JetBrains.Application.UI.Icons.FeaturesIntellisenseThemedIcons;
 using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 {
     [OptionsPage(PID, "Unity",
-        typeof(FeaturesIntellisenseThemedIcons.ParameterInfoPage),
+        typeof(LogoIcons.Unity),
         ParentId = InlayHintsOptionsPage.PID,
         NestingType = OptionPageNestingType.Child,
         Sequence = 7)]
