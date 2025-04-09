@@ -30,7 +30,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
 
         public override bool IsApplicable(IPsiModule psiModule)
         {
-            // applicable only to generated C# projects (class libraries can use whatever language version they want)
             return psiModule is IProjectPsiModule projectPsiModule
 #pragma warning disable CS0618 // Type or member is obsolete
                    && projectPsiModule.PsiLanguage.Is<CSharpLanguage>()
@@ -90,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                 // There is a certain amount of C# lang features which don't respect LangVersion, but depend on Roslyn capabilities,
                 // thus we need latestAvailableLanguageValue.
                 // see: RIDER-119992 Incorrect not initialized variable errors
-                //
+                
                 // Older Unity versions:
                 // Make sure we don't suggest code changes that won't compile in Unity due to mismatched C# language levels
                 // (e.g. C#6 "elvis" operator)
@@ -177,6 +176,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                     }
                 }
                 
+                if (project.IsDotNetCoreProject()) // avoid affecting Unity 7+, see RIDER-124621 
+                    return (null, null, null);
+                
                 return DetermineCSharpLanguageLevelOldUnity(project, unityProjectFileCacheProvider);
             }
 
@@ -184,7 +186,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
             private static (CSharpLanguageLevel? languageLevel, CSharpLanguageLevel? latestAvailableLanguageValue,CSharpLanguageLevel? previewAvailableLanguageValue)
                 DetermineCSharpLanguageLevelOldUnity(IProject project, UnityProjectFileCacheProvider unityProjectFileCacheProvider)
             {
-                
                 CSharpLanguageLevel? languageLevel = null;
                 if (!unityProjectFileCacheProvider.IsLangVersionExplicitlySpecified(project) || IsLangVersionDefault())
                 {
@@ -237,10 +238,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                     return false;
                 }
 
-                bool IsTargetFrameworkAtLeast46()
-                {
-                    return project.GetCurrentTargetFrameworkId().Version >= ourVersion46;
-                }
+                bool IsTargetFrameworkAtLeast46() => project.GetCurrentTargetFrameworkId().Version >= ourVersion46;
 
                 return (languageLevel, languageLevel, languageLevel);
             }

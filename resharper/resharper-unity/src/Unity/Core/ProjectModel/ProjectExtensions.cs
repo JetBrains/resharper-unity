@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
@@ -53,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             // This works for Assets for local Packages folders and for 'file:' based packages
             if (project.ProjectFileLocation.IsAbsolute)
             {
-                return project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory && IsUnityProject(project);
+                return project.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue();
             }
             // for our tests // todo: refactor tests so they also check logic above
             return project.HasSubItems(AssetsFolder) && IsUnityProject(project);
