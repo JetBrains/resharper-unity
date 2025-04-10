@@ -86,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             return (guid, AssetUtils.GetAllNamesFor(declaredElement).ToArray());
         }
 
-        public override void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution)
+        public override void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution, CodeInsightsClickInfo clickInfo)
         {
             if (!(highlightInfo.CodeInsightsHighlighting is UnityInspectorCodeInsightsHighlighting))
                 return;
