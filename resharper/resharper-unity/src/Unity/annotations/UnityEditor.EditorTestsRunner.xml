@@ -1,8 +1,0 @@
-<assembly name="UnityEditor.EditorTestsRunner">
-  <member name="M:UnityEditor.EditorTestsRunner.EditorTestsWithLogParser.ExpectLogLineRegex(System.String)">
-    <parameter name="pattern">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-      <attribute ctor="M:JetBrains.Annotations.RegexPatternAttribute.#ctor" />
-    </parameter>
-  </member>
-</assembly>

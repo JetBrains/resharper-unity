@@ -1,8 +1,0 @@
-<assembly name="UnityEngine.PhysicsModule">
-
-  <!-- UnityEngine.CollisionFlags -->
-  <member name="T:UnityEngine.CollisionFlags">
-    <!-- Missing [Flags] attribute causes warnings on bitwise operations. See RIDER-28661 -->
-    <attribute ctor="M:System.FlagsAttribute.#ctor" />
-  </member>
-</assembly>
