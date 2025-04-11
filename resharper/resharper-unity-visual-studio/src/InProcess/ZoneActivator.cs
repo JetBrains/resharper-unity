@@ -4,9 +4,16 @@ using JetBrains.VsIntegration.Env;
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.InProcess
 {
     [ZoneActivator]
-    public class ZoneActivator(VisualStudioProtocolConnector connector) : IActivateDynamic<IUnityPluginZone>, IActivateDynamic<IUnityShaderZone>
+    public class ZoneActivator : IActivateDynamic<IUnityPluginZone>, IActivateDynamic<IUnityShaderZone>
     {
-        bool IActivateDynamic<IUnityPluginZone>.ActivatorEnabled() => !connector.IsOutOfProcess.Value;
-        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !connector.IsOutOfProcess.Value;
+        private readonly VisualStudioProtocolConnector myConnector;
+
+        public ZoneActivator(VisualStudioProtocolConnector connector)
+        {
+            myConnector = connector;
+        }
+
+        bool IActivateDynamic<IUnityPluginZone>.ActivatorEnabled() => !myConnector.IsOutOfProcess.Value;
+        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !myConnector.IsOutOfProcess.Value;
     }
 }
