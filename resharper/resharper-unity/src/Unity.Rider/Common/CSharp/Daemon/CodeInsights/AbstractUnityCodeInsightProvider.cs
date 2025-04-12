@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             myBulbMenu = bulbMenu;
         }
 
-        public virtual void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution)
+        public virtual void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution, CodeInsightsClickInfo clickInfo)
         {
             var windowContextSource = new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset));
             if (highlightInfo.CodeInsightsHighlighting is UnityCodeInsightsHighlighting unityCodeInsightsHighlighting)

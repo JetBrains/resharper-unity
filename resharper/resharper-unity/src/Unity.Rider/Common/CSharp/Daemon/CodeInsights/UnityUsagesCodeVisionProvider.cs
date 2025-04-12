@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             return solution.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue();
         }
 
-        public void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution)
+        public void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution, CodeInsightsClickInfo clickInfo)
         {
             var rules = new List<IDataRule>();
             rules.AddRule("Solution", ProjectModelDataConstants.SOLUTION, solution);

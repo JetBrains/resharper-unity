@@ -24,7 +24,7 @@ public class InactiveShaderVariantBranchCodeInsightsProvider : ICodeInsightsProv
     public ICollection<CodeVisionRelativeOrdering> RelativeOrderings { get; }  = [new CodeVisionRelativeOrderingFirst()];
     public bool IsAvailableIn(ISolution solution) => true;
 
-    public void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution)
+    public void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution, CodeInsightsClickInfo clickInfo)
     {
         if (highlightInfo.CodeInsightsHighlighting is not InactiveShaderVariantBranchHighlight highlight)
         {
