@@ -109,6 +109,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
                 case IProperty _:
                 case IMethod _:
+                    if (unityApi.IsSerialisedAutoProperty(element as IProperty, true)
+                        .HasFlag(SerializedFieldStatus.UnitySerializedField))
+                        return true;
                     var eventsCount = solution
                         .GetComponent<UnityEventsElementContainer>()
                         .GetAssetUsagesCount(element, out var unityEventsEstimatedResult);

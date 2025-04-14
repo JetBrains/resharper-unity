@@ -528,7 +528,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return result;
         }
 
-        public IEnumerable<UnityEventSubscriptionFindResult> GetMethodsForUnityEvent(IPsiSourceFile psiSourceFile, IField field)
+        public IEnumerable<UnityEventSubscriptionFindResult> GetMethodsForUnityEvent(IPsiSourceFile psiSourceFile, ITypeOwner field)
         {
             myShellLocks.AssertReadAccessAllowed();
 

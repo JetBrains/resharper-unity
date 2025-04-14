@@ -464,7 +464,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             }
         }
 
-        public IEnumerable<UnityInspectorFindResult> GetAssetUsagesFor(IPsiSourceFile sourceFile, IField element)
+        public IEnumerable<UnityInspectorFindResult> GetAssetUsagesFor(IPsiSourceFile sourceFile, ITypeOwner element)
         {
             myShellLocks.AssertReadAccessAllowed();
 
@@ -510,7 +510,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         }
 
 
-        public LocalList<IPsiSourceFile> GetPossibleFilesWithUsage(IField element)
+        public LocalList<IPsiSourceFile> GetPossibleFilesWithUsage(ITypeOwner element)
         {
             var result = new LocalList<IPsiSourceFile>();
             foreach (var name in AssetUtils.GetAllNamesFor(element))
