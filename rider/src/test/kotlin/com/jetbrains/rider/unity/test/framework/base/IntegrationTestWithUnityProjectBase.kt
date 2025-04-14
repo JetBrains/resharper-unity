@@ -1,5 +1,7 @@
 package com.jetbrains.rider.unity.test.framework.base
 
+import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
+import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.frameworkLogger
@@ -19,6 +21,9 @@ import java.io.File
 abstract class IntegrationTestWithUnityProjectBase(open val engineVersion: EngineVersion) : IntegrationTestWithGeneratedSolutionBase() {
     private lateinit var unityProjectPath: File
 
+    override val traceScenarios: Set<LogTraceScenario>
+        get() = super.traceScenarios + LogTraceScenarios.Debugger
+    
     private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
 
     override val customGoldSuffixes: List<String>
