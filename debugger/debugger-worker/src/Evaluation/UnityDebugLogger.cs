@@ -76,8 +76,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             {
                 if ((BreakpointTraceOutputSettings & BreakpointTraceOutput.DebugConsole) > 0)
                 {
-                    var lineEnding = message.EndsWith("\n") ? string.Empty : "\n";
-                    myDebuggerSession.OnDebuggerOutput(false, message + lineEnding);
+                    myDebuggerSession.OnDebuggerOutput(false, message);
                 }
 
 
