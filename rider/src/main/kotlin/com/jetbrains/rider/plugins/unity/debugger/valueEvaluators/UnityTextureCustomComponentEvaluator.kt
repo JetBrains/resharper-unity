@@ -22,16 +22,15 @@ import com.jetbrains.rd.util.AtomicReference
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.printlnError
 import com.jetbrains.rd.util.reactive.valueOrThrow
+import com.jetbrains.rider.debugger.DotNetNamedValue
 import com.jetbrains.rider.debugger.DotNetStackFrame
 import com.jetbrains.rider.debugger.IDotNetValue
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
-import com.jetbrains.rider.model.debuggerWorker.AdditionalActionsRequestParameter
-import com.jetbrains.rider.model.debuggerWorker.ObjectAdditionalAction
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesBase
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityPluginScopeService
-import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalAction
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTexturePropertiesData
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalActionParams
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalActionResult
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
@@ -95,7 +94,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             closeOnEsc()
         }
 
-        component.add(createTextureDebugView(dotNetValue, session, shownPanelLifetimeDefinition, project))
+        component.add(createTextureDebugView(dotNetValue, properties, session, shownPanelLifetimeDefinition, project))
         Disposer.register(panel) { shownPanelLifetimeDefinition.terminate() }
         panel.show()
         shownPanelLifetimeDefinition.onTermination { panel.close() }
@@ -104,37 +103,21 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
     companion object {
         private val LOG = thisLogger()
 
-        private suspend fun getAdditionalAction(stackFrame: DotNetStackFrame,
-                                                dotNetValueId: Int,
-                                                lifetime: Lifetime,
-                                                onErrorCallback: (String) -> Unit): UnityTextureAdditionalAction? {
-
-            val additionalActions: List<ObjectAdditionalAction>
-            try {
-                withContext(Dispatchers.EDT) {
-                    additionalActions = stackFrame.context.getObjectAdditionalActions
-                        .startSuspending(lifetime, AdditionalActionsRequestParameter(stackFrame.frameProxy.id, dotNetValueId))
-                }
-            }
-            catch (t: Throwable) {
-                onErrorCallback(t.toString())
-                return null
-            }
-
-            return additionalActions.filterIsInstance<UnityTextureAdditionalAction>().firstOrNull()
-        }
-
-        private suspend fun unityTextureAdditionalActionResult(unityTextureAdditionalAction: UnityTextureAdditionalAction,
-                                                               lifetime: Lifetime,
-                                                               timeoutForAdvanceUnityEvaluation: Int,
-                                                               onErrorCallback: (String) -> Unit): UnityTextureAdditionalActionResult? {
+        private suspend fun unityTextureAdditionalActionResult(
+            dotNetValue: IDotNetValue,
+            unityTextureAdditionalAction: UnityTexturePropertiesData,
+            lifetime: Lifetime,
+            timeoutForAdvanceUnityEvaluation: Int,
+            onErrorCallback: (String) -> Unit
+        ): UnityTextureAdditionalActionResult? {
 
             val additionalActionResult: UnityTextureAdditionalActionResult
 
             try {
+                val value = dotNetValue as DotNetNamedValue
                 withContext(Dispatchers.EDT) {
                     additionalActionResult = unityTextureAdditionalAction.evaluateTexture
-                        .startSuspending(lifetime, UnityTextureAdditionalActionParams(timeoutForAdvanceUnityEvaluation))
+                        .startSuspending(lifetime, UnityTextureAdditionalActionParams(timeoutForAdvanceUnityEvaluation, value.frame.frameProxy.id))
                 }
                 return additionalActionResult
             }
@@ -144,14 +127,15 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             }
         }
 
-        suspend fun getUnityTextureInfo(stackFrame: DotNetStackFrame,
-                                        dotNetValueId: Int,
-                                        lifetime: Lifetime,
-                                        timeoutForAdvanceUnityEvaluation: Int,
-                                        stagedActivity: AtomicReference<StructuredIdeActivity?>?,
-                                        errorCallback: (String) -> Unit
+        suspend fun getUnityTextureInfo(
+            dotNetValue: IDotNetValue,
+            properties: ObjectPropertiesBase,
+            lifetime: Lifetime,
+            timeoutForAdvanceUnityEvaluation: Int,
+            stagedActivity: AtomicReference<StructuredIdeActivity?>?,
+            errorCallback: (String) -> Unit
         ): UnityTextureInfo? {
-            val unityTextureAdditionalAction = getAdditionalAction(stackFrame, dotNetValueId, lifetime, errorCallback)
+            val unityTextureAdditionalAction = properties.additionalData.filterIsInstance<UnityTexturePropertiesData>().firstOrNull()
 
             if (unityTextureAdditionalAction == null) {
                 errorCallback("unityTextureAdditionalAction == null")
@@ -161,7 +145,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             if (stagedActivity != null)
                 TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.TEXTURE_PIXELS_REQUEST)
 
-            val unityTextureAdditionalActionResult = unityTextureAdditionalActionResult(unityTextureAdditionalAction, lifetime,
+            val unityTextureAdditionalActionResult = unityTextureAdditionalActionResult(dotNetValue, unityTextureAdditionalAction, lifetime,
                                                                                         timeoutForAdvanceUnityEvaluation, errorCallback)
 
             if (unityTextureAdditionalActionResult == null) {
@@ -184,10 +168,13 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
         }
 
         @Suppress("LABEL_NAME_CLASH")
-        fun createTextureDebugView(dotNetValue: IDotNetValue,
-                                   session: XDebugSession,
-                                   lifetime: Lifetime,
-                                   project: Project): JComponent {
+        fun createTextureDebugView(
+            dotNetValue: IDotNetValue,
+            properties: ObjectPropertiesBase,
+            session: XDebugSession,
+            lifetime: Lifetime,
+            project: Project,
+        ): JComponent {
             val stagedActivity = TextureDebuggerCollector.createTextureDebuggingActivity(session.project)
 
             lifetime.onTerminationIfAlive {
@@ -218,7 +205,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             }
 
             UnityPluginScopeService.getScope().launch {
-                when (val unityTextureInfo = getUnityTextureInfo(stackFrame, dotNetValue.objectProxy.id, lifetime,
+                when (val unityTextureInfo = getUnityTextureInfo(dotNetValue, properties, lifetime,
                                                                  timeoutForAdvanceUnityEvaluation, stagedActivity, ::errorCallback)) {
                     null -> errorCallback("textureInfo is null")
                     else -> {

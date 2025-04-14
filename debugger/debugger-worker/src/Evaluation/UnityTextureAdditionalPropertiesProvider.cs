@@ -22,19 +22,21 @@ using Mono.Debugging.TypeSystem.KnownTypes;
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    internal class UnityTextureAdditionalActionProvider : IAdditionalObjectActionProvider
+    internal class UnityTextureAdditionalPropertiesProvider : IAdditionalObjectPropertiesProvider
     {
         private readonly ILogger myLogger;
         private readonly IKnownTypes<Value> myKnownTypes;
 
+        private readonly IUnityOptions myUnityOptions;
         private UnityTextureDebuggerHelper? myHelper;
         private readonly string myAssemblyAbsolutePath = string.Empty;
 
-        public UnityTextureAdditionalActionProvider(ILogger logger, IValueFactory<Value> factory,
-            IKnownTypes<Value> knownTypes, ISessionCreationInfo creationInfo)
+        public UnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<Value> factory,
+            IKnownTypes<Value> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions)
         {
             myLogger = logger;
             myKnownTypes = knownTypes;
+            myUnityOptions = unityOptions;
 
             if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {
@@ -50,9 +52,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             }
         }
 
-        public ObjectAdditionalAction? CreateAction(IValueEntity valueEntity, IValueFetchOptions options,
-            IStackFrame frame)
+        public AdditionalObjectPropertiesData? Create(PausedContext pausedContext, IValueEntity valueEntity,
+            IValueFetchOptions options)
         {
+            if(!myUnityOptions.ExtensionsEnabled)
+                return null;
+            
+            options = options.AllowFullInvokes();
             if (valueEntity is not IValue value)
                 return null;
 
@@ -60,11 +66,15 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             if (primaryRole is not IValueRole<Value> objectValueRole)
                 return null;
 
-            var objectAction = new UnityTextureAdditionalAction();
+            var objectAction = new UnityTexturePropertiesData();
             var softValue = objectValueRole.ValueReference.GetValue(options);
 
-            objectAction.EvaluateTexture.SetSync((lifetime, evaluationParameters) =>
-                DoTextureCalculations(softValue, options, frame, evaluationParameters, lifetime));
+            objectAction.EvaluateTexture.SetRdTask((rdCallLifetime, evaluationParameters) =>
+            {
+                return pausedContext.EnqueueTask(rdCallLifetime, nameof(objectAction.EvaluateTexture),
+                    lifetime => pausedContext.WithFrame(evaluationParameters.FrameId, 
+                        frame => DoTextureCalculations(softValue, options, frame, evaluationParameters, lifetime)));
+            });
             return objectAction;
         }
 

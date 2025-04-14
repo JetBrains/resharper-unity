@@ -12,6 +12,7 @@ import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
 import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator
+import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator.Companion.getUnityTextureInfo
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.enums.PlatformType
@@ -76,8 +77,8 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
                     val lifetime = this.project.lifetime
                     var textureInfo: UnityTextureInfo? = null
                     val job = (project as ComponentManagerEx).getCoroutineScope().launch {
-                        textureInfo = UnityTextureCustomComponentEvaluator.getUnityTextureInfo(stackFrame, value.objectProxy.id, lifetime,
-                                                                                               10000, null) {
+                        textureInfo = getUnityTextureInfo(
+                            value, value.objectProperties!!, lifetime, 10000, null) {
                             fail(it)
                         }
                     }

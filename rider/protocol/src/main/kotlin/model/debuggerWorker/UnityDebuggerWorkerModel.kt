@@ -74,6 +74,7 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
 
     var unityTextureAdditionalActionParams = structdef {
         field("evaluationTimeout", int)
+        field("frameId", int)
     }
 
     var unityTextureAdditionalActionResult = classdef{
@@ -82,7 +83,7 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         field("isTerminated", bool)
     }
 
-    val unityTextureAdditionalAction = classdef extends DebuggerWorkerModel.objectAdditionalAction {
+    val unityTexturePropertiesData = classdef extends DebuggerWorkerModel.additionalObjectPropertiesData {
         call("evaluateTexture", unityTextureAdditionalActionParams, unityTextureAdditionalActionResult)
     }
 
