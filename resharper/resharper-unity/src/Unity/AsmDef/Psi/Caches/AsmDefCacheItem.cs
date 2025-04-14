@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
     public class AsmDefVersionDefine
     {
-        // We know that expression is valid here, because this constructor is only used when deserialising
+        // We know that expression is valid here, because this constructor is only used when deserializing
         // We might also get a Unity product version range (if the resource name is "Unity", then we compare against
         // the product version). We convert to a semver compatible version range.
         private AsmDefVersionDefine(string resourceName, string symbol, string expression)

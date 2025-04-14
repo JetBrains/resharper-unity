@@ -101,13 +101,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.VersionUtils
             {
                 // 1.2.3 => x >= 1.2.3
                 // [1.2.3] => x = 1.2.3
+                // [1.2.3) - invalid
+                // (1.2.3] - invalid
+                // (1.2.3) - invalid
                 if (versions.Length == 1)
                 {
+                    // [1.2.3] => x = 1.2.3
                     if (fromInclusive && toInclusive)
+                    {
                         range = new JetSemanticVersionRange(fromVersion, fromVersion, fromInclusive, toInclusive);
-                    else
-                        range = new JetSemanticVersionRange(fromVersion, null, fromInclusive, toInclusive);
-                    return true;
+                        return true;
+                    }
+
+                    // 1.2.3 => x >= 1.2.3
+                    if (!fromInclusive && !fromExclusive && !toInclusive && !toExclusive)
+                    {
+                        range = new JetSemanticVersionRange(fromVersion, null, true, false);
+                        return true;
+                    }
+                    
+                    return false;
                 }
 
                 if (JetSemanticVersion.TryParse(versions[1], out var toVersion))
