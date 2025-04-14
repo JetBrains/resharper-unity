@@ -102,6 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         {
                             consumer.Accept(findResult);
                         }
+                        HandleAssetUsages(sourceFile, consumer, element as ITypeOwner);
                     }
 
                     if (element is ITypeElement typeElement)
@@ -111,21 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
                     if (element is IField field)
                     {
-                        if (field.Type.GetTypeElement().DerivesFromUnityEvent())
-                        {
-                            foreach (var findResult in myUnityEventsElementContainer.GetMethodsForUnityEvent(sourceFile, field))
-                            {
-                                consumer.Accept(findResult);
-                            }
-                        }
-                        else
-                        {
-                            var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
-                            foreach (var findResult in usages)
-                            {
-                                consumer.Accept(findResult);
-                            }
-                        }
+                        HandleAssetUsages(sourceFile, consumer, field);
                     }
                 }
 
@@ -140,6 +127,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             }
             
             return false;
+        }
+
+        private void HandleAssetUsages<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer, [CanBeNull] ITypeOwner field)
+        {
+            if (field == null)
+                return;
+            
+            if (field.Type.GetTypeElement().DerivesFromUnityEvent())
+            {
+                foreach (var findResult in myUnityEventsElementContainer.GetMethodsForUnityEvent(sourceFile, field))
+                {
+                    consumer.Accept(findResult);
+                }
+            }
+            else
+            {
+                var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
+                foreach (var findResult in usages)
+                {
+                    consumer.Accept(findResult);
+                }
+            }
         }
 
         private void AddScriptUsages<TResult>([NotNull] IPsiSourceFile sourceFile,

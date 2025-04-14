@@ -60,6 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     break;
                 case IProperty _:
                 case IMethod _:
+                    CollectSourceFilesWithUsage(element as ITypeOwner, element, set);
                     foreach (var file in myAnimExplicitUsagesContainer.Value.GetPossibleFilesWithUsage(element))
                         set.Add(file);
                     foreach (var file in myAnimImplicitUsagesContainer.Value.GetPossibleFilesWithUsage(element))
@@ -68,21 +69,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         set.Add(sourceFile);
                     break;
                 case IField field:
-                    if (field.Type.GetTypeElement().DerivesFromUnityEvent())
-                    {
-                        foreach (var sourceFile in myUnityEventsElementContainer.Value.GetPossibleFilesWithUsage(element))
-                            set.Add(sourceFile);
-                    }
-                    else
-                    {
-                        foreach (var sourceFile in myInspectorValuesContainer.Value.GetPossibleFilesWithUsage(field))
-                            set.Add(sourceFile);
-                    }
-
+                    CollectSourceFilesWithUsage(field, element, set);
                     break;
             }
 
             return new UnityYamlSearchFilterKey(set);
+        }
+
+        private void CollectSourceFilesWithUsage([CanBeNull] ITypeOwner field, IDeclaredElement element, JetHashSet<IPsiSourceFile> set)
+        {
+            if (field == null)
+                return;
+                
+            if (field.Type.GetTypeElement().DerivesFromUnityEvent())
+            {
+                foreach (var sourceFile in myUnityEventsElementContainer.Value.GetPossibleFilesWithUsage(element))
+                    set.Add(sourceFile);
+            }
+            else
+            {
+                foreach (var sourceFile in myInspectorValuesContainer.Value.GetPossibleFilesWithUsage(field))
+                    set.Add(sourceFile);
+            }
         }
 
         private void AddFilesWithPossibleScriptUsages([NotNull] IClass scriptClass,
