@@ -77,7 +77,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
         attachDebuggerToUnityEditorAndPlay(
             test = {
                 waitForUnityEditorPlayMode()
-                toggleUnityPausepoint(project, "ResetTransformSystem.cs", 26)
+                toggleUnityPausepoint(project, "ResetTransformSystem.cs", 24)
                 waitForUnityEditorPauseMode()
                 removeAllUnityPausepoints()
                 unpause()

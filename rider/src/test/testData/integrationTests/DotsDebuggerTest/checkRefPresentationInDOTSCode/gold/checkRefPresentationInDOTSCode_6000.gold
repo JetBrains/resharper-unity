@@ -1,5 +1,5 @@
 --> ResetTransformSystem.cs:24$(595) //             transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
-ResetTransformSystemBase.ResetTransformSystemBase_59E97586_LambdaJob_0_Job.OriginalLambdaBody() in , Assembly-CSharp.dll
+ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>.OriginalLambdaBody() in , Assembly-CSharp.dll
     +Current Entity = {Entity_} '' Entity<id>
         +Archetype = {EntityArchetype} (Unity.Entities.Entity, Unity.Transforms.LocalToWorld, Unity.Transforms.LocalTransform, Unity.Transforms.PostTransformMatrix, RotationSpeed, Unity.Entities.Simulate, Unity.Entities.SceneTag, Unity.Entities.EditorRenderData, Unity.Entities.SceneSection)
         +Chunk = ArchetypeChunk
