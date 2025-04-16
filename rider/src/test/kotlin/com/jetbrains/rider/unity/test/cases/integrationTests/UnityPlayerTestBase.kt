@@ -55,20 +55,27 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : P
 
     private fun buildUnityPlayer() {
         val buildDir = File(unityProjectPath, "Builds")
+        val buildTarget = when {
+            SystemInfo.isMac -> "OSXUniversal"
+            SystemInfo.isWindows -> "Win64"
+            SystemInfo.isLinux -> "Linux64"
+            else -> error("Unsupported OS for Unity player build: ${SystemInfo.getOsName()}")
+        }
+
         val process = ProcessBuilder(
             unityExecutable.absolutePath,
             "-batchmode", "-quit",
             "-projectPath", unityProjectPath.absolutePath,
             "-executeMethod", "BuildScript.Build",
             "-logFile", File(testMethod.logDirectory, "PlayerBuild.log").absolutePath,
-            "-buildTarget", if (SystemInfo.isMac) "OSXUniversal" else "Win64"
+            "-buildTarget", buildTarget
         ).start()
 
         process.waitFor()
         assert(process.exitValue() == 0) { "Unity Build failed! Check logs at: ${buildDir.absolutePath}/build.log" }
     }
 
-    protected fun getPlayerFile(): File? {
+    protected fun getPlayerFile(): File {
         val buildDir = File(unityProjectPath, "Builds")
         val gameFilePath = if (SystemInfo.isMac) "SimpleUnityGame.app" else "SimpleUnityGame.exe"
         val gameFullPath = if (SystemInfo.isMac) {
@@ -79,7 +86,10 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : P
         } else {
             buildDir.resolve(gameFilePath)
         }
-        return if (gameFullPath.exists()) gameFullPath else null
+        require(gameFullPath.exists()) {
+            "Built Unity player not found at expected path: ${gameFullPath.absolutePath}"
+        }
+        return gameFullPath
     }
 
     override val testGoldFile: File
