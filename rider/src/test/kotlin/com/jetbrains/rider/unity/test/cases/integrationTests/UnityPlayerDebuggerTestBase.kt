@@ -60,5 +60,9 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion)
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnityPlayerDebuggerTest {
-    class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022)
+    class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022){
+        init {
+            addMute(Mute("RIDER-123706", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+        }
+    }
     }
