@@ -34,8 +34,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
             OldName = declaredElement.ShortName;
         }
 
-        public override void Rename(IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations,
-            IRefactoringDriver driver)
+        public override void Rename(
+            IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations,
+            IRefactoringDriver driver, PreviousAtomicRenames previousAtomicRenames)
         {
             // Rename the "declaration"
             var declaredElement = myPointer.FindDeclaredElement();
@@ -68,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
             // Rename/bind the references
             foreach (var pair in LanguageUtil.SortReferences(references.Where(r => r.IsValid())))
             {
-                foreach (var sortedReference in LanguageUtil.GetSortedReferences(pair.Value))
+                foreach (var sortedReference in pair.Value.GetSortedReferences())
                 {
                     Interruption.Current.CheckAndThrow();
 

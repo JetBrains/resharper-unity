@@ -95,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         }
 
         public override void Rename(IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations,
-                                    IRefactoringDriver driver)
+                                    IRefactoringDriver driver, PreviousAtomicRenames previousAtomicRenames)
         {
             if (myElementsToRename.IsEmpty())
                 return;

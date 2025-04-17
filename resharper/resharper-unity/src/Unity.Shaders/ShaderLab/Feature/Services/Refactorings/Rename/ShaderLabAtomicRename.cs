@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.ReSharper.Refactorings.Rename;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Refactorings.Rename
@@ -31,7 +32,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.R
             NewName = newName;
         }
 
-        public override void Rename(IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations, IRefactoringDriver driver)
+        public override void Rename(
+            IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations,
+            IRefactoringDriver driver, PreviousAtomicRenames previousAtomicRenames)
         {
             // Rename the "declaration"
             var declaredElement = myElementPointer.FindDeclaredElement();
