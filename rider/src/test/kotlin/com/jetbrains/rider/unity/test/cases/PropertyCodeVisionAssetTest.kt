@@ -49,12 +49,14 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     fun baseTest(caseName: String, showProperties: String) = doUnityTest(showProperties,
             "Assets/NewBehaviourScript.cs") { false }
 
+    @Mute("RIDER-124053", specificParameters = ["NoProperties"])
     @Test(description = "Unity property code vision test", dataProvider = "assetSettings")
     @Solution("RiderSample")
     @ChecklistItems(["Code vision/Property code vision"])
     fun propertyCodeVision(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
+    @Mute("RIDER-124053", specificParameters = ["NoProperties"])
     @Test(description = "Unity property code vision test with typing", dataProvider = "assetSettings")
     @Solution("RiderSample")
     @ChecklistItems(["Code vision/Property code vision with typing"])
@@ -71,12 +73,14 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     fun baseTestYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/NewBehaviourScript.cs") { false }
 
+    @Mute("RIDER-124053", specificParameters = ["NoProperties"])
     @Test(description = "Unity property code vision test with yaml off", dataProvider = "assetSettings")
     @Solution("RiderSample")
     @ChecklistItems(["Code vision/Property code vision with yaml off"])
     fun propertyCodeVisionYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
+    @Mute("RIDER-124053", specificParameters = ["Properties", "NoProperties"])
     @Test(description = "Unity property code vision test with yaml off and typing", dataProvider = "assetSettings")
     @Solution("RiderSample")
     @ChecklistItems(["Code vision/Property code vision with yaml off and typing"])
@@ -86,6 +90,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
         true
     }
 
+    @Mute("RIDER-124053", specificParameters = ["NoProperties", "Properties"])
     @Test(description = "Unity property scriptable object code vision test", dataProvider = "assetSettings")
     @Solution("RiderSample")
     @ChecklistItems(["Code vision/Property scriptable object code vision"])
