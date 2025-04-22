@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         private List<IAssetOccurrenceWithTextOccurrence> GetAssetOccurrence(IDeclaredElement de, IProgressIndicator subProgress)
         {
-            var finder = mySolution.GetPsiServices().AsyncFinder;
+            var finder = mySolution.GetPsiServices().ParallelFinder;
             var occurrenceFactory = mySolution.GetComponent<OccurrenceFactory>();
             var module = mySolution.GetComponent<UnityExternalFilesModuleFactory>().PsiModule;
             var searchDomain = SearchDomainFactory.Instance.CreateSearchDomain(module);
