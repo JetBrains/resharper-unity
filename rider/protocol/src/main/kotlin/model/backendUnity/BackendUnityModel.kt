@@ -145,7 +145,7 @@ object BackendUnityModel: Root() {
         property ("riderPackagePotentialUpdateVersion", string).documentation = "Version of the latest compatible update for the Rider package"
         field("unityApplicationSettings", Library.UnityApplicationSettings)
         field("unityProjectSettings", Library.UnityProjectSettings)
-        property("unityPlatformInfo", UnityPlatformInfo)
+        property("unityPlatformInfo", UnityPlatformInfo).async
 
         // Rider application settings (frontend)
         property("riderProcessId", int).documentation = "The process ID of the frontend, set by the backend. Unity uses this in a call to AllowSetForegroundWindow, so that Rider can bring itself to the foreground when opening a file"
