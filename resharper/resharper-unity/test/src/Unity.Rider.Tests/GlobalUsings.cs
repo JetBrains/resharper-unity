@@ -29,5 +29,6 @@ global using ExplicitAttribute = NUnit.Framework.ExplicitAttribute;
 global using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 global using IgnoreAttribute = NUnit.Framework.IgnoreAttribute;
 #endif
+
 [assembly: System.Reflection.AssemblyMetadataAttribute("Root", "Plugins/ReSharperUnity/resharper/resharper-unity/test/src/Unity.Rider.Tests")]
 
