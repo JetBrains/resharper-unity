@@ -34,7 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         FontStyle = FontStyle.Bold,
         RiderPresentableNameResourceType = typeof(Strings),
         RiderPresentableNameResourceName = nameof(Strings.ImplicitlyUsedIdentifier_RiderPresentableName),
-        FallbackAttributeId = DefaultLanguageAttributeIds.IDENTIFIER,
         VsGenerateClassificationDefinition = VsGenerateDefinition.VisibleClassification,
         Layer = HighlighterLayer.SYNTAX + 1)]
     public static class UnityHighlightingAttributeIds
