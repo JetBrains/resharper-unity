@@ -6,6 +6,31 @@ Categorised:
 
 ## All
 
+### File Templates
+
+| Description                                                                                                                  |
+|------------------------------------------------------------------------------------------------------------------------------|
+| [ShaderLab 2D property](Live/Properties-Texture2DProperty.md)                                                                |
+| [ShaderLab 2DArray property](Live/Properties-Texture2DArrayProperty.md)                                                      |
+| [ShaderLab 3D property](Live/Properties-Texture3DProperty.md)                                                                |
+| [ShaderLab Blend 2x multiplicative (srcdst+dstsrc)](Live/RenderState-Blend2xMultiplicative.md)                               |
+| [ShaderLab Blend additive (src + dst)](Live/RenderState-BlendAdditive.md)                                                    |
+| [ShaderLab Blend multiplicative (src*dst)](Live/RenderState-BlendMultiplicative.md)                                          |
+| [ShaderLab Blend premultiplied transparency (src+(1-srcAlpha)*dst)](Live/RenderState-BlendPremultipliedTransparency.md)      |
+| [ShaderLab Blend soft additive (src*(1-dst)+dst)](Live/RenderState-BlendSoftAdditive.md)                                     |
+| [ShaderLab Blend traditional transparency (src*srcAlpha+(1-srcAlpha)*dst)](Live/RenderState-BlendTraditionalTransparency.md) |
+| [ShaderLab Color property](Live/Properties-ColorProperty.md)                                                                 |
+| [ShaderLab Cube property](Live/Properties-TextureCubeProperty.md)                                                            |
+| [ShaderLab CubeArray property](Live/Properties-TextureCubeArrayProperty.md)                                                  |
+| [ShaderLab Float property](Live/Properties-FloatProperty.md)                                                                 |
+| [ShaderLab Integer property](Live/Properties-IntegerProperty.md)                                                             |
+| [ShaderLab Shader block](Live/Root-Shader.md)                                                                                |
+| [ShaderLab Surface Shader](Live/Shader-SurfaceShader.md)                                                                     |
+| [ShaderLab Vector property](Live/Properties-VectorProperty.md)                                                               |
+| [ShaderLab Vertex/Fragment Shader](Live/Shader-VFShader.md)                                                                  |
+| [ShaderLab Vertex/Fragment Shader Pass](Live/SubShader-VFShader.md)                                                          |
+
+
 ### Live Templates
 
 | Shortcut                                                                     | Description                                                              |
@@ -32,6 +57,31 @@ Categorised:
 
 <a name="unity"></a>
 ## Category: unity
+
+### File Templates
+
+| Description                                                                                                                  |
+|------------------------------------------------------------------------------------------------------------------------------|
+| [ShaderLab 2D property](Live/Properties-Texture2DProperty.md)                                                                |
+| [ShaderLab 2DArray property](Live/Properties-Texture2DArrayProperty.md)                                                      |
+| [ShaderLab 3D property](Live/Properties-Texture3DProperty.md)                                                                |
+| [ShaderLab Blend 2x multiplicative (srcdst+dstsrc)](Live/RenderState-Blend2xMultiplicative.md)                               |
+| [ShaderLab Blend additive (src + dst)](Live/RenderState-BlendAdditive.md)                                                    |
+| [ShaderLab Blend multiplicative (src*dst)](Live/RenderState-BlendMultiplicative.md)                                          |
+| [ShaderLab Blend premultiplied transparency (src+(1-srcAlpha)*dst)](Live/RenderState-BlendPremultipliedTransparency.md)      |
+| [ShaderLab Blend soft additive (src*(1-dst)+dst)](Live/RenderState-BlendSoftAdditive.md)                                     |
+| [ShaderLab Blend traditional transparency (src*srcAlpha+(1-srcAlpha)*dst)](Live/RenderState-BlendTraditionalTransparency.md) |
+| [ShaderLab Color property](Live/Properties-ColorProperty.md)                                                                 |
+| [ShaderLab Cube property](Live/Properties-TextureCubeProperty.md)                                                            |
+| [ShaderLab CubeArray property](Live/Properties-TextureCubeArrayProperty.md)                                                  |
+| [ShaderLab Float property](Live/Properties-FloatProperty.md)                                                                 |
+| [ShaderLab Integer property](Live/Properties-IntegerProperty.md)                                                             |
+| [ShaderLab Shader block](Live/Root-Shader.md)                                                                                |
+| [ShaderLab Surface Shader](Live/Shader-SurfaceShader.md)                                                                     |
+| [ShaderLab Vector property](Live/Properties-VectorProperty.md)                                                               |
+| [ShaderLab Vertex/Fragment Shader](Live/Shader-VFShader.md)                                                                  |
+| [ShaderLab Vertex/Fragment Shader Pass](Live/SubShader-VFShader.md)                                                          |
+
 
 ### Live Templates
 
