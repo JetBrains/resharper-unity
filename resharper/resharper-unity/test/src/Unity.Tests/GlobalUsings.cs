@@ -8,17 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-#if INDEPENDENT_BUILD
-global using TestAttribute = NUnit.Framework.TestAttribute;
-global using TestCaseAttribute = NUnit.Framework.TestCaseAttribute;
-global using TestCaseSourceAttribute = NUnit.Framework.TestCaseSourceAttribute;
-global using TestFixtureAttribute = NUnit.Framework.TestFixtureAttribute;
-global using TestFixtureSourceAttribute = NUnit.Framework.TestFixtureSourceAttribute;
-global using SetUpFixtureAttribute = NUnit.Framework.SetUpFixtureAttribute;
-global using ExplicitAttribute = NUnit.Framework.ExplicitAttribute;
-global using CategoryAttribute = NUnit.Framework.CategoryAttribute;
-global using IgnoreAttribute = NUnit.Framework.IgnoreAttribute;
-#else
+#if NUNIT_ATTRIBUTE_WRAPPERS
 global using TestAttribute = JetBrains.TestFramework.TestAttribute;
 global using TestCaseAttribute = JetBrains.TestFramework.TestCaseAttribute;
 global using TestCaseSourceAttribute = JetBrains.TestFramework.TestCaseSourceAttribute;
@@ -28,6 +18,16 @@ global using SetUpFixtureAttribute = JetBrains.TestFramework.SetUpFixtureAttribu
 global using ExplicitAttribute = JetBrains.TestFramework.ExplicitAttribute;
 global using CategoryAttribute = JetBrains.TestFramework.CategoryAttribute;
 global using IgnoreAttribute = JetBrains.TestFramework.IgnoreAttribute;
+#else
+global using TestAttribute = NUnit.Framework.TestAttribute;
+global using TestCaseAttribute = NUnit.Framework.TestCaseAttribute;
+global using TestCaseSourceAttribute = NUnit.Framework.TestCaseSourceAttribute;
+global using TestFixtureAttribute = NUnit.Framework.TestFixtureAttribute;
+global using TestFixtureSourceAttribute = NUnit.Framework.TestFixtureSourceAttribute;
+global using SetUpFixtureAttribute = NUnit.Framework.SetUpFixtureAttribute;
+global using ExplicitAttribute = NUnit.Framework.ExplicitAttribute;
+global using CategoryAttribute = NUnit.Framework.CategoryAttribute;
+global using IgnoreAttribute = NUnit.Framework.IgnoreAttribute;
 #endif
 [assembly: System.Reflection.AssemblyMetadataAttribute("Root", "Plugins/ReSharperUnity/resharper/resharper-unity/test/src/Unity.Tests")]
 
