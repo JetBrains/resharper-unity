@@ -192,6 +192,7 @@ object UnityProfilerModel : Ext(BackendUnityModel) {
     private val SampleInfo = structdef {
         field("duration", double)
         field("markerId", int)
+        field("memoryAllocation", long)
         field("childrenCount", int)
     }
     private val MarkerToNamePair = structdef {
