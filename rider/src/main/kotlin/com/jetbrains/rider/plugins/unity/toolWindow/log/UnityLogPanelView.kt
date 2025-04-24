@@ -4,6 +4,7 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
 import com.intellij.openapi.editor.markup.TextAttributes
@@ -21,13 +22,14 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.intellij.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
 import com.jetbrains.rider.plugins.unity.model.LogEventMode
 import com.jetbrains.rider.plugins.unity.model.LogEventType
-import com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import net.miginfocom.swing.MigLayout
@@ -119,7 +121,8 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         return Date((ticks - ticksAtEpoch) / ticksPerMillisecond)
     }
 
-    val mainSplitterOrientation = RiderUnitySettings.BooleanViewProperty("mainSplitterOrientation")
+    val mainSplitterOrientation: Property<Boolean> = Property(PropertiesComponent.getInstance(project).getBoolean("RiderUnitySettings.mainSplitterOrientation"))
+        .apply { this.change.adviseNotNull(lifetime) { PropertiesComponent.getInstance(project).setValue("RiderUnitySettings.mainSplitterOrientation", it) } }
 
     private val mainSplitterToggleAction = object : DumbAwareAction(
         UnityBundle.message("action.toggle.output.position.text"),
@@ -265,4 +268,8 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         logModel.onCleared.advise(lifetime) { console.clear() }
         logModel.queueUpdate()
     }
+}
+
+private fun Property<Boolean>.invert() {
+    value = !value
 }
