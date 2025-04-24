@@ -1399,10 +1399,10 @@ a plugin to be installed to a project.</value>
         <value>Never add 'FormerlySerializedAs' when renaming serialized fields</value>
     </data>
     <data name="UnitySettings_Refactoring_Never_Show_Serialized_Refactoring_Popup_For_Each_Case" xml:space="preserve">
-        <value>Show popup confirmation popup for each case</value>
+        <value>Show confirmation popup for each case</value>
     </data>
     <data name="UnitySettings_Refactoring_Popup_Should_Add_Attribute" xml:space="preserve">
-        <value>Should add 'FormerlySerializedAs' to {0}</value>
+        <value>Add 'FormerlySerializedAs' to {0}</value>
     </data>
     <data name="UnitySettings_Refactoring_Popup_Remember_Selected_Options_And_Never_Show_Popup" xml:space="preserve">
         <value>Remember selected option and never show this popup</value>
