@@ -16,7 +16,7 @@ public class UnityObjectLifetimeCheckViaNullEqualityQuickFixAvailabilityTests : 
     protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UnityObjectNullComparison\Availability";
 
     protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile, IContextBoundSettingsStore boundSettingsStore) => 
-        highlighting is UnityObjectNullComparisonWarning;
+        highlighting is UnityObjectNullComparisonWarning or UnityObjectNullComparisonHintHighlighting;
 
     [Test] public void Test01() { DoNamedTest(); }
 }
