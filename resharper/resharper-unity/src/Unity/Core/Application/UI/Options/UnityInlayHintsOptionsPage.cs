@@ -28,6 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 
             AddHeader(Strings.UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_Assembly_Definition_file_package_versions);
             AddVisibilityOption((UnityInlayHintSettings s) => s.ShowAsmDefVersionDefinePackageVersions);
+            
+            AddHeader(Strings.UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint);
+            AddVisibilityOption((UnityInlayHintSettings s) => s.UnityObjectNullComparisonHint);
+
         }
     }
 }

@@ -14,5 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 
         [SettingsEntry(PushToHintMode.Default, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnityInlayHintSettings_t_Visibility_mode_of_hints_for_package_versions_in__asmdef_files))]
         public PushToHintMode ShowAsmDefVersionDefinePackageVersions;
+        
+        [SettingsEntry(PushToHintMode.Default, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnityInlayHintsOptionsPage_t_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint))]
+        public PushToHintMode UnityObjectNullComparisonHint;
     }
 }
