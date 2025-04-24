@@ -1,11 +1,14 @@
 #nullable enable
 using JetBrains.Application.Parts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
-using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.TextControl.DocumentMarkup.Adornments;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 
@@ -14,7 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
     typeof(IEqualityExpression),
     HighlightingTypes =
     [
-        typeof(UnityObjectNullComparisonWarning)
+        typeof(UnityObjectNullComparisonWarning),
+        typeof(UnityObjectNullComparisonHintHighlighting)
     ])]
 public class UnityObjectNullComparisonProblemAnalyzer(UnityApi unityApi)
     : UnityElementProblemAnalyzer<IEqualityExpression>(unityApi)
@@ -27,10 +31,20 @@ public class UnityObjectNullComparisonProblemAnalyzer(UnityApi unityApi)
         if (left == null || right == null)
             return;
         if (left.IsNullLiteral() && UnityTypeUtils.IsUnityObject(right.Type())
-             || right.IsNullLiteral() && UnityTypeUtils.IsUnityObject(left.Type()))
+            || right.IsNullLiteral() && UnityTypeUtils.IsUnityObject(left.Type()))
         {
-            IHighlighting highlighting = new UnityObjectNullComparisonWarning(expression);
-            consumer.AddHighlighting(highlighting);
+            if (Api.HasNullabilityAttributeOnImplicitBoolOperator.Value)
+            {
+                consumer.AddHighlighting(new UnityObjectNullComparisonWarning(expression));
+            }
+
+            var mode = ElementProblemAnalyzerUtils.GetInlayHintsMode(data,
+                settings => settings.UnityObjectNullComparisonHint);
+
+            if (mode != PushToHintMode.Never)
+            {
+                consumer.AddHighlighting(new UnityObjectNullComparisonHintHighlighting(expression, mode));
+            }
         }
     }
 }

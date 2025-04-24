@@ -616,6 +616,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string UnityFixFloatingPointComparison_Text => ResourceManager.GetString("UnityFixFloatingPointComparison_Text");
     public static string UnityObjectNullComparisonWarning_Description => ResourceManager.GetString("UnityObjectNullComparisonWarning_Description");
     public static string UnityObjectNullComparisonWarning_Message => ResourceManager.GetString("UnityObjectNullComparisonWarning_Message");
+    public static string UnityInlayHintsOptionsPage_t_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint => ResourceManager.GetString("UnityInlayHintsOptionsPage_t_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint");
+    public static string UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint => ResourceManager.GetString("UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint");
     public static string UnityObjectNullComparisonHint_Message => ResourceManager.GetString("UnityObjectNullComparisonHint_Message");
     public static string Odin_UnknownGroupingPathMessage => ResourceManager.GetString("Odin_UnknownGroupingPathMessage");
     public static string Odin_UnknownGroupingPathTitle => ResourceManager.GetString("Odin_UnknownGroupingPathTitle");
@@ -628,5 +630,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string Odin_MemberWrongGroupingAttributeDescription => ResourceManager.GetString("Odin_MemberWrongGroupingAttributeDescription");
     public static string OdinReplaceAttributeQuickFix => ResourceManager.GetString("OdinReplaceAttributeQuickFix");
     public static string Odin_FieldDetector_AddDeclarationHighlighting_Tooltip => ResourceManager.GetString("Odin_FieldDetector_AddDeclarationHighlighting_Tooltip");
+    public static string UnityInlayHintsSettingsSettingDescription => ResourceManager.GetString("UnityInlayHintsSettingsSettingDescription");
   }
 }
