@@ -46,7 +46,7 @@ internal static class SamplesCacheUtils
 
             var sample = PooledSample.GetInstance(parsingResult.QualifiedName, parsingResult.TypeName,
                 parsingResult.AssemblyName, sampleInfo.Duration,
-                sampleInfo.Duration / snapshot.FrameTimeMs, sampleInfo.MarkerId, childrenCount);
+                sampleInfo.Duration / snapshot.FrameTimeMs, sampleInfo.MarkerId, childrenCount, sampleInfo.MemoryAllocation);
 
             //Add to cache collections
             samplesCache.RegisterSample(sample);

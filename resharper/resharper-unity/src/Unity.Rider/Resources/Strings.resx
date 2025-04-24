@@ -166,51 +166,51 @@
     </data>
     <!-- Method declarations -->
     <data name="UnityProfilerSnapshot_Single_Method_Highlighting_display_name" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1})</value>
+        <value>{0:F2}ms ({1:P1}) {2}</value>
     </data>
     <data name="UnityProfilerSnapshot_Single_Method_Highlighting_tooltip" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1} of frame) called once in this frame</value>
+        <value>{0:F2}ms ({1:P1} of frame) Alloc:{2} called once in this frame</value>
     </data>
     <data name="UnityProfilerSnapshot_Single_Method_Highlighting_moreinfo" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1} of frame) called once in this frame</value>
+        <value>{0:F2}ms ({1:P1} of frame) Alloc:{2} called once in this frame</value>
     </data>
     <data name="UnityProfilerSnapshot_Multiple_Method_Highlighting_display_name" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1}) x{2}</value>
+        <value>{0:F2}ms ({1:P1}) {2} x{3}</value>
     </data>
     <data name="UnityProfilerSnapshot_Multiple_Method_Highlighting_tooltip" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] called {5} times in this frame</value>
+        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] Alloc:{5} called {6} times in this frame</value>
     </data>
     <data name="UnityProfilerSnapshot_Multiple_Method_Highlighting_moreinfo" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] called {5} times in this frame</value>
+        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] Alloc:{5} called {6}  times in this frame</value>
     </data>
     <!-- class declaration -->
     <data name="UnityProfilerSnapshot_Single_Class_Highlighting_display_name" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1})</value>
+        <value>{0:F2}ms ({1:P1}) {2}</value>
     </data>
     <data name="UnityProfilerSnapshot_Single_Class_Highlighting_tooltip" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1} of frame) used once in this frame</value>
+        <value>{0:F2}ms ({1:P1} of frame) Alloc:{2} used once in this frame</value>
     </data>
     <data name="UnityProfilerSnapshot_Single_Class_Highlighting_moreinfo" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1} of frame) used once in this frame</value>
+        <value>{0:F2}ms ({1:P1} of frame) Alloc:{2} used once in this frame</value>
     </data>
     <data name="UnityProfilerSnapshot_Multiple_Class_Highlighting_display_name" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1}) x{2}</value>
+        <value>{0:F2}ms ({1:P1}) {2} x{3}</value>
     </data>
     <data name="UnityProfilerSnapshot_Multiple_Class_Highlighting_tooltip" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] used {5} times in this frame</value>
+        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] Alloc:{5} used {6} times in this frame</value>
     </data>
     <data name="UnityProfilerSnapshot_Multiple_Class_Highlighting_moreinfo" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] used {5} times in this frame</value>
+        <value>{0:F2}ms ({1:P1} of frame) [min:{2:F2}, max:{3:F2}, avg:{4:F2}] Alloc:{5} used {6} times in this frame</value>
     </data>
     <!-- Internal calls -->
     <data name="UnityProfilerSnapshot_Internal_Call_Highlighting_display_name" xml:space="preserve">
-        <value>{0:F2}ms ({1:P1}) x{2}</value>
+        <value>{0:F2}ms ({1:P1}) {2} x{3}</value>
     </data>
     <data name="UnityProfilerSnapshot_Internal_Call_Highlighting_tooltip" xml:space="preserve">
-        <value>{0} {1:F2}ms ({2:P1}) called {3} times in this function</value>
+        <value>{0} {1:F2}ms ({2:P1}) Alloc:{5} called {6} times in this function</value>
     </data>
     <data name="UnityProfilerSnapshot_Internal_Call_Highlighting_moreinfo" xml:space="preserve">
-        <value>{0} {1:F2}ms ({2:P1}) called {3} times in this function</value>
+        <value>{0} {1:F2}ms ({2:P1}) Alloc:{5} called {6} times in this function</value>
     </data>
     <!-- Parent calls -->
     <data name="UnityProfilerSnapshot_Parent_Sample_Information" xml:space="preserve">

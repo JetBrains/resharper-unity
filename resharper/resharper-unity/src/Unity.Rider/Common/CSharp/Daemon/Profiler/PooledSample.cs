@@ -37,6 +37,7 @@ public class PooledSample : IDisposable
     public string AssemblyName { get; private set; }
     public double Duration { get; private set; }
     public double FramePercentage { get; private set; }
+    public long MemoryAllocation { get; private set; }
     public int Id { get; private set; }
     public bool IsProfilerMarker => Id < 0; //Unity marks BeginSample/EndSample with negative Id
 
@@ -106,7 +107,7 @@ public class PooledSample : IDisposable
     [Pure, MustDisposeResource]
     public static PooledSample GetInstance(string qualifiedName, string typeName, string assemblyName,
         double sampleInfoDuration,
-        double framePercentage, int sampleInfoMarkerId, int childrenCount)
+        double framePercentage, int sampleInfoMarkerId, int childrenCount, long memoryAllocation)
     {
         var pooledSample = GetInstance();
 
@@ -117,6 +118,7 @@ public class PooledSample : IDisposable
         pooledSample.FramePercentage = framePercentage;
         pooledSample.Id = sampleInfoMarkerId;
         pooledSample.ChildrenCount = childrenCount;
+        pooledSample.MemoryAllocation = memoryAllocation;
 
         return pooledSample;
     }
@@ -140,7 +142,7 @@ public class PooledSample : IDisposable
 
     public override string ToString()
     {
-        return $"{Id}|{QualifiedName}|{Duration}|{GetCallStack()}";
+        return $"{Id}|{QualifiedName}|{Duration}|{StringUtil.StrFormatByteSize(MemoryAllocation)}|{GetCallStack()}";
     }
 
     public void AddChild(PooledSample sample)

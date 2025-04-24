@@ -292,12 +292,14 @@ public class UnityProfilerDaemon(
         {
             var totalDuration = samples.Sum(s => s.Duration);
             var totalPercentage = samples.Sum(s => s.FramePercentage);
+            var totalAllocation = StringUtil.StrFormatByteSize(samples.Sum(s => s.MemoryAllocation));
+            
             if (samples.Count == 1)
             {
                 return new FunctionDeclarationSnapshotInfo(
-                    string.Format(single.DisplayName, totalDuration, totalPercentage),
-                    string.Format(single.Tooltip, totalDuration, totalPercentage),
-                    string.Format(single.MoreText, totalDuration, totalPercentage));
+                    string.Format(single.DisplayName, totalDuration, totalPercentage, totalAllocation),
+                    string.Format(single.Tooltip, totalDuration, totalPercentage, totalAllocation),
+                    string.Format(single.MoreText, totalDuration, totalPercentage, totalAllocation));
             }
 
 
@@ -305,9 +307,9 @@ public class UnityProfilerDaemon(
             var max = samples.Max(s => s.Duration);
             var avg = samples.Average(s => s.Duration);
             return new(
-                string.Format(multiple.DisplayName, totalDuration, totalPercentage, samples.Count),
-                string.Format(multiple.Tooltip, totalDuration, totalPercentage, min, max, avg, samples.Count),
-                string.Format(multiple.MoreText, totalDuration, totalPercentage, min, max, avg, samples.Count)
+                string.Format(multiple.DisplayName, totalDuration, totalPercentage, totalAllocation, samples.Count),
+                string.Format(multiple.Tooltip, totalDuration, totalPercentage, min, max, avg, totalAllocation, samples.Count),
+                string.Format(multiple.MoreText, totalDuration, totalPercentage, min, max, avg, totalAllocation, samples.Count)
             );
         }
 
@@ -340,11 +342,12 @@ public class UnityProfilerDaemon(
                 return;
             var durationSum = samples.Sum(s => s.Duration);
             var percentageSum = samples.Sum(s => s.FramePercentage);
+            var memory = StringUtil.StrFormatByteSize(samples.Sum(s => s.MemoryAllocation));
 
-            var displayName = string.Format(highlightingString.DisplayName, durationSum, percentageSum, samples.Count);
-            var tooltip = string.Format(highlightingString.Tooltip, qualifiedName, durationSum, percentageSum,
+            var displayName = string.Format(highlightingString.DisplayName, durationSum, percentageSum, memory, samples.Count);
+            var tooltip = string.Format(highlightingString.Tooltip, qualifiedName, durationSum, percentageSum, memory,
                 samples.Count);
-            var moreText = string.Format(highlightingString.MoreText, qualifiedName, durationSum, percentageSum,
+            var moreText = string.Format(highlightingString.MoreText, qualifiedName, durationSum, percentageSum, memory,
                 samples.Count);
             insightProvider.AddHighlighting(consumer, sharpExpression.GetDocumentRange(), declaration.DeclaredElement,
                 displayName, tooltip, moreText, null
