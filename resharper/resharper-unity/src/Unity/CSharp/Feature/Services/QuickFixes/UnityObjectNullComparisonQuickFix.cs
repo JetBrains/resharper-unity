@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Common.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -19,6 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 public class UnityObjectNullComparisonQuickFix(IEqualityExpression equalityExpression) : IQuickFix
 {
     public UnityObjectNullComparisonQuickFix(UnityObjectNullComparisonWarning warning) : this(warning.Expression) { }
+
+    public UnityObjectNullComparisonQuickFix(UnityObjectNullComparisonHintHighlighting highlighting) : this(highlighting.Expression) { }
 
     public IEnumerable<IntentionAction> CreateBulbItems()
     {

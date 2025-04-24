@@ -1719,6 +1719,12 @@ a plugin to be installed to a project.</value>
     <data name="UnityObjectNullComparisonWarning_Message" xml:space="preserve">
         <value>Implicit check for Unity object lifetime</value>
     </data>
+    <data name="UnityInlayHintsOptionsPage_t_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint" xml:space="preserve">
+        <value>Implicit check for Unity object lifetime</value>
+    </data>
+    <data name="UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint" xml:space="preserve">
+        <value>Implicit check for Unity object lifetime</value>
+    </data>
     <data name="UnityObjectNullComparisonHint_Message">
         <value>Implicit check for Unity object lifetime</value>
     </data>
@@ -1754,5 +1760,9 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="Odin_FieldDetector_AddDeclarationHighlighting_Tooltip" xml:space="preserve">
         <value>This field is serialized by Odin</value>
+    </data>
+    <data name="UnityInlayHintsSettingsSettingDescription" xml:space="preserve">
+        <value>Unity Inlay Hints settings</value>
+        <comment>Don't localize</comment>
     </data>
 </root>
