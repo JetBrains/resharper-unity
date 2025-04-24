@@ -16,9 +16,10 @@ import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XBreakpoint
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
-import com.intellij.xdebugger.impl.DebuggerSupport
+import com.intellij.xdebugger.impl.breakpoints.XBreakpointBase
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointManagerImpl
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointUtil
+import com.intellij.xdebugger.impl.breakpoints.asProxy
 import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
@@ -112,7 +113,7 @@ private fun tryEditBreakpoint(project: Project, breakpoint: XBreakpoint<*>, wher
     val editor = tryGetEditor(project, providedEditor) ?: return
 
     // Don't show the balloon if the dialog is already open
-    if (!BreakpointsDialogFactory.getInstance(project).popupRequested(breakpoint)) {
+    if (breakpoint is XBreakpointBase<*, *, *> && !BreakpointsDialogFactory.getInstance(project).popupRequested(breakpoint.asProxy())) {
         val gutterComponent = (editor as? EditorEx)?.gutterComponentEx ?: return
         DebuggerUIUtil.showXBreakpointEditorBalloon(project, whereToShow, gutterComponent, false, breakpoint)
     }
