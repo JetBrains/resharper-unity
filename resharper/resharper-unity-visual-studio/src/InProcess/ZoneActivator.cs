@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.InProcess
             myConnector = connector;
         }
 
-        bool IActivateDynamic<IUnityPluginZone>.ActivatorEnabled() => !myConnector.IsOutOfProcess.Value;
-        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !myConnector.IsOutOfProcess.Value;
+        bool IActivateDynamic<IUnityPluginZone>.ActivatorEnabled() => !myConnector.IsOutOfProcess;
+        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !myConnector.IsOutOfProcess;
     }
 }
