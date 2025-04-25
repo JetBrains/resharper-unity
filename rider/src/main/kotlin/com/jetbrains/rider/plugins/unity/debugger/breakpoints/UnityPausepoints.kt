@@ -18,7 +18,6 @@ import com.intellij.xdebugger.breakpoints.XBreakpoint
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointBase
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointManagerImpl
-import com.intellij.xdebugger.impl.breakpoints.XBreakpointUtil
 import com.intellij.xdebugger.impl.breakpoints.asProxy
 import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
@@ -106,7 +105,8 @@ private fun tryGetEditor(project: Project, providedEditor: Editor?): Editor? {
 private fun tryGetGutterIconRenderer(breakpoint: XBreakpoint<*>, providedIconRenderer: GutterIconRenderer?): GutterIconRenderer? {
     if (providedIconRenderer != null) return providedIconRenderer
 
-    return XBreakpointUtil.getBreakpointGutterIconRenderer(breakpoint)
+    val breakpointProxy = (breakpoint as? XBreakpointBase<*, *, *>)?.asProxy() ?: return null
+    return breakpointProxy.getGutterIconRenderer()
 }
 
 private fun tryEditBreakpoint(project: Project, breakpoint: XBreakpoint<*>, whereToShow: Point?, providedEditor: Editor?) {
