@@ -168,6 +168,7 @@
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType" />
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationType" />
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType" />
+    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDevicePlayerDebugConfigurationType" />
     <rider.newRunConfigurationTreeGroupingProvider implementation="com.jetbrains.rider.plugins.unity.run.UnityNewRunConfigurationTreeGroupingProvider" />
 
     <!-- Debugger -->

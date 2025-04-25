@@ -15,6 +15,7 @@ import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.configurations.*
+import com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDevicePlayerDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
@@ -33,6 +34,7 @@ class DefaultRunConfigurationGenerator {
         val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = UnityBundle.message("standalone.player")
         val RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME = UnityBundle.message("unit.tests.batch.mode")
         val RUN_DEBUG_START_UNITY_CONFIGURATION_NAME = UnityBundle.message("start.unity")
+        val RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME = UnityBundle.message("attach.player")
     }
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
@@ -71,6 +73,13 @@ class DefaultRunConfigurationGenerator {
                 if (session.project.isUnityProject.value
                     && !runManager.allSettings.any { it.type is UnityEditorDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
                     createAttachToUnityEditorConfiguration(session.project, ATTACH_AND_PLAY_CONFIGURATION_NAME, true)
+                }
+
+                if (session.project.isUnityProject.value
+                    && !runManager.allSettings.any { it.type is UnityDevicePlayerDebugConfigurationType }) {
+                    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDevicePlayerDebugConfigurationType::class.java)
+                    val runConfiguration = runManager.createConfiguration(RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME, configurationType.factory)
+                    runManager.setTemporaryConfiguration(runConfiguration)
                 }
 
                 session.project.solution.frontendBackendModel.unityApplicationData.adviseNotNull(lt) {
