@@ -79,40 +79,44 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
             ConfigurationTypeUtil.findConfigurationType(UnityPlayerDebugConfigurationType::class.java)
         configurationSettings = runManager.createConfiguration(displayName, configurationType.attachToPlayerFactory)
         (configurationSettings.configuration as UnityPlayerDebugConfiguration).apply {
-            state.playerId = process.id
-            state.playerInstanceId = process.playerInstanceId
-            state.host = process.host
-            state.port = process.port
-            state.projectName = process.projectName
-
-            when (process) {
-                is UnityIosUsbProcess -> {
-                    state.deviceId = process.deviceId
-                    state.deviceName = process.deviceDisplayName
-                }
-                is UnityAndroidAdbProcess -> {
-                    state.deviceId = process.deviceId
-                    state.deviceName = process.deviceDisplayName
-                    state.androidPackageUid = process.packageUid
-                    state.packageName = process.packageName
-                }
-                is UnityLocalUwpPlayer -> state.packageName = process.packageName
-                is UnityEditor -> state.pid = process.pid
-                is UnityEditorHelper -> {
-                    state.pid = process.pid
-                    state.roleName = process.roleName
-                }
-                is UnityVirtualPlayer -> {
-                    state.virtualPlayerId = process.virtualPlayerId
-                    state.virtualPlayerName = process.playerName
-                }
-                else -> {}
-            }
+            populateStateFromProcess(state, process)
         }
         runManager.setTemporaryConfiguration(configurationSettings)
     }
 
     startDebugRunConfiguration(project, configurationSettings)
+}
+
+fun populateStateFromProcess(state:UnityPlayerDebugConfigurationOptions, process: UnityProcess) {
+    state.playerId = process.id
+    state.playerInstanceId = process.playerInstanceId
+    state.host = process.host
+    state.port = process.port
+    state.projectName = process.projectName
+
+    when (process) {
+        is UnityIosUsbProcess -> {
+            state.deviceId = process.deviceId
+            state.deviceName = process.deviceDisplayName
+        }
+        is UnityAndroidAdbProcess -> {
+            state.deviceId = process.deviceId
+            state.deviceName = process.deviceDisplayName
+            state.androidPackageUid = process.packageUid
+            state.packageName = process.packageName
+        }
+        is UnityLocalUwpPlayer -> state.packageName = process.packageName
+        is UnityEditor -> state.pid = process.pid
+        is UnityEditorHelper -> {
+            state.pid = process.pid
+            state.roleName = process.roleName
+        }
+        is UnityVirtualPlayer -> {
+            state.virtualPlayerId = process.virtualPlayerId
+            state.virtualPlayerName = process.playerName
+        }
+        else -> {}
+    }
 }
 
 fun createAttachToUnityEditorConfiguration(project: Project, name: String, play: Boolean): RunnerAndConfigurationSettings {
