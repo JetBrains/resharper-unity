@@ -7,7 +7,7 @@
           "symbol": "WHATEVER"
       },
       {
-          "name": |"Unity"|(0)||(1),
+          "name": |"Unity"||(0)|(1),
           "expression": "2019.4",
           "symbol": "UNITY_IS_INSTALLED"
       }
@@ -15,5 +15,5 @@
 }
 
 ---------------------------------------------------------
-(0): ReSharper Parameter Name Hint Action: AsmDefPackageVersionInlayHintContextActionHighlighting
-(1): ReSharper Parameter Name Hint: (2019.4.0)
+(0): ReSharper Parameter Name Hint: (2019.4.0)
+(1): ReSharper Parameter Name Hint Action: AsmDefPackageVersionInlayHintContextActionHighlighting

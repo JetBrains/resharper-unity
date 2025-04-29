@@ -1,7 +1,7 @@
 ﻿{
-    "reference": |"guid:7d9f6c8edad14e1593fde9cc75764047"|(0)||(1)
+    "reference": |"guid:7d9f6c8edad14e1593fde9cc75764047"||(0)|(1)
 }
 
 ---------------------------------------------------------
-(0): ReSharper Parameter Name Hint Action: AsmDefGuidReferenceInlayHintContextActionHighlighting
-(1): ReSharper Parameter Name Hint: (SecondProject)
+(0): ReSharper Parameter Name Hint: (SecondProject)
+(1): ReSharper Parameter Name Hint Action: AsmDefGuidReferenceInlayHintContextActionHighlighting

@@ -133,7 +133,7 @@ namespace Burst.SharedStaticTests
         {
             public void Execute()
             {
-                var sharedStatic0 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(1))|(0);
+                var sharedStatic0 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(0))|(1);
             }
         }
 
@@ -172,7 +172,7 @@ namespace Burst.SharedStaticTests
         {
             public void Execute()
             {
-                var sharedStatic3 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(3), |typeof(int)|(4))|(2);
+                var sharedStatic3 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(2), |typeof(int)|(3))|(4);
             }
         }
 
@@ -187,8 +187,8 @@ namespace Burst.SharedStaticTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: this method is available in C# only, not in Burst
-(1): ReSharper Warning: Burst: Typeof is prohibited
-(2): ReSharper Warning: Burst: this method is available in C# only, not in Burst
+(0): ReSharper Warning: Burst: Typeof is prohibited
+(1): ReSharper Warning: Burst: this method is available in C# only, not in Burst
+(2): ReSharper Warning: Burst: Typeof is prohibited
 (3): ReSharper Warning: Burst: Typeof is prohibited
-(4): ReSharper Warning: Burst: Typeof is prohibited
+(4): ReSharper Warning: Burst: this method is available in C# only, not in Burst

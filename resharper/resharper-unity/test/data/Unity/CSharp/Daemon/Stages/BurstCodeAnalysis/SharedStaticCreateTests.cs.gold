@@ -108,7 +108,7 @@ public class SharedStaticCreateTests2 : MonoBehaviour
         {
             public void Execute()
             {
-                var sharedStatic0 = |SharedStatic<int>.GetOrCreate(|myDoubleType|(1))|(0);
+                var sharedStatic0 = |SharedStatic<int>.GetOrCreate(|myDoubleType|(0))|(1);
             }
         }
 
@@ -117,7 +117,7 @@ public class SharedStaticCreateTests2 : MonoBehaviour
         {
             public void Execute()
             {
-                var sharedStatic3 = |SharedStatic<int>.GetOrCreate(|myDoubleType|(3), |myIntType|(4))|(2);
+                var sharedStatic3 = |SharedStatic<int>.GetOrCreate(|myDoubleType|(2), |myIntType|(3))|(4);
                 F();
             }
 
@@ -128,8 +128,8 @@ public class SharedStaticCreateTests2 : MonoBehaviour
         }
     }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: this method is available in C# only, not in Burst
-(1): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
-(2): ReSharper Warning: Burst: this method is available in C# only, not in Burst
+(0): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
+(1): ReSharper Warning: Burst: this method is available in C# only, not in Burst
+(2): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
 (3): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
-(4): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
+(4): ReSharper Warning: Burst: this method is available in C# only, not in Burst

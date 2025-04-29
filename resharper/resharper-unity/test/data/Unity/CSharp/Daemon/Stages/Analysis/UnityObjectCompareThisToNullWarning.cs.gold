@@ -26,8 +26,8 @@ public class PlainOldClass
     {
         if (|this == null|(0))
         |{
-            |Console.WriteLine();|(2)
-        }|(1)
+            |Console.WriteLine();|(1)
+        }|(2)
     }
 
     public void CompareToNullWithStandardInequalityOperator()
@@ -41,6 +41,6 @@ public class PlainOldClass
 
 ---------------------------------------------------------
 (0): ReSharper Warning: Expression is always false
-(1): ReSharper Dead Code: Code is heuristically unreachable
-(2):<overlapped> ReSharper Dead Code: Code is heuristically unreachable
+(1):<overlapped> ReSharper Dead Code: Code is heuristically unreachable
+(2): ReSharper Dead Code: Code is heuristically unreachable
 (3): ReSharper Warning: Expression is always true

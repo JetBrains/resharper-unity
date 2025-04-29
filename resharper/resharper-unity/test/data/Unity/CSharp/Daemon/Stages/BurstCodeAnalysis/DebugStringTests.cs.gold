@@ -157,7 +157,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                |string.Format(|new CultureInfo(1)|(2), "", null)|(1);
+                |string.Format(|new CultureInfo(1)|(1), "", null)|(2);
             }
         }
 
@@ -202,8 +202,8 @@ namespace DebugStringTests
 }
 ---------------------------------------------------------
 (0): ReSharper Warning: Burst: String.Format argument with index '0' has an invalid type 'String'. Only value types are supported.
-(1): ReSharper Warning: Burst: 'Format' signature contains managed types
-(2): ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
+(1): ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
+(2): ReSharper Warning: Burst: 'Format' signature contains managed types
 (3): ReSharper Warning: Burst: Loading from a non-readonly static field 'DebugStringTests.toFormat' is not supported
 (4): ReSharper Warning: Burst: The 'format' argument in String.Format(format, ...) must be either a string literal or a const string
 (5): ReSharper Warning: Burst: Debug logging functions only accept strings
