@@ -42,6 +42,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
 
     private fun removeProcess(it: UnityProcess) {
         availableDevices.remove(it.toUnityDevice())
+        ActiveDeviceManager.getInstance(project).removeDevice(it.toUnityDevice())
         ActiveDeviceManager.getInstance(project).startRefreshingDevices()
     }
 
