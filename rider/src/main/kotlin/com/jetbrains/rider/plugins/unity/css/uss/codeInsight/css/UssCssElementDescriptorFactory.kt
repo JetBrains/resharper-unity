@@ -26,7 +26,7 @@ internal class UssCssElementDescriptorFactory {
         var descriptors = dereference(cssDescriptorsHolderRef)
         if (descriptors == null) {
             val loader = CssDescriptorsLoader()
-            val schemesToLoad = listOf("css-cascade-4.xml", "css3-transitions.xml", "css-transforms-1.xml", "css-transforms-2.xml", "css-color-4.xml")
+            val schemesToLoad = listOf("css-cascade.xml", "css3-transitions.xml", "css-transforms-1.xml", "css-transforms-2.xml", "css-color-4.xml")
             schemesToLoad.forEach {
                 CssElementDescriptorFactory2.getInstance().javaClass.getResource("xml/$it")!!.let { url -> loader.loadDescriptors(url) }
             }
