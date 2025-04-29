@@ -189,7 +189,7 @@ class UnityPlayerListener {
                         UnityLocalUwpPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName, packageName)
                     }
                     else {
-                        UnityLocalPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName)
+                        UnityLocalPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName = projectName)
                     }
                 }
                 else {

@@ -14,18 +14,19 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Service(Service.Level.PROJECT)
 class UnityDevicesProvider(private val project: Project): DevicesProvider {
     private val locker = Object()
-    private val availableDevices = mutableListOf<UnityDevice>()
+    private val availableDevices = mutableListOf<UnityProcess>()
     private var refreshStartedOnce = AtomicBoolean(false)
 
     private val allDevices
-        get() = mutableListOf<UnityDevice>().apply {
+        get() = mutableListOf<UnityProcess>().apply {
             synchronized(locker) {
                 addAll(availableDevices)
             }
         }
 
     override fun getDeviceKinds(): List<DeviceKind> {
-        return listOf(UnityDeviceKind)
+        return listOf(UnityIosDeviceKind, UnityAndroidDeviceKind, UnityCustomPlayerDeviceKind, UnityRemotePlayerDeviceKind,
+                      UnityLocalPlayerDeviceKind, UnityLocalUwpPlayerDeviceKind, UnityEditorDeviceKind, UnityVirtualPlayerDeviceKind)
     }
 
     override suspend fun loadAllDevices(): List<Device> {
@@ -41,13 +42,13 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
     }
 
     private fun removeProcess(it: UnityProcess) {
-        availableDevices.remove(it.toUnityDevice())
-        ActiveDeviceManager.getInstance(project).removeDevice(it.toUnityDevice())
+        availableDevices.remove(it)
+        ActiveDeviceManager.getInstance(project).removeDevice(it)
         ActiveDeviceManager.getInstance(project).startRefreshingDevices()
     }
 
     fun addProcess(it: UnityProcess) {
-        availableDevices.add(it.toUnityDevice())
+        availableDevices.add(it)
         ActiveDeviceManager.getInstance(project).startRefreshingDevices()
     }
 

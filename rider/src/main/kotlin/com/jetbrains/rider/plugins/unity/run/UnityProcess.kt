@@ -3,7 +3,18 @@
 package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.openapi.util.NlsSafe
+import com.jetbrains.rider.plugins.unity.run.devices.UnityAndroidDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityCustomPlayerDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityIosDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityLocalPlayerDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityLocalUwpPlayerDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityRemotePlayerDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityVirtualPlayerDeviceKind
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
+import com.jetbrains.rider.run.devices.Device
+import com.jetbrains.rider.run.devices.DeviceKind
+import icons.UnityIcons
 
 /**
  * The base class that represents a Unity process that can potentially be debugged
@@ -21,7 +32,12 @@ sealed class UnityProcess(
     @NlsSafe val host: String,
     val port: Int,
     val debuggingEnabled: Boolean,
+    deviceKind: DeviceKind,
     @NlsSafe open val projectName: String? = null
+): Device(
+    formatDeviceName(projectName, displayName, host, port),
+    UnityIcons.RunConfigurations.AttachToPlayer,
+    deviceKind
 ) {
     val type = typeFromId(id)
 
@@ -45,9 +61,24 @@ sealed class UnityProcess(
     }
 }
 
+@NlsSafe
+fun formatDeviceName(projectName: String?, name: String, ip: String, port:Int): String {
+    return when {
+        !projectName.isNullOrEmpty() ->
+            if (projectName == UnityProcessPickerDialog.CUSTOM_PLAYER_PROJECT)
+                "$name ($ip:$port)"
+            else "$projectName ($ip:$port)"
+        name.isNotEmpty() ->
+            "$name ($ip:$port)"
+        else ->
+            "$ip:$port"
+    }
+}
+
+
 /** Base class of Unity players which are also local processes, such as the Editor */
-sealed class UnityLocalProcess(id: String, name: String, val pid: Int, projectName: String?) :
-    UnityProcess(id, name, "127.0.0.1", convertPidToDebuggerPort(pid), true, projectName) {
+sealed class UnityLocalProcess(id: String, name: String, val pid: Int, deviceKind: DeviceKind, projectName: String?) :
+    UnityProcess(id, name, "127.0.0.1", convertPidToDebuggerPort(pid), true, deviceKind, projectName) {
 
     override fun dump() =
         "$id ($displayName, $host:$port, debugging ${if (debuggingEnabled) "enabled" else "disabled"}, ${projectName ?: "no project name"})"
@@ -61,7 +92,7 @@ sealed class UnityLocalProcess(id: String, name: String, val pid: Int, projectNa
  * `Library/EditorInstance.json` file.
  */
 class UnityEditor(executableName: String, pid: Int, projectName: String?) :
-    UnityLocalProcess("$TYPE($executableName-${projectName ?: "UnknownProject"})", executableName, pid, projectName) {
+    UnityLocalProcess("$TYPE($executableName-${projectName ?: "UnknownProject"})", executableName, pid, UnityEditorDeviceKind, projectName) {
     companion object {
         const val TYPE = "Editor"
     }
@@ -75,7 +106,7 @@ class UnityEditor(executableName: String, pid: Int, projectName: String?) :
  * The project name should always be available, but this is not guaranteed.
  */
 class UnityEditorHelper(executableName: String, @NlsSafe val roleName: String, pid: Int, projectName: String?) :
-    UnityLocalProcess("$TYPE($executableName-$roleName-${projectName ?: "UnknownProject"})", executableName, pid, projectName) {
+    UnityLocalProcess("$TYPE($executableName-$roleName-${projectName ?: "UnknownProject"})", executableName, pid, UnityEditorDeviceKind, projectName) {
     companion object {
         const val TYPE = "EditorHelper"
     }
@@ -95,7 +126,7 @@ class UnityVirtualPlayer(executableName: String,
                          val virtualPlayerId: String,
                          pid: Int,
                          projectName: String?) :
-    UnityLocalProcess("$TYPE($virtualPlayerId)", executableName, pid, projectName) {
+    UnityLocalProcess("$TYPE($virtualPlayerId)", executableName, pid, UnityVirtualPlayerDeviceKind, projectName) {
     companion object {
         const val TYPE = "VirtualPlayer"
     }
@@ -117,8 +148,9 @@ open class UnityLocalPlayer(
     host: String,
     port: Int,
     debuggingEnabled: Boolean,
+    deviceKind: DeviceKind = UnityLocalPlayerDeviceKind,
     projectName: String?
-) : UnityProcess(playerId, playerId, host, port, debuggingEnabled, projectName) {
+) : UnityProcess(playerId, playerId, host, port, debuggingEnabled, deviceKind, projectName) {
 
     override fun dump() =
         "$id ($displayName, $host:$port, debugging ${if (debuggingEnabled) "enabled" else "disabled"}, ${projectName ?: "no project name"})"
@@ -138,7 +170,7 @@ class UnityLocalUwpPlayer(
     debuggingEnabled: Boolean,
     projectName: String?,
     val packageName: String
-) : UnityLocalPlayer(playerId, host, port, debuggingEnabled, projectName) {
+) : UnityLocalPlayer(playerId, host, port, debuggingEnabled, UnityLocalUwpPlayerDeviceKind, projectName) {
     companion object {
         const val TYPE = "UWPPlayer"
     }
@@ -150,7 +182,7 @@ class UnityLocalUwpPlayer(
  * This can include standalone players on other machines, mobile devices, consoles, etc.
  */
 class UnityRemotePlayer(playerId: String, host: String, port: Int, debuggingEnabled: Boolean, projectName: String?) :
-    UnityProcess(playerId, playerId, host, port, debuggingEnabled, projectName) {
+    UnityProcess(playerId, playerId, host, port, debuggingEnabled, UnityRemotePlayerDeviceKind) {
 
     override fun dump() =
         "$id ($displayName, $host:$port, debugging ${if (debuggingEnabled) "enabled" else "disabled"}, ${projectName ?: "no project name"})"
@@ -164,7 +196,7 @@ class UnityRemotePlayer(playerId: String, host: String, port: Int, debuggingEnab
  * We can also assume that the custom player is for the current project, or why else would you debug it?
  */
 class UnityCustomPlayer(displayName: String, host: String, port: Int, override val projectName: String) :
-    UnityProcess("$TYPE($host:$port)", displayName, host, port, true, projectName) {
+    UnityProcess("$TYPE($host:$port)", displayName, host, port, true, UnityCustomPlayerDeviceKind, projectName) {
     companion object {
         const val TYPE = "CustomPlayer"
     }
@@ -180,7 +212,7 @@ class UnityCustomPlayer(displayName: String, host: String, port: Int, override v
  * The local port is hardcoded at 12000 based on Unity's own open source debugger plugins.
  */
 class UnityIosUsbProcess(displayName: String, val deviceId: String, val deviceDisplayName: String) :
-    UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", 12000, true) {
+    UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", 12000, true, UnityIosDeviceKind) {
     companion object {
         const val TYPE = "iPhoneUSBPlayer"
     }
@@ -202,7 +234,7 @@ class UnityAndroidAdbProcess(
     port: Int,
     val packageUid: String,
     val packageName: String?
-) : UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", port, true) {
+) : UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", port, true, UnityAndroidDeviceKind) {
     companion object {
         const val TYPE = "AndroidADBPlayer"
     }

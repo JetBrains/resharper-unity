@@ -13,11 +13,11 @@ import com.intellij.ui.dsl.builder.panel
 import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.UnityEditor
+import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityConfigurationFactoryBase
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationOptions
-import com.jetbrains.rider.plugins.unity.run.devices.UnityDevice
 import com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider
 import com.jetbrains.rider.run.RiderRunBundle
 import com.jetbrains.rider.run.configurations.AsyncRunConfiguration
@@ -79,14 +79,14 @@ class UnityDevicePlayerConfiguration(project: Project, factory: UnityDevicePlaye
             throw CantRunException("Unexpected executor ID: ${executor.id}")
             // TODO: We should be able to return resolvedPromise(null), but the function's type doesn't allow this
         }
-        val device = ActiveDeviceManager.getInstance(project).getDevice<UnityDevice>()
-        return UnityAttachProfileState(getRemoteConfiguration(), environment, name, device?.process is UnityEditor)
+        val device = ActiveDeviceManager.getInstance(project).getDevice<UnityProcess>()
+        return UnityAttachProfileState(getRemoteConfiguration(), environment, name, device is UnityEditor)
     }
 
     private fun getRemoteConfiguration() = object : RemoteConfiguration {
-        val activeDevice = ActiveDeviceManager.getInstance(project).getDevice<UnityDevice>()
-        override var address = activeDevice?.process?.host ?: state.host!!
-        override var port = activeDevice?.process?.port ?: state.port
+        val activeDevice = ActiveDeviceManager.getInstance(project).getDevice<UnityProcess>()
+        override var address = activeDevice?.host ?: state.host!!
+        override var port = activeDevice?.port ?: state.port
         override var listenPortForConnections = false
     }
 
