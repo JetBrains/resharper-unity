@@ -3,10 +3,9 @@
 package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.openapi.util.NlsSafe
-import com.jetbrains.rider.plugins.unity.run.devices.UnityAndroidDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityCustomPlayerDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
-import com.jetbrains.rider.plugins.unity.run.devices.UnityIosDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityUsbDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityLocalPlayerDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityLocalUwpPlayerDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityRemotePlayerDeviceKind
@@ -212,7 +211,7 @@ class UnityCustomPlayer(displayName: String, host: String, port: Int, override v
  * The local port is hardcoded at 12000 based on Unity's own open source debugger plugins.
  */
 class UnityIosUsbProcess(displayName: String, val deviceId: String, val deviceDisplayName: String) :
-    UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", 12000, true, UnityIosDeviceKind) {
+    UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", 12000, true, UnityUsbDeviceKind) {
     companion object {
         const val TYPE = "iPhoneUSBPlayer"
     }
@@ -234,7 +233,7 @@ class UnityAndroidAdbProcess(
     port: Int,
     val packageUid: String,
     val packageName: String?
-) : UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", port, true, UnityAndroidDeviceKind) {
+) : UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", port, true, UnityUsbDeviceKind) {
     companion object {
         const val TYPE = "AndroidADBPlayer"
     }

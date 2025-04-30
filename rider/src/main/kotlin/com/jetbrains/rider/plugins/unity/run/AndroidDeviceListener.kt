@@ -15,6 +15,8 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.io.File
 import java.nio.file.Path
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import kotlin.concurrent.timer
 import kotlin.io.path.isDirectory
 
@@ -80,6 +82,8 @@ class AndroidDeviceListener() {
             }
 
             return adbExe
+        } catch (e: CancellationException) { // should never be logged
+            throw e
         } catch (e: Throwable) {
             logger.error(e)
             return null
@@ -94,8 +98,8 @@ class AndroidDeviceListener() {
         // Since we're running in a modal dialog, we block the normal UI thread scheduler for getAdbPath. However, that
         // uses startSuspending, which will work with the appropriate scheduler. It's also really quick, as we're just
         // fetching a single string value, so we can use runBlocking and wait for the call to complete
-        lifetime.launchBackground {
-            val adbExe = getAdbPath(project, lifetime) ?: return@launchBackground
+        lifetime.coroutineScope.launch {
+            val adbExe = getAdbPath(project, lifetime) ?: return@launch
 
             val refreshTimer = timer("Poll for Android devices via adb", true, 0L, refreshPeriod) {
                 refreshAndroidProcesses(adbExe, onPlayerAdded, onPlayerRemoved)

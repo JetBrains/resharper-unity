@@ -70,7 +70,7 @@ class UnityDevicePlayerFactory(type: ConfigurationType) : UnityConfigurationFact
 internal class UnityDevicePlayerDebugConfigurationType : ConfigurationTypeBase(
     ID,
     UnityBundle.message("configuration.type.name.attach.to.unity.device.player"),
-    UnityBundle.message("configuration.type.description.attach.to.unity.device.player.and.debug"),
+    "",
     UnityIcons.RunConfigurations.AttachToPlayer
 ), VirtualConfigurationType {
 

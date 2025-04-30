@@ -4,52 +4,75 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
-import com.intellij.util.ui.UIUtil
+import com.jetbrains.rd.util.lifetime.LifetimeDefinition
+import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggableProcessListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.run.devices.*
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Service(Service.Level.PROJECT)
 class UnityDevicesProvider(private val project: Project): DevicesProvider {
+    private val workingTime = 3_000L
     private val locker = Object()
-    private val availableDevices = mutableListOf<UnityProcess>()
-    private var refreshStartedOnce = AtomicBoolean(false)
+    private val cachedDevices = mutableListOf<UnityProcess>()
 
+    // Copy of all availableDevices - thread-safe
     private val allDevices
-        get() = mutableListOf<UnityProcess>().apply {
-            synchronized(locker) {
-                addAll(availableDevices)
-            }
+        get() = synchronized(locker) {
+            cachedDevices.toList()
         }
 
     override fun getDeviceKinds(): List<DeviceKind> {
-        return listOf(UnityIosDeviceKind, UnityAndroidDeviceKind, UnityCustomPlayerDeviceKind, UnityRemotePlayerDeviceKind,
+        return listOf(UnityUsbDeviceKind, UnityCustomPlayerDeviceKind, UnityRemotePlayerDeviceKind,
                       UnityLocalPlayerDeviceKind, UnityLocalUwpPlayerDeviceKind, UnityEditorDeviceKind, UnityVirtualPlayerDeviceKind)
     }
 
+    private var lifetime = LifetimeDefinition.Terminated
+    // we can't let UnityDebuggableProcessListener run all the time, so
+    // it just runs workingTime, collects devices
+    // when the device widget is touched, run it again
+    // in the worst case there might be a 3 seconds non blocking delay with updating devices
     override suspend fun loadAllDevices(): List<Device> {
-        val lifetime = UnityProjectLifetimeService.getLifetime(project)
-        if (refreshStartedOnce.compareAndSet(false, true)){
-            UnityDebuggableProcessListener(project, lifetime,
-                                           { UIUtil.invokeLaterIfNeeded { addProcess(it) } },
-                                           { UIUtil.invokeLaterIfNeeded { removeProcess(it) } }
-            )
+        if (lifetime.isNotAlive) {
+            lifetime = UnityProjectLifetimeService.getNestedLifetimeDefinition(project)
+            lifetime.coroutineScope.launch { updateDevices(lifetime) }
         }
 
         return allDevices
     }
 
-    private fun removeProcess(it: UnityProcess) {
-        availableDevices.remove(it)
-        ActiveDeviceManager.getInstance(project).removeDevice(it)
-        ActiveDeviceManager.getInstance(project).startRefreshingDevices()
-    }
+    private suspend fun updateDevices(lifetime: LifetimeDefinition) {
+        // Take a snapshot before starting - will use it later
+        val currentlyDiscovered = synchronized(locker) { cachedDevices.toSet() }
+        val previouslySeenDevices = currentlyDiscovered.toMutableSet()
 
-    fun addProcess(it: UnityProcess) {
-        availableDevices.add(it)
-        ActiveDeviceManager.getInstance(project).startRefreshingDevices()
+        // Listen for workingTime, updating availableDevices as discoveries happen
+        UnityDebuggableProcessListener(
+            project, lifetime,
+            onProcessAdded = { device ->
+                synchronized(locker) {
+                    previouslySeenDevices.remove(device)
+                    cachedDevices.remove(device)
+                    cachedDevices.add(device)
+                }
+                ActiveDeviceManager.getInstance(project).startRefreshingDevices()
+            },
+            onProcessRemoved = { device ->
+                synchronized(locker) {
+                    cachedDevices.remove(device)
+                }
+                ActiveDeviceManager.getInstance(project).startRefreshingDevices()
+            }
+        )
+        delay(workingTime)
+        // Drop devices, which were not seen during this scan
+        synchronized(locker) {
+            cachedDevices.removeAll(previouslySeenDevices)
+        }
+        lifetime.terminate()
     }
 
     override fun checkCompatibility(deviceKind: DeviceKind): CompatibilityProblem? = null

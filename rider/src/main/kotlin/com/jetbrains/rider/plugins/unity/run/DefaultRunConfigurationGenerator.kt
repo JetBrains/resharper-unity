@@ -34,7 +34,7 @@ class DefaultRunConfigurationGenerator {
         val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = UnityBundle.message("standalone.player")
         val RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME = UnityBundle.message("unit.tests.batch.mode")
         val RUN_DEBUG_START_UNITY_CONFIGURATION_NAME = UnityBundle.message("start.unity")
-        val RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME = UnityBundle.message("attach.player")
+        val RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME = UnityBundle.message("unity.smart.attach.player")
     }
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
