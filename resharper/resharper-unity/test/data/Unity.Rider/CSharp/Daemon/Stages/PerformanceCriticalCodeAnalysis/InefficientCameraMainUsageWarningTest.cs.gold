@@ -12,21 +12,21 @@ public class Test : MonoBehaviour
 
     |public void FixedUpdate()
     {
-        var x = |Camera.main|(1);
-        var fov = |Camera.main|(2).fieldOfView;
-    }|(0)
+        var x = |Camera.main|(0);
+        var fov = |Camera.main|(1).fieldOfView;
+    }|(2)
 
     |public void Update()
     {
-        var x = |Camera.main|(4);
-        var fov = |Camera.main|(5).fieldOfView;
-    }|(3)
+        var x = |Camera.main|(3);
+        var fov = |Camera.main|(4).fieldOfView;
+    }|(5)
 
     |public void LateUpdate()
     {
-        var x = |Camera.main|(7);
-        var fov = |Camera.main|(8).fieldOfView;
-    }|(6)
+        var x = |Camera.main|(6);
+        var fov = |Camera.main|(7).fieldOfView;
+    }|(8)
 }
 
 public class Boring
@@ -39,12 +39,12 @@ public class Boring
 }
 
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(0): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
 (1): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
-(2): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
-(3): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(3): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
 (4): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
-(5): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
-(6): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(5): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(6): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
 (7): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
-(8): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
+(8): ReSharper Unity Performance Critical Line Marker: Performance-critical context

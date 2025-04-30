@@ -10,36 +10,36 @@ namespace DefaultNamespace
     |private static void AnotherMethodName()
     {
       var test = new CommonTest();
-      test.|AnotherMethodNameA|(1)();
-    }|(0)
+      test.|AnotherMethodNameA|(0)();
+    }|(1)
 
     |private void AnotherMethodNameA()
     {
-      |Test|(3)();
+      |Test|(2)();
 
       void F()
       {
-        |GetComponent|(4)<CommonTest>();
+        |GetComponent|(3)<CommonTest>();
       }
 
       void Test()
       {
-        |F|(5)();
+        |F|(4)();
       }
-    }|(2)
+    }|(5)
 
     |private void Update()
     {
-      |action|(7)();
-    }|(6)
+      |action|(6)();
+    }|(7)
   }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(1): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (4): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(5): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(6): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(5): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(6): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(7): ReSharper Unity Performance Critical Line Marker: Performance-critical context

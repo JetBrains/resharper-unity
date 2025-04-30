@@ -8,48 +8,48 @@ namespace DefaultNamespace
 
         |public void Test()
         {
-            |Update|(1)();
-        }|(0)
+            |Update|(0)();
+        }|(1)
             
         |public void Update()
         {
             if (myRigidBody2D == null)
             {
-                myRigidBody2D = |GetComponent|(3)<RigidBody2D>();
+                myRigidBody2D = |GetComponent|(2)<RigidBody2D>();
             }
 
-            |Test|(4)();
-            |IndirectCostly|(5)();
+            |Test|(3)();
+            |IndirectCostly|(4)();
 
+            |Test2|(5)();
             |Test2|(6)();
             |Test2|(7)();
             |Test2|(8)();
-            |Test2|(9)();
-        }|(2)
+        }|(9)
         
         |private void IndirectCostly()
         {
-            var temp = gameObject.|GetComponent|(11)<RigidBody2D>();
-        }|(10)
+            var temp = gameObject.|GetComponent|(10)<RigidBody2D>();
+        }|(11)
 
         |private void Test2()
         {
-            |IndirectCostly|(13)();
-        }|(12)
+            |IndirectCostly|(12)();
+        }|(13)
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(1): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (4): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (5): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (6): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (8): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(10): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(11): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(12): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(13): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(9): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(10): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(11): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(12): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(13): ReSharper Unity Performance Critical Line Marker: Performance-critical context

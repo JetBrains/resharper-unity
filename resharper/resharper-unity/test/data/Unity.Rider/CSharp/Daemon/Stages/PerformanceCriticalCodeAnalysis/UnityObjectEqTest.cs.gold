@@ -7,22 +7,22 @@ namespace DefaultNamespace
         private GameObject gameObject = null;
         |public void Update()
         {
-            |IndirectCostly|(1)();
-        }|(0)
+            |IndirectCostly|(0)();
+        }|(1)
 
         |private void IndirectCostly()
         {
-            if (gameObject |==|(3) null)
+            if (gameObject |==|(2) null)
             {
-                |GetComponent|(4)<Transform>();
+                |GetComponent|(3)<Transform>();
                 // smth..
             }
-        }|(2)
+        }|(4)
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(3): ReSharper Unity Expensive Null Comparison: Comparison to 'null' is expensive
-(4): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(1): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(2): ReSharper Unity Expensive Null Comparison: Comparison to 'null' is expensive
+(3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(4): ReSharper Unity Performance Critical Line Marker: Performance-critical context

@@ -16,27 +16,27 @@ namespace DefaultNamespace
 
         |public void FixedUpdate()
         {
-            var a = |Vector3.up * 5f * 4f|(1);
-            |arr[0, 1]|(2) = 5;
+            var a = |Vector3.up * 5f * 4f|(0);
+            |arr[0, 1]|(1) = 5;
             if (myRigidBody2D == null)
             {
-                myRigidBody2D = |GetComponent|(3)<RigidBody2D>();
+                myRigidBody2D = |GetComponent|(2)<RigidBody2D>();
             }
 
             NotExpensive();
-        }|(0)
+        }|(3)
 
         |public void NotExpensive() {
-            var a = |Vector3.up * 5f * 4f|(5);
-            |arr[0, 1]|(6) = 5;
-        }|(4)
+            var a = |Vector3.up * 5f * 4f|(4);
+            |arr[0, 1]|(5) = 5;
+        }|(6)
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(1): ReSharper Unity Inefficient Multiplication Order: Order of multiplication operations is inefficient
-(2): ReSharper Unity Inefficient Multidimensional Array Usage: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
-(3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(4): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(5): ReSharper Unity Inefficient Multiplication Order: Order of multiplication operations is inefficient
-(6): ReSharper Unity Inefficient Multidimensional Array Usage: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
+(0): ReSharper Unity Inefficient Multiplication Order: Order of multiplication operations is inefficient
+(1): ReSharper Unity Inefficient Multidimensional Array Usage: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
+(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(3): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(4): ReSharper Unity Inefficient Multiplication Order: Order of multiplication operations is inefficient
+(5): ReSharper Unity Inefficient Multidimensional Array Usage: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
+(6): ReSharper Unity Performance Critical Line Marker: Performance-critical context

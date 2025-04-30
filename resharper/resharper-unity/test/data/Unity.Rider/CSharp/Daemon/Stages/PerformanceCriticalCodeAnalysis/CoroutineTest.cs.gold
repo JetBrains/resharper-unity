@@ -13,17 +13,17 @@ namespace DefaultNamespace
 
         |public void HotMethod()
         {
-            var x = gameObject.|GetComponent|(1)<Transform>();
-        }|(0)
+            var x = gameObject.|GetComponent|(0)<Transform>();
+        }|(1)
         
         |public IEnumerator HotMethod2()
         {
-            var x = |GetComponent|(3)<Transform>();
-        }|(2)
+            var x = |GetComponent|(2)<Transform>();
+        }|(3)
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(1): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(3): ReSharper Unity Performance Critical Line Marker: Performance-critical context

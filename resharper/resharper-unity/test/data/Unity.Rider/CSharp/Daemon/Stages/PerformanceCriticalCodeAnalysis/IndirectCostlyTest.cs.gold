@@ -7,20 +7,20 @@ namespace DefaultNamespace
         private Object[] container = null;
         |public void Update()
         {
-            |IndirectCostly|(1)();
-        }|(0)
+            |IndirectCostly|(0)();
+        }|(1)
 
         |private void IndirectCostly()
         {
             if (container == null)
             {
-                container = Object.|FindObjectsOfType|(3)<SimpleTest>();
+                container = Object.|FindObjectsOfType|(2)<SimpleTest>();
             }
-        }|(2)
+        }|(3)
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(1): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(3): ReSharper Unity Performance Critical Line Marker: Performance-critical context

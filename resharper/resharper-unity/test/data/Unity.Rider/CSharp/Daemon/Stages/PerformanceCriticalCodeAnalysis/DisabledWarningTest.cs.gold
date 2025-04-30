@@ -6,10 +6,10 @@ public class Test : MonoBehaviour
     {
         // ReSharper disable once Unity.PerformanceCriticalCodeCameraMain
         var x = Camera.main;
-        var fov = |Camera.main|(1).fieldOfView;
-    }|(0)
+        var fov = |Camera.main|(0).fieldOfView;
+    }|(1)
 }
 
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(1): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
+(0): ReSharper Unity Expensive Camera Main Usage: 'Camera.main' is expensive
+(1): ReSharper Unity Performance Critical Line Marker: Performance-critical context

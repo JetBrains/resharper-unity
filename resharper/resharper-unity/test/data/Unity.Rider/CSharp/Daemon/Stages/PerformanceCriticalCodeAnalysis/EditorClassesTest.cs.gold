@@ -4,40 +4,40 @@ using UnityEditor;
 
 public class TestEditor : Editor
 {
-    |public void DrawHeader() { Debug.|Log|(1)("test"); }|(0)
-    |public void OnInspectorGUI() { Debug.|Log|(3)("test"); }|(2)
-    |public void OnInteractivePreviewGUI() { Debug.|Log|(5)("test"); }|(4)
-    |public void OnPreviewGUI() { Debug.|Log|(7)("test"); }|(6)
-    |public void OnSceneGUI() { Debug.|Log|(9)("test"); }|(8)
+    |public void DrawHeader() { Debug.|Log|(0)("test"); }|(1)
+    |public void OnInspectorGUI() { Debug.|Log|(2)("test"); }|(3)
+    |public void OnInteractivePreviewGUI() { Debug.|Log|(4)("test"); }|(5)
+    |public void OnPreviewGUI() { Debug.|Log|(6)("test"); }|(7)
+    |public void OnSceneGUI() { Debug.|Log|(8)("test"); }|(9)
 }
 
 public class TestEditorWindow : EditorWindow
 {
-    |public void OnGUI() { Debug.|Log|(11)("test"); }|(10)
-    |public void OnInspectorUpdate() { Debug.|Log|(13)("test"); }|(12)
+    |public void OnGUI() { Debug.|Log|(10)("test"); }|(11)
+    |public void OnInspectorUpdate() { Debug.|Log|(12)("test"); }|(13)
 }
 
 public class TestPropertyDrawer : PropertyDrawer
 {
-    |public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) { Debug.|Log|(15)("test"); }|(14)
-    |public override float GetPropertyHeight(SerializedProperty property, GUIContent label) { Debug.|Log|(17)("test"); }|(16)
+    |public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) { Debug.|Log|(14)("test"); }|(15)
+    |public override float GetPropertyHeight(SerializedProperty property, GUIContent label) { Debug.|Log|(16)("test"); }|(17)
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(4): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(5): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(6): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(8): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(10): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(11): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(12): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(13): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(14): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(15): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(16): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(17): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(1): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(3): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(4): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(5): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(6): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(7): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(8): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(9): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(10): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(11): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(12): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(13): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(14): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(15): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(16): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(17): ReSharper Unity Performance Critical Line Marker: Performance-critical context
