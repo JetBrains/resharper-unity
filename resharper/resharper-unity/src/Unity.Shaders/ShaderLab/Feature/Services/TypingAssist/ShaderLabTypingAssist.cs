@@ -123,14 +123,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
                         return false;
                     
                     var rangeStart = offset;
-                    // Remove whitespaces after end of preceding non-whitespace token
-                    if (MoveToClosestTokenNodeTypeSkippingWhitespaces(cachingLexer, -1) is { IsWhitespace: false })
-                        rangeStart = cachingLexer.TokenEnd;
-                    cachingLexer.Advance();
-
-                    while (cachingLexer.TokenType is { IsWhitespace: true } && cachingLexer.TokenType != ShaderLabTokenType.NEW_LINE) 
+                    var rangeEnd = offset;
+                    var isInsideNonWhitespaceToken = cachingLexer.TokenType is { IsWhitespace: false } &&
+                                                     cachingLexer.TokenStart < offset &&
+                                                     cachingLexer.TokenEnd > offset;
+                    // no need to search for whitespaces if we are inside a non-whitespace token
+                    if (!isInsideNonWhitespaceToken)
+                    {
+                        // Remove whitespaces after end of preceding non-whitespace token
+                        if (MoveToClosestTokenNodeTypeSkippingWhitespaces(cachingLexer, -1) is { IsWhitespace: false })
+                            rangeStart = cachingLexer.TokenEnd;
                         cachingLexer.Advance();
-                    var rangeEnd = cachingLexer.TokenStart;
+
+                        while (cachingLexer.TokenType is { IsWhitespace: true } && cachingLexer.TokenType != ShaderLabTokenType.NEW_LINE)
+                            cachingLexer.Advance();
+                        rangeEnd = cachingLexer.TokenStart;
+                    }
 
                     var isStartOfBlock = cachingLexer.TokenType == ShaderLabTokenType.LBRACE;
                     var isEndOfBlock = cachingLexer.TokenType == ShaderLabTokenType.RBRACE;
