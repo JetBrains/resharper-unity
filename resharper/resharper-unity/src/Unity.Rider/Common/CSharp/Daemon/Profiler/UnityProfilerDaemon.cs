@@ -307,7 +307,7 @@ public class UnityProfilerDaemon(
             var max = samples.Max(s => s.Duration);
             var avg = samples.Average(s => s.Duration);
             return new(
-                string.Format(multiple.DisplayName, totalDuration, totalPercentage, totalAllocation, samples.Count),
+                string.Format(multiple.DisplayName, totalDuration, totalPercentage, samples.Count, totalAllocation),
                 string.Format(multiple.Tooltip, totalDuration, totalPercentage, min, max, avg, totalAllocation, samples.Count),
                 string.Format(multiple.MoreText, totalDuration, totalPercentage, min, max, avg, totalAllocation, samples.Count)
             );
@@ -344,7 +344,7 @@ public class UnityProfilerDaemon(
             var percentageSum = samples.Sum(s => s.FramePercentage);
             var memory = StringUtil.StrFormatByteSize(samples.Sum(s => s.MemoryAllocation));
 
-            var displayName = string.Format(highlightingString.DisplayName, durationSum, percentageSum, memory, samples.Count);
+            var displayName = string.Format(highlightingString.DisplayName, durationSum, percentageSum, samples.Count, memory);
             var tooltip = string.Format(highlightingString.Tooltip, qualifiedName, durationSum, percentageSum, memory,
                 samples.Count);
             var moreText = string.Format(highlightingString.MoreText, qualifiedName, durationSum, percentageSum, memory,

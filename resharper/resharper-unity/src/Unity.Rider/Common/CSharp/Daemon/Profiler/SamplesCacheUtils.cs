@@ -63,6 +63,9 @@ internal static class SamplesCacheUtils
                 stack.Push(sample);
             else
             {
+                //no children in the sample
+                sample.ShareMemoryAllocationsWithParent();
+                
                 var sanityCheck = 1000000;
                 while (stack.Count > 0 && --sanityCheck > 0)
                 {
@@ -74,6 +77,7 @@ internal static class SamplesCacheUtils
                     if (remainingChildren >= 1)
                         break;
 
+                    topSample.ShareMemoryAllocationsWithParent();                  
                     stack.Pop();
                 }
 

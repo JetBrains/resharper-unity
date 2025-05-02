@@ -10,6 +10,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     private static readonly ILog ourLogger = Log.GetLog(nameof(RawFrameDataViewAdapter));
     private readonly object? myRawFrameDataViewObject;
     private readonly RawFrameDataViewReflectionData? myReflectionData;
+    private int? myGCAllocMarkerId;
 
     internal RawFrameDataViewAdapter(object? rawFrameDataViewObject, RawFrameDataViewReflectionData? reflectionData)
     {
@@ -22,7 +23,21 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       }
 
       if (!myReflectionData.IsValid())
+      {
         ourLogger.Verbose($"{myReflectionData.GetType().Name} is not valid.");
+        return;
+      }
+
+      // Initialize GC allocation marker ID in constructor
+      try
+      {
+        myGCAllocMarkerId = (int)myReflectionData.GetMarkerIdMethod.Invoke(myRawFrameDataViewObject, new object[] { "GC.Alloc" });
+      }
+      catch (Exception ex)
+      {
+        ourLogger.Verbose($"Failed to initialize GC allocation marker ID: {ex}");
+        myGCAllocMarkerId = -1;
+      }
     }
 
     public void Dispose()
@@ -265,6 +280,42 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       {
         ourLogger.Verbose($"Error retrieving {nameof(myReflectionData.FrameStartTimeMsProperty)}: {ex}");
         return -1;
+      }
+    }
+
+    public long GetAllocSize(int sampleIndex)
+    {
+      if (myReflectionData == null || !myGCAllocMarkerId.HasValue)
+      {
+        ourLogger.Verbose($"Can't get {nameof(GetAllocSize)}: required data is not available.");
+        return 0;
+      }
+
+      // Early return if GC allocation marker ID is not found
+      if (myGCAllocMarkerId.Value == -1)
+        return 0;
+
+      try
+      {
+        // Get the sample marker ID first to avoid unnecessary metadata count check
+        var sampleMarkerId = GetSampleMarkerId(sampleIndex);
+
+        // Early return if the marker ID doesn't match the GC allocation marker ID
+        if (sampleMarkerId != myGCAllocMarkerId.Value)
+          return 0;
+
+        // Check if the sample has metadata
+        var sampleMetadataCount = (int)myReflectionData.GetSampleMetadataCountMethod.Invoke(myRawFrameDataViewObject, new object[] { sampleIndex });
+        if (sampleMetadataCount == 0)
+          return 0;
+
+        // Get the allocation size
+        return (long)myReflectionData.GetSampleMetadataAsLongMethod.Invoke(myRawFrameDataViewObject, new object[] { sampleIndex, 0 });
+      }
+      catch (Exception ex)
+      {
+        ourLogger.Verbose($"Error in {nameof(GetAllocSize)}: {ex}");
+        return 0;
       }
     }
   }

@@ -1,16 +1,20 @@
 #nullable enable
+using System.Linq;
 using JetBrains.Rider.Unity.Editor.Profiler.Adapters.Interfaces;
 using UnityEditor.Profiling;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.UnityApiBasedAdapters
 {
   public class UnityApiRawFrameDataViewAdapter : IRawFrameDataViewAdapter
   {
     private readonly RawFrameDataView myRawFrameDataView;
+    private readonly int myGCAllocMarkerId;
 
     public UnityApiRawFrameDataViewAdapter(RawFrameDataView rawFrameDataView)
     {
       myRawFrameDataView = rawFrameDataView;
+      myGCAllocMarkerId = myRawFrameDataView.GetMarkerId("GC.Alloc");
     }
 
     public void Dispose()
@@ -19,6 +23,25 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.UnityApiBasedAdapters
     }
 
     public bool Valid => myRawFrameDataView.valid;
+
+    public long GetAllocSize(int sampleIndex)
+    {
+      if (myGCAllocMarkerId == -1)
+        return 0;
+      var sampleMetadataCount = myRawFrameDataView.GetSampleMetadataCount(sampleIndex);
+      if(sampleMetadataCount == 0)
+        return 0;
+      
+      var sampleMarkerId = GetSampleMarkerId(sampleIndex);
+      var markerMetadataInfos = myRawFrameDataView.GetMarkerMetadataInfo(sampleMarkerId);
+      if(markerMetadataInfos != null)
+        Debug.Log($"{GetSampleName(sampleIndex)}:{string.Join("|", markerMetadataInfos.Select(x => $"{x.name}:{x.type}:{x.unit}"))}");
+
+      if (sampleMarkerId != myGCAllocMarkerId)
+        return 0;
+
+      return myRawFrameDataView.GetSampleMetadataAsLong(sampleIndex, 0);
+    }
 
     public double GetSampleTimeMs(int sampleIndex)
     {

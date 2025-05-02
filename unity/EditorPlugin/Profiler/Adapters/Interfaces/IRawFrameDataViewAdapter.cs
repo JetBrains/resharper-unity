@@ -15,5 +15,6 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.Interfaces
     int GetSampleMarkerId(int index);
     int GetSampleChildrenCount(int index);
     string GetSampleName(int index);
+    long GetAllocSize(int i);
   }
 }

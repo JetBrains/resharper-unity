@@ -79,7 +79,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         var duration = rawFrameDataView.GetSampleTimeMs(i);
         var markerId = rawFrameDataView.GetSampleMarkerId(i);
         var childrenCount = rawFrameDataView.GetSampleChildrenCount(i);
-        var sampleInfo = new SampleInfo(duration, markerId, childrenCount);
+        var memoryAllocSize = rawFrameDataView.GetAllocSize(i);
+        var sampleInfo = new SampleInfo(duration, markerId, memoryAllocSize, childrenCount);
         currentProfilerFrameSnapshot.Samples.Add(sampleInfo);
 
         if (i % batchSize == 0)

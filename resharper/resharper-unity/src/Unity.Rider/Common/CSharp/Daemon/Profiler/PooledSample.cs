@@ -30,6 +30,8 @@ public class PooledSample : IDisposable
         get => myChildren.NotNull("Object was disposed");
         private set => myChildren = value;
     }
+    
+    private bool myMemoryIsSharedWithParent = false;
 
     public int ChildrenCount { get; private set; }
     public string QualifiedName { get; private set; }
@@ -143,6 +145,16 @@ public class PooledSample : IDisposable
     public override string ToString()
     {
         return $"{Id}|{QualifiedName}|{Duration}|{StringUtil.StrFormatByteSize(MemoryAllocation)}|{GetCallStack()}";
+    }
+
+    public void ShareMemoryAllocationsWithParent()
+    {
+        if (myMemoryIsSharedWithParent)
+            throw new InvalidOperationException("Cannot share memory allocations with parent memory allocations");
+        
+        if(Parent != null) 
+            Parent.MemoryAllocation += MemoryAllocation;
+        myMemoryIsSharedWithParent = true;
     }
 
     public void AddChild(PooledSample sample)

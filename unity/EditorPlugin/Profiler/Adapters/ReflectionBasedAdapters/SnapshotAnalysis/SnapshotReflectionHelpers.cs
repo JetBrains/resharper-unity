@@ -33,6 +33,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     private const string GetSampleMarkerIdMethodName = "GetSampleMarkerId";
     private const string GetSampleChildrenCountMethodName = "GetSampleChildrenCount";
     private const string GetSampleNameMethodName = "GetSampleName";
+    private const string GetMarkerIdMethodName = "GetMarkerId";
+    private const string GetSampleMetadataCountMethodName = "GetSampleMetadataCount";
+    private const string GetMarkerMetadataInfoMethodName = "GetMarkerMetadataInfo";
+    private const string GetSampleMetadataAsLongMethodName = "GetSampleMetadataAsLong";
     private const string FrameStartTimeMsPropertyName = "frameStartTimeMs";
     private const string FrameTimeMsPropertyName = "frameTimeMs";
     private const string SampleCountPropertyName = "sampleCount";
@@ -46,6 +50,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     public readonly MethodInfo GetSampleMarkerIdMethod;
     public readonly MethodInfo GetSampleNameMethod;
     public readonly MethodInfo GetSampleTimeMsMethod;
+    public readonly MethodInfo GetMarkerIdMethod;
+    public readonly MethodInfo GetSampleMetadataCountMethod;
+    public readonly MethodInfo GetMarkerMetadataInfoMethod;
+    public readonly MethodInfo GetSampleMetadataAsLongMethod;
     public readonly Type RawFrameDataViewType;
     public readonly PropertyInfo SampleCountProperty;
     public readonly PropertyInfo ThreadIndexProperty;
@@ -64,6 +72,16 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
         BindingFlags.Instance | BindingFlags.Public);
       GetSampleNameMethod =
         RawFrameDataViewType.GetMethod(GetSampleNameMethodName, BindingFlags.Instance | BindingFlags.Public);
+
+      // Methods for GetAllocSize
+      GetMarkerIdMethod =
+        RawFrameDataViewType.GetMethod(GetMarkerIdMethodName, BindingFlags.Instance | BindingFlags.Public);
+      GetSampleMetadataCountMethod =
+        RawFrameDataViewType.GetMethod(GetSampleMetadataCountMethodName, BindingFlags.Instance | BindingFlags.Public);
+      GetMarkerMetadataInfoMethod =
+        RawFrameDataViewType.GetMethod(GetMarkerMetadataInfoMethodName, BindingFlags.Instance | BindingFlags.Public);
+      GetSampleMetadataAsLongMethod =
+        RawFrameDataViewType.GetMethod(GetSampleMetadataAsLongMethodName, BindingFlags.Instance | BindingFlags.Public);
 
       FrameStartTimeMsProperty =
         RawFrameDataViewType.GetProperty(FrameStartTimeMsPropertyName, BindingFlags.Instance | BindingFlags.Public);
@@ -85,6 +103,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
              && GetSampleMarkerIdMethod != null
              && GetSampleChildrenCountMethod != null
              && GetSampleNameMethod != null
+             && GetMarkerIdMethod != null
+             && GetSampleMetadataCountMethod != null
+             && GetMarkerMetadataInfoMethod != null
+             && GetSampleMetadataAsLongMethod != null
              && FrameStartTimeMsProperty != null
              && FrameTimeMsProperty != null
              && SampleCountProperty != null
