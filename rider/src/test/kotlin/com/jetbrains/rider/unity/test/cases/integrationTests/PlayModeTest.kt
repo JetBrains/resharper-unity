@@ -72,8 +72,8 @@ abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithU
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class PlayModeTestUnity2020 : PlayModeTest(Unity.V2020) {
     init {
-        addMute(Mute("RIDER-105666"), ::checkAttachDebuggerToUnityEditor)
-        addMute(Mute("RIDER-105666"), ::checkAttachDebuggerToUnityEditorAndPlay)
+        addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditor)
+        addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditorAndPlay)
     }
 }
 
@@ -81,7 +81,7 @@ class PlayModeTestUnity2020 : PlayModeTest(Unity.V2020) {
 class PlayModeTestUnity2022 : PlayModeTest(Unity.V2022) {
     init {
         addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
-        addMute(Mute("RIDER-105666"), ::checkAttachDebuggerToUnityEditorAndPlay)
+        addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditorAndPlay)
         addMute(Mute("RIDER-122954", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkAttachDebuggerToUnityEditor)
     }
 }
@@ -91,8 +91,8 @@ class PlayModeTestUnity6 : PlayModeTest(Unity.V6)
 {
     init {
         addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
-        addMute(Mute("RIDER-105666"), ::checkAttachDebuggerToUnityEditor)
-        addMute(Mute("RIDER-105666"), ::checkAttachDebuggerToUnityEditorAndPlay)
+        addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditor)
+        addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditorAndPlay)
     }
 }
 
