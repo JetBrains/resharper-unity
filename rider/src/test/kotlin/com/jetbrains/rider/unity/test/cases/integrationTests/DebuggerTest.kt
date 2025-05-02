@@ -214,13 +214,6 @@ class DebuggerTestUnity2020 : DebuggerTest(Unity.V2020)  {
 class DebuggerTestUnity2022 : DebuggerTest(Unity.V2022)
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DebuggerTestUnity2023 : DebuggerTest(Unity.V2023) {
-    init {
-      addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
-    }
-}
-
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity6 : DebuggerTest(Unity.V6) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
