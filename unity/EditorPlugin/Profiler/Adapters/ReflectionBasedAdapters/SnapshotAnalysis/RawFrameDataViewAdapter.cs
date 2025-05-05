@@ -10,7 +10,11 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     private static readonly ILog ourLogger = Log.GetLog(nameof(RawFrameDataViewAdapter));
     private readonly object? myRawFrameDataViewObject;
     private readonly RawFrameDataViewReflectionData? myReflectionData;
-    private int? myGCAllocMarkerId;
+    private readonly int? myGCAllocMarkerId;
+
+    // Cached reflection parameter arrays for common method calls
+    private readonly object[] mySingleIntParameterArray = new object[1];
+    private readonly object[] myTwoIntParametersArray = new object[2];
 
     internal RawFrameDataViewAdapter(object? rawFrameDataViewObject, RawFrameDataViewReflectionData? reflectionData)
     {
@@ -63,8 +67,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
 
       try
       {
-        return (float)myReflectionData.GetSampleTimeMsMethod.Invoke(myRawFrameDataViewObject,
-          new object[] { sampleIndex });
+        mySingleIntParameterArray[0] = sampleIndex;
+        return (float)myReflectionData.GetSampleTimeMsMethod.Invoke(myRawFrameDataViewObject, mySingleIntParameterArray);
       }
       catch (Exception ex)
       {
@@ -83,7 +87,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
 
       try
       {
-        return (int)myReflectionData.GetSampleMarkerIdMethod.Invoke(myRawFrameDataViewObject, new object[] { index });
+        mySingleIntParameterArray[0] = index;
+        return (int)myReflectionData.GetSampleMarkerIdMethod.Invoke(myRawFrameDataViewObject, mySingleIntParameterArray);
       }
       catch (Exception ex)
       {
@@ -102,8 +107,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
 
       try
       {
-        return (int)myReflectionData.GetSampleChildrenCountMethod.Invoke(myRawFrameDataViewObject,
-          new object[] { index });
+        mySingleIntParameterArray[0] = index;
+        return (int)myReflectionData.GetSampleChildrenCountMethod.Invoke(myRawFrameDataViewObject, mySingleIntParameterArray);
       }
       catch (Exception ex)
       {
@@ -263,26 +268,6 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       }
     }
 
-    // Property invocations
-    public float GetFrameStartTimeMs()
-    {
-      if (myReflectionData == null)
-      {
-        ourLogger.Verbose($"Can't get {nameof(GetFrameStartTimeMs)}: {nameof(myReflectionData)} is null.");
-        return -1;
-      }
-
-      try
-      {
-        return (float)myReflectionData.FrameStartTimeMsProperty.GetValue(myRawFrameDataViewObject);
-      }
-      catch (Exception ex)
-      {
-        ourLogger.Verbose($"Error retrieving {nameof(myReflectionData.FrameStartTimeMsProperty)}: {ex}");
-        return -1;
-      }
-    }
-
     public long GetAllocSize(int sampleIndex)
     {
       if (myReflectionData == null || !myGCAllocMarkerId.HasValue)
@@ -305,12 +290,15 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
           return 0;
 
         // Check if the sample has metadata
-        var sampleMetadataCount = (int)myReflectionData.GetSampleMetadataCountMethod.Invoke(myRawFrameDataViewObject, new object[] { sampleIndex });
+        mySingleIntParameterArray[0] = sampleIndex;
+        var sampleMetadataCount = (int)myReflectionData.GetSampleMetadataCountMethod.Invoke(myRawFrameDataViewObject, mySingleIntParameterArray);
         if (sampleMetadataCount == 0)
           return 0;
 
         // Get the allocation size
-        return (long)myReflectionData.GetSampleMetadataAsLongMethod.Invoke(myRawFrameDataViewObject, new object[] { sampleIndex, 0 });
+        myTwoIntParametersArray[0] = sampleIndex;
+        myTwoIntParametersArray[1] = 0;
+        return (long)myReflectionData.GetSampleMetadataAsLongMethod.Invoke(myRawFrameDataViewObject, myTwoIntParametersArray);
       }
       catch (Exception ex)
       {

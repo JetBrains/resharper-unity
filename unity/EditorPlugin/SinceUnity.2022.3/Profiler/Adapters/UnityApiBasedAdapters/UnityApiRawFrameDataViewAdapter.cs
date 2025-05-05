@@ -33,14 +33,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.UnityApiBasedAdapters
         return 0;
       
       var sampleMarkerId = GetSampleMarkerId(sampleIndex);
-      var markerMetadataInfos = myRawFrameDataView.GetMarkerMetadataInfo(sampleMarkerId);
-      if(markerMetadataInfos != null)
-        Debug.Log($"{GetSampleName(sampleIndex)}:{string.Join("|", markerMetadataInfos.Select(x => $"{x.name}:{x.type}:{x.unit}"))}");
-
-      if (sampleMarkerId != myGCAllocMarkerId)
-        return 0;
-
-      return myRawFrameDataView.GetSampleMetadataAsLong(sampleIndex, 0);
+      return sampleMarkerId != myGCAllocMarkerId 
+        ? 0 
+        : myRawFrameDataView.GetSampleMetadataAsLong(sampleIndex, 0);
     }
 
     public double GetSampleTimeMs(int sampleIndex)

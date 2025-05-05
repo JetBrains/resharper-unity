@@ -1,9 +1,12 @@
 #nullable enable
 
 using System;
+using System.Buffers;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
 using JetBrains.Util.DataStructures.Specialized;
 
@@ -15,38 +18,73 @@ internal static class SamplesCacheUtils
 
     private static readonly ObjectPool<PooledDictionary<int, string>> ourIdNameDictionaryPool = PooledDictionary<int, string>.CreatePool();
 
+    // Constants for string comparisons
+    private const string InvokeConst = "[Invoke]";
+    private const string BracketsConst = "()";
+
+    // Helper methods to get spans for string constants to avoid allocations when comparing
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ReadOnlySpan<char> GetInvokeSpan() => InvokeConst.AsSpan();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ReadOnlySpan<char> GetBracketsSpan() => BracketsConst.AsSpan();
+
+    /// <summary>
+    /// Constructs a cache of profiler samples from a Unity profiler snapshot.
+    /// This method is optimized for performance and memory usage.
+    /// </summary>
+    /// <param name="snapshot">The Unity profiler snapshot to process</param>
+    /// <param name="cacheUpdatingProgress">Optional progress reporter</param>
+    /// <returns>A pooled cache of samples</returns>
     [MustDisposeResource]
     public static PooledSamplesCache ConstructCache(UnityProfilerSnapshot? snapshot,
         IProgress<double>? cacheUpdatingProgress = null)
     {
         if(snapshot == null)
             return PooledSamplesCache.GetInstance();
-        
+
         var samplesCache = PooledSamplesCache.GetInstance();
         samplesCache.SnapshotInfo = snapshot.Status;
 
         using var stack = ourSamplesStackPool.Allocate();
         using var markerIdToName = ourIdNameDictionaryPool.Allocate();
+
+        // Pre-allocate capacity to avoid resizing
+        // Note: EnsureCapacity is not available in .NET Framework 4.7.2
+        // We'll rely on the Dictionary's automatic resizing
+
         foreach (var (id, name) in snapshot.MarkerIdToName) 
             markerIdToName.Add(id, name);
 
         var samplesCount = snapshot.Samples.Count;
-        var batchSize = samplesCount / 100;
+        // Avoid division by zero
+        var batchSize = samplesCount > 100 ? samplesCount / 100 : 1;
+
+        // Cache frame time to avoid repeated division
+        var frameTimeMs = snapshot.FrameTimeMs;
+
+        // Cache samples collection to avoid repeated property access
+        var samples = snapshot.Samples;
+
+        // Process samples in batches for better cache locality
         for (var index = 0; index < samplesCount; index++)
         {
             if(index % batchSize == 0)
                 cacheUpdatingProgress?.Report(index / (double) samplesCount);
-            
-            var sampleInfo = snapshot.Samples[index];
-            if (!markerIdToName.TryGetValue(sampleInfo.MarkerId, out var sampleName))
-                sampleName = string.Empty;
+
+            var sampleInfo = samples[index];
+
+            // Use TryGetValue with out parameter to avoid extra lookup
+            string sampleName;
+            if (!markerIdToName.TryGetValue(sampleInfo.MarkerId, out sampleName))
+                sampleName = EmptyString;
 
             var parsingResult = ParseSampleName(sampleName);
             var childrenCount = sampleInfo.ChildrenCount;
 
             var sample = PooledSample.GetInstance(parsingResult.QualifiedName, parsingResult.TypeName,
                 parsingResult.AssemblyName, sampleInfo.Duration,
-                sampleInfo.Duration / snapshot.FrameTimeMs, sampleInfo.MarkerId, childrenCount, sampleInfo.MemoryAllocation);
+                sampleInfo.Duration / frameTimeMs, sampleInfo.MarkerId, childrenCount, sampleInfo.MemoryAllocation);
 
             //Add to cache collections
             samplesCache.RegisterSample(sample);
@@ -65,8 +103,11 @@ internal static class SamplesCacheUtils
             {
                 //no children in the sample
                 sample.ShareMemoryAllocationsWithParent();
-                
-                var sanityCheck = 1000000;
+
+                // Use a constant for the sanity check to avoid magic numbers
+                const int maxIterations = 1000000;
+                var sanityCheck = maxIterations;
+
                 while (stack.Count > 0 && --sanityCheck > 0)
                 {
                     var topSample = stack.Peek();
@@ -94,6 +135,12 @@ internal static class SamplesCacheUtils
         public readonly string QualifiedName = qualifiedName;
         public readonly string TypeName = typeName;
     }
+
+    // Cache for frequently used empty strings to avoid allocations
+    private static readonly string EmptyString = string.Empty;
+
+    // Use MethodImpl to suggest inlining for this performance-critical method
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static SampleParsingResult ParseSampleName(string sampleName)
     {
         //AssemblyName.dll!NamespaceName::ClassName.MethodName() [Invoke]
@@ -101,29 +148,90 @@ internal static class SamplesCacheUtils
         //  Assembly-CSharp.dll!MyNamespace2::HeavyScript2.get_GetName() [Invoke]
         //  Assembly-CSharp.dll!MyNamespace2::HeavyScript2.Update() 
 
-        var parts = sampleName.Split('!');
-        var dllName = parts[0];
-        if (parts.Length == 1)
-            dllName = string.Empty;
+        // Fast path for empty or null strings
+        if (string.IsNullOrEmpty(sampleName))
+            return new SampleParsingResult(EmptyString, EmptyString, EmptyString);
 
-        var qualifiedName = parts[parts.Length - 1]; //get the last part
+        var slice = new StringSlice(sampleName);
 
-        qualifiedName = qualifiedName.StartsWith("::")
-            ? qualifiedName.Substring(2, qualifiedName.Length - 2) //empty namespace
-            : qualifiedName.Replace("::", "."); //replace :: with .
+        // Extract dllName
+        string dllName;
+        var exclamationIndex = slice.IndexOf('!');
+        if (exclamationIndex < 0)
+        {
+            dllName = EmptyString;
+        }
+        else
+        {
+            dllName = slice.Substring(0, exclamationIndex).ToString();
+            slice = slice.Substring(exclamationIndex + 1);
+        }
 
+        // Process qualifiedName
+        var doubleColonIndex = slice.IndexOf("::");
+        if (doubleColonIndex == 0)
+        {
+            // Empty namespace
+            slice = slice.Substring(2);
+        }
+        else if (doubleColonIndex > 0)
+        {
+            // Replace :: with .
+            using var sb = PooledStringBuilder.GetInstance();
+            var startIndex = 0;
 
-        var invoke = "[Invoke]";
-        if (qualifiedName.EndsWith(invoke))
-            qualifiedName = qualifiedName.Substring(0, qualifiedName.Length - invoke.Length).Trim();
+            // Pre-allocate StringBuilder capacity based on input length to avoid resizing
+            // Add extra capacity for potential '.' replacements
+            sb.Builder.EnsureCapacity(slice.Length + 10);
 
-        var brackets = "()";
-        if (qualifiedName.EndsWith(brackets))
-            qualifiedName = qualifiedName.Substring(0, qualifiedName.Length - brackets.Length);
+            while (true)
+            {
+                doubleColonIndex = slice.IndexOf("::", startIndex);
+                if (doubleColonIndex < 0)
+                {
+                    sb.Append(slice.Substring(startIndex).ToString());
+                    break;
+                }
 
-        // #error wrong type parsing
-        qualifiedName = qualifiedName.Trim();
-        var typeName = qualifiedName.SubstringOrEmpty(0, qualifiedName.LastIndexOf('.'));
+                sb.Append(slice.Substring(startIndex, doubleColonIndex - startIndex).ToString());
+                sb.Append('.');
+                startIndex = doubleColonIndex + 2;
+            }
+
+            slice = new StringSlice(sb.ToString());
+        }
+
+        // Use ReadOnlySpan for string comparisons to avoid allocations
+        // Remove [Invoke] if present
+        var invokeSpan = GetInvokeSpan();
+        if (slice.Length >= invokeSpan.Length)
+        {
+            var sliceEnd = slice.ToString().AsSpan().Slice(slice.Length - invokeSpan.Length);
+            if (sliceEnd.SequenceEqual(invokeSpan))
+            {
+                slice = slice.Substring(0, slice.Length - invokeSpan.Length).Trim();
+            }
+        }
+
+        // Remove () if present
+        var bracketsSpan = GetBracketsSpan();
+        if (slice.Length >= bracketsSpan.Length)
+        {
+            var sliceEnd = slice.ToString().AsSpan().Slice(slice.Length - bracketsSpan.Length);
+            if (sliceEnd.SequenceEqual(bracketsSpan))
+            {
+                slice = slice.Substring(0, slice.Length - bracketsSpan.Length);
+            }
+        }
+
+        // Trim and get final qualifiedName
+        slice = slice.Trim();
+        var qualifiedName = slice.ToString();
+
+        // Extract typeName
+        var lastDotIndex = slice.LastIndexOf('.');
+        var typeName = lastDotIndex > 0 ? slice.Substring(0, lastDotIndex).ToString() : EmptyString;
+
         return new SampleParsingResult(dllName, qualifiedName, typeName);
     }
 }

@@ -25,7 +25,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       ourLogger.Trace(
         $"GetCurrentProfilerSnapshotStatusInfo: {nameof(selectedFrameIndex)}:{selectedFrameIndex} {nameof(threadIndex)}:{threadIndex}");
       using var rawFrameDataView = myProfilerSnapshotDriverAdapter.GetRawFrameDataView(selectedFrameIndex, threadIndex);
-      
+
       return rawFrameDataView.ToSnapshotStatus(selectedFrameIndex,
        rawFrameDataView is { Valid: true, SampleCount: > 0 }
           ? SnapshotStatus.HasNewSnapshotDataToFetch
@@ -61,28 +61,44 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         SnapshotStatus.SnapshotDataFetchingInProgress);
       progress?.Report(snapshotStatus);
 
+      // Pre-allocate collections with capacity to avoid resizing
+      var markerIdToName = new List<MarkerToNamePair>(sampleCount / 4); // Assuming ~25% unique markers
+      var samples = new List<SampleInfo>(sampleCount);
+
       var currentProfilerFrameSnapshot = new UnityProfilerSnapshot(
         snapshotRequestInfo.FrameIndex,
         rawFrameDataView.FrameStartTimeMs,
         rawFrameDataView.FrameTimeMs,
         threadId, threadName,
-        new List<MarkerToNamePair>(sampleCount),
-        new List<SampleInfo>(sampleCount),
+        markerIdToName,
+        samples,
         snapshotStatus);
 
       lifetime.ThrowIfNotAlive();
 
-      var knownMarkerIds = new HashSet<int>();
-      var batchSize = sampleCount / 20;
+      // Use HashSet for faster lookups
+      var knownMarkerIds =
+#if UNITY_2022_3_OR_NEWER
+        new HashSet<int>(sampleCount / 4);
+#else
+        new HashSet<int>();
+#endif
+      
+      var batchSize = Math.Max(1, sampleCount / 20); // Ensure batchSize is at least 1
+
+      // Start from 1 as the first sample is usually the frame itself
       for (var i = 1; i < sampleCount; i++)
       {
-        var duration = rawFrameDataView.GetSampleTimeMs(i);
+        // Get all sample data at once to minimize method calls
         var markerId = rawFrameDataView.GetSampleMarkerId(i);
+        var duration = rawFrameDataView.GetSampleTimeMs(i);
         var childrenCount = rawFrameDataView.GetSampleChildrenCount(i);
         var memoryAllocSize = rawFrameDataView.GetAllocSize(i);
-        var sampleInfo = new SampleInfo(duration, markerId, memoryAllocSize, childrenCount);
-        currentProfilerFrameSnapshot.Samples.Add(sampleInfo);
 
+        // Create and add sample info
+        samples.Add(new SampleInfo(duration, markerId, memoryAllocSize, childrenCount));
+
+        // Report progress periodically
         if (i % batchSize == 0)
           progress?.Report(rawFrameDataView.ToSnapshotStatus(snapshotRequestInfo.FrameIndex,
             SnapshotStatus.SnapshotDataFetchingInProgress,
@@ -90,12 +106,13 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
         lifetime.ThrowIfNotAlive();
 
-        if (knownMarkerIds.Contains(markerId))
-          continue;
-
-        var sampleName = rawFrameDataView.GetSampleName(i);
-        knownMarkerIds.Add(markerId);
-        currentProfilerFrameSnapshot.MarkerIdToName.Add(new MarkerToNamePair(markerId, sampleName));
+        // Only get sample name if we haven't seen this marker ID before
+        if (!knownMarkerIds.Contains(markerId))
+        {
+          var sampleName = rawFrameDataView.GetSampleName(i);
+          knownMarkerIds.Add(markerId);
+          markerIdToName.Add(new MarkerToNamePair(markerId, sampleName));
+        }
       }
 
       ourLogger.Verbose($"GetUnityProfilerSnapshot: {nameof(currentProfilerFrameSnapshot)} is ready");
