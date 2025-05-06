@@ -16,6 +16,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Daemon
 {
+    // todo: consider migrating to `INamespaceFolderCustomizer`
+    
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class NamespaceProviderProjectSettingsProvider : IUnityProjectSettingsProvider
     {
@@ -91,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Daemon
         {
             var index = NamespaceFolderProvider.GetIndexFromOldIndex(VirtualFileSystemPath.Parse(path, InteractionContext.SolutionContext,
                 FileSystemPathInternStrategy.TRY_GET_INTERNED_BUT_DO_NOT_INTERN));
-            SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, index, true);
+            SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.GetNamespaceFoldersToProcessAccessor(true), index, true);
         }
 
         private void ExcludePackagesFoldersFromNamespace(ISettingsStorageMountPoint mountPoint,
