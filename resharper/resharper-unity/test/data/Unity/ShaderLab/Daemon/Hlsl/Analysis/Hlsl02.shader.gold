@@ -33,7 +33,7 @@
             // put more per-instance properties here
         |UNITY_INSTANCING_BUFFER_END|(4)(|Props|(5))
 
-        void surf (Input |IN|(6), inout |SurfaceOutputStandard|(7) ||o|(8)|(9)) {
+        void surf (Input IN, inout |SurfaceOutputStandard|(6) |o|(7)) {
         
             #if SHADER_TARGET > 40
                 // Albedo comes from a texture tinted by color
@@ -56,7 +56,5 @@
 (3): ReSharper Underlined Error Highlighting: This declarator has unknown type
 (4): ReSharper Error Highlighting: Cannot resolve symbol 'UNITY_INSTANCING_BUFFER_END'
 (5): ReSharper Underlined Error Highlighting: This declarator has unknown type
-(6): ReSharper Dead Code: Parameter 'IN' is never used
-(7): ReSharper Error Highlighting: Cannot resolve symbol 'SurfaceOutputStandard'
-(8): ReSharper Dead Code: Parameter 'o' is never used
-(9): ReSharper Underlined Error Highlighting: This declarator has unknown type
+(6): ReSharper Error Highlighting: Cannot resolve symbol 'SurfaceOutputStandard'
+(7): ReSharper Underlined Error Highlighting: This declarator has unknown type

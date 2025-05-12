@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using JetBrains.Application;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Cpp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -22,6 +23,7 @@ using JetBrains.ReSharper.Psi.Cpp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Threading;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
@@ -45,8 +47,7 @@ public class ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar element
 file struct BranchingState
 {
     public HashSet<string>? Keywords;
-    public ITreeNode? FirstInactiveNode;
-    public ITreeNode? LastInactiveNode;
+    public ITreeNode? InactiveNode;
 }
 
 file class ShaderKeywordsHighlightProcess(IDaemonProcess process, IContextBoundSettingsStore settingsStore, CppFile file, ShaderProgramInfo shaderProgramInfo, ShaderApi shaderApi, ShaderPlatform shaderPlatform, ISet<string> enabledKeywords, IReadOnlyDictionary<string, PragmaCommand> pragmas, IInactiveShaderBranchHighlightFactory? inactiveShaderBranchHighlightFactory)
@@ -105,7 +106,7 @@ file class ShaderKeywordsHighlightProcess(IDaemonProcess process, IContextBoundS
                     else if (nodeType == CppTokenNodeTypes.ELIF_DIRECTIVE || nodeType == CppTokenNodeTypes.ELSE_DIRECTIVE)
                     {
                         HandleEndOfBranch(consumer);
-                        myBranching.FirstInactiveNode = myBranching.LastInactiveNode = null;
+                        myBranching.InactiveNode = null;
                     }
                     else if (nodeType == CppTokenNodeTypes.ENDIF_DIRECTIVE)
                     {
@@ -116,7 +117,7 @@ file class ShaderKeywordsHighlightProcess(IDaemonProcess process, IContextBoundS
                 case PPPragmaDirective pragmaDirective:
                     VisitPragmaDirective(pragmaDirective, consumer);
                     break;
-                case { NodeType: {} nodeType } when nodeType == CppTokenNodeTypes.CONDITIONALLY_NOT_COMPILED_CODE:
+                case { NodeType: {} nodeType } when nodeType == CppCompositeNodeTypes.CONDITIONALLY_NOT_COMPILED_FRAGMENT:
                     VisitInactiveNode(element);
                     break;
             }
@@ -144,8 +145,8 @@ file class ShaderKeywordsHighlightProcess(IDaemonProcess process, IContextBoundS
     private void HandleEndOfBranch(IHighlightingConsumer consumer)
     {
         if (!(inactiveShaderBranchHighlightFactory != null 
-              && myBranching is { Keywords: {} keywords, FirstInactiveNode: {} first, LastInactiveNode: {} last})) return;
-        var highlight = inactiveShaderBranchHighlightFactory.CreateInactiveShaderBranchHighlight(file.GetDocumentRange(new TreeTextRange(first.GetTreeStartOffset(), last.GetTreeEndOffset())), keywords);
+              && myBranching is { Keywords: {} keywords, InactiveNode: {} inactiveNode})) return;
+        var highlight = inactiveShaderBranchHighlightFactory.CreateInactiveShaderBranchHighlight(inactiveNode.GetDocumentRange(), keywords);
         consumer.ConsumeHighlighting(new HighlightingInfo(highlight.CalculateRange(), highlight));
     }
 
@@ -195,10 +196,12 @@ file class ShaderKeywordsHighlightProcess(IDaemonProcess process, IContextBoundS
         }
     }
 
-    private void VisitInactiveNode(ITreeNode branchNode)
+    private void VisitInactiveNode(ITreeNode inactiveNode)
     {
-        myBranching.FirstInactiveNode ??= branchNode;
-        myBranching.LastInactiveNode = branchNode;
+        if (myBranching.InactiveNode != null)
+            Logger.LogError("inactive node is already set");
+
+        myBranching.InactiveNode = inactiveNode;
     }
 
     private bool TryGetShaderFeatures(string symbol, out string keyword, out OneToListMap<string, ShaderFeature>.ValueCollection features)
