@@ -17,9 +17,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.YamlTestFramework
       ".asset",
       ".unity"
     };
-    
+
     public UnityExtensionMappingAttribute() : base(typeof(YamlProjectFileType), ourFileExtensions) { }
 
-    protected override Lazy<ProjectFileType?> ProjectFileTypeInstance { get; } = new(() => YamlProjectFileType.Instance);
+    protected override ProjectFileType GetProjectFileTypeInstance() => YamlProjectFileType.Instance!;
   }
 }
