@@ -22,8 +22,10 @@ import com.jetbrains.rd.util.AtomicReference
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.printlnError
 import com.jetbrains.rd.util.reactive.valueOrThrow
+import com.jetbrains.rider.debugger.DelegatedDotNetValue
 import com.jetbrains.rider.debugger.DotNetNamedValue
 import com.jetbrains.rider.debugger.DotNetStackFrame
+import com.jetbrains.rider.debugger.DotNetValue
 import com.jetbrains.rider.debugger.IDotNetValue
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
@@ -37,6 +39,7 @@ import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.intellij.images.editor.impl.ImageEditorManagerImpl
@@ -103,6 +106,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
     companion object {
         private val LOG = thisLogger()
 
+        @OptIn(ExperimentalCoroutinesApi::class)
         private suspend fun unityTextureAdditionalActionResult(
             dotNetValue: IDotNetValue,
             unityTextureAdditionalAction: UnityTexturePropertiesData,
@@ -114,10 +118,16 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             val additionalActionResult: UnityTextureAdditionalActionResult
 
             try {
-                val value = dotNetValue as DotNetNamedValue
+                val stackFrame = when (dotNetValue) {
+                    is DotNetValue -> dotNetValue.frame
+                    is DotNetNamedValue -> dotNetValue.frame
+                    is DelegatedDotNetValue -> dotNetValue.value.frame
+                    else -> error("Unsupported value. Can't get a stack frame")
+                }
+
                 withContext(Dispatchers.EDT) {
                     additionalActionResult = unityTextureAdditionalAction.evaluateTexture
-                        .startSuspending(lifetime, UnityTextureAdditionalActionParams(timeoutForAdvanceUnityEvaluation, value.frame.frameProxy.id))
+                        .startSuspending(lifetime, UnityTextureAdditionalActionParams(timeoutForAdvanceUnityEvaluation, stackFrame.frameProxy.id))
                 }
                 return additionalActionResult
             }
