@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
                 return;
             }
 
-            if (!solution.GetPsiServices().Caches.WaitForCaches(text))
+            if (!solution.GetPsiServices().Caches.WaitForCaches(text, waitOnlyPrimaryCaches:true))
                 return;
 
             var manager = CallHierarchyExplorerViewManager.GetInstance(solution);
