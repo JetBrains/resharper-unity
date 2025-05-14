@@ -19,8 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 [QuickFix]
 public class UnityObjectNullComparisonQuickFix(IEqualityExpression equalityExpression) : IQuickFix
 {
-    public UnityObjectNullComparisonQuickFix(UnityObjectNullComparisonWarning warning) : this(warning.Expression) { }
-
     public UnityObjectNullComparisonQuickFix(UnityObjectNullComparisonHintHighlighting highlighting) : this(highlighting.Expression) { }
 
     public IEnumerable<IntentionAction> CreateBulbItems()

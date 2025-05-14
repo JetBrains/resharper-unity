@@ -150,11 +150,7 @@
         <Title resourceName="UnityObjectNullPatternMatchingWarning_Message" resourceType="Strings" />
         <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
         <Description resourceName="UnityObjectNullPatternMatchingWarning_Description" resourceType="Strings" />
-      </Tag>
-      <Tag externalName="UnityObjectNullComparisonWarning.HIGHLIGHTING_ID" default="SUGGESTION">
-        <Title resourceName="UnityObjectNullComparisonWarning_Message" resourceType="Strings" />
-        <Description resourceName="UnityObjectNullComparisonWarning_Description" resourceType="Strings" />
-      </Tag>
+      </Tag>      
       <Tag externalName="UnresolvedComponentOrScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title resourceName="CannotResolveComponentOrScriptableObject" resourceType="Strings" />
         <Description resourceName="TheClassReferredToInTheCallToGetComponentAddComponentOrScriptableObjectCreateInstanceCannotBeFoundInTheCurrentProjectOrReferencedAssembliesTheCallIsLikelyToFailAtRuntimeAndReturnNull" resourceType="Strings" />
@@ -625,13 +621,6 @@
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
   
-  <Warning name="UnityObjectNullComparison" configurableSeverity="Unity.UnityObjectNullComparison" staticGroup="UnitySuggestions">
-    <Parameter type="IEqualityExpression" name="expression" />
-    <Message resourceName="UnityObjectNullComparisonWarning_Message" resourceType="Strings" />
-    <Range>Expression.OperatorSign.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
   <Warning name="UnresolvedComponentOrScriptableObject" configurableSeverity="Unity.UnresolvedComponentOrScriptableObject" baseInterfaces="IResolveProblemHighlighting">
     <Parameter type="IReference" name="reference" />
     <Message resourceName="CannotResolveSymbolMessage" resourceType="Strings">
