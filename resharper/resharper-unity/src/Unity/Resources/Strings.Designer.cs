@@ -614,8 +614,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string EvaluatesParentTypeName_Text => ResourceManager.GetString("EvaluatesParentTypeName_Text");
     public static string EvaluatesBakerParentTypeName_Text => ResourceManager.GetString("EvaluatesBakerParentTypeName_Text");
     public static string UnityFixFloatingPointComparison_Text => ResourceManager.GetString("UnityFixFloatingPointComparison_Text");
-    public static string UnityObjectNullComparisonWarning_Description => ResourceManager.GetString("UnityObjectNullComparisonWarning_Description");
-    public static string UnityObjectNullComparisonWarning_Message => ResourceManager.GetString("UnityObjectNullComparisonWarning_Message");
     public static string UnityInlayHintsOptionsPage_t_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint => ResourceManager.GetString("UnityInlayHintsOptionsPage_t_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint");
     public static string UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint => ResourceManager.GetString("UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint");
     public static string UnityObjectNullComparisonHint_Message => ResourceManager.GetString("UnityObjectNullComparisonHint_Message");
