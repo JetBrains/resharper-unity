@@ -88,7 +88,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       //Cancel all fetching tasks if the Editor is playing or Profiler is recording
       if (ProfilerDriver.enabled && EditorApplication.isPlaying)
       {
-        mySequentialLifetimes.TerminateCurrent();
+        if(!mySequentialLifetimes.IsCurrentTerminated)
+          mySequentialLifetimes.TerminateCurrent();
         return;
       }
       
