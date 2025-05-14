@@ -17,7 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
     typeof(IEqualityExpression),
     HighlightingTypes =
     [
-        typeof(UnityObjectNullComparisonWarning),
         typeof(UnityObjectNullComparisonHintHighlighting)
     ])]
 public class UnityObjectNullComparisonProblemAnalyzer(UnityApi unityApi)
@@ -33,11 +32,6 @@ public class UnityObjectNullComparisonProblemAnalyzer(UnityApi unityApi)
         if (left.IsNullLiteral() && UnityTypeUtils.IsUnityObject(right.Type())
             || right.IsNullLiteral() && UnityTypeUtils.IsUnityObject(left.Type()))
         {
-            if (Api.HasNullabilityAttributeOnImplicitBoolOperator.Value)
-            {
-                consumer.AddHighlighting(new UnityObjectNullComparisonWarning(expression));
-            }
-
             var mode = ElementProblemAnalyzerUtils.GetInlayHintsMode(data,
                 settings => settings.UnityObjectNullComparisonHint);
 

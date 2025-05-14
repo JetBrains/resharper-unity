@@ -1711,14 +1711,6 @@ a plugin to be installed to a project.</value>
     <data name="UnityFixFloatingPointComparison_Text" xml:space="preserve">
         <value>Fix comparison with Mathf.Approximately</value>
     </data>
-    <data name="UnityObjectNullComparisonWarning_Description" xml:space="preserve">
-        <value>Calls the custom equality operator defined on 'UnityEngine.Object'.
-          This operator checks if the underlying Unity engine object has been destroyed. Prefer implicit bool comparison if the lifetime check is intended, or explicitly use 'is' operator or 'object.ReferenceEquals()'
-          for a standard (and quicker) CLR null check.</value>
-    </data>
-    <data name="UnityObjectNullComparisonWarning_Message" xml:space="preserve">
-        <value>Implicit check for Unity object lifetime</value>
-    </data>
     <data name="UnityInlayHintsOptionsPage_t_UnityInlayHintsOptionsPage_UnityObjectNullComparisonHint" xml:space="preserve">
         <value>Implicit check for Unity object lifetime</value>
     </data>
