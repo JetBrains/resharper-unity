@@ -120,11 +120,10 @@ class DotsDebuggerestUnity2020 : DotsDebuggerTest(Unity.V2020) {
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
-    //init {
-        //addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
-        //addMute(Mute("RIDER-118536", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkRefPresentationInDOTSCode)
-        //addMute(Mute("RIDER-119059", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpointInDOTSCode)
-    //}
+    init {
+        addMute(Mute("RIDER-119059"), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-119059"), ::checkBreakpointInDOTSCode)
+    }
 }
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)

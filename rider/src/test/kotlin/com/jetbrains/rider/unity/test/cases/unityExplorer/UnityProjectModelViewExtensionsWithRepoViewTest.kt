@@ -128,6 +128,7 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
 
     }
 
+    @Mute("RIDER-117138")
     @Test(description = "Move a script in the project")
     @Issues([Issue("RIDER-41182"), Issue("RIDER-91321")])
     @ChecklistItems(["Unity explorer/Move script"])
