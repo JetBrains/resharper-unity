@@ -162,7 +162,7 @@ dependencies {
         bundledPlugin("rider.intellij.plugin.appender")
         bundledPlugin("com.intellij.css")
         bundledPlugin("org.jetbrains.plugins.yaml")
-        bundledPlugin("com.intellij.json")
+        bundledPlugin("com.intellij.modules.json")
         bundledPlugin("com.jetbrains.dotCover")
         bundledPlugin("org.intellij.intelliLang")
         bundledPlugin("com.intellij.platform.images")
