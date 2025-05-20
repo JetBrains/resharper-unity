@@ -112,7 +112,7 @@ fun startUnity(project: Project,
     return startUnity(args, logPath, withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 }
 
-private fun startUnity(args: MutableList<String>,
+fun startUnity(args: MutableList<String>,
                        logPath: File,
                        withCoverage: Boolean,
                        resetEditorPrefs: Boolean,
