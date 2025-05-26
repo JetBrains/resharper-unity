@@ -27,7 +27,8 @@ import java.time.Duration
 @Solution("CodeLensTestSolution")
 class PropertyCodeVisionAssetWithRepoViewTest : CodeLensTestBase() {
 
-    override val repositoryViewEnabled: Boolean = true
+    override val advancedSetting: Map<String, String>
+        get() = mapOf(("repository.view.enabled_boolean" to "true" ))
 
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)

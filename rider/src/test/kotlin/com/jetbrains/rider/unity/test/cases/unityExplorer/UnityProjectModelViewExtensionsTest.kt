@@ -20,6 +20,10 @@ import java.io.File
 @TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("UnityProjectModelViewExtensionsTest")
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
+
+    override val advancedSetting: Map<String, String>
+        get() = mapOf(("repository.view.enabled_boolean" to "false" ))
+
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
         params.persistCaches = true

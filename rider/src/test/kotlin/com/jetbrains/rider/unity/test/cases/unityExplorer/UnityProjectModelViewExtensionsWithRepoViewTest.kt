@@ -21,7 +21,8 @@ import java.io.File
 @Solution("UnityProjectModelViewExtensionsTest")
 class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
 
-    override val repositoryViewEnabled: Boolean = true
+    override val advancedSetting: Map<String, String>
+        get() = mapOf(("repository.view.enabled_boolean" to "true" ))
 
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
