@@ -361,10 +361,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
 
         protected override bool GetAutoInsertDataForRBrace(ITextControl textControl, ITokenNode rBraceToken,
             TreeTextRange treeLBraceRange, DocumentOffset lBracePos, int position, IDocument document,
-            out DocumentOffset positionForRBrace, out string rBraceText, ref IFile file)
+            out DocumentOffset positionForRBrace, out bool isForcedToBeMultiline, ref IFile file)
         {
             positionForRBrace = rBraceToken.GetDocumentEndOffset();
-            rBraceText = "}";
+            isForcedToBeMultiline = false;
             return false;
         }
 
