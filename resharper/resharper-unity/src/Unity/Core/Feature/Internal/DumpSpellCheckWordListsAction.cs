@@ -89,7 +89,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
                 from word in pair.Value
                 select word).ToJetHashSet(StringComparer.InvariantCultureIgnoreCase);
 
-            var spellService = solution.GetComponent<ISpellServiceBackendDispatcher>().SpellService;
+            var spellService = solution.GetComponent<ISpellServiceBackendProvider>().SpellService;
+            if (spellService == null) return;
 
             var wordsCheckResult = spellService.CheckWords(
                 Lifetime.Eternal,
