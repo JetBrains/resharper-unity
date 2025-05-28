@@ -46,7 +46,6 @@ import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.framework.processor.TestProcessor
 import com.jetbrains.rider.test.framework.testData.TestDataStorage
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.test.unity.EngineVersion
 import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
 import com.jetbrains.rider.utils.NullPrintStream
 import kotlinx.coroutines.launch

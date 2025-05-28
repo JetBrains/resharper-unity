@@ -15,12 +15,12 @@ import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.combine
+import com.jetbrains.rider.test.scriptingApi.EngineVersion
 import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
 import com.jetbrains.rider.test.scriptingApi.createLibraryFolderIfNotExist
 import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
+import com.jetbrains.rider.test.scriptingApi.riderPackageVersion
 import com.jetbrains.rider.test.scriptingApi.setRiderPackageVersion
-import com.jetbrains.rider.test.unity.EngineVersion
-import com.jetbrains.rider.test.unity.riderPackageVersion
 import com.jetbrains.rider.unity.test.framework.api.activateRiderFrontendTest
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies

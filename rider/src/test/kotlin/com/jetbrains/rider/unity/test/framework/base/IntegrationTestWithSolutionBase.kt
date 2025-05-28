@@ -4,27 +4,28 @@ import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rdclient.testFramework.isUnderTeamCity
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
-import com.jetbrains.rider.plugins.unity.util.getUnityArgs
 import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.logging.TestLoggerHelper
+import com.jetbrains.rider.test.scriptingApi.Unity
 import com.jetbrains.rider.test.scriptingApi.addArgsForUnityProcess
 import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
 import com.jetbrains.rider.test.scriptingApi.createLibraryFolderIfNotExist
 import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
 import com.jetbrains.rider.test.scriptingApi.killHangingUnityProcesses
-import com.jetbrains.rider.test.scriptingApi.waitFirstScriptCompilation
-import com.jetbrains.rider.test.unity.Unity
 import com.jetbrains.rider.unity.test.framework.api.activateRiderFrontendTest
-import com.jetbrains.rider.unity.test.framework.api.startUnity
-import com.jetbrains.rider.unity.test.framework.api.waitConnectionToUnityEditor
-
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.AfterSuite
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.BeforeSuite
 import java.util.concurrent.TimeUnit
+import kotlin.collections.filter
+import kotlin.collections.forEach
+import kotlin.collections.mutableListOf
+import kotlin.sequences.filter
+import kotlin.text.contains
+import kotlin.text.filter
 
 abstract class IntegrationTestWithSolutionBase : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {

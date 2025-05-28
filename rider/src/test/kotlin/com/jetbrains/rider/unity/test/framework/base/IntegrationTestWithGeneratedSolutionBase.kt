@@ -5,7 +5,6 @@ import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.facades.build.BuildApiFacade.BuildSettings
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.test.unity.unityEnvironment
 import com.jetbrains.rider.test.scriptingApi.waitFirstScriptCompilation
 import com.jetbrains.rider.unity.test.framework.api.*
 
@@ -47,18 +46,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
 
     @BeforeMethod
     open fun startUnityProcessAndWait() {
-        val unityTestEnvironment = testMethod.unityEnvironment
-        unityProcessHandle = when {
-            unityTestEnvironment != null ->
-                startUnity(
-                    unityTestEnvironment.withCoverage,
-                    unityTestEnvironment.resetEditorPrefs,
-                    unityTestEnvironment.useRiderTestPath,
-                    unityTestEnvironment.batchMode
-                )
-            else ->
-                startUnity(withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
-        }
+        unityProcessHandle = startUnity(withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 
         waitFirstScriptCompilation(project)
         waitConnectionToUnityEditor(project)
