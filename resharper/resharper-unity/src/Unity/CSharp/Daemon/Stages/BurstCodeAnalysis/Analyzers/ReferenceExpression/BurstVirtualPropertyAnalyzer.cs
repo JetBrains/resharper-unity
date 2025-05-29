@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             var typeElement = property.ContainingType;
 
-            var type = referenceExpression.GetExtensionQualifier()?.Type();
+            var type = referenceExpression.GetExtensionQualifierExpression()?.Type();
 
             if (typeElement is IInterface && (type?.IsValueType() == true || type?.IsOpenType == true))
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
