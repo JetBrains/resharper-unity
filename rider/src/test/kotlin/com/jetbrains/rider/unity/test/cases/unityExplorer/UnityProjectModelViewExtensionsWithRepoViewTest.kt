@@ -67,7 +67,7 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
         }
     }
 
-    @Mute("RIDER-117138")
+    @Mute("RIDER-124341")
     @Test(description = "Rename a folder in the project")
     @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder() {
@@ -99,6 +99,7 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
         }
     }
 
+    @Mute("RIDER-124341")
     @Test(description = "Rename a folder in the project")
     @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder3() {
@@ -129,7 +130,7 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
 
     }
 
-    @Mute("RIDER-117138")
+    @Mute("RIDER-124341")
     @Test(description = "Move a script in the project")
     @Issues([Issue("RIDER-41182"), Issue("RIDER-91321")])
     @ChecklistItems(["Unity explorer/Move script"])
