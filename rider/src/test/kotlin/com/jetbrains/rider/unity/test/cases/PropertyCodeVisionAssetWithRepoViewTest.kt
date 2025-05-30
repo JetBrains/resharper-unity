@@ -13,6 +13,7 @@ import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.base.CodeLensTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.*
+import com.jetbrains.rider.test.framework.advancedSettings.AdvancedSettingsList
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.SettingsHelper
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
@@ -27,8 +28,8 @@ import java.time.Duration
 @Solution("CodeLensTestSolution")
 class PropertyCodeVisionAssetWithRepoViewTest : CodeLensTestBase() {
 
-    override val advancedSetting: Map<String, String>
-        get() = mapOf(("repository.view.enabled_boolean" to "true" ))
+    override val advancedSettings: AdvancedSettingsList
+        get() = AdvancedSettingsList(boolSettings = mapOf(("repository.view.enabled" to true)))
 
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)

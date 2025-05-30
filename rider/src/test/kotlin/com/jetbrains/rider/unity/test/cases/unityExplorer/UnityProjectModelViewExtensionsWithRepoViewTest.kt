@@ -6,6 +6,7 @@ import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.*
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.env.enums.SdkVersion
+import com.jetbrains.rider.test.framework.advancedSettings.AdvancedSettingsList
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.callUndo
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
@@ -21,8 +22,8 @@ import java.io.File
 @Solution("UnityProjectModelViewExtensionsTest")
 class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
 
-    override val advancedSetting: Map<String, String>
-        get() = mapOf(("repository.view.enabled_boolean" to "true" ))
+    override val advancedSettings: AdvancedSettingsList
+        get() = AdvancedSettingsList(boolSettings = mapOf(("repository.view.enabled" to true)))
 
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
