@@ -148,8 +148,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         private MethodSignature[]? GetSpecialCaseSignatures(IClrTypeName attributeClrName,
                                                             PredefinedType predefinedType)
         {
-            if (Equals(attributeClrName, KnownTypes.OnOpenAssetAttribute))
-                return GetOnOpenAssetMethodSignature(predefinedType);
             if (Equals(attributeClrName, KnownTypes.PostProcessBuildAttribute))
                 return GetPostProcessBuildMethodSignature(predefinedType);
             return null;
@@ -200,19 +198,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {
                 new MethodSignature(returnType, true),
                 new MethodSignature(returnType, true, new[] { menuCommandType }, new[] { "menuCommand" })
-            };
-        }
-
-        private static MethodSignature[] GetOnOpenAssetMethodSignature(PredefinedType predefinedType)
-        {
-            // Note that since 2019.2, there is an additional signature of
-            // private static bool OnOpen(int instanceID, int line, int column)
-            // This will be found by the RequiredSignature check
-            return new[]
-            {
-                new MethodSignature(predefinedType.Bool, true,
-                    new[] {predefinedType.Int, predefinedType.Int},
-                    new[] {"instanceID", "line"})
             };
         }
 
