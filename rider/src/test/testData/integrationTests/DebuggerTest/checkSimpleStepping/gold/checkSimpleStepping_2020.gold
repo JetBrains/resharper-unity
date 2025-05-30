@@ -1,6 +1,6 @@
 binaryNotation / 25 = {int} 80000
 --> NewBehaviourScript.cs:15(310,336) // Debug.Log(binaryNotation);
-NewBehaviourScript.Update() in , Assembly-CSharp.dll
+NewBehaviourScript.Update() in Assembly-CSharp.dll
     +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
     +this.gameObject = Main Camera (active: true, layer: 0)
     +this = {NewBehaviourScript} enabled: true, gameObject: Main Camera
@@ -8,7 +8,7 @@ NewBehaviourScript.Update() in , Assembly-CSharp.dll
 
 binaryNotation / 25 = {int} 80000
 --> NewBehaviourScript.cs:16(341,342) // }
-NewBehaviourScript.Update() in , Assembly-CSharp.dll
+NewBehaviourScript.Update() in Assembly-CSharp.dll
     +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
     +this.gameObject = Main Camera (active: true, layer: 0)
     +this = {NewBehaviourScript} enabled: true, gameObject: Main Camera

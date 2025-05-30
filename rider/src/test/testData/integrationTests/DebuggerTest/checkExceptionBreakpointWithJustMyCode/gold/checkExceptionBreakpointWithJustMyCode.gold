@@ -1,8 +1,8 @@
 --> NewBehaviourScript.cs:7(103,140) // throw new System.ArgumentException();
-NewBehaviourScript.Update() in , Assembly-CSharp.dll
+NewBehaviourScript.Update() in Assembly-CSharp.dll
     +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
     +DontDestroyOnLoad Scene = DontDestroyOnLoad (DontDestroyOnLoad)
     +this.gameObject = Main Camera (active: true, layer: 0)
-    +$exception = {ArgumentException} System.ArgumentException: Value does not fall within the expected range.\n  at NewBehaviourScript.Update () [0x00001] in solutionDir\Assets\NewBehaviourScript.cs:7
+    +$exception = {ArgumentException} System.ArgumentException: Value does not fall within the expected range.\n  at NewBehaviourScript.Update () [0x00001] in solutionDir/Assets/NewBehaviourScript.cs:7
     +this = {NewBehaviourScript} enabled: true, gameObject: Main Camera
 

@@ -1,6 +1,6 @@
 binaryNotation / 25 = {int} 80000
 --> NewBehaviourScript.cs:15(310,336) // Debug.Log(binaryNotation);
-NewBehaviourScript.Update() in , Assembly-CSharp.dll
+NewBehaviourScript.Update() in Assembly-CSharp.dll
     +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
     +DontDestroyOnLoad Scene = DontDestroyOnLoad (DontDestroyOnLoad)
     +this.gameObject = Main Camera (active: true, layer: 0)
