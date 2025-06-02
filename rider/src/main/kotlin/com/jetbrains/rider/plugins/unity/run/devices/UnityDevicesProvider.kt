@@ -8,7 +8,6 @@ import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggableDeviceListener
-import com.jetbrains.rider.plugins.unity.run.UnityDebuggableProcessListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.run.devices.*
 import kotlinx.coroutines.delay
@@ -36,6 +35,17 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
     // when the device widget is touched, run it again
     // in the worst case there might be a 3 seconds non blocking delay with updating devices
     override suspend fun loadAllDevices(): List<Device> {
+        // remove old disconnected device
+        //val deviceView = manager.activeDeviceView.value
+        //if (deviceView is RefreshingDeviceView) {
+        //    val name = deviceView.name
+        //    getDeviceKinds().forEach {
+        //        val device = object : Device(name, EMPTY_ICON, it){}
+        //        manager.removeDevice(device)
+        //    }
+        //}
+        //manager.startRefreshingDevices()
+
         if (lifetime.isNotAlive) {
             lifetime = UnityProjectLifetimeService.getNestedLifetimeDefinition(project)
             lifetime.coroutineScope.launch { updateDevices(lifetime) }
@@ -83,6 +93,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
         lifetime.terminate()
     }
 
+
     override fun checkCompatibility(deviceKind: DeviceKind): CompatibilityProblem? = null
     override fun checkCompatibility(device: Device): CompatibilityProblem? = null
 
@@ -90,6 +101,8 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
         return listOf(ActionManager.getInstance().getAction("AttachToUnityProcessAction")
         )
     }
+
+    override fun hasSupportForRefreshingDeviceView(): Boolean = false
 
     companion object {
         fun getService(project: Project): UnityDevicesProvider {
