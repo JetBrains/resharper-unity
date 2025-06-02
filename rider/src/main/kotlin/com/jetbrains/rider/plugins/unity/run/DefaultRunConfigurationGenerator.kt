@@ -34,6 +34,7 @@ class DefaultRunConfigurationGenerator {
         val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = UnityBundle.message("standalone.player")
         val RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME = UnityBundle.message("unit.tests.batch.mode")
         val RUN_DEBUG_START_UNITY_CONFIGURATION_NAME = UnityBundle.message("start.unity")
+        val OLD_RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME ="Smart Attach"
         val RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME = UnityBundle.message("unity.smart.attach.player")
     }
 
@@ -46,6 +47,9 @@ class DefaultRunConfigurationGenerator {
                 removeRunConfigurations(session.project) {
                     it.type is UnknownConfigurationType && it.name == ATTACH_AND_PLAY_CONFIGURATION_NAME
                 }
+
+                // todo: remove this block in 25.3
+                runManager.allSettings.filter { it.type is UnityDevicePlayerDebugConfigurationType && it.name == OLD_RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME }.forEach { runManager.removeConfiguration(it) }
 
                 val previouslySelectedConfig = RunManager.getInstance(session.project).selectedConfiguration
 

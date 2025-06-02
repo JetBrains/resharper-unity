@@ -4,20 +4,18 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.execution.util.ExecUtil
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.diagnostic.trace
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.launchBackground
 import com.jetbrains.rd.platform.diagnostics.doActivity
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
-import java.io.File
+import kotlinx.coroutines.*
 import java.nio.file.Path
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.launch
-import kotlin.concurrent.timer
+import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 
 class AndroidDeviceListener() {
@@ -53,7 +51,7 @@ class AndroidDeviceListener() {
     private val playerPackageNames = mutableMapOf<String, String?>()
     private val players = mutableMapOf<String, UnityAndroidAdbProcess>()
 
-    private suspend fun getAdbPath(project: Project, lifetime: Lifetime): File? {
+    private suspend fun getAdbPath(project: Project, lifetime: Lifetime): Path? {
         try {
             val model = project.solution.frontendBackendModel
             val sdkRoot = model.getAndroidSdkRoot.startSuspending(lifetime, Unit)?.let { Path.of(it) }
@@ -71,9 +69,9 @@ class AndroidDeviceListener() {
 
             logger.trace("Using Android SDK root: $sdkRoot")
 
-            var adbExe = sdkRoot.resolve("SDK/platform-tools/adb").toFile()
+            var adbExe = sdkRoot.resolve("SDK/platform-tools/adb")
             if (!adbExe.exists()) {
-                adbExe = sdkRoot.resolve("SDK/platform-tools/adb.exe").toFile()
+                adbExe = sdkRoot.resolve("SDK/platform-tools/adb.exe")
             }
 
             if (!adbExe.exists()) {
@@ -101,10 +99,11 @@ class AndroidDeviceListener() {
         lifetime.coroutineScope.launch {
             val adbExe = getAdbPath(project, lifetime) ?: return@launch
 
-            val refreshTimer = timer("Poll for Android devices via adb", true, 0L, refreshPeriod) {
+            thisLogger().info("Poll for Android devices via adb")
+            while (isActive) {
                 refreshAndroidProcesses(adbExe, onPlayerAdded, onPlayerRemoved)
+                delay(refreshPeriod)
             }
-            lifetime.onTermination { refreshTimer.cancel() }
         }
     }
 
@@ -122,8 +121,8 @@ class AndroidDeviceListener() {
         }
     }
 
-    private fun refreshAndroidProcesses(
-        adbExe: File,
+    private suspend fun refreshAndroidProcesses(
+        adbExe: Path,
         onPlayerAdded: (UnityProcess) -> Unit,
         onPlayerRemoved: (UnityProcess) -> Unit
     ) {
@@ -132,8 +131,8 @@ class AndroidDeviceListener() {
         refreshAndroidProcesses(adbExe, discoveredDevices, onPlayerAdded, onPlayerRemoved)
     }
 
-    private fun refreshAndroidProcesses(
-        adbExe: File,
+    private suspend fun refreshAndroidProcesses(
+        adbExe: Path,
         devices: List<String>,
         onPlayerAdded: (UnityProcess) -> Unit,
         onPlayerRemoved: (UnityProcess) -> Unit
@@ -164,7 +163,7 @@ class AndroidDeviceListener() {
         }
     }
 
-    private fun getDevices(adbExe: File): List<String> {
+    private suspend fun getDevices(adbExe: Path): List<String> {
         val devices = mutableListOf<String>()
         invokeAdb("Calling adb to list Android devices", adbExe, "devices") { output ->
             @Suppress("SpellCheckingInspection")
@@ -183,13 +182,15 @@ class AndroidDeviceListener() {
         return devices
     }
 
-    private fun updateCachedDeviceDetails(adbExe: File, devices: List<String>) {
+    private suspend fun updateCachedDeviceDetails(adbExe: Path, devices: List<String>) {
         devices.forEach { serial ->
-            deviceDetails.computeIfAbsent(serial) { getDeviceDetails(adbExe, it) }
+            if (!deviceDetails.containsKey(serial)) {
+                deviceDetails[serial] = getDeviceDetails(adbExe, serial)
+            }
         }
     }
 
-    private fun getDeviceDetails(adbExe: File, serial: String): DeviceDetails {
+    private suspend fun getDeviceDetails(adbExe: Path, serial: String): DeviceDetails {
         val properties = mutableMapOf<String, String>()
         invokeAdb("Calling adb to retrieve device properties", adbExe, "-s", serial, "shell", "getprop") { output ->
             val regex = Regex("""^\[(?<key>.*)]: \[(?<value>.*)]$""")
@@ -209,7 +210,7 @@ class AndroidDeviceListener() {
         return DeviceDetails(properties)
     }
 
-    private fun getPlayers(adbExe: File, devices: List<String>): Map<String, PlayerDetails> {
+    private suspend fun getPlayers(adbExe: Path, devices: List<String>): Map<String, PlayerDetails> {
         val playerDetails = mutableMapOf<String, PlayerDetails>()
         devices.forEach { serial ->
             invokeAdb("Calling adb to retrieve Unity processes for $serial", adbExe, "-s", serial, "shell", "cat /proc/net/tcp") { output ->
@@ -253,13 +254,13 @@ class AndroidDeviceListener() {
         return playerDetails
     }
 
-    private fun updateCachedPackageNames(adbExe: File, players: Map<String, PlayerDetails>) {
+    private suspend fun updateCachedPackageNames(adbExe: Path, players: Map<String, PlayerDetails>) {
         players.values.forEach { player ->
-            playerPackageNames.computeIfAbsent(player.key) { getPackageName(adbExe, player) }
+            playerPackageNames.getOrPut(player.key) { getPackageName(adbExe, player) }
         }
     }
 
-    private fun getPackageName(adbExe: File, player: PlayerDetails): String? {
+    private suspend fun getPackageName(adbExe: Path, player: PlayerDetails): String? {
         logger.doActivity("Calling adb to retrieve package name for uid ${player.uid}") {
             val output = execAndGetOutput(adbExe, "-s", player.deviceSerial, "shell", "cmd package list packages --uid ${player.uid}")
             if (output.exitCode == 0) {
@@ -273,7 +274,7 @@ class AndroidDeviceListener() {
         return null
     }
 
-    private fun invokeAdb(key: String, adbExe: File, vararg args: String, action: (ProcessOutput) -> Unit) {
+    private suspend fun invokeAdb(key: String, adbExe: Path, vararg args: String, action: (ProcessOutput) -> Unit) {
         logger.doActivity(key) {
             val output = execAndGetOutput(adbExe, *args)
             if (output.exitCode == 0) {
@@ -282,9 +283,11 @@ class AndroidDeviceListener() {
         }
     }
 
-    private fun execAndGetOutput(adbExe: File, vararg args: String): ProcessOutput {
+    private suspend fun execAndGetOutput(adbExe: Path, vararg args: String): ProcessOutput {
         val commandLine = GeneralCommandLine(adbExe.toString(), *args)
-        val output = ExecUtil.execAndGetOutput(commandLine)
+        val output = withContext(Dispatchers.IO) {
+            ExecUtil.execAndGetOutput(commandLine)
+        }
         logger.trace {
             buildString {
                 appendLine("Call to '${commandLine.commandLineString}'. Exit code ${output.exitCode}")

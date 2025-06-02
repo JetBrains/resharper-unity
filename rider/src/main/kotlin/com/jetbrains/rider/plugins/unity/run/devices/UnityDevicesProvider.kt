@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
+import com.jetbrains.rider.plugins.unity.run.UnityDebuggableDeviceListener
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggableProcessListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.run.devices.*
@@ -26,8 +27,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
         }
 
     override fun getDeviceKinds(): List<DeviceKind> {
-        return listOf(UnityUsbDeviceKind, UnityCustomPlayerDeviceKind, UnityRemotePlayerDeviceKind,
-                      UnityLocalPlayerDeviceKind, UnityLocalUwpPlayerDeviceKind, UnityEditorDeviceKind, UnityVirtualPlayerDeviceKind)
+        return listOf(UnityUsbDeviceKind, UnityRemotePlayerDeviceKind)
     }
 
     private var lifetime = LifetimeDefinition.Terminated
@@ -50,26 +50,34 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
         val previouslySeenDevices = currentlyDiscovered.toMutableSet()
 
         // Listen for workingTime, updating availableDevices as discoveries happen
-        UnityDebuggableProcessListener(
+        UnityDebuggableDeviceListener(
             project, lifetime,
             onProcessAdded = { device ->
-                synchronized(locker) {
-                    previouslySeenDevices.remove(device)
-                    cachedDevices.remove(device)
-                    cachedDevices.add(device)
+                if (getDeviceKinds().any { device.kind == it } ) {
+                    synchronized(locker) {
+                        previouslySeenDevices.remove(device)
+                        cachedDevices.remove(device)
+                        cachedDevices.add(device)
+                    }
+                    ActiveDeviceManager.getInstance(project).startRefreshingDevices()
                 }
-                ActiveDeviceManager.getInstance(project).startRefreshingDevices()
             },
             onProcessRemoved = { device ->
-                synchronized(locker) {
-                    cachedDevices.remove(device)
+                if (getDeviceKinds().any { device.kind == it } ) {
+                    synchronized(locker) {
+                        cachedDevices.remove(device)
+                    }
+                    ActiveDeviceManager.getInstance(project).removeDevice(device)
+                    ActiveDeviceManager.getInstance(project).startRefreshingDevices()
                 }
-                ActiveDeviceManager.getInstance(project).startRefreshingDevices()
             }
         )
         delay(workingTime)
         // Drop devices, which were not seen during this scan
         synchronized(locker) {
+            previouslySeenDevices.forEach { device ->
+                ActiveDeviceManager.getInstance(project).removeDevice(device)
+            }
             cachedDevices.removeAll(previouslySeenDevices)
         }
         lifetime.terminate()

@@ -15,3 +15,14 @@ class UnityDebuggableProcessListener(project: Project, lifetime: Lifetime,
         UnityRunManagerListener().startListening(project, lifetime, onProcessAdded, onProcessRemoved)
     }
 }
+
+class UnityDebuggableDeviceListener(project: Project, lifetime: Lifetime,
+                                     onProcessAdded: (UnityProcess) -> Unit,
+                                     onProcessRemoved: (UnityProcess) -> Unit) {
+
+    init {
+        UnityPlayerListener().startListening(lifetime, onProcessAdded, onProcessRemoved)
+        AppleDeviceListener(project, lifetime, onProcessAdded, onProcessRemoved)
+        AndroidDeviceListener().startListening(project, lifetime, onProcessAdded, onProcessRemoved)
+    }
+}
