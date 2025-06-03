@@ -159,6 +159,7 @@ dependencies {
 
         instrumentationTools()
 
+        bundledModule("intellij.rider.rdclient.dotnet.spellchecker")
         bundledPlugin("rider.intellij.plugin.appender")
         bundledPlugin("com.intellij.css")
         bundledPlugin("org.jetbrains.plugins.yaml")
