@@ -13,6 +13,7 @@
   <depends>com.intellij.modules.xdebugger</depends>
   <depends>rider.intellij.plugin.appender</depends>
   <depends>com.intellij.modules.json</depends>
+  <depends>com.intellij.modules.spellchecker</depends>
 
   <content>
     <module name="intellij.rider.plugins.unity/yaml" />
