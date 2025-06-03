@@ -65,6 +65,7 @@ class UnityDevicePlayerFactory(type: ConfigurationType) : UnityConfigurationFact
 
     override fun getId(): String = "UnityAttachToDevicePlayer"
     override fun getOptionsClass(): Class<UnityPlayerDebugConfigurationOptions> = UnityPlayerDebugConfigurationOptions::class.java
+    override fun getSingletonPolicy(): RunConfigurationSingletonPolicy = RunConfigurationSingletonPolicy.MULTIPLE_INSTANCE
 }
 
 internal class UnityDevicePlayerDebugConfigurationType : ConfigurationTypeBase(

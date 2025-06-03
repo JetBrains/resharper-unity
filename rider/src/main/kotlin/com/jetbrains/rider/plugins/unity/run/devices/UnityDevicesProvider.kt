@@ -4,14 +4,17 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.launchWithBackgroundProgress
+import com.intellij.platform.util.progress.reportProgress
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggableDeviceListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.run.devices.*
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Service(Service.Level.PROJECT)
 class UnityDevicesProvider(private val project: Project): DevicesProvider {
@@ -33,22 +36,13 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
     // we can't let UnityDebuggableProcessListener run all the time, so
     // it just runs workingTime, collects devices
     // when the device widget is touched, run it again
-    // in the worst case there might be a 3 seconds non blocking delay with updating devices
+    // in the worst case there might be a $workingTime seconds non blocking delay with updating devices
     override suspend fun loadAllDevices(): List<Device> {
-        // remove old disconnected device
-        //val deviceView = manager.activeDeviceView.value
-        //if (deviceView is RefreshingDeviceView) {
-        //    val name = deviceView.name
-        //    getDeviceKinds().forEach {
-        //        val device = object : Device(name, EMPTY_ICON, it){}
-        //        manager.removeDevice(device)
-        //    }
-        //}
-        //manager.startRefreshingDevices()
-
         if (lifetime.isNotAlive) {
             lifetime = UnityProjectLifetimeService.getNestedLifetimeDefinition(project)
-            lifetime.coroutineScope.launch { updateDevices(lifetime) }
+            lifetime.launchWithBackgroundProgress(project, UnityBundle.message("progress.title.scanning.unity.devices")) {
+                updateDevices(lifetime)
+            }
         }
 
         return allDevices
@@ -82,17 +76,34 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
                 }
             }
         )
-        delay(workingTime)
+
+        delayWithProgress()
+
         // Drop devices, which were not seen during this scan
         synchronized(locker) {
             previouslySeenDevices.forEach { device ->
                 ActiveDeviceManager.getInstance(project).removeDevice(device)
+                ActiveDeviceManager.getInstance(project).removeActiveDevice(device)
             }
             cachedDevices.removeAll(previouslySeenDevices)
         }
         lifetime.terminate()
     }
 
+    private suspend fun delayWithProgress(){
+        // using progress reporter to update progress bar, instead of simple `delay(workingTime)`
+        val steps = 100
+        val delay = (workingTime / steps)
+        reportProgress(steps) { reporter ->
+            coroutineScope {
+                (0 until steps).forEach { i ->
+                    reporter.itemStep {
+                        delay(delay)
+                    }
+                }
+            }
+        }
+    }
 
     override fun checkCompatibility(deviceKind: DeviceKind): CompatibilityProblem? = null
     override fun checkCompatibility(device: Device): CompatibilityProblem? = null
