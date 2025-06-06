@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityYamlSpecificOccurrenceKindIconProvider : IOccurrenceKindIconProvider
     {
-        public IconId GetImageId(OccurrenceKind declaredElement)
+        public IconId GetImageId(OccurrenceKind declaredElement, IOccurrence occurrence)
         {
             // TODO: Better icon?
             if (declaredElement == UnityAssetSpecificOccurrenceKinds.EventHandler)

@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class AsmDefSpecificOccurrenceKindIconProvider : IOccurrenceKindIconProvider
     {
-        public IconId GetImageId(OccurrenceKind occurrenceKind)
+        public IconId GetImageId(OccurrenceKind occurrenceKind, IOccurrence occurrence)
         {
             if (occurrenceKind == AsmDefOccurrenceKindProvider.AssemblyDefinitionReference)
                 return UnityFileTypeThemedIcons.UsageAsmdef.Id;
