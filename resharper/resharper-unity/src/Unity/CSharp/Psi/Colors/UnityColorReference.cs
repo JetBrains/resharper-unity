@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Application.Settings;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.CodeStyle.Suggestions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -13,14 +16,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
     public class UnityColorReference : IColorReference
     {
         private readonly IExpression myOwningExpression;
+        private readonly IContextBoundSettingsStore mySettingsStore;
 
         public UnityColorReference(IColorElement colorElement, IExpression owningExpression, ITreeNode owner,
-            DocumentRange colorConstantRange)
+            DocumentRange colorConstantRange, IContextBoundSettingsStore settingsStore)
         {
             myOwningExpression = owningExpression;
             ColorElement = colorElement;
             Owner = owner;
             ColorConstantRange = colorConstantRange;
+            mySettingsStore = settingsStore;
 
             BindOptions = new ColorBindOptions
             {
@@ -152,7 +157,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
             }
 
             var oldExp = (ICSharpExpression) myOwningExpression;
-            oldExp.ReplaceBy(newExp);
+            
+            var result = oldExp.ReplaceBy(newExp);
+            CodeStyleUtil.ApplyStyle<IObjectCreationStyleSuggestion>(result, mySettingsStore);
         }
 
         private ITypeElement GetColorType()
@@ -162,7 +169,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
                 return qualifier.Reference.Resolve().DeclaredElement as ITypeElement;
 
             if (myOwningExpression is IInvocationExpression invocationExpression)
-                return invocationExpression.Reference?.Resolve().DeclaredElement as ITypeElement;
+                return invocationExpression.Reference.Resolve().DeclaredElement as ITypeElement;
 
             var objectCreationExpression = myOwningExpression as IObjectCreationExpression;
             // Handle explicit `new T(...)`

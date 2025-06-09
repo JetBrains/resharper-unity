@@ -20,12 +20,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
     public class UnityColorHighlighterProcess : CSharpIncrementalDaemonStageProcessBase
     {
         private readonly IEnumerable<IUnityColorReferenceProvider> myProviders;
+        private readonly IContextBoundSettingsStore mySettingsStore;
 
         public UnityColorHighlighterProcess(IEnumerable<IUnityColorReferenceProvider> providers, IDaemonProcess process, IContextBoundSettingsStore settingsStore,
                                             ICSharpFile file)
             : base(process, settingsStore, file)
         {
             myProviders = providers;
+            mySettingsStore = settingsStore;
         }
 
         public override void VisitNode(ITreeNode element, IHighlightingConsumer consumer)
@@ -39,23 +41,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 
         private HighlightingInfo? CreateColorHighlightingInfo(ITreeNode element, IEnumerable<IUnityColorReferenceProvider> providers)
         {
-            var colorReference = GetColorReference(element, providers);
+            var colorReference = GetColorReference(element, providers, mySettingsStore);
             var range = colorReference?.ColorConstantRange;
             return range?.IsValid() == true
                 ? new HighlightingInfo(range.Value, new ColorHintHighlighting(colorReference))
                 : null;
         }
 
-        private static IColorReference? GetColorReference(ITreeNode element, IEnumerable<IUnityColorReferenceProvider> providers)
+        private static IColorReference? GetColorReference(ITreeNode element, IEnumerable<IUnityColorReferenceProvider> providers, IContextBoundSettingsStore settingsStore)
         {
             if (element is IObjectCreationExpression constructorExpression)
-                return ReferenceFromConstructor(constructorExpression);
+                return ReferenceFromConstructor(constructorExpression, settingsStore);
 
             var referenceExpression = element as IReferenceExpression;
             if (referenceExpression?.QualifierExpression is IReferenceExpression qualifier)
             {
-                var result = ReferenceFromInvocation(qualifier, referenceExpression)
-                    ?? ReferenceFromProperty(qualifier, referenceExpression);
+                var result = ReferenceFromInvocation(qualifier, referenceExpression, settingsStore)
+                    ?? ReferenceFromProperty(qualifier, referenceExpression, settingsStore);
                 
                 if (result != null)
                     return result;
@@ -71,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             return null;
         }
 
-        private static IColorReference? ReferenceFromConstructor(IObjectCreationExpression constructorExpression)
+        private static IColorReference? ReferenceFromConstructor(IObjectCreationExpression constructorExpression, IContextBoundSettingsStore settingsStore)
         {
             // Get the type from the constructor, which allows us to support target typed new. This will fail to resolve
             // if the parameters don't match (e.g. calling new Color32(r, g, b) without passing a), so fall back to the
@@ -112,11 +114,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 
             var colorElement = new ColorElement(color.Value);
             var argumentList = constructorExpression.ArgumentList;
-            return new UnityColorReference(colorElement, constructorExpression, argumentList, argumentList.GetDocumentRange());
+            return new UnityColorReference(colorElement, constructorExpression, argumentList, argumentList.GetDocumentRange(), settingsStore);
         }
 
         private static IColorReference? ReferenceFromInvocation(IReferenceExpression qualifier,
-                                                                IReferenceExpression methodReferenceExpression)
+                                                                IReferenceExpression methodReferenceExpression, IContextBoundSettingsStore settingsStore)
         {
             var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(methodReferenceExpression);
             if (invocationExpression == null || invocationExpression.Arguments.IsEmpty)
@@ -142,11 +144,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             var colorElement = new ColorElement(color.Value);
             var argumentList = invocationExpression.ArgumentList;
             return new UnityColorReference(colorElement, invocationExpression,
-                argumentList, argumentList.GetDocumentRange());
+                argumentList, argumentList.GetDocumentRange(), settingsStore);
         }
 
         private static IColorReference? ReferenceFromProperty(IReferenceExpression qualifier,
-                                                              IReferenceExpression colorQualifiedMemberExpression)
+                                                              IReferenceExpression colorQualifiedMemberExpression, IContextBoundSettingsStore settingsStore)
         {
             var name = colorQualifiedMemberExpression.Reference.GetName();
 
@@ -164,7 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 
             var colorElement = new ColorElement(color.Value, name);
             return new UnityColorReference(colorElement, colorQualifiedMemberExpression,
-                 colorQualifiedMemberExpression, colorQualifiedMemberExpression.NameIdentifier.GetDocumentRange());
+                 colorQualifiedMemberExpression, colorQualifiedMemberExpression.NameIdentifier.GetDocumentRange(), settingsStore);
         }
 
         private static (float? alpha, JetRgbaColor)? GetColorFromFloatArgb(ICollection<ICSharpArgument> arguments)
