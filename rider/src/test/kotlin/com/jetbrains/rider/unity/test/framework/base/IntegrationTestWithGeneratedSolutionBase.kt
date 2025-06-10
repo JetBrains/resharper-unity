@@ -81,7 +81,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
         // later Unity compiles assemblies, but discovery would not start again, till solution reload
         withOpenedEditor(file.absolutePath) {
             FrontendTextControlHost.getInstance(project!!.frontendProjectSession.appSession)
-            waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
+            waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile!!))
 
             it.waitForDiscovering()
         }

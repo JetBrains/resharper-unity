@@ -30,7 +30,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     fun testAddToBuildSettings() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
-            waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
+            waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile!!))
             callAltEnterMenu {
                 executeItemByPrefix("Add 'Scenes/PossibleShortName' to build settings")
             }
@@ -44,7 +44,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     fun testEnableSceneAtBuildSettings() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
-            waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
+            waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile!!))
             callAltEnterMenu {
                 executeItemByPrefix("Enable scene")
             }
@@ -59,7 +59,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
         doTestWithDumpDocument {
             withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
                 FrontendTextControlHost.getInstance(project!!)
-                waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
+                waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile!!))
                 callAltEnterMenu {
                     executeItemByPrefix("Change scene name to 'Scenes/Folder/ImpossibleShortName'")
                 }
