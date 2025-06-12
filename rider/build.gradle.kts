@@ -150,7 +150,7 @@ dependencies {
 
                 else -> {
                     logger.lifecycle("*** Using Rider SDK from intellij-snapshots repository")
-                    rider("${productVersion}-SNAPSHOT")
+                    rider("${productVersion}-SNAPSHOT", useInstaller = false)
                 }
             }
         }
