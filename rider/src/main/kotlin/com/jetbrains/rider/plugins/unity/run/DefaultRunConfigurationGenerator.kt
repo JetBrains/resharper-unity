@@ -49,7 +49,9 @@ class DefaultRunConfigurationGenerator {
                 }
 
                 // todo: remove this block in 25.3
-                runManager.allSettings.filter { it.type is UnityDevicePlayerDebugConfigurationType && it.name == OLD_RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME }.forEach { runManager.removeConfiguration(it) }
+                runManager.allSettings.filter { (it.type is UnknownConfigurationType || it.type is UnityDevicePlayerDebugConfigurationType)
+                                                && it.name == OLD_RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME }
+                    .forEach { runManager.removeConfiguration(it) }
 
                 val previouslySelectedConfig = RunManager.getInstance(session.project).selectedConfiguration
 
@@ -79,11 +81,13 @@ class DefaultRunConfigurationGenerator {
                     createAttachToUnityEditorConfiguration(session.project, ATTACH_AND_PLAY_CONFIGURATION_NAME, true)
                 }
 
+                // consider generating only when unityProjectSettings suggests that there is Console or Mobile export
                 if (session.project.isUnityProject.value
                     && !runManager.allSettings.any { it.type is UnityDevicePlayerDebugConfigurationType }) {
                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDevicePlayerDebugConfigurationType::class.java)
                     val runConfiguration = runManager.createConfiguration(RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME, configurationType.factory)
-                    runManager.setTemporaryConfiguration(runConfiguration)
+                    runConfiguration.storeInLocalWorkspace()
+                    runManager.addConfiguration(runConfiguration)
                 }
 
                 session.project.solution.frontendBackendModel.unityApplicationData.adviseNotNull(lt) {
