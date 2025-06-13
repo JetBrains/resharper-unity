@@ -123,7 +123,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                 workingDirectory = project.solutionDirectory.canonicalPath,
                 envs = hashMapOf(),
                 isPassParentEnvs = true,
-                useExternalConsole = false
+                useExternalConsole = false,
+                mixedModeDebugging = false // false by default
             )
             val exeConfiguration = UnityExeConfiguration(name, project,
                                                          ConfigurationTypeUtil.findConfigurationType(

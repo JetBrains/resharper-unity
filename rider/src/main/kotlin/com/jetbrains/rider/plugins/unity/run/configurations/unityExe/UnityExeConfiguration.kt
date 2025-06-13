@@ -28,7 +28,7 @@ class UnityExeConfiguration(name: String,
                             project: Project,
                             factory: ConfigurationFactory,
                             params: ExeConfigurationParameters)
-    : ExeConfiguration(name, project, factory, params) {
+    : ExeConfiguration(name, project, factory, params, true) {
 
     override fun isNative(): Boolean {
         return false
@@ -75,7 +75,8 @@ class UnityExeConfiguration(name: String,
                                 { _, _, _ -> },
                                 null,
                                 "",
-                                true
+                                true,
+                                mixedModeDebugging = parameters.mixedModeDebugging
         )
     }
 
