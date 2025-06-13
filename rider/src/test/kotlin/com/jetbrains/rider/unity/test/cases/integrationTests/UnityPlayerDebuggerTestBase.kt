@@ -60,7 +60,7 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion)
 class UnityPlayerDebuggerTest {
     class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022){
         init {
-            addMute(Mute("RIDER-123706", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+            addMute(Mute("RIDER-123706"), ::checkBreakpoint)
         }
     }
     }
