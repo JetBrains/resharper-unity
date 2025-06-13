@@ -3,12 +3,13 @@ package com.jetbrains.rider.plugins.unity.run.devices
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.diagnostic.runAndLogException
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.launchWithBackgroundProgress
 import com.intellij.platform.util.progress.reportProgress
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
-import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rd.util.threading.coroutines.async
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggableDeviceListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
@@ -40,11 +41,20 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
     override suspend fun loadAllDevices(): List<Device> {
         if (lifetime.isNotAlive) {
             lifetime = UnityProjectLifetimeService.getNestedLifetimeDefinition(project)
-            lifetime.launchWithBackgroundProgress(project, UnityBundle.message("progress.title.scanning.unity.devices")) {
-                updateDevices(lifetime)
+            lifetime.async {
+                coroutineScope {
+                    try {
+                        val action = ActionManager.getInstance().getAction("ActiveDevice") as ActiveDeviceAction
+                        action.progress()
+                        updateDevices(lifetime.createNested())
+                        action.stopProgress(project)
+                    }
+                    finally {
+                        lifetime.terminate()
+                    }
+                }
             }
         }
-
         return allDevices
     }
 
