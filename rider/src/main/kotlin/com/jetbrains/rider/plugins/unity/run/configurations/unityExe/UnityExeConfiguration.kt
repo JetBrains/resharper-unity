@@ -9,6 +9,7 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunConfiguration
 import com.jetbrains.rider.multiPlatform.RiderMultiPlatformBundle
 import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -28,7 +29,7 @@ class UnityExeConfiguration(name: String,
                             project: Project,
                             factory: ConfigurationFactory,
                             params: ExeConfigurationParameters)
-    : ExeConfiguration(name, project, factory, params, true) {
+    : ExeConfiguration(name, project, factory, params, true), IMixedModeDebugAwareRunConfiguration {
 
     override fun isNative(): Boolean {
         return false
@@ -86,4 +87,6 @@ class UnityExeConfiguration(name: String,
         @Suppress("DEPRECATION")
         throw UnsupportedOperationException(RiderRunBundle.message("obsolete.synchronous.api.is.used.message", UnityExeConfiguration::getStateAsync.name))
     }
+
+    override fun useMixedDebugMode(): Boolean = parameters.mixedModeDebugging
 }
