@@ -61,14 +61,12 @@ sealed class UnityProcess(
 }
 
 @NlsSafe
-fun formatDeviceName(projectName: String?, name: String, ip: String, port:Int): String {
+fun formatDeviceName(projectName: String?, displayName: String, ip: String, port:Int): String {
     return when {
-        !projectName.isNullOrEmpty() ->
-            if (projectName == UnityProcessPickerDialog.CUSTOM_PLAYER_PROJECT)
-                "$name ($ip:$port)"
-            else "$projectName ($ip:$port)"
-        name.isNotEmpty() ->
-            "$name ($ip:$port)"
+        displayName.isNotEmpty() ->
+            displayName
+        !projectName.isNullOrEmpty() && projectName != UnityProcessPickerDialog.CUSTOM_PLAYER_PROJECT ->
+            "$projectName ($ip:$port)"
         else ->
             "$ip:$port"
     }
