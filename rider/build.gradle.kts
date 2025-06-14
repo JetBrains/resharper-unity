@@ -3,14 +3,11 @@ import com.jetbrains.plugin.structure.base.utils.listFiles
 import com.ullink.gradle.nunit.NUnit
 import groovy.xml.XmlParser
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.intellij.platform.gradle.Constants
-import org.jetbrains.intellij.platform.gradle.tasks.BuildSearchableOptionsTask
 import org.jetbrains.intellij.platform.gradle.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
-import org.jetbrains.intellij.platform.gradle.tasks.RunIdeTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 import kotlin.io.path.*
@@ -237,13 +234,6 @@ tasks {
     buildSearchableOptions {
         enabled = isReleaseBuild
     }
-
-    fun JavaForkOptions.configureDotNet() {
-        systemProperty("rider.backend.dotnet.runtime.path", file("../dotnet-sdk.cmd").absolutePath)
-    }
-    withType<RunIdeTask>().configureEach { this.configureDotNet() }
-    withType<BuildSearchableOptionsTask>().configureEach { this.configureDotNet() }
-    withType<Test>().configureEach { this.configureDotNet() }
 
     runIde {
         // Match Rider's default heap size of 1.5Gb (default for runIde is 512Mb)
