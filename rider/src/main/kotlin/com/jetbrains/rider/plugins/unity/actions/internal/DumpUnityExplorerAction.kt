@@ -6,7 +6,7 @@ import com.jetbrains.rd.platform.internal.DumpAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import java.io.OutputStreamWriter
 
-class DumpUnityExplorerAction : DumpAction("Dump Unity Explorer") {
+private class DumpUnityExplorerAction : DumpAction("Dump Unity Explorer") {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val host = UnityExplorer.getInstance(project)
