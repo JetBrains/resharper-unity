@@ -4,6 +4,7 @@ import com.intellij.execution.CantRunException
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.*
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.internal.statistic.eventLog.events.EventPair
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.ui.dsl.builder.AlignX
@@ -57,6 +58,10 @@ class UnityDevicePlayerConfiguration(project: Project, factory: UnityDevicePlaye
     }
 
     override val provider: DevicesProvider? = UnityDevicesProvider.getService(project)
+
+    override fun getAdditionalUsageData(): List<EventPair<*>> {
+        return ActiveDeviceManager.getInstance(project).getStatisticsDeviceData()
+    }
 }
 
 class UnityDevicePlayerFactory(type: ConfigurationType) : UnityConfigurationFactoryBase(type) {
