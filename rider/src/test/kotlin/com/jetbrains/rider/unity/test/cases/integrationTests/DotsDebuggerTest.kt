@@ -129,6 +129,7 @@ class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
 class DotsDebuggerTestUnity6 : DotsDebuggerTest(Unity.V6) {
     init {
         addMute(Mute("RIDER-118536"), ::checkRefPresentationInDOTSCode)
+        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
 }
 
