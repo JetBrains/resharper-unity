@@ -286,24 +286,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                 {
                     case JetPlatform.Windows:
                     {
-                        return GoUpForUnityExecutable(filePath,$"{Unity}.exe") ?? GoUpForUnityExecutable(filePath,$"{Tuanjie}.exe");
+                        return GoUpForUnityExecutable(filePath,$"{Unity}.exe", path => path.ExistsFile) 
+                               ?? GoUpForUnityExecutable(filePath,$"{Tuanjie}.exe", path => path.ExistsFile);
                     }
                     case JetPlatform.Linux:
                     {
-                        return GoUpForUnityExecutable(filePath, Unity) ?? GoUpForUnityExecutable(filePath, Tuanjie);
+                        return GoUpForUnityExecutable(filePath, Unity, path => path.ExistsFile)
+                               ?? GoUpForUnityExecutable(filePath, Tuanjie, path => path.ExistsFile);
                     }
                     case JetPlatform.MacOsX:
                     {
-                        var appPath = filePath;
-                        while (!appPath.Name.Equals("Contents"))
+                        var result = GoUpForUnityExecutable(filePath, $"{Unity}.app", path => path.ExistsDirectory) 
+                                     ?? GoUpForUnityExecutable(filePath, $"{Tuanjie}.app", path => path.ExistsDirectory);
+                        // not sure, how this worked before: either older Unity versions or assembly is inside the Unity.app/Contents
+                        if (result == null)
                         {
-                            appPath = appPath.Directory;
-                            if (!appPath.ExistsDirectory || appPath.IsEmpty)
-                                return null;
-                        }
+                            var appPath = filePath;
+                            while (!appPath.Name.Equals("Contents"))
+                            {
+                                appPath = appPath.Directory;
+                                if (!appPath.ExistsDirectory || appPath.IsEmpty)
+                                    return null;
+                            }
 
-                        appPath = appPath.Directory;
-                        return appPath;
+                            appPath = appPath.Directory;
+                            return appPath;    
+                        }
+                        return result;
                     }
                     default:
                         ourLogger.Error("Unknown runtime platform");
@@ -314,7 +323,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return null;
         }
 
-        private static VirtualFileSystemPath GoUpForUnityExecutable(VirtualFileSystemPath filePath, string targetName)
+        private static VirtualFileSystemPath GoUpForUnityExecutable(VirtualFileSystemPath filePath, string targetName, Func<VirtualFileSystemPath, bool> checkExists)
         {
             // For Player Projects it might be: Editor/Data/PlaybackEngines/LinuxStandaloneSupport/Variations/mono/Managed/UnityEngine.dll
             // For Editor: Editor\Data\Managed\UnityEngine.dll
@@ -323,7 +332,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             var path = filePath;
             while (!path.IsEmpty)
             {
-                if (path.Combine(targetName).ExistsFile)
+                if (checkExists(path.Combine(targetName)))
                 {
                     return path.Combine(targetName);
                 }
