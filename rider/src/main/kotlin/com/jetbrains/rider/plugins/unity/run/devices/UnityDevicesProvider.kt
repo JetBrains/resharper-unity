@@ -24,7 +24,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
     private val workingTime = 3_000L
     private val locker = Object()
     private val cachedDevices = mutableListOf<UnityProcess>()
-    private val deviceKinds = listOf(UnityUsbDeviceKind, UnityRemotePlayerDeviceKind) // search those
+    private val deviceKindsForSearch = listOf(UnityUsbDeviceKind, UnityRemotePlayerDeviceKind) // search those
 
     // Copy of all availableDevices - thread-safe
     private val allDevices
@@ -74,7 +74,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
         UnityDebuggableDeviceListener(
             project, lifetime,
             onProcessAdded = { device ->
-                if (deviceKinds.any { device.kind == it } ) {
+                if (deviceKindsForSearch.any { device.kind == it } ) {
                     synchronized(locker) {
                         previouslySeenDevices.remove(device)
                         cachedDevices.remove(device)
@@ -84,7 +84,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
                 }
             },
             onProcessRemoved = { device ->
-                if (deviceKinds.any { device.kind == it } ) {
+                if (deviceKindsForSearch.any { device.kind == it } ) {
                     synchronized(locker) {
                         cachedDevices.remove(device)
                     }
