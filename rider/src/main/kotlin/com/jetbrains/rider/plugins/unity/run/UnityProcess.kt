@@ -54,6 +54,21 @@ sealed class UnityProcess(
         get() = projectName
 
     abstract fun dump(): String
+    
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UnityProcess) return false
+        
+        // Consider two processes equal if they have the same host and port
+        // This helps deduplicate processes discovered by different listeners
+        return host == other.host && port == other.port
+    }
+    
+    override fun hashCode(): Int {
+        var result = host.hashCode()
+        result = 31 * result + port
+        return result
+    }
 
     companion object {
         fun typeFromId(id: String): String = id.substringBefore('(')
