@@ -34,7 +34,7 @@ class DefaultRunConfigurationGenerator {
         val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = UnityBundle.message("standalone.player")
         val RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME = UnityBundle.message("unit.tests.batch.mode")
         val RUN_DEBUG_START_UNITY_CONFIGURATION_NAME = UnityBundle.message("start.unity")
-        val OLD_RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME ="Smart Attach"
+        val OLD_RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME =UnityBundle.message("unity.smart.attach.player.old")
         val RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME = UnityBundle.message("unity.smart.attach.player")
     }
 
@@ -42,46 +42,20 @@ class DefaultRunConfigurationGenerator {
         override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.hasUnityReference.whenTrue(lifetime) { lt ->
                 val runManager = RunManager.getInstance(session.project)
-                // Clean up the renamed "attach and play" configuration from 2018.2 EAP1-3
-                // (Was changed from a separate configuration type to just another factory under "Attach to Unity")
-                removeRunConfigurations(session.project) {
-                    it.type is UnknownConfigurationType && it.name == ATTACH_AND_PLAY_CONFIGURATION_NAME
-                }
 
-                // todo: remove this block in 25.3
-                runManager.allSettings.filter { (it.type is UnknownConfigurationType || it.type is UnityDevicePlayerDebugConfigurationType)
+                // Clean up the renamed configuration from 2025.2
+                runManager.allSettings.filter { it.type is UnityDevicePlayerDebugConfigurationType
                                                 && it.name == OLD_RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME }
                     .forEach { runManager.removeConfiguration(it) }
 
+                // todo: consider using it later to better guess what run config to select
                 val previouslySelectedConfig = RunManager.getInstance(session.project).selectedConfiguration
 
-                // Remove any additional "Attach to Unity Editor" configurations. The user can no longer create them
-                // (the configuration type is marked as VirtualConfigurationType), but there might be old instances,
-                // or renamed instances, or accidentally duplicated instances. Furthermore, they are not
-                // user-configurable, so we only ever need two configurations. This also cleans up any leftover English
-                // language configs when installing a language pack
+                // Remove any "Attach to Unity Editor" configurations. Those were discontinued in favor of "Attach to"
                 removeRunConfigurations(session.project) {
-                    it.type is UnityEditorDebugConfigurationType && it.name != ATTACH_CONFIGURATION_NAME && it.name != ATTACH_AND_PLAY_CONFIGURATION_NAME
+                    it.type is UnityEditorDebugConfigurationType
                 }
 
-                // Add "Attach Unity Editor" configurations, if they don't exist
-                if (!runManager.allSettings.any { it.type is UnityEditorDebugConfigurationType && it.factory is UnityAttachToEditorFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
-                    val newConfig = createAttachToUnityEditorConfiguration(session.project, ATTACH_CONFIGURATION_NAME, false)
-
-                    // If we deleted an "Attach to Unity Editor" config which was selected, select the new one
-                    (previouslySelectedConfig?.configuration as? UnityAttachToEditorRunConfiguration)?.let {
-                        if (!it.play) {
-                            RunManager.getInstance(session.project).selectedConfiguration = newConfig
-                        }
-                    }
-                }
-
-                if (session.project.isUnityProject.value
-                    && !runManager.allSettings.any { it.type is UnityEditorDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
-                    createAttachToUnityEditorConfiguration(session.project, ATTACH_AND_PLAY_CONFIGURATION_NAME, true)
-                }
-
-                // consider generating only when unityProjectSettings suggests that there is Console or Mobile export
                 if (session.project.isUnityProject.value
                     && !runManager.allSettings.any { it.type is UnityDevicePlayerDebugConfigurationType }) {
                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDevicePlayerDebugConfigurationType::class.java)
@@ -123,9 +97,9 @@ class DefaultRunConfigurationGenerator {
                     )
                 }
 
-                // make Attach Unity Editor configuration selected if nothing is selected
+                // make "Attach to" configuration selected if nothing is selected
                 if (runManager.selectedConfiguration == null) {
-                    val runConfiguration = runManager.findConfigurationByName(ATTACH_CONFIGURATION_NAME)
+                    val runConfiguration = runManager.findConfigurationByName(RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME)
                     if (runConfiguration != null) {
                         runManager.selectedConfiguration = runConfiguration
                     }

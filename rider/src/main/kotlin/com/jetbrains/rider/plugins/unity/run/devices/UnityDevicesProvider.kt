@@ -3,16 +3,18 @@ package com.jetbrains.rider.plugins.unity.run.devices
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.runAndLogException
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.platform.util.progress.reportProgress
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.threading.coroutines.async
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggableDeviceListener
+import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
+import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPointAndPlay
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.run.devices.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -22,6 +24,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
     private val workingTime = 3_000L
     private val locker = Object()
     private val cachedDevices = mutableListOf<UnityProcess>()
+    private val deviceKinds = listOf(UnityUsbDeviceKind, UnityRemotePlayerDeviceKind) // search those
 
     // Copy of all availableDevices - thread-safe
     private val allDevices
@@ -30,7 +33,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
         }
 
     override fun getDeviceKinds(): List<DeviceKind> {
-        return listOf(UnityUsbDeviceKind, UnityRemotePlayerDeviceKind)
+         return listOf(UnityEditorDeviceKind, UnityUsbDeviceKind, UnityRemotePlayerDeviceKind)
     }
 
     private var lifetime = LifetimeDefinition.Terminated
@@ -55,7 +58,11 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
                 }
             }
         }
-        return allDevices
+        val mutableList = mutableListOf<Device>()
+        mutableList.add(UnityEditorEntryPoint(UnityBundle.message("unity.editor.devices.kind.name"), -1, project.solutionDirectory.name))
+        mutableList.add(UnityEditorEntryPointAndPlay(UnityBundle.message("unity.editor.and.play"), -1, project.solutionDirectory.name))
+        mutableList.addAll(allDevices)
+        return mutableList
     }
 
     private suspend fun updateDevices(lifetime: LifetimeDefinition) {
@@ -67,7 +74,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
         UnityDebuggableDeviceListener(
             project, lifetime,
             onProcessAdded = { device ->
-                if (getDeviceKinds().any { device.kind == it } ) {
+                if (deviceKinds.any { device.kind == it } ) {
                     synchronized(locker) {
                         previouslySeenDevices.remove(device)
                         cachedDevices.remove(device)
@@ -77,7 +84,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
                 }
             },
             onProcessRemoved = { device ->
-                if (getDeviceKinds().any { device.kind == it } ) {
+                if (deviceKinds.any { device.kind == it } ) {
                     synchronized(locker) {
                         cachedDevices.remove(device)
                     }

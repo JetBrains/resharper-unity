@@ -257,3 +257,25 @@ class UnityAndroidAdbProcess(
     override fun dump() =
         "$id ($displayName, $deviceId, $deviceDisplayName, $host:$port, UID: $packageUid, ${packageName ?: "no package name"}"
 }
+
+
+/**
+ * Not a process, but a hack to mix Attach to UnityEditor into AttachTo device selector
+ */
+
+class UnityEditorEntryPoint(executableName: String, pid: Int, projectName: String?) :
+    UnityLocalProcess("$TYPE($executableName-${projectName ?: "UnknownProject"})", executableName, pid, UnityEditorDeviceKind, projectName) {
+    companion object {
+        const val TYPE = "UnityEditorEntryPoint"
+    }
+}
+
+/**
+ * Not a process, but a hack to mix Attach to UnityEditorAndPlay into AttachTo device selector
+ */
+class UnityEditorEntryPointAndPlay(executableName: String, pid: Int, projectName: String?) :
+    UnityLocalProcess("$TYPE($executableName-${projectName ?: "UnknownProject"})", executableName, pid, UnityEditorDeviceKind, projectName) {
+    companion object {
+        const val TYPE = "UnityEditorEntryPointAndPlay"
+    }
+}

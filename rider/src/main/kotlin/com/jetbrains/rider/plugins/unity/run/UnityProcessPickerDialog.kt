@@ -313,6 +313,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             // be considered more important than remote players, which could simply be other team members running the
             // game on the same network.
             return when (process) {
+                is UnityEditorEntryPoint -> 5
+                is UnityEditorEntryPointAndPlay -> 7
                 is UnityEditor -> 10
                 is UnityEditorHelper -> 20          // A child node of UnityEditor
                 is UnityVirtualPlayer -> 25

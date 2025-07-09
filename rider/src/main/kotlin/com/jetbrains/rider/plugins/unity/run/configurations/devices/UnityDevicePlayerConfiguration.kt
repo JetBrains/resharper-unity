@@ -11,7 +11,9 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.*
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityConfigurationFactoryBase
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationOptions
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityRunConfigurationBase
 import com.jetbrains.rider.plugins.unity.run.configurations.populateStateFromProcess
@@ -22,14 +24,28 @@ import com.jetbrains.rider.run.devices.DevicesProvider
 import icons.UnityIcons
 import javax.swing.JComponent
 
-// single config for all players, which utilize DevicesConfiguration
 class UnityDevicePlayerConfiguration(project: Project, factory: UnityDevicePlayerFactory) :
     UnityRunConfigurationBase(project, factory),
     DevicesConfiguration {
 
+
+    private val editorConfigurationType = ConfigurationTypeUtil.findConfigurationType(UnityEditorDebugConfigurationType::class.java)
+    private val editorConfiguration = UnityAttachToEditorRunConfiguration(project, editorConfigurationType.attachToEditorAndPlayFactory, false)
+    private val editorAndPlayConfiguration = UnityAttachToEditorRunConfiguration(project, editorConfigurationType.attachToEditorAndPlayFactory, true)
+
     override suspend fun getRunProfileStateAsync(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
         val manager = ActiveDeviceManager.getInstance(project)
         val process = manager.getDevice<UnityProcess>()
+
+        if (process != null) {
+            if (process is UnityEditorEntryPoint)
+                return editorConfiguration.getState(executor, environment) ?: throw CantRunException(
+                    UnityBundle.message("dialog.message.failed.to.use.attach.to.unity.editor.run.configuration"))
+            if (process is UnityEditorEntryPointAndPlay)
+                return editorAndPlayConfiguration.getState(executor, environment) ?: throw CantRunException(
+                    UnityBundle.message("dialog.message.failed.to.use.attach.to.unity.editor.run.configuration"))
+        }
+
         if (process == null) { throw CantRunException(UnityBundle.message("failed.to.identify.device")) }
         populateStateFromProcess(state, process)
 
@@ -37,13 +53,23 @@ class UnityDevicePlayerConfiguration(project: Project, factory: UnityDevicePlaye
     }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration?> {
+        val manager = ActiveDeviceManager.getInstance(project)
+        val process = manager.getDevice<UnityProcess>()
+        if (process != null) {
+            if (
+                process is UnityEditorEntryPoint)
+                return editorConfiguration.configurationEditor
+            if (process is UnityEditorEntryPointAndPlay)
+                return editorAndPlayConfiguration.configurationEditor
+        }
+
         return object : SettingsEditor<UnityDevicePlayerConfiguration>() {
             override fun resetEditorFrom(config: UnityDevicePlayerConfiguration) {
             }
 
             private val panel = panel {
                 row {
-                    label(ActiveDeviceManager.getInstance(project).activeDeviceView.value?.name ?:"").align(AlignX.FILL)
+                    label(manager.activeDeviceView.value?.name ?:"").align(AlignX.FILL)
                 }
             }
 

@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.CantRunException
 import com.intellij.execution.Executor
+import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.configurations.WithoutOwnBeforeRunSteps
@@ -33,7 +34,6 @@ abstract class UnityRunConfigurationBase(project: Project,
     companion object {
         private val logger = Logger.getInstance(UnityRunConfigurationBase::class.java)
     }
-
     // I don't know why RunConfigurationBase has this as nullable
     override fun getState(): UnityPlayerDebugConfigurationOptions = options as UnityPlayerDebugConfigurationOptions
 
