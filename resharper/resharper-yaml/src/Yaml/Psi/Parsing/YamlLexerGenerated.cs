@@ -222,10 +222,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         }
         catch (Exception e)
         {
-          e.AddData("TokenType", () => currentTokenType);
-          e.AddData("LexerState", () => LexerStateEx);
-          e.AddData("TokenStart", () => yy_buffer_start);
-          e.AddData("TokenPos", () => yy_buffer_index);
+          e.AddDataSafe("TokenType", currentTokenType);
+          e.AddDataSafe("LexerState", LexerStateEx);
+          e.AddDataSafe("TokenStart", yy_buffer_start);
+          e.AddDataSafe("TokenPos", yy_buffer_index);
           e.AddData("Buffer", () =>
           {
             var start = Math.Max(0, yy_buffer_end);
