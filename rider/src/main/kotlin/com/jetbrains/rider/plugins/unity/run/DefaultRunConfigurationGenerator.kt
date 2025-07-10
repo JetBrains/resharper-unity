@@ -1,11 +1,13 @@
 package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.execution.RunManager
+import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.ConfigurationTypeUtil
-import com.intellij.execution.configurations.UnknownConfigurationType
+import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.project.Project
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -14,8 +16,9 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.run.configurations.*
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDevicePlayerDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.run.configurations.removeRunConfigurations
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
@@ -85,6 +88,8 @@ class DefaultRunConfigurationGenerator {
                             runManager)
                     } else
                         thisLogger().trace("exePath: $exePath is not a file.")
+
+                    reorderRunConfigurations(session.project)
                 }
 
                 session.project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(lt) {
@@ -95,7 +100,11 @@ class DefaultRunConfigurationGenerator {
                         mutableListOf<String>().toProgramParameters(),
                         runManager
                     )
+
+                    reorderRunConfigurations(session.project)
                 }
+
+                reorderRunConfigurations(session.project)
 
                 // make "Attach to" configuration selected if nothing is selected
                 if (runManager.selectedConfiguration == null) {
@@ -105,6 +114,13 @@ class DefaultRunConfigurationGenerator {
                     }
                 }
             }
+        }
+
+        private fun reorderRunConfigurations(project: Project) {
+            // Reorder configurations to put "Attach to" first
+            val runManagerImpl = RunManagerImpl.getInstanceImpl(project)
+            runManagerImpl.setOrder(compareBy { it.name != RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME },
+                                    isApplyAdditionalSortByTypeAndGroup = false)
         }
 
         private fun createOrUpdateUnityExeRunConfiguration(
