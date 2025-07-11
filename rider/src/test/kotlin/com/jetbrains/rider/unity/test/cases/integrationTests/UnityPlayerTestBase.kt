@@ -2,6 +2,7 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.util.system.OS
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
@@ -15,12 +16,7 @@ import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.combine
-import com.jetbrains.rider.test.scriptingApi.EngineVersion
-import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
-import com.jetbrains.rider.test.scriptingApi.createLibraryFolderIfNotExist
-import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
-import com.jetbrains.rider.test.scriptingApi.riderPackageVersion
-import com.jetbrains.rider.test.scriptingApi.setRiderPackageVersion
+import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.activateRiderFrontendTest
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
@@ -59,7 +55,7 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : P
             SystemInfo.isMac -> "OSXUniversal"
             SystemInfo.isWindows -> "Win64"
             SystemInfo.isLinux -> "Linux64"
-            else -> error("Unsupported OS for Unity player build: ${SystemInfo.getOsName()}")
+            else -> error("Unsupported OS for Unity player build: ${OS.CURRENT}")
         }
 
         val process = ProcessBuilder(
