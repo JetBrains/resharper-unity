@@ -4,10 +4,10 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
-import com.intellij.platform.util.progress.reportProgress
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.threading.coroutines.async
+import com.jetbrains.rd.util.threading.coroutines.nextFalseValueAsync
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggableDeviceListener
@@ -49,7 +49,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
                     try {
                         val action = ActionManager.getInstance().getAction("ActiveDevice") as ActiveDeviceAction
                         action.progress()
-                        updateDevices(lifetime.createNested())
+                        updateDevices(lifetime.createNested(), action)
                         action.stopProgress(project)
                     }
                     finally {
@@ -61,11 +61,11 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
         val mutableList = mutableListOf<Device>()
         mutableList.add(UnityEditorEntryPoint(UnityBundle.message("unity.editor.devices.kind.name"), -1, project.solutionDirectory.name))
         mutableList.add(UnityEditorEntryPointAndPlay(UnityBundle.message("unity.editor.and.play"), -1, project.solutionDirectory.name))
-        mutableList.addAll(allDevices)
+        mutableList.addAll(allDevices.toHashSet())
         return mutableList
     }
 
-    private suspend fun updateDevices(lifetime: LifetimeDefinition) {
+    private suspend fun updateDevices(lifetime: LifetimeDefinition, action: ActiveDeviceAction) {
         // Take a snapshot before starting - will use it later
         val currentlyDiscovered = synchronized(locker) { cachedDevices.toSet() }
         val previouslySeenDevices = currentlyDiscovered.toMutableSet()
@@ -94,7 +94,10 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
             }
         )
 
-        delayWithProgress()
+        coroutineScope {
+            action.isExpanded.nextFalseValueAsync(lifetime).await()
+            delay(workingTime)
+        }
 
         // Drop devices, which were not seen during this scan
         synchronized(locker) {
@@ -105,21 +108,6 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
             cachedDevices.removeAll(previouslySeenDevices)
         }
         lifetime.terminate()
-    }
-
-    private suspend fun delayWithProgress(){
-        // using progress reporter to update progress bar, instead of simple `delay(workingTime)`
-        val steps = 100
-        val delay = (workingTime / steps)
-        reportProgress(steps) { reporter ->
-            coroutineScope {
-                (0 until steps).forEach { i ->
-                    reporter.itemStep {
-                        delay(delay)
-                    }
-                }
-            }
-        }
     }
 
     override fun checkCompatibility(deviceKind: DeviceKind): CompatibilityProblem? = null
