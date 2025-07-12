@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
             }
         }
 
-        protected override IQuickFix? CreateQuickFix(IProject project, ITextControl textControl,
+        protected override IQuickFix? CreateBulbAction(IProject project, ITextControl textControl,
                                                      out IHighlighting highlighting)
         {
             IQuickFix? result;
