@@ -34,8 +34,9 @@ import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.*
-import com.jetbrains.rider.shared.run.withRawParameters
+import com.jetbrains.rider.run.configurations.TerminalMode
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
+import com.jetbrains.rider.shared.run.withRawParameters
 import com.jetbrains.rider.util.NetUtils
 import java.nio.file.Path
 
@@ -64,7 +65,7 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
                          runner: ProgramRunner<*>,
                          workerProcessHandler: DebuggerWorkerProcessHandler,
                          lifetime: Lifetime): ExecutionResult {
-        val runCommandLine = createEmptyConsoleCommandLine(exeConfiguration.parameters.useExternalConsole)
+        val runCommandLine = createEmptyConsoleCommandLine(exeConfiguration.parameters.terminalMode)
             .withEnvironment(exeConfiguration.parameters.envs)
             .withEnvironment("MONO_ARGUMENTS",
                              "--debugger-agent=transport=dt_socket,address=127.0.0.1:${remoteConfiguration.port},server=n,suspend=y")
@@ -106,7 +107,7 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         }
 
         fun runUnityEditor() {
-            val targetProcessHandler = if (exeConfiguration.parameters.useExternalConsole)
+            val targetProcessHandler = if (exeConfiguration.parameters.terminalMode == TerminalMode.ExternalConsole)
                 ExternalConsoleMediator.createProcessHandler(runCommandLine)
             else
                 KillableProcessHandler(runCommandLine)
