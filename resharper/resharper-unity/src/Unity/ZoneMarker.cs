@@ -1,5 +1,6 @@
 ﻿using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.ReSharper.Daemon.SolutionAnalysis;
+using JetBrains.ReSharper.ExternalSources.ILViewer;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Json;
 using JetBrains.ReSharper.Plugins.Yaml;
@@ -18,7 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         IRequire<ILanguageCSharpZone>,
         IRequire<PsiFeaturesImplZone>,
         IRequire<ILanguageYamlZone>,
-        IRequire<SweaZone>
+        IRequire<SweaZone>,
+        IRequire<IIlViewerZone>
     {
     }
 
