@@ -51,9 +51,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSource
             foreach (var path in paths) yield return path;
             if (!mySolutionTracker.IsUnityProject.Value || !fsp.IsAbsolute ||
                 !SolutionDirectory.IsPrefixOf(fsp)) yield break;
-            var fullPath = "." + FileSystemDefinition.GetPathSeparator(InteractionContext.Local) +
-                           fsp.MakeRelativeTo(SolutionDirectory).FullPath;
-            yield return (FileSystemPath.TryParse(fullPath), fullPath);
+            
+            // on mac path in the pdb looks like ./Library/PackageCache/com.unity.ide.rider@4d374c7eb6db/Rider/Editor/Discovery.cs
+            var unityPdbRelPath = "." + FileSystemDefinition.GetPathSeparator(InteractionContext.Local) +
+                           fsp.MakeRelativeTo(SolutionDirectory).PathWithCurrentPlatformSeparators();
+            yield return (FileSystemPath.TryParse(unityPdbRelPath), unityPdbRelPath);
         }
     }
 }
