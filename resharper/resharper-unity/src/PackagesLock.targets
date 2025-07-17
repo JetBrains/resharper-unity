@@ -4,7 +4,7 @@
         <PackageLock Include="Antlr2.Runtime" Version="2.7.7.3" />
         <PackageLock Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.7.0" IsDevelopmentDependency="True" />
         <PackageLock Include="JetBrains.Annotations" Version="2024.3.0" />
-        <PackageLock Include="JetBrains.Build.Platform.DistributedCache" Version="1.1.20250716.244" />
+        <PackageLock Include="JetBrains.Build.Platform.DistributedCache" Version="1.1.20250717.260" />
         <PackageLock Include="JetBrains.HabitatDetector" Version="1.4.5" IsDevelopmentDependency="True" />
         <PackageLock Include="JetBrains.Lifetimes" Version="2024.3.0" />
         <PackageLock Include="JetBrains.RdFramework" Version="2024.3.0" />
