@@ -7,6 +7,10 @@ import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBre
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.report.ChecklistItems
+import com.jetbrains.rider.test.annotations.report.Feature
+import com.jetbrains.rider.test.annotations.report.Severity
+import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.*

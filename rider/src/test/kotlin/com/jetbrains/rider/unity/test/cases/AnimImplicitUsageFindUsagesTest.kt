@@ -3,8 +3,12 @@ import com.jetbrains.rd.ide.model.findUsagesHost
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.report.ChecklistItems
+import com.jetbrains.rider.test.annotations.report.Feature
+import com.jetbrains.rider.test.annotations.report.Severity
+import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.base.PerClassSolutionTestBase
-import com.jetbrains.rider.test.env.enums.SdkVersion
+import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.unity.test.framework.api.doFindUsagesTest
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies

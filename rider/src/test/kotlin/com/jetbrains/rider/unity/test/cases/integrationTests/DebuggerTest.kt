@@ -15,6 +15,10 @@ import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCu
 import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator.Companion.getUnityTextureInfo
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
 import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.report.ChecklistItems
+import com.jetbrains.rider.test.annotations.report.Feature
+import com.jetbrains.rider.test.annotations.report.Severity
+import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.*

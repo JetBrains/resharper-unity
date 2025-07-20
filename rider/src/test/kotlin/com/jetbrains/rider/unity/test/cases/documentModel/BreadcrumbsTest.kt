@@ -1,6 +1,10 @@
 package com.jetbrains.rider.unity.test.cases.documentModel
 
 import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.report.ChecklistItems
+import com.jetbrains.rider.test.annotations.report.Feature
+import com.jetbrains.rider.test.annotations.report.Severity
+import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.checkCrumbs
