@@ -19,7 +19,7 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("PlayMode Action for Unity")
 @Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDebugAndUnitTesting/Project")
 abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
     @Test(description="Check play, pause, step, unpause, stop actions for Unity")
@@ -73,7 +73,7 @@ abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 }
 
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class PlayModeTestUnity2020 : PlayModeTest(Unity.V2020) {
     init {
         addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditor)
@@ -81,7 +81,7 @@ class PlayModeTestUnity2020 : PlayModeTest(Unity.V2020) {
     }
 }
 
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class PlayModeTestUnity2022 : PlayModeTest(Unity.V2022) {
     init {
         addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
@@ -90,7 +90,7 @@ class PlayModeTestUnity2022 : PlayModeTest(Unity.V2022) {
     }
 }
 
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class PlayModeTestUnity6 : PlayModeTest(Unity.V6)
 {
     init {
@@ -100,7 +100,7 @@ class PlayModeTestUnity6 : PlayModeTest(Unity.V6)
     }
 }
 
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
 class PlayModeTestTuanjie2022 : PlayModeTest(Tuanjie.V2022)

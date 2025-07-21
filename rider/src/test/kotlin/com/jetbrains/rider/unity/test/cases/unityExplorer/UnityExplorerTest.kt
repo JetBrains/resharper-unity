@@ -90,7 +90,8 @@ class UnityExplorerTest : PerTestEnvironmentTestBase() {
 
     @Test(description = "Test project loading with a special folder")
     @Issue("RIDER-92886")
-    @TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE, platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
+    @TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+    @TestRequirements(platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
     @ChecklistItems(["Unity explorer/Loading with a special folder"])
     fun test_project_loading_with_special_folder() { // infinite loading caused by a "..\\" folder
         withSolution("AnimImplicitUsageTest", OpenSolutionParams().apply {

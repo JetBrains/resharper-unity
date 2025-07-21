@@ -8,6 +8,7 @@ import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.unity.test.framework.base.FindUsagesAssetTestBase
 import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.TestRequirements
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
@@ -16,7 +17,8 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Feature("Unity Animator Find Usages")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.LATEST_STABLE)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestRequirements(platform = [PlatformType.ALL])
 @Solution("AnimatorFindUsages")
 open class AnimatorFindUsagesTest : FindUsagesAssetTestBase() {
     @Test(description = "Test animator find usages", dataProvider = "findUsagesGrouping")

@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Dots")
 @Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDotsDebug/Project")
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
@@ -110,7 +110,7 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
 }
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerestUnity2020 : DotsDebuggerTest(Unity.V2020) {
     //init {
         //addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
@@ -120,7 +120,7 @@ class DotsDebuggerestUnity2020 : DotsDebuggerTest(Unity.V2020) {
 }
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
     init {
         addMute(Mute("RIDER-119059"), ::checkUnityPausePoint)
@@ -129,7 +129,7 @@ class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
 }
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DotsDebuggerTestUnity6 : DotsDebuggerTest(Unity.V6) {
     init {
         addMute(Mute("RIDER-118536"), ::checkRefPresentationInDOTSCode)

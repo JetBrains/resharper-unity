@@ -15,7 +15,8 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Feature("Unity Assets Find Usages")
 @Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.LATEST_STABLE)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestRequirements(platform = [PlatformType.ALL])
 @Solution("FindUsages_event_handlers_2017")
 open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
     @Test(description = "Find script usages with Unity2017 scene model", dataProvider = "findUsagesGrouping")

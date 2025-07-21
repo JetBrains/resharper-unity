@@ -4,13 +4,15 @@ import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.unity.test.framework.base.FindUsagesAssetTestBase
 import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.TestRequirements
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
 import org.testng.annotations.Test
 
-@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.LATEST_STABLE)
+@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestRequirements(platform = [PlatformType.ALL])
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Solution("PrefabModificationTestSolution")
 class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {

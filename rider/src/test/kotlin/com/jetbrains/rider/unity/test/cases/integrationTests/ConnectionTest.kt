@@ -18,7 +18,7 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Connection with Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL]) // todo: allow Linux
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL]) // todo: allow Linux
 @Solution("SimpleUnityProjectWithoutPlugin")
 class ConnectionTest : IntegrationTestWithSolutionBase() {
     @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2

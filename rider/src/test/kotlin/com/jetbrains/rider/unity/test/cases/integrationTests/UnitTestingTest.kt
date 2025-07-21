@@ -21,7 +21,7 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
 @Feature("Unit Testing in Unity solution with started Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDebugAndUnitTesting/Project")
 abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
     @Test(description="Check run all tests from project")
@@ -78,17 +78,17 @@ abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWi
     }
 }
 
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTestUnity2020 : UnitTestingTest(Unity.V2020)
 
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTestUnity2022 : UnitTestingTest(Unity.V2022)
 
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTestUnity6 : UnitTestingTest(Unity.V6) {
 }
 
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
 class UnitTestingTestTuanjie2022 : UnitTestingTest(Tuanjie.V2022)
