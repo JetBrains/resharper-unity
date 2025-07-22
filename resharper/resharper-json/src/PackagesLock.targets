@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
         <PackageLock Include="Antlr2.Runtime" Version="2.7.7.3" />
-        <PackageLock Include="JetBrains.Annotations" Version="2024.3.0" />
+        <PackageLock Include="JetBrains.Annotations" Version="2025.2.0" />
         <PackageLock Include="JetBrains.Build.Platform.DistributedCache" Version="1.1.20250130.230" />
         <PackageLock Include="JetBrains.Lifetimes" Version="2024.3.0" />
         <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
