@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.Psi.Mo
             changeManager.RegisterChangeProvider(lifetime, this);
             changeManager.AddDependency(lifetime, psiModules, this);
 
-            changeManager.Changed.Advise(lifetime, args =>
+            changeManager.Changed2.Advise(lifetime, args =>
             {
                 var changeMap = args.ChangeMap;
                 var module = moduleFactory.PsiModule;

@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
             mySolution.Locks.ExecuteOrQueueEx(lifetime, "PreProcessingDirectiveCache.Init", () =>
             {
-                changeManager.Changed.Advise(lifetime, OnChange);
+                changeManager.Changed2.Advise(lifetime, OnChange);
                 packageManager.Updating.Change.Advise_NoAcknowledgement(lifetime, OnPackagesUpdated);
                 asmDefCache.CacheUpdated.Advise(lifetime, OnAsmDefCacheUpdated);
                 myUnityVersion.ActualVersionForSolution.Advise(lifetime, OnApplicationVersionChanged);
