@@ -7,13 +7,29 @@ import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.execution.ui.RunConfigurationStartHistory
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.platform.backend.workspace.WorkspaceModel
+import com.jetbrains.rd.util.threading.coroutines.launch
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityBundleInfo
 import com.jetbrains.rider.plugins.unity.run.*
+import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator.Companion.RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME
+import com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDevicePlayerDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
+import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rider.run.devices.ActiveDeviceManager
+import com.jetbrains.rider.run.devices.Device
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
+import org.jetbrains.concurrency.runAsync
+import kotlin.coroutines.coroutineContext
 
 /**
  * Returns true if any "Attach to Unity Editor" or "Attach to Unity Editor & Play" run configuration is running
@@ -35,14 +51,26 @@ fun isAttachedToUnityEditor(project: Project): Boolean {
  * configuration doesn't exist, it will be recreated
  */
 fun attachToUnityEditor(project: Project) {
-    val configurationSettings = getUnityEditorRunConfiguration(project)
-                                ?: createAttachToUnityEditorConfiguration(
-                                    project,
-                                    DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME,
-                                    false
-                                )
-
-    startDebugRunConfiguration(project, configurationSettings)
+    val configurationSettings = getUnityEditorRunConfiguration(project) ?: createAttachToConfiguration(project)
+    val manager = ActiveDeviceManager.getInstance(project)
+    val process = manager.getDevice<Device>()
+    if (process !is UnityEditorEntryPoint){
+        val lifetime = UnityProjectLifetimeService.getLifetime(project).createNested()
+        lifetime.launch {
+            val device = manager.getDevices().entries
+                .filter { it.key is UnityEditorDeviceKind }
+                .flatMap { it.value }
+                .single { it.first is UnityEditorEntryPoint }
+                .first
+            manager.setActiveDevice(device)
+        }.invokeOnCompletion {
+            lifetime.launch(Dispatchers.EDT) {
+                startDebugRunConfiguration(project, configurationSettings)
+            }
+        }
+    }
+    else
+        startDebugRunConfiguration(project, configurationSettings)
 }
 
 /**
@@ -119,11 +147,10 @@ fun populateStateFromProcess(state:UnityPlayerDebugConfigurationOptions, process
     }
 }
 
-fun createAttachToUnityEditorConfiguration(project: Project, name: String, play: Boolean): RunnerAndConfigurationSettings {
+fun createAttachToConfiguration(project: Project): RunnerAndConfigurationSettings {
     val runManager = RunManager.getInstance(project)
-    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityEditorDebugConfigurationType::class.java)
-    val factory = if (play) configurationType.attachToEditorAndPlayFactory else configurationType.attachToEditorFactory
-    val runConfiguration = runManager.createConfiguration(name, factory)
+    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDevicePlayerDebugConfigurationType::class.java)
+    val runConfiguration = runManager.createConfiguration(RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME, configurationType.factory)
     // No need to share it - we recreate it if it's missing
     runConfiguration.storeInLocalWorkspace()
     runManager.addConfiguration(runConfiguration)
@@ -138,15 +165,9 @@ fun removeRunConfigurations(project: Project, predicate: (RunnerAndConfiguration
 private fun getUnityEditorRunConfiguration(project: Project): RunnerAndConfigurationSettings? {
     val runManager = RunManager.getInstance(project)
 
-    // Find the "Attach to Unity Editor" run configuration. If we can't find it, look for a renamed configuration,
-    // without the "& Play" setting
     return runManager.findConfigurationByTypeAndName(
-        UnityEditorDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME
-    ) ?: ConfigurationTypeUtil.findConfigurationType(UnityEditorDebugConfigurationType::class.java).let { type ->
-        runManager.getConfigurationSettingsList(type).firstOrNull {
-            !(it.configuration as UnityAttachToEditorRunConfiguration).play
-        }
-    }
+        UnityDevicePlayerDebugConfigurationType.ID, RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME
+    )
 }
 
 private fun isRunning(project: Project, configurationSettings: RunnerAndConfigurationSettings) =

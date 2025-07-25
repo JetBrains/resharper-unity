@@ -21,6 +21,7 @@ import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
@@ -33,6 +34,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
+import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.getUnityArgs
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
@@ -40,12 +42,12 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
-import com.jetbrains.rider.test.tooling.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.framework.processor.TestProcessor
 import com.jetbrains.rider.test.framework.testData.TestDataStorage
 import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.tooling.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
 import com.jetbrains.rider.utils.NullPrintStream
 import kotlinx.coroutines.launch
@@ -449,6 +451,11 @@ fun waitForUnityRunConfigurations(project: Project) {
 
 private fun selectRunConfiguration(project: Project, name: String) {
     val runManager = RunManager.getInstance(project)
+    if (runManager.selectedConfiguration?.name == name) {
+        frameworkLogger.info("Already selected run configuration '$name'")
+        return
+    }
+
     val runConfigurationToSelect = runManager.allConfigurationsList.firstOrNull {
         it.name == name
     }.shouldNotBeNull("There are no run configuration with name '$name', " +
@@ -492,16 +499,12 @@ private fun attachDebuggerToUnityEditor(
     goldFile: File? = null,
     customSuffixes: List<String> = emptyList()
 ) {
-    selectRunConfiguration(
-        project,
-        if (andPlay) DefaultRunConfigurationGenerator.ATTACH_AND_PLAY_CONFIGURATION_NAME
-        else DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME
-    )
+    selectRunConfiguration(project, DefaultRunConfigurationGenerator.RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME)
 
-    val waitAndTest: DebugTestExecutionContext.() -> Unit = {
-        waitForDotNetDebuggerInitializedOrCanceled()
-        test()
-    }
+    if (andPlay)
+        selectDevice(project){a-> a.kind == UnityEditorDeviceKind && a.name == UnityBundle.message("unity.editor.and.play") }
+    else
+        selectDevice(project){a-> a.kind == UnityEditorDeviceKind && a.name == UnityBundle.message("unity.editor.devices.kind.name") }
 
     if (goldFile != null) {
         executeWithGold(goldFile, customSuffixes) {

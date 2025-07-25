@@ -6,6 +6,7 @@ import com.intellij.openapi.project.DumbAware
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import icons.UnityIcons
 
+// In most cases use UnityDevicePlayerDebugConfigurationType instead
 class UnityEditorDebugConfigurationType : ConfigurationTypeBase(
     id,
     UnityBundle.message("configuration.type.name.attach.to.unity.editor"),
