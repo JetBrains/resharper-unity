@@ -1,13 +1,14 @@
 package com.jetbrains.rider.plugins.unity.run.devices
 
 import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.run.devices.DeviceKind
 import org.jetbrains.annotations.Nls
 
 open class UnityDeviceKind(id: String, @Nls name: String) : DeviceKind(id, name, name) {
 
-  override fun getMissingDevicesAction(): AnAction? {
+  override fun getMissingDevicesAction(project: Project): AnAction? {
     return null
   }
 }
