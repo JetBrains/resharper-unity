@@ -1,6 +1,6 @@
 <idea-plugin package="com.jetbrains.rider.plugins.unity.css">
   <dependencies>
-    <plugin id="com.intellij.css"/>
+    <module name="intellij.css.backend"/>
   </dependencies>
 
   <!-- USS depends on CSS, but make it an optional dependency, so we don't disable all of Unity support if someone
