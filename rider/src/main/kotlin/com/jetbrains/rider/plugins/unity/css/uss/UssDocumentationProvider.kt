@@ -8,6 +8,7 @@ import com.intellij.psi.css.descriptor.CssValueOwnerDescriptor
 import com.intellij.psi.css.impl.util.CssDocumentationProvider
 import com.intellij.psi.css.impl.util.MdnDocumentationUtil
 import com.intellij.psi.css.impl.util.table.CssDescriptorsUtil
+import com.intellij.psi.css.impl.util.table.CssDescriptorsUtilCore
 import org.jetbrains.annotations.Nls
 
 class UssDocumentationProvider : DocumentationProvider {
@@ -51,7 +52,7 @@ class UssDocumentationProvider : DocumentationProvider {
             }
             else latestDescriptor.getDocumentationString(documentationElement)
         }
-        val descriptorProvider = CssDescriptorsUtil.findDescriptorProvider(context)
+        val descriptorProvider = CssDescriptorsUtilCore.findDescriptorProvider(context)
         return descriptorProvider?.generateDocForSelector(descriptorText, context)
     }
 
