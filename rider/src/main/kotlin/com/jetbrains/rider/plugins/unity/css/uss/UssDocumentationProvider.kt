@@ -63,6 +63,6 @@ class UssDocumentationProvider : DocumentationProvider {
         if (!filteredByContext.isEmpty()) {
             descriptors = filteredByContext
         }
-        return CssDescriptorsUtil.sortDescriptors(descriptors)
+        return CssDescriptorsUtilCore.sortDescriptors(descriptors)
     }
 }
