@@ -1,4 +1,3 @@
-using System;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.LookupItems;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
@@ -11,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
     public class ShaderLabSemanticCompletionTests : ShaderLabCodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
-        
+
         protected override string RelativeTestDataPath => @"ShaderLab\CodeCompletion\Semantic";
 
         [TestCase("TestSemantic01.shader")]
@@ -22,6 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("TestSemantic06.shader")]
         public void Test(string name) => DoTestSolution(name);
 
-        protected override Func<ILookupItem, bool> ItemSelector { get; } = item => item is LookupItem lookupItem && lookupItem.ItemInfo is HlslSemanticItemsProvider.SemanticTextualInfo;
+        protected override bool LookupItemFilter(ILookupItem lookupItem)
+        {
+            return lookupItem is LookupItem { ItemInfo: HlslSemanticItemsProvider.SemanticTextualInfo };
+        }
     }
 }

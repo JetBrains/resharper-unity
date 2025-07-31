@@ -23,8 +23,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.BlockShaders.Feature.Services.
         [TestCase("TestSemantic06.shaderFoundry")]
         public void Test(string name) => DoTestSolution(name);
 
-        protected override Func<ILookupItem, bool> ItemSelector { get; } = item => item is LookupItem lookupItem && 
-            (lookupItem.ItemInfo is BlockShadersSemanticItemsProvider.AttributeSemanticTextualInfo ||
-            lookupItem.ItemInfo is HlslSemanticItemsProvider.SemanticTextualInfo);
+        protected override bool LookupItemFilter(ILookupItem item)
+        {
+            return item is LookupItem
+            {
+                ItemInfo: BlockShadersSemanticItemsProvider.AttributeSemanticTextualInfo
+                          or HlslSemanticItemsProvider.SemanticTextualInfo
+            };
+        }
     }
 }

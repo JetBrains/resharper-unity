@@ -24,6 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("ShaderVariant08.shader")]
         public void Test(string name) => DoTestSolution(name);
 
-        protected override Func<ILookupItem, bool> ItemSelector { get; } = item => item is LookupItem lookupItem && lookupItem.Presentation.Image == PsiSymbolsThemedIcons.Macro.Id && !lookupItem.ItemInfo.Text.StartsWith("__");
+        protected override bool LookupItemFilter(ILookupItem item)
+        {
+            return item is LookupItem lookupItem
+                   && lookupItem.Presentation.Image == PsiSymbolsThemedIcons.Macro.Id
+                   && !lookupItem.ItemInfo.Text.StartsWith("__");
+        }
     }
 }

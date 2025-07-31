@@ -20,9 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
 
         protected override string RelativeTestDataPath => @"ShaderLab\CodeCompletion\Keywords\List";
 
-        protected override Func<ILookupItem, bool> ItemSelector => KeywordsOnly;
-
-        private static bool KeywordsOnly(ILookupItem lookupItem)
+        protected override bool LookupItemFilter(ILookupItem lookupItem)
         {
             if (lookupItem.IsKeyword()) return true;
 
@@ -42,8 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("TestShaderCommandContent02")]
         [TestCase("TestShaderCommandContent03")]
         [TestCase("TestShaderCommandContent04")]
-        [TestCase("TestShaderCommandContent05")]        
-        [TestCase("TestShaderCommandContent06")]        
+        [TestCase("TestShaderCommandContent05")]
+        [TestCase("TestShaderCommandContent06")]
         [TestCase("TestCategoryCommandContent01")]
         [TestCase("TestCategoryCommandContent02")]
         [TestCase("TestSubShaderCommandContent01")]
