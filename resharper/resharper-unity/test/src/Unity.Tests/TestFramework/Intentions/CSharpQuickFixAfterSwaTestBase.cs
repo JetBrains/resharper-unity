@@ -11,7 +11,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
 {
-    public abstract class CSharpQuickFixAfterSwaTestBase<TQuickFix> : CSharpQuickFixTestBase<TQuickFix> where TQuickFix : IQuickFix
+    public abstract class CSharpQuickFixAfterSwaTestBase<TQuickFix> : CSharpQuickFixTestBase<TQuickFix>
+        where TQuickFix : IQuickFix
     {
         protected override void DoTestSolution(params string[] fileSet)
         {
@@ -21,28 +22,30 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
             }
         }
 
-        protected override IQuickFix? CreateBulbAction(IProject project, ITextControl textControl,
-                                                     out IHighlighting highlighting)
+        protected override QuickFixInstance? CreateBulbAction(IProject project, ITextControl textControl)
         {
-            IQuickFix? result;
             var solution = project.GetSolution();
-            var swea = solution.GetComponent<SolutionAnalysisService>();
-            using (swea.RunAnalysisCookie())
+            var solutionAnalysisService = solution.GetComponent<SolutionAnalysisService>();
+
+            using (solutionAnalysisService.RunAnalysisCookie())
             using (UnityProjectCookie.RunUnitySolutionCookie(solution))
             {
-                foreach (var file in swea.GetFilesToAnalyze())
-                    swea.AnalyzeInvisibleFile(file);
+                foreach (var file in solutionAnalysisService.GetFilesToAnalyze())
+                    solutionAnalysisService.AnalyzeInvisibleFile(file);
 
-                swea.AllFilesAnalyzed();
+                solutionAnalysisService.AllFilesAnalyzed();
 
                 using (SyncReanalyzeCookie.Create(solution.Locks, SolutionAnalysisManager.GetInstance(solution)))
                 {
-                    highlighting = RunErrorFinder(project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
-                    result = Shell.Instance.GetComponent<IQuickFixes>().InstantiateQuickfix(highlighting, typeof(TQuickFix), 0);
+                    var errorInfo = RunErrorFinder(project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
+
+                    var quickFixes = Shell.Instance.GetComponent<IQuickFixes>();
+                    var result = quickFixes.InstantiateQuickfix(errorInfo.Highlighting, typeof(TQuickFix), quickFixIndex: 0);
+                    if (result is null) return null;
+
+                    return new QuickFixInstance(result, errorInfo);
                 }
             }
-
-            return result;
         }
 
         protected override void OnQuickFixNotAvailable(ITextControl textControl, IQuickFix action)
