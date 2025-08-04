@@ -390,7 +390,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // Add them back if they're removed from the project model. This can happen if the user generates projects
             // for registry packages, or changes the settings to add .unity or .prefab to projects, or manually edits
             // the project to add the files (although this will get overwritten)
-            myChangeManager.Changed2.Advise(myLifetime, args =>
+            myChangeManager.Changed.Advise(myLifetime, args =>
             {
                 var solutionChanges = args.ChangeMap.GetChanges<SolutionChange>().ToList();
                 if (solutionChanges.IsEmpty())
