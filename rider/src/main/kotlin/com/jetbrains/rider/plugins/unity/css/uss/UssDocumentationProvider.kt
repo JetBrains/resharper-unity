@@ -31,7 +31,7 @@ class UssDocumentationProvider : DocumentationProvider {
                             documentationElement: PsiElement,
                             context: PsiElement?): String? {
         if (descriptorText == null) return null
-        if (documentationElement is CssDescriptorOwner) {
+        if (documentationElement is CssDescriptorOwner<*>) {
             val descriptorProviderContext = context ?: documentationElement
             val descriptors = getFilteredAndSortedDescriptors(documentationElement, descriptorProviderContext)
             if (descriptors.isEmpty()) {
@@ -56,8 +56,10 @@ class UssDocumentationProvider : DocumentationProvider {
         return descriptorProvider?.generateDocForSelector(descriptorText, context)
     }
 
-    private fun getFilteredAndSortedDescriptors(descriptorOwner: CssDescriptorOwner,
-                                                descriptorProviderContext: PsiElement): Collection<CssElementDescriptor> {
+    private fun getFilteredAndSortedDescriptors(
+        descriptorOwner: CssDescriptorOwner<*>,
+        descriptorProviderContext: PsiElement,
+    ): Collection<CssElementDescriptor> {
         var descriptors: MutableCollection<CssElementDescriptor> = descriptorOwner.getDescriptors(descriptorProviderContext).toMutableList()
         val filteredByContext = CssDescriptorsUtil.filterDescriptorsByContext(descriptors, descriptorProviderContext)
         if (!filteredByContext.isEmpty()) {
