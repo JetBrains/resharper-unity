@@ -9,7 +9,7 @@
       <_ILRepackDotnetExe>$(DOTNET_HOST_PATH)</_ILRepackDotnetExe>
       <_ILRepackDotnetExe Condition=" '$(DOTNET_HOST_PATH)' == '' ">dotnet</_ILRepackDotnetExe>
     </PropertyGroup>
-    <Exec Command="&quot;$(_ILRepackDotNetExe)&quot; $(ILRepackNetCore) /internalize /lib:&quot;$(LibDirectory)&quot; /out:&quot;$(ILRepackOutputAssembly)&quot; @(ILRepackInputAssemblies -> '&quot;%(FullPath)&quot;', ' ')"
+    <Exec Command="&quot;$(_ILRepackDotNetExe)&quot; $(ILRepack) /internalize /lib:&quot;$(LibDirectory)&quot; /out:&quot;$(ILRepackOutputAssembly)&quot; @(ILRepackInputAssemblies -> '&quot;%(FullPath)&quot;', ' ')"
           StandardOutputImportance="Normal"/>
   </Target>
 </Project>

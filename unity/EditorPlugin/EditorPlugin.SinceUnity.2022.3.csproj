@@ -14,7 +14,8 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Build.ILRepack" />
+    <PackageReference Include="JetBrains.Annotations" Aliases="Annotations" PrivateAssets="All" />
+    <PackageReference Include="ILRepack" PrivateAssets="all" />
     <PackageReference Include="JetBrains.Unity.Libs.Ref.2022.3.58f1"/>
     <PackageReference Include="NUnit" />
   </ItemGroup>
