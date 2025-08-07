@@ -19,13 +19,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
 {
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabLanguageService(ShaderLabLanguage psiLanguageType, ILazy<IConstantValueService> constantValueService, ILazy<CommonIdentifierIntern> commonIdentifierIntern, ILazy<ShaderLabCodeFormatter> codeFormatter)
-        : LanguageService(psiLanguageType, constantValueService)
+        : LanguageService(psiLanguageType, constantValueService, codeFormatter)
     {
         private IDeclaredElementPresenter? myPresenter;
 
         public override ILexerFactory GetPrimaryLexerFactory() => new ShaderLabLexerFactory();
-
-        public override ICodeFormatter CodeFormatter => codeFormatter.Value;
 
         public override ILexer CreateFilteringLexer(ILexer lexer)
         {
