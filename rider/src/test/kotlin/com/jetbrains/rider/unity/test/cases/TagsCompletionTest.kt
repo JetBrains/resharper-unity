@@ -25,7 +25,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Tags Autocompletion")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("ProjectSettingsTestData")
 class TagsCompletionTest : PerTestSolutionTestBase() {
     override val traceCategories: List<String>

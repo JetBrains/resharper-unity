@@ -21,7 +21,7 @@ import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.Test
 import java.time.Duration
 
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Solution("MarkupTestData")
 class InputSystemUnityEventModeTest : PerTestSolutionTestBase() {

@@ -13,7 +13,7 @@ import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
@@ -29,7 +29,7 @@ import org.testng.annotations.Test
 import java.time.Duration
 
 @Mute("RIDER-114854")
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Solution("InputSystemTestData")
 class InputSystemTest : PerTestSolutionTestBase() {

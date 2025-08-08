@@ -8,7 +8,7 @@ import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.base.RefactoringsTestBase
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.combine
@@ -22,7 +22,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity quick fix project settings")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("ProjectSettingsTestData")
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     @Test(description="Quick fix for adding to build settings")

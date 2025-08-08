@@ -24,7 +24,7 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity DOTS Autocompletion")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("UnityDotsAutocompletionTestData")
 class UnityDotsAutocompletionTest : PerTestSolutionTestBase() {
     override val traceCategories: List<String>

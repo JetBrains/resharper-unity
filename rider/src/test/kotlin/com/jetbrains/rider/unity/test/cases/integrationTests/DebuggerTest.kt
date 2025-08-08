@@ -204,24 +204,24 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
     }
 }
 
-@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity2020 : DebuggerTest(Unity.V2020)  {
     init {
         addMute(Mute("RIDER-105466", platforms = arrayOf(PlatformType.WINDOWS_ALL)), ::checkUnityPausePoint)
     }
 }
 
-@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity2022 : DebuggerTest(Unity.V2022)
 
-@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity6 : DebuggerTest(Unity.V6) {
     init {
         addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
     }
 }
 
-@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
 class DebuggerTestTuanjie2022 : DebuggerTest (Tuanjie.V2022)

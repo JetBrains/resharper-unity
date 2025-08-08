@@ -30,7 +30,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Asset Database Autocompletion")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("AssetDatabasePathCompletionProject")
 class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Editor {
     override val editorApiFacade: EditorApiFacade by lazy { RiderEditorApiFacade(solutionApiFacade, testDataStorage) }

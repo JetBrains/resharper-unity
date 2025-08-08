@@ -60,7 +60,7 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion)
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Severity(SeverityLevel.CRITICAL)
-@TestRequirements(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Suppress("Unused")
 class UnityPlayerDebuggerTest {
     class TestUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022){

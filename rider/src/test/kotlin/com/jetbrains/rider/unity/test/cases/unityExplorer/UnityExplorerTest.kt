@@ -12,7 +12,7 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Issue
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.PerTestEnvironmentTestBase
+import com.jetbrains.rider.test.base.PerTestSettingsTestBase
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -27,13 +27,13 @@ import java.time.Duration
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity Explorer")
 @Severity(SeverityLevel.CRITICAL)
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
-class UnityExplorerTest : PerTestEnvironmentTestBase() {
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+class UnityExplorerTest : PerTestSettingsTestBase() {
 
     @Test(description = "Add a new item with multiple backends")
     @Mute("RIDER-101228")
     @Issue("RIDER-70098 Rider adds Unity meta files in a non-Unity project")
-    @TestEnvironment(allowMultipleBackends = true)
+    @TestSettings(allowMultipleBackends = true)
     @ChecklistItems(["Unity explorer/Add script with multiple backends"])
     fun testMultipleBackendsAddNewItem() {
         val params = OpenSolutionParams()
@@ -90,8 +90,8 @@ class UnityExplorerTest : PerTestEnvironmentTestBase() {
 
     @Test(description = "Test project loading with a special folder")
     @Issue("RIDER-92886")
-    @TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
-    @TestRequirements(platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
+    @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+    @TestEnvironment(platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
     @ChecklistItems(["Unity explorer/Loading with a special folder"])
     fun test_project_loading_with_special_folder() { // infinite loading caused by a "..\\" folder
         withSolution("AnimImplicitUsageTest", OpenSolutionParams().apply {

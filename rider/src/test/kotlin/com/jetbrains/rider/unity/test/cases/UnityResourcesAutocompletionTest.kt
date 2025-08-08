@@ -27,7 +27,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Resources Autocompletion")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("ResourcesAutocompletionTestData")
 class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
     override val traceCategories: List<String>

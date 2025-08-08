@@ -18,7 +18,7 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Feature("Unity AnimImplicitUsage Find Usages")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("AnimImplicitUsageTest")
 class AnimImplicitUsageFindUsagesTest : PerClassSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {

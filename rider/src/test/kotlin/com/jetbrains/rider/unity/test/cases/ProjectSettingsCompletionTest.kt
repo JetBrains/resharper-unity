@@ -27,7 +27,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity project settings completion")
 @Severity(SeverityLevel.NORMAL)
-@TestEnvironment(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
 @Solution("ProjectSettingsTestData")
 class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
