@@ -102,7 +102,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       // If the profiler window is closed or destroyed - clear existing cached snapshot information
       if (profilerWindowObject == null || myProfilerWindowAdapter == null)
       {
-        mySequentialLifetimes.TerminateCurrent();
+        if(!mySequentialLifetimes.IsCurrentTerminated)
+          mySequentialLifetimes.TerminateCurrent();
         myLastSnapshot.Set(null);
         myProfilerStatus.Set(myLastSnapshot.Value.ToSnapshotStatus(SnapshotStatus.HasNewSnapshotDataToFetch));
         return;
