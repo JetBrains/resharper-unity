@@ -15,3 +15,9 @@ Make property 'Prop' abstract
 To property with serialized backing field
 Add accessor body
 To property with backing field
+Set C# language version to 'latest' for this project
+--Set language version to 'latest' for all C# projects with lower version
+Set C# language version to 'default' for this project
+--Set language version to 'default' for all C# projects with lower version
+Set C# language version to '6.0' for this project
+--Set language version to '6.0' for all C# projects with lower version
