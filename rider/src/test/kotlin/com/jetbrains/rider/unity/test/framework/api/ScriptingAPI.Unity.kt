@@ -129,25 +129,6 @@ fun startUnity(args: MutableList<String>,
     frameworkLogger.info("Starting unity process${if (withCoverage) " with Coverage" else ""}")
     val processHandle = when {
         withCoverage -> {
-            //            val unityProjectDefaultArgsString = getUnityWithProjectArgs(project)
-            //                .drop(1)
-            //                .toMutableList()
-            //                .apply { addAll(args) }
-            //                .let {
-            //                    when {
-            //                        SystemInfo.isWindows -> it.joinToString(" ")
-            //                        else -> ParametersList.join(it)
-            //                    }
-            //                }
-            //            val unityInstallationFinder = UnityInstallationFinder.getInstance(project)
-            //            val unityConfigurationParameters = RdDotCoverUnityConfigurationParameters(
-            //                unityInstallationFinder.getApplicationExecutablePath().toString(),
-            //                unityProjectDefaultArgsString,
-            //                unityInstallationFinder.getApplicationVersion()
-            //            )
-            //
-            //            project.solution.dotCoverModel.fire(unityConfigurationParameters)
-            //            getUnityProcessHandle(project)
             throw NotImplementedError()
         }
         else -> StartUnityAction.startUnity(args)?.toHandle()
