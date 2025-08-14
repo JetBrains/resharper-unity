@@ -15,6 +15,7 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.base.CodeLensTestBase
+import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.framework.advancedSettings.AdvancedSettingsList
@@ -28,7 +29,7 @@ import java.time.Duration
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity code vision")
 @Severity(SeverityLevel.CRITICAL)
-@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("CodeLensTestSolution")
 class PropertyCodeVisionAssetWithRepoViewTest : CodeLensTestBase() {
 

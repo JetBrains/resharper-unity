@@ -9,6 +9,7 @@ import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.unity.test.framework.base.FindUsagesAssetTestBase
 import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import org.testng.annotations.Test
@@ -16,7 +17,7 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Feature("Unity Find Usages with prefab modifications")
 @Severity(SeverityLevel.NORMAL)
-@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @TestEnvironment(platform = [PlatformType.ALL])
 @Solution("UI_PrefabModifications" )
 class FindUguiUsagesPrefabModificationsTest : FindUsagesAssetTestBase() {

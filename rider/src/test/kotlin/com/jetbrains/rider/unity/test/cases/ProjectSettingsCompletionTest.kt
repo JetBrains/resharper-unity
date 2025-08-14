@@ -13,6 +13,7 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -27,7 +28,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity project settings completion")
 @Severity(SeverityLevel.NORMAL)
-@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("ProjectSettingsTestData")
 class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {

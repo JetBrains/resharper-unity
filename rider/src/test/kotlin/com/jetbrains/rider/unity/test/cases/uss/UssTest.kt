@@ -8,6 +8,7 @@ import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
@@ -19,7 +20,7 @@ import org.testng.annotations.Test
 
 @Mute("Test wasn't in te right package, so it never run")
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
-@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @TestEnvironment(platform = [PlatformType.ALL])
 @Solution("SimpleUnityProject")
 class UssTest : PerTestSolutionTestBase() {

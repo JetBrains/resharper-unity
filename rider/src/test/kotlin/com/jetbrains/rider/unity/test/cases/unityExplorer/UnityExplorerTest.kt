@@ -13,6 +13,7 @@ import com.jetbrains.rider.test.annotations.report.Issue
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.base.PerTestSettingsTestBase
+import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -27,7 +28,7 @@ import java.time.Duration
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity Explorer")
 @Severity(SeverityLevel.CRITICAL)
-@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 class UnityExplorerTest : PerTestSettingsTestBase() {
 
     @Test(description = "Add a new item with multiple backends")
@@ -90,7 +91,7 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
 
     @Test(description = "Test project loading with a special folder")
     @Issue("RIDER-92886")
-    @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+    @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
     @TestEnvironment(platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
     @ChecklistItems(["Unity explorer/Loading with a special folder"])
     fun test_project_loading_with_special_folder() { // infinite loading caused by a "..\\" folder

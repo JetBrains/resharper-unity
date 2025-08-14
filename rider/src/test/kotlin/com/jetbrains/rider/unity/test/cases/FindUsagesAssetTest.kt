@@ -5,6 +5,7 @@ import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
+import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.unity.test.framework.base.FindUsagesAssetTestBase
 import com.jetbrains.rider.test.enums.PlatformType
@@ -15,7 +16,7 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Feature("Unity Assets Find Usages")
 @Severity(SeverityLevel.CRITICAL)
-@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @TestEnvironment(platform = [PlatformType.ALL])
 @Solution("FindUsages_event_handlers_2017")
 open class FindUsagesAssetTest : FindUsagesAssetTestBase() {

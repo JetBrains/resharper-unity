@@ -8,6 +8,7 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.base.PerClassSolutionTestBase
+import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.unity.test.framework.api.doFindUsagesTest
@@ -18,7 +19,7 @@ import org.testng.annotations.Test
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Feature("Unity AnimImplicitUsage Find Usages")
 @Severity(SeverityLevel.NORMAL)
-@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("AnimImplicitUsageTest")
 class AnimImplicitUsageFindUsagesTest : PerClassSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {

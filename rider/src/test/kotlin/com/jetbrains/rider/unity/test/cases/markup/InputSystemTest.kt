@@ -15,6 +15,7 @@ import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -29,7 +30,7 @@ import org.testng.annotations.Test
 import java.time.Duration
 
 @Mute("RIDER-114854")
-@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Solution("InputSystemTestData")
 class InputSystemTest : PerTestSolutionTestBase() {

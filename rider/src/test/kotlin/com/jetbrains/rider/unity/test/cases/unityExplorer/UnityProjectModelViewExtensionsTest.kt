@@ -11,6 +11,7 @@ import com.jetbrains.rider.test.annotations.report.Issues
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
+import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.advancedSettings.AdvancedSettingsList
 import com.jetbrains.rider.test.scriptingApi.TemplateType
@@ -24,7 +25,7 @@ import java.io.File
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity Project Model View Extensions")
 @Severity(SeverityLevel.CRITICAL)
-@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE)
+@TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("UnityProjectModelViewExtensionsTest")
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
