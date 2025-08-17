@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.Parts;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.CodeCleanup.HighlightingModule;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.QuickFixes.UsageChecking;
@@ -21,15 +22,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         public void Register(IQuickFixesRegistrar table)
         {
             table.RegisterQuickFix<RedundantEventFunctionWarning>(
-                default,
+                Lifetime.Eternal,
                 h => new RemoveUnusedElementFix(h.MethodDeclaration, Strings.QuickFixRegistrar_Register_Remove_redundant_Unity_event_function),
                 typeof(RemoveUnusedElementFix));
 
-            table.RegisterQuickFix<RedundantInitializeOnLoadAttributeWarning>(default, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
-            table.RegisterQuickFix<RedundantSerializeFieldAttributeWarning>(default, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
-            table.RegisterQuickFix<RedundantHideInInspectorAttributeWarning>(default, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
-            table.RegisterQuickFix<RedundantAttributeOnTargetWarning>(default, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
-            table.RegisterQuickFix<RedundantFormerlySerializedAsAttributeWarning>(default, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
+            table.RegisterQuickFix<RedundantInitializeOnLoadAttributeWarning>(Lifetime.Eternal, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
+            table.RegisterQuickFix<RedundantSerializeFieldAttributeWarning>(Lifetime.Eternal, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
+            table.RegisterQuickFix<RedundantHideInInspectorAttributeWarning>(Lifetime.Eternal, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
+            table.RegisterQuickFix<RedundantAttributeOnTargetWarning>(Lifetime.Eternal, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
+            table.RegisterQuickFix<RedundantFormerlySerializedAsAttributeWarning>(Lifetime.Eternal, h => new RemoveRedundantAttributeQuickFix(h), typeof(RemoveRedundantAttributeQuickFix));
         }
 
         public void Register(IHighlightingCleanupItemsRegistrar registrar)
