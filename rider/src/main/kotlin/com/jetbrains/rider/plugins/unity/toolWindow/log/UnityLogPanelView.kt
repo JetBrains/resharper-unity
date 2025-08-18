@@ -21,6 +21,7 @@ import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.intellij.util.application
+import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -32,7 +33,6 @@ import com.jetbrains.rider.plugins.unity.model.LogEventMode
 import com.jetbrains.rider.plugins.unity.model.LogEventType
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
-import net.miginfocom.swing.MigLayout
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Font
@@ -160,9 +160,13 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     }
 
     @Suppress("SpellCheckingInspection")
-    private val listPanel = JPanel(MigLayout("ins 0, gap 0, flowy, novisualpadding, fill", "", "[][min!]")).apply {
-        add(JBScrollPane(eventList).apply { horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER }, "grow, wmin 0")
-        add(searchTextField, "grow")
+    private val listPanel = JPanel(BorderLayout()).apply {
+        border = JBUI.Borders.empty()
+        add(JBScrollPane(eventList).apply {
+            horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+            border = JBUI.Borders.empty()
+        }, BorderLayout.CENTER)
+        add(searchTextField, BorderLayout.SOUTH)
     }
 
     private val mainSplitter = JBSplitter().apply {
