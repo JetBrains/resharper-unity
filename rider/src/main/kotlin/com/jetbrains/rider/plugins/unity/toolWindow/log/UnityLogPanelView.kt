@@ -164,12 +164,13 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         border = JBUI.Borders.empty()
         add(JBScrollPane(eventList).apply {
             horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-            border = JBUI.Borders.empty()
+            border = JBUI.Borders.emptyLeft(3)
         }, BorderLayout.CENTER)
         add(searchTextField, BorderLayout.SOUTH)
     }
 
     private val mainSplitter = JBSplitter().apply {
+        setDividerWidth(JBUI.scale(1))
         proportion = 1f / 2
         firstComponent = listPanel
         secondComponent = RiderUI.borderPanel {
