@@ -165,7 +165,6 @@ dependencies {
         bundledPlugin("org.jetbrains.plugins.yaml")
         bundledPlugin("com.intellij.modules.json")
         bundledPlugin("com.jetbrains.dotCover")
-        bundledPlugin("org.intellij.intelliLang")
         bundledPlugin("com.intellij.platform.images")
 
         // TODO: Temporary I hope hope hope
