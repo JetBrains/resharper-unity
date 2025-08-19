@@ -15,7 +15,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.Ref.CorCLR" />
-    <PackageReference Include="JetBrains.Annotations" Aliases="Annotations" PrivateAssets="All" />
     <PackageReference Include="ILRepack" PrivateAssets="all" />
     <PackageReference Include="NUnit" />
   </ItemGroup>
