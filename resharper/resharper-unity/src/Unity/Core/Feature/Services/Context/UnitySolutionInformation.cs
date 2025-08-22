@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Context
 
         public string GetUnityVersion()
         {
-            var (verifiedVersion, isCustom) = UnityVersionUtils.GetUnityVersion(UnityVersion.GetProjectSettingsUnityVersion(mySolution.SolutionDirectory));
+            var (verifiedVersion, isCustom) = UnityVersionUtils.GetUnityVersion(UnityVersionUtils.GetProjectSettingsUnityVersion(mySolution.SolutionDirectory));
             return verifiedVersion;
         }
 
