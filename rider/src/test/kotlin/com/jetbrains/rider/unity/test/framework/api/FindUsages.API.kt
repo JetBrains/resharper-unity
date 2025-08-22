@@ -13,13 +13,13 @@ import com.jetbrains.rider.test.scriptingApi.setCaretAfterWord
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import java.time.Duration
 
-context(SolutionApiFacade, TestDataStorage)
+context(solutionApiFacade: SolutionApiFacade, testDataStorage: TestDataStorage)
 fun doFindUsagesTest(relPath:String, word:String) {
-    waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
+    waitAndPump(solutionApiFacade.project.lifetime, { solutionApiFacade.project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
     withOpenedEditor(relPath) {
         setCaretAfterWord(word)
-        val text = requestFindUsages(activeSolutionDirectory, true)
-        executeWithGold(testGoldFile) { printStream ->
+        val text = requestFindUsages(solutionApiFacade.activeSolutionDirectory, true)
+        executeWithGold(testDataStorage.testGoldFile) { printStream ->
             printStream.print(text)
         }
     }

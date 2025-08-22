@@ -180,9 +180,9 @@ fun TestProcessor<*>.startUnity(executable: String,
                       generateSolution)
 }
 
-context(SolutionApiFacade, TestProcessor<*>)
+context(solutionApiFacade: SolutionApiFacade, testProcessor: TestProcessor<*>)
 fun startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
-    startUnity(project, withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
+    testProcessor.startUnity(solutionApiFacade.project, withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 
 fun killUnity(processHandle: ProcessHandle) {
     frameworkLogger.info("Trying to kill unity process")
@@ -203,7 +203,7 @@ fun killUnity(processHandle: ProcessHandle) {
 
 fun killUnity(project: Project) = killUnity(getUnityProcessHandle(project))
 
-context(SolutionApiFacade, TestProcessor<*>)
+context(solutionApiFacade: SolutionApiFacade, testProcessor: TestProcessor<*>)
 fun withUnityProcess(
     withCoverage: Boolean = false,
     resetEditorPrefs: Boolean = false,
@@ -220,13 +220,13 @@ fun withUnityProcess(
     }
 }
 
-context(SolutionApiFacade, TestDataStorage)
+context(solutionApiFacade: SolutionApiFacade, testDataStorage: TestDataStorage)
 fun executeScript(file: String) {
-    val script = testCaseSourceDirectory.combine(file)
-    script.copyTo(project.solutionDirectory.combine("Assets", file))
+    val script = testDataStorage.testCaseSourceDirectory.combine(file)
+    script.copyTo(solutionApiFacade.project.solutionDirectory.combine("Assets", file))
 
     frameworkLogger.info("Executing script '$file'")
-    project.solution.frontendBackendModel.refreshUnityModel()
+    solutionApiFacade.project.solution.frontendBackendModel.refreshUnityModel()
 }
 
 fun FrontendBackendModel.refreshUnityModel() {
@@ -454,11 +454,11 @@ fun attachDebuggerToUnityEditorAndPlay(
     customSuffixes: List<String> = emptyList()
 ) = attachDebuggerToUnityEditor(project, true, beforeRun, test, goldFile, customSuffixes)
 
-context(SolutionApiFacade, TestDataStorage)
+context(solutionApiFacade: SolutionApiFacade, testDataStorage: TestDataStorage)
 fun attachDebuggerToUnityEditorAndPlay(
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null) = attachDebuggerToUnityEditorAndPlay(project, beforeRun, test, goldFile, customGoldSuffixes)
+    goldFile: File? = null) = attachDebuggerToUnityEditorAndPlay(solutionApiFacade.project, beforeRun, test, goldFile, testDataStorage.customGoldSuffixes)
 
 fun attachDebuggerToUnityEditor(
     project: Project,
