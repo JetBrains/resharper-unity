@@ -17,6 +17,7 @@ using JetBrains.ProjectModel.Impl;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.Rd.Base;
+using JetBrains.ReSharper.Feature.Services.Unity;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches;
 using JetBrains.ReSharper.Resources.Shell;
@@ -62,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         private void SetActualVersionForSolution(Lifetime lt)
         {
-            var projectVersionTxtPath = GetProjectVersionPath(mySolutionDirectory);
+            var projectVersionTxtPath = UnityVersionUtils.GetProjectVersionPath(mySolutionDirectory);
             myFileSystemTracker.AdviseFileChanges(lt,
                 projectVersionTxtPath,
                 _ =>
@@ -139,32 +140,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         }
 
 
-        private static VirtualFileSystemPath GetProjectVersionPath(VirtualFileSystemPath solutionDirectory)
-        {
-            var projectVersionTxtPath = solutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
-            return projectVersionTxtPath;
-        }
-        
-        [CanBeNull]
-        public static string GetProjectSettingsUnityVersion(VirtualFileSystemPath solutionDirectory)
-        {
-            var projectVersionTxtPath = GetProjectVersionPath(solutionDirectory);
-            if (!projectVersionTxtPath.ExistsFile)
-                return null;
-            
-            var text = projectVersionTxtPath.ReadAllText2().Text;
-            var match = Regex.Match(text, @"^m_EditorVersion:\s+(?<version>.*)\s*$", RegexOptions.Multiline);
-            var groups = match.Groups;
-            if (match.Success)
-                return groups["version"].Value;
-
-            return null;
-        }
         
         [CanBeNull]
         private Version TryGetVersionFromProjectVersion(VirtualFileSystemPath solutionDirectory)
         {
-            var version = GetProjectSettingsUnityVersion(solutionDirectory);
+            var version = UnityVersionUtils.GetProjectSettingsUnityVersion(solutionDirectory);
             if (version == null)
                 return null;
             

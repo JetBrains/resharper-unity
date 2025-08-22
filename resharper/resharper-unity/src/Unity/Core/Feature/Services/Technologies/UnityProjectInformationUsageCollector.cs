@@ -9,10 +9,10 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.FeaturesStatistics;
 using JetBrains.ReSharper.Feature.Services.Project;
+using JetBrains.ReSharper.Feature.Services.Unity;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
 
                 return await mySolution.GetPsiServices().Files.CommitWithRetryBackgroundRead(lifetime, () =>
                 {
-                    var (verifiedVersion, isCustom) = UnityVersionUtils.GetUnityVersion(UnityVersion.GetProjectSettingsUnityVersion(mySolution.SolutionDirectory));
+                    var (verifiedVersion, isCustom) = UnityVersionUtils.GetUnityVersion(UnityVersionUtils.GetProjectSettingsUnityVersion(mySolution.SolutionDirectory));
                     
                     var hashSet = new HashSet<MetricEvent>();
                     hashSet.Add(myProjectKindEvent.Metric(GetProjectType()));
