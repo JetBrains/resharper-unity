@@ -40,9 +40,18 @@ set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
 
 setlocal
 set BUILD_DIR=%LOCALAPPDATA%\gradle-jvm
-set JVM_TARGET_DIR=%BUILD_DIR%\jdk-17.0.3.1_windows-x64_bin-d6ede5\
 
-set JVM_URL=https://download.oracle.com/java/17/archive/jdk-17.0.3.1_windows-x64_bin.zip
+for /f "tokens=3 delims= " %%A in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "PROCESSOR_ARCHITECTURE"') do set WIN_ARCH=%%A
+if "%WIN_ARCH%" equ "AMD64" (
+    set JVM_TARGET_DIR=%BUILD_DIR%\jdk-21.0.5_windows-x64_bin-020647\
+    set JVM_URL=https://download.oracle.com/java/21/archive/jdk-21.0.5_windows-x64_bin.zip
+) else if "%WIN_ARCH%" equ "ARM64" (
+    set JVM_TARGET_DIR=%BUILD_DIR%\microsoft-jdk-21.0.6-windows-aarch64-351b9f\
+    set JVM_URL=https://aka.ms/download-jdk/microsoft-jdk-21.0.6-windows-aarch64.zip
+) else (
+    echo Unknown architecture %WIN_ARCH%
+    goto fail
+)
 
 set IS_TAR_GZ=0
 set JVM_TEMP_FILE=gradle-jvm.zip

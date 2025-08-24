@@ -116,8 +116,8 @@ val resharperHostPluginSolution =  backendDir.resolve("resharper-unity.sln")
 version = "${pluginVersion}.$buildCounter"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 sourceSets {
@@ -308,14 +308,14 @@ tasks {
         dependsOn(generateModels)
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjvm-default=all")
-            jvmTarget = "17"
+            jvmTarget = "21"
             allWarningsAsErrors = warningsAsErrors
         }
     }
 
     named<KotlinCompile>("compileTestKotlin") {
         kotlinOptions {
-            jvmTarget = "17"
+            jvmTarget = "21"
             allWarningsAsErrors = warningsAsErrors
         }
     }
