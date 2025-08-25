@@ -1,14 +1,13 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using JetBrains.Application.changes;
 using JetBrains.Application.Parts;
-using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.Tasks;
+using JetBrains.ProjectModel.Tasks.Listeners;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
@@ -46,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
     // * If we have Player projects and use Alt+Enter to add a reference from a QF, the reference is only added to the
     //   current project context. We could update the other context's project?
     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
-    public class AsmDefModuleReferenceChangeListener : IChangeProvider, ISolutionLoadTasksDoneListener
+    public class AsmDefModuleReferenceChangeListener : IChangeProvider, ISolutionLoadTasksDoneListener2
     {
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
@@ -73,9 +72,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             myLogger = logger;
         }
 
-        public async Task OnSolutionLoadDoneAsync(OuterLifetime lifetime, ISolutionLoadTasksSchedulerThreading threading)
+        IEnumerable<SolutionLoadTasksListenerExecutionStep> ISolutionLoadTasksDoneListener2.OnSolutionLoadDone()
         {
-            await threading.YieldToIfNeeded(lifetime, Scheduling.MainGuard);
+            yield return SolutionLoadTasksListenerExecutionStep.YieldToMainThreadGuarded;
             myChangeManager.RegisterChangeProvider(myLifetime, this);
             myChangeManager.AddDependency(myLifetime, this, mySolution);
         }
