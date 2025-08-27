@@ -20,9 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return context.TerminatedContext.Reference is IUnityReferenceFromStringLiteral;
         }
 
-        protected override AutocompletionBehaviour GetAutocompletionBehaviour(CSharpCodeCompletionContext specificContext)
+        protected override AutoAcceptBehaviour GetAutocompletionBehaviour(CSharpCodeCompletionContext specificContext)
         {
-            return AutocompletionBehaviour.AutocompleteWithReplace;
+            return AutoAcceptBehaviour.AutoAcceptWithReplace;
         }
 
         protected override void DecorateItems(CSharpCodeCompletionContext context, IReadOnlyCollection<ILookupItem> items)

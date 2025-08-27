@@ -27,9 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeCompletion
 [Language(typeof(CSharpLanguage))]
 public class OdinMemberCodeCompletionProvider : CSharpItemsProviderBase<CSharpCodeCompletionContext>
 {
-    protected override AutocompletionBehaviour GetAutocompletionBehaviour(CSharpCodeCompletionContext specificContext)
+    protected override AutoAcceptBehaviour GetAutocompletionBehaviour(CSharpCodeCompletionContext specificContext)
     {
-        return AutocompletionBehaviour.AutocompleteWithReplace;
+        return AutoAcceptBehaviour.AutoAcceptWithReplace;
     }
     
     protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
