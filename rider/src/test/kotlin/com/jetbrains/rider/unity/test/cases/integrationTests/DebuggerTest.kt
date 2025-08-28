@@ -207,7 +207,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity2020 : DebuggerTest(Unity.V2020)  {
     init {
-        addMute(Mute("RIDER-105466", platforms = arrayOf(PlatformType.WINDOWS_ALL)), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-105466", platforms = arrayOf(PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL)), ::checkUnityPausePoint)
     }
 }
 
