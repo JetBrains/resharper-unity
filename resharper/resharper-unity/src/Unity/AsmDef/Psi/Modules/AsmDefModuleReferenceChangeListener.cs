@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             myLogger = logger;
         }
 
-        IEnumerable<SolutionLoadTasksListenerExecutionStep> ISolutionLoadTasksDoneListener2.OnSolutionLoadDone()
+        IEnumerable<SolutionLoadTasksListenerExecutionStep> ISolutionLoadTasksDoneListener2.OnSolutionLoadDone(OuterLifetime loadLifetime)
         {
             yield return SolutionLoadTasksListenerExecutionStep.YieldToMainThreadGuarded;
             myChangeManager.RegisterChangeProvider(myLifetime, this);
