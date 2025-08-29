@@ -9,7 +9,7 @@ plugins {
 repositories {
     maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
     maven("https://cache-redirector.jetbrains.com/maven-central")
-    val rd_version: String by project
+    val rd_version: String? by project
     if (rd_version == "SNAPSHOT") {
         mavenLocal()
     }
