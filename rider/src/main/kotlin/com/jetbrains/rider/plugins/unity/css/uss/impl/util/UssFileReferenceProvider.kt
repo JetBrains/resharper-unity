@@ -71,10 +71,10 @@ class UssFileReferenceProvider : CssFileReferenceProvider {
         // trim "project:" or "project:///" at the start
         // provide fake references to avoid unresolved ranges - (unresolved by CssReferenceProvider)
         val prefixReferences = mutableListOf<UssFilePrefixReference>()
-        // fully ignore generated paths like
-        // project://database/Assets/UI%20Images/home.quit.png?fileID=2800000&guid=eb66e14c26629fd4fb9653b5317f6dee&type=3#home.quit
+        // fully ignore generated paths like project://database/Assets/UI%20Images/home.quit.png?fileID=2800000&guid=eb66e14c26629fd4fb9653b5317f6dee&type=3#home.quit
+        // fully ignore when there is a sub-asset ref `#` RIDER-129076
         // todo: resolve to file by its guid, requires going to backend `MetaFileGuidCache`
-        if (elementText.startsWith("project://database/", startOffset)) {
+        if (elementText.startsWith("project://database/", startOffset) || elementText.contains('#')) {
             prefixReferences.add(UssFilePrefixReference(element, range))
         }
         // todo: consider making if folder reference to projectDir
