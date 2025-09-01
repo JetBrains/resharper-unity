@@ -165,7 +165,11 @@
     <!-- Project Model -->
     <solutionExplorerCustomization implementation="com.jetbrains.rider.plugins.unity.explorer.UnitySolutionExplorerCustomization" />
     <rider.documentBehaviour implementation="com.jetbrains.rider.plugins.unity.document.UnityRiderDocumentBehaviour" />
-
+    <projectService
+      serviceImplementation="com.jetbrains.rider.plugins.unity.explorer.UnityTreeFileChooserSupport"
+      serviceInterface="com.intellij.ide.util.TreeFileChooserSupport"
+      overrides="true"/>
+    
     <!-- Run configurations -->
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType" />
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationType" />
