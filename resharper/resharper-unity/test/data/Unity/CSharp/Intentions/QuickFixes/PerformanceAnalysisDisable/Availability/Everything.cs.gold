@@ -32,44 +32,44 @@ namespace ContextActionsTests
 ------------------------------------------------
 0: Expensive method invocation
 QUICKFIXES:
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 1: Expensive method invocation
 QUICKFIXES:
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 2: Expensive method invocation
 QUICKFIXES:
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 3: Expensive method invocation
 QUICKFIXES:
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 4: Expensive method invocation
 QUICKFIXES:
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 5: Expensive method invocation
 QUICKFIXES:
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 6: Expensive method invocation
 QUICKFIXES:
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 7: Expensive method invocation
 QUICKFIXES:
 Disable performance analysis for method
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 8: Expensive method invocation
 QUICKFIXES:
 Disable performance analysis for method
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 9: Expensive method invocation
 QUICKFIXES:
 Disable performance analysis for method
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'

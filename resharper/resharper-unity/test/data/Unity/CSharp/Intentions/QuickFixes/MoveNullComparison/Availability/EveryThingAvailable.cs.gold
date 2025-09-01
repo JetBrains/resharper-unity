@@ -18,6 +18,6 @@ namespace DefaultNamespace
 ------------------------------------------------
 0: Comparison to 'null' is expensive
 QUICKFIXES:
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 Move outside of loop

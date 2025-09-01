@@ -552,7 +552,7 @@
         <value>'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</value>
     </data>
     <data name="MoveAction_Text_Introduce_field_and_initialise_in___0__" xml:space="preserve">
-        <value>Introduce field and initialise in '{0}'</value>
+        <value>Introduce field and initialize in '{0}'</value>
     </data>
     <data name="MoveFromLoopAction_Text_Move_outside_of_loop" xml:space="preserve">
         <value>Move outside of loop</value>

@@ -19,7 +19,7 @@ namespace DefaultNamespace
 ------------------------------------------------
 0: Expensive method invocation
 QUICKFIXES:
-Introduce field and initialise in 'Start'
-Introduce field and initialise in 'Awake'
+Introduce field and initialize in 'Start'
+Introduce field and initialize in 'Awake'
 1: Expensive method invocation
 NO QUICKFIXES
