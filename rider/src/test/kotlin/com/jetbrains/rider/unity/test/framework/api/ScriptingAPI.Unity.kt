@@ -548,15 +548,17 @@ fun getGoldFileUnityDependentSuffix(engineVersion: EngineVersion): String {
     return "_${engineVersion.version.lowercase()}"
 }
 
-fun getUnityDependentGoldFile(engineVersion: EngineVersion, testFile: File): File {
-    val suffix = getGoldFileUnityDependentSuffix(engineVersion)
-    val fileWithNameSuffix = testFile.getFileWithNameSuffix(suffix)
-    val goldFileWithSuffix = fileWithNameSuffix.getGoldFile()
+fun getUnityDependentGoldFile(engineVersion: EngineVersion, testFile: File, backend: String? = null): File {
+    val unitySuffix = getGoldFileUnityDependentSuffix(engineVersion)
 
-    if (goldFileWithSuffix.exists()) {
-        return goldFileWithSuffix
+    val candidates = buildList {
+        if (backend != null) add(testFile.getFileWithNameSuffix("${unitySuffix}_$backend").getGoldFile()) // UnityVersion + backend
+        add(testFile.getFileWithNameSuffix(unitySuffix).getGoldFile())                                    // UnityVersion
+        if (backend != null) add(testFile.getFileWithNameSuffix("_$backend").getGoldFile())               // backend
+        add(testFile)                                                                                                    // Without UnityVersion + backend
     }
-    return testFile
+
+    return candidates.firstOrNull { it.exists() } ?: testFile
 }
 
 //endregion
