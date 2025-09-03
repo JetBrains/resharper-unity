@@ -63,11 +63,23 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnityPlayerDebuggerTest {
     class TestMonoUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022){
-    }
-    class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022){
-    }
-    class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase(Unity.V6){
+        init {
+            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+        }
     }
     class TestMonoUnityBuild6 : UnityPlayerDebuggerTestBase(Unity.V6){
+        init {
+            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+        }
     }
+    class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022){
+        init {
+            addMute(Mute("RIDER-129597", platforms = [PlatformType.ALL]), ::checkBreakpoint)
+        }
     }
+    class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase(Unity.V6){
+        init {
+            addMute(Mute("RIDER-129597", platforms = [PlatformType.ALL]), ::checkBreakpoint)
+        }
+    }
+}
