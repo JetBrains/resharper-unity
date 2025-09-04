@@ -19,6 +19,9 @@ import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.dsl.builder.AlignY
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.intellij.util.application
 import com.intellij.util.ui.JBUI
@@ -159,14 +162,20 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         })
     }
 
-    @Suppress("SpellCheckingInspection")
-    private val listPanel = JPanel(BorderLayout()).apply {
-        border = JBUI.Borders.empty()
-        add(JBScrollPane(eventList).apply {
-            horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-            border = JBUI.Borders.emptyLeft(3)
-        }, BorderLayout.CENTER)
-        add(searchTextField, BorderLayout.SOUTH)
+    private val listPanel: JComponent = panel {
+        row {
+            val scroll = JBScrollPane(eventList).apply {
+                horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+                border = JBUI.Borders.empty()
+            }
+            cell(scroll).align(AlignY.TOP)
+        }.resizableRow()
+        row {
+            cell(searchTextField).align(AlignX.FILL)
+        }
+    }.apply {
+        // Allow splitter to resize this component freely; prevent it from forcing minimum size
+        minimumSize = JBUI.emptySize()
     }
 
     private val mainSplitter = JBSplitter().apply {
@@ -201,7 +210,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
 
-    val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
+    val panel: RiderSimpleToolWindowWithTwoToolbarsPanel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
 
     private fun removeFirstFromList() {
