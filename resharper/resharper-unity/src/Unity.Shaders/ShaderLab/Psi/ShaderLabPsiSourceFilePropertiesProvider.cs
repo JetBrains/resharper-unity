@@ -16,9 +16,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
         public IPsiSourceFileProperties? GetPsiProperties(IPsiSourceFileProperties? prevProperties, IProject project,
             IProjectFile? projectFile, IPsiSourceFile sourceFile)
         {
-            using (ReadLockCookie.Create())
+            if (sourceFile.LanguageType.Is<ShaderLabProjectFileType>())
             {
-                if (sourceFile.LanguageType.Is<ShaderLabProjectFileType>())
+                using (ReadLockCookie.Create())
                 {
                     if (ShouldBeExcluded(prevProperties, project, sourceFile))
                         return ExcludedProjectPsiSourceFilePropertiesProvider.ExcludedProjectPsiSourceFileProperties.Instance;
