@@ -34,7 +34,7 @@ public interface IUnityProfilerSnapshotDataProvider
     public bool TryGetTypeSamples(string qualifiedName, ref IList<PooledSample> samples);
 }
 
-[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
+[SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
 public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 {
     private static readonly UnityProfilerSnapshotStatus ourUnityProfilerSnapshotStatusDisabled =

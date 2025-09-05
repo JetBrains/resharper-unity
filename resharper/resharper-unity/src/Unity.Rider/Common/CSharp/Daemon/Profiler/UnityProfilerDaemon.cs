@@ -27,7 +27,7 @@ using JetBrains.Util.DataStructures.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
 
-[DaemonStage(Instantiation.DemandAnyThreadSafe,
+[DaemonStage(Instantiation.ContainerAsyncAnyThreadSafe,
     StagesBefore = [typeof(GlobalFileStructureCollectorStage)],
     StagesAfter = [typeof(LanguageSpecificDaemonStage)]
 )]
