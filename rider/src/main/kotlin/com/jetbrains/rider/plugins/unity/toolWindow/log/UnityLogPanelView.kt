@@ -168,7 +168,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                 horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
                 border = JBUI.Borders.empty()
             }
-            cell(scroll).align(AlignY.TOP)
+            cell(scroll).align(AlignY.FILL).align(AlignX.FILL)
         }.resizableRow()
         row {
             cell(searchTextField).align(AlignX.FILL)
