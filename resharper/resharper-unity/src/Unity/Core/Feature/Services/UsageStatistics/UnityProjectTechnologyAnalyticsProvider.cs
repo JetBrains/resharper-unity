@@ -2,19 +2,20 @@ using System.Collections.Generic;
 using JetBrains.Application.Parts;
 using JetBrains.IDE.UsageStatistics;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Context;
-using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
-
-[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-public class UnityProjectTechnologyAnalyticsProvider(UnitySolutionTracker unitySolutionTracker, UnitySolutionInformation unitySolutionInformation)
-    : UnityProjectTechnologyProviderBase(unitySolutionTracker, unitySolutionInformation),
-        IProjectTechnologyProvider
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
-    IEnumerable<string> IProjectTechnologyProvider.GetProjectTechnology(IProject project)
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
+    public class UnityProjectTechnologyAnalyticsProvider(UnitySolutionTracker unitySolutionTracker) : IProjectTechnologyProvider
     {
-        return GetProjectTechnologyInternal();
+        public IEnumerable<string> GetProjectTechnology(IProject project)
+        {
+            if (unitySolutionTracker.HasUnityReference.Value)
+            {
+                yield return "Unity";
+                yield return "GameDev";
+            }
+        }
     }
 }
