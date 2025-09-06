@@ -3,14 +3,14 @@
        SuperClasses: 0
 
        Inheritors: 2
-             {-284865750} :UnityEngine.SerializeReference (1)
-             {100758254} :UnityEngine.ExecuteInEditModeAttribute (1)
+             {-1373166008} :UnityEngine.SerializeReference (1)
+             {-1291950376} :UnityEngine.ExecuteInEditModeAttribute (1)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {610357282}  | PropertyWithBackingField.A | IsTypeParameter:False
+       {1728107394}  | PropertyWithBackingField.A | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -19,17 +19,17 @@
 
        --------------------------------------------------------------------
 
-       {1207344404}  | PropertyWithBackingField.B | IsTypeParameter:False
+       {-382904124}  | PropertyWithBackingField.B | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
 
        SerializeReferenceHolders: 1
-             {1155656818} :PropertyWithBackingField.ReferenceHolderForB (3)
+             {1486771180} :PropertyWithBackingField.ReferenceHolderForB (3)
 
        --------------------------------------------------------------------
 
-       {-1704289570}  | PropertyWithBackingField.ReferenceHolderForA | IsTypeParameter:False
+       {983735034}  | PropertyWithBackingField.ReferenceHolderForA | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -38,7 +38,7 @@
 
        --------------------------------------------------------------------
 
-       {1155656818}  | PropertyWithBackingField.ReferenceHolderForB | IsTypeParameter:False
+       {1486771180}  | PropertyWithBackingField.ReferenceHolderForB | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -47,7 +47,7 @@
 
        --------------------------------------------------------------------
 
-       {100758254}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
+       {-1291950376}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 
@@ -57,7 +57,7 @@
 
        --------------------------------------------------------------------
 
-       {-242411980}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
+       {380617412}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -66,7 +66,7 @@
 
        --------------------------------------------------------------------
 
-       {-284865750}  | UnityEngine.SerializeReference | IsTypeParameter:False
+       {-1373166008}  | UnityEngine.SerializeReference | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 

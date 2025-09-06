@@ -3,71 +3,71 @@
        SuperClasses: 0
 
        Inheritors: 2
-             {-284865750} :UnityEngine.SerializeReference (1)
-             {100758254} :UnityEngine.ExecuteInEditModeAttribute (1)
+             {-1373166008} :UnityEngine.SerializeReference (1)
+             {-1291950376} :UnityEngine.ExecuteInEditModeAttribute (1)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {440566548}  | GenericClassesLib01.A`1 | IsTypeParameter:False
+       {647865834}  | GenericClassesLib01.A`1 | IsTypeParameter:False
        SuperClasses: 1
-             {-84116082} :GenericClassesLib01.IMyInterface (1)
+             {-1422232740} :GenericClassesLib01.IMyInterface (1)
 
        Inheritors: 1
-             {867431140} :GenericClassesLib01.B`2 (1)
+             {-1736683686} :GenericClassesLib01.B`2 (1)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {848205004}  | GenericClassesLib01.A`1<T0_IN_A[0]> | IsTypeParameter:True
+       {1414350594}  | GenericClassesLib01.A`1<T0_IN_A[0]> | IsTypeParameter:True
        SuperClasses: 0
 
        Inheritors: 1
-             {-2034318600} :GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> (1)
+             {545966470} :GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> (1)
 
        SerializeReferenceHolders: 1
-             {440566548} :GenericClassesLib01.A`1 (1)
+             {647865834} :GenericClassesLib01.A`1 (1)
 
        --------------------------------------------------------------------
 
-       {867431140}  | GenericClassesLib01.B`2 | IsTypeParameter:False
+       {-1736683686}  | GenericClassesLib01.B`2 | IsTypeParameter:False
        SuperClasses: 1
-             {440566548} :GenericClassesLib01.A`1 (1)
+             {647865834} :GenericClassesLib01.A`1 (1)
 
        Inheritors: 1
-             {-401719372} :GenericClassesLib01.C (1)
+             {965696118} :GenericClassesLib01.C (1)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {-2034318600}  | GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> | IsTypeParameter:True
+       {545966470}  | GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> | IsTypeParameter:True
        SuperClasses: 1
-             {848205004} :GenericClassesLib01.A`1<T0_IN_A[0]> (1)
+             {1414350594} :GenericClassesLib01.A`1<T0_IN_A[0]> (1)
 
        Inheritors: 1
-             {2132960142} :GenericClassesLib01.X (1)
+             {828256104} :GenericClassesLib01.X (1)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {1947604696}  | GenericClassesLib01.B`2<T1_IN_B[1]> | IsTypeParameter:True
+       {-2082588296}  | GenericClassesLib01.B`2<T1_IN_B[1]> | IsTypeParameter:True
        SuperClasses: 0
 
        Inheritors: 1
-             {1223291230} :GenericClassesLib01.Y (1)
+             {829763766} :GenericClassesLib01.Y (1)
 
        SerializeReferenceHolders: 1
-             {867431140} :GenericClassesLib01.B`2 (1)
+             {-1736683686} :GenericClassesLib01.B`2 (1)
 
        --------------------------------------------------------------------
 
-       {-401719372}  | GenericClassesLib01.C | IsTypeParameter:False
+       {965696118}  | GenericClassesLib01.C | IsTypeParameter:False
        SuperClasses: 1
-             {867431140} :GenericClassesLib01.B`2 (1)
+             {-1736683686} :GenericClassesLib01.B`2 (1)
 
        Inheritors: 0
 
@@ -75,16 +75,7 @@
 
        --------------------------------------------------------------------
 
-       {-1146626266}  | GenericClassesLib01.ClassWithInterfaceField | IsTypeParameter:False
-       SuperClasses: 0
-
-       Inheritors: 0
-
-       SerializeReferenceHolders: 0
-
-       --------------------------------------------------------------------
-
-       {-1309108674}  | GenericClassesLib01.ClassWithXAndYFields | IsTypeParameter:False
+       {-47640586}  | GenericClassesLib01.ClassWithInterfaceField | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -93,40 +84,49 @@
 
        --------------------------------------------------------------------
 
-       {-84116082}  | GenericClassesLib01.IMyInterface | IsTypeParameter:False
+       {1751042076}  | GenericClassesLib01.ClassWithXAndYFields | IsTypeParameter:False
+       SuperClasses: 0
+
+       Inheritors: 0
+
+       SerializeReferenceHolders: 0
+
+       --------------------------------------------------------------------
+
+       {-1422232740}  | GenericClassesLib01.IMyInterface | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 1
-             {440566548} :GenericClassesLib01.A`1 (1)
+             {647865834} :GenericClassesLib01.A`1 (1)
 
        SerializeReferenceHolders: 1
-             {-1146626266} :GenericClassesLib01.ClassWithInterfaceField (1)
+             {-47640586} :GenericClassesLib01.ClassWithInterfaceField (1)
 
        --------------------------------------------------------------------
 
-       {2132960142}  | GenericClassesLib01.X | IsTypeParameter:False
+       {828256104}  | GenericClassesLib01.X | IsTypeParameter:False
        SuperClasses: 1
-             {-2034318600} :GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> (1)
+             {545966470} :GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> (1)
 
        Inheritors: 0
 
        SerializeReferenceHolders: 1
-             {-1309108674} :GenericClassesLib01.ClassWithXAndYFields (1)
+             {1751042076} :GenericClassesLib01.ClassWithXAndYFields (1)
 
        --------------------------------------------------------------------
 
-       {1223291230}  | GenericClassesLib01.Y | IsTypeParameter:False
+       {829763766}  | GenericClassesLib01.Y | IsTypeParameter:False
        SuperClasses: 1
-             {1947604696} :GenericClassesLib01.B`2<T1_IN_B[1]> (1)
+             {-2082588296} :GenericClassesLib01.B`2<T1_IN_B[1]> (1)
 
        Inheritors: 0
 
        SerializeReferenceHolders: 1
-             {-1309108674} :GenericClassesLib01.ClassWithXAndYFields (1)
+             {1751042076} :GenericClassesLib01.ClassWithXAndYFields (1)
 
        --------------------------------------------------------------------
 
-       {100758254}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
+       {-1291950376}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 
@@ -136,7 +136,7 @@
 
        --------------------------------------------------------------------
 
-       {-242411980}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
+       {380617412}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -145,7 +145,7 @@
 
        --------------------------------------------------------------------
 
-       {-284865750}  | UnityEngine.SerializeReference | IsTypeParameter:False
+       {-1373166008}  | UnityEngine.SerializeReference | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 

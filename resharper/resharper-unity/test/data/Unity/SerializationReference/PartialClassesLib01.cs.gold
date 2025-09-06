@@ -3,16 +3,16 @@
        SuperClasses: 0
 
        Inheritors: 2
-             {-284865750} :UnityEngine.SerializeReference (1)
-             {100758254} :UnityEngine.ExecuteInEditModeAttribute (1)
+             {-1373166008} :UnityEngine.SerializeReference (1)
+             {-1291950376} :UnityEngine.ExecuteInEditModeAttribute (1)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {-1083522694}  | PartialClassesLib01.Class1 | IsTypeParameter:False
+       {-98147942}  | PartialClassesLib01.Class1 | IsTypeParameter:False
        SuperClasses: 1
-             {2118291948} :PartialClassesLib01.IInterface1 (2)
+             {-336204952} :PartialClassesLib01.IInterface1 (2)
 
        Inheritors: 0
 
@@ -20,17 +20,17 @@
 
        --------------------------------------------------------------------
 
-       {2118291948}  | PartialClassesLib01.IInterface1 | IsTypeParameter:False
+       {-336204952}  | PartialClassesLib01.IInterface1 | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 1
-             {-1083522694} :PartialClassesLib01.Class1 (2)
+             {-98147942} :PartialClassesLib01.Class1 (2)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {100758254}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
+       {-1291950376}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 
@@ -40,7 +40,7 @@
 
        --------------------------------------------------------------------
 
-       {-242411980}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
+       {380617412}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -49,7 +49,7 @@
 
        --------------------------------------------------------------------
 
-       {-284865750}  | UnityEngine.SerializeReference | IsTypeParameter:False
+       {-1373166008}  | UnityEngine.SerializeReference | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 

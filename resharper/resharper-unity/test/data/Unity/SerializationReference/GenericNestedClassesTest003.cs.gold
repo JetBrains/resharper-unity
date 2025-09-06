@@ -3,14 +3,14 @@
        SuperClasses: 0
 
        Inheritors: 2
-             {-284865750} :UnityEngine.SerializeReference (1)
-             {100758254} :UnityEngine.ExecuteInEditModeAttribute (1)
+             {-1373166008} :UnityEngine.SerializeReference (1)
+             {-1291950376} :UnityEngine.ExecuteInEditModeAttribute (1)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {1834141508}  | GenericClassesLib03.OwnerClass`1 | IsTypeParameter:False
+       {1758442650}  | GenericClassesLib03.OwnerClass`1 | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -19,7 +19,7 @@
 
        --------------------------------------------------------------------
 
-       {-151231166}  | GenericClassesLib03.OwnerClass`1+NestedClassClear | IsTypeParameter:False
+       {-1988606460}  | GenericClassesLib03.OwnerClass`1+NestedClassClear | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -28,17 +28,17 @@
 
        --------------------------------------------------------------------
 
-       {814765288}  | GenericClassesLib03.OwnerClass`1+NestedClassClear<T_IN_OWNER[0]> | IsTypeParameter:True
+       {534751508}  | GenericClassesLib03.OwnerClass`1+NestedClassClear<T_IN_OWNER[0]> | IsTypeParameter:True
        SuperClasses: 0
 
        Inheritors: 0
 
        SerializeReferenceHolders: 1
-             {-151231166} :GenericClassesLib03.OwnerClass`1+NestedClassClear (1)
+             {-1988606460} :GenericClassesLib03.OwnerClass`1+NestedClassClear (1)
 
        --------------------------------------------------------------------
 
-       {-1440280864}  | GenericClassesLib03.OwnerClass`1<T_IN_OWNER[0]> | IsTypeParameter:True
+       {-2241020}  | GenericClassesLib03.OwnerClass`1<T_IN_OWNER[0]> | IsTypeParameter:True
        SuperClasses: 0
 
        Inheritors: 0
@@ -47,7 +47,7 @@
 
        --------------------------------------------------------------------
 
-       {100758254}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
+       {-1291950376}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 
@@ -57,7 +57,7 @@
 
        --------------------------------------------------------------------
 
-       {-242411980}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
+       {380617412}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -66,7 +66,7 @@
 
        --------------------------------------------------------------------
 
-       {-284865750}  | UnityEngine.SerializeReference | IsTypeParameter:False
+       {-1373166008}  | UnityEngine.SerializeReference | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 
