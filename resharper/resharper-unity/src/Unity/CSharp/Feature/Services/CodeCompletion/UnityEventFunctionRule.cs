@@ -622,8 +622,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             public bool IsDynamic => myLookupItem.IsDynamic;
 
-            public bool IgnoreSoftOnSpace => myLookupItem.IgnoreSoftOnSpace;
-
             public int Identity => myLookupItem.Identity;
 
             public ILookupItemBehavior Behavior => myLookupItem.Behavior;
