@@ -191,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var insertTextRange = new TextRange(lastSlashOffset.Offset + 1, treeEndOffset.Offset);
             var insertRange = new DocumentRange(originalInsertRange.Document, insertTextRange);
 
-            textLookupRanges = new TextLookupRanges(insertRange, insertRange, contextCompletionRanges.CustomPrefixRule);
+            textLookupRanges = new TextLookupRanges(insertRange, insertRange);
             return relativeSearchPath;
         }
 
