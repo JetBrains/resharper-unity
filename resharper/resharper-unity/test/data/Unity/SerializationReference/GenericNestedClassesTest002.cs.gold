@@ -3,16 +3,16 @@
        SuperClasses: 0
 
        Inheritors: 2
-             {-1373166008} :UnityEngine.SerializeReference (1)
-             {-1291950376} :UnityEngine.ExecuteInEditModeAttribute (1)
+             {-284865750} :UnityEngine.SerializeReference (1)
+             {100758254} :UnityEngine.ExecuteInEditModeAttribute (1)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {-268126934}  | GenericClassesLib02.InheritorClass | IsTypeParameter:False
+       {-599293600}  | GenericClassesLib02.InheritorClass | IsTypeParameter:False
        SuperClasses: 1
-             {1217453204} :GenericClassesLib02.OwnerClass+NestedClass`1 (1)
+             {-1967552396} :GenericClassesLib02.OwnerClass+NestedClass`1 (1)
 
        Inheritors: 0
 
@@ -20,7 +20,7 @@
 
        --------------------------------------------------------------------
 
-       {706440416}  | GenericClassesLib02.OwnerClass | IsTypeParameter:False
+       {-1895161262}  | GenericClassesLib02.OwnerClass | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -29,30 +29,30 @@
 
        --------------------------------------------------------------------
 
-       {1217453204}  | GenericClassesLib02.OwnerClass+NestedClass`1 | IsTypeParameter:False
+       {-1967552396}  | GenericClassesLib02.OwnerClass+NestedClass`1 | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 1
-             {-268126934} :GenericClassesLib02.InheritorClass (1)
+             {-599293600} :GenericClassesLib02.InheritorClass (1)
 
        SerializeReferenceHolders: 0
 
        --------------------------------------------------------------------
 
-       {-293787756}  | GenericClassesLib02.OwnerClass+NestedClass`1<T_IN_NESTED[0]> | IsTypeParameter:True
+       {-243753046}  | GenericClassesLib02.OwnerClass+NestedClass`1<T_IN_NESTED[0]> | IsTypeParameter:True
        SuperClasses: 0
 
        Inheritors: 1
-             {-1119305750} :GenericClassesLib02.X (1)
+             {-1475416536} :GenericClassesLib02.X (1)
 
        SerializeReferenceHolders: 1
-             {1217453204} :GenericClassesLib02.OwnerClass+NestedClass`1 (1)
+             {-1967552396} :GenericClassesLib02.OwnerClass+NestedClass`1 (1)
 
        --------------------------------------------------------------------
 
-       {-1119305750}  | GenericClassesLib02.X | IsTypeParameter:False
+       {-1475416536}  | GenericClassesLib02.X | IsTypeParameter:False
        SuperClasses: 1
-             {-293787756} :GenericClassesLib02.OwnerClass+NestedClass`1<T_IN_NESTED[0]> (1)
+             {-243753046} :GenericClassesLib02.OwnerClass+NestedClass`1<T_IN_NESTED[0]> (1)
 
        Inheritors: 0
 
@@ -60,7 +60,7 @@
 
        --------------------------------------------------------------------
 
-       {-1291950376}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
+       {100758254}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 
@@ -70,7 +70,7 @@
 
        --------------------------------------------------------------------
 
-       {380617412}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
+       {-242411980}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
        SuperClasses: 0
 
        Inheritors: 0
@@ -79,7 +79,7 @@
 
        --------------------------------------------------------------------
 
-       {-1373166008}  | UnityEngine.SerializeReference | IsTypeParameter:False
+       {-284865750}  | UnityEngine.SerializeReference | IsTypeParameter:False
        SuperClasses: 1
              {1512807047} : (1)
 
