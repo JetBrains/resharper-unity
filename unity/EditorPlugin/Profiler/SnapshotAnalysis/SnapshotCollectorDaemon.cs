@@ -78,7 +78,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
     void ISnapshotCollectorDaemon.Update(EditorWindow? lastKnownProfilerWindow)
     {
       // Cancel all fetching tasks if the Editor is playing or Profiler is recording
-      if (ProfilerDriver.enabled && EditorApplication.isPlaying)
+      if (ProfilerDriver.enabled || EditorApplication.isPlaying)
       {
         if(!mySequentialLifetimes.IsCurrentTerminated)
           mySequentialLifetimes.TerminateCurrent();
@@ -169,46 +169,56 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       // Create a lifetime that will be terminated when a new task starts or the parent lifetime ends
       var snapshotFetchingLifetime = lifetime.Intersect(mySequentialLifetimes.Next());
 
-      // Create progress reporter once and reuse it
-      var progress = new Progress<UnityProfilerSnapshotStatus>(snapshotStatus =>
-        snapshotFetchingLifetime.Execute(() => myProfilerStatus.Set(snapshotStatus)));
-
       // Start a new task
-      return Task.Run(async () =>
+      try
       {
-        try
+        // Create progress reporter once and reuse it
+        var progress = new Progress<UnityProfilerSnapshotStatus>(snapshotStatus =>
+          snapshotFetchingLifetime.Execute(() => myProfilerStatus.Set(snapshotStatus)));
+
+        return Task.Run(async () =>
         {
-          // Get the snapshot data
-          var profilerFrameSnapshot =
-            await mySnapshotCrawler.GetUnityProfilerSnapshot(snapshotRequest, snapshotFetchingLifetime, progress);
+          try
+          {
+            // Get the snapshot data
+            var profilerFrameSnapshot =
+              await mySnapshotCrawler.GetUnityProfilerSnapshot(snapshotRequest, snapshotFetchingLifetime, progress);
 
-          // Update the last snapshot if the lifetime is still alive
-          if (snapshotFetchingLifetime.IsAlive)
-            myLastSnapshot.Set(profilerFrameSnapshot);
+            // Update the last snapshot if the lifetime is still alive
+            if (snapshotFetchingLifetime.IsAlive)
+              myLastSnapshot.Set(profilerFrameSnapshot);
 
-          return profilerFrameSnapshot;
-        }
-        catch (OperationCanceledException)
-        {
-          ourLogger.Verbose($"Task {nameof(mySnapshotCrawler.GetUnityProfilerSnapshot)} was canceled");
+            return profilerFrameSnapshot;
+          }
+          catch (OperationCanceledException)
+          {
+            ourLogger.Verbose($"Task {nameof(mySnapshotCrawler.GetUnityProfilerSnapshot)} was canceled");
 
-          // Only set to null if the lifetime is still alive
-          if (snapshotFetchingLifetime.IsAlive)
-            myLastSnapshot.Set(null);
+            // Only set to null if the lifetime is still alive
+            if (snapshotFetchingLifetime.IsAlive)
+              myLastSnapshot.Set(null);
 
-          return null;
-        }
-        catch (Exception ex)
-        {
-          ourLogger.Error($"Task {nameof(mySnapshotCrawler.GetUnityProfilerSnapshot)} failed with exception", ex);
+            return null;
+          }
+          catch (Exception ex)
+          {
+            ourLogger.Error($"Task {nameof(mySnapshotCrawler.GetUnityProfilerSnapshot)} failed with exception", ex);
 
-          // Only set to null if the lifetime is still alive
-          if (snapshotFetchingLifetime.IsAlive)
-            myLastSnapshot.Set(null);
+            // Only set to null if the lifetime is still alive
+            if (snapshotFetchingLifetime.IsAlive)
+              myLastSnapshot.Set(null);
 
-          return null;
-        }
-      }, snapshotFetchingLifetime);
+            return null;
+          }
+        }, snapshotFetchingLifetime);
+      }
+      catch (LifetimeCanceledException)
+      {
+        ourLogger.Verbose($"Task {nameof(StartSnapshotFetchingTask)} was canceled");
+      }
+      
+      myLastSnapshot.Set(null);
+      return Task.FromResult<UnityProfilerSnapshot?>(null);
     }
   }
 }
