@@ -76,7 +76,6 @@ class UnityExeConfiguration(name: String,
                                 null,
                                 "",
                                 true,
-                                false,
                                 mixedModeDebugging = parameters.mixedModeDebugging
         )
     }
