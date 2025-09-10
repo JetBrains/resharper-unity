@@ -40,7 +40,7 @@ using UnitTestLaunch = JetBrains.Rider.Model.Unity.BackendUnity.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting
 {
-    [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
+    [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class RunViaUnityEditorStrategy : IExternalRunnerUnitTestRunStrategy
     {
         private static readonly Key<CancellationTokenSource> ourCancellationTokenSourceKey =
