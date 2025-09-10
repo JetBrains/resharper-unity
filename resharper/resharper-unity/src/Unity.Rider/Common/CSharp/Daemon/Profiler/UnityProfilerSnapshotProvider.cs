@@ -34,7 +34,7 @@ public interface IUnityProfilerSnapshotDataProvider
     public bool TryGetTypeSamples(string qualifiedName, ref IList<PooledSample> samples);
 }
 
-[SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
+[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
 public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 {
     private static readonly UnityProfilerSnapshotStatus ourUnityProfilerSnapshotStatusDisabled =
@@ -105,10 +105,10 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 }
             });
         
-        mySettingsStore.AdviseAsyncChanged(myLifetime, (lt, change) =>
+        mySettingsStore.AdviseAsyncChanged(myLifetime, async (lt, change) =>
         {
             if (!change.ChangedEntries.Contains(mySnapshotFetchingScalarEntry))
-                return Task.CompletedTask;
+                return;
 
             var fetchingSettings = GetSnapshotFetchingSettings();
 
@@ -123,26 +123,24 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                     myLogger.Verbose( $"Start snapshot auto fetching after settings changed to {fetchingSettings}");
                     
                     if (snapshotStatus == null)
-                        return Task.CompletedTask;
+                        return;
 
                     FrontendBackendProfilerModel.ProfilerSnapshotStatus.Value = snapshotStatus;
                     
                     var snapshotRequest = new ProfilerSnapshotRequest(snapshotStatus.FrameIndex, snapshotStatus.ThreadIndex);
                     FetchProfilerSnapshotWithProgress(snapshotRequest);
-                    return Task.CompletedTask;
+                    return;
                 }
                 case ProfilerSnapshotFetchingSettings.Disabled:
                     myLogger.Verbose( $"Stop snapshot auto fetching after settings changed to {fetchingSettings}");
                     FrontendBackendProfilerModel.ProfilerSnapshotStatus.Value = ourUnityProfilerSnapshotStatusDisabled;
                     myRequestSnapshotSeqLifetimes.TerminateCurrent();
                     UpdateSampleCache(null);
-                    InvalidateDaemon();
+                    await InvalidateDaemon(lt);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(fetchingSettings));
             }
-
-            return Task.CompletedTask;
         });
     }
 
@@ -162,9 +160,18 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
     private void AdviseOnUnityProfilerSnapshotStatus()
     {
         myBackendUnityHost.BackendUnityProfilerModel!.ViewNotNull<UnityProfilerModel>(
-            myLifetime,
-            (lt, unityProfilerModel) =>
-                unityProfilerModel.ProfilerSnapshotStatus.AdviseNotNull(lt, HandleSnapshotStatusChange));
+            myLifetime, (lt, unityProfilerModel) =>
+                unityProfilerModel.ProfilerSnapshotStatus.AdviseNotNull(lt, async void (status) =>
+                {
+                    try
+                    {
+                        await HandleSnapshotStatusChange(status, lt);
+                    }
+                    catch (Exception e)
+                    {
+                        myLogger.LogException(e);
+                    }
+                }));
     }
 
     private void FetchProfilerSnapshotWithProgress(ProfilerSnapshotRequest snapshotRequest)
@@ -184,7 +191,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                     return;
 
                 var currentProfilerFrameSnapshot =
-                    await getUnityProfilerSnapshotCall.Start(myLifetime, snapshotRequest);
+                    await getUnityProfilerSnapshotCall.Start(requestLifetime, snapshotRequest);
                 var samplesCount = currentProfilerFrameSnapshot?.Samples.Count ?? -1;
                 myLogger.Verbose($"Succesfully recived snapthot information, samples count {samplesCount}");
 
@@ -202,7 +209,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                     myLogger.LogException(e);
                 }
 
-                InvalidateDaemon();
+                await InvalidateDaemon(requestLifetime);
                   
             }
             catch (Exception e)
@@ -216,10 +223,10 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         }).NoAwait();
     }
 
-    private void InvalidateDaemon()
+    private async Task InvalidateDaemon(Lifetime lifetime)
     {
         myLogger.Verbose("Invalidating daemon");
-        DaemonBase.GetInstance(mySolution).Invalidate(); //TODO: is it ok to invalidate in this way?
+        await lifetime.StartMainRead(DaemonBase.GetInstance(mySolution).Invalidate); 
     }
 
     private void StartCacheUpdateProgressTask(Lifetime lifetime, Property<double> cacheUpdatingProgressProperty)
@@ -247,7 +254,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         );
     }
 
-    private void HandleSnapshotStatusChange(UnityProfilerSnapshotStatus snapshotStatus)
+    private async Task HandleSnapshotStatusChange(UnityProfilerSnapshotStatus snapshotStatus, Lifetime lifetime)
     {
         myLogger.Verbose($"Updated snapshot status: {snapshotStatus}");
 
@@ -257,6 +264,8 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         if (GetSnapshotFetchingSettings() == ProfilerSnapshotFetchingSettings.Disabled)
         {
             FrontendBackendProfilerModel.ProfilerSnapshotStatus.Set(ourUnityProfilerSnapshotStatusDisabled);
+            // Ensure any ongoing snapshot request and related progress tasks are terminated to avoid leaks
+            myRequestSnapshotSeqLifetimes.TerminateCurrent();
             return;
         }
 
@@ -268,7 +277,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         if(snapshotStatus.Status == SnapshotStatus.NoSnapshotDataAvailable)
         {
             UpdateSampleCache(null);
-            InvalidateDaemon();
+            await InvalidateDaemon(lifetime);
         }
 
         if (snapshotStatus.Status != SnapshotStatus.HasNewSnapshotDataToFetch)
