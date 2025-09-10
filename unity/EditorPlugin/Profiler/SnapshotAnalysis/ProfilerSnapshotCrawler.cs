@@ -13,9 +13,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
   internal class ProfilerSnapshotCrawler
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(ProfilerSnapshotCrawler));
-    private readonly IProfilerSnapshotDriverAdapter myProfilerSnapshotDriverAdapter;
+    private readonly IProfilerSnapshotDriverAdapter? myProfilerSnapshotDriverAdapter;
 
-    public ProfilerSnapshotCrawler(IProfilerSnapshotDriverAdapter profilerSnapshotDriverAdapter)
+    public ProfilerSnapshotCrawler(IProfilerSnapshotDriverAdapter? profilerSnapshotDriverAdapter)
     {
       myProfilerSnapshotDriverAdapter = profilerSnapshotDriverAdapter;
     }
@@ -24,7 +24,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
     {
       ourLogger.Trace(
         $"GetCurrentProfilerSnapshotStatusInfo: {nameof(selectedFrameIndex)}:{selectedFrameIndex} {nameof(threadIndex)}:{threadIndex}");
-      using var rawFrameDataView = myProfilerSnapshotDriverAdapter.GetRawFrameDataView(selectedFrameIndex, threadIndex);
+      using var rawFrameDataView = myProfilerSnapshotDriverAdapter?.GetRawFrameDataView(selectedFrameIndex, threadIndex);
 
       return rawFrameDataView.ToSnapshotStatus(selectedFrameIndex,
        rawFrameDataView is { Valid: true, SampleCount: > 0 }
@@ -44,7 +44,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       }
 
       using var rawFrameDataView =
-        myProfilerSnapshotDriverAdapter.GetRawFrameDataView(snapshotRequestInfo.FrameIndex,
+        myProfilerSnapshotDriverAdapter?.GetRawFrameDataView(snapshotRequestInfo.FrameIndex,
           snapshotRequestInfo.ThreadIndex);
 
       if (rawFrameDataView == null)
