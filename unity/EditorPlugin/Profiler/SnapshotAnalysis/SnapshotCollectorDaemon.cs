@@ -36,7 +36,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       myAdaptersFactory = adaptersFactory;
       mySequentialLifetimes = new SequentialLifetimes(appDomainLifetime);
 
-      mySnapshotCrawler = new ProfilerSnapshotCrawler(myAdaptersFactory.CreateProfilerSnapshotDriverAdapter()!);
+      mySnapshotCrawler = new ProfilerSnapshotCrawler(myAdaptersFactory.CreateProfilerSnapshotDriverAdapter());
 
       // Update the status to "UpToDate" when a snapshot becomes ready
       myLastSnapshot.Advise(appDomainLifetime, snapshot =>
