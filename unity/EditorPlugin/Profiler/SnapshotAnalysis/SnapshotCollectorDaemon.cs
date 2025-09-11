@@ -78,7 +78,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
     void ISnapshotCollectorDaemon.Update(EditorWindow? lastKnownProfilerWindow)
     {
       // Cancel all fetching tasks if the Editor is playing or Profiler is recording
-      if (ProfilerDriver.enabled || EditorApplication.isPlaying)
+      if (EditorApplication.isPlaying || (ProfilerDriver.enabled && ProfilerDriver.profileEditor))
       {
         if(!mySequentialLifetimes.IsCurrentTerminated)
           mySequentialLifetimes.TerminateCurrent();
@@ -174,7 +174,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       {
         // Create progress reporter once and reuse it
         var progress = new Progress<UnityProfilerSnapshotStatus>(snapshotStatus =>
-          snapshotFetchingLifetime.Execute(() => myProfilerStatus.Set(snapshotStatus)));
+        {
+          if (snapshotFetchingLifetime.IsAlive)
+            snapshotFetchingLifetime.Execute(() => myProfilerStatus.Set(snapshotStatus));
+        });
 
         return Task.Run(async () =>
         {
@@ -216,6 +219,11 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       {
         ourLogger.Verbose($"Task {nameof(StartSnapshotFetchingTask)} was canceled");
       }
+      catch (Exception ex)
+      {
+        ourLogger.Error($"Task {nameof(StartSnapshotFetchingTask)} failed with exception", ex);
+        throw;
+      } 
       
       myLastSnapshot.Set(null);
       return Task.FromResult<UnityProfilerSnapshot?>(null);
