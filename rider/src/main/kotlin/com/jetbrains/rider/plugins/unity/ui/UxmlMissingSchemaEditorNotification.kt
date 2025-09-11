@@ -127,7 +127,7 @@ class UxmlMissingSchemaEditorNotification : EditorNotificationProvider {
                 // because we need a VirtualFile to create an XmlFile to represent the schema and also to act as a
                 // trackable dependency for the cached schema value.
                 VfsUtil.markDirtyAndRefresh(false, true, true, project.projectDir)
-                DaemonCodeAnalyzer.getInstance(project).restart()
+                DaemonCodeAnalyzer.getInstance(project).restart(this)
             }
             else {
                 // This is either an exception in UxmlSchemaGenerator, an exception in the protocol, or we're unable to
