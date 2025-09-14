@@ -11,6 +11,7 @@ import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.test.OpenSolutionParams
+import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
@@ -49,13 +50,11 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : P
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
 
-    fun getBackendFromClassName(className: String?): String {
-        return when {
-            className?.contains("IL2CPP", ignoreCase = true) == true -> "IL2CPP"
-            className?.contains("Mono", ignoreCase = true) == true -> "Mono"
-            else -> "Mono"
+    val unityBackend: String
+        get() {
+            val annotation = this::class.annotations.find { it is TestSettings } as? TestSettings
+            return annotation?.unityBackend ?: "Mono"
         }
-    }
 
     private fun buildUnityPlayer(backend: String) {
         val buildDir = File(unityProjectPath, "Builds")
@@ -99,12 +98,11 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : P
 
     override val testGoldFile: File
         get() {
-            val backend = getBackendFromClassName(this::class.simpleName)
-            return getUnityDependentGoldFile(unityMajorVersion, super.testGoldFile, backend).takeIf { it.exists() }
+            return getUnityDependentGoldFile(unityMajorVersion, super.testGoldFile, unityBackend).takeIf { it.exists() }
                    ?: getUnityDependentGoldFile(
                        unityMajorVersion,
                        File(super.testGoldFile.path.replace(this::class.simpleName.toString(), "")),
-                       backend.lowercase()
+                       unityBackend.lowercase()
                    )
         }
 
@@ -130,12 +128,7 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : P
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
         super.setUpTestCaseSolution()
         prepareAssemblies(project, activeSolutionDirectory)
-        val backend = when {
-            testClass.name.contains("IL2CPP", ignoreCase = true) -> "IL2CPP"
-            testClass.name.contains("Mono", ignoreCase = true) -> "Mono"
-            else -> "Mono"
-        }
-        buildUnityPlayer(getBackendFromClassName(testClass.name))
+        buildUnityPlayer(unityBackend)
     }
 
     @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
