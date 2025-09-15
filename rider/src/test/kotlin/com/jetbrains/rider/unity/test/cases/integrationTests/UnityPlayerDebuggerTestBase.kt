@@ -19,8 +19,8 @@ import kotlin.test.assertNotNull
 @Severity(SeverityLevel.CRITICAL)
 @Solution("UnityPlayerProjects/SimpleUnityGame")
 @RiderTestTimeout(5, TimeUnit.MINUTES)
-abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion)
-    : UnityPlayerTestBase(engineVersion) {
+abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, unityBackend: UnityBackend)
+    : UnityPlayerTestBase(engineVersion, unityBackend) {
 
     @Test(description = "Check breakpoint for prebuilt Player)")
     @ChecklistItems(["Debug prebuilt Unity Player"])
@@ -62,22 +62,22 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion)
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnityPlayerDebuggerTest {
-    class TestMonoUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022){
+    class TestMonoUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022, UnityBackend.Mono){
         init {
             addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
         }
     }
-    class TestMonoUnityBuild6 : UnityPlayerDebuggerTestBase(Unity.V6){
+    class TestMonoUnityBuild6 : UnityPlayerDebuggerTestBase(Unity.V6, UnityBackend.Mono){
         init {
             addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
         }
     }
-    class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022){
+    class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022, UnityBackend.Il2CPP){
         init {
             addMute(Mute("RIDER-129597", platforms = [PlatformType.ALL]), ::checkBreakpoint)
         }
     }
-    class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase(Unity.V6){
+    class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase(Unity.V6, UnityBackend.Il2CPP){
         init {
             addMute(Mute("RIDER-129597", platforms = [PlatformType.ALL]), ::checkBreakpoint)
         }

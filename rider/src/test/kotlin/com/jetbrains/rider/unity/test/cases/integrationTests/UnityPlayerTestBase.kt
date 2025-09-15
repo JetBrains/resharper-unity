@@ -11,7 +11,6 @@ import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
@@ -27,7 +26,8 @@ import org.testng.annotations.BeforeMethod
 import java.io.File
 import kotlin.test.assertNotNull
 
-abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : PerTestSolutionTestBase() {
+abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,private val unityBackend: UnityBackend)
+    : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
         params.waitForCaches = true
@@ -50,13 +50,7 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : P
     override val testCaseSourceDirectory: File
         get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
 
-    val unityBackend: String
-        get() {
-            val annotation = this::class.annotations.find { it is TestSettings } as? TestSettings
-            return annotation?.unityBackend ?: "Mono"
-        }
-
-    private fun buildUnityPlayer(backend: String) {
+    private fun buildUnityPlayer(unityBackend: UnityBackend) {
         val buildDir = File(unityProjectPath, "Builds")
         val buildTarget = when {
             SystemInfo.isMac -> "OSXUniversal"
@@ -72,7 +66,7 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : P
             "-executeMethod", "BuildScript.Build",
             "-logFile", File(testMethod.logDirectory, "PlayerBuild.log").absolutePath,
             "-buildTarget", buildTarget,
-            "-backend", backend
+            "-backend", unityBackend.toString()
         ).start()
 
         process.waitFor()
@@ -98,11 +92,11 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion) : P
 
     override val testGoldFile: File
         get() {
-            return getUnityDependentGoldFile(unityMajorVersion, super.testGoldFile, unityBackend).takeIf { it.exists() }
+            return getUnityDependentGoldFile(unityMajorVersion, super.testGoldFile, unityBackend.toString()).takeIf { it.exists() }
                    ?: getUnityDependentGoldFile(
                        unityMajorVersion,
                        File(super.testGoldFile.path.replace(this::class.simpleName.toString(), "")),
-                       unityBackend.lowercase()
+                       unityBackend.toString().lowercase()
                    )
         }
 
