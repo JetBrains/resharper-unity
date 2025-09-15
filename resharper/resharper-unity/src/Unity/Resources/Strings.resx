@@ -1293,12 +1293,6 @@ float values with full precision.</value>
     <data name="UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation" xml:space="preserve">
         <value>Timeout for advanced Unity evaluations, in milliseconds:</value>
     </data>
-    <data name="UnityOptionsPage_AddGeneralSection_" xml:space="preserve">
-        <value>Recommended. Integration features such as play/pause, log view and
-refreshing assets in the background are automatically supported by
-the Rider package in Unity 2019.2 and newer. Earlier versions require
-a plugin to be installed to a project.</value>
-    </data>
     <data name="UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity" xml:space="preserve">
         <value>Automatically refresh assets in Unity</value>
     </data>

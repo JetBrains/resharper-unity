@@ -77,7 +77,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             if (!OptionsPageContext.IsRider) return;
 
             AddHeader(Strings.UnityOptionsPage_AddGeneralSection_General);
-            AddBetterCommentText(Strings.UnityOptionsPage_AddGeneralSection_);
 
             AddBoolOption((UnitySettings s) => s.AllowAutomaticRefreshInUnity,
                 Strings.UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity);

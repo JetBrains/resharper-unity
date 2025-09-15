@@ -478,7 +478,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string UnityOptionsPage_AddDebuggingSection_Extend_value_rendering_Comment => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Extend_value_rendering_Comment");
     public static string UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players");
     public static string UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation");
-    public static string UnityOptionsPage_AddGeneralSection_ => ResourceManager.GetString("UnityOptionsPage_AddGeneralSection_");
     public static string UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity => ResourceManager.GetString("UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity");
     public static string UnityOptionsPage_AddGeneralSection_General => ResourceManager.GetString("UnityOptionsPage_AddGeneralSection_General");
     public static string UnityOptionsPage_AddGeneralSection_Notify_when_Rider_package_update_is_available => ResourceManager.GetString("UnityOptionsPage_AddGeneralSection_Notify_when_Rider_package_update_is_available");
