@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab
 
-import com.jetbrains.rider.ideaInterop.fileTypes.RiderLanguageBase
+import com.intellij.lang.Language
 
-object ShaderLabLanguage : RiderLanguageBase("ShaderLab", "SHADERLAB") {
+object ShaderLabLanguage : Language("ShaderLab") {
     override fun isCaseSensitive(): Boolean = false
 }
