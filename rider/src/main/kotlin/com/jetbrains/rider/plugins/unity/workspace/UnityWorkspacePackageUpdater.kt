@@ -19,7 +19,7 @@ import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
-import com.jetbrains.rd.util.threading.coroutines.async
+import com.jetbrains.rd.util.threading.coroutines.launch
 import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
@@ -27,6 +27,8 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSourc
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.withContext
 import java.nio.file.Paths
 
 @Service(Service.Level.PROJECT)
@@ -55,25 +57,15 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
             // is loaded, updateWorkspaceModel will cache the changes until the packagesUpdating flag is reset. At this
             // point, we sync the cached changes, and switch to updating the workspace model directly. We then expect
             // Unity to only add/remove a single package at a time.
+            val updater = getInstance(session.project)
             model.packages.adviseAddRemove(lifetime) { action, _, unityPackage ->
+                logger.trace("$action: ${unityPackage.id}")
                 ThreadingAssertions.assertEventDispatchThread()
-                val updater = getInstance(session.project)
-                lifetime.async(Dispatchers.IO) {
-                    val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
-                    lifetime.async(Dispatchers.EDT) {
-                        when (action) {
-                            AddRemove.Add -> getInstance(session.project).updateWorkspaceModel { entityStorage ->
-                                if (packageFolder != null) updater.sourceRootsTree.add(packageFolder)
-                                updater.addPackage(unityPackage, packageFolder, entityStorage)
-                            }
-                            AddRemove.Remove -> getInstance(session.project).updateWorkspaceModel { entityStorage ->
-                                if (packageFolder != null) updater.sourceRootsTree.remove(packageFolder)
-                                updater.removePackage(unityPackage, entityStorage)
-                            }
-                        }
-                    }
-                }
+                // Enqueue event for ordered, non-blocking processing
+                updater.eventsChannel.trySend(PackageEvent(action, unityPackage))
             }
+
+            updater.start(lifetime)
 
             // Wait for the property to become false. On the backend, it is initially null, set to true before initially
             // calculating the packages, and then set to false. Depending on when we subscribe, we might not see all
@@ -85,6 +77,40 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
                     return@adviseUntil true
                 }
                 return@adviseUntil false
+            }
+        }
+    }
+
+    private data class PackageEvent(val action: AddRemove, val unityPackage: UnityPackage)
+    private val eventsChannel = Channel<PackageEvent>(Channel.UNLIMITED)
+
+    private fun start(lifetime: Lifetime) {
+        val updater = this
+        // Process events sequentially on IO dispatcher; switch to EDT for model updates
+        lifetime.launch (Dispatchers.IO) {
+            for (event in eventsChannel) { // equivalent to a “consume forever” while loop
+                val unityPackage = event.unityPackage
+                val packageFolder = unityPackage.packageFolderPath?.let { path ->
+                    VfsUtil.findFile(Paths.get(path), true)
+                }
+                withContext(Dispatchers.EDT) {
+                    when (event.action) {
+                        AddRemove.Add -> updater.updateWorkspaceModel { entityStorage ->
+                            if (packageFolder != null) {
+                                logger.trace("Adding to the sourceRootsTree: ${unityPackage.packageFolderPath}")
+                                updater.sourceRootsTree.add(packageFolder)
+                            }
+                            updater.addPackage(unityPackage, packageFolder, entityStorage)
+                        }
+                        AddRemove.Remove -> updater.updateWorkspaceModel { entityStorage ->
+                            if (packageFolder != null) {
+                                logger.trace("Removing from the sourceRootsTree: ${unityPackage.packageFolderPath}")
+                                updater.sourceRootsTree.remove(packageFolder)
+                            }
+                            updater.removePackage(unityPackage, entityStorage)
+                        }
+                    }
+                }
             }
         }
     }
