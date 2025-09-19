@@ -22,7 +22,7 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages.Notification
 {
-    [SolutionComponent(InstantiationEx.LegacyDefault)]
+    [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
     public class RiderPackageUpdateAvailabilityChecker
     {
         private readonly ILogger myLogger;
@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly JetHashSet<JetSemanticVersion> myNotificationShown;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private string packageId = PackageCompatibilityValidator.RiderPackageId;
-        private JetSemanticVersion leastRiderPackageVersion = new(3, 0, 27);
+        private JetSemanticVersion leastRiderPackageVersion = new(3, 0, 38);
 
         public RiderPackageUpdateAvailabilityChecker(
             Lifetime lifetime,
@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Change.Advise_NoAcknowledgement(lifetime,
                 args =>
                 {
-                    if (!args.GetNewOrNull()) return;
+                    if (!args.IsRaising()) return;
                     ShowNotificationIfNeeded(lifetime, version);
                 });
         }
@@ -114,8 +114,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                     // Version before 2019.2 doesn't have Rider package
                     // 2019.2.0 - 2019.2.5 : version 1.2.1 is the last one
-                    // 2019.2.6 - present : see: leastRiderPackageVersion
-                    if (unityVersion < new Version(2019, 2, 6)) return;
+                    // 2019.2.6 - last one is 3.0.33
+                    // 2019.4 - last one is 3.0.36
+                    // 2021.3 - 3.0.37+
+                    if (unityVersion < new Version(2021, 3, 0)) return;
                     var notificationLifetime = mySequentialLifetimes.Next().CreateNested(); // avoid multiple notifications simultaneously
 
                     var package = myPackageManager.GetPackageById(packageId);
