@@ -15,7 +15,6 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
-using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
@@ -36,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly SequentialLifetimes mySequentialLifetimes;
         private readonly JetHashSet<JetSemanticVersion> myNotificationShown;
-        private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
+        private readonly IContextBoundSettingsStoreLive myBoundSettingsStoreLive;
         private string packageId = PackageCompatibilityValidator.RiderPackageId;
         private JetSemanticVersion leastRiderPackageVersion = new(3, 0, 38);
 
@@ -48,7 +47,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             PackageManager packageManager,
             UnitySolutionTracker unitySolutionTracker,
             UnityVersion unityVersion,
-            IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             ISettingsStore settingsStore,
             BackendUnityHost backendUnityHost, 
             UserNotifications userNotifications,
@@ -66,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myFrontendBackendHost = frontendBackendHost;
             mySequentialLifetimes = new SequentialLifetimes(lifetime);
             myNotificationShown = new JetHashSet<JetSemanticVersion>();
-            myBoundSettingsStore = applicationWideContextBoundSettingStore.BoundSettingsStore;
+            myBoundSettingsStoreLive = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             unitySolutionTracker.IsUnityProject.WhenTrue(lifetime, lt =>
             {
                 ShowNotificationIfNeeded(lt, leastRiderPackageVersion);
@@ -91,9 +89,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
         private void BindToInstallationSettingChange(Lifetime lifetime, JetSemanticVersion version)
         {
-            var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) =>
-                s.AllowRiderUpdateNotifications);
-            myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Change.Advise_NoAcknowledgement(lifetime,
+            var entry = myBoundSettingsStoreLive.Schema.GetScalarEntry((UnitySettings s) => s.AllowRiderUpdateNotifications);
+            var apartmentForNotifications = ApartmentForNotifications.Primary(myShellLocks);
+            myBoundSettingsStoreLive.GetValueProperty2<bool>(lifetime, entry, null, apartmentForNotifications).Change.Advise_NoAcknowledgement(lifetime,
                 args =>
                 {
                     if (!args.IsRaising()) return;
@@ -103,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
         private void ShowNotificationIfNeeded(Lifetime lifetime, JetSemanticVersion packageVersion)
         {
-            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowRiderUpdateNotifications))
+            if (!myBoundSettingsStoreLive.GetValue((UnitySettings s) => s.AllowRiderUpdateNotifications))
                 return;
 
             myPackageManager.IsInitialUpdateFinished.WhenTrue(lifetime, lt =>
