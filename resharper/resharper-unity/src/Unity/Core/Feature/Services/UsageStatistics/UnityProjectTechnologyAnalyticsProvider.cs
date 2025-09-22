@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-    public class UnityProjectTechnologyAnalyticsProvider(UnitySolutionTracker unitySolutionTracker) : IProjectTechnologyProvider
+    public class UnityProjectTechnologyAnalyticsProvider(UnitySolutionTracker unitySolutionTracker) : IProjectTechnologyAnalyticsProvider
     {
         public IEnumerable<string> GetProjectTechnology(IProject project)
         {
