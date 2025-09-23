@@ -145,7 +145,7 @@ class MetaTracker : VfsBackendRequester {
     private fun isValidEvent(event: VFileEvent): Boolean {
         if (event.isFromRefresh) return false
         if (event.fileSystem !is LocalFileSystem) return false
-        return CommandProcessor.getInstance().currentCommand != null
+        return CommandProcessor.getInstance().isCommandInProgress
     }
 
     private fun isUndoRedoInProgress(project: Project): Boolean {
