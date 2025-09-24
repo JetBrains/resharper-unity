@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Docum
             {
                 if (!IsFileAssociatedWithOpenedEditor(document)) return true;
 
-                mySolution.Locks.ExecuteOrQueueWithWriteLockWhenAvailableEx(Lifetime.Eternal, "Sync Unity shared files", () =>
+                mySolution.Locks.ExecuteOrQueueWriteLockAsync(Lifetime.Eternal, "Sync Unity shared files", () =>
                 {
                     using (mySolution.CreateTransactionCookie(DefaultAction.Commit, "Sync Unity shared files"))
                     {

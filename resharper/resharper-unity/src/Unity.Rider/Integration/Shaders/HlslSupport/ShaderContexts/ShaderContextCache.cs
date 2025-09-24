@@ -51,7 +51,7 @@ public class ShaderContextCache : IPreferredRootFileProvider, ICppChangeProvider
         else
             myShaderContext.RemoveFromCache(psiSourceFile.GetLocation());
 
-        mySolution.Locks.ExecuteOrQueueWithWriteLockWhenAvailableEx(myLifetime, $"Updating shader context for {psiSourceFile}", () =>
+        mySolution.Locks.ExecuteOrQueueWriteLockAsync(myLifetime, $"Updating shader context for {psiSourceFile}", () =>
         {
             if (psiSourceFile.IsValid())
                 myChangeManager.OnProviderChanged(this, new CppChange(new CppFileLocation(psiSourceFile)), SimpleTaskExecutor.Instance);
