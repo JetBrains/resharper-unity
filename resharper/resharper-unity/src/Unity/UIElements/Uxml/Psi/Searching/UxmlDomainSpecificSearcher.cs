@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Searching
         
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
         {
-            return sourceFile.GetPsiFiles<UxmlLanguage>().Any(psiFile => ProcessElement(psiFile, consumer));
+            return sourceFile.GetPsiFiles<UxmlLanguage>(myReferenceSearcherParameters.LanguageCategories).Any(psiFile => ProcessElement(psiFile, consumer));
         }
 
         public bool ProcessElement<TResult>(ITreeNode element, IFindResultConsumer<TResult> consumer)

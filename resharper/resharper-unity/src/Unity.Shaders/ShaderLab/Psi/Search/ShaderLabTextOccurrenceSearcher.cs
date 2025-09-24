@@ -10,13 +10,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
     // Finds the nodes that can contain text. Used in a rename operation when "search in text and comments" is enabled
     public class ShaderLabTextOccurrenceSearcher : TextOccurrenceSearcherBase<ShaderLabLanguage>, IDomainSpecificSearcher
     {
-        public ShaderLabTextOccurrenceSearcher(IEnumerable<IDeclaredElement> elements)
-            : base(elements)
+        public ShaderLabTextOccurrenceSearcher(IEnumerable<IDeclaredElement> elements, TextOccurrenceSearcherParameters parameters)
+            : base(elements, parameters)
         {
         }
 
-        public ShaderLabTextOccurrenceSearcher(string subject)
-            : base(subject)
+        public ShaderLabTextOccurrenceSearcher(string subject, TextOccurrenceSearcherParameters parameters)
+            : base(subject, parameters)
         {
         }
 

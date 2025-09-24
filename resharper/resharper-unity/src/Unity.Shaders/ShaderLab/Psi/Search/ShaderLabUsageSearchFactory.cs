@@ -28,14 +28,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
             return new ShaderLabReferenceSearcher(elements, referenceSearcherParameters);
         }
 
-        public override IDomainSpecificSearcher CreateTextOccurrenceSearcher(IDeclaredElementsSet elements)
+        public override IDomainSpecificSearcher CreateTextOccurrenceSearcher(IDeclaredElementsSet elements, TextOccurrenceSearcherParameters parameters)
         {
-            return new ShaderLabTextOccurrenceSearcher(elements);
+            return new ShaderLabTextOccurrenceSearcher(elements, parameters);
         }
 
-        public override IDomainSpecificSearcher CreateTextOccurrenceSearcher(string subject)
+        public override IDomainSpecificSearcher CreateTextOccurrenceSearcher(string subject, TextOccurrenceSearcherParameters parameters)
         {
-            return new ShaderLabTextOccurrenceSearcher(subject);
+            return new ShaderLabTextOccurrenceSearcher(subject, parameters);
         }
 
         public override IEnumerable<string> GetAllPossibleWordsInFile(IDeclaredElement element)
