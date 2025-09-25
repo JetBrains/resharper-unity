@@ -12,6 +12,7 @@ using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
 {
@@ -69,13 +70,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
             }
         }
 
-        public int Version => 1;
+        public int Version => 3;
 
         public UnityProjectDataCache Read(VirtualFileSystemPath projectFileLocation, BinaryReader reader)
         {
             var version = System.Version.Parse(reader.ReadString());
             var explicitlySpecified = reader.ReadBoolean();
-            var unityAppPath = VirtualFileSystemPath.Parse(reader.ReadString(), InteractionContext.SolutionContext);
+            var unityAppPathString = reader.ReadNullableString();
+            var unityAppPath = unityAppPathString != null ? VirtualFileSystemPath.Parse(unityAppPathString, InteractionContext.SolutionContext) : null;
             return new UnityProjectDataCache(version, explicitlySpecified, unityAppPath);
         }
 
@@ -83,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
         {
             writer.Write(data.UnityVersion.ToString());
             writer.Write(data.LangVersionExplicitlySpecified);
-            writer.Write(data.UnityAppPath.FullPath);
+            writer.WriteNullableString(data.UnityAppPath?.FullPath);
         }
 
         public UnityProjectDataCache BuildData(VirtualFileSystemPath projectFileLocation, XmlDocument document)
