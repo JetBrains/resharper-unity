@@ -9,7 +9,7 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunConfiguration
+import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunProfile
 import com.jetbrains.rider.multiPlatform.RiderMultiPlatformBundle
 import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -29,7 +29,7 @@ class UnityExeConfiguration(name: String,
                             project: Project,
                             factory: ConfigurationFactory,
                             params: ExeConfigurationParameters)
-    : ExeConfiguration(name, project, factory, params, true), IMixedModeDebugAwareRunConfiguration {
+    : ExeConfiguration(name, project, factory, params, true), IMixedModeDebugAwareRunProfile {
 
     override fun isNative(): Boolean {
         return false

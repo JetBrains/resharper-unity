@@ -14,7 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
-import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunConfiguration
+import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunProfile
 import com.jetbrains.rider.debugger.attach.util.getAvailableRuntimes
 import com.jetbrains.rider.debugger.mixed.mode.isMixedModeDebugFeatureEnabled
 import com.jetbrains.rider.model.ProcessRuntimeInformation
@@ -45,7 +45,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
       RemoteConfiguration,
       WithoutOwnBeforeRunSteps,
       UnityAttachRunConfiguration,
-      IMixedModeDebugAwareRunConfiguration {
+      IMixedModeDebugAwareRunProfile {
 
     // TEMP, will be removed in 19.2
     companion object {
