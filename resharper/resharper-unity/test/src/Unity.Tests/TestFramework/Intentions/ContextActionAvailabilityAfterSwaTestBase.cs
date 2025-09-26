@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
         {
             var isAvailable = base.IsAvailable(contextActionInstance, textControl);
 
-            return isAvailable && contextActionInstance.CreateBulbItemsNoScoped(Solution).Any();
+            return isAvailable && contextActionInstance.CreateActionInstances(Solution).Any();
         }
     }
 }
