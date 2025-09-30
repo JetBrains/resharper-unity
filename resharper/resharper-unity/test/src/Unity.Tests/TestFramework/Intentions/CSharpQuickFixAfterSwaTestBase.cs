@@ -38,7 +38,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
                 using (SyncReanalyzeCookie.Create(solution.Locks, SolutionAnalysisManager.GetInstance(solution)))
                 {
                     var errorInfo = RunErrorFinder(project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
-
                     var quickFixes = Shell.Instance.GetComponent<IQuickFixes>();
 
                     var quickFix = quickFixes.InstantiateQuickFixNoAvailabilityCheck(errorInfo.Highlighting, typeof(TQuickFix), quickFixIndex: 0);
@@ -49,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
             }
         }
 
-        protected override void OnQuickFixNotAvailable(ITextControl textControl, IQuickFix action)
+        protected override void OnQuickFixNotAvailable(ITextControl textControl, QuickFixInstance action)
         {
             textControl.PutData(TextControlBannerKey, "NOT_AVAILABLE\r\n");
         }
