@@ -1,1 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" data-name="icons fills"><path fill="#ced0d6" d="M9.5 12a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 1 0v4a.5.5 0 0 1-.5.5ZM7 11.5v-4a.5.5 0 0 0-1 0v4a.5.5 0 0 0 1 0ZM14 6h-1v7c0 1.103-.897 2-2 2H5c-1.103 0-2-.897-2-2V6H2V4c0-.551.449-1 1-1h2c0-1.103.897-2 2-2h2c1.103 0 2 .897 2 2h2c.551 0 1 .449 1 1v2ZM6 3h4c0-.551-.449-1-1-1H7c-.551 0-1 .449-1 1Zm6 3H4v7c0 .551.449 1 1 1h6c.551 0 1-.449 1-1V6Zm1-2H3v1h10V4Z"/></svg>
+<!-- Copyright © 2000–2024 JetBrains s.r.o. -->
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill="none" stroke="#CED0D6" stroke-miterlimit="10" d="M3.5 5.5h9V13a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 13zm10 0h-11V4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5z"/>
+  <path fill="none" stroke="#CED0D6" stroke-linecap="round" stroke-miterlimit="10" d="M9.5 7.5v4m-3-4v4m.5-10h2A1.5 1.5 0 0 1 10.5 3v.5h-5V3A1.5 1.5 0 0 1 7 1.5Z"/>
+</svg>
