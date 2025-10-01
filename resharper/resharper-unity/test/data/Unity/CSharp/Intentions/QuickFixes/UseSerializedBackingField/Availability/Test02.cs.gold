@@ -1,15 +1,14 @@
 ﻿using UnityEngine;
 
-public abstract class Base : MonoBehaviour
+public class Base : MonoBehaviour
 {
-    public abstract int Prop { get; set; }
+    public virtual int Prop { get; set; }
 }
 
 public class Derived : Base
 {
     public override int |Prop|(0) { get; }
 }
-
 ------------------------------------------------
 0: Auto-property must override all accessors of the overridden property
 QUICKFIXES:
