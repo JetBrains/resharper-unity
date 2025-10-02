@@ -3,7 +3,7 @@
   <ItemGroup>
     <PackageVersion Include="JetBrains.Annotations.Sources" Version="2025.2.0" />
     <PackageVersion Include="ILRepack" Version="2.0.44" />
-    <PackageVersion Include="JetBrains.RdFramework" Version="2025.2.3" />
+    <PackageVersion Include="JetBrains.RdFramework" Version="2025.3.1" />
     <PackageVersion Include="JetBrains.Unity.Libs.Ref.2019.2.0f1" Version="2023.10.14" />
     <PackageVersion Include="JetBrains.Unity.Libs.Ref.2022.3.58f1" Version="2025.3.11.1" />
     <PackageVersion Include="JetBrains.Unity.Libs.Ref.CorCLR" Version="2025.2.13.2" />
