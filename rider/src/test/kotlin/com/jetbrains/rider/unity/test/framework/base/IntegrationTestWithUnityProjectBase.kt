@@ -36,7 +36,7 @@ abstract class IntegrationTestWithUnityProjectBase(open val engineVersion: Engin
 
     override val solutionApiFacade: SolutionApiFacade by lazy { RiderExistingSolutionApiFacade() }
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeMethod
     override fun setUpTestCaseSolution() {
         unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null, testWorkDirectory, solutionSourceRootDirectory,
                                                         testDataDirectory)
