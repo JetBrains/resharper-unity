@@ -40,10 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
                     var errorInfo = RunErrorFinder(project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
                     var quickFixes = Shell.Instance.GetComponent<IQuickFixes>();
 
-                    var quickFix = quickFixes.InstantiateQuickFixNoAvailabilityCheck(errorInfo.Highlighting, typeof(TQuickFix), quickFixIndex: 0);
-                    if (quickFix is null) return null;
-
-                    return new QuickFixInstance(quickFix, errorInfo);
+                    return quickFixes.InstantiateQuickFixNoAvailabilityCheck(errorInfo, typeof(TQuickFix));
                 }
             }
         }
