@@ -8,8 +8,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration
     // available in tests, so we have to separate it from Common, which includes components and functionality that also
     // work in tests. This zone sets up a requirement on Rider's environment zone, which disables it during testing.
     [ZoneMarker]
-    public class ZoneMarker : IRequire<IRiderProductEnvironmentZone>,
-        IRequire<IRiderFeatureZone>,
+    public class ZoneMarker : IRequire<IRiderProductFullEnvironmentZone>,
+        IRequire<IRiderFullFeatureZone>,
         IRequire<IRiderUnityPluginZone>
     {
     }
