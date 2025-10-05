@@ -17,6 +17,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.util.Key
+import com.intellij.util.NetworkUtils
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
 import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -37,7 +38,6 @@ import com.jetbrains.rider.run.*
 import com.jetbrains.rider.run.configurations.TerminalMode
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.shared.run.withRawParameters
-import com.jetbrains.rider.util.NetUtils
 import java.nio.file.Path
 
 /**
@@ -55,7 +55,7 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         val runCmd = super.createWorkerRunInfo(lifetime, helper, port)
 
         remoteConfiguration.listenPortForConnections = true
-        remoteConfiguration.port = NetUtils.findFreePort(500013, setOf(port))
+        remoteConfiguration.port = NetworkUtils.findFreePort(500013, setOf(port))
         remoteConfiguration.address = "127.0.0.1"
 
         return runCmd
