@@ -30,7 +30,7 @@ class ReferenceRootNode(project: Project) : AbstractTreeNode<Any>(project, key) 
                     val virtualFile = entity.url?.virtualFile
                     if (virtualFile != null) {
                         val itemLocation = entity.descriptor.location
-                        val itemKey = if (itemLocation is RdCustomLocation) itemLocation.customLocation else itemLocation.toString()
+                        val itemKey = if (itemLocation is RdCustomLocation) itemLocation.customLocation.value else itemLocation.toString()
                         val item = referenceNames.getOrCreate(itemKey) {
                             ReferenceItemNode(myProject, entity.descriptor.name, virtualFile, arrayListOf())
                         }

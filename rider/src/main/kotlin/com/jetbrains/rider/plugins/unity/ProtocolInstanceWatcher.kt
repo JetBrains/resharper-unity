@@ -4,6 +4,7 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.application
+import com.jetbrains.rider.ijent.extensions.toRd
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.model.RdDelta
@@ -44,7 +45,7 @@ class ProtocolInstanceWatcher : ProjectActivity {
                         }
 
                         val watchedFileName = "ProtocolInstance.json"
-                        val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
+                        val delta = RdDelta(libraryPath.resolve(watchedFileName).toRd(), RdDeltaType.Changed)
                         var key: WatchKey
                         try {
                             while (watchService.take().also { watchKey -> key = watchKey } != null && lt.isAlive) {

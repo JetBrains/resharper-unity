@@ -10,6 +10,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.DataFlow;
+using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.ProjectsHost.SolutionHost.Progress;
@@ -166,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                     myLogger.Trace($"Refresh, force = {refreshType} Finished");
                     var solution = mySolution.GetProtocolSolution();
                     var solFolder = mySolution.SolutionDirectory;
-                    var list = new List<string> { solFolder.FullPath };
+                    var list = new List<RdPath> { solFolder.ToRd() };
                     await solution.GetFileSystemModel().RefreshPaths
                         .Start(lifetimeDef.Lifetime, new RdFsRefreshRequest(list, true)).AsTask();
                     myLogger.Trace("RefreshPaths.StartAsTask Finished.");

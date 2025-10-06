@@ -1,6 +1,6 @@
 package com.jetbrains.rider.plugins.unity
 
-import com.jetbrains.rider.RiderEnvironment
+import com.jetbrains.rider.environment.local.RiderLocalEnvironment
 import java.io.File
 
 object UnityPluginEnvironment {
@@ -15,6 +15,6 @@ object UnityPluginEnvironment {
         val prefixPath = prefixes.joinToString(separator = File.separator)
         val fullFileName = if (prefixes.isNotEmpty()) "$prefixPath${File.separator}$fileName" else fileName
 
-        return RiderEnvironment.getBundledPluginFile(fullFileName, pluginId)
+        return RiderLocalEnvironment.getBundledPluginFile(fullFileName, pluginId)
     }
 }
