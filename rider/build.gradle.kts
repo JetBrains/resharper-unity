@@ -164,6 +164,7 @@ dependencies {
         bundledModule("intellij.rider.cpp.core")
         bundledModule("intellij.rider.cpp.core.languages")
         bundledModule("intellij.rider.hlsl")
+        bundledModule("intellij.css.actions")
         bundledPlugin("rider.intellij.plugin.appender")
         bundledPlugin("com.intellij.css")
         bundledPlugin("org.jetbrains.plugins.yaml")
