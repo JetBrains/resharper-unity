@@ -202,9 +202,7 @@ Please [suggest new features in the issues](https://github.com/JetBrains/resharp
 
 ## Unity Editor plugin
 
-> For `Unity 2019.2+ with Rider package` Editor plugin is loaded directly from Rider installation. 
-
-By default, when Rider opens a Unity project, it will automatically install a Unity Editor plugin, and keep it up to date with new versions. This behaviour can be disabled in Rider's _Preferences &rarr; Languages &amp; Frameworks &rarr; Unity Engine_.
+The JetBrains Rider package in Unity automatically loads the Editor plugin directly from the Rider installation.
 
 This plugin does the following:
 

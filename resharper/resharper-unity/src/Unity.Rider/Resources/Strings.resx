@@ -101,9 +101,6 @@
     <data name="SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings" xml:space="preserve">
         <value>Enable scene in build settings</value>
     </data>
-    <data name="TheUnityEditorPluginIsOutOfDateAndAutomatic_Text" xml:space="preserve">
-        <value>The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.</value>
-    </data>
     <data name="ThisBranchMayBeActiveInOneOfShaderVariants_Text" xml:space="preserve">
         <value>This branch may be active in one of Shader Variants. Click to configure enabled keywords for the Shader Variant.</value>
     </data>
@@ -118,21 +115,6 @@
     </data>
     <data name="UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__" xml:space="preserve">
         <value>Finding usages in Unity for: </value>
-    </data>
-    <data name="UnityEditorPluginInstalled_Text" xml:space="preserve">
-        <value>Unity Editor plugin installed</value>
-    </data>
-    <data name="UnityEditorPluginUpdated_Text" xml:space="preserve">
-        <value>Unity Editor plugin updated</value>
-    </data>
-    <data name="UnityEditorPluginUpdatedDebugBuild_Text" xml:space="preserve">
-        <value>Unity Editor plugin updated (debug build)</value>
-    </data>
-    <data name="UnityEditorPluginUpdatedUpToDate_Text" xml:space="preserve">
-        <value>Unity Editor plugin updated (up to date)</value>
-    </data>
-    <data name="UnityEditorPluginUpdateRequired_Text" xml:space="preserve">
-        <value>Unity editor plugin update required</value>
     </data>
     <data name="UnityFileLayoutPageTab_Create_Default" xml:space="preserve">
         <value>Default</value>

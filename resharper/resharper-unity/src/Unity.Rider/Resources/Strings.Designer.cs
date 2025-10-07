@@ -87,17 +87,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Resources
     public static string RiderTypeDetector_AddScriptUsagesHighlighting_Click_to_view_usages_in_assets => ResourceManager.GetString("RiderTypeDetector_AddScriptUsagesHighlighting_Click_to_view_usages_in_assets");
     public static string RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results => ResourceManager.GetString("RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results");
     public static string SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings => ResourceManager.GetString("SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings");
-    public static string TheUnityEditorPluginIsOutOfDateAndAutomatic_Text => ResourceManager.GetString("TheUnityEditorPluginIsOutOfDateAndAutomatic_Text");
     public static string ThisBranchMayBeActiveInOneOfShaderVariants_Text => ResourceManager.GetString("ThisBranchMayBeActiveInOneOfShaderVariants_Text");
     public static string UnityAssetsUsage_Text => ResourceManager.GetString("UnityAssetsUsage_Text");
     public static string UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field");
     public static string UnityController_StartUnityInternal_Start_Unity_Editor => ResourceManager.GetString("UnityController_StartUnityInternal_Start_Unity_Editor");
     public static string UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__ => ResourceManager.GetString("UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__");
-    public static string UnityEditorPluginInstalled_Text => ResourceManager.GetString("UnityEditorPluginInstalled_Text");
-    public static string UnityEditorPluginUpdated_Text => ResourceManager.GetString("UnityEditorPluginUpdated_Text");
-    public static string UnityEditorPluginUpdatedDebugBuild_Text => ResourceManager.GetString("UnityEditorPluginUpdatedDebugBuild_Text");
-    public static string UnityEditorPluginUpdatedUpToDate_Text => ResourceManager.GetString("UnityEditorPluginUpdatedUpToDate_Text");
-    public static string UnityEditorPluginUpdateRequired_Text => ResourceManager.GetString("UnityEditorPluginUpdateRequired_Text");
     public static string UnityFileLayoutPageTab_Create_Default => ResourceManager.GetString("UnityFileLayoutPageTab_Create_Default");
     public static string UnityFileLayoutPageTab_Create_Default_with_regions => ResourceManager.GetString("UnityFileLayoutPageTab_Create_Default_with_regions");
     public static string UnityFileLayoutPageTab_Create_Empty => ResourceManager.GetString("UnityFileLayoutPageTab_Create_Empty");
