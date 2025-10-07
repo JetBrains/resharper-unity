@@ -24,18 +24,18 @@ class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<Unity
         configuration.useMixedMode = viewModel.useMixedMode.value
     }
 
-    override fun resetEditorFrom(configuration: UnityAttachToEditorRunConfiguration) {
+    public override fun resetEditorFrom(configuration: UnityAttachToEditorRunConfiguration) {
         viewModel.pid.value = configuration.pid
         viewModel.useMixedMode.value = configuration.useMixedMode
     }
 
-    override fun applyEditorTo(configuration: UnityAttachToEditorRunConfiguration) {
+    public override fun applyEditorTo(configuration: UnityAttachToEditorRunConfiguration) {
         checkEditorData(configuration)
     }
 
-    override fun createEditor() = form.panel
+    public override fun createEditor() = form.panel
 
-    override fun disposeEditor() {
+    public override fun disposeEditor() {
         lifetimeDefinition.terminate()
     }
 }
