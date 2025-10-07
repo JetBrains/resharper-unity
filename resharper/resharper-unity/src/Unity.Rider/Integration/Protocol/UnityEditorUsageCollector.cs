@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             myGroup = new EventLogGroup("dotnet.unity.unityeditor", "Connected Unity Editor Information", 1, featureUsageLogger);
             
             myConnectedUnityEvent = myGroup.RegisterEvent("version", "Project Unity Version", 
-                EventFields.StringValidatedByRegexp("version", "Unity Version", UnityVersion.VersionRegex),
+                EventFields.StringValidatedByInlineRegexp("version", "Unity Version", UnityVersion.VersionRegex),
                 EventFields.Boolean("isCustom", "Custom Unity Build")); 
         }
         

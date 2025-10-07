@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
                 EventFields.Enum<UnityProjectKind>("type", "Type"));
             
             myUnityVersionEvent = myGroup.RegisterEvent("version", "Project Unity Version", 
-                EventFields.StringValidatedByRegexp("version", "Unity Version", UnityVersion.VersionRegex),
+                EventFields.StringValidatedByInlineRegexp("version", "Unity Version", UnityVersion.VersionRegex),
                 EventFields.Boolean("isCustom", "Custom Unity Build")); 
             myEnterPlayModeOptionsEvent = myGroup.RegisterEvent("enterPlayModeOptions", "Enter Play Mode Options",
                 EventFields.Enum<Status>("exists", "EnterPlayModeOptionsEnabled exists in the project."),
