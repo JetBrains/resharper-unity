@@ -53,6 +53,7 @@ internal class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) 
                             viewModel.useMixedMode.advise(viewModel.lifetime) {
                                 checkBox.selected(it)
                             }
+                            checkBox.comment(UnityBundle.message("unity.attach.to.editor.form.mixed.mode.checkbox.text.comment"))
                         }
                 }
 
