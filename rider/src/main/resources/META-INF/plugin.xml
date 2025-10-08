@@ -16,7 +16,7 @@
   <depends>com.intellij.modules.spellchecker</depends>
   <depends>com.intellij.rider.rdclient.spellchecker</depends>
 
-  <content>
+  <content namespace="jetbrains">
     <module name="intellij.rider.plugins.unity/yaml" />
     <module name="intellij.rider.plugins.unity/css" />
     <module name="intellij.rider.plugins.unity/javascript" />
