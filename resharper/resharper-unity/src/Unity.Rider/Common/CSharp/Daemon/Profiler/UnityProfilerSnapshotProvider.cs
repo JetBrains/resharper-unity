@@ -226,7 +226,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
     private async Task InvalidateDaemon(Lifetime lifetime)
     {
         myLogger.Verbose("Invalidating daemon");
-        await lifetime.StartMainRead(DaemonBase.GetInstance(mySolution).Invalidate); 
+        await lifetime.StartMainRead(() => DaemonBase.GetInstance(mySolution).Invalidate()); 
     }
 
     private void StartCacheUpdateProgressTask(Lifetime lifetime, Property<double> cacheUpdatingProgressProperty)
