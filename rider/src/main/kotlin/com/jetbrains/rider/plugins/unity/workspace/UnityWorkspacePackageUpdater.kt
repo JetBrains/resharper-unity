@@ -21,6 +21,7 @@ import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rd.util.threading.coroutines.launch
 import com.jetbrains.rdclient.util.idea.toVirtualFile
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
@@ -42,12 +43,17 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
     private var initialEntityStorage: MutableEntityStorage? = MutableEntityStorage.create()
     val sourceRootsTree = VirtualFilePrefixTree.createSet()
 
+    private var eventsChannel: Channel<PackageEvent>
+
     init {
         val assets = project.solutionDirectory.toVirtualFile(false)?.findChild("Assets")
         if (assets != null) sourceRootsTree.add(assets)
         else logger.warn("No `Assets` folder in the Unity project")
         // Very tiny chance, that UnityWorkspacePackageUpdater gets created on event of removing the Assets folder
         // RIDER-98395 Fix FileSystemExplorerActionsTest.testDeleteFolderInExplorer after adding Unity
+
+        eventsChannel = Channel<PackageEvent>(Channel.UNLIMITED)
+        start(UnityProjectLifetimeService.getLifetime(project), eventsChannel)
     }
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
@@ -57,15 +63,12 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
             // is loaded, updateWorkspaceModel will cache the changes until the packagesUpdating flag is reset. At this
             // point, we sync the cached changes, and switch to updating the workspace model directly. We then expect
             // Unity to only add/remove a single package at a time.
-            val updater = getInstance(session.project)
             model.packages.adviseAddRemove(lifetime) { action, _, unityPackage ->
                 logger.trace("$action: ${unityPackage.id}")
                 ThreadingAssertions.assertEventDispatchThread()
                 // Enqueue event for ordered, non-blocking processing
-                updater.eventsChannel.trySend(PackageEvent(action, unityPackage))
+                getInstance(session.project).eventsChannel.trySend(PackageEvent(action, unityPackage))
             }
-
-            updater.start(lifetime)
 
             // Wait for the property to become false. On the backend, it is initially null, set to true before initially
             // calculating the packages, and then set to false. Depending on when we subscribe, we might not see all
@@ -82,9 +85,8 @@ class UnityWorkspacePackageUpdater(private val project: Project) {
     }
 
     private data class PackageEvent(val action: AddRemove, val unityPackage: UnityPackage)
-    private val eventsChannel = Channel<PackageEvent>(Channel.UNLIMITED)
 
-    private fun start(lifetime: Lifetime) {
+    private fun start(lifetime: Lifetime, eventsChannel: Channel<PackageEvent>) {
         val updater = this
         // Process events sequentially on IO dispatcher; switch to EDT for model updates
         lifetime.launch (Dispatchers.IO) {
