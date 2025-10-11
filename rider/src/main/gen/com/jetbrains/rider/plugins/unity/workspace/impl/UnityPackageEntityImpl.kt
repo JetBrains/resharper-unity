@@ -18,8 +18,8 @@ import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 @GeneratedCodeApiVersion(3)
 @GeneratedCodeImplVersion(7)
 @OptIn(WorkspaceEntityInternalApi::class)
-internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData) : UnityPackageEntity,
-                                                                                        WorkspaceEntityBase(dataSource) {
+internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData) : UnityPackageEntity, WorkspaceEntityBase(
+  dataSource) {
 
   private companion object {
 
@@ -46,8 +46,8 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
   }
 
 
-  internal class Builder(result: UnityPackageEntityData?) :
-    ModifiableWorkspaceEntityBase<UnityPackageEntity, UnityPackageEntityData>(result), UnityPackageEntity.Builder {
+  internal class Builder(result: UnityPackageEntityData?) : ModifiableWorkspaceEntityBase<UnityPackageEntity, UnityPackageEntityData>(
+    result), UnityPackageEntity.Builder {
     internal constructor() : this(UnityPackageEntityData())
 
     override fun applyToBuilder(builder: MutableEntityStorage) {

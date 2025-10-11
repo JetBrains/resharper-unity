@@ -64,7 +64,5 @@ interface UnityPackageEntity : WorkspaceEntity {
 fun MutableEntityStorage.modifyUnityPackageEntity(
   entity: UnityPackageEntity,
   modification: UnityPackageEntity.Builder.() -> Unit,
-): UnityPackageEntity {
-  return modifyEntity(UnityPackageEntity.Builder::class.java, entity, modification)
-}
+): UnityPackageEntity = modifyEntity(UnityPackageEntity.Builder::class.java, entity, modification)
 //endregion
