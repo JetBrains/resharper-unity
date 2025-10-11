@@ -4,7 +4,7 @@ using JetBrains.RdBackend.Common.Env;
 namespace JetBrains.ReSharper.Plugins.Json.Rider
 {
     [ZoneMarker]
-    public class ZoneMarker : IRequire<ILanguageJsonNewZone>, IRequire<IReSharperHostNetFullFeatureZone>
+    public class ZoneMarker : IRequire<ILanguageJsonNewZone>, IRequire<IReSharperHostNetFeatureZone>
     {
     }
 }

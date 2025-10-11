@@ -4,7 +4,7 @@ using JetBrains.RdBackend.Common.Env;
 namespace JetBrains.ReSharper.Plugins.Yaml.Rider
 {
     [ZoneMarker]
-    public class ZoneMarker : IRequire<ILanguageYamlZone>, IRequire<IReSharperHostNetFullFeatureZone>
+    public class ZoneMarker : IRequire<ILanguageYamlZone>, IRequire<IReSharperHostNetFeatureZone>
     {
     }
 }
