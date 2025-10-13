@@ -34,4 +34,10 @@ Top
     Visible
         Text RdTextRange(startOffset=155, endOffset=167) 3 asset usages
         Text RdTextRange(startOffset=155, endOffset=167) 1 usage
+        ZeroWidth RdTextRange(startOffset=155, endOffset=167)
+    Hidden
+Block 779 BlockCodeVisionInlayRenderer
+Top
+    Visible
+        ZeroWidth RdTextRange(startOffset=779, endOffset=786)
     Hidden

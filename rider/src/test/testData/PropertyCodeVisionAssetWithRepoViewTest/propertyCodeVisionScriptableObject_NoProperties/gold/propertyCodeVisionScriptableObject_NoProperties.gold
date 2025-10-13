@@ -18,6 +18,7 @@ Block 156 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=156, endOffset=176) 2 asset usages
+        ZeroWidth RdTextRange(startOffset=156, endOffset=176)
     Hidden
 after change
 Inline 232 InlineCodeVisionInlayRenderer
@@ -39,4 +40,5 @@ Block 156 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=156, endOffset=176) 2 asset usages
+        ZeroWidth RdTextRange(startOffset=156, endOffset=176)
     Hidden
