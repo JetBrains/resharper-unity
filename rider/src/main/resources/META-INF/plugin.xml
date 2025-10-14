@@ -227,6 +227,10 @@
     <rider.gotoCustomizer implementation="com.jetbrains.rider.plugins.unity.gotoType.UnityGotoCustomizer"/>
   </extensions>
 
+  <extensions defaultExtensionNs="com.jetbrains.rider">
+    <projectFileIndexAugmentor implementation="com.jetbrains.rider.plugins.unity.UnityProjectFileIndexAugmentor"/>
+  </extensions>
+
   <applicationListeners>
     <listener class="com.jetbrains.rider.plugins.unity.SaveAllActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
     <listener class="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
