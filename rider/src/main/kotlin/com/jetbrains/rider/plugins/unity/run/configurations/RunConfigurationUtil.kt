@@ -147,6 +147,17 @@ fun populateStateFromProcess(state:UnityPlayerDebugConfigurationOptions, process
     }
 }
 
+fun createAttachToUnityEditorConfiguration(project: Project, name: String, play: Boolean): RunnerAndConfigurationSettings {
+    val runManager = RunManager.getInstance(project)
+    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityEditorDebugConfigurationType::class.java)
+    val factory = if (play) configurationType.attachToEditorAndPlayFactory else configurationType.attachToEditorFactory
+    val runConfiguration = runManager.createConfiguration(name, factory)
+    // No need to share it - we recreate it if it's missing
+    runConfiguration.storeInLocalWorkspace()
+    runManager.addConfiguration(runConfiguration)
+    return runConfiguration
+}
+
 fun createAttachToConfiguration(project: Project): RunnerAndConfigurationSettings {
     val runManager = RunManager.getInstance(project)
     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDevicePlayerDebugConfigurationType::class.java)

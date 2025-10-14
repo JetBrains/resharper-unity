@@ -15,10 +15,11 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorAndPlayFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.createAttachToConfiguration
+import com.jetbrains.rider.plugins.unity.run.configurations.createAttachToUnityEditorConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDevicePlayerDebugConfigurationType
-import com.jetbrains.rider.plugins.unity.run.configurations.removeRunConfigurations
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
@@ -33,6 +34,9 @@ import kotlin.io.path.pathString
 class DefaultRunConfigurationGenerator {
 
     companion object {
+        val ATTACH_CONFIGURATION_NAME = UnityBundle.message("attach.to.unity.editor")
+        val ATTACH_AND_PLAY_CONFIGURATION_NAME = UnityBundle.message("attach.to.unity.editor.and.play")
+
         val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = UnityBundle.message("standalone.player")
         val RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME = UnityBundle.message("unit.tests.batch.mode")
         val RUN_DEBUG_START_UNITY_CONFIGURATION_NAME = UnityBundle.message("start.unity")
@@ -53,10 +57,19 @@ class DefaultRunConfigurationGenerator {
                 // todo: consider using it later to better guess what run config to select
                 val previouslySelectedConfig = RunManager.getInstance(session.project).selectedConfiguration
 
-                // Remove any "Attach to Unity Editor" configurations. Those were discontinued in favor of "Attach to"
-                removeRunConfigurations(session.project) {
-                    it.type is UnityEditorDebugConfigurationType
+                // todo: Remove any "Attach to Unity Editor" configurations. Those were discontinued in favor of "Attach to"
+                //removeRunConfigurations(session.project) {
+                //    it.type is UnityEditorDebugConfigurationType
+                //}
+                if (session.project.isUnityProject.value
+                    && !runManager.allSettings.any { it.type is UnityEditorDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
+                    createAttachToUnityEditorConfiguration(session.project, ATTACH_CONFIGURATION_NAME, false)
                 }
+                // deprecating ATTACH_AND_PLAY_CONFIGURATION_NAME, please use AttachTo instead
+                //if (session.project.isUnityProject.value
+                //    && !runManager.allSettings.any { it.type is UnityEditorDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory && it.name == ATTACH_AND_PLAY_CONFIGURATION_NAME }) {
+                //    createAttachToUnityEditorConfiguration(session.project, ATTACH_AND_PLAY_CONFIGURATION_NAME, true)
+                //}
 
                 if (session.project.isUnityProject.value
                     && !runManager.allSettings.any { it.type is UnityDevicePlayerDebugConfigurationType }) {
@@ -102,9 +115,17 @@ class DefaultRunConfigurationGenerator {
 
                 reorderRunConfigurations(session.project)
 
-                // make "Attach to" configuration selected if nothing is selected
+                //todo: make "Attach to" configuration selected if nothing is selected
+                //if (runManager.selectedConfiguration == null) {
+                //    val runConfiguration = runManager.findConfigurationByName(RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME)
+                //    if (runConfiguration != null) {
+                //        runManager.selectedConfiguration = runConfiguration
+                //    }
+                //}
+
+                // make Attach Unity Editor configuration selected if nothing is selected
                 if (runManager.selectedConfiguration == null) {
-                    val runConfiguration = runManager.findConfigurationByName(RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME)
+                    val runConfiguration = runManager.findConfigurationByName(ATTACH_CONFIGURATION_NAME)
                     if (runConfiguration != null) {
                         runManager.selectedConfiguration = runConfiguration
                     }
@@ -113,10 +134,10 @@ class DefaultRunConfigurationGenerator {
         }
 
         private fun reorderRunConfigurations(project: Project) {
-            // Reorder configurations to put "Attach to" first
-            val runManagerImpl = RunManagerImpl.getInstanceImpl(project)
-            runManagerImpl.setOrder(compareBy { it.name != RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME },
-                                    isApplyAdditionalSortByTypeAndGroup = false)
+            // todo: Reorder configurations to put "Attach to" first
+            //val runManagerImpl = RunManagerImpl.getInstanceImpl(project)
+            //runManagerImpl.setOrder(compareBy { it.name != RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME },
+            //                        isApplyAdditionalSortByTypeAndGroup = false)
         }
 
         private fun createOrUpdateUnityExeRunConfiguration(
