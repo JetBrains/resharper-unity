@@ -33,36 +33,4 @@ interface UnityPackageEntity : WorkspaceEntity {
     }
 
     val packageFolder: VirtualFile? get() = descriptor.packageFolderPath?.toVirtualFile(false)
-
-  //region generated code
-  @GeneratedCodeApiVersion(3)
-  interface Builder : WorkspaceEntity.Builder<UnityPackageEntity> {
-    override var entitySource: EntitySource
-    var descriptor: UnityPackage
-  }
-
-  companion object : EntityType<UnityPackageEntity, Builder>() {
-    @JvmOverloads
-    @JvmStatic
-    @JvmName("create")
-    operator fun invoke(
-      descriptor: UnityPackage,
-      entitySource: EntitySource,
-      init: (Builder.() -> Unit)? = null,
-    ): Builder {
-      val builder = builder()
-      builder.descriptor = descriptor
-      builder.entitySource = entitySource
-      init?.invoke(builder)
-      return builder
-    }
-  }
-  //endregion
 }
-
-//region generated code
-fun MutableEntityStorage.modifyUnityPackageEntity(
-  entity: UnityPackageEntity,
-  modification: UnityPackageEntity.Builder.() -> Unit,
-): UnityPackageEntity = modifyEntity(UnityPackageEntity.Builder::class.java, entity, modification)
-//endregion
