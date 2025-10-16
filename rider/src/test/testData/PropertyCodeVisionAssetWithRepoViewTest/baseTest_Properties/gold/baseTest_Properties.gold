@@ -4,14 +4,22 @@ Top
     Visible
         Text RdTextRange(startOffset=93, endOffset=111) 6 asset usages
         Text RdTextRange(startOffset=93, endOffset=111) 1 usage
+        ZeroWidth RdTextRange(startOffset=93, endOffset=111)
     Hidden
 Block 169 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=169, endOffset=174) Event function
+        ZeroWidth RdTextRange(startOffset=169, endOffset=174)
     Hidden
 Block 314 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=314, endOffset=320) Event function
+        ZeroWidth RdTextRange(startOffset=314, endOffset=320)
+    Hidden
+Block 346 BlockCodeVisionInlayRenderer
+Top
+    Visible
+        ZeroWidth RdTextRange(startOffset=346, endOffset=350)
     Hidden
