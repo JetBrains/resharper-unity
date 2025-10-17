@@ -215,10 +215,6 @@
         <Title resourceName="UnityDots_MustBeStructForDotsInheritor_Title" resourceType="Strings" />
         <Description resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
       </Tag>
-      <Tag externalName="MustBeSurroundedWithRefRwRoWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title resourceName="UnityDots_MustBeSurroundedWithRefRwRo" resourceType="Strings" />
-        <Description resourceName="UnityDots_MustBeSurroundedWithRefRwRo" resourceType="Strings" />
-      </Tag>
       
       <Tag externalName="AspectWrongFieldsTypeWarning.HIGHLIGHTING_ID" default="ERROR">
         <Title resourceName="UnityDots_AspectWrongFieldsType_Title" resourceType="Strings" />
@@ -691,16 +687,6 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
   
-  <Warning name="MustBeSurroundedWithRefRwRo" configurableSeverity="Unity.Entities.MustBeSurroundedWithRefRwRo">
-    <Parameter type="ITypeUsage" name="typeUsage" />
-    <Parameter type="int" name="index" />
-    <Message resourceName="UnityDots_WrongQueryTypeArgument" resourceType="Strings">
-      <Argument>typeUsage.GetText()</Argument>
-    </Message>
-    <Range>TypeUsage.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
   <Warning name="OdinUnknownGroupingPath" configurableSeverity="Odin.OdinUnknownGroupingPath">
     <Parameter type="DocumentRange" name="range" />
     <Parameter type="string" name="groupPath" />
