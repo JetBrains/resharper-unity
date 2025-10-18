@@ -14,7 +14,7 @@ import com.jetbrains.rider.plugins.unity.isUnityProject
 import java.util.function.Function
 import javax.swing.JComponent
 
-class UssDisabledEditorNotification : EditorNotificationProvider {
+private class UssDisabledEditorNotification : EditorNotificationProvider {
 
     companion object {
         private const val DO_NOT_SHOW_AGAIN_KEY = "unity.uss.css.plugin.disabled.do.not.show"
