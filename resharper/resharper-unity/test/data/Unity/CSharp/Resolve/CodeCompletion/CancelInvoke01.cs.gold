@@ -1,9 +1,17 @@
-﻿# 2 ITEMS #
+﻿Completion: Basic
+Count: 2
+Focus: Hard
+Auto-accept: DoNotAutoAccept
+Range: "CancelInvoke("♦");"
 
-+ Example    void
-+ LaunchProjectile    void
-# AUTOMATIC #
-# 2 ITEMS #
+##### RELEVANCE SORT #####
 
-+ Example    void
-+ LaunchProjectile    void
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Methods, NonStatic, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+Example                     void    <==
+LaunchProjectile            void
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Example                     void    <==
+LaunchProjectile            void

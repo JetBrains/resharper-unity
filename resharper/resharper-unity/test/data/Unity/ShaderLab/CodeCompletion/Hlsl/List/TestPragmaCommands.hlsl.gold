@@ -1,6 +1,12 @@
-# 67 ITEMS #
+﻿Completion: Basic
+Count: 67
+Focus: Hard
+Range: "#pragma ♦"
 
-+ def
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject, HighSelectionPriority, NormalSelectionPriority, Other]
+def                         <==
 disable_fastmath
 domain
 dynamic_branch
@@ -67,10 +73,11 @@ surface
 target
 vertex
 warning
-# AUTOMATIC #
-# 67 ITEMS #
 
-+ def
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+def                         <==
 disable_fastmath
 domain
 dynamic_branch

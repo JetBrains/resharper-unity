@@ -1,6 +1,12 @@
-﻿# 13 ITEMS #
+﻿Completion: Basic
+Count: 13
+Focus: Hard
+Range: "Blend ♦"
 
-+ DstAlpha
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+DstAlpha                    <==
 DstColor
 False
 Off
@@ -13,10 +19,11 @@ SrcAlpha
 SrcAlphaSaturate
 SrcColor
 Zero
-# AUTOMATIC #
-# 13 ITEMS #
 
-+ DstAlpha
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+DstAlpha                    <==
 DstColor
 False
 Off

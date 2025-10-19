@@ -1,6 +1,12 @@
-﻿# 8 ITEMS #
+﻿Completion: Basic
+Count: 8
+Focus: Hard
+Range: "Pass ♦"
 
-+ DecrSat
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+DecrSat                     <==
 DecrWrap
 IncrSat
 IncrWrap
@@ -8,10 +14,11 @@ Invert
 Keep
 Replace
 Zero
-# AUTOMATIC #
-# 8 ITEMS #
 
-+ DecrSat
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+DecrSat                     <==
 DecrWrap
 IncrSat
 IncrWrap

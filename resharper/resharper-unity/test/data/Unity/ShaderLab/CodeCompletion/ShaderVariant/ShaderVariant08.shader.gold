@@ -1,8 +1,27 @@
-# 6 ITEMS #
+﻿Completion: Basic
+Prefix: "_SHAPE"
+Count: 6
+Focus: Hard
+Range: "#if _SHAPE♦"
+            ▲▲▲▲▲▲▲
 
-+ _SHAPE_B
-_SHAPE_C
-_SHAPE_E
-_SHAPE_F
-_SHAPE_A
-_SHAPE_D
+##### RELEVANCE SORT #####
+
+                            [16]
+_̣ṢḤẠP̣Ẹ_B                    <==
+_̣ṢḤẠP̣Ẹ_C
+_̣ṢḤẠP̣Ẹ_E
+_̣ṢḤẠP̣Ẹ_F
+                            [PrefixMatch^, FromLightAndDynamicEvaluation^, FromSingleCompletion^, 15, NormalSelectionPriority, Other]
+_̣ṢḤẠP̣Ẹ_A
+_̣ṢḤẠP̣Ẹ_D
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+_̣ṢḤẠP̣Ẹ_A                    <==
+_̣ṢḤẠP̣Ẹ_B
+_̣ṢḤẠP̣Ẹ_C
+_̣ṢḤẠP̣Ẹ_D
+_̣ṢḤẠP̣Ẹ_E
+_̣ṢḤẠP̣Ẹ_F

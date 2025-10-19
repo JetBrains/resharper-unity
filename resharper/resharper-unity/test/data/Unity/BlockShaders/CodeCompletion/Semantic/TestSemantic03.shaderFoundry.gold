@@ -1,6 +1,23 @@
-# 7 ITEMS #
+﻿Completion: Basic
+Count: 7
+Focus: Hard
+Range: "[System(Semantic::♦)] out float Depth;"
 
-+ ClipDistance
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+ClipDistance                <==
+CullDistance
+Depth
+DepthGreaterEqual
+DepthLessEqual
+PointSize
+VertexAttributeBlendWeight
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+ClipDistance                <==
 CullDistance
 Depth
 DepthGreaterEqual

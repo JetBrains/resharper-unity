@@ -1,6 +1,23 @@
-﻿# 7 ITEMS #
+﻿Completion: Basic
+Count: 7
+Focus: Hard
+Range: "Blend [♦]"
 
-+ _Color
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, NormalSelectionPriority, Other]
+_Color                      <==
+_Cull
+_DstBlend
+_SrcBlend
+_ZBias
+_ZTest
+_ZWrite
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+_Color                      <==
 _Cull
 _DstBlend
 _SrcBlend

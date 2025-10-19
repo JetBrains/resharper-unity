@@ -1,7 +1,15 @@
-﻿# 1 ITEM #
+﻿Completion: Basic
+Count: 1
+Focus: Hard
+Auto-accept: DoNotAutoAccept
+Range: "b.StartCoroutine("♦");"
 
-+ WaitAndPrint    IEnumerator
-# AUTOMATIC #
-# 1 ITEM #
+##### RELEVANCE SORT #####
 
-+ WaitAndPrint    IEnumerator
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Methods, NonStatic, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+WaitAndPrint                IEnumerator    <==
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+WaitAndPrint                IEnumerator    <==

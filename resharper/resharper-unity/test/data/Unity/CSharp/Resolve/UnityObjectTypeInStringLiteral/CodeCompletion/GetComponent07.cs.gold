@@ -1,7 +1,17 @@
-﻿# 1 ITEM #
+﻿Completion: Basic
+Prefix: "My"
+Count: 1
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "go.GetComponent("TheNamespace.My♦");"
+                                      ▲▲▲
 
-+ MyMonoBehaviour
-# AUTOMATIC #
-# 1 ITEM #
+##### RELEVANCE SORT #####
 
-+ MyMonoBehaviour
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixMatch, TypesAndNamespaces, ImportedType, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+ṂỵMonoBehaviour             <==
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+ṂỵMonoBehaviour             <==

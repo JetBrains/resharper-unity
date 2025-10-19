@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
     [RequireHlslSupport]
     public class ShaderLabVariableReferenceCompletionListTests : ShaderLabCodeCompletionTestBase
     {
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         protected override string RelativeTestDataPath => @"ShaderLab\CodeCompletion\VariableReference";
 
         [Test] public void TestList01() { DoNamedTest(); }

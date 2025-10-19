@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
     {
         protected override string RelativeTestDataPath => @"CSharp\Resolve\CodeCompletion";
         protected override bool CheckAutomaticCompletionDefault() => true;
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
 
         [Test] public void Invoke01() { DoNamedTest(); }
         [Test] public void InvokeRepeating01() { DoNamedTest(); }

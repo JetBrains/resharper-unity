@@ -1,13 +1,20 @@
-﻿# 4 ITEMS #
+﻿Completion: Basic
+Count: 4
+Focus: Hard
+Range: "♦"
 
-+ Color(Space)
-Density(Space)
-Mode(Space)
-Range(Space)
-# AUTOMATIC #
-# 4 ITEMS #
+##### RELEVANCE SORT #####
 
-+ Color(Space)
-Density(Space)
-Mode(Space)
-Range(Space)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Color                       <==
+Density
+Mode
+Range
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Color                       <==
+Density
+Mode
+Range

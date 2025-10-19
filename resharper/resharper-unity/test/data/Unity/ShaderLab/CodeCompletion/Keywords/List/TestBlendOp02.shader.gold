@@ -1,6 +1,12 @@
-# 36 ITEMS #
+﻿Completion: Basic
+Count: 36
+Focus: Hard
+Range: "BlendOp Add, ♦"
 
-+ Add
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Add                         <==
 ColorBurn
 ColorDodge
 Darken
@@ -36,10 +42,11 @@ RevSub
 Screen
 SoftLight
 Sub
-# AUTOMATIC #
-# 36 ITEMS #
 
-+ Add
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Add                         <==
 ColorBurn
 ColorDodge
 Darken

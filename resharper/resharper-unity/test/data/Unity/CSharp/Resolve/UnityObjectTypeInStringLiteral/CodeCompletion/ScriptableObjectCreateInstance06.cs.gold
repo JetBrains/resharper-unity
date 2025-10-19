@@ -1,7 +1,17 @@
-﻿# 1 ITEM #
+﻿Completion: Basic
+Prefix: "My"
+Count: 1
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "var so = ScriptableObject.CreateInstance("My♦");"
+                                                  ▲▲▲
 
-+ MyScriptableObject
-# AUTOMATIC #
-# 1 ITEM #
+##### RELEVANCE SORT #####
 
-+ MyScriptableObject
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixMatch, TypesAndNamespaces, ImportedType, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+ṂỵScriptableObject          <==
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+ṂỵScriptableObject          <==

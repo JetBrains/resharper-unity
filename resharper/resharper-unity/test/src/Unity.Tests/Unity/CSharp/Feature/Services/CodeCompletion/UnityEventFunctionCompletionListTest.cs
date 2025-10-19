@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
     {
         private LookupListSorting mySorting = LookupListSorting.ByRelevance;
 
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         protected override string RelativeTestDataPath => @"CSharp\CodeCompletion\List";
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override LookupListSorting Sorting => mySorting;

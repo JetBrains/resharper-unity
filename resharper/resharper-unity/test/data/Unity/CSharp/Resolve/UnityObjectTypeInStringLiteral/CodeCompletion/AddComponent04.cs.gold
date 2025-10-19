@@ -1,15 +1,25 @@
-﻿# 5 ITEMS #
+﻿Completion: Basic
+Prefix: "Unit"
+Count: 5
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "go.AddComponent("Unit♦");"
+                         ▲▲▲▲▲
 
-+ Unity
-+ UnityEditor
-+ UnityEditorInternal
-+ UnityEngine
-+ UnityEngineInternal
-# AUTOMATIC #
-# 5 ITEMS #
+##### RELEVANCE SORT #####
 
-+ Unity
-+ UnityEditor
-+ UnityEditorInternal
-+ UnityEngine
-+ UnityEngineInternal
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixMatch, TypesAndNamespaces, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+Ụṇịṭy                       <==
+ỤṇịṭyEditor
+ỤṇịṭyEditorInternal
+ỤṇịṭyEngine
+ỤṇịṭyEngineInternal
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Ụṇịṭy                       <==
+ỤṇịṭyEditor
+ỤṇịṭyEditorInternal
+ỤṇịṭyEngine
+ỤṇịṭyEngineInternal

@@ -1,6 +1,39 @@
-# 23 ITEMS #
+﻿Completion: Basic
+Count: 23
+Focus: Hard
+Range: "[System(Semantic::♦"
 
-+ ClipDistance
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+ClipDistance                <==
+Color
+Coverage
+CullDistance
+Depth
+DepthGreaterEqual
+DepthLessEqual
+InstanceID
+IsFrontFace
+PointSize
+Position
+SampleIndex
+ShadingRate
+StencilReference
+VertexAttributeBlendIndices
+VertexAttributeBlendWeight
+VertexAttributeColor
+VertexAttributeNormal
+VertexAttributePosition
+VertexAttributeTangent
+VertexAttributeTextureCoordinate
+VertexID
+ViewportArrayIndex
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+ClipDistance                <==
 Color
 Coverage
 CullDistance

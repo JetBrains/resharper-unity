@@ -1,25 +1,32 @@
-﻿# 10 ITEMS #
+﻿Completion: Basic
+Count: 10
+Focus: Hard
+Range: "_MyTex("MyTex", 2D) = "White" { 2D ♦"
 
-+ 2D
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+2D                          <==
 2DArray
 3D
 Any
 Cube
 CubeArray
-LightmapMode(Space)
-Matrix(Space)
+LightmapMode
+Matrix
 Rect
-TexGen(Space)
-# AUTOMATIC #
-# 10 ITEMS #
+TexGen
 
-+ 2D
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+2D                          <==
 2DArray
 3D
 Any
 Cube
 CubeArray
-LightmapMode(Space)
-Matrix(Space)
+LightmapMode
+Matrix
 Rect
-TexGen(Space)
+TexGen

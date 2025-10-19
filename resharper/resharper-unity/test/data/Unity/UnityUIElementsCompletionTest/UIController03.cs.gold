@@ -1,9 +1,19 @@
-﻿# 2 ITEMS #
+﻿Completion: Basic
+Prefix: """
+Count: 2
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "var t2 = root.Query<Button>("♦");"
+                                    ▲▲△
 
-+ "show-message-button"
-"start-game-button"
-# AUTOMATIC #
-# 2 ITEMS #
+##### RELEVANCE SORT #####
 
-+ "show-message-button"
-"start-game-button"
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixNoCaseMatch, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+"̣show-message-button"       <==
+"̣start-game-button"
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+"̣show-message-button"       <==
+"̣start-game-button"

@@ -1,6 +1,12 @@
-﻿# 11 ITEMS #
+﻿Completion: Basic
+Count: 11
+Focus: Hard
+Range: "Blend 1 One ♦"
 
-+ DstAlpha
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+DstAlpha                    <==
 DstColor
 One
 OneMinusDstAlpha
@@ -11,10 +17,11 @@ SrcAlpha
 SrcAlphaSaturate
 SrcColor
 Zero
-# AUTOMATIC #
-# 11 ITEMS #
 
-+ DstAlpha
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+DstAlpha                    <==
 DstColor
 One
 OneMinusDstAlpha

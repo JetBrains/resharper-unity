@@ -1,27 +1,36 @@
-﻿# 1072 ITEMS #
+﻿Completion: Basic
+Count: 1072
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "♦   "
 
-+ private Awake() { ... }
-private CreateGUI() { ... }
-private OnDestroy() { ... }
-private OnDisable() { ... }
-private OnEnable() { ... }
-private OnFocus() { ... }
-private OnGUI() { ... }
-private OnHierarchyChange() { ... }
-private OnInspectorUpdate() { ... }
-private OnLostFocus() { ... }
-private OnProjectChange() { ... }
-private OnSelectionChange() { ... }
-private Update() { ... }
-private ModifierKeysChanged() { ... }
-private OnAddedAsTab() { ... }
-private OnBecameInvisible() { ... }
-private OnBecameVisible() { ... }
-private OnDidOpenScene() { ... }
-private OnTabDetached() { ... }
-private OnValidate() { ... }
-private Reset() { ... }
-private ShowButton(Rect) { ... }
+##### RELEVANCE SORT #####
+
+                            [HighSelectionPriority, NormalSelectionPriority]
+private |Awake|() { ... }    OrderStr=Awake()    <==
+private |CreateGUI|() { ... }    OrderStr=CreateGUI()
+private |OnDestroy|() { ... }    OrderStr=OnDestroy()
+private |OnDisable|() { ... }    OrderStr=OnDisable()
+private |OnEnable|() { ... }    OrderStr=OnEnable()
+private |OnFocus|() { ... }    OrderStr=OnFocus()
+private |OnGUI|() { ... }    OrderStr=OnGUI()
+private |OnHierarchyChange|() { ... }    OrderStr=OnHierarchyChange()
+private |OnInspectorUpdate|() { ... }    OrderStr=OnInspectorUpdate()
+private |OnLostFocus|() { ... }    OrderStr=OnLostFocus()
+private |OnProjectChange|() { ... }    OrderStr=OnProjectChange()
+private |OnSelectionChange|() { ... }    OrderStr=OnSelectionChange()
+private |Update|() { ... }    OrderStr=Update()
+                            [Methods^, GenerateItems^, MemberOfCurrentType^]
+private |ModifierKeysChanged|() { ... }    OrderStr=ModifierKeysChanged()
+private |OnAddedAsTab|() { ... }    OrderStr=OnAddedAsTab()
+private |OnBecameInvisible|() { ... }    OrderStr=OnBecameInvisible()
+private |OnBecameVisible|() { ... }    OrderStr=OnBecameVisible()
+private |OnDidOpenScene|() { ... }    OrderStr=OnDidOpenScene()
+private |OnTabDetached|() { ... }    OrderStr=OnTabDetached()
+private |OnValidate|() { ... }    OrderStr=OnValidate()
+private |Reset|() { ... }    OrderStr=Reset()
+private |ShowButton|(Rect) { ... }    OrderStr=ShowButton(Rect)
+                            [Keywords, LiveTemplates, NormalSelectionPriority]
 abstract
 async
 bool
@@ -69,6 +78,7 @@ ushort
 virtual
 void
 volatile
+                            [TypesAndNamespaces, ImportedType, NotObsolete^, NormalSelectionPriority]
 A
 AccelerationEvent
 ActionOnDotNetUnhandledException
@@ -1020,6 +1030,7 @@ iOSStatusBarStyle
 iOSTargetDevice
 jvalue
 tvOSSdkVersion
+                            [TypesAndNamespaces, ImportedType, NormalSelectionPriority]
 AndroidTargetDevice
 AnimationClipPair
 AssetModificationProcessor
@@ -1058,6 +1069,7 @@ WWW
 iOSSystemGestureDeferMode
 iOSTargetOSVersion
 tvOSTargetOSVersion
+                            [FromLightAndDynamicEvaluation^, TypesAndNamespaces, NotObsolete, NormalSelectionPriority]
 AOT
 JetBrains
 Microsoft
@@ -1068,83 +1080,17 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
-public override Equals(object) { … }    bool
-public override GetExtraPaneTypes() { … }    IEnumerable<Type>
-public override GetHashCode() { … }    int
-public override ToString() { … }    string
-# AUTOMATIC #
-# 1072 ITEMS #
+                            [Other^, ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority, FromFullEvaluation, FromSingleCompletion^]
+public override |Equals|(object) |{ … }    bool    OrderStr=Equals
+public override |GetExtraPaneTypes|() |{ … }    IEnumerable<Type>    OrderStr=GetExtraPaneTypes
+public override |GetHashCode|() |{ … }    int    OrderStr=GetHashCode
+public override |ToString|() |{ … }    string    OrderStr=ToString
 
-+ private Awake() { ... }
-private CreateGUI() { ... }
-private OnDestroy() { ... }
-private OnDisable() { ... }
-private OnEnable() { ... }
-private OnFocus() { ... }
-private OnGUI() { ... }
-private OnHierarchyChange() { ... }
-private OnInspectorUpdate() { ... }
-private OnLostFocus() { ... }
-private OnProjectChange() { ... }
-private OnSelectionChange() { ... }
-private Update() { ... }
-private ModifierKeysChanged() { ... }
-private OnAddedAsTab() { ... }
-private OnBecameInvisible() { ... }
-private OnBecameVisible() { ... }
-private OnDidOpenScene() { ... }
-private OnTabDetached() { ... }
-private OnValidate() { ... }
-private Reset() { ... }
-private ShowButton(Rect) { ... }
-abstract
-async
-bool
-byte
-char
-class
-const
-decimal
-delegate
-double
-dynamic
-enum
-event
-explicit
-extern
-float
-implicit
-int
-interface
-internal
-long
-new
-nint
-nuint
-object
-override
-partial
-private
-protected
-public
-readonly
-record
-ref
-required
-sbyte
-sealed
-short
-static
-string
-struct
-uint
-ulong
-unsafe
-ushort
-virtual
-void
-volatile
-A
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+A                           <==
+AOT
 AccelerationEvent
 ActionOnDotNetUnhandledException
 ActiveEditorTracker
@@ -1172,10 +1118,12 @@ AndroidPreferredInstallLocation
 AndroidSdkVersions
 AndroidShowActivityIndicatorOnLoading
 AndroidSplashScreenScale
+AndroidTargetDevice
 Animation
 AnimationBlendMode
 AnimationClip
 AnimationClipCurveData
+AnimationClipPair
 AnimationClipSettings
 AnimationCullingType
 AnimationCurve
@@ -1218,12 +1166,15 @@ AssetBundleRequest
 AssetDatabase
 AssetDeleteResult
 AssetImporter
+AssetModificationProcessor
 AssetMoveResult
 AssetPipelineMode
 AssetPostprocessor
 AssetPreview
 AssetSettingsProvider
+AssetStatus
 AssetStoreAsset
+AssetsItem
 AsyncOperation
 AudioBehaviour
 AudioChorusFilter
@@ -1237,6 +1188,7 @@ AudioDistortionFilter
 AudioEchoFilter
 AudioHighPassFilter
 AudioImporter
+AudioImporterChannels
 AudioImporterSampleSettings
 AudioListener
 AudioLowPassFilter
@@ -1259,11 +1211,13 @@ AvatarIKHint
 AvatarMask
 AvatarMaskBodyPart
 AvatarTarget
+private |Awake|() { ... }    OrderStr=Awake()
 BatteryStatus
 BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
+BlendWeights
 BodyDof
 BodyPart
 BoneState
@@ -1285,6 +1239,7 @@ BuildTarget
 BuildTargetGroup
 BuoyancyEffector2D
 Cache
+CacheIndex
 CacheServerMode
 CachedAssetBundle
 Caching
@@ -1326,6 +1281,7 @@ CollisionFlags
 Color
 Color32
 ColorGamut
+ColorPickerHDRConfig
 ColorSpace
 ColorUsageAttribute
 ColorUtility
@@ -1357,6 +1313,7 @@ ControllerColliderHit
 Coroutine
 CrashReport
 CreateAssetMenuAttribute
+private |CreateGUI|() { ... }    OrderStr=CreateGUI()
 Cubemap
 CubemapArray
 CubemapFace
@@ -1377,6 +1334,7 @@ CustomRenderTextureUpdateZone
 CustomRenderTextureUpdateZoneSpace
 CustomYieldInstruction
 D3D11FullscreenMode
+D3D9FullscreenMode
 D3DHDRDisplayBitDepth
 Debug
 DecoratorDrawer
@@ -1568,10 +1526,12 @@ IntegratedSubsystem<>
 IntegratedSubsystemDescriptor
 IntegratedSubsystemDescriptor<>
 InteractionMode
+JetBrains
 Joint
 Joint2D
 JointAngleLimits2D
 JointDrive
+JointDriveMode
 JointLimitState2D
 JointLimits
 JointMotor
@@ -1608,12 +1568,15 @@ LightingExplorerExtensionAttribute
 LightingExplorerTab
 LightingExplorerTableColumn
 LightingWindowEnvironmentSection
+LightmapBakeQuality
 LightmapBakeType
 LightmapData
 LightmapEditorSettings
 LightmapParameters
 LightmapSettings
+LightmapSnapshot
 Lightmapping
+LightmappingMode
 LightmapsMode
 LightmapsModeLegacy
 LineAlignment
@@ -1654,6 +1617,7 @@ MeshTopology
 MeshUtility
 MessageType
 Microphone
+Microsoft
 MinAttribute
 MissingComponentException
 MissingReferenceException
@@ -1666,6 +1630,7 @@ ModelImporterAnimationType
 ModelImporterAvatarSetup
 ModelImporterClipAnimation
 ModelImporterGenerateAnimations
+ModelImporterGenerateMaterials
 ModelImporterHumanoidOversampling
 ModelImporterIndexFormat
 ModelImporterMaterialImportMode
@@ -1679,6 +1644,7 @@ ModelImporterNormals
 ModelImporterSkinWeights
 ModelImporterTangentSpaceMode
 ModelImporterTangents
+private |ModifierKeysChanged|() { ... }    OrderStr=ModifierKeysChanged()
 MonoBehaviour
 MonoImporter
 MonoScript
@@ -1687,6 +1653,7 @@ MotionVectorGenerationMode
 MouseCursor
 MultilineAttribute
 NPOTSupport
+NetworkDetailStats
 NetworkReachability
 Object
 ObjectFactory
@@ -1695,6 +1662,22 @@ ObjectPreview
 ObjectReferenceKeyframe
 OcclusionArea
 OcclusionPortal
+private |OnAddedAsTab|() { ... }    OrderStr=OnAddedAsTab()
+private |OnBecameInvisible|() { ... }    OrderStr=OnBecameInvisible()
+private |OnBecameVisible|() { ... }    OrderStr=OnBecameVisible()
+private |OnDestroy|() { ... }    OrderStr=OnDestroy()
+private |OnDidOpenScene|() { ... }    OrderStr=OnDidOpenScene()
+private |OnDisable|() { ... }    OrderStr=OnDisable()
+private |OnEnable|() { ... }    OrderStr=OnEnable()
+private |OnFocus|() { ... }    OrderStr=OnFocus()
+private |OnGUI|() { ... }    OrderStr=OnGUI()
+private |OnHierarchyChange|() { ... }    OrderStr=OnHierarchyChange()
+private |OnInspectorUpdate|() { ... }    OrderStr=OnInspectorUpdate()
+private |OnLostFocus|() { ... }    OrderStr=OnLostFocus()
+private |OnProjectChange|() { ... }    OrderStr=OnProjectChange()
+private |OnSelectionChange|() { ... }    OrderStr=OnSelectionChange()
+private |OnTabDetached|() { ... }    OrderStr=OnTabDetached()
+private |OnValidate|() { ... }    OrderStr=OnValidate()
 OperatingSystemFamily
 PS4BuildSubtarget
 PS4HardwareTarget
@@ -1713,6 +1696,7 @@ ParticleSystemCullingMode
 ParticleSystemCurveMode
 ParticleSystemCustomData
 ParticleSystemCustomDataMode
+ParticleSystemEmissionType
 ParticleSystemEmitterVelocityMode
 ParticleSystemForceField
 ParticleSystemForceFieldShape
@@ -1740,6 +1724,7 @@ ParticleSystemTrailMode
 ParticleSystemTrailTextureMode
 ParticleSystemTriggerEventType
 ParticleSystemVertexStream
+ParticleSystemVertexStreams
 PatchExtents
 PauseState
 PhysicMaterial
@@ -1774,13 +1759,17 @@ PolygonCollider2D
 PopupWindow
 PopupWindowContent
 Pose
+PostProcessAttribute
 PrefabAssetType
 PrefabInstanceStatus
+PrefabType
 PrefabUnpackMode
 PrefabUtility
 PreferBinarySerialization
+PreferenceItem
 PreviewRenderUtility
 PrimitiveType
+ProceduralTexture
 ProjectWindowUtil
 Projector
 PropertyAttribute
@@ -1788,6 +1777,7 @@ PropertyDrawer
 PropertyModification
 PropertyName
 ProvisioningProfileType
+QualityLevel
 QualitySettings
 Quaternion
 QueryTriggerInteraction
@@ -1824,8 +1814,11 @@ RenderTextureReadWrite
 Renderer
 RendererExtensions
 RenderingPath
+ReplacePrefabOptions
 RequireComponent
+private |Reset|() { ... }    OrderStr=Reset()
 Resolution
+ResolutionDialogSetting
 ResourceRequest
 Resources
 Rigidbody
@@ -1842,6 +1835,7 @@ RuntimeAnimatorController
 RuntimeInitializeLoadType
 RuntimeInitializeOnLoadMethodAttribute
 RuntimePlatform
+SaveAssetsProcessor
 SaveType
 ScalableBufferManager
 ScaleMode
@@ -1853,10 +1847,12 @@ Screen
 ScreenCapture
 ScreenOrientation
 ScriptCallOptimizationLevel
+ScriptCompiler
 ScriptableObject
 ScriptableSingleton<>
 ScriptableWizard
 ScriptingImplementation
+ScriptingRuntimeVersion
 SearchableEditorWindow
 SecondarySpriteTexture
 Security
@@ -1867,6 +1863,7 @@ SemanticMergeMode
 SendMessageOptions
 SerializationMode
 SerializeField
+SerializePrivateVariables
 SerializeReference
 SerializedObject
 SerializedProperty
@@ -1881,6 +1878,7 @@ Shader
 ShaderData
 ShaderGUI
 ShaderImporter
+ShaderIncludePathAttribute
 ShaderInfo
 ShaderMessage
 ShaderUtil
@@ -1890,6 +1888,7 @@ ShadowQuality
 ShadowResolution
 ShadowmaskMode
 SharedBetweenAnimatorsAttribute
+private |ShowButton|(Rect) { ... }    OrderStr=ShowButton(Rect)
 SkeletonBone
 SketchUpImportCamera
 SketchUpImportScene
@@ -1912,6 +1911,7 @@ SparseTexture
 SpeedTreeImporter
 SphereCollider
 SpherecastCommand
+SplashScreenStyle
 SplatPrototype
 SpringJoint
 SpringJoint2D
@@ -1947,9 +1947,12 @@ SubsystemDescriptor
 SubsystemDescriptor<>
 SubsystemManager
 SurfaceEffector2D
+System
 SystemInfo
 SystemLanguage
 TakeInfo
+TargetGlesGraphics
+TargetIOSGraphics
 TargetJoint2D
 Terrain
 TerrainChangedFlags
@@ -2010,6 +2013,7 @@ Transform
 TransformUtils
 TransparencySortMode
 Tree
+TreeEditor
 TreeInstance
 TreePrototype
 TrueTypeFontImporter
@@ -2023,13 +2027,20 @@ UIVertex
 UnassignedReferenceException
 Undo
 UndoPropertyModification
+UndoSnapshot
+Unity
 UnityAPICompatibilityVersionAttribute
+UnityEditor
+UnityEditorInternal
+UnityEngine
+UnityEngineInternal
 UnityEventQueueSystem
 UnityException
 UnityStats
 Unsupported
 UnwrapParam
 Unwrapping
+private |Update|() { ... }    OrderStr=Update()
 UserAuthorization
 VRTextureUsage
 Vector2
@@ -2053,6 +2064,7 @@ WSABuildType
 WSASDK
 WSASubtarget
 WSAUWPBuildType
+WWW
 WWWAudioExtensions
 WWWForm
 WaitForEndOfFrame
@@ -2083,6 +2095,22 @@ XboxOneEncryptionLevel
 XboxOneLoggingLevel
 XboxOnePackageUpdateGranularity
 YieldInstruction
+abstract
+async
+bool
+byte
+char
+class
+const
+decimal
+delegate
+double
+dynamic
+enum
+event
+explicit
+extern
+float
 iOSAppInBackgroundBehavior
 iOSBackgroundMode
 iOSBuildType
@@ -2092,58 +2120,45 @@ iOSLaunchScreenType
 iOSSdkVersion
 iOSShowActivityIndicatorOnLoading
 iOSStatusBarStyle
-iOSTargetDevice
-jvalue
-tvOSSdkVersion
-AndroidTargetDevice
-AnimationClipPair
-AssetModificationProcessor
-AssetStatus
-AssetsItem
-AudioImporterChannels
-BlendWeights
-CacheIndex
-ColorPickerHDRConfig
-D3D9FullscreenMode
-JointDriveMode
-LightmapBakeQuality
-LightmapSnapshot
-LightmappingMode
-ModelImporterGenerateMaterials
-NetworkDetailStats
-ParticleSystemEmissionType
-ParticleSystemVertexStreams
-PostProcessAttribute
-PrefabType
-PreferenceItem
-ProceduralTexture
-QualityLevel
-ReplacePrefabOptions
-ResolutionDialogSetting
-SaveAssetsProcessor
-ScriptCompiler
-ScriptingRuntimeVersion
-SerializePrivateVariables
-ShaderIncludePathAttribute
-SplashScreenStyle
-TargetGlesGraphics
-TargetIOSGraphics
-UndoSnapshot
-WWW
 iOSSystemGestureDeferMode
+iOSTargetDevice
 iOSTargetOSVersion
+implicit
+int
+interface
+internal
+jvalue
+long
+new
+nint
+nuint
+object
+override
+partial
+private
+protected
+public
+readonly
+record
+ref
+required
+sbyte
+sealed
+short
+static
+string
+struct
+tvOSSdkVersion
 tvOSTargetOSVersion
-AOT
-JetBrains
-Microsoft
-System
-TreeEditor
-Unity
-UnityEditor
-UnityEditorInternal
-UnityEngine
-UnityEngineInternal
-public override Equals(object) { … }    bool
-public override GetExtraPaneTypes() { … }    IEnumerable<Type>
-public override GetHashCode() { … }    int
-public override ToString() { … }    string
+uint
+ulong
+unsafe
+ushort
+virtual
+void
+volatile
+                            [Full, Generic]
+public override |Equals|(object) |{ … }    bool    OrderStr=Equals
+public override |GetExtraPaneTypes|() |{ … }    IEnumerable<Type>    OrderStr=GetExtraPaneTypes
+public override |GetHashCode|() |{ … }    int    OrderStr=GetHashCode
+public override |ToString|() |{ … }    string    OrderStr=ToString

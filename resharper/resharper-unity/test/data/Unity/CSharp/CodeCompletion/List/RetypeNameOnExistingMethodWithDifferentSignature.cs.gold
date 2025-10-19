@@ -1,89 +1,100 @@
-﻿# 42 ITEMS #
+﻿Completion: Basic
+Count: 42
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "public void ♦Update()"
+                     △△△△△△
 
-+ Awake() { ... }
-FixedUpdate() { ... }
-LateUpdate() { ... }
-OnAnimatorMove() { ... }
-OnApplicationQuit() { ... }
-OnBecameInvisible() { ... }
-OnBecameVisible() { ... }
-OnConnectedToServer() { ... }
-OnDestroy() { ... }
-OnDisable() { ... }
-OnDrawGizmos() { ... }
-OnDrawGizmosSelected() { ... }
-OnEnable() { ... }
-OnGUI() { ... }
-OnMouseDown() { ... }
-OnMouseDrag() { ... }
-OnMouseEnter() { ... }
-OnMouseExit() { ... }
-OnMouseOver() { ... }
-OnMouseUp() { ... }
-OnMouseUpAsButton() { ... }
-OnParticleSystemStopped() { ... }
-OnParticleTrigger() { ... }
-OnParticleUpdateJobScheduled() { ... }
-OnPostRender() { ... }
-OnPreCull() { ... }
-OnPreRender() { ... }
-OnRenderObject() { ... }
-OnServerInitialized() { ... }
-OnTransformChildrenChanged() { ... }
-OnTransformParentChanged() { ... }
-OnValidate() { ... }
-OnWillRenderObject() { ... }
-Reset() { ... }
-Start() { ... }
-OnBeforeTransformParentChanged() { ... }
-OnCanvasGroupChanged() { ... }
-OnCanvasHierarchyChanged() { ... }
-OnDidApplyAnimationProperties() { ... }
-OnRectTransformDimensionsChange() { ... }
+##### RELEVANCE SORT #####
+
+                            [HighSelectionPriority, NormalSelectionPriority]
+Awake|() { ... }            OrderStr=Awake()    <==
+FixedUpdate|() { ... }      OrderStr=FixedUpdate()
+LateUpdate|() { ... }       OrderStr=LateUpdate()
+OnAnimatorMove|() { ... }    OrderStr=OnAnimatorMove()
+OnApplicationQuit|() { ... }    OrderStr=OnApplicationQuit()
+OnBecameInvisible|() { ... }    OrderStr=OnBecameInvisible()
+OnBecameVisible|() { ... }    OrderStr=OnBecameVisible()
+OnConnectedToServer|() { ... }    OrderStr=OnConnectedToServer()
+OnDestroy|() { ... }        OrderStr=OnDestroy()
+OnDisable|() { ... }        OrderStr=OnDisable()
+OnDrawGizmos|() { ... }     OrderStr=OnDrawGizmos()
+OnDrawGizmosSelected|() { ... }    OrderStr=OnDrawGizmosSelected()
+OnEnable|() { ... }         OrderStr=OnEnable()
+OnGUI|() { ... }            OrderStr=OnGUI()
+OnMouseDown|() { ... }      OrderStr=OnMouseDown()
+OnMouseDrag|() { ... }      OrderStr=OnMouseDrag()
+OnMouseEnter|() { ... }     OrderStr=OnMouseEnter()
+OnMouseExit|() { ... }      OrderStr=OnMouseExit()
+OnMouseOver|() { ... }      OrderStr=OnMouseOver()
+OnMouseUp|() { ... }        OrderStr=OnMouseUp()
+OnMouseUpAsButton|() { ... }    OrderStr=OnMouseUpAsButton()
+OnParticleSystemStopped|() { ... }    OrderStr=OnParticleSystemStopped()
+OnParticleTrigger|() { ... }    OrderStr=OnParticleTrigger()
+OnParticleUpdateJobScheduled|() { ... }    OrderStr=OnParticleUpdateJobScheduled()
+OnPostRender|() { ... }     OrderStr=OnPostRender()
+OnPreCull|() { ... }        OrderStr=OnPreCull()
+OnPreRender|() { ... }      OrderStr=OnPreRender()
+OnRenderObject|() { ... }    OrderStr=OnRenderObject()
+OnServerInitialized|() { ... }    OrderStr=OnServerInitialized()
+OnTransformChildrenChanged|() { ... }    OrderStr=OnTransformChildrenChanged()
+OnTransformParentChanged|() { ... }    OrderStr=OnTransformParentChanged()
+OnValidate|() { ... }       OrderStr=OnValidate()
+OnWillRenderObject|() { ... }    OrderStr=OnWillRenderObject()
+Reset|() { ... }            OrderStr=Reset()
+Start|() { ... }            OrderStr=Start()
+                            [Methods^, GenerateItems^, MemberOfCurrentType^]
+OnBeforeTransformParentChanged|() { ... }    OrderStr=OnBeforeTransformParentChanged()
+OnCanvasGroupChanged|() { ... }    OrderStr=OnCanvasGroupChanged()
+OnCanvasHierarchyChanged|() { ... }    OrderStr=OnCanvasHierarchyChanged()
+OnDidApplyAnimationProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
+OnRectTransformDimensionsChange|() { ... }    OrderStr=OnRectTransformDimensionsChange()
+                            [Other^, ObsoleteRuleApplied^, Keywords, LiveTemplates, NotObsolete^, FromLightAndDynamicEvaluation^, NormalSelectionPriority, FromSingleCompletion^]
 operator
 this
-# AUTOMATIC #
-# 42 ITEMS #
 
-+ Awake() { ... }
-FixedUpdate() { ... }
-LateUpdate() { ... }
-OnAnimatorMove() { ... }
-OnApplicationQuit() { ... }
-OnBecameInvisible() { ... }
-OnBecameVisible() { ... }
-OnConnectedToServer() { ... }
-OnDestroy() { ... }
-OnDisable() { ... }
-OnDrawGizmos() { ... }
-OnDrawGizmosSelected() { ... }
-OnEnable() { ... }
-OnGUI() { ... }
-OnMouseDown() { ... }
-OnMouseDrag() { ... }
-OnMouseEnter() { ... }
-OnMouseExit() { ... }
-OnMouseOver() { ... }
-OnMouseUp() { ... }
-OnMouseUpAsButton() { ... }
-OnParticleSystemStopped() { ... }
-OnParticleTrigger() { ... }
-OnParticleUpdateJobScheduled() { ... }
-OnPostRender() { ... }
-OnPreCull() { ... }
-OnPreRender() { ... }
-OnRenderObject() { ... }
-OnServerInitialized() { ... }
-OnTransformChildrenChanged() { ... }
-OnTransformParentChanged() { ... }
-OnValidate() { ... }
-OnWillRenderObject() { ... }
-Reset() { ... }
-Start() { ... }
-OnBeforeTransformParentChanged() { ... }
-OnCanvasGroupChanged() { ... }
-OnCanvasHierarchyChanged() { ... }
-OnDidApplyAnimationProperties() { ... }
-OnRectTransformDimensionsChange() { ... }
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Awake|() { ... }            OrderStr=Awake()    <==
+FixedUpdate|() { ... }      OrderStr=FixedUpdate()
+LateUpdate|() { ... }       OrderStr=LateUpdate()
+OnAnimatorMove|() { ... }    OrderStr=OnAnimatorMove()
+OnApplicationQuit|() { ... }    OrderStr=OnApplicationQuit()
+OnBecameInvisible|() { ... }    OrderStr=OnBecameInvisible()
+OnBecameVisible|() { ... }    OrderStr=OnBecameVisible()
+OnBeforeTransformParentChanged|() { ... }    OrderStr=OnBeforeTransformParentChanged()
+OnCanvasGroupChanged|() { ... }    OrderStr=OnCanvasGroupChanged()
+OnCanvasHierarchyChanged|() { ... }    OrderStr=OnCanvasHierarchyChanged()
+OnConnectedToServer|() { ... }    OrderStr=OnConnectedToServer()
+OnDestroy|() { ... }        OrderStr=OnDestroy()
+OnDidApplyAnimationProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
+OnDisable|() { ... }        OrderStr=OnDisable()
+OnDrawGizmos|() { ... }     OrderStr=OnDrawGizmos()
+OnDrawGizmosSelected|() { ... }    OrderStr=OnDrawGizmosSelected()
+OnEnable|() { ... }         OrderStr=OnEnable()
+OnGUI|() { ... }            OrderStr=OnGUI()
+OnMouseDown|() { ... }      OrderStr=OnMouseDown()
+OnMouseDrag|() { ... }      OrderStr=OnMouseDrag()
+OnMouseEnter|() { ... }     OrderStr=OnMouseEnter()
+OnMouseExit|() { ... }      OrderStr=OnMouseExit()
+OnMouseOver|() { ... }      OrderStr=OnMouseOver()
+OnMouseUp|() { ... }        OrderStr=OnMouseUp()
+OnMouseUpAsButton|() { ... }    OrderStr=OnMouseUpAsButton()
+OnParticleSystemStopped|() { ... }    OrderStr=OnParticleSystemStopped()
+OnParticleTrigger|() { ... }    OrderStr=OnParticleTrigger()
+OnParticleUpdateJobScheduled|() { ... }    OrderStr=OnParticleUpdateJobScheduled()
+OnPostRender|() { ... }     OrderStr=OnPostRender()
+OnPreCull|() { ... }        OrderStr=OnPreCull()
+OnPreRender|() { ... }      OrderStr=OnPreRender()
+OnRectTransformDimensionsChange|() { ... }    OrderStr=OnRectTransformDimensionsChange()
+OnRenderObject|() { ... }    OrderStr=OnRenderObject()
+OnServerInitialized|() { ... }    OrderStr=OnServerInitialized()
+OnTransformChildrenChanged|() { ... }    OrderStr=OnTransformChildrenChanged()
+OnTransformParentChanged|() { ... }    OrderStr=OnTransformParentChanged()
+OnValidate|() { ... }       OrderStr=OnValidate()
+OnWillRenderObject|() { ... }    OrderStr=OnWillRenderObject()
+Reset|() { ... }            OrderStr=Reset()
+Start|() { ... }            OrderStr=Start()
 operator
 this

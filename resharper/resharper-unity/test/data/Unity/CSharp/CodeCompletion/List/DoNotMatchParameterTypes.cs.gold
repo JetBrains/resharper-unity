@@ -1,23 +1,36 @@
-﻿# 9 ITEMS #
+﻿Completion: Basic
+Prefix: "GO"
+Count: 9
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "GO♦   "
+        ▲▲▲
 
-+ GameObject
-GUILayoutOption
-ParticleSystemGameObjectFilter
-AddedGameObject (in UnityEditor.SceneManagement)
-ComponentGuaranteesOptions (in System.Runtime.Versioning)
-GameObjectRecorder (in UnityEditor.Animations)
-GameObjectUtility (in UnityEditor)
-GlobalObjectId (in UnityEditor)
-TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)
-# AUTOMATIC #
-# 9 ITEMS #
+##### RELEVANCE SORT #####
 
-+ GameObject
-GUILayoutOption
-ParticleSystemGameObjectFilter
-AddedGameObject (in UnityEditor.SceneManagement)
-ComponentGuaranteesOptions (in System.Runtime.Versioning)
-GameObjectRecorder (in UnityEditor.Animations)
-GameObjectUtility (in UnityEditor)
-GlobalObjectId (in UnityEditor)
-TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)
+                            [CamelHumpsCaseMatch]
+G̣ameỌbject                  <==
+                            [FromLightAndDynamicEvaluation^, ImportedType^]
+G̣UILayoutỌption
+ParticleSystemG̣ameỌbjectFilter
+                            [Other^, NormalSelectionPriority^, NotImportedType, ObsoleteRuleApplied^, NotObsolete^, TypesAndNamespaces^, FromFullEvaluation, FromSingleCompletion^]
+AddedG̣ameỌbject |(in UnityEditor.SceneManagement)
+ComponentG̣uaranteesỌptions |(in System.Runtime.Versioning)
+G̣ameỌbjectRecorder |(in UnityEditor.Animations)
+G̣ameỌbjectUtility |(in UnityEditor)
+G̣lobalỌbjectId |(in UnityEditor)
+TextureG̣enerationỌutput |(in UnityEditor.Experimental.AssetImporters)
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+G̣UILayoutỌption             <==
+G̣ameỌbject
+ParticleSystemG̣ameỌbjectFilter
+                            [Full, Generic]
+AddedG̣ameỌbject |(in UnityEditor.SceneManagement)
+ComponentG̣uaranteesỌptions |(in System.Runtime.Versioning)
+G̣ameỌbjectRecorder |(in UnityEditor.Animations)
+G̣ameỌbjectUtility |(in UnityEditor)
+G̣lobalỌbjectId |(in UnityEditor)
+TextureG̣enerationỌutput |(in UnityEditor.Experimental.AssetImporters)

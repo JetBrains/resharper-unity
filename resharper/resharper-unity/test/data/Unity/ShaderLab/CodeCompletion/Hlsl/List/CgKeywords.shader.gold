@@ -1,6 +1,12 @@
-﻿# 336 ITEMS #
+﻿Completion: Basic
+Count: 336
+Focus: Hard
+Range: "♦"
 
-+ SamplerComparisonState
+##### RELEVANCE SORT #####
+
+                            [MemberOfObject]
+SamplerComparisonState      <==
 SamplerState
 bool
 cbuffer
@@ -45,6 +51,7 @@ unsigned
 vector
 void
 volatile
+                            [NonStatic, HighSelectionPriority^]
 CANDIDATE_TYPE
 COMMITTED_STATUS
 DWORD
@@ -281,6 +288,7 @@ uint4x1
 uint4x2
 uint4x3
 uint4x4
+                            [NonStatic, NormalSelectionPriority^]
 AppendStructuredBuffer
 Buffer
 ByteAddressBuffer
@@ -311,6 +319,7 @@ Texture3D
 TextureCube
 TextureCubeArray
 TriangleStream
+                            [16]
 HLSL_SUPPORT_INCLUDED
 SHADER_API_D3D11
 SHADER_API_DESKTOP
@@ -335,62 +344,22 @@ fixed4x1
 fixed4x2
 fixed4x3
 fixed4x4
+                            [Other^, FromLightAndDynamicEvaluation^, 15, HighSelectionPriority, NormalSelectionPriority, FromSingleCompletion^]
 tile_static
-# AUTOMATIC #
-# 336 ITEMS #
 
-+ SamplerComparisonState
-SamplerState
-bool
-cbuffer
-centroid
-class
-column_major
-const
-double
-enum
-extern
-float
-groupshared
-half
-inline
-int
-interface
-linear
-matrix
-namespace
-nointerpolation
-noperspective
-precise
-row_major
-sampler1D
-sampler2D
-sampler3D
-samplerCUBE
-shared
-signed
-snorm
-static
-string
-struct
-tbuffer
-template
-typedef
-typename
-uniform
-union
-unorm
-unsigned
-vector
-void
-volatile
-CANDIDATE_TYPE
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+CANDIDATE_TYPE              <==
 COMMITTED_STATUS
 DWORD
 FLOAT
 MATRIX
 RAY_FLAG
+SamplerComparisonState
+SamplerState
 VECTOR
+bool
 bool1
 bool1x1
 bool1x2
@@ -411,6 +380,12 @@ bool4x1
 bool4x2
 bool4x3
 bool4x4
+cbuffer
+centroid
+class
+column_major
+const
+double
 double1
 double1x1
 double1x2
@@ -432,6 +407,9 @@ double4x2
 double4x3
 double4x4
 dword
+enum
+extern
+float
 float1
 float1x1
 float1x2
@@ -452,6 +430,8 @@ float4x1
 float4x2
 float4x3
 float4x4
+groupshared
+half
 half1
 half1x1
 half1x2
@@ -472,6 +452,8 @@ half4x1
 half4x2
 half4x3
 half4x4
+inline
+int
 int1
 int1x1
 int1x2
@@ -492,6 +474,9 @@ int4x1
 int4x2
 int4x3
 int4x4
+interface
+linear
+matrix
 min10float
 min10float1
 min10float1x1
@@ -597,8 +582,28 @@ min16uint4x1
 min16uint4x2
 min16uint4x3
 min16uint4x4
+namespace
+nointerpolation
+noperspective
+precise
+row_major
 sampler
+sampler1D
+sampler2D
+sampler3D
+samplerCUBE
 sampler_state
+shared
+signed
+snorm
+static
+string
+struct
+tbuffer
+template
+tile_static
+typedef
+typename
 uint
 uint1
 uint1x1
@@ -620,6 +625,14 @@ uint4x1
 uint4x2
 uint4x3
 uint4x4
+uniform
+union
+unorm
+unsigned
+vector
+void
+volatile
+                            [Light, Generic, Rank=11]
 AppendStructuredBuffer
 Buffer
 ByteAddressBuffer
@@ -650,6 +663,7 @@ Texture3D
 TextureCube
 TextureCubeArray
 TriangleStream
+                            [Light, Generic, Rank=18]
 HLSL_SUPPORT_INCLUDED
 SHADER_API_D3D11
 SHADER_API_DESKTOP
@@ -674,4 +688,3 @@ fixed4x1
 fixed4x2
 fixed4x3
 fixed4x4
-tile_static

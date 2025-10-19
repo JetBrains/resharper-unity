@@ -1,6 +1,13 @@
-﻿# 699 ITEMS #
+﻿Completion: Basic
+Count: 699
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "[SerializeField] ♦"
 
-+ abstract
+##### RELEVANCE SORT #####
+
+                            [Keywords, LiveTemplates]
+abstract                    <==
 async
 bool
 byte
@@ -47,6 +54,7 @@ ushort
 virtual
 void
 volatile
+                            [TypesAndNamespaces, ImportedType, NotObsolete^]
 A
 AccelerationEvent
 AddComponentMenu
@@ -674,6 +682,7 @@ WindZoneMode
 WrapMode
 YieldInstruction
 jvalue
+                            [TypesAndNamespaces, ImportedType]
 AnimationClipPair
 AssetModificationProcessor
 BlendWeights
@@ -686,6 +695,7 @@ ProceduralTexture
 QualityLevel
 SerializePrivateVariables
 WWW
+                            [FromLightAndDynamicEvaluation^, TypesAndNamespaces, NotObsolete]
 AOT
 JetBrains
 Microsoft
@@ -696,60 +706,16 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
-public override Equals(object) { … }    bool
-public override GetHashCode() { … }    int
-public override ToString() { … }    string
-# AUTOMATIC #
-# 699 ITEMS #
+                            [Other^, ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, NotObsolete, NormalSelectionPriority^, ObsoleteRuleApplied^, FromFullEvaluation, FromSingleCompletion^]
+public override |Equals|(object) |{ … }    bool    OrderStr=Equals
+public override |GetHashCode|() |{ … }    int    OrderStr=GetHashCode
+public override |ToString|() |{ … }    string    OrderStr=ToString
 
-+ abstract
-async
-bool
-byte
-char
-class
-const
-decimal
-delegate
-double
-dynamic
-enum
-event
-explicit
-extern
-float
-implicit
-int
-interface
-internal
-long
-new
-nint
-nuint
-object
-override
-partial
-private
-protected
-public
-readonly
-record
-ref
-required
-sbyte
-sealed
-short
-static
-string
-struct
-uint
-ulong
-unsafe
-ushort
-virtual
-void
-volatile
-A
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+A                           <==
+AOT
 AccelerationEvent
 AddComponentMenu
 AdditionalCanvasShaderChannels
@@ -766,6 +732,7 @@ AndroidJavaRunnable
 Animation
 AnimationBlendMode
 AnimationClip
+AnimationClipPair
 AnimationCullingType
 AnimationCurve
 AnimationEvent
@@ -795,6 +762,7 @@ AssetBundleLoadResult
 AssetBundleManifest
 AssetBundleRecompressOperation
 AssetBundleRequest
+AssetModificationProcessor
 AsyncOperation
 AudioBehaviour
 AudioChorusFilter
@@ -831,6 +799,7 @@ BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
+BlendWeights
 BodyDof
 BoneWeight
 BoneWeight1
@@ -843,6 +812,7 @@ BoxcastCommand
 BuildCompression
 BuoyancyEffector2D
 Cache
+CacheIndex
 CachedAssetBundle
 Caching
 Camera
@@ -1037,10 +1007,12 @@ IntegratedSubsystem
 IntegratedSubsystem<>
 IntegratedSubsystemDescriptor
 IntegratedSubsystemDescriptor<>
+JetBrains
 Joint
 Joint2D
 JointAngleLimits2D
 JointDrive
+JointDriveMode
 JointLimitState2D
 JointLimits
 JointMotor
@@ -1072,6 +1044,7 @@ LightType
 LightmapBakeType
 LightmapData
 LightmapSettings
+LightmappingMode
 LightmapsMode
 LightmapsModeLegacy
 LineAlignment
@@ -1098,6 +1071,7 @@ MeshFilter
 MeshRenderer
 MeshTopology
 Microphone
+Microsoft
 MinAttribute
 MissingComponentException
 MissingReferenceException
@@ -1126,6 +1100,7 @@ ParticleSystemCullingMode
 ParticleSystemCurveMode
 ParticleSystemCustomData
 ParticleSystemCustomDataMode
+ParticleSystemEmissionType
 ParticleSystemEmitterVelocityMode
 ParticleSystemForceField
 ParticleSystemForceFieldShape
@@ -1153,6 +1128,7 @@ ParticleSystemTrailMode
 ParticleSystemTrailTextureMode
 ParticleSystemTriggerEventType
 ParticleSystemVertexStream
+ParticleSystemVertexStreams
 PatchExtents
 PhysicMaterial
 PhysicMaterialCombine
@@ -1177,9 +1153,11 @@ PolygonCollider2D
 Pose
 PreferBinarySerialization
 PrimitiveType
+ProceduralTexture
 Projector
 PropertyAttribute
 PropertyName
+QualityLevel
 QualitySettings
 Quaternion
 QueryTriggerInteraction
@@ -1243,6 +1221,7 @@ Security
 SelectionBaseAttribute
 SendMessageOptions
 SerializeField
+SerializePrivateVariables
 SerializeReference
 Shader
 ShaderVariantCollection
@@ -1295,6 +1274,7 @@ SubsystemDescriptor
 SubsystemDescriptor<>
 SubsystemManager
 SurfaceEffector2D
+System
 SystemInfo
 SystemLanguage
 TargetJoint2D
@@ -1335,6 +1315,7 @@ TrailRenderer
 Transform
 TransparencySortMode
 Tree
+TreeEditor
 TreeInstance
 TreePrototype
 Types
@@ -1343,7 +1324,12 @@ UILineInfo
 UISystemProfilerApi
 UIVertex
 UnassignedReferenceException
+Unity
 UnityAPICompatibilityVersionAttribute
+UnityEditor
+UnityEditorInternal
+UnityEngine
+UnityEngineInternal
 UnityEventQueueSystem
 UnityException
 UserAuthorization
@@ -1354,6 +1340,7 @@ Vector3
 Vector3Int
 Vector4
 VerticalWrapMode
+WWW
 WWWAudioExtensions
 WWWForm
 WaitForEndOfFrame
@@ -1375,29 +1362,55 @@ WindZone
 WindZoneMode
 WrapMode
 YieldInstruction
+abstract
+async
+bool
+byte
+char
+class
+const
+decimal
+delegate
+double
+dynamic
+enum
+event
+explicit
+extern
+float
+implicit
+int
+interface
+internal
 jvalue
-AnimationClipPair
-AssetModificationProcessor
-BlendWeights
-CacheIndex
-JointDriveMode
-LightmappingMode
-ParticleSystemEmissionType
-ParticleSystemVertexStreams
-ProceduralTexture
-QualityLevel
-SerializePrivateVariables
-WWW
-AOT
-JetBrains
-Microsoft
-System
-TreeEditor
-Unity
-UnityEditor
-UnityEditorInternal
-UnityEngine
-UnityEngineInternal
-public override Equals(object) { … }    bool
-public override GetHashCode() { … }    int
-public override ToString() { … }    string
+long
+new
+nint
+nuint
+object
+override
+partial
+private
+protected
+public
+readonly
+record
+ref
+required
+sbyte
+sealed
+short
+static
+string
+struct
+uint
+ulong
+unsafe
+ushort
+virtual
+void
+volatile
+                            [Full, Generic]
+public override |Equals|(object) |{ … }    bool    OrderStr=Equals
+public override |GetHashCode|() |{ … }    int    OrderStr=GetHashCode
+public override |ToString|() |{ … }    string    OrderStr=ToString

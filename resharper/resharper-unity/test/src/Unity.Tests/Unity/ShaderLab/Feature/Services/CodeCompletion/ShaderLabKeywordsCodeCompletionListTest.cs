@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
     [TestSetting(typeof(CodeCompletionSettingsKey), nameof(CodeCompletionSettingsKey.ReplaceKeywordsWithTemplates), false)]
     public class ShaderLabKeywordsCodeCompletionListTest : ShaderLabCodeCompletionTestBase
     {
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
 
         protected override bool CheckAutomaticCompletionDefault() => true;
 

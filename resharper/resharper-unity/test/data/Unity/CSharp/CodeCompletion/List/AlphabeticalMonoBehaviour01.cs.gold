@@ -1,5 +1,783 @@
-﻿# 761 ITEMS #
+﻿Completion: Basic
+Count: 761
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "♦   "
 
+##### RELEVANCE SORT #####
+
+                            [HighSelectionPriority, NormalSelectionPriority]
+private |Awake|() { ... }    OrderStr=Awake()    <==
+private |FixedUpdate|() { ... }    OrderStr=FixedUpdate()
+private |LateUpdate|() { ... }    OrderStr=LateUpdate()
+private |OnAnimatorIK|(int) { ... }    OrderStr=OnAnimatorIK(int)
+private |OnAnimatorMove|() { ... }    OrderStr=OnAnimatorMove()
+private |OnApplicationFocus|(bool) { ... }    OrderStr=OnApplicationFocus(bool)
+private |OnApplicationPause|(bool) { ... }    OrderStr=OnApplicationPause(bool)
+private |OnApplicationQuit|() { ... }    OrderStr=OnApplicationQuit()
+private |OnAudioFilterRead|(float[], int) { ... }    OrderStr='OnAudioFilterRead(float[], int)'
+private |OnBecameInvisible|() { ... }    OrderStr=OnBecameInvisible()
+private |OnBecameVisible|() { ... }    OrderStr=OnBecameVisible()
+private |OnCollisionEnter|(Collision) { ... }    OrderStr=OnCollisionEnter(Collision)
+private |OnCollisionEnter2D|(Collision2D) { ... }    OrderStr=OnCollisionEnter2D(Collision2D)
+private |OnCollisionExit|(Collision) { ... }    OrderStr=OnCollisionExit(Collision)
+private |OnCollisionExit2D|(Collision2D) { ... }    OrderStr=OnCollisionExit2D(Collision2D)
+private |OnCollisionStay|(Collision) { ... }    OrderStr=OnCollisionStay(Collision)
+private |OnCollisionStay2D|(Collision2D) { ... }    OrderStr=OnCollisionStay2D(Collision2D)
+private |OnConnectedToServer|() { ... }    OrderStr=OnConnectedToServer()
+private |OnControllerColliderHit|(ControllerColliderHit) { ... }    OrderStr=OnControllerColliderHit(ControllerColliderHit)
+private |OnDestroy|() { ... }    OrderStr=OnDestroy()
+private |OnDisable|() { ... }    OrderStr=OnDisable()
+private |OnDrawGizmos|() { ... }    OrderStr=OnDrawGizmos()
+private |OnDrawGizmosSelected|() { ... }    OrderStr=OnDrawGizmosSelected()
+private |OnEnable|() { ... }    OrderStr=OnEnable()
+private |OnGUI|() { ... }    OrderStr=OnGUI()
+private |OnJointBreak|(float) { ... }    OrderStr=OnJointBreak(float)
+private |OnJointBreak2D|(Joint2D) { ... }    OrderStr=OnJointBreak2D(Joint2D)
+private |OnMouseDown|() { ... }    OrderStr=OnMouseDown()
+private |OnMouseDrag|() { ... }    OrderStr=OnMouseDrag()
+private |OnMouseEnter|() { ... }    OrderStr=OnMouseEnter()
+private |OnMouseExit|() { ... }    OrderStr=OnMouseExit()
+private |OnMouseOver|() { ... }    OrderStr=OnMouseOver()
+private |OnMouseUp|() { ... }    OrderStr=OnMouseUp()
+private |OnMouseUpAsButton|() { ... }    OrderStr=OnMouseUpAsButton()
+private |OnParticleCollision|(GameObject) { ... }    OrderStr=OnParticleCollision(GameObject)
+private |OnParticleSystemStopped|() { ... }    OrderStr=OnParticleSystemStopped()
+private |OnParticleTrigger|() { ... }    OrderStr=OnParticleTrigger()
+private |OnParticleUpdateJobScheduled|() { ... }    OrderStr=OnParticleUpdateJobScheduled()
+private |OnPostRender|() { ... }    OrderStr=OnPostRender()
+private |OnPreCull|() { ... }    OrderStr=OnPreCull()
+private |OnPreRender|() { ... }    OrderStr=OnPreRender()
+private |OnRenderImage|(RenderTexture, RenderTexture) { ... }    OrderStr='OnRenderImage(RenderTexture, RenderTexture)'
+private |OnRenderObject|() { ... }    OrderStr=OnRenderObject()
+private |OnServerInitialized|() { ... }    OrderStr=OnServerInitialized()
+private |OnTransformChildrenChanged|() { ... }    OrderStr=OnTransformChildrenChanged()
+private |OnTransformParentChanged|() { ... }    OrderStr=OnTransformParentChanged()
+private |OnTriggerEnter|(Collider) { ... }    OrderStr=OnTriggerEnter(Collider)
+private |OnTriggerEnter2D|(Collider2D) { ... }    OrderStr=OnTriggerEnter2D(Collider2D)
+private |OnTriggerExit|(Collider) { ... }    OrderStr=OnTriggerExit(Collider)
+private |OnTriggerExit2D|(Collider2D) { ... }    OrderStr=OnTriggerExit2D(Collider2D)
+private |OnTriggerStay|(Collider) { ... }    OrderStr=OnTriggerStay(Collider)
+private |OnTriggerStay2D|(Collider2D) { ... }    OrderStr=OnTriggerStay2D(Collider2D)
+private |OnValidate|() { ... }    OrderStr=OnValidate()
+private |OnWillRenderObject|() { ... }    OrderStr=OnWillRenderObject()
+private |Reset|() { ... }    OrderStr=Reset()
+private |Start|() { ... }    OrderStr=Start()
+private |Update|() { ... }    OrderStr=Update()
+                            [Methods^, GenerateItems^, MemberOfCurrentType^]
+private |OnBeforeTransformParentChanged|() { ... }    OrderStr=OnBeforeTransformParentChanged()
+private |OnCanvasGroupChanged|() { ... }    OrderStr=OnCanvasGroupChanged()
+private |OnCanvasHierarchyChanged|() { ... }    OrderStr=OnCanvasHierarchyChanged()
+private |OnDidApplyAnimationProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
+private |OnRectTransformDimensionsChange|() { ... }    OrderStr=OnRectTransformDimensionsChange()
+                            [Keywords, LiveTemplates, NormalSelectionPriority]
+abstract
+async
+bool
+byte
+char
+class
+const
+decimal
+delegate
+double
+dynamic
+enum
+event
+explicit
+extern
+float
+implicit
+int
+interface
+internal
+long
+new
+nint
+nuint
+object
+override
+partial
+private
+protected
+public
+readonly
+record
+ref
+required
+sbyte
+sealed
+short
+static
+string
+struct
+uint
+ulong
+unsafe
+ushort
+virtual
+void
+volatile
+                            [TypesAndNamespaces, ImportedType, NotObsolete^, NormalSelectionPriority]
+A
+AccelerationEvent
+AddComponentMenu
+AdditionalCanvasShaderChannels
+AnchoredJoint2D
+AndroidActivityIndicatorStyle
+AndroidInput
+AndroidJNI
+AndroidJNIHelper
+AndroidJavaClass
+AndroidJavaException
+AndroidJavaObject
+AndroidJavaProxy
+AndroidJavaRunnable
+Animation
+AnimationBlendMode
+AnimationClip
+AnimationCullingType
+AnimationCurve
+AnimationEvent
+AnimationPlayMode
+AnimationState
+Animator
+AnimatorClipInfo
+AnimatorControllerParameter
+AnimatorControllerParameterType
+AnimatorCullingMode
+AnimatorOverrideController
+AnimatorRecorderMode
+AnimatorStateInfo
+AnimatorTransitionInfo
+AnimatorUpdateMode
+AnimatorUtility
+AnisotropicFiltering
+Application
+ApplicationInstallMode
+ApplicationSandboxType
+AreaEffector2D
+ArmDof
+AssemblyIsEditorAssembly
+AssetBundle
+AssetBundleCreateRequest
+AssetBundleLoadResult
+AssetBundleManifest
+AssetBundleRecompressOperation
+AssetBundleRequest
+AsyncOperation
+AudioBehaviour
+AudioChorusFilter
+AudioClip
+AudioClipLoadType
+AudioCompressionFormat
+AudioConfiguration
+AudioDataLoadState
+AudioDistortionFilter
+AudioEchoFilter
+AudioHighPassFilter
+AudioListener
+AudioLowPassFilter
+AudioRenderer
+AudioReverbFilter
+AudioReverbPreset
+AudioReverbZone
+AudioRolloffMode
+AudioSettings
+AudioSource
+AudioSourceCurveType
+AudioSpeakerMode
+AudioType
+AudioVelocityUpdateMode
+Avatar
+AvatarBuilder
+AvatarIKGoal
+AvatarIKHint
+AvatarMask
+AvatarMaskBodyPart
+AvatarTarget
+BatteryStatus
+BeforeRenderOrderAttribute
+Behaviour
+BillboardAsset
+BillboardRenderer
+BodyDof
+BoneWeight
+BoneWeight1
+BoundingSphere
+Bounds
+BoundsInt
+BoxCollider
+BoxCollider2D
+BoxcastCommand
+BuildCompression
+BuoyancyEffector2D
+Cache
+CachedAssetBundle
+Caching
+Camera
+CameraClearFlags
+CameraType
+Canvas
+CanvasGroup
+CanvasRenderer
+CapsuleCollider
+CapsuleCollider2D
+CapsuleDirection2D
+CapsulecastCommand
+CharacterController
+CharacterInfo
+CharacterJoint
+CircleCollider2D
+Cloth
+ClothSkinningCoefficient
+ClothSphereColliderPair
+ClusterInput
+ClusterInputType
+ClusterNetwork
+Collider
+Collider2D
+ColliderDistance2D
+Collision
+Collision2D
+CollisionDetectionMode
+CollisionDetectionMode2D
+CollisionFlags
+Color
+Color32
+ColorGamut
+ColorSpace
+ColorUsageAttribute
+ColorUtility
+CombineInstance
+Compass
+Component
+CompositeCollider2D
+CompressionLevel
+CompressionType
+ComputeBuffer
+ComputeBufferMode
+ComputeBufferType
+ComputeShader
+ConfigurableJoint
+ConfigurableJointMotion
+ConstantForce
+ConstantForce2D
+ContactFilter2D
+ContactPoint
+ContactPoint2D
+ContextMenu
+ContextMenuItemAttribute
+ControllerColliderHit
+Coroutine
+CrashReport
+CreateAssetMenuAttribute
+Cubemap
+CubemapArray
+CubemapFace
+CullingGroup
+CullingGroupEvent
+Cursor
+CursorLockMode
+CursorMode
+CustomGridBrushAttribute
+CustomRenderTexture
+CustomRenderTextureInitializationSource
+CustomRenderTextureUpdateMode
+CustomRenderTextureUpdateZone
+CustomRenderTextureUpdateZoneSpace
+CustomYieldInstruction
+D3DHDRDisplayBitDepth
+Debug
+DefaultExecutionOrder
+DelayedAttribute
+DepthTextureMode
+DetailPrototype
+DetailRenderMode
+DeviceOrientation
+DeviceType
+DisallowMultipleComponent
+Display
+DistanceJoint2D
+DrivenRectTransformTracker
+DrivenTransformProperties
+DurationUnit
+DynamicGI
+EdgeCollider2D
+Effector2D
+EffectorForceMode2D
+EffectorSelection2D
+Event
+EventModifiers
+EventProvider
+EventType
+ExcludeFromObjectFactoryAttribute
+ExcludeFromPresetAttribute
+ExecuteAlways
+ExecuteInEditMode
+ExitGUIException
+ExposedPropertyResolver
+ExposedReference<>
+FFTWindow
+FilterMode
+FingerDof
+FixedJoint
+FixedJoint2D
+Flare
+FlareLayer
+FocusType
+FogMode
+Font
+FontStyle
+ForceMode
+ForceMode2D
+FrameTiming
+FrameTimingManager
+FrictionJoint2D
+FrustumPlanes
+FullScreenMode
+FullScreenMovieControlMode
+FullScreenMovieScalingMode
+GL
+GUI
+GUIContent
+GUILayout
+GUILayoutOption
+GUILayoutUtility
+GUISettings
+GUISkin
+GUIStyle
+GUIStyleState
+GUITargetAttribute
+GUIUtility
+GameObject
+GeometryUtility
+Gizmos
+Gradient
+GradientAlphaKey
+GradientColorKey
+GradientMode
+GradientUsageAttribute
+Graphics
+GraphicsBuffer
+Grid
+GridBrushBase
+GridLayout
+Gyroscope
+HDROutputSettings
+Handheld
+Hash128
+HashUnsafeUtilities
+HashUtilities
+HeadDof
+HeaderAttribute
+HelpURLAttribute
+HideFlags
+HideInInspector
+HingeJoint
+HingeJoint2D
+HorizontalWrapMode
+HumanBodyBones
+HumanBone
+HumanDescription
+HumanLimit
+HumanPartDof
+HumanPose
+HumanPoseHandler
+HumanTrait
+IAnimationClipSource
+ICanvasRaycastFilter
+IExposedPropertyTable
+ILogHandler
+ILogger
+IMECompositionMode
+ISerializationCallbackReceiver
+ISubsystem
+ISubsystemDescriptor
+ImageConversion
+ImageEffectAfterScale
+ImageEffectAllowedInSceneView
+ImageEffectOpaque
+ImageEffectTransformsToLDR
+ImageEffectUsesCommandBuffer
+ImagePosition
+Input
+InspectorNameAttribute
+IntegratedSubsystem
+IntegratedSubsystem<>
+IntegratedSubsystemDescriptor
+IntegratedSubsystemDescriptor<>
+Joint
+Joint2D
+JointAngleLimits2D
+JointDrive
+JointLimitState2D
+JointLimits
+JointMotor
+JointMotor2D
+JointProjectionMode
+JointSpring
+JointSuspension2D
+JointTranslationLimits2D
+JsonUtility
+KeyCode
+Keyframe
+LOD
+LODFadeMode
+LODGroup
+LayerMask
+LazyLoadReference<>
+LegDof
+LensFlare
+Light
+LightBakingOutput
+LightProbeGroup
+LightProbeProxyVolume
+LightProbes
+LightRenderMode
+LightShadowCasterMode
+LightShadows
+LightShape
+LightType
+LightmapBakeType
+LightmapData
+LightmapSettings
+LightmapsMode
+LightmapsModeLegacy
+LineAlignment
+LineRenderer
+LineTextureMode
+LineUtility
+LocalizationAsset
+LocationInfo
+LocationService
+LocationServiceStatus
+LogOption
+LogType
+Logger
+MatchTargetWeightMask
+Material
+MaterialGlobalIlluminationFlags
+MaterialPropertyBlock
+Mathf
+Matrix4x4
+Mesh
+MeshCollider
+MeshColliderCookingOptions
+MeshFilter
+MeshRenderer
+MeshTopology
+Microphone
+MinAttribute
+MissingComponentException
+MissingReferenceException
+MixedLightingMode
+MonoBehaviour
+Motion
+MotionVectorGenerationMode
+MultilineAttribute
+NPOTSupport
+NetworkReachability
+Object
+OcclusionArea
+OcclusionPortal
+OperatingSystemFamily
+ParticleCollisionEvent
+ParticlePhysicsExtensions
+ParticleSystem
+ParticleSystemAnimationMode
+ParticleSystemAnimationRowMode
+ParticleSystemAnimationTimeMode
+ParticleSystemAnimationType
+ParticleSystemCollisionMode
+ParticleSystemCollisionQuality
+ParticleSystemCollisionType
+ParticleSystemCullingMode
+ParticleSystemCurveMode
+ParticleSystemCustomData
+ParticleSystemCustomDataMode
+ParticleSystemEmitterVelocityMode
+ParticleSystemForceField
+ParticleSystemForceFieldShape
+ParticleSystemGameObjectFilter
+ParticleSystemGradientMode
+ParticleSystemInheritVelocityMode
+ParticleSystemMeshShapeType
+ParticleSystemNoiseQuality
+ParticleSystemOverlapAction
+ParticleSystemRenderMode
+ParticleSystemRenderSpace
+ParticleSystemRenderer
+ParticleSystemRingBufferMode
+ParticleSystemScalingMode
+ParticleSystemShapeMultiModeValue
+ParticleSystemShapeTextureChannel
+ParticleSystemShapeType
+ParticleSystemSimulationSpace
+ParticleSystemSortMode
+ParticleSystemStopAction
+ParticleSystemStopBehavior
+ParticleSystemSubEmitterProperties
+ParticleSystemSubEmitterType
+ParticleSystemTrailMode
+ParticleSystemTrailTextureMode
+ParticleSystemTriggerEventType
+ParticleSystemVertexStream
+PatchExtents
+PhysicMaterial
+PhysicMaterialCombine
+Physics
+Physics2D
+PhysicsJobOptions2D
+PhysicsMaterial2D
+PhysicsScene
+PhysicsScene2D
+PhysicsSceneExtensions
+PhysicsSceneExtensions2D
+PhysicsUpdateBehaviour2D
+Ping
+Plane
+PlatformEffector2D
+PlayMode
+PlayerPrefs
+PlayerPrefsException
+PointEffector2D
+PointerType
+PolygonCollider2D
+Pose
+PreferBinarySerialization
+PrimitiveType
+Projector
+PropertyAttribute
+PropertyName
+QualitySettings
+Quaternion
+QueryTriggerInteraction
+QueueMode
+Random
+RangeAttribute
+RangeInt
+Ray
+Ray2D
+RaycastCommand
+RaycastHit
+RaycastHit2D
+ReceiveGI
+Rect
+RectInt
+RectOffset
+RectTransform
+RectTransformUtility
+ReflectionProbe
+RelativeJoint2D
+RemoteConfigSettings
+RemoteSettings
+RenderBuffer
+RenderMode
+RenderSettings
+RenderTargetSetup
+RenderTexture
+RenderTextureCreationFlags
+RenderTextureDescriptor
+RenderTextureFormat
+RenderTextureMemoryless
+RenderTextureReadWrite
+Renderer
+RendererExtensions
+RenderingPath
+RequireComponent
+Resolution
+ResourceRequest
+Resources
+Rigidbody
+Rigidbody2D
+RigidbodyConstraints
+RigidbodyConstraints2D
+RigidbodyInterpolation
+RigidbodyInterpolation2D
+RigidbodySleepMode2D
+RigidbodyType2D
+RotationDriveMode
+RuntimeAnimatorController
+RuntimeInitializeLoadType
+RuntimeInitializeOnLoadMethodAttribute
+RuntimePlatform
+ScalableBufferManager
+ScaleMode
+Screen
+ScreenCapture
+ScreenOrientation
+ScriptableObject
+SecondarySpriteTexture
+Security
+SelectionBaseAttribute
+SendMessageOptions
+SerializeField
+SerializeReference
+Shader
+ShaderVariantCollection
+ShadowProjection
+ShadowQuality
+ShadowResolution
+ShadowmaskMode
+SharedBetweenAnimatorsAttribute
+SkeletonBone
+SkinQuality
+SkinWeights
+SkinnedMeshRenderer
+Skybox
+SleepTimeout
+SliderJoint2D
+SnapAxis
+Snapping
+Social
+SoftJointLimit
+SoftJointLimitSpring
+SortingLayer
+Space
+SpaceAttribute
+SparseTexture
+SphereCollider
+SpherecastCommand
+SplatPrototype
+SpringJoint
+SpringJoint2D
+Sprite
+SpriteAlignment
+SpriteDrawMode
+SpriteMask
+SpriteMaskInteraction
+SpriteMeshType
+SpritePackingMode
+SpritePackingRotation
+SpriteRenderer
+SpriteSortPoint
+SpriteTileMode
+StackTraceLogType
+StackTraceUtility
+StateMachineBehaviour
+StaticBatchingUtility
+StereoTargetEyeMask
+StreamingController
+Subsystem
+Subsystem<>
+SubsystemDescriptor
+SubsystemDescriptor<>
+SubsystemManager
+SurfaceEffector2D
+SystemInfo
+SystemLanguage
+TargetJoint2D
+Terrain
+TerrainChangedFlags
+TerrainCollider
+TerrainData
+TerrainExtensions
+TerrainHeightmapSyncControl
+TerrainLayer
+TerrainRenderFlags
+TexGenMode
+TextAlignment
+TextAnchor
+TextAreaAttribute
+TextAsset
+TextClipping
+TextEditor
+TextGenerationSettings
+TextGenerator
+TextMesh
+Texture
+Texture2D
+Texture2DArray
+Texture3D
+TextureFormat
+TextureWrapMode
+ThreadPriority
+Time
+TooltipAttribute
+Touch
+TouchPhase
+TouchScreenKeyboard
+TouchScreenKeyboardType
+TouchType
+TrackedReference
+TrailRenderer
+Transform
+TransparencySortMode
+Tree
+TreeInstance
+TreePrototype
+Types
+UICharInfo
+UILineInfo
+UISystemProfilerApi
+UIVertex
+UnassignedReferenceException
+UnityAPICompatibilityVersionAttribute
+UnityEventQueueSystem
+UnityException
+UserAuthorization
+VRTextureUsage
+Vector2
+Vector2Int
+Vector3
+Vector3Int
+Vector4
+VerticalWrapMode
+WWWAudioExtensions
+WWWForm
+WaitForEndOfFrame
+WaitForFixedUpdate
+WaitForSeconds
+WaitForSecondsRealtime
+WaitUntil
+WaitWhile
+WebCamDevice
+WebCamFlags
+WebCamKind
+WebCamTexture
+WeightedMode
+WheelCollider
+WheelFrictionCurve
+WheelHit
+WheelJoint2D
+WindZone
+WindZoneMode
+WrapMode
+YieldInstruction
+jvalue
+                            [TypesAndNamespaces, ImportedType, NormalSelectionPriority]
+AnimationClipPair
+AssetModificationProcessor
+BlendWeights
+CacheIndex
+JointDriveMode
+LightmappingMode
+ParticleSystemEmissionType
+ParticleSystemVertexStreams
+ProceduralTexture
+QualityLevel
+SerializePrivateVariables
+WWW
+                            [FromLightAndDynamicEvaluation^, TypesAndNamespaces, NotObsolete, NormalSelectionPriority]
+AOT
+JetBrains
+Microsoft
+System
+TreeEditor
+Unity
+UnityEditor
+UnityEditorInternal
+UnityEngine
+UnityEngineInternal
+                            [Other^, ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority, FromFullEvaluation, FromSingleCompletion^]
+public override |Equals|(object) |{ … }    bool    OrderStr=Equals
+public override |GetHashCode|() |{ … }    int    OrderStr=GetHashCode
+public override |ToString|() |{ … }    string    OrderStr=ToString
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
 A
 AOT
 AccelerationEvent
@@ -80,7 +858,7 @@ AvatarIKHint
 AvatarMask
 AvatarMaskBodyPart
 AvatarTarget
-+ private Awake() { ... }
+private |Awake|() { ... }    OrderStr=Awake()    <==
 BatteryStatus
 BeforeRenderOrderAttribute
 Behaviour
@@ -210,7 +988,7 @@ FilterMode
 FingerDof
 FixedJoint
 FixedJoint2D
-+ private FixedUpdate() { ... }
+private |FixedUpdate|() { ... }    OrderStr=FixedUpdate()
 Flare
 FlareLayer
 FocusType
@@ -315,7 +1093,7 @@ Keyframe
 LOD
 LODFadeMode
 LODGroup
-+ private LateUpdate() { ... }
+private |LateUpdate|() { ... }    OrderStr=LateUpdate()
 LayerMask
 LazyLoadReference<>
 LegDof
@@ -374,62 +1152,62 @@ NetworkReachability
 Object
 OcclusionArea
 OcclusionPortal
-+ private OnAnimatorIK(int) { ... }
-+ private OnAnimatorMove() { ... }
-+ private OnApplicationFocus(bool) { ... }
-+ private OnApplicationPause(bool) { ... }
-+ private OnApplicationQuit() { ... }
-+ private OnAudioFilterRead(float[], int) { ... }
-+ private OnBecameInvisible() { ... }
-+ private OnBecameVisible() { ... }
-private OnBeforeTransformParentChanged() { ... }
-private OnCanvasGroupChanged() { ... }
-private OnCanvasHierarchyChanged() { ... }
-+ private OnCollisionEnter(Collision) { ... }
-+ private OnCollisionEnter2D(Collision2D) { ... }
-+ private OnCollisionExit(Collision) { ... }
-+ private OnCollisionExit2D(Collision2D) { ... }
-+ private OnCollisionStay(Collision) { ... }
-+ private OnCollisionStay2D(Collision2D) { ... }
-+ private OnConnectedToServer() { ... }
-+ private OnControllerColliderHit(ControllerColliderHit) { ... }
-+ private OnDestroy() { ... }
-private OnDidApplyAnimationProperties() { ... }
-+ private OnDisable() { ... }
-+ private OnDrawGizmos() { ... }
-+ private OnDrawGizmosSelected() { ... }
-+ private OnEnable() { ... }
-+ private OnGUI() { ... }
-+ private OnJointBreak(float) { ... }
-+ private OnJointBreak2D(Joint2D) { ... }
-+ private OnMouseDown() { ... }
-+ private OnMouseDrag() { ... }
-+ private OnMouseEnter() { ... }
-+ private OnMouseExit() { ... }
-+ private OnMouseOver() { ... }
-+ private OnMouseUp() { ... }
-+ private OnMouseUpAsButton() { ... }
-+ private OnParticleCollision(GameObject) { ... }
-+ private OnParticleSystemStopped() { ... }
-+ private OnParticleTrigger() { ... }
-+ private OnParticleUpdateJobScheduled() { ... }
-+ private OnPostRender() { ... }
-+ private OnPreCull() { ... }
-+ private OnPreRender() { ... }
-private OnRectTransformDimensionsChange() { ... }
-+ private OnRenderImage(RenderTexture, RenderTexture) { ... }
-+ private OnRenderObject() { ... }
-+ private OnServerInitialized() { ... }
-+ private OnTransformChildrenChanged() { ... }
-+ private OnTransformParentChanged() { ... }
-+ private OnTriggerEnter(Collider) { ... }
-+ private OnTriggerEnter2D(Collider2D) { ... }
-+ private OnTriggerExit(Collider) { ... }
-+ private OnTriggerExit2D(Collider2D) { ... }
-+ private OnTriggerStay(Collider) { ... }
-+ private OnTriggerStay2D(Collider2D) { ... }
-+ private OnValidate() { ... }
-+ private OnWillRenderObject() { ... }
+private |OnAnimatorIK|(int) { ... }    OrderStr=OnAnimatorIK(int)
+private |OnAnimatorMove|() { ... }    OrderStr=OnAnimatorMove()
+private |OnApplicationFocus|(bool) { ... }    OrderStr=OnApplicationFocus(bool)
+private |OnApplicationPause|(bool) { ... }    OrderStr=OnApplicationPause(bool)
+private |OnApplicationQuit|() { ... }    OrderStr=OnApplicationQuit()
+private |OnAudioFilterRead|(float[], int) { ... }    OrderStr='OnAudioFilterRead(float[], int)'
+private |OnBecameInvisible|() { ... }    OrderStr=OnBecameInvisible()
+private |OnBecameVisible|() { ... }    OrderStr=OnBecameVisible()
+private |OnBeforeTransformParentChanged|() { ... }    OrderStr=OnBeforeTransformParentChanged()
+private |OnCanvasGroupChanged|() { ... }    OrderStr=OnCanvasGroupChanged()
+private |OnCanvasHierarchyChanged|() { ... }    OrderStr=OnCanvasHierarchyChanged()
+private |OnCollisionEnter|(Collision) { ... }    OrderStr=OnCollisionEnter(Collision)
+private |OnCollisionEnter2D|(Collision2D) { ... }    OrderStr=OnCollisionEnter2D(Collision2D)
+private |OnCollisionExit|(Collision) { ... }    OrderStr=OnCollisionExit(Collision)
+private |OnCollisionExit2D|(Collision2D) { ... }    OrderStr=OnCollisionExit2D(Collision2D)
+private |OnCollisionStay|(Collision) { ... }    OrderStr=OnCollisionStay(Collision)
+private |OnCollisionStay2D|(Collision2D) { ... }    OrderStr=OnCollisionStay2D(Collision2D)
+private |OnConnectedToServer|() { ... }    OrderStr=OnConnectedToServer()
+private |OnControllerColliderHit|(ControllerColliderHit) { ... }    OrderStr=OnControllerColliderHit(ControllerColliderHit)
+private |OnDestroy|() { ... }    OrderStr=OnDestroy()
+private |OnDidApplyAnimationProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
+private |OnDisable|() { ... }    OrderStr=OnDisable()
+private |OnDrawGizmos|() { ... }    OrderStr=OnDrawGizmos()
+private |OnDrawGizmosSelected|() { ... }    OrderStr=OnDrawGizmosSelected()
+private |OnEnable|() { ... }    OrderStr=OnEnable()
+private |OnGUI|() { ... }    OrderStr=OnGUI()
+private |OnJointBreak|(float) { ... }    OrderStr=OnJointBreak(float)
+private |OnJointBreak2D|(Joint2D) { ... }    OrderStr=OnJointBreak2D(Joint2D)
+private |OnMouseDown|() { ... }    OrderStr=OnMouseDown()
+private |OnMouseDrag|() { ... }    OrderStr=OnMouseDrag()
+private |OnMouseEnter|() { ... }    OrderStr=OnMouseEnter()
+private |OnMouseExit|() { ... }    OrderStr=OnMouseExit()
+private |OnMouseOver|() { ... }    OrderStr=OnMouseOver()
+private |OnMouseUp|() { ... }    OrderStr=OnMouseUp()
+private |OnMouseUpAsButton|() { ... }    OrderStr=OnMouseUpAsButton()
+private |OnParticleCollision|(GameObject) { ... }    OrderStr=OnParticleCollision(GameObject)
+private |OnParticleSystemStopped|() { ... }    OrderStr=OnParticleSystemStopped()
+private |OnParticleTrigger|() { ... }    OrderStr=OnParticleTrigger()
+private |OnParticleUpdateJobScheduled|() { ... }    OrderStr=OnParticleUpdateJobScheduled()
+private |OnPostRender|() { ... }    OrderStr=OnPostRender()
+private |OnPreCull|() { ... }    OrderStr=OnPreCull()
+private |OnPreRender|() { ... }    OrderStr=OnPreRender()
+private |OnRectTransformDimensionsChange|() { ... }    OrderStr=OnRectTransformDimensionsChange()
+private |OnRenderImage|(RenderTexture, RenderTexture) { ... }    OrderStr='OnRenderImage(RenderTexture, RenderTexture)'
+private |OnRenderObject|() { ... }    OrderStr=OnRenderObject()
+private |OnServerInitialized|() { ... }    OrderStr=OnServerInitialized()
+private |OnTransformChildrenChanged|() { ... }    OrderStr=OnTransformChildrenChanged()
+private |OnTransformParentChanged|() { ... }    OrderStr=OnTransformParentChanged()
+private |OnTriggerEnter|(Collider) { ... }    OrderStr=OnTriggerEnter(Collider)
+private |OnTriggerEnter2D|(Collider2D) { ... }    OrderStr=OnTriggerEnter2D(Collider2D)
+private |OnTriggerExit|(Collider) { ... }    OrderStr=OnTriggerExit(Collider)
+private |OnTriggerExit2D|(Collider2D) { ... }    OrderStr=OnTriggerExit2D(Collider2D)
+private |OnTriggerStay|(Collider) { ... }    OrderStr=OnTriggerStay(Collider)
+private |OnTriggerStay2D|(Collider2D) { ... }    OrderStr=OnTriggerStay2D(Collider2D)
+private |OnValidate|() { ... }    OrderStr=OnValidate()
+private |OnWillRenderObject|() { ... }    OrderStr=OnWillRenderObject()
 OperatingSystemFamily
 ParticleCollisionEvent
 ParticlePhysicsExtensions
@@ -539,7 +1317,7 @@ Renderer
 RendererExtensions
 RenderingPath
 RequireComponent
-+ private Reset() { ... }
+private |Reset|() { ... }    OrderStr=Reset()
 Resolution
 ResourceRequest
 Resources
@@ -610,7 +1388,7 @@ SpriteSortPoint
 SpriteTileMode
 StackTraceLogType
 StackTraceUtility
-+ private Start() { ... }
+private |Start|() { ... }    OrderStr=Start()
 StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
@@ -679,7 +1457,7 @@ UnityEngine
 UnityEngineInternal
 UnityEventQueueSystem
 UnityException
-+ private Update() { ... }
+private |Update|() { ... }    OrderStr=Update()
 UserAuthorization
 VRTextureUsage
 Vector2
@@ -758,772 +1536,7 @@ ushort
 virtual
 void
 volatile
----- FULL EVALUATION ----
-public override Equals(object) { … }    bool
-public override GetHashCode() { … }    int
-public override ToString() { … }    string
-# AUTOMATIC #
-# 761 ITEMS #
-
-A
-AOT
-AccelerationEvent
-AddComponentMenu
-AdditionalCanvasShaderChannels
-AnchoredJoint2D
-AndroidActivityIndicatorStyle
-AndroidInput
-AndroidJNI
-AndroidJNIHelper
-AndroidJavaClass
-AndroidJavaException
-AndroidJavaObject
-AndroidJavaProxy
-AndroidJavaRunnable
-Animation
-AnimationBlendMode
-AnimationClip
-AnimationClipPair
-AnimationCullingType
-AnimationCurve
-AnimationEvent
-AnimationPlayMode
-AnimationState
-Animator
-AnimatorClipInfo
-AnimatorControllerParameter
-AnimatorControllerParameterType
-AnimatorCullingMode
-AnimatorOverrideController
-AnimatorRecorderMode
-AnimatorStateInfo
-AnimatorTransitionInfo
-AnimatorUpdateMode
-AnimatorUtility
-AnisotropicFiltering
-Application
-ApplicationInstallMode
-ApplicationSandboxType
-AreaEffector2D
-ArmDof
-AssemblyIsEditorAssembly
-AssetBundle
-AssetBundleCreateRequest
-AssetBundleLoadResult
-AssetBundleManifest
-AssetBundleRecompressOperation
-AssetBundleRequest
-AssetModificationProcessor
-AsyncOperation
-AudioBehaviour
-AudioChorusFilter
-AudioClip
-AudioClipLoadType
-AudioCompressionFormat
-AudioConfiguration
-AudioDataLoadState
-AudioDistortionFilter
-AudioEchoFilter
-AudioHighPassFilter
-AudioListener
-AudioLowPassFilter
-AudioRenderer
-AudioReverbFilter
-AudioReverbPreset
-AudioReverbZone
-AudioRolloffMode
-AudioSettings
-AudioSource
-AudioSourceCurveType
-AudioSpeakerMode
-AudioType
-AudioVelocityUpdateMode
-Avatar
-AvatarBuilder
-AvatarIKGoal
-AvatarIKHint
-AvatarMask
-AvatarMaskBodyPart
-AvatarTarget
-+ private Awake() { ... }
-BatteryStatus
-BeforeRenderOrderAttribute
-Behaviour
-BillboardAsset
-BillboardRenderer
-BlendWeights
-BodyDof
-BoneWeight
-BoneWeight1
-BoundingSphere
-Bounds
-BoundsInt
-BoxCollider
-BoxCollider2D
-BoxcastCommand
-BuildCompression
-BuoyancyEffector2D
-Cache
-CacheIndex
-CachedAssetBundle
-Caching
-Camera
-CameraClearFlags
-CameraType
-Canvas
-CanvasGroup
-CanvasRenderer
-CapsuleCollider
-CapsuleCollider2D
-CapsuleDirection2D
-CapsulecastCommand
-CharacterController
-CharacterInfo
-CharacterJoint
-CircleCollider2D
-Cloth
-ClothSkinningCoefficient
-ClothSphereColliderPair
-ClusterInput
-ClusterInputType
-ClusterNetwork
-Collider
-Collider2D
-ColliderDistance2D
-Collision
-Collision2D
-CollisionDetectionMode
-CollisionDetectionMode2D
-CollisionFlags
-Color
-Color32
-ColorGamut
-ColorSpace
-ColorUsageAttribute
-ColorUtility
-CombineInstance
-Compass
-Component
-CompositeCollider2D
-CompressionLevel
-CompressionType
-ComputeBuffer
-ComputeBufferMode
-ComputeBufferType
-ComputeShader
-ConfigurableJoint
-ConfigurableJointMotion
-ConstantForce
-ConstantForce2D
-ContactFilter2D
-ContactPoint
-ContactPoint2D
-ContextMenu
-ContextMenuItemAttribute
-ControllerColliderHit
-Coroutine
-CrashReport
-CreateAssetMenuAttribute
-Cubemap
-CubemapArray
-CubemapFace
-CullingGroup
-CullingGroupEvent
-Cursor
-CursorLockMode
-CursorMode
-CustomGridBrushAttribute
-CustomRenderTexture
-CustomRenderTextureInitializationSource
-CustomRenderTextureUpdateMode
-CustomRenderTextureUpdateZone
-CustomRenderTextureUpdateZoneSpace
-CustomYieldInstruction
-D3DHDRDisplayBitDepth
-Debug
-DefaultExecutionOrder
-DelayedAttribute
-DepthTextureMode
-DetailPrototype
-DetailRenderMode
-DeviceOrientation
-DeviceType
-DisallowMultipleComponent
-Display
-DistanceJoint2D
-DrivenRectTransformTracker
-DrivenTransformProperties
-DurationUnit
-DynamicGI
-EdgeCollider2D
-Effector2D
-EffectorForceMode2D
-EffectorSelection2D
-Event
-EventModifiers
-EventProvider
-EventType
-ExcludeFromObjectFactoryAttribute
-ExcludeFromPresetAttribute
-ExecuteAlways
-ExecuteInEditMode
-ExitGUIException
-ExposedPropertyResolver
-ExposedReference<>
-FFTWindow
-FilterMode
-FingerDof
-FixedJoint
-FixedJoint2D
-+ private FixedUpdate() { ... }
-Flare
-FlareLayer
-FocusType
-FogMode
-Font
-FontStyle
-ForceMode
-ForceMode2D
-FrameTiming
-FrameTimingManager
-FrictionJoint2D
-FrustumPlanes
-FullScreenMode
-FullScreenMovieControlMode
-FullScreenMovieScalingMode
-GL
-GUI
-GUIContent
-GUILayout
-GUILayoutOption
-GUILayoutUtility
-GUISettings
-GUISkin
-GUIStyle
-GUIStyleState
-GUITargetAttribute
-GUIUtility
-GameObject
-GeometryUtility
-Gizmos
-Gradient
-GradientAlphaKey
-GradientColorKey
-GradientMode
-GradientUsageAttribute
-Graphics
-GraphicsBuffer
-Grid
-GridBrushBase
-GridLayout
-Gyroscope
-HDROutputSettings
-Handheld
-Hash128
-HashUnsafeUtilities
-HashUtilities
-HeadDof
-HeaderAttribute
-HelpURLAttribute
-HideFlags
-HideInInspector
-HingeJoint
-HingeJoint2D
-HorizontalWrapMode
-HumanBodyBones
-HumanBone
-HumanDescription
-HumanLimit
-HumanPartDof
-HumanPose
-HumanPoseHandler
-HumanTrait
-IAnimationClipSource
-ICanvasRaycastFilter
-IExposedPropertyTable
-ILogHandler
-ILogger
-IMECompositionMode
-ISerializationCallbackReceiver
-ISubsystem
-ISubsystemDescriptor
-ImageConversion
-ImageEffectAfterScale
-ImageEffectAllowedInSceneView
-ImageEffectOpaque
-ImageEffectTransformsToLDR
-ImageEffectUsesCommandBuffer
-ImagePosition
-Input
-InspectorNameAttribute
-IntegratedSubsystem
-IntegratedSubsystem<>
-IntegratedSubsystemDescriptor
-IntegratedSubsystemDescriptor<>
-JetBrains
-Joint
-Joint2D
-JointAngleLimits2D
-JointDrive
-JointDriveMode
-JointLimitState2D
-JointLimits
-JointMotor
-JointMotor2D
-JointProjectionMode
-JointSpring
-JointSuspension2D
-JointTranslationLimits2D
-JsonUtility
-KeyCode
-Keyframe
-LOD
-LODFadeMode
-LODGroup
-+ private LateUpdate() { ... }
-LayerMask
-LazyLoadReference<>
-LegDof
-LensFlare
-Light
-LightBakingOutput
-LightProbeGroup
-LightProbeProxyVolume
-LightProbes
-LightRenderMode
-LightShadowCasterMode
-LightShadows
-LightShape
-LightType
-LightmapBakeType
-LightmapData
-LightmapSettings
-LightmappingMode
-LightmapsMode
-LightmapsModeLegacy
-LineAlignment
-LineRenderer
-LineTextureMode
-LineUtility
-LocalizationAsset
-LocationInfo
-LocationService
-LocationServiceStatus
-LogOption
-LogType
-Logger
-MatchTargetWeightMask
-Material
-MaterialGlobalIlluminationFlags
-MaterialPropertyBlock
-Mathf
-Matrix4x4
-Mesh
-MeshCollider
-MeshColliderCookingOptions
-MeshFilter
-MeshRenderer
-MeshTopology
-Microphone
-Microsoft
-MinAttribute
-MissingComponentException
-MissingReferenceException
-MixedLightingMode
-MonoBehaviour
-Motion
-MotionVectorGenerationMode
-MultilineAttribute
-NPOTSupport
-NetworkReachability
-Object
-OcclusionArea
-OcclusionPortal
-+ private OnAnimatorIK(int) { ... }
-+ private OnAnimatorMove() { ... }
-+ private OnApplicationFocus(bool) { ... }
-+ private OnApplicationPause(bool) { ... }
-+ private OnApplicationQuit() { ... }
-+ private OnAudioFilterRead(float[], int) { ... }
-+ private OnBecameInvisible() { ... }
-+ private OnBecameVisible() { ... }
-private OnBeforeTransformParentChanged() { ... }
-private OnCanvasGroupChanged() { ... }
-private OnCanvasHierarchyChanged() { ... }
-+ private OnCollisionEnter(Collision) { ... }
-+ private OnCollisionEnter2D(Collision2D) { ... }
-+ private OnCollisionExit(Collision) { ... }
-+ private OnCollisionExit2D(Collision2D) { ... }
-+ private OnCollisionStay(Collision) { ... }
-+ private OnCollisionStay2D(Collision2D) { ... }
-+ private OnConnectedToServer() { ... }
-+ private OnControllerColliderHit(ControllerColliderHit) { ... }
-+ private OnDestroy() { ... }
-private OnDidApplyAnimationProperties() { ... }
-+ private OnDisable() { ... }
-+ private OnDrawGizmos() { ... }
-+ private OnDrawGizmosSelected() { ... }
-+ private OnEnable() { ... }
-+ private OnGUI() { ... }
-+ private OnJointBreak(float) { ... }
-+ private OnJointBreak2D(Joint2D) { ... }
-+ private OnMouseDown() { ... }
-+ private OnMouseDrag() { ... }
-+ private OnMouseEnter() { ... }
-+ private OnMouseExit() { ... }
-+ private OnMouseOver() { ... }
-+ private OnMouseUp() { ... }
-+ private OnMouseUpAsButton() { ... }
-+ private OnParticleCollision(GameObject) { ... }
-+ private OnParticleSystemStopped() { ... }
-+ private OnParticleTrigger() { ... }
-+ private OnParticleUpdateJobScheduled() { ... }
-+ private OnPostRender() { ... }
-+ private OnPreCull() { ... }
-+ private OnPreRender() { ... }
-private OnRectTransformDimensionsChange() { ... }
-+ private OnRenderImage(RenderTexture, RenderTexture) { ... }
-+ private OnRenderObject() { ... }
-+ private OnServerInitialized() { ... }
-+ private OnTransformChildrenChanged() { ... }
-+ private OnTransformParentChanged() { ... }
-+ private OnTriggerEnter(Collider) { ... }
-+ private OnTriggerEnter2D(Collider2D) { ... }
-+ private OnTriggerExit(Collider) { ... }
-+ private OnTriggerExit2D(Collider2D) { ... }
-+ private OnTriggerStay(Collider) { ... }
-+ private OnTriggerStay2D(Collider2D) { ... }
-+ private OnValidate() { ... }
-+ private OnWillRenderObject() { ... }
-OperatingSystemFamily
-ParticleCollisionEvent
-ParticlePhysicsExtensions
-ParticleSystem
-ParticleSystemAnimationMode
-ParticleSystemAnimationRowMode
-ParticleSystemAnimationTimeMode
-ParticleSystemAnimationType
-ParticleSystemCollisionMode
-ParticleSystemCollisionQuality
-ParticleSystemCollisionType
-ParticleSystemCullingMode
-ParticleSystemCurveMode
-ParticleSystemCustomData
-ParticleSystemCustomDataMode
-ParticleSystemEmissionType
-ParticleSystemEmitterVelocityMode
-ParticleSystemForceField
-ParticleSystemForceFieldShape
-ParticleSystemGameObjectFilter
-ParticleSystemGradientMode
-ParticleSystemInheritVelocityMode
-ParticleSystemMeshShapeType
-ParticleSystemNoiseQuality
-ParticleSystemOverlapAction
-ParticleSystemRenderMode
-ParticleSystemRenderSpace
-ParticleSystemRenderer
-ParticleSystemRingBufferMode
-ParticleSystemScalingMode
-ParticleSystemShapeMultiModeValue
-ParticleSystemShapeTextureChannel
-ParticleSystemShapeType
-ParticleSystemSimulationSpace
-ParticleSystemSortMode
-ParticleSystemStopAction
-ParticleSystemStopBehavior
-ParticleSystemSubEmitterProperties
-ParticleSystemSubEmitterType
-ParticleSystemTrailMode
-ParticleSystemTrailTextureMode
-ParticleSystemTriggerEventType
-ParticleSystemVertexStream
-ParticleSystemVertexStreams
-PatchExtents
-PhysicMaterial
-PhysicMaterialCombine
-Physics
-Physics2D
-PhysicsJobOptions2D
-PhysicsMaterial2D
-PhysicsScene
-PhysicsScene2D
-PhysicsSceneExtensions
-PhysicsSceneExtensions2D
-PhysicsUpdateBehaviour2D
-Ping
-Plane
-PlatformEffector2D
-PlayMode
-PlayerPrefs
-PlayerPrefsException
-PointEffector2D
-PointerType
-PolygonCollider2D
-Pose
-PreferBinarySerialization
-PrimitiveType
-ProceduralTexture
-Projector
-PropertyAttribute
-PropertyName
-QualityLevel
-QualitySettings
-Quaternion
-QueryTriggerInteraction
-QueueMode
-Random
-RangeAttribute
-RangeInt
-Ray
-Ray2D
-RaycastCommand
-RaycastHit
-RaycastHit2D
-ReceiveGI
-Rect
-RectInt
-RectOffset
-RectTransform
-RectTransformUtility
-ReflectionProbe
-RelativeJoint2D
-RemoteConfigSettings
-RemoteSettings
-RenderBuffer
-RenderMode
-RenderSettings
-RenderTargetSetup
-RenderTexture
-RenderTextureCreationFlags
-RenderTextureDescriptor
-RenderTextureFormat
-RenderTextureMemoryless
-RenderTextureReadWrite
-Renderer
-RendererExtensions
-RenderingPath
-RequireComponent
-+ private Reset() { ... }
-Resolution
-ResourceRequest
-Resources
-Rigidbody
-Rigidbody2D
-RigidbodyConstraints
-RigidbodyConstraints2D
-RigidbodyInterpolation
-RigidbodyInterpolation2D
-RigidbodySleepMode2D
-RigidbodyType2D
-RotationDriveMode
-RuntimeAnimatorController
-RuntimeInitializeLoadType
-RuntimeInitializeOnLoadMethodAttribute
-RuntimePlatform
-ScalableBufferManager
-ScaleMode
-Screen
-ScreenCapture
-ScreenOrientation
-ScriptableObject
-SecondarySpriteTexture
-Security
-SelectionBaseAttribute
-SendMessageOptions
-SerializeField
-SerializePrivateVariables
-SerializeReference
-Shader
-ShaderVariantCollection
-ShadowProjection
-ShadowQuality
-ShadowResolution
-ShadowmaskMode
-SharedBetweenAnimatorsAttribute
-SkeletonBone
-SkinQuality
-SkinWeights
-SkinnedMeshRenderer
-Skybox
-SleepTimeout
-SliderJoint2D
-SnapAxis
-Snapping
-Social
-SoftJointLimit
-SoftJointLimitSpring
-SortingLayer
-Space
-SpaceAttribute
-SparseTexture
-SphereCollider
-SpherecastCommand
-SplatPrototype
-SpringJoint
-SpringJoint2D
-Sprite
-SpriteAlignment
-SpriteDrawMode
-SpriteMask
-SpriteMaskInteraction
-SpriteMeshType
-SpritePackingMode
-SpritePackingRotation
-SpriteRenderer
-SpriteSortPoint
-SpriteTileMode
-StackTraceLogType
-StackTraceUtility
-+ private Start() { ... }
-StateMachineBehaviour
-StaticBatchingUtility
-StereoTargetEyeMask
-StreamingController
-Subsystem
-Subsystem<>
-SubsystemDescriptor
-SubsystemDescriptor<>
-SubsystemManager
-SurfaceEffector2D
-System
-SystemInfo
-SystemLanguage
-TargetJoint2D
-Terrain
-TerrainChangedFlags
-TerrainCollider
-TerrainData
-TerrainExtensions
-TerrainHeightmapSyncControl
-TerrainLayer
-TerrainRenderFlags
-TexGenMode
-TextAlignment
-TextAnchor
-TextAreaAttribute
-TextAsset
-TextClipping
-TextEditor
-TextGenerationSettings
-TextGenerator
-TextMesh
-Texture
-Texture2D
-Texture2DArray
-Texture3D
-TextureFormat
-TextureWrapMode
-ThreadPriority
-Time
-TooltipAttribute
-Touch
-TouchPhase
-TouchScreenKeyboard
-TouchScreenKeyboardType
-TouchType
-TrackedReference
-TrailRenderer
-Transform
-TransparencySortMode
-Tree
-TreeEditor
-TreeInstance
-TreePrototype
-Types
-UICharInfo
-UILineInfo
-UISystemProfilerApi
-UIVertex
-UnassignedReferenceException
-Unity
-UnityAPICompatibilityVersionAttribute
-UnityEditor
-UnityEditorInternal
-UnityEngine
-UnityEngineInternal
-UnityEventQueueSystem
-UnityException
-+ private Update() { ... }
-UserAuthorization
-VRTextureUsage
-Vector2
-Vector2Int
-Vector3
-Vector3Int
-Vector4
-VerticalWrapMode
-WWW
-WWWAudioExtensions
-WWWForm
-WaitForEndOfFrame
-WaitForFixedUpdate
-WaitForSeconds
-WaitForSecondsRealtime
-WaitUntil
-WaitWhile
-WebCamDevice
-WebCamFlags
-WebCamKind
-WebCamTexture
-WeightedMode
-WheelCollider
-WheelFrictionCurve
-WheelHit
-WheelJoint2D
-WindZone
-WindZoneMode
-WrapMode
-YieldInstruction
-abstract
-async
-bool
-byte
-char
-class
-const
-decimal
-delegate
-double
-dynamic
-enum
-event
-explicit
-extern
-float
-implicit
-int
-interface
-internal
-jvalue
-long
-new
-nint
-nuint
-object
-override
-partial
-private
-protected
-public
-readonly
-record
-ref
-required
-sbyte
-sealed
-short
-static
-string
-struct
-uint
-ulong
-unsafe
-ushort
-virtual
-void
-volatile
----- FULL EVALUATION ----
-public override Equals(object) { … }    bool
-public override GetHashCode() { … }    int
-public override ToString() { … }    string
+                            [Full, Generic]
+public override |Equals|(object) |{ … }    bool    OrderStr=Equals
+public override |GetHashCode|() |{ … }    int    OrderStr=GetHashCode
+public override |ToString|() |{ … }    string    OrderStr=ToString

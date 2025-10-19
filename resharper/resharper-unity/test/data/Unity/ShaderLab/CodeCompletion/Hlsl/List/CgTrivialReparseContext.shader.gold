@@ -1,45 +1,54 @@
-# 20 ITEMS #
+﻿Completion: Basic
+Prefix: "fix"
+Count: 20
+Focus: Hard
+Range: "fix♦ed4 v;"
+        ▲▲▲▲△△△
 
-+ fixed
-fixed1x1
-fixed1x2
-fixed1x3
-fixed1x4
-fixed2
-fixed2x1
-fixed2x2
-fixed2x3
-fixed2x4
-fixed3
-fixed3x1
-fixed3x2
-fixed3x3
-fixed3x4
-fixed4
-fixed4x1
-fixed4x2
-fixed4x3
-fixed4x4
-# AUTOMATIC #
-# 20 ITEMS #
+##### RELEVANCE SORT #####
 
-+ fixed
-fixed1x1
-fixed1x2
-fixed1x3
-fixed1x4
-fixed2
-fixed2x1
-fixed2x2
-fixed2x3
-fixed2x4
-fixed3
-fixed3x1
-fixed3x2
-fixed3x3
-fixed3x4
-fixed4
-fixed4x1
-fixed4x2
-fixed4x3
-fixed4x4
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixMatch, 16, Other]
+f̣ịx̣ed                       <==
+f̣ịx̣ed1x1
+f̣ịx̣ed1x2
+f̣ịx̣ed1x3
+f̣ịx̣ed1x4
+f̣ịx̣ed2
+f̣ịx̣ed2x1
+f̣ịx̣ed2x2
+f̣ịx̣ed2x3
+f̣ịx̣ed2x4
+f̣ịx̣ed3
+f̣ịx̣ed3x1
+f̣ịx̣ed3x2
+f̣ịx̣ed3x3
+f̣ịx̣ed3x4
+f̣ịx̣ed4
+f̣ịx̣ed4x1
+f̣ịx̣ed4x2
+f̣ịx̣ed4x3
+f̣ịx̣ed4x4
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic, Rank=18]
+f̣ịx̣ed                       <==
+f̣ịx̣ed1x1
+f̣ịx̣ed1x2
+f̣ịx̣ed1x3
+f̣ịx̣ed1x4
+f̣ịx̣ed2
+f̣ịx̣ed2x1
+f̣ịx̣ed2x2
+f̣ịx̣ed2x3
+f̣ịx̣ed2x4
+f̣ịx̣ed3
+f̣ịx̣ed3x1
+f̣ịx̣ed3x2
+f̣ịx̣ed3x3
+f̣ịx̣ed3x4
+f̣ịx̣ed4
+f̣ịx̣ed4x1
+f̣ịx̣ed4x2
+f̣ịx̣ed4x3
+f̣ịx̣ed4x4

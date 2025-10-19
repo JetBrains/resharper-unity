@@ -1,7 +1,14 @@
-﻿# 1 ITEM #
+﻿Completion: Basic
+Count: 1
+Focus: Hard
+Range: "♦"
 
-+ Bind(Space)
-# AUTOMATIC #
-# 1 ITEM #
+##### RELEVANCE SORT #####
 
-+ Bind(Space)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Bind                        <==
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Bind                        <==

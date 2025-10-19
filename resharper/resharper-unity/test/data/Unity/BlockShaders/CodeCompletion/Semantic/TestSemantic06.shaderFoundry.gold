@@ -1,6 +1,36 @@
-# 20 ITEMS #
+﻿Completion: Basic
+Count: 20
+Focus: Hard
+Range: "float4 _Color : ♦"
 
-+ COLOR
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+COLOR                       <==
+COLOR0
+COLOR1
+COLOR2
+COLOR3
+COLOR4
+COLOR5
+COLOR6
+COLOR7
+POSITION
+SV_POSITION
+TANGENT
+TEXCOORD0
+TEXCOORD1
+TEXCOORD2
+TEXCOORD3
+TEXCOORD4
+TEXCOORD5
+TEXCOORD6
+TEXCOORD7
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+COLOR                       <==
 COLOR0
 COLOR1
 COLOR2

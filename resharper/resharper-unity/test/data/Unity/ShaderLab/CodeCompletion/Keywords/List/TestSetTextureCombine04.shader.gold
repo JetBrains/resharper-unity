@@ -1,15 +1,22 @@
-﻿# 6 ITEMS #
+﻿Completion: Basic
+Count: 6
+Focus: Hard
+Range: "Combine Texture ♦"
 
-+ Alpha
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Alpha                       <==
 Dot3
 Dot3Rgba
 Double
 Lerp
 Quad
-# AUTOMATIC #
-# 6 ITEMS #
 
-+ Alpha
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Alpha                       <==
 Dot3
 Dot3Rgba
 Double

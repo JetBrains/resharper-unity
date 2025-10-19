@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.BlockShaders.Feature.Services.
     [TestUnity, RequireHlslSupport]
     public class BlockShadersSemanticCompletionTests : ShaderLabCodeCompletionTestBase
     {
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         
         protected override string RelativeTestDataPath => @"BlockShaders\CodeCompletion\Semantic";
 

@@ -1,6 +1,12 @@
-# 10 ITEMS #
+﻿Completion: Basic
+Count: 10
+Focus: Hard
+Range: "#pragma ♦"
 
-+ disable_fastmath
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject, HighSelectionPriority, NormalSelectionPriority, Other]
+disable_fastmath            <==
 enable_d3d11_debug_symbols
 exclude_renderers
 hlslcc_bytecode_disassembly
@@ -10,10 +16,11 @@ multi_compile_local
 only_renderers
 require
 warning
-# AUTOMATIC #
-# 10 ITEMS #
 
-+ disable_fastmath
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+disable_fastmath            <==
 enable_d3d11_debug_symbols
 exclude_renderers
 hlslcc_bytecode_disassembly

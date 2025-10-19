@@ -1,9 +1,16 @@
-﻿# 2 ITEMS #
+﻿Completion: Basic
+Count: 2
+Focus: Hard
+Range: "♦"
 
-+ Name(Space)
-Tags(Braces)
-# AUTOMATIC #
-# 2 ITEMS #
+##### RELEVANCE SORT #####
 
-+ Name(Space)
-Tags(Braces)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Name                        <==
+Tags
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Name                        <==
+Tags

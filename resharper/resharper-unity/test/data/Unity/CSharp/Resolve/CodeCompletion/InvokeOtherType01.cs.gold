@@ -1,7 +1,15 @@
-﻿# 1 ITEM #
+﻿Completion: Basic
+Count: 1
+Focus: Hard
+Auto-accept: DoNotAutoAccept
+Range: "GetComponent<A>().Invoke("♦", 2);"
 
-+ LaunchProjectile    void
-# AUTOMATIC #
-# 1 ITEM #
+##### RELEVANCE SORT #####
 
-+ LaunchProjectile    void
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Methods, NonStatic, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+LaunchProjectile            void    <==
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+LaunchProjectile            void    <==

@@ -1,11 +1,21 @@
-﻿# 3 ITEMS #
+﻿Completion: Basic
+Prefix: "Edit"
+Count: 3
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "var so = ScriptableObject.CreateInstance("Edit♦");"
+                                                  ▲▲▲▲▲
 
-+ TreeEditor
-+ UnityEditor
-+ UnityEditorInternal
-# AUTOMATIC #
-# 3 ITEMS #
+##### RELEVANCE SORT #####
 
-+ TreeEditor
-+ UnityEditor
-+ UnityEditorInternal
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, TypesAndNamespaces, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+TreeẸḍịṭor                  <==
+UnityẸḍịṭor
+UnityẸḍịṭorInternal
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+TreeẸḍịṭor                  <==
+UnityẸḍịṭor
+UnityẸḍịṭorInternal

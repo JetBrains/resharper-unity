@@ -1,728 +1,738 @@
-﻿# 362 ITEMS #
+﻿Completion: Basic
+Count: 362
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "go.GetComponent("UnityEngine.♦");"
 
+##### RELEVANCE SORT #####
+
+                            [NotObsolete]
+AddComponentMenu            <==
+AnchoredJoint2D
+AndroidInput
+AndroidJNI
+AndroidJNIHelper
+AndroidJavaClass
+AndroidJavaException
+AndroidJavaObject
+AndroidJavaProxy
+Animation
+AnimationClip
+AnimationCurve
+AnimationEvent
+AnimationState
+Animator
+AnimatorControllerParameter
+AnimatorOverrideController
+AnimatorUtility
+Application
+AreaEffector2D
+AssemblyIsEditorAssembly
+AssetBundle
+AssetBundleCreateRequest
+AssetBundleManifest
+AssetBundleRecompressOperation
+AssetBundleRequest
+AsyncOperation
+AudioBehaviour
+AudioChorusFilter
+AudioClip
+AudioDistortionFilter
+AudioEchoFilter
+AudioHighPassFilter
+AudioListener
+AudioLowPassFilter
+AudioRenderer
+AudioReverbFilter
+AudioReverbZone
+AudioSettings
+AudioSource
+Avatar
+AvatarBuilder
+AvatarMask
+BeforeRenderOrderAttribute
+Behaviour
+BillboardAsset
+BillboardRenderer
+BoxCollider
+BoxCollider2D
+BuoyancyEffector2D
+Caching
+Camera
+Canvas
+CanvasGroup
+CanvasRenderer
+CapsuleCollider
+CapsuleCollider2D
+CharacterController
+CharacterJoint
+CircleCollider2D
+Cloth
+ClusterInput
+ClusterNetwork
+Collider
+Collider2D
+Collision
+Collision2D
+ColorUsageAttribute
+ColorUtility
+Compass
+Component
+CompositeCollider2D
+ComputeBuffer
+ComputeShader
+ConfigurableJoint
+ConstantForce
+ConstantForce2D
+ContextMenu
+ContextMenuItemAttribute
+ControllerColliderHit
+Coroutine
+CrashReport
+CreateAssetMenuAttribute
+Cubemap
+CubemapArray
+CullingGroup
+Cursor
+CustomGridBrushAttribute
+CustomRenderTexture
+CustomYieldInstruction
+Debug
+DefaultExecutionOrder
+DelayedAttribute
+DetailPrototype
+DisallowMultipleComponent
+Display
+DistanceJoint2D
+DynamicGI
+EdgeCollider2D
+Effector2D
+Event
+EventProvider
+ExcludeFromObjectFactoryAttribute
+ExcludeFromPresetAttribute
+ExecuteAlways
+ExecuteInEditMode
+ExitGUIException
+FixedJoint
+FixedJoint2D
+Flare
+FlareLayer
+Font
+FrameTimingManager
+FrictionJoint2D
+GL
+GUI
+GUIContent
+GUILayout
+GUILayoutOption
+GUILayoutUtility
+GUISettings
+GUISkin
+GUIStyle
+GUIStyleState
+GUITargetAttribute
+GUIUtility
+GameObject
+GeometryUtility
+Gizmos
+Gradient
+GradientUsageAttribute
+Graphics
+GraphicsBuffer
+Grid
+GridBrushBase
+GridLayout
+Gyroscope
+HDROutputSettings
+Handheld
+HashUnsafeUtilities
+HashUtilities
+HeaderAttribute
+HelpURLAttribute
+HideInInspector
+HingeJoint
+HingeJoint2D
+HumanPoseHandler
+HumanTrait
+ImageConversion
+ImageEffectAfterScale
+ImageEffectAllowedInSceneView
+ImageEffectOpaque
+ImageEffectTransformsToLDR
+ImageEffectUsesCommandBuffer
+Input
+InspectorNameAttribute
+IntegratedSubsystem
+IntegratedSubsystem<>
+IntegratedSubsystemDescriptor
+IntegratedSubsystemDescriptor<>
+Joint
+Joint2D
+JsonUtility
+LODGroup
+LensFlare
+Light
+LightProbeGroup
+LightProbeProxyVolume
+LightProbes
+LightmapData
+LightmapSettings
+LineRenderer
+LineUtility
+LocalizationAsset
+LocationService
+Logger
+Material
+MaterialPropertyBlock
+Mesh
+MeshCollider
+MeshFilter
+MeshRenderer
+Microphone
+MinAttribute
+MissingComponentException
+MissingReferenceException
+MonoBehaviour
+Motion
+MultilineAttribute
+Object
+OcclusionArea
+OcclusionPortal
+ParticlePhysicsExtensions
+ParticleSystem
+ParticleSystemForceField
+ParticleSystemRenderer
+PhysicMaterial
+Physics
+Physics2D
+PhysicsMaterial2D
+PhysicsSceneExtensions
+PhysicsSceneExtensions2D
+PhysicsUpdateBehaviour2D
+Ping
+PlatformEffector2D
+PlayerPrefs
+PlayerPrefsException
+PointEffector2D
+PolygonCollider2D
+PreferBinarySerialization
+Projector
+PropertyAttribute
+QualitySettings
+Random
+RangeAttribute
+RectOffset
+RectTransform
+RectTransformUtility
+ReflectionProbe
+RelativeJoint2D
+RemoteConfigSettings
+RemoteSettings
+RenderSettings
+RenderTexture
+Renderer
+RendererExtensions
+RequireComponent
+ResourceRequest
+Resources
+Rigidbody
+Rigidbody2D
+RuntimeAnimatorController
+RuntimeInitializeOnLoadMethodAttribute
+ScalableBufferManager
+Screen
+ScreenCapture
+ScriptableObject
+Security
+SelectionBaseAttribute
+SerializeField
+SerializeReference
+Shader
+ShaderVariantCollection
+SharedBetweenAnimatorsAttribute
+SkinnedMeshRenderer
+Skybox
+SleepTimeout
+SliderJoint2D
+Snapping
+Social
+SpaceAttribute
+SparseTexture
+SphereCollider
+SplatPrototype
+SpringJoint
+SpringJoint2D
+Sprite
+SpriteMask
+SpriteRenderer
+StackTraceUtility
+StateMachineBehaviour
+StaticBatchingUtility
+StreamingController
+Subsystem
+Subsystem<>
+SubsystemDescriptor
+SubsystemDescriptor<>
+SubsystemManager
+SurfaceEffector2D
+SystemInfo
+TargetJoint2D
+Terrain
+TerrainCollider
+TerrainData
+TerrainExtensions
+TerrainLayer
+TextAreaAttribute
+TextAsset
+TextEditor
+TextGenerator
+TextMesh
+Texture
+Texture2D
+Texture2DArray
+Texture3D
+Time
+TooltipAttribute
+TouchScreenKeyboard
+TrackedReference
+TrailRenderer
+Transform
+Tree
+TreePrototype
+Types
+UISystemProfilerApi
+UnassignedReferenceException
+UnityAPICompatibilityVersionAttribute
+UnityEventQueueSystem
+UnityException
+WWWAudioExtensions
+WWWForm
+WaitForEndOfFrame
+WaitForFixedUpdate
+WaitForSeconds
+WaitForSecondsRealtime
+WaitUntil
+WaitWhile
+WebCamTexture
+WheelCollider
+WheelJoint2D
+WindZone
+YieldInstruction
+                            [ImportedType^]
+AnimationClipPair
+ProceduralTexture
+SerializePrivateVariables
+WWW
+                            [Other^, NormalSelectionPriority^, ObsoleteRuleApplied^, NotObsolete, TypesAndNamespaces^, FromLightAndDynamicEvaluation^, FromSingleCompletion^]
 AI
 Accessibility
-+ AddComponentMenu
 Advertisements
 Analytics
-+ AnchoredJoint2D
 Android
-+ AndroidInput
-+ AndroidJNI
-+ AndroidJNIHelper
-+ AndroidJavaClass
-+ AndroidJavaException
-+ AndroidJavaObject
-+ AndroidJavaProxy
-+ Animation
-+ AnimationClip
-AnimationClipPair
-+ AnimationCurve
-+ AnimationEvent
-+ AnimationState
 Animations
-+ Animator
-+ AnimatorControllerParameter
-+ AnimatorOverrideController
-+ AnimatorUtility
 Apple
-+ Application
-+ AreaEffector2D
-+ AssemblyIsEditorAssembly
 Assertions
-+ AssetBundle
-+ AssetBundleCreateRequest
-+ AssetBundleManifest
-+ AssetBundleRecompressOperation
-+ AssetBundleRequest
-+ AsyncOperation
 Audio
-+ AudioBehaviour
-+ AudioChorusFilter
-+ AudioClip
-+ AudioDistortionFilter
-+ AudioEchoFilter
-+ AudioHighPassFilter
-+ AudioListener
-+ AudioLowPassFilter
-+ AudioRenderer
-+ AudioReverbFilter
-+ AudioReverbZone
-+ AudioSettings
-+ AudioSource
-+ Avatar
-+ AvatarBuilder
-+ AvatarMask
-+ BeforeRenderOrderAttribute
-+ Behaviour
-+ BillboardAsset
-+ BillboardRenderer
 Bindings
-+ BoxCollider
-+ BoxCollider2D
-+ BuoyancyEffector2D
-+ Caching
-+ Camera
-+ Canvas
-+ CanvasGroup
-+ CanvasRenderer
-+ CapsuleCollider
-+ CapsuleCollider2D
-+ CharacterController
-+ CharacterJoint
-+ CircleCollider2D
-+ Cloth
-+ ClusterInput
-+ ClusterNetwork
-+ Collider
-+ Collider2D
-+ Collision
-+ Collision2D
-+ ColorUsageAttribute
-+ ColorUtility
-+ Compass
-+ Component
-+ CompositeCollider2D
-+ ComputeBuffer
-+ ComputeShader
-+ ConfigurableJoint
 Connect
-+ ConstantForce
-+ ConstantForce2D
-+ ContextMenu
-+ ContextMenuItemAttribute
-+ ControllerColliderHit
-+ Coroutine
-+ CrashReport
 CrashReportHandler
-+ CreateAssetMenuAttribute
-+ Cubemap
-+ CubemapArray
-+ CullingGroup
-+ Cursor
-+ CustomGridBrushAttribute
-+ CustomRenderTexture
-+ CustomYieldInstruction
-+ Debug
-+ DefaultExecutionOrder
-+ DelayedAttribute
-+ DetailPrototype
 Diagnostics
-+ DisallowMultipleComponent
-+ Display
-+ DistanceJoint2D
-+ DynamicGI
-+ EdgeCollider2D
-+ Effector2D
-+ Event
-+ EventProvider
 Events
-+ ExcludeFromObjectFactoryAttribute
-+ ExcludeFromPresetAttribute
-+ ExecuteAlways
-+ ExecuteInEditMode
-+ ExitGUIException
 Experimental
-+ FixedJoint
-+ FixedJoint2D
-+ Flare
-+ FlareLayer
-+ Font
-+ FrameTimingManager
-+ FrictionJoint2D
-+ GL
-+ GUI
-+ GUIContent
-+ GUILayout
-+ GUILayoutOption
-+ GUILayoutUtility
-+ GUISettings
-+ GUISkin
-+ GUIStyle
-+ GUIStyleState
-+ GUITargetAttribute
-+ GUIUtility
-+ GameObject
-+ GeometryUtility
-+ Gizmos
-+ Gradient
-+ GradientUsageAttribute
-+ Graphics
-+ GraphicsBuffer
-+ Grid
-+ GridBrushBase
-+ GridLayout
-+ Gyroscope
-+ HDROutputSettings
-+ Handheld
-+ HashUnsafeUtilities
-+ HashUtilities
-+ HeaderAttribute
-+ HelpURLAttribute
-+ HideInInspector
-+ HingeJoint
-+ HingeJoint2D
-+ HumanPoseHandler
-+ HumanTrait
-+ ImageConversion
-+ ImageEffectAfterScale
-+ ImageEffectAllowedInSceneView
-+ ImageEffectOpaque
-+ ImageEffectTransformsToLDR
-+ ImageEffectUsesCommandBuffer
-+ Input
-+ InspectorNameAttribute
-+ IntegratedSubsystem
-+ IntegratedSubsystem<>
-+ IntegratedSubsystemDescriptor
-+ IntegratedSubsystemDescriptor<>
 Internal
 Jobs
-+ Joint
-+ Joint2D
-+ JsonUtility
-+ LODGroup
-+ LensFlare
-+ Light
-+ LightProbeGroup
-+ LightProbeProxyVolume
-+ LightProbes
-+ LightmapData
-+ LightmapSettings
-+ LineRenderer
-+ LineUtility
-+ LocalizationAsset
-+ LocationService
-+ Logger
 LowLevel
 Lumin
-+ Material
-+ MaterialPropertyBlock
-+ Mesh
-+ MeshCollider
-+ MeshFilter
-+ MeshRenderer
-+ Microphone
-+ MinAttribute
-+ MissingComponentException
-+ MissingReferenceException
-+ MonoBehaviour
-+ Motion
-+ MultilineAttribute
 Networking
-+ Object
-+ OcclusionArea
-+ OcclusionPortal
-+ ParticlePhysicsExtensions
-+ ParticleSystem
-+ ParticleSystemForceField
 ParticleSystemJobs
-+ ParticleSystemRenderer
-+ PhysicMaterial
-+ Physics
-+ Physics2D
-+ PhysicsMaterial2D
-+ PhysicsSceneExtensions
-+ PhysicsSceneExtensions2D
-+ PhysicsUpdateBehaviour2D
-+ Ping
-+ PlatformEffector2D
 Playables
 PlayerLoop
-+ PlayerPrefs
-+ PlayerPrefsException
-+ PointEffector2D
-+ PolygonCollider2D
-+ PreferBinarySerialization
-ProceduralTexture
 Profiling
-+ Projector
-+ PropertyAttribute
-+ QualitySettings
-+ Random
-+ RangeAttribute
-+ RectOffset
-+ RectTransform
-+ RectTransformUtility
-+ ReflectionProbe
-+ RelativeJoint2D
-+ RemoteConfigSettings
-+ RemoteSettings
-+ RenderSettings
-+ RenderTexture
-+ Renderer
-+ RendererExtensions
 Rendering
-+ RequireComponent
-+ ResourceRequest
-+ Resources
-+ Rigidbody
-+ Rigidbody2D
-+ RuntimeAnimatorController
-+ RuntimeInitializeOnLoadMethodAttribute
-+ ScalableBufferManager
 SceneManagement
-+ Screen
-+ ScreenCapture
-+ ScriptableObject
 Scripting
-+ Security
-+ SelectionBaseAttribute
 Serialization
-+ SerializeField
-SerializePrivateVariables
-+ SerializeReference
-+ Shader
-+ ShaderVariantCollection
-+ SharedBetweenAnimatorsAttribute
-+ SkinnedMeshRenderer
-+ Skybox
-+ SleepTimeout
-+ SliderJoint2D
-+ Snapping
-+ Social
 SocialPlatforms
-+ SpaceAttribute
-+ SparseTexture
-+ SphereCollider
-+ SplatPrototype
-+ SpringJoint
-+ SpringJoint2D
-+ Sprite
-+ SpriteMask
-+ SpriteRenderer
 Sprites
-+ StackTraceUtility
-+ StateMachineBehaviour
-+ StaticBatchingUtility
-+ StreamingController
-+ Subsystem
-+ Subsystem<>
-+ SubsystemDescriptor
-+ SubsystemDescriptor<>
-+ SubsystemManager
 Subsystems
-+ SurfaceEffector2D
-+ SystemInfo
-+ TargetJoint2D
-+ Terrain
-+ TerrainCollider
-+ TerrainData
-+ TerrainExtensions
-+ TerrainLayer
 TestTools
-+ TextAreaAttribute
-+ TextAsset
 TextCore
-+ TextEditor
-+ TextGenerator
-+ TextMesh
-+ Texture
-+ Texture2D
-+ Texture2DArray
-+ Texture3D
 Tilemaps
-+ Time
-+ TooltipAttribute
-+ TouchScreenKeyboard
-+ TrackedReference
-+ TrailRenderer
-+ Transform
-+ Tree
-+ TreePrototype
-+ Types
 U2D
 UIElements
-+ UISystemProfilerApi
-+ UnassignedReferenceException
-+ UnityAPICompatibilityVersionAttribute
-+ UnityEventQueueSystem
-+ UnityException
 VFX
 VR
 Video
 WSA
-WWW
-+ WWWAudioExtensions
-+ WWWForm
-+ WaitForEndOfFrame
-+ WaitForFixedUpdate
-+ WaitForSeconds
-+ WaitForSecondsRealtime
-+ WaitUntil
-+ WaitWhile
-+ WebCamTexture
-+ WheelCollider
-+ WheelJoint2D
-+ WindZone
 Windows
 XR
-+ YieldInstruction
 Yoga
 _Scripting
 iOS
 tvOS
-# AUTOMATIC #
-# 362 ITEMS #
 
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
 AI
 Accessibility
-+ AddComponentMenu
+AddComponentMenu            <==
 Advertisements
 Analytics
-+ AnchoredJoint2D
+AnchoredJoint2D
 Android
-+ AndroidInput
-+ AndroidJNI
-+ AndroidJNIHelper
-+ AndroidJavaClass
-+ AndroidJavaException
-+ AndroidJavaObject
-+ AndroidJavaProxy
-+ Animation
-+ AnimationClip
+AndroidInput
+AndroidJNI
+AndroidJNIHelper
+AndroidJavaClass
+AndroidJavaException
+AndroidJavaObject
+AndroidJavaProxy
+Animation
+AnimationClip
 AnimationClipPair
-+ AnimationCurve
-+ AnimationEvent
-+ AnimationState
+AnimationCurve
+AnimationEvent
+AnimationState
 Animations
-+ Animator
-+ AnimatorControllerParameter
-+ AnimatorOverrideController
-+ AnimatorUtility
+Animator
+AnimatorControllerParameter
+AnimatorOverrideController
+AnimatorUtility
 Apple
-+ Application
-+ AreaEffector2D
-+ AssemblyIsEditorAssembly
+Application
+AreaEffector2D
+AssemblyIsEditorAssembly
 Assertions
-+ AssetBundle
-+ AssetBundleCreateRequest
-+ AssetBundleManifest
-+ AssetBundleRecompressOperation
-+ AssetBundleRequest
-+ AsyncOperation
+AssetBundle
+AssetBundleCreateRequest
+AssetBundleManifest
+AssetBundleRecompressOperation
+AssetBundleRequest
+AsyncOperation
 Audio
-+ AudioBehaviour
-+ AudioChorusFilter
-+ AudioClip
-+ AudioDistortionFilter
-+ AudioEchoFilter
-+ AudioHighPassFilter
-+ AudioListener
-+ AudioLowPassFilter
-+ AudioRenderer
-+ AudioReverbFilter
-+ AudioReverbZone
-+ AudioSettings
-+ AudioSource
-+ Avatar
-+ AvatarBuilder
-+ AvatarMask
-+ BeforeRenderOrderAttribute
-+ Behaviour
-+ BillboardAsset
-+ BillboardRenderer
+AudioBehaviour
+AudioChorusFilter
+AudioClip
+AudioDistortionFilter
+AudioEchoFilter
+AudioHighPassFilter
+AudioListener
+AudioLowPassFilter
+AudioRenderer
+AudioReverbFilter
+AudioReverbZone
+AudioSettings
+AudioSource
+Avatar
+AvatarBuilder
+AvatarMask
+BeforeRenderOrderAttribute
+Behaviour
+BillboardAsset
+BillboardRenderer
 Bindings
-+ BoxCollider
-+ BoxCollider2D
-+ BuoyancyEffector2D
-+ Caching
-+ Camera
-+ Canvas
-+ CanvasGroup
-+ CanvasRenderer
-+ CapsuleCollider
-+ CapsuleCollider2D
-+ CharacterController
-+ CharacterJoint
-+ CircleCollider2D
-+ Cloth
-+ ClusterInput
-+ ClusterNetwork
-+ Collider
-+ Collider2D
-+ Collision
-+ Collision2D
-+ ColorUsageAttribute
-+ ColorUtility
-+ Compass
-+ Component
-+ CompositeCollider2D
-+ ComputeBuffer
-+ ComputeShader
-+ ConfigurableJoint
+BoxCollider
+BoxCollider2D
+BuoyancyEffector2D
+Caching
+Camera
+Canvas
+CanvasGroup
+CanvasRenderer
+CapsuleCollider
+CapsuleCollider2D
+CharacterController
+CharacterJoint
+CircleCollider2D
+Cloth
+ClusterInput
+ClusterNetwork
+Collider
+Collider2D
+Collision
+Collision2D
+ColorUsageAttribute
+ColorUtility
+Compass
+Component
+CompositeCollider2D
+ComputeBuffer
+ComputeShader
+ConfigurableJoint
 Connect
-+ ConstantForce
-+ ConstantForce2D
-+ ContextMenu
-+ ContextMenuItemAttribute
-+ ControllerColliderHit
-+ Coroutine
-+ CrashReport
+ConstantForce
+ConstantForce2D
+ContextMenu
+ContextMenuItemAttribute
+ControllerColliderHit
+Coroutine
+CrashReport
 CrashReportHandler
-+ CreateAssetMenuAttribute
-+ Cubemap
-+ CubemapArray
-+ CullingGroup
-+ Cursor
-+ CustomGridBrushAttribute
-+ CustomRenderTexture
-+ CustomYieldInstruction
-+ Debug
-+ DefaultExecutionOrder
-+ DelayedAttribute
-+ DetailPrototype
+CreateAssetMenuAttribute
+Cubemap
+CubemapArray
+CullingGroup
+Cursor
+CustomGridBrushAttribute
+CustomRenderTexture
+CustomYieldInstruction
+Debug
+DefaultExecutionOrder
+DelayedAttribute
+DetailPrototype
 Diagnostics
-+ DisallowMultipleComponent
-+ Display
-+ DistanceJoint2D
-+ DynamicGI
-+ EdgeCollider2D
-+ Effector2D
-+ Event
-+ EventProvider
+DisallowMultipleComponent
+Display
+DistanceJoint2D
+DynamicGI
+EdgeCollider2D
+Effector2D
+Event
+EventProvider
 Events
-+ ExcludeFromObjectFactoryAttribute
-+ ExcludeFromPresetAttribute
-+ ExecuteAlways
-+ ExecuteInEditMode
-+ ExitGUIException
+ExcludeFromObjectFactoryAttribute
+ExcludeFromPresetAttribute
+ExecuteAlways
+ExecuteInEditMode
+ExitGUIException
 Experimental
-+ FixedJoint
-+ FixedJoint2D
-+ Flare
-+ FlareLayer
-+ Font
-+ FrameTimingManager
-+ FrictionJoint2D
-+ GL
-+ GUI
-+ GUIContent
-+ GUILayout
-+ GUILayoutOption
-+ GUILayoutUtility
-+ GUISettings
-+ GUISkin
-+ GUIStyle
-+ GUIStyleState
-+ GUITargetAttribute
-+ GUIUtility
-+ GameObject
-+ GeometryUtility
-+ Gizmos
-+ Gradient
-+ GradientUsageAttribute
-+ Graphics
-+ GraphicsBuffer
-+ Grid
-+ GridBrushBase
-+ GridLayout
-+ Gyroscope
-+ HDROutputSettings
-+ Handheld
-+ HashUnsafeUtilities
-+ HashUtilities
-+ HeaderAttribute
-+ HelpURLAttribute
-+ HideInInspector
-+ HingeJoint
-+ HingeJoint2D
-+ HumanPoseHandler
-+ HumanTrait
-+ ImageConversion
-+ ImageEffectAfterScale
-+ ImageEffectAllowedInSceneView
-+ ImageEffectOpaque
-+ ImageEffectTransformsToLDR
-+ ImageEffectUsesCommandBuffer
-+ Input
-+ InspectorNameAttribute
-+ IntegratedSubsystem
-+ IntegratedSubsystem<>
-+ IntegratedSubsystemDescriptor
-+ IntegratedSubsystemDescriptor<>
+FixedJoint
+FixedJoint2D
+Flare
+FlareLayer
+Font
+FrameTimingManager
+FrictionJoint2D
+GL
+GUI
+GUIContent
+GUILayout
+GUILayoutOption
+GUILayoutUtility
+GUISettings
+GUISkin
+GUIStyle
+GUIStyleState
+GUITargetAttribute
+GUIUtility
+GameObject
+GeometryUtility
+Gizmos
+Gradient
+GradientUsageAttribute
+Graphics
+GraphicsBuffer
+Grid
+GridBrushBase
+GridLayout
+Gyroscope
+HDROutputSettings
+Handheld
+HashUnsafeUtilities
+HashUtilities
+HeaderAttribute
+HelpURLAttribute
+HideInInspector
+HingeJoint
+HingeJoint2D
+HumanPoseHandler
+HumanTrait
+ImageConversion
+ImageEffectAfterScale
+ImageEffectAllowedInSceneView
+ImageEffectOpaque
+ImageEffectTransformsToLDR
+ImageEffectUsesCommandBuffer
+Input
+InspectorNameAttribute
+IntegratedSubsystem
+IntegratedSubsystem<>
+IntegratedSubsystemDescriptor
+IntegratedSubsystemDescriptor<>
 Internal
 Jobs
-+ Joint
-+ Joint2D
-+ JsonUtility
-+ LODGroup
-+ LensFlare
-+ Light
-+ LightProbeGroup
-+ LightProbeProxyVolume
-+ LightProbes
-+ LightmapData
-+ LightmapSettings
-+ LineRenderer
-+ LineUtility
-+ LocalizationAsset
-+ LocationService
-+ Logger
+Joint
+Joint2D
+JsonUtility
+LODGroup
+LensFlare
+Light
+LightProbeGroup
+LightProbeProxyVolume
+LightProbes
+LightmapData
+LightmapSettings
+LineRenderer
+LineUtility
+LocalizationAsset
+LocationService
+Logger
 LowLevel
 Lumin
-+ Material
-+ MaterialPropertyBlock
-+ Mesh
-+ MeshCollider
-+ MeshFilter
-+ MeshRenderer
-+ Microphone
-+ MinAttribute
-+ MissingComponentException
-+ MissingReferenceException
-+ MonoBehaviour
-+ Motion
-+ MultilineAttribute
+Material
+MaterialPropertyBlock
+Mesh
+MeshCollider
+MeshFilter
+MeshRenderer
+Microphone
+MinAttribute
+MissingComponentException
+MissingReferenceException
+MonoBehaviour
+Motion
+MultilineAttribute
 Networking
-+ Object
-+ OcclusionArea
-+ OcclusionPortal
-+ ParticlePhysicsExtensions
-+ ParticleSystem
-+ ParticleSystemForceField
+Object
+OcclusionArea
+OcclusionPortal
+ParticlePhysicsExtensions
+ParticleSystem
+ParticleSystemForceField
 ParticleSystemJobs
-+ ParticleSystemRenderer
-+ PhysicMaterial
-+ Physics
-+ Physics2D
-+ PhysicsMaterial2D
-+ PhysicsSceneExtensions
-+ PhysicsSceneExtensions2D
-+ PhysicsUpdateBehaviour2D
-+ Ping
-+ PlatformEffector2D
+ParticleSystemRenderer
+PhysicMaterial
+Physics
+Physics2D
+PhysicsMaterial2D
+PhysicsSceneExtensions
+PhysicsSceneExtensions2D
+PhysicsUpdateBehaviour2D
+Ping
+PlatformEffector2D
 Playables
 PlayerLoop
-+ PlayerPrefs
-+ PlayerPrefsException
-+ PointEffector2D
-+ PolygonCollider2D
-+ PreferBinarySerialization
+PlayerPrefs
+PlayerPrefsException
+PointEffector2D
+PolygonCollider2D
+PreferBinarySerialization
 ProceduralTexture
 Profiling
-+ Projector
-+ PropertyAttribute
-+ QualitySettings
-+ Random
-+ RangeAttribute
-+ RectOffset
-+ RectTransform
-+ RectTransformUtility
-+ ReflectionProbe
-+ RelativeJoint2D
-+ RemoteConfigSettings
-+ RemoteSettings
-+ RenderSettings
-+ RenderTexture
-+ Renderer
-+ RendererExtensions
+Projector
+PropertyAttribute
+QualitySettings
+Random
+RangeAttribute
+RectOffset
+RectTransform
+RectTransformUtility
+ReflectionProbe
+RelativeJoint2D
+RemoteConfigSettings
+RemoteSettings
+RenderSettings
+RenderTexture
+Renderer
+RendererExtensions
 Rendering
-+ RequireComponent
-+ ResourceRequest
-+ Resources
-+ Rigidbody
-+ Rigidbody2D
-+ RuntimeAnimatorController
-+ RuntimeInitializeOnLoadMethodAttribute
-+ ScalableBufferManager
+RequireComponent
+ResourceRequest
+Resources
+Rigidbody
+Rigidbody2D
+RuntimeAnimatorController
+RuntimeInitializeOnLoadMethodAttribute
+ScalableBufferManager
 SceneManagement
-+ Screen
-+ ScreenCapture
-+ ScriptableObject
+Screen
+ScreenCapture
+ScriptableObject
 Scripting
-+ Security
-+ SelectionBaseAttribute
+Security
+SelectionBaseAttribute
 Serialization
-+ SerializeField
+SerializeField
 SerializePrivateVariables
-+ SerializeReference
-+ Shader
-+ ShaderVariantCollection
-+ SharedBetweenAnimatorsAttribute
-+ SkinnedMeshRenderer
-+ Skybox
-+ SleepTimeout
-+ SliderJoint2D
-+ Snapping
-+ Social
+SerializeReference
+Shader
+ShaderVariantCollection
+SharedBetweenAnimatorsAttribute
+SkinnedMeshRenderer
+Skybox
+SleepTimeout
+SliderJoint2D
+Snapping
+Social
 SocialPlatforms
-+ SpaceAttribute
-+ SparseTexture
-+ SphereCollider
-+ SplatPrototype
-+ SpringJoint
-+ SpringJoint2D
-+ Sprite
-+ SpriteMask
-+ SpriteRenderer
+SpaceAttribute
+SparseTexture
+SphereCollider
+SplatPrototype
+SpringJoint
+SpringJoint2D
+Sprite
+SpriteMask
+SpriteRenderer
 Sprites
-+ StackTraceUtility
-+ StateMachineBehaviour
-+ StaticBatchingUtility
-+ StreamingController
-+ Subsystem
-+ Subsystem<>
-+ SubsystemDescriptor
-+ SubsystemDescriptor<>
-+ SubsystemManager
+StackTraceUtility
+StateMachineBehaviour
+StaticBatchingUtility
+StreamingController
+Subsystem
+Subsystem<>
+SubsystemDescriptor
+SubsystemDescriptor<>
+SubsystemManager
 Subsystems
-+ SurfaceEffector2D
-+ SystemInfo
-+ TargetJoint2D
-+ Terrain
-+ TerrainCollider
-+ TerrainData
-+ TerrainExtensions
-+ TerrainLayer
+SurfaceEffector2D
+SystemInfo
+TargetJoint2D
+Terrain
+TerrainCollider
+TerrainData
+TerrainExtensions
+TerrainLayer
 TestTools
-+ TextAreaAttribute
-+ TextAsset
+TextAreaAttribute
+TextAsset
 TextCore
-+ TextEditor
-+ TextGenerator
-+ TextMesh
-+ Texture
-+ Texture2D
-+ Texture2DArray
-+ Texture3D
+TextEditor
+TextGenerator
+TextMesh
+Texture
+Texture2D
+Texture2DArray
+Texture3D
 Tilemaps
-+ Time
-+ TooltipAttribute
-+ TouchScreenKeyboard
-+ TrackedReference
-+ TrailRenderer
-+ Transform
-+ Tree
-+ TreePrototype
-+ Types
+Time
+TooltipAttribute
+TouchScreenKeyboard
+TrackedReference
+TrailRenderer
+Transform
+Tree
+TreePrototype
+Types
 U2D
 UIElements
-+ UISystemProfilerApi
-+ UnassignedReferenceException
-+ UnityAPICompatibilityVersionAttribute
-+ UnityEventQueueSystem
-+ UnityException
+UISystemProfilerApi
+UnassignedReferenceException
+UnityAPICompatibilityVersionAttribute
+UnityEventQueueSystem
+UnityException
 VFX
 VR
 Video
 WSA
 WWW
-+ WWWAudioExtensions
-+ WWWForm
-+ WaitForEndOfFrame
-+ WaitForFixedUpdate
-+ WaitForSeconds
-+ WaitForSecondsRealtime
-+ WaitUntil
-+ WaitWhile
-+ WebCamTexture
-+ WheelCollider
-+ WheelJoint2D
-+ WindZone
+WWWAudioExtensions
+WWWForm
+WaitForEndOfFrame
+WaitForFixedUpdate
+WaitForSeconds
+WaitForSecondsRealtime
+WaitUntil
+WaitWhile
+WebCamTexture
+WheelCollider
+WheelJoint2D
+WindZone
 Windows
 XR
-+ YieldInstruction
+YieldInstruction
 Yoga
 _Scripting
 iOS

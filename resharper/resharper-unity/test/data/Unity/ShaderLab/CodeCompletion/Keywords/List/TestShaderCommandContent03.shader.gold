@@ -1,15 +1,22 @@
-﻿# 5 ITEMS #
+﻿Completion: Basic
+Count: 5
+Focus: Hard
+Range: "♦"
 
-+ Category(Braces)
-CustomEditor(Space)
-Dependency(Space)
-Fallback(Space)
-SubShader(Braces)
-# AUTOMATIC #
-# 5 ITEMS #
+##### RELEVANCE SORT #####
 
-+ Category(Braces)
-CustomEditor(Space)
-Dependency(Space)
-Fallback(Space)
-SubShader(Braces)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Category                    <==
+CustomEditor
+Dependency
+Fallback
+SubShader
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Category                    <==
+CustomEditor
+Dependency
+Fallback
+SubShader

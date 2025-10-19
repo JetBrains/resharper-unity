@@ -1,7 +1,14 @@
-﻿# 1 ITEM #
+﻿Completion: Basic
+Count: 1
+Focus: Hard
+Range: "♦"
 
-+ Shader(Space)
-# AUTOMATIC #
-# 1 ITEM #
+##### RELEVANCE SORT #####
 
-+ Shader(Space)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Shader                      <==
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Shader                      <==

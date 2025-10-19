@@ -1,11 +1,18 @@
-﻿# 3 ITEMS #
+﻿Completion: Basic
+Count: 3
+Focus: Hard
+Range: "♦"
 
-+ Combine(Space)
-ConstantColor(Space)
-Matrix(Space)
-# AUTOMATIC #
-# 3 ITEMS #
+##### RELEVANCE SORT #####
 
-+ Combine(Space)
-ConstantColor(Space)
-Matrix(Space)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Combine                     <==
+ConstantColor
+Matrix
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Combine                     <==
+ConstantColor
+Matrix

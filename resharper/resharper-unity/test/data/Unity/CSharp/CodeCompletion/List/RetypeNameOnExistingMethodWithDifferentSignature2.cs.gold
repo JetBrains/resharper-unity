@@ -1,11 +1,22 @@
-﻿# 3 ITEMS #
+﻿Completion: Basic
+Prefix: "OnA"
+Count: 3
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "private void OnA♦(bool hasFocus)"
+                     ▲▲▲▲
 
-+ OnApplicationFocus(bool) { ... }
-OnApplicationPause(bool) { ... }
-myOnA
-# AUTOMATIC #
-# 3 ITEMS #
+##### RELEVANCE SORT #####
 
-+ OnApplicationFocus(bool) { ... }
-OnApplicationPause(bool) { ... }
-myOnA
+                            [PrefixMatch, Methods, GenerateItems, MemberOfCurrentType, HighSelectionPriority]
+ỌṇẠpplicationFocus|(bool) { ... }    OrderStr=OnApplicationFocus(bool)    <==
+ỌṇẠpplicationPause|(bool) { ... }    OrderStr=OnApplicationPause(bool)
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, Other^]
+myỌṇẠ
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+ỌṇẠpplicationFocus|(bool) { ... }    OrderStr=OnApplicationFocus(bool)    <==
+ỌṇẠpplicationPause|(bool) { ... }    OrderStr=OnApplicationPause(bool)
+myỌṇẠ

@@ -1,7 +1,17 @@
-﻿# 1 ITEM #
+﻿Completion: Basic
+Prefix: """
+Count: 1
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "var custom = root.Query<MyElement>("♦");"
+                                           ▲▲△
 
-+ "MyElement"
-# AUTOMATIC #
-# 1 ITEM #
+##### RELEVANCE SORT #####
 
-+ "MyElement"
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixNoCaseMatch, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+"̣MyElement"                 <==
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+"̣MyElement"                 <==

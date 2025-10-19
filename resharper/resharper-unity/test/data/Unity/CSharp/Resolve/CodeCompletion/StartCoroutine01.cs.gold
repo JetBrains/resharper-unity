@@ -1,9 +1,17 @@
-﻿# 2 ITEMS #
+﻿Completion: Basic
+Count: 2
+Focus: Hard
+Auto-accept: DoNotAutoAccept
+Range: "StartCoroutine("♦");"
 
-+ Start    void
-+ WaitAndPrint    IEnumerator
-# AUTOMATIC #
-# 2 ITEMS #
+##### RELEVANCE SORT #####
 
-+ Start    void
-+ WaitAndPrint    IEnumerator
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Methods, NonStatic, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+Start                       void    <==
+WaitAndPrint                IEnumerator
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Start                       void    <==
+WaitAndPrint                IEnumerator

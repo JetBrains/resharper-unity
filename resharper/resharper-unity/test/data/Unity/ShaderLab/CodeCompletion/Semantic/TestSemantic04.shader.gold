@@ -1,6 +1,26 @@
-# 10 ITEMS #
+﻿Completion: Basic
+Count: 10 (filtered)
+Focus: Hard
+Range: "float3 normal: ♦"
 
-+ NORMAL
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+NORMAL                      <==
+POSITION
+TEXCOORD0
+TEXCOORD1
+TEXCOORD2
+TEXCOORD3
+TEXCOORD4
+TEXCOORD5
+TEXCOORD6
+TEXCOORD7
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+NORMAL                      <==
 POSITION
 TEXCOORD0
 TEXCOORD1

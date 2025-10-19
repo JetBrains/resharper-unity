@@ -1,9 +1,16 @@
-﻿# 2 ITEMS #
+﻿Completion: Basic
+Count: 2
+Focus: Hard
+Range: "ColorMaterial ♦"
 
-+ AmbientAndDiffuse
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+AmbientAndDiffuse           <==
 Emission
-# AUTOMATIC #
-# 2 ITEMS #
 
-+ AmbientAndDiffuse
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+AmbientAndDiffuse           <==
 Emission

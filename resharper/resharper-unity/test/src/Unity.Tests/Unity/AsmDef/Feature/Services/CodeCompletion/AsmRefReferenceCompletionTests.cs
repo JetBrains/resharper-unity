@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
     [TestFileExtension(".asmref")]
     public class AsmRefReferenceCompletionListTests : CodeCompletionTestBase
     {
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmRefReference";
 
         [Test] public void TestList01() { DoNamedTest("Ref01_SecondProject.asmdef"); }

@@ -1,6 +1,24 @@
-# 8 ITEMS #
+﻿Completion: Basic
+Count: 8 (filtered)
+Focus: Hard
+Range: "void frag(in float2 tex: ♦) "
 
-+ TEXCOORD0
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+TEXCOORD0                   <==
+TEXCOORD1
+TEXCOORD2
+TEXCOORD3
+TEXCOORD4
+TEXCOORD5
+TEXCOORD6
+TEXCOORD7
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+TEXCOORD0                   <==
 TEXCOORD1
 TEXCOORD2
 TEXCOORD3
