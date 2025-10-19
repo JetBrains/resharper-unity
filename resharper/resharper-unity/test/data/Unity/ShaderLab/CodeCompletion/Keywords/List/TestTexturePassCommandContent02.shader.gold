@@ -1,7 +1,14 @@
-﻿# 1 ITEM #
+﻿Completion: Basic
+Count: 1
+Focus: Hard
+Range: "♦"
 
-+ SetTexture(Brackets)
-# AUTOMATIC #
-# 1 ITEM #
+##### RELEVANCE SORT #####
 
-+ SetTexture(Brackets)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+SetTexture                  <==
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+SetTexture                  <==

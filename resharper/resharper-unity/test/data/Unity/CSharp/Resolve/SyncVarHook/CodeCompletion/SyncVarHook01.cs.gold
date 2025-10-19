@@ -1,11 +1,19 @@
-﻿# 3 ITEMS #
+﻿Completion: Basic
+Count: 3
+Focus: Hard
+Auto-accept: DoNotAutoAccept
+Range: "[SyncVar(hook = "♦")]"
 
-+ AnotherValidMethod    void
-+ OnValueChanged    void
-+ SomeOtherValue    int
-# AUTOMATIC #
-# 3 ITEMS #
+##### RELEVANCE SORT #####
 
-+ AnotherValidMethod    void
-+ OnValueChanged    void
-+ SomeOtherValue    int
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Methods, NonStatic, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+AnotherValidMethod          void    <==
+OnValueChanged              void
+SomeOtherValue              int
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+AnotherValidMethod          void    <==
+OnValueChanged              void
+SomeOtherValue              int

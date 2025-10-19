@@ -1,14 +1,21 @@
-﻿# 5 ITEMS #
+﻿Completion: Basic
+Count: 5
+Focus: Hard
+Range: "Combine ♦"
 
-+ Constant
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Constant                    <==
 One
 Previous
 Primary
 Texture
-# AUTOMATIC #
-# 5 ITEMS #
 
-+ Constant
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Constant                    <==
 One
 Previous
 Primary

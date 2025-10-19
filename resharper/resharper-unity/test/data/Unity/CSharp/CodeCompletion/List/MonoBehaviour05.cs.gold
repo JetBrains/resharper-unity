@@ -1,13 +1,25 @@
-﻿# 4 ITEMS #
+﻿Completion: Basic
+Prefix: "OnAnima"
+Count: 4
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "private void OnAnima♦   "
+                     ▲▲▲▲▲▲▲▲
 
-+ OnAnimatorIK(int) { ... }
-OnAnimatorMove() { ... }
-OnDidApplyAnimationProperties() { ... }
-myOnAnima
-# AUTOMATIC #
-# 4 ITEMS #
+##### RELEVANCE SORT #####
 
-+ OnAnimatorIK(int) { ... }
-OnAnimatorMove() { ... }
-OnDidApplyAnimationProperties() { ... }
-myOnAnima
+                            [PrefixMatch, HighSelectionPriority, NormalSelectionPriority]
+ỌṇẠṇịṃạtorIK|(int) { ... }    OrderStr=OnAnimatorIK(int)    <==
+ỌṇẠṇịṃạtorMove|() { ... }    OrderStr=OnAnimatorMove()
+                            [Methods^, GenerateItems^, MemberOfCurrentType^]
+ỌṇDidApplyẠṇịṃạtionProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
+                            [Other^, ObsoleteRuleApplied^, NotObsolete^, FromLightAndDynamicEvaluation^, NormalSelectionPriority, FromSingleCompletion^]
+myỌṇẠṇịṃạ
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+ỌṇẠṇịṃạtorIK|(int) { ... }    OrderStr=OnAnimatorIK(int)    <==
+ỌṇẠṇịṃạtorMove|() { ... }    OrderStr=OnAnimatorMove()
+ỌṇDidApplyẠṇịṃạtionProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
+myỌṇẠṇịṃạ

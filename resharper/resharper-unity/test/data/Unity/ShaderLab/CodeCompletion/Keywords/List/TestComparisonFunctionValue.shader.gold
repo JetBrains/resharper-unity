@@ -1,6 +1,12 @@
-﻿# 8 ITEMS #
+﻿Completion: Basic
+Count: 8
+Focus: Hard
+Range: "Comp ♦"
 
-+ Always
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Always                      <==
 Equal
 GEqual
 Greater
@@ -8,10 +14,11 @@ LEqual
 Less
 Never
 NotEqual
-# AUTOMATIC #
-# 8 ITEMS #
 
-+ Always
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Always                      <==
 Equal
 GEqual
 Greater

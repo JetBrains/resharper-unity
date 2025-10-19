@@ -1,21 +1,33 @@
-﻿# 8 ITEMS #
+﻿Completion: Basic
+Prefix: "Non"
+Count: 8
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "[Non♦[SerializeField] public int Value;"
+         ▲▲▲▲
 
-+ NonSerialized (in System)
-NotNull (in JetBrains.Annotations)
-DebuggerNonUserCode (in System.Diagnostics)
-ItemNotNull (in JetBrains.Annotations)
-NativeContainerIsAtomicWriteOnly (in Unity.Collections.LowLevel.Unsafe)
-NativeContainerIsReadOnly (in Unity.Collections.LowLevel.Unsafe)
-NativeContainerSupportsDeallocateOnJobCompletion (in Unity.Collections.LowLevel.Unsafe)
-NativeSetClassTypeToNullOnSchedule (in Unity.Collections.LowLevel.Unsafe)
-# AUTOMATIC #
-# 8 ITEMS #
+##### RELEVANCE SORT #####
 
-+ NonSerialized (in System)
-NotNull (in JetBrains.Annotations)
-DebuggerNonUserCode (in System.Diagnostics)
-ItemNotNull (in JetBrains.Annotations)
-NativeContainerIsAtomicWriteOnly (in Unity.Collections.LowLevel.Unsafe)
-NativeContainerIsReadOnly (in Unity.Collections.LowLevel.Unsafe)
-NativeContainerSupportsDeallocateOnJobCompletion (in Unity.Collections.LowLevel.Unsafe)
-NativeSetClassTypeToNullOnSchedule (in Unity.Collections.LowLevel.Unsafe)
+                            [PrefixMatch]
+ṆọṇSerialized |(in System)    <==
+                            [CamelHumpsCaseMatch]
+ṆọtṆull |(in JetBrains.Annotations)
+                            [FromSingleCompletion^, Attributes^, TypesAndNamespaces^, NotImportedType^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation^, Other^]
+DebuggerṆọṇUserCode |(in System.Diagnostics)
+ItemṆọtṆull |(in JetBrains.Annotations)
+ṆativeContainerIsAtomicWriteỌṇly |(in Unity.Collections.LowLevel.Unsafe)
+ṆativeContainerIsReadỌṇly |(in Unity.Collections.LowLevel.Unsafe)
+ṆativeContainerSupportsDeallocateỌṇJobCompletion |(in Unity.Collections.LowLevel.Unsafe)
+ṆativeSetClassTypeToNullỌṇSchedule |(in Unity.Collections.LowLevel.Unsafe)
+
+##### ALPHABETIC SORT #####
+
+                            [Full, Top]
+DebuggerṆọṇUserCode |(in System.Diagnostics)    <==
+ItemṆọtṆull |(in JetBrains.Annotations)
+ṆativeContainerIsAtomicWriteỌṇly |(in Unity.Collections.LowLevel.Unsafe)
+ṆativeContainerIsReadỌṇly |(in Unity.Collections.LowLevel.Unsafe)
+ṆativeContainerSupportsDeallocateỌṇJobCompletion |(in Unity.Collections.LowLevel.Unsafe)
+ṆativeSetClassTypeToNullỌṇSchedule |(in Unity.Collections.LowLevel.Unsafe)
+ṆọṇSerialized |(in System)
+ṆọtṆull |(in JetBrains.Annotations)

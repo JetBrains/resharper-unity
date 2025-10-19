@@ -1,11 +1,22 @@
-﻿# 3 ITEMS #
+﻿Completion: Basic
+Prefix: "OnAnima"
+Count: 3
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "private OnAnima♦   "
+                ▲▲▲▲▲▲▲▲
 
-+ OnAnimatorIK(int) { ... }
-OnAnimatorMove() { ... }
-OnDidApplyAnimationProperties() { ... }
-# AUTOMATIC #
-# 3 ITEMS #
+##### RELEVANCE SORT #####
 
-+ OnAnimatorIK(int) { ... }
-OnAnimatorMove() { ... }
-OnDidApplyAnimationProperties() { ... }
+                            [PrefixMatch, HighSelectionPriority, NormalSelectionPriority]
+ỌṇẠṇịṃạtorIK|(int) { ... }    OrderStr=OnAnimatorIK(int)    <==
+ỌṇẠṇịṃạtorMove|() { ... }    OrderStr=OnAnimatorMove()
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, Methods^, GenerateItems^, MemberOfCurrentType^, NotObsolete^, ObsoleteRuleApplied^, Other^]
+ỌṇDidApplyẠṇịṃạtionProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+ỌṇẠṇịṃạtorIK|(int) { ... }    OrderStr=OnAnimatorIK(int)    <==
+ỌṇẠṇịṃạtorMove|() { ... }    OrderStr=OnAnimatorMove()
+ỌṇDidApplyẠṇịṃạtionProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()

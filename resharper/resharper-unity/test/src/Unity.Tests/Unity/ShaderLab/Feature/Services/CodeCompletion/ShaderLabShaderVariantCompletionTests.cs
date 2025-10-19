@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
     [TestUnity, RequireHlslSupport, CgIncludesDirectory("ShaderLab/CGIncludes")]
     public class ShaderLabShaderVariantCompletionTests : ShaderLabCodeCompletionTestBase
     {
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         
         protected override string RelativeTestDataPath => @"ShaderLab\CodeCompletion\ShaderVariant";
 

@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
         // test solution for manual testing 
         // https://jetbrains.team/p/dotnettestprojects/repositories/UIElementsDemo/
 
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         protected override string RelativeTestDataPath => @"UnityUIElementsCompletionTest";
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override LookupListSorting Sorting => LookupListSorting.ByRelevance;

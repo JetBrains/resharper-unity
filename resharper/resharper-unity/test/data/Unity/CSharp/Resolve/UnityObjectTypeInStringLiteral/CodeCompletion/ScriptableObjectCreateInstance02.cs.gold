@@ -1,24 +1,33 @@
-﻿# 11 ITEMS #
+﻿Completion: Basic
+Count: 11
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "var so = UnityEngine.ScriptableObject.CreateInstance("♦");"
 
+##### RELEVANCE SORT #####
+
+                            [ImportedType]
+Test                        <==
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, TypesAndNamespaces^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, Other^]
 AOT
 JetBrains
 Microsoft
 System
-+ Test
 TreeEditor
 Unity
 UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
-# AUTOMATIC #
-# 11 ITEMS #
 
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
 AOT
 JetBrains
 Microsoft
 System
-+ Test
+Test                        <==
 TreeEditor
 Unity
 UnityEditor

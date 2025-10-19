@@ -1,6 +1,12 @@
-# 62 ITEMS #
+﻿Completion: Basic
+Count: 62
+Focus: Hard
+Range: "#pragma ♦"
 
-+ disable_fastmath
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject, HighSelectionPriority, NormalSelectionPriority, Other]
+disable_fastmath            <==
 domain
 dynamic_branch
 dynamic_branch_local
@@ -62,10 +68,11 @@ skip_variants
 surface
 target
 vertex
-# AUTOMATIC #
-# 62 ITEMS #
 
-+ disable_fastmath
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+disable_fastmath            <==
 domain
 dynamic_branch
 dynamic_branch_local

@@ -1,9 +1,20 @@
-﻿# 2 ITEMS #
+﻿Completion: Basic
+Prefix: "OnAnima"
+Count: 2
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "OnAnima♦"
+        ▲▲▲▲▲▲▲▲
 
-+ private OnAnimatorMove() { ... }
-private OnDidApplyAnimationProperties() { ... }
-# AUTOMATIC #
-# 2 ITEMS #
+##### RELEVANCE SORT #####
 
-+ private OnAnimatorMove() { ... }
-private OnDidApplyAnimationProperties() { ... }
+                            [PrefixMatch, HighSelectionPriority, NormalSelectionPriority]
+private |ỌṇẠṇịṃạtorMove|() { ... }    OrderStr=OnAnimatorMove()    <==
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, Methods^, GenerateItems^, MemberOfCurrentType^, NotObsolete^, ObsoleteRuleApplied^, Other^]
+private |ỌṇDidApplyẠṇịṃạtionProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+private |ỌṇẠṇịṃạtorMove|() { ... }    OrderStr=OnAnimatorMove()    <==
+private |ỌṇDidApplyẠṇịṃạtionProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()

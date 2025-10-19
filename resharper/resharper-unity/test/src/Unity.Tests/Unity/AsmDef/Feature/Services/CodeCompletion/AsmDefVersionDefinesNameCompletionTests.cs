@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
     [TestFileExtension(".asmdef")]
     public class AsmDefVersionDefinesNameCompletionListTests : CodeCompletionTestBase
     {
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\VersionDefines";
 
         protected override string ProjectName => "Assembly-CSharp";

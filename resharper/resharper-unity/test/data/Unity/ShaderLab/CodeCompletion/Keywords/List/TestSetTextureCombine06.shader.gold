@@ -1,13 +1,20 @@
-﻿# 4 ITEMS #
+﻿Completion: Basic
+Count: 4
+Focus: Hard
+Range: "Combine One - Previous Alpha ♦"
 
-+ Dot3
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Dot3                        <==
 Dot3Rgba
 Double
 Quad
-# AUTOMATIC #
-# 4 ITEMS #
 
-+ Dot3
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Dot3                        <==
 Dot3Rgba
 Double
 Quad

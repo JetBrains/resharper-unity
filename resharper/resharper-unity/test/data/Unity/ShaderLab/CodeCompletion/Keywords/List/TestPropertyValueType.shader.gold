@@ -1,6 +1,12 @@
-﻿# 13 ITEMS #
+﻿Completion: Basic
+Count: 13
+Focus: Hard
+Range: "_TestProp("MyProp", ♦)"
 
-+ 2D
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+2D                          <==
 2DArray
 3D
 Any
@@ -13,10 +19,11 @@ Integer
 Range
 Rect
 Vector
-# AUTOMATIC #
-# 13 ITEMS #
 
-+ 2D
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+2D                          <==
 2DArray
 3D
 Any

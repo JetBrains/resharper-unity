@@ -1,21 +1,31 @@
-﻿# 8 ITEMS #
+﻿Completion: Basic
+Prefix: """
+Count: 8
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "var t = root.Q("♦", "");"
+                       ▲▲△
 
-+ "Background"
-"MyElement"
-"MyElement2"
-"ToolbarButton-button"
-"VisualElement"
-"message"
-"show-message-button"
-"start-game-button"
-# AUTOMATIC #
-# 8 ITEMS #
+##### RELEVANCE SORT #####
 
-+ "Background"
-"MyElement"
-"MyElement2"
-"ToolbarButton-button"
-"VisualElement"
-"message"
-"show-message-button"
-"start-game-button"
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixNoCaseMatch, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+"̣Background"                <==
+"̣MyElement"
+"̣MyElement2"
+"̣ToolbarButton-button"
+"̣VisualElement"
+"̣message"
+"̣show-message-button"
+"̣start-game-button"
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+"̣Background"                <==
+"̣MyElement"
+"̣MyElement2"
+"̣ToolbarButton-button"
+"̣VisualElement"
+"̣message"
+"̣show-message-button"
+"̣start-game-button"

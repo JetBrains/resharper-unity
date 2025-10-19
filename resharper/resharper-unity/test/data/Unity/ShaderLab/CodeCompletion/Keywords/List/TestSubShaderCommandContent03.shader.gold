@@ -1,55 +1,62 @@
-﻿# 25 ITEMS #
+﻿Completion: Basic
+Count: 25
+Focus: Hard
+Range: "♦"
 
-+ AlphaTest(Space)
-AlphaToMask(Space)
-BindChannels(Braces)
-Blend(Space)
-BlendOp(Space)
-Color(Space)
-ColorMask(Space)
-ColorMaterial(Space)
-Conservative(Space)
-Cull(Space)
-Fog(Braces)
-GrabPass(Braces)
-LOD(Space)
-Lighting(Space)
-Material(Braces)
-Name(Space)
-Offset(Space)
-Pass(Braces)
-SeparateSpecular(Space)
-Stencil(Braces)
-Tags(Braces)
-UsePass(Space)
-ZClip(Space)
-ZTest(Space)
-ZWrite(Space)
-# AUTOMATIC #
-# 25 ITEMS #
+##### RELEVANCE SORT #####
 
-+ AlphaTest(Space)
-AlphaToMask(Space)
-BindChannels(Braces)
-Blend(Space)
-BlendOp(Space)
-Color(Space)
-ColorMask(Space)
-ColorMaterial(Space)
-Conservative(Space)
-Cull(Space)
-Fog(Braces)
-GrabPass(Braces)
-LOD(Space)
-Lighting(Space)
-Material(Braces)
-Name(Space)
-Offset(Space)
-Pass(Braces)
-SeparateSpecular(Space)
-Stencil(Braces)
-Tags(Braces)
-UsePass(Space)
-ZClip(Space)
-ZTest(Space)
-ZWrite(Space)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+AlphaTest                   <==
+AlphaToMask
+BindChannels
+Blend
+BlendOp
+Color
+ColorMask
+ColorMaterial
+Conservative
+Cull
+Fog
+GrabPass
+LOD
+Lighting
+Material
+Name
+Offset
+Pass
+SeparateSpecular
+Stencil
+Tags
+UsePass
+ZClip
+ZTest
+ZWrite
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+AlphaTest                   <==
+AlphaToMask
+BindChannels
+Blend
+BlendOp
+Color
+ColorMask
+ColorMaterial
+Conservative
+Cull
+Fog
+GrabPass
+LOD
+Lighting
+Material
+Name
+Offset
+Pass
+SeparateSpecular
+Stencil
+Tags
+UsePass
+ZClip
+ZTest
+ZWrite

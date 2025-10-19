@@ -1,6 +1,21 @@
-﻿# 4 ITEMS #
+﻿Completion: Basic
+Count: 4
+Focus: Hard
+Auto-accept: AutoAcceptWithReplace
+Range: "private readonly RefRW<AnimationComponent> ♦"
 
-+ AnimationComponent
-+ Component
-+ myAnimationComponent
-+ myComponent
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+AnimationComponent          <==
+Component
+myAnimationComponent
+myComponent
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+AnimationComponent          <==
+Component
+myAnimationComponent
+myComponent

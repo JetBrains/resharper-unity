@@ -1,6 +1,12 @@
-# 42 ITEMS #
+﻿Completion: Basic
+Count: 42
+Focus: Hard
+Range: "#ifdef ♦ "
 
-+ A
+##### RELEVANCE SORT #####
+
+                            [NormalSelectionPriority, Other]
+A                           <==
 B
 FOO
 HLSL_SUPPORT_INCLUDED
@@ -32,6 +38,7 @@ fixed4x1
 fixed4x2
 fixed4x3
 fixed4x4
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 16^]
 BAR
 C
 D
@@ -42,3 +49,49 @@ SHADER_API_GLES3
 SHADER_API_METAL
 SHADER_API_MOBILE
 SHADER_API_VULKAN
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+A                           <==
+B
+BAR
+C
+D
+FOO
+HLSL_SUPPORT_INCLUDED
+HLSL_VERSION
+INTERNAL_DATA
+SHADER_API_D3D11
+SHADER_API_D3D11_9X
+SHADER_API_DESKTOP
+SHADER_API_GLCORE
+SHADER_API_GLES
+SHADER_API_GLES3
+SHADER_API_METAL
+SHADER_API_MOBILE
+SHADER_API_VULKAN
+SHADER_TARGET
+UNITY_VERSION
+WorldNormalVector
+WorldReflectionVector
+fixed
+fixed1x1
+fixed1x2
+fixed1x3
+fixed1x4
+fixed2
+fixed2x1
+fixed2x2
+fixed2x3
+fixed2x4
+fixed3
+fixed3x1
+fixed3x2
+fixed3x3
+fixed3x4
+fixed4
+fixed4x1
+fixed4x2
+fixed4x3
+fixed4x4

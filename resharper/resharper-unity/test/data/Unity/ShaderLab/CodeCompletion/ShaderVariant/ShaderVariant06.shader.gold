@@ -1,12 +1,36 @@
-# 10 ITEMS #
+﻿Completion: Basic
+Prefix: "_"
+Count: 10 (filtered)
+Focus: Hard
+Range: "#if _♦ "
+            ▲▲
 
-_B
-_C
-_A
-SHADER_API_D3D11_9X
-SHADER_API_GLCORE
-SHADER_API_GLES
-SHADER_API_GLES3
-SHADER_API_METAL
-SHADER_API_MOBILE
-SHADER_API_VULKAN
+##### RELEVANCE SORT #####
+
+                            [16]
+_̣B
+_̣C
+                            [PrefixNoCaseMatch^, 15, NormalSelectionPriority, Other]
+_̣A
+                            [FromLightAndDynamicEvaluation^, FromSingleCompletion^, 16]
+SHADER_̣API_D3D11_9X
+SHADER_̣API_GLCORE
+SHADER_̣API_GLES
+SHADER_̣API_GLES3
+SHADER_̣API_METAL
+SHADER_̣API_MOBILE
+SHADER_̣API_VULKAN
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+SHADER_̣API_D3D11_9X         <==
+SHADER_̣API_GLCORE
+SHADER_̣API_GLES
+SHADER_̣API_GLES3
+SHADER_̣API_METAL
+SHADER_̣API_MOBILE
+SHADER_̣API_VULKAN
+_̣A
+_̣B
+_̣C

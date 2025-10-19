@@ -1,15 +1,22 @@
-﻿# 5 ITEMS #
+﻿Completion: Basic
+Count: 5
+Focus: Hard
+Range: "♦"
 
-+ Ambient(Space)
-Diffuse(Space)
-Emission(Space)
-Shininess(Space)
-Specular(Space)
-# AUTOMATIC #
-# 5 ITEMS #
+##### RELEVANCE SORT #####
 
-+ Ambient(Space)
-Diffuse(Space)
-Emission(Space)
-Shininess(Space)
-Specular(Space)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Ambient                     <==
+Diffuse
+Emission
+Shininess
+Specular
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Ambient                     <==
+Diffuse
+Emission
+Shininess
+Specular

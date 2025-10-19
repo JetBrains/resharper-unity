@@ -1,4 +1,16 @@
-﻿# 2 ITEMS #
+﻿Completion: Basic
+Count: 2
+Focus: Hard
+Range: ""♦""
 
-+ Ref01
-+ Test01
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, NormalSelectionPriority, Other]
+Ref01                       <==
+Test01
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Ref01                       <==
+Test01

@@ -1,13 +1,20 @@
-﻿# 4 ITEMS #
+﻿Completion: Basic
+Count: 4 (filtered)
+Focus: Hard
+Range: "Combine Previous Lerp (♦"
 
-+ Constant
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Constant                    <==
 Previous
 Primary
 Texture
-# AUTOMATIC #
-# 4 ITEMS #
 
-+ Constant
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Constant                    <==
 Previous
 Primary
 Texture

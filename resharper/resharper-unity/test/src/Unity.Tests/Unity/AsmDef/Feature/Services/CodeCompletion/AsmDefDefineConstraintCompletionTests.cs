@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
     [TestCompilationSymbols("RESHARPER_UNITY_TEST_DEFINED_SYMBOL;RESHARPER_UNITY_TEST_DEFINED_SYMBOL_2")]
     public class AsmDefDefineConstraintCompletionListTests : CodeCompletionTestBase
     {
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\DefineConstraints";
 
         protected override string ProjectName => "Assembly-CSharp";

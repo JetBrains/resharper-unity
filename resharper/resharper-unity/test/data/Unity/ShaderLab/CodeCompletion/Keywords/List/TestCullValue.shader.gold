@@ -1,13 +1,20 @@
-﻿# 4 ITEMS #
+﻿Completion: Basic
+Count: 4
+Focus: Hard
+Range: "Cull ♦"
 
-+ Back
+##### RELEVANCE SORT #####
+
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Back                        <==
 False
 Front
 Off
-# AUTOMATIC #
-# 4 ITEMS #
 
-+ Back
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Back                        <==
 False
 Front
 Off

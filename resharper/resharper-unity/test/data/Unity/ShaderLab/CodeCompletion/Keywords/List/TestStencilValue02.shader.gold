@@ -1,35 +1,42 @@
-﻿# 15 ITEMS #
+﻿Completion: Basic
+Count: 15
+Focus: Hard
+Range: "♦"
 
-+ Comp(Space)
-CompBack(Space)
-CompFront(Space)
-Fail(Space)
-FailBack(Space)
-FailFront(Space)
-Pass(Braces)
-PassBack(Space)
-PassFront(Space)
-ReadMask(Space)
-Ref(Space)
-WriteMask(Space)
-ZFail(Space)
-ZFailBack(Space)
-ZFailFront(Space)
-# AUTOMATIC #
-# 15 ITEMS #
+##### RELEVANCE SORT #####
 
-+ Comp(Space)
-CompBack(Space)
-CompFront(Space)
-Fail(Space)
-FailBack(Space)
-FailFront(Space)
-Pass(Braces)
-PassBack(Space)
-PassFront(Space)
-ReadMask(Space)
-Ref(Space)
-WriteMask(Space)
-ZFail(Space)
-ZFailBack(Space)
-ZFailFront(Space)
+                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+Comp                        <==
+CompBack
+CompFront
+Fail
+FailBack
+FailFront
+Pass
+PassBack
+PassFront
+ReadMask
+Ref
+WriteMask
+ZFail
+ZFailBack
+ZFailFront
+
+##### ALPHABETIC SORT #####
+
+                            [Light, Generic]
+Comp                        <==
+CompBack
+CompFront
+Fail
+FailBack
+FailFront
+Pass
+PassBack
+PassFront
+ReadMask
+Ref
+WriteMask
+ZFail
+ZFailBack
+ZFailFront
