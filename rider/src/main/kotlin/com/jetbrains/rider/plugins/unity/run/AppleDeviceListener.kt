@@ -5,14 +5,13 @@ import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.runBlockingCancellable
+import com.intellij.openapi.progress.runBlockingMaybeCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.AssemblyExecutionContext
 import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import kotlinx.coroutines.runBlocking
 import java.io.PrintWriter
 import java.nio.file.Path
 import java.util.regex.Pattern
@@ -155,7 +154,7 @@ class AppleDeviceListener(project: Project,
         // files (including the 'Extensions' folder) live under 'dotnet'. ReSharper plugins ship in a 'DotFiles' folder,
         // but are installed into the main install folder. No-one actually uses 'DotFiles' now
         val helperExe = UnityPluginEnvironment.getBundledFile("JetBrains.Rider.Unity.ListIosUsbDevices.dll", "DotFiles")
-        val commandLine = runBlockingCancellable {
+        val commandLine = runBlockingMaybeCancellable {
             AssemblyExecutionContext.create (
                 helperExe,
                 iosSupportPath.toString(),
