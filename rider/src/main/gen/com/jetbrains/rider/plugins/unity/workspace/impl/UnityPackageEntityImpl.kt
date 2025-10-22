@@ -2,7 +2,6 @@
 
 package com.jetbrains.rider.plugins.unity.workspace.impl
 
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.workspace.storage.*
 import com.intellij.platform.workspace.storage.impl.ModifiableWorkspaceEntityBase
 import com.intellij.platform.workspace.storage.impl.WorkspaceEntityBase
@@ -10,11 +9,9 @@ import com.intellij.platform.workspace.storage.impl.WorkspaceEntityData
 import com.intellij.platform.workspace.storage.instrumentation.EntityStorageInstrumentation
 import com.intellij.platform.workspace.storage.instrumentation.EntityStorageInstrumentationApi
 import com.intellij.platform.workspace.storage.metadata.model.EntityMetadata
-import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
-import com.jetbrains.rider.plugins.unity.workspace.ModifiableUnityPackageEntity
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
+import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntityBuilder
 
 @GeneratedCodeApiVersion(3)
 @GeneratedCodeImplVersion(7)
@@ -48,7 +45,7 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
 
 
   internal class Builder(result: UnityPackageEntityData?) : ModifiableWorkspaceEntityBase<UnityPackageEntity, UnityPackageEntityData>(
-    result), ModifiableUnityPackageEntity {
+    result), UnityPackageEntityBuilder {
     internal constructor() : this(UnityPackageEntityData())
 
     override fun applyToBuilder(builder: MutableEntityStorage) {
@@ -125,7 +122,7 @@ internal class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>(
 
   internal fun isDescriptorInitialized(): Boolean = ::descriptor.isInitialized
 
-  override fun wrapAsModifiable(diff: MutableEntityStorage): ModifiableWorkspaceEntity<UnityPackageEntity> {
+  override fun wrapAsModifiable(diff: MutableEntityStorage): WorkspaceEntityBuilder<UnityPackageEntity> {
     val modifiable = UnityPackageEntityImpl.Builder(null)
     modifiable.diff = diff
     modifiable.id = createEntityId()
@@ -151,7 +148,7 @@ internal class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>(
     return UnityPackageEntity::class.java
   }
 
-  override fun createDetachedEntity(parents: List<ModifiableWorkspaceEntity<*>>): ModifiableWorkspaceEntity<*> {
+  override fun createDetachedEntity(parents: List<WorkspaceEntityBuilder<*>>): WorkspaceEntityBuilder<*> {
     return UnityPackageEntity(descriptor, entitySource) {
     }
   }
