@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             if (!OdinAttributeUtil.HasOdinSupport(myTechnologyDescriptionCollector))
                 return false;
 
-            return type.DerivesFromOdinDrawer();
+            return type.DerivesFromOdinDrawer() || type.DerivesFromOdinAttributeProcessor();
         }
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This

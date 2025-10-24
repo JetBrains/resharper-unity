@@ -74,6 +74,7 @@ public static class OdinKnownAttributes
   
     public static readonly IClrTypeName PropertyGroupAttribute = new ClrTypeName("Sirenix.OdinInspector.PropertyGroupAttribute");
     public static readonly IClrTypeName OdinDrawer = new ClrTypeName("Sirenix.OdinInspector.Editor.OdinDrawer");
+    public static readonly IClrTypeName OdinAttributeProcessor = new ClrTypeName("Sirenix.OdinInspector.Editor.OdinAttributeProcessor");
 
     
     public static readonly Dictionary<IClrTypeName, string[]> AttributesWithMemberCompletion = new()
