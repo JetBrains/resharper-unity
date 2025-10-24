@@ -7,6 +7,6 @@
     <PackageLock Include="JetBrains.Lifetimes" Version="2025.3.1" />
     <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
     <PackageLock Include="NVelocity" Version="1.0.3" />
-    <PackageLock Include="System.Memory" Version="4.5.5" />
+    <PackageLock Include="System.Memory" Version="4.6.0" />
   </ItemGroup>
 </Project>
