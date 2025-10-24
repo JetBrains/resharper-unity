@@ -62,6 +62,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
         {
             return candidate.DerivesFrom(OdinKnownAttributes.OdinDrawer);
         }
+        
+        public static bool DerivesFromOdinAttributeProcessor([CanBeNull] this ITypeElement candidate)
+        {
+            return candidate.DerivesFrom(OdinKnownAttributes.OdinAttributeProcessor);
+        }
 
         public static bool DerivesFromScriptableObject([CanBeNull] this ITypeElement candidate)
         {
