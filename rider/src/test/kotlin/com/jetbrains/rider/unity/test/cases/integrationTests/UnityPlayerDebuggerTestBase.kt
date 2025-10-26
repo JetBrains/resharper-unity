@@ -7,6 +7,8 @@ import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.enums.PlatformType
+import com.jetbrains.rider.test.enums.UnityBackend
+import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.*
 import org.testng.annotations.Test
@@ -19,8 +21,7 @@ import kotlin.test.assertNotNull
 @Severity(SeverityLevel.CRITICAL)
 @Solution("UnityPlayerProjects/SimpleUnityGame")
 @RiderTestTimeout(5, TimeUnit.MINUTES)
-abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, unityBackend: UnityBackend)
-    : UnityPlayerTestBase(engineVersion, unityBackend) {
+abstract class UnityPlayerDebuggerTestBase() : UnityPlayerTestBase(){
 
     @Test(description = "Check breakpoint for prebuilt Player)")
     @ChecklistItems(["Debug prebuilt Unity Player"])
@@ -62,24 +63,45 @@ abstract class UnityPlayerDebuggerTestBase(engineVersion: EngineVersion, unityBa
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnityPlayerDebuggerTest {
-    class TestMonoUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022, UnityBackend.Mono){
+    @UnityTestSettings(unityVersion = UnityVersion.V2022, unityBackend = UnityBackend.Mono)
+    class TestMonoUnityBuild2022 : UnityPlayerDebuggerTestBase(){
         init {
             addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
         }
     }
-    class TestMonoUnityBuild6 : UnityPlayerDebuggerTestBase(Unity.V6, UnityBackend.Mono){
+
+    @UnityTestSettings(unityVersion = UnityVersion.V6, unityBackend = UnityBackend.Mono)
+    class TestMonoUnityBuild6 : UnityPlayerDebuggerTestBase(){
         init {
             addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
         }
     }
-    class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase(Unity.V2022, UnityBackend.Il2CPP){
+
+    @UnityTestSettings(unityVersion = UnityVersion.V6_2, unityBackend = UnityBackend.Mono)
+    class TestMonoUnityBuild6_2 : UnityPlayerDebuggerTestBase() {
         init {
-            addMute(Mute("RIDER-129597", platforms = [PlatformType.ALL]), ::checkBreakpoint)
+            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
         }
     }
-    class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase(Unity.V6, UnityBackend.Il2CPP){
+
+    @UnityTestSettings(unityVersion = UnityVersion.V2022, unityBackend = UnityBackend.Il2CPP)
+    class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase() {
         init {
-            addMute(Mute("RIDER-129597", platforms = [PlatformType.ALL]), ::checkBreakpoint)
+            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
         }
     }
-}
+
+    @UnityTestSettings(unityVersion = UnityVersion.V6, unityBackend = UnityBackend.Il2CPP)
+    class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase() {
+        init {
+            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+        }
+    }
+
+    @UnityTestSettings(unityVersion = UnityVersion.V6_2, unityBackend = UnityBackend.Il2CPP)
+    class TestIL2CPPUnityBuild6_2 : UnityPlayerDebuggerTestBase() {
+        init {
+            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+        }
+    }
+    }
