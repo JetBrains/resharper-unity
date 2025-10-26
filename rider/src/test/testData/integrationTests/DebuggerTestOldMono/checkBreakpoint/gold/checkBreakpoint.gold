@@ -1,8 +1,0 @@
---> NewBehaviourScript.cs:9(143,158) // Debug.Log(a+b);
-NewBehaviourScript.Update() in , Assembly-CSharp.dll
-    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity): null
-    +this.gameObject = Main Camera (active: true, layer: 0): null
-    +this = enabled: true, gameObject: Main Camera: NewBehaviourScript
-    a = 0: int
-    b = 1: int
-
