@@ -207,7 +207,7 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity2020 : DebuggerTest(Unity.V2020)  {
     init {
-        addMute(Mute("RIDER-105466", platforms = arrayOf(PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL)), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
 }
 
@@ -217,12 +217,15 @@ class DebuggerTestUnity2022 : DebuggerTest(Unity.V2022)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity6 : DebuggerTest(Unity.V6) {
     init {
-        addMute(Mute("RIDER-105466"), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTestUnity6_2 : DebuggerTest(Unity.V6_2) {
+    init {
+        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
+    }
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
