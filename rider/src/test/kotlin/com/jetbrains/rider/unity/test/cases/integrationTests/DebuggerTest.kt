@@ -222,6 +222,10 @@ class DebuggerTestUnity6 : DebuggerTest(Unity.V6) {
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+class DebuggerTestUnity6_2 : DebuggerTest(Unity.V6_2) {
+}
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
 class DebuggerTestTuanjie2022 : DebuggerTest (Tuanjie.V2022)

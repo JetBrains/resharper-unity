@@ -104,4 +104,4 @@ class UnityPlayerDebuggerTest {
             addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
         }
     }
-    }
+}

@@ -127,4 +127,10 @@ class DotsDebuggerTestUnity6 : DotsDebuggerTest(Unity.V6) {
     }
 }
 
+@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+class DotsDebuggerTestUnity6_2 : DotsDebuggerTest(Unity.V6_2) {
+}
+
+
 
