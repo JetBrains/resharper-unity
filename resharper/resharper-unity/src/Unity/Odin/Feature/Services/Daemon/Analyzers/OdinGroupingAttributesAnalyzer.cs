@@ -66,6 +66,9 @@ public class OdinGroupingAttributesAnalyzer : UnityElementProblemAnalyzer<IClass
         var membersWithDefinedGroupWithDifferentAttribute = new LocalHashSet<ITypeMember>();
         foreach (var info in grouping)
         {
+            if(string.IsNullOrEmpty(info.GroupPath))
+                continue;
+            
             trie.Add(info.GroupPath, info.GroupPath);
 
             var clrName = info.AttributeInstance.GetClrName();

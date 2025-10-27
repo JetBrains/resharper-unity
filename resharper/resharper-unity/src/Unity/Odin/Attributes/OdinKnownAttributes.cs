@@ -95,6 +95,8 @@ public static class OdinKnownAttributes
         {CustomContextMenuAttribute, new [] {"action"} },
         
         {OnCollectionChangedAttribute, new [] {"before", "after"} },
+        { HideIfGroupAttribute, ["value"] },
+        { ShowIfGroupAttribute, ["value"] },
     };
     
     
@@ -113,8 +115,7 @@ public static class OdinKnownAttributes
         {TitleGroupAttribute, "title"},
         
         {HideIfGroupAttribute, "path"},
-        {ShowIfGroupAttribute, "condition"},
-
+        {ShowIfGroupAttribute, "path"},
     };
 }
 
