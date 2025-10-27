@@ -20,6 +20,8 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
+import com.jetbrains.rider.test.enums.TuanjieVersion
+import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.*
@@ -34,7 +36,7 @@ import kotlin.test.fail
 @Feature("Debug Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
 @Solution("UnityDebugAndUnitTesting/Project")
-abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
+abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
     @Test(description = "Check 2 breakpoints in simple Unity App")
     @ChecklistItems(["Breakpoints/Simple breakpoint"])
     fun checkBreakpoint() {
@@ -205,24 +207,28 @@ abstract class DebuggerTest(engineVersion: EngineVersion) : IntegrationTestWithU
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DebuggerTestUnity2020 : DebuggerTest(Unity.V2020)  {
+@UnityTestSettings(unityVersion = UnityVersion.V2020)
+class DebuggerTestUnity2020 : DebuggerTest()  {
     init {
         addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DebuggerTestUnity2022 : DebuggerTest(Unity.V2022)
+@UnityTestSettings(unityVersion = UnityVersion.V2022)
+class DebuggerTestUnity2022 : DebuggerTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DebuggerTestUnity6 : DebuggerTest(Unity.V6) {
+@UnityTestSettings(unityVersion = UnityVersion.V6)
+class DebuggerTestUnity6 : DebuggerTest() {
     init {
         addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DebuggerTestUnity6_2 : DebuggerTest(Unity.V6_2) {
+@UnityTestSettings(unityVersion = UnityVersion.V6_2)
+class DebuggerTestUnity6_2 : DebuggerTest() {
     init {
         addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
@@ -231,4 +237,5 @@ class DebuggerTestUnity6_2 : DebuggerTest(Unity.V6_2) {
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
-class DebuggerTestTuanjie2022 : DebuggerTest (Tuanjie.V2022)
+@UnityTestSettings(tuanjieVersion = TuanjieVersion.V2022)
+class DebuggerTestTuanjie2022 : DebuggerTest ()

@@ -6,9 +6,9 @@ import com.jetbrains.rdclient.testFramework.isUnderTeamCity
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.logging.TestLoggerHelper
-import com.jetbrains.rider.test.scriptingApi.Unity
 import com.jetbrains.rider.test.scriptingApi.addArgsForUnityProcess
 import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
 import com.jetbrains.rider.test.scriptingApi.createLibraryFolderIfNotExist
@@ -44,7 +44,7 @@ abstract class IntegrationTestWithSolutionBase : PerTestSolutionTestBase() {
     fun checkUnityEditorLicense() {
         // Do not check locally and allow missing Unity Installations
         if (!isUnderTeamCity) return
-        Unity.entries.filter { it.isUnity() }.forEach { unityVersion ->
+        UnityVersion.entries.filter { it.isUnity() }.forEach { unityVersion ->
             val args = mutableListOf<String>()
             args.add(getEngineExecutableInstallationPath(unityVersion).canonicalPath.toString())
             val logFile = TestLoggerHelper.getClassLogDirectory(javaClass).resolve("UnityEditorCheck.log")

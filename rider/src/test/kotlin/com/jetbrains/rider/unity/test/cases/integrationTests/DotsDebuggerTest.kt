@@ -12,6 +12,7 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
+import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDotsDebug/Project")
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
-abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
+abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
     @Test(description = "Check breakpoint for Unity DOTS code")
     @ChecklistItems(["Breakpoints/Breakpoint in DOTS"])
     fun checkBreakpointInDOTSCode() {
@@ -111,7 +112,8 @@ abstract class DotsDebuggerTest(override val engineVersion: EngineVersion) : Int
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
+@UnityTestSettings(unityVersion = UnityVersion.V2022)
+class DotsDebuggerTestUnity2022 : DotsDebuggerTest() {
     init {
         addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
@@ -119,7 +121,8 @@ class DotsDebuggerTestUnity2022 : DotsDebuggerTest(Unity.V2022) {
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DotsDebuggerTestUnity6 : DotsDebuggerTest(Unity.V6) {
+@UnityTestSettings(unityVersion = UnityVersion.V6)
+class DotsDebuggerTestUnity6 : DotsDebuggerTest() {
     init {
         addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
@@ -127,7 +130,8 @@ class DotsDebuggerTestUnity6 : DotsDebuggerTest(Unity.V6) {
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DotsDebuggerTestUnity6_2 : DotsDebuggerTest(Unity.V6_2) {
+@UnityTestSettings(unityVersion = UnityVersion.V6_2)
+class DotsDebuggerTestUnity6_2 : DotsDebuggerTest() {
     init {
         addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }

@@ -8,10 +8,9 @@ import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.scriptingApi.EngineVersion
+import com.jetbrains.rider.test.enums.TuanjieVersion
+import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
-import com.jetbrains.rider.test.scriptingApi.Tuanjie
-import com.jetbrains.rider.test.scriptingApi.Unity
 import com.jetbrains.rider.test.scriptingApi.changeFileContent
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
@@ -23,7 +22,7 @@ import org.testng.annotations.Test
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDebugAndUnitTesting/Project")
-abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
+abstract class UnitTestingTest() : IntegrationTestWithUnityProjectBase() {
     @Test(description="Check run all tests from project")
     @ChecklistItems(["Run all tests from the Project"])
     fun checkRunAllTestsFromProject() {
@@ -79,20 +78,23 @@ abstract class UnitTestingTest(engineVersion: EngineVersion) : IntegrationTestWi
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTestUnity2020 : UnitTestingTest(Unity.V2020)
+@UnityTestSettings(unityVersion = UnityVersion.V2020)
+class UnitTestingTestUnity2020 : UnitTestingTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTestUnity2022 : UnitTestingTest(Unity.V2022)
+@UnityTestSettings(unityVersion = UnityVersion.V2022)
+class UnitTestingTestUnity2022 : UnitTestingTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTestUnity6 : UnitTestingTest(Unity.V6) {
-}
+@UnityTestSettings(unityVersion = UnityVersion.V6)
+class UnitTestingTestUnity6 : UnitTestingTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTestUnity6_2 : UnitTestingTest(Unity.V6_2) {
-}
+@UnityTestSettings(unityVersion = UnityVersion.V6_2)
+class UnitTestingTestUnity6_2 : UnitTestingTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
-class UnitTestingTestTuanjie2022 : UnitTestingTest(Tuanjie.V2022)
+@UnityTestSettings(tuanjieVersion = TuanjieVersion.V2022)
+class UnitTestingTestTuanjie2022 : UnitTestingTest()

@@ -11,8 +11,11 @@ import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.test.OpenSolutionParams
+import com.jetbrains.rider.test.annotations.UnityTestSettings
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.enums.UnityBackend
+import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.combine
@@ -26,7 +29,7 @@ import org.testng.annotations.BeforeMethod
 import java.io.File
 import kotlin.test.assertNotNull
 
-abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,private val unityBackend: UnityBackend)
+abstract class UnityPlayerTestBase()
     : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
@@ -38,8 +41,20 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,priv
         }
     }
 
+    protected val engineVersion: UnityVersion
+        get() = this::class.java
+                    .getAnnotation(UnityTestSettings::class.java)
+                    ?.unityVersion
+                ?: UnityTestSettings().unityVersion
+
+    protected val unityBackend: UnityBackend
+        get() = this::class.java
+                    .getAnnotation(UnityTestSettings::class.java)
+                    ?.unityBackend
+                ?: UnityTestSettings().unityBackend
+
+
     private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
-    private val unityMajorVersion = this.engineVersion
     private lateinit var unityProjectPath: File
     private lateinit var lifetimeDefinition: LifetimeDefinition
 
@@ -92,9 +107,9 @@ abstract class UnityPlayerTestBase(private val engineVersion: EngineVersion,priv
 
     override val testGoldFile: File
         get() {
-            return getUnityDependentGoldFile(unityMajorVersion, super.testGoldFile, unityBackend.toString()).takeIf { it.exists() }
+            return getUnityDependentGoldFile(engineVersion, super.testGoldFile, unityBackend.toString()).takeIf { it.exists() }
                    ?: getUnityDependentGoldFile(
-                       unityMajorVersion,
+                       engineVersion,
                        File(super.testGoldFile.path.replace(this::class.simpleName.toString(), "")),
                        unityBackend.toString().lowercase()
                    )

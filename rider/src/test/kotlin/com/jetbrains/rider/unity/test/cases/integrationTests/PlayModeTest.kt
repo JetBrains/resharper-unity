@@ -6,10 +6,9 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
+import com.jetbrains.rider.test.enums.TuanjieVersion
+import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.scriptingApi.EngineVersion
-import com.jetbrains.rider.test.scriptingApi.Tuanjie
-import com.jetbrains.rider.test.scriptingApi.Unity
 import com.jetbrains.rider.test.scriptingApi.rebuildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.replaceFileContent
 import com.jetbrains.rider.unity.test.framework.api.*
@@ -21,7 +20,7 @@ import org.testng.annotations.Test
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDebugAndUnitTesting/Project")
-abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithUnityProjectBase(engineVersion) {
+abstract class PlayModeTest() : IntegrationTestWithUnityProjectBase() {
     @Test(description="Check play, pause, step, unpause, stop actions for Unity")
     @ChecklistItems(["Play Mode/PlayMode actions (play, stop. etc.)"])
     fun checkPlayingPauseModesAndSteps() {
@@ -74,7 +73,8 @@ abstract class PlayModeTest(engineVersion: EngineVersion) : IntegrationTestWithU
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class PlayModeTestUnity2020 : PlayModeTest(Unity.V2020) {
+@UnityTestSettings(unityVersion = UnityVersion.V2020)
+class PlayModeTestUnity2020 : PlayModeTest() {
     init {
         addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditor)
         addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditorAndPlay)
@@ -82,15 +82,19 @@ class PlayModeTestUnity2020 : PlayModeTest(Unity.V2020) {
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class PlayModeTestUnity2022 : PlayModeTest(Unity.V2022)
+@UnityTestSettings(unityVersion = UnityVersion.V2022)
+class PlayModeTestUnity2022 : PlayModeTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class PlayModeTestUnity6 : PlayModeTest(Unity.V6)
+@UnityTestSettings(unityVersion = UnityVersion.V6)
+class PlayModeTestUnity6 : PlayModeTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class PlayModeTestUnity6_2 : PlayModeTest(Unity.V6_2)
+@UnityTestSettings(unityVersion = UnityVersion.V6_2)
+class PlayModeTestUnity6_2 : PlayModeTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
-class PlayModeTestTuanjie2022 : PlayModeTest(Tuanjie.V2022)
+@UnityTestSettings(tuanjieVersion = TuanjieVersion.V2022)
+class PlayModeTestTuanjie2022 : PlayModeTest()
