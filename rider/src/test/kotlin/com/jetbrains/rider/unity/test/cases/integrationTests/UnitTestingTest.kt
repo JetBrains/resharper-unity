@@ -78,10 +78,6 @@ abstract class UnitTestingTest() : IntegrationTestWithUnityProjectBase() {
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@UnityTestSettings(unityVersion = UnityVersion.V2020)
-class UnitTestingTestUnity2020 : UnitTestingTest()
-
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V2022)
 class UnitTestingTestUnity2022 : UnitTestingTest()
 

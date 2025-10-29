@@ -73,15 +73,6 @@ abstract class PlayModeTest() : IntegrationTestWithUnityProjectBase() {
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@UnityTestSettings(unityVersion = UnityVersion.V2020)
-class PlayModeTestUnity2020 : PlayModeTest() {
-    init {
-        addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditor)
-        addMute(Mute("RIDER-122954"), ::checkAttachDebuggerToUnityEditorAndPlay)
-    }
-}
-
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V2022)
 class PlayModeTestUnity2022 : PlayModeTest()
 
