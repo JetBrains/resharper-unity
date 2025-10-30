@@ -2,8 +2,8 @@ package com.jetbrains.rider.unity.test.framework.base
 
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
-import com.jetbrains.rider.test.annotations.UnityTestSettings
-import com.jetbrains.rider.test.enums.UnityVersion
+import com.jetbrains.rider.test.enums.EngineVersion
+import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.frameworkLogger
@@ -19,11 +19,11 @@ import java.time.Duration
 abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGeneratedSolutionBase() {
     private lateinit var unityProjectPath: File
 
-    protected val engineVersion: UnityVersion
-        get() = this::class.java
-                    .getAnnotation(UnityTestSettings::class.java)
-                    ?.unityVersion
-                ?: UnityTestSettings().unityVersion
+  protected val engineVersion: EngineVersion
+    get() {
+      val settings = getUnityTestSettingsAnnotation()
+      return settings.tuanjieVersion.takeIf { it != TuanjieVersion.NONE } ?: settings.unityVersion
+    }
 
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger

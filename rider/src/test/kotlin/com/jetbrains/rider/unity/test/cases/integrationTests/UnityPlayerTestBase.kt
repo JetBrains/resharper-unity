@@ -11,11 +11,10 @@ import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.annotations.UnityTestSettings
 import com.jetbrains.rider.test.asserts.shouldBeTrue
-import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.enums.EngineVersion
+import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.enums.UnityBackend
-import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.combine
@@ -23,14 +22,14 @@ import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.activateRiderFrontendTest
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
+import com.jetbrains.rider.unity.test.framework.base.BaseTestWithUnitySetup
 import kotlinx.coroutines.CompletableDeferred
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File
 import kotlin.test.assertNotNull
 
-abstract class UnityPlayerTestBase()
-    : PerTestSolutionTestBase() {
+abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
         params.waitForCaches = true
@@ -41,17 +40,14 @@ abstract class UnityPlayerTestBase()
         }
     }
 
-    protected val engineVersion: UnityVersion
-        get() = this::class.java
-                    .getAnnotation(UnityTestSettings::class.java)
-                    ?.unityVersion
-                ?: UnityTestSettings().unityVersion
+    protected val engineVersion: EngineVersion
+        get() {
+            val settings = getUnityTestSettingsAnnotation()
+            return settings.tuanjieVersion.takeIf { it != TuanjieVersion.NONE } ?: settings.unityVersion
+        }
 
     protected val unityBackend: UnityBackend
-        get() = this::class.java
-                    .getAnnotation(UnityTestSettings::class.java)
-                    ?.unityBackend
-                ?: UnityTestSettings().unityBackend
+        get() = getUnityTestSettingsAnnotation().unityBackend
 
 
     private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
