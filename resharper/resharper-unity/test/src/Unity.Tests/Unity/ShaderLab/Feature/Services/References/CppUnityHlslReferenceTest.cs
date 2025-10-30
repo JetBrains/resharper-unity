@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Language;
+using JetBrains.ReSharper.Psi.Cpp.Presentation;
 using JetBrains.ReSharper.Psi.Cpp.Resolve;
 using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.ReSharper.Psi.Cpp.Tree;
@@ -44,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Ref
             if (declaredElement is CppResolveEntityDeclaredElement cppElement)
             {
                 var entity = cppElement.GetResolveEntity();
-                var name = ResolveEntityPrettyPrinter.GetFullName(entity);
+                var name = ResolveEntityPrettyPrinter.GetFullName(entity, ourPresenter);
                 var type = cppElement.GetElementType();
                 return $"Name:{name}, type:{type}{BuildExtraInfo(entity)}";
             }
@@ -73,12 +74,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Ref
             };
             if (!type.IsNullType() && type.IsFunctionType())
             {
-                res = ", cpp-type: " + type.DbgDescription;
+                res = ", cpp-type: " + ourPresenter.PresentType(type);
                 if (ent is ICppDeclaratorResolveEntity declEnt && declEnt.DeclarationSpecifiers != CppDeclarationSpecifiers.None)
                     res += ", specs: " + declEnt.DeclarationSpecifiers.SpecsToString();
             }
 
             return res;
         }
+
+        private static readonly CppPresenter ourPresenter = CppPresenter.CreatePresenterForDebug();
     }
 }
