@@ -24,3 +24,4 @@ ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>.OriginalLambda
         +Rotation = {quaternion} quaternion(<float_value>, <float_value>, <float_value>, <float_value>)
         Scale = {float} 0
         +[Static members]
+

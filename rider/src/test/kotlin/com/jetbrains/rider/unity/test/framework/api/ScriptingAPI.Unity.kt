@@ -546,7 +546,7 @@ private fun SolutionApiFacade.selectUnitTestLaunchPreference(preference: UnitTes
 //region for Unity versions gold file
 
 fun getGoldFileUnityDependentSuffix(engineVersion: EngineVersion): String {
-    return "_${engineVersion.version.lowercase()}"
+    return "_${engineVersion.version.lowercase().replace('.', '_')}"
 }
 
 fun getUnityDependentGoldFile(engineVersion: EngineVersion, testFile: File, backend: String? = null): File {

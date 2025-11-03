@@ -1,12 +1,12 @@
---> ResetTransformSystem.cs:24$(607) //             transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
-ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>.OriginalLambdaBody() in , Assembly-CSharp.dll
+--> ResetTransformSystem.cs:24$(595) //             transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
+ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>.OriginalLambdaBody() in Assembly-CSharp.dll
     +Current Entity = {Entity_} '' Entity<id>
     +this = ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>
     +speed = RotationSpeed
     +transform = {LocalTransform} Position=float3(<float_value>, <float_value>, <float_value>) Rotation=quaternion(<float_value>, <float_value>, <float_value>, <float_value>) Scale=0
 
 --> ResetTransformSystem.cs:34(921,1010) // transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity};
-ResetTransformJobEntity.Execute() in , Assembly-CSharp.dll
+ResetTransformJobEntity.Execute() in Assembly-CSharp.dll
     +Current Entity = {Entity_} '' Entity<id>
     +__TypeHandle = ResetTransformJobEntity.InternalCompilerQueryAndHandleData.TypeHandle
     +speed = RotationSpeed
