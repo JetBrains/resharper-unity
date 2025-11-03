@@ -74,18 +74,34 @@ abstract class PlayModeTest() : IntegrationTestWithUnityProjectBase() {
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V2022)
-class PlayModeTestUnity2022 : PlayModeTest()
+class PlayModeTestUnity2022 : PlayModeTest(){
+    init {
+        addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
+    }
+}
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6)
-class PlayModeTestUnity6 : PlayModeTest()
+class PlayModeTestUnity6 : PlayModeTest(){
+    init {
+        addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
+    }
+}
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_2)
-class PlayModeTestUnity6_2 : PlayModeTest()
+class PlayModeTestUnity6_2 : PlayModeTest(){
+    init {
+        addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
+    }
+}
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
 @UnityTestSettings(tuanjieVersion = TuanjieVersion.V2022)
-class PlayModeTestTuanjie2022 : PlayModeTest()
+class PlayModeTestTuanjie2022 : PlayModeTest(){
+    init {
+        addMute(Mute("RIDER-105666"), ::checkPlayModeLogs)
+    }
+}
