@@ -68,7 +68,7 @@ public class UnityProjectModulesCollector : SolutionUsagesCollector
         myUnitySolutionTracker = unitySolutionTracker;
         mySolution = solution;
         myProjectModulesTracker = projectModulesTracker;
-        myGroup = new EventLogGroup("dotnet.unity.platforms", "Unity Available Platforms Information", 1,
+        myGroup = new EventLogGroup("dotnet.unity.platforms", "Unity Available Platforms Information", 2,
             featureUsageLogger);
         myActiveBuildTargetEvent = myGroup.RegisterEvent("activeBuildTarget",
             "Active Build Target: currently selected build target in Unity Editor"
