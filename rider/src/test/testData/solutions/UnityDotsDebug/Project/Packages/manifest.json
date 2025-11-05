@@ -1,8 +1,8 @@
 {
   "dependencies": {
-      "com.unity.ide.rider": "{{VERSION}}",
-      "com.unity.entities": "1.0.16",
-      "com.unity.modules.uielements": "1.0.0",
-      "com.unity.modules.physics": "1.0.0"
+    "com.unity.ide.rider": "{{VERSION}}",
+    "com.unity.entities": "1.4.3",
+    "com.unity.modules.physics": "1.0.0",
+    "com.unity.modules.uielements": "1.0.0"
   }
 }
