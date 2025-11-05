@@ -2,7 +2,9 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
+import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -28,6 +30,9 @@ import java.util.concurrent.TimeUnit
 @Solution("UnityDotsDebug/Project")
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
+    override val traceScenarios: Set<LogTraceScenario>
+        get() = super.traceScenarios + LogTraceScenarios.Debugger + LogTraceScenarios.MonoDebuggerConnection
+    
     @Test(description = "Check breakpoint for Unity DOTS code")
     @ChecklistItems(["Breakpoints/Breakpoint in DOTS"])
     fun checkBreakpointInDOTSCode() {
@@ -51,7 +56,6 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
             }, testGoldFile)
     }
 
-    @Mute("RIDER-118536", platforms = [PlatformType.MAC_OS_ALL])
     @Test(description = "Check Ref Presentation in DOTS code for simple app")
     @ChecklistItems(["Breakpoints/Ref Presentation in DOTS"])
     fun checkRefPresentationInDOTSCode() {
@@ -115,7 +119,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
 @UnityTestSettings(unityVersion = UnityVersion.V2022)
 class DotsDebuggerTestUnity2022 : DotsDebuggerTest() {
     init {
-        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
+        //addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
 }
 

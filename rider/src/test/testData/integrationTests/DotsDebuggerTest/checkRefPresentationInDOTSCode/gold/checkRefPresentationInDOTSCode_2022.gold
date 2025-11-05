@@ -1,16 +1,16 @@
---> ResetTransformSystem.cs:24$(607) //             transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
+--> ResetTransformSystem.cs:24$(595) //             transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
 ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>.OriginalLambdaBody() in Assembly-CSharp.dll
     +Current Entity = {Entity_} '' Entity<id>
-        +Archetype = {EntityArchetype} (Unity.Entities.Entity, Unity.Transforms.LocalToWorld, Unity.Transforms.LocalTransform, Unity.Transforms.PostTransformMatrix, RotationSpeed, Unity.Entities.Simulate, Unity.Entities.SceneTag, Unity.Entities.EditorRenderData, Unity.Entities.SceneSection)
+        +Archetype = {EntityArchetype} (Unity.Entities.Entity, RotationSpeed, Unity.Transforms.LocalToWorld, Unity.Transforms.LocalTransform, Unity.Transforms.PostTransformMatrix, Unity.Entities.Simulate, Unity.Entities.SceneTag, Unity.Entities.SceneSection, Unity.Entities.EditorRenderData)
         +Chunk = ArchetypeChunk
-        +[0] = LocalToWorld
-        +[1] = {LocalTransform} Position=float3(<float_value>, <float_value>, <float_value>) Rotation=quaternion(<float_value>, <float_value>, <float_value>, <float_value>) Scale=0
-        +[2] = PostTransformMatrix
-        +[3] = RotationSpeed
+        +[0] = RotationSpeed
+        +[1] = LocalToWorld
+        +[2] = {LocalTransform} Position=float3(<float_value>, <float_value>, <float_value>) Rotation=quaternion(<float_value>, <float_value>, <float_value>, <float_value>) Scale=0
+        +[3] = PostTransformMatrix
         +[4] = {Component_E} Unity.Entities.Simulate (Enabled)
         +[5] = {SceneTag} SubSceneTag: Entity<id>
-        +[6] = EditorRenderData
-        +[7] = SceneSection
+        +[6] = SceneSection
+        +[7] = EditorRenderData
         +World = {World} Default World - Game (#0)
         +[Static members]
     +this = ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>
