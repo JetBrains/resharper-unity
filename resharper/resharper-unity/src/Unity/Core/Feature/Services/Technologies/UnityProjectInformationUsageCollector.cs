@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies
             myShellLocks = shellLocks;
             if (solution != null)
                 myUnityModule = UnityProjectSettingsUtils.GetUnityModule(solution);
-            myGroup = new EventLogGroup("dotnet.unity.projects", "Unity Project Information", 2, featureUsageLogger);
+            myGroup = new EventLogGroup("dotnet.unity.projects", "Unity Project Information", 3, featureUsageLogger);
             myProjectKindEvent = myGroup.RegisterEvent("projectKind", "Project Kind", 
                 EventFields.Enum<UnityProjectKind>("type", "Type"));
             

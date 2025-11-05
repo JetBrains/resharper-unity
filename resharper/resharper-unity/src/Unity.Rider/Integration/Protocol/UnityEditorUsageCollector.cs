@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         public UnityEditorUsageCollector(UnitySolutionTracker solutionTracker, FeatureUsageLogger featureUsageLogger)
         {
             mySolutionTracker = solutionTracker;
-            myGroup = new EventLogGroup("dotnet.unity.unityeditor", "Connected Unity Editor Information", 1, featureUsageLogger);
+            myGroup = new EventLogGroup("dotnet.unity.unityeditor", "Connected Unity Editor Information", 2, featureUsageLogger);
             
             myConnectedUnityEvent = myGroup.RegisterEvent("version", "Project Unity Version", 
                 EventFields.StringValidatedByInlineRegexp("version", "Unity Version", UnityVersion.VersionRegex),
