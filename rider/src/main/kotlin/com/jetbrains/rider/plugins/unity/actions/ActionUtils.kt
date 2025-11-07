@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.ui.ExperimentalUI
 import com.jetbrains.rd.framework.impl.RdProperty
+import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
@@ -15,13 +16,19 @@ fun AnActionEvent.getFrontendBackendModel(): FrontendBackendModel? {
     return project.solution.frontendBackendModel
 }
 
-val AnActionEvent.isUnityProject: RdProperty<Boolean>?
+val AnActionEvent.isUnityProject: Property<Boolean>?
     get() = project?.isUnityProject
 
 val AnActionEvent.isUnityProjectFolder: RdProperty<Boolean>?
     get() = project?.isUnityProjectFolder
 
 val RdProperty<Boolean>?.valueOrDefault: Boolean
+    get() {
+        if (this == null) return false
+        return this.value
+    }
+
+val Property<Boolean>?.valueOrDefault: Boolean
     get() {
         if (this == null) return false
         return this.value

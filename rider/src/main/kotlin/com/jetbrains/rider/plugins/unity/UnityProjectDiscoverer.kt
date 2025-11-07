@@ -10,6 +10,7 @@ import com.jetbrains.rd.framework.impl.RdProperty
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rd.util.threading.coroutines.launch
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
@@ -23,7 +24,7 @@ import kotlinx.coroutines.withContext
 
 class UnityDetectorImpl(private val project: Project) : UnityDetector {
 
-    override val isUnitySolution: RdProperty<Boolean>
+    override val isUnitySolution: Property<Boolean>
         get() = UnityProjectDiscoverer.getInstance(project).isUnityProject
 }
 
@@ -32,8 +33,7 @@ class UnityProjectDiscoverer(val project: Project) {
     // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
-    // todo: switch to Property, after RIDER-132142 fixed, https://jetbrains.team/p/ij/reviews/181766/timeline
-    val isUnityProject = RdProperty(UnityProjectDiscovererState.getInstance(project).isUnityProjectState)
+    val isUnityProject = Property(UnityProjectDiscovererState.getInstance(project).isUnityProjectState)
 
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
     val isUnityProjectFolder = RdProperty(UnityProjectDiscovererState.getInstance(project).isUnityProjectFolderState)
@@ -144,7 +144,7 @@ class UnityProjectDiscoverer(val project: Project) {
 
 val Project.hasUnityReference: RdProperty<Boolean>
     get() = UnityProjectDiscoverer.getInstance(this).hasUnityReference
-val Project.isUnityProject: RdProperty<Boolean>
+val Project.isUnityProject: Property<Boolean>
     get() = UnityProjectDiscoverer.getInstance(this).isUnityProject
 val Project.isUnityProjectFolder: RdProperty<Boolean>
     get() = UnityProjectDiscoverer.getInstance(this).isUnityProjectFolder
