@@ -370,7 +370,7 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
         val unityProcess: UnityProcess? = pair.first
         startGameExecutable = pair.second
 
-        assertNotNull(unityProcess)
+        assertNotNull(unityProcess, "Failed to discover debuggable Unity process")
         attachToUnityProcess(project, unityProcess)
 
         session = waitForNotNull(UnityPlayerDebuggerTestBase.collectTimeout, "Debugger session wasn't started") {

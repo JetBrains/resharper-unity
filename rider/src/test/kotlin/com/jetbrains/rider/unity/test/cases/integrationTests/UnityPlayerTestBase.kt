@@ -1,6 +1,5 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.system.OS
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
@@ -19,6 +18,8 @@ import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.unity.test.framework.FirewallHelper.addAllowRuleToFirewall
+import com.jetbrains.rider.unity.test.framework.FirewallHelper.removeRuleFromFirewall
 import com.jetbrains.rider.unity.test.framework.api.activateRiderFrontendTest
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
@@ -27,6 +28,7 @@ import kotlinx.coroutines.CompletableDeferred
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertNotNull
 
 abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
@@ -39,6 +41,8 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
             createLibraryFolderIfNotExist(it)
         }
     }
+
+    override val solutionApiFacade: SolutionApiFacade by lazy { RiderExistingSolutionApiFacade() }
 
     protected val engineVersion: EngineVersion
         get() {
@@ -53,6 +57,7 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
     private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
     private lateinit var unityProjectPath: File
     private lateinit var lifetimeDefinition: LifetimeDefinition
+    private lateinit var unityPlayerFile: File
 
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger
@@ -62,11 +67,11 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
         get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
 
     private fun buildUnityPlayer(unityBackend: UnityBackend) {
-        val buildDir = File(unityProjectPath, "Builds")
-        val buildTarget = when {
-            SystemInfo.isMac -> "OSXUniversal"
-            SystemInfo.isWindows -> "Win64"
-            SystemInfo.isLinux -> "Linux64"
+        val buildLogFile = testMethod.logDirectory.combine("PlayerBuild.log")
+        val buildTarget = when (OS.CURRENT) {
+            OS.macOS -> "OSXUniversal"
+            OS.Windows -> "Win64"
+            OS.Linux -> "Linux64"
             else -> error("Unsupported OS for Unity player build: ${OS.CURRENT}")
         }
 
@@ -75,23 +80,37 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
             "-batchmode", "-quit",
             "-projectPath", unityProjectPath.absolutePath,
             "-executeMethod", "BuildScript.Build",
-            "-logFile", File(testMethod.logDirectory, "PlayerBuild.log").absolutePath,
+            "-logFile", buildLogFile.canonicalPath,
             "-buildTarget", buildTarget,
             "-backend", unityBackend.toString()
         ).start()
-
-        process.waitFor()
-        assert(process.exitValue() == 0) { "Unity Build failed! Check logs at: ${buildDir.absolutePath}/build.log" }
+        try {
+            process.waitFor(5, TimeUnit.MINUTES)
+            assert(process.exitValue() == 0) { "Unity Build failed! Check logs at: ${buildLogFile.canonicalPath}" }
+            // On macOS need to explicitly allow listening to the incoming connections
+            if (OS.CURRENT == OS.macOS) {
+                unityPlayerFile = getPlayerFile()
+                addAllowRuleToFirewall(unityPlayerFile.canonicalPath)
+            }
+        } finally {
+          process.destroyForcibly()
+        }
     }
 
     protected fun getPlayerFile(): File {
         val buildDir = File(unityProjectPath, "Builds")
-        val gameFilePath = if (SystemInfo.isMac) "SimpleUnityGame.app" else "SimpleUnityGame.exe"
-        val gameFullPath = if (SystemInfo.isMac) {
+        val executableName =  unityProjectPath.name
+        val gameFilePath = when (OS.CURRENT) {
+            OS.macOS -> "$executableName.app"
+            OS.Windows -> "$executableName.exe"
+            OS.Linux -> executableName
+            else -> error("Unsupported OS for Unity player build: ${OS.CURRENT}")
+        }
+        val gameFullPath = if (OS.CURRENT == OS.macOS) {
             buildDir
                 .resolve(gameFilePath)
                 .resolve("Contents/MacOS")
-                .resolve(gameFilePath.removeSuffix(".app"))
+                .resolve(executableName)
         } else {
             buildDir.resolve(gameFilePath)
         }
@@ -111,11 +130,9 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
                    )
         }
 
-    override val solutionApiFacade: SolutionApiFacade by lazy { RiderExistingSolutionApiFacade() }
-
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,
-        filter: ((File) -> Boolean)? = null
+        filter: ((File) -> Boolean)? = null,
     ): File {
         val solutionName: String = File(solutionDirectoryName).name
         val workDirectory = File(testWorkDirectory, solutionName)
@@ -145,6 +162,13 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
     fun terminateLifetimeDefinition() {
         if (::lifetimeDefinition.isInitialized && lifetimeDefinition.isAlive) {
             lifetimeDefinition.terminate()
+        }
+    }
+
+    @AfterMethod
+    fun cleanupFirewallRules() {
+        if (OS.CURRENT == OS.macOS && ::unityPlayerFile.isInitialized) {
+            removeRuleFromFirewall(unityPlayerFile.canonicalPath)
         }
     }
 
