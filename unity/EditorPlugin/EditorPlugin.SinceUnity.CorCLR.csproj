@@ -17,6 +17,7 @@
     <PackageReference Include="JetBrains.Unity.Libs.Ref.CorCLR" />
     <PackageReference Include="ILRepack" PrivateAssets="all" />
     <PackageReference Include="NUnit" />
+    <PackageReference Include="JetBrains.RdFramework" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PathLocator\PathLocator.csproj" />
