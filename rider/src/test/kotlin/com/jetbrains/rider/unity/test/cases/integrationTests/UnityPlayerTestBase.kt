@@ -182,6 +182,7 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
             UnityPlayerListener()
                 .startListening(lifetime,
                                 {
+                                    logger.info("#### Found non-matching Unity Player process:$it")
                                     if (filter(it) && !result.isCompleted) {
                                         logger.info("Found Unity Player process:$it")
                                         result.complete(it)
