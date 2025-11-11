@@ -1,8 +1,8 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.editor.Editor
-import com.jetbrains.rider.cpp.fileType.HlslHeaderFileType
-import com.jetbrains.rider.cpp.fileType.HlslSourceFileType
+import com.jetbrains.rider.hlsl.fileType.HlslHeaderFileType
+import com.jetbrains.rider.hlsl.fileType.HlslSourceFileType
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 import com.jetbrains.rider.plugins.unity.isUnityProject
 

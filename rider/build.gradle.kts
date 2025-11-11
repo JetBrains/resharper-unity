@@ -162,6 +162,7 @@ dependencies {
         bundledModule("intellij.rider.rdclient.dotnet.spellchecker")
         bundledModule("intellij.rider.cpp.core")
         bundledModule("intellij.rider.cpp.core.languages")
+        bundledModule("intellij.rider.hlsl")
         bundledPlugin("rider.intellij.plugin.appender")
         bundledPlugin("com.intellij.css")
         bundledPlugin("org.jetbrains.plugins.yaml")

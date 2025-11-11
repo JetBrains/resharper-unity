@@ -12,11 +12,11 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.client.frontendProjectSession
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
-import com.jetbrains.rider.cpp.fileType.HlslHeaderFileType
-import com.jetbrains.rider.cpp.fileType.HlslSourceFileType
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetManager
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetProvider
+import com.jetbrains.rider.hlsl.fileType.HlslHeaderFileType
+import com.jetbrains.rider.hlsl.fileType.HlslSourceFileType
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
