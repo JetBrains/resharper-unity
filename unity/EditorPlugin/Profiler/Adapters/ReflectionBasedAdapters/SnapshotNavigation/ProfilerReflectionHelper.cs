@@ -103,31 +103,36 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
 
   internal sealed class TreeViewControllerReflectionData : IReflectionData
   {
-    public const string TreeViewControllerTypeName = "UnityEditor.IMGUI.Controls.TreeViewController";
     public readonly PropertyInfo? ContextClickItemCallback;
     public readonly PropertyInfo? ItemDoubleClickedCallbackPropertyInfo;
-    public readonly Type? TreeViewControllerType;
 
-    public TreeViewControllerReflectionData()
+    public TreeViewControllerReflectionData(Type type)
     {
-      TreeViewControllerType =
-        typeof(EditorWindow).Assembly.GetType(TreeViewControllerTypeName);
-      ItemDoubleClickedCallbackPropertyInfo = TreeViewControllerType?
-        .GetProperty("itemDoubleClickedCallback",
-          BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-      ContextClickItemCallback = TreeViewControllerType?
+      ContextClickItemCallback = GetClickItemProperty(type);
+      ItemDoubleClickedCallbackPropertyInfo = GetDoubleClickProperty(type);
+    }
+
+    private static PropertyInfo? GetClickItemProperty(Type treeViewControllerType)
+    {
+      return treeViewControllerType?
         .GetProperty("contextClickItemCallback",
+          BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+    }
+
+    private static PropertyInfo? GetDoubleClickProperty(Type treeViewControllerType)
+    {
+      return treeViewControllerType?
+        .GetProperty("itemDoubleClickedCallback",
           BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
     }
 
     public bool IsValid()
     {
-      return TreeViewControllerType != null
-             && ItemDoubleClickedCallbackPropertyInfo != null
-             && ItemDoubleClickedCallbackPropertyInfo.PropertyType == typeof(Action<int>)
-             && ContextClickItemCallback != null
-             && ContextClickItemCallback.PropertyType == typeof(Action<int>)
-        ;
+      return ItemDoubleClickedCallbackPropertyInfo != null
+      && ItemDoubleClickedCallbackPropertyInfo.PropertyType == typeof(Action<int>)
+      && ContextClickItemCallback != null
+      && ContextClickItemCallback.PropertyType == typeof(Action<int>)
+      ;
     }
   }
 }

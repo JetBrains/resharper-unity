@@ -171,17 +171,11 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
 
     internal TreeViewControllerAdapter? CreateTreeViewControllerAdapter(object treeViewController)
     {
-      var reflectionData = MyReflectionDataProvider.TreeViewControllerReflectionData;
+      var reflectionData = new TreeViewControllerReflectionData(treeViewController.GetType());
 
       if (reflectionData == null || !reflectionData.IsValid())
       {
         OurLogger.Verbose($"{reflectionData?.GetType().Name} is not valid.");
-        return null;
-      }
-
-      if (treeViewController.GetType() != reflectionData.TreeViewControllerType)
-      {
-        OurLogger.Verbose($"Type '{TreeViewControllerReflectionData.TreeViewControllerTypeName}' expected.");
         return null;
       }
 
