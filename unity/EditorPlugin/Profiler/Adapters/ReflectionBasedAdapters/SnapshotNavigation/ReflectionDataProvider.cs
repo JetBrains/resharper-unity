@@ -12,7 +12,6 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     internal readonly ProfilerFrameDataHierarchyViewReflectionData? ProfilerFrameDataHierarchyViewReflectionData;
     internal readonly ProfilerFrameDataTreeViewReflectionData? ProfilerFrameDataTreeViewReflectionData;
     internal readonly ProfilerWindowReflectionData? ProfilerWindowReflectionData;
-    internal readonly TreeViewControllerReflectionData? TreeViewControllerReflectionData;
     public readonly bool IsCompatibleWithCurrentUnityVersion;
 
     internal ReflectionDataProvider()
@@ -24,7 +23,6 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
         CPUProfilerModuleReflectionData = new CPUProfilerModuleReflectionData();
         ProfilerFrameDataHierarchyViewReflectionData = new ProfilerFrameDataHierarchyViewReflectionData();
         ProfilerFrameDataTreeViewReflectionData = new ProfilerFrameDataTreeViewReflectionData();
-        TreeViewControllerReflectionData = new TreeViewControllerReflectionData();
 
         if (!ProfilerDriverReflectionData.IsValid())
         {
@@ -63,14 +61,6 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
           IsCompatibleWithCurrentUnityVersion = false;
           ourLogger.Verbose(
             $"The {nameof(SnapshotNavigation.ProfilerFrameDataTreeViewReflectionData)} is not compatible with the current Unity version.");
-          return;
-        }
-
-        if (!TreeViewControllerReflectionData.IsValid())
-        {
-          IsCompatibleWithCurrentUnityVersion = false;
-          ourLogger.Verbose(
-            $"The {nameof(SnapshotNavigation.TreeViewControllerReflectionData)} is not compatible with the current Unity version.");
           return;
         }
 
