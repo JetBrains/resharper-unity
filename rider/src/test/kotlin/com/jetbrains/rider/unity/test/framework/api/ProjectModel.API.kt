@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rd.ide.model.RdDndOrderType
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.protocol.protocolHost
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
 import com.jetbrains.rider.model.RdProjectModelDumpFlags
 import com.jetbrains.rider.model.RdProjectModelDumpParams
@@ -15,15 +14,19 @@ import com.jetbrains.rider.model.RdProjectModelSolutionDump
 import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode
-import com.jetbrains.rider.projectView.*
+import com.jetbrains.rider.projectView.ProjectVirtualFileView
 import com.jetbrains.rider.projectView.actions.newFile.RiderNewDirectoryAction
+import com.jetbrains.rider.projectView.getOrCreateActualElement
+import com.jetbrains.rider.projectView.getProjectElementView
 import com.jetbrains.rider.projectView.moveProviders.RiderCutProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderDeleteProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderPasteProvider
 import com.jetbrains.rider.projectView.moveProviders.impl.DuplicateNameDialog
 import com.jetbrains.rider.projectView.nodes.getVirtualFile
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
+import com.jetbrains.rider.protocol.protocolHost
 import com.jetbrains.rider.test.framework.TestProjectModelContext
 import com.jetbrains.rider.test.framework.flushQueues
 import com.jetbrains.rider.test.framework.frameworkLogger
@@ -59,14 +62,14 @@ fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDire
 
 private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: File) : String {
     val tree = UnityExplorer.getInstance(project).tree
-    return dumpExplorerTree(tree)
+    return dumpExplorerTree(project, tree)
         .replace(tempTestDirectory.toPath().toUri().toString(), "")
         .replace(tempTestDirectory.toPath().toUri().toString().replace("file:///", "file://"), "")
 }
 
 
-fun dumpExplorerTree(tree: JTree) : String {
-    val dump = dumpTree(tree)
+fun dumpExplorerTree(project: Project, tree: JTree) : String {
+    val dump = dumpFilteredTree(project, tree)
     return dump
         .replace(" Scratches and Consoles", "")
         .replace(SolutionViewPaneBase.TextSeparator, "*")
