@@ -42,7 +42,7 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
-import com.jetbrains.rider.test.facades.environment.RiderTestEnvironment
+import com.jetbrains.rider.test.facades.environment.RiderTestExecutionTarget
 import com.jetbrains.rider.test.enums.EngineVersion
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.*
@@ -69,7 +69,7 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //region UnityDll
 
-val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer(RiderTestEnvironment.fromCurrentMachine(), "Unity3d-2022.2.15f1-06-09-2023.zip")
+val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer(RiderTestExecutionTarget.fromCurrentMachine(), "Unity3d-2022.2.15f1-06-09-2023.zip")
 
 fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {
     prepareAssemblies(activeSolutionDirectory)
