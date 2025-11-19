@@ -1,23 +1,25 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.ide.projectView.ProjectView
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.startBackgroundAsync
-import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.framework.impl.RdProperty
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseUntil
+import com.jetbrains.rd.util.threading.coroutines.launch
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerPane
 import com.jetbrains.rider.unity.UnityDetector
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class UnityDetectorImpl(private val project: Project) : UnityDetector {
 
@@ -30,6 +32,7 @@ class UnityProjectDiscoverer(val project: Project) {
     // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
+    // todo: switch to Property, after RIDER-132142 fixed, https://jetbrains.team/p/ij/reviews/181766/timeline
     val isUnityProject = RdProperty(UnityProjectDiscovererState.getInstance(project).isUnityProjectState)
 
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
@@ -39,7 +42,7 @@ class UnityProjectDiscoverer(val project: Project) {
     init {
         // we can't change this to ProjectActivity because all of them are executes synchronously in tests
         val lifetime = UnityProjectLifetimeService.getLifetime(project)
-        lifetime.startBackgroundAsync {
+        lifetime.launch {
             val hasUnityFileStructure = hasUnityFileStructure(project)
             isUnityProjectFolder.set(hasUnityFileStructure)
             UnityProjectDiscovererState.getInstance(project).isUnityProjectFolderState = hasUnityFileStructure
@@ -47,16 +50,18 @@ class UnityProjectDiscoverer(val project: Project) {
             val isUnityProjectVal = hasUnityFileStructure && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project)
 
             val oldVal = isUnityProject.value // old val is the one from the settings
-            isUnityProject.set(isUnityProjectVal)
+            withContext(Dispatchers.EDT) {
+                isUnityProject.set(isUnityProjectVal)
+            }
             UnityProjectDiscovererState.getInstance(project).isUnityProjectState = isUnityProjectVal
 
             // this only happens for the first opening of a Unity project, later the cached value is the same as evaluated one
             if (oldVal != isUnityProjectVal) {
                 val projectView = ProjectView.getInstance(project)
-                withUiContext {
+                withContext(Dispatchers.EDT) {
                     val fileSystemPane = projectView.getProjectViewPaneById(FileSystemExplorerPane.ID)
                     // if fileSystemPane is null, means that ProjectView is not yet initialized, so we can do nothing
-                    if (fileSystemPane !=  null) {
+                    if (fileSystemPane != null) {
                         val pane = projectView.getProjectViewPaneById(UnityExplorer.ID)
                         if (isUnityProjectVal) {
                             if (pane == null) projectView.addProjectPane(UnityExplorer(project))
