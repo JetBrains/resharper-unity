@@ -130,6 +130,7 @@ open class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachT
 
 private class CustomPlayerSettingsEditor : SettingsEditor<UnityPlayerDebugConfiguration>() {
     private val form = MonoConnectRemoteForm()
+        .also { /*we can implement mixed mode for this editor, if we need to*/it.useMixedModeCheckbox.isVisible = false }
 
     override fun resetEditorFrom(config: UnityPlayerDebugConfiguration) {
         val state = config.state
