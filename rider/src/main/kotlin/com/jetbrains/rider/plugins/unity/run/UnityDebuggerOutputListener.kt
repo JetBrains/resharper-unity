@@ -33,6 +33,9 @@ class UnityDebuggerOutputListener(val project: Project,
             var url: String? = null
             text += if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2018.2") >= 0) {
                 url = "https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html"
+                if (VersionComparatorUtil.compare(unityVersion, "6000.0") >= 0) {
+                    url = "https://docs.unity3d.com/$unityVersion/Documentation/Manual/managed-code-debugging.html"
+                }
                 if (isEditor)
                     UnityBundle.message("notification.content.please.follow.href.debugging.in.editor.documentation")
                 else
