@@ -131,10 +131,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
             var actions = GetSettings(textControl.Document.Buffer, "ACTION");
             if (actions.Count == 0)
               throw new Exception("No actions found");
+
             foreach (var action in actions)
             {
               if (action.Length == 0)
                 continue;
+
               var text = action.Substring(1).Replace("{LEFT}", "{").Replace("{RIGHT}", "}");
               switch (action.ToCharArray()[0])
               {

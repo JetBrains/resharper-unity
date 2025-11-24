@@ -1,6 +1,4 @@
-using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.Syntax;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
@@ -13,11 +11,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Rider.Feature.SyntaxHighlighting
     [Language(typeof(YamlLanguage))]
     internal class YamlSyntaxHighlightingManager : SyntaxHighlightingManager
     {
-        public override SyntaxHighlightingStageProcess CreateProcess(IDaemonProcess process,
-                                                                     IContextBoundSettingsStore settings,
-                                                                     IFile getPrimaryPsiFile)
+        public override SyntaxHighlightingProcessor CreateProcessor(IPsiSourceFile sourceFile, IFile psiFile)
         {
-            return null;
+          return null;
         }
     }
 }
