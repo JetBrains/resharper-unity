@@ -29,8 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
 
 [DaemonStage(Instantiation.ContainerAsyncAnyThreadSafe,
     StagesBefore = [typeof(GlobalFileStructureCollectorStage)],
-    StagesAfter = [typeof(LanguageSpecificDaemonStage)]
-)]
+    StagesAfter = [typeof(LanguageSpecificDaemonStage)],
+    HighlightingTypes = [typeof(Process)])]
 public class UnityProfilerDaemon(
     ILazy<IUnityProfilerSnapshotDataProvider> snapshotDataProvider,
     ISolution solution,
@@ -59,6 +59,7 @@ public class UnityProfilerDaemon(
             myIconHost);
     }
 
+    [HighlightingSource(HighlightingTypes = [typeof(UnityProfilerInsightProvider)])]
     private class Process(
         ICSharpFile file,
         ISolution solution,
