@@ -100,5 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         [SettingsEntry(ProfilerSnapshotFetchingSettings.AutoFetch, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Profiler_Integration_Snapshot_Fetching))]
         public ProfilerSnapshotFetchingSettings ProfilerSnapshotFetchingSettings;
 
+        [SettingsEntry(ProfilerSnapshotHighlightingSettings.Default, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Profiler_New_Highlighting_Enabled))]
+        public ProfilerSnapshotHighlightingSettings ProfilerGutterMarksDisplaySettings;
     }
 }

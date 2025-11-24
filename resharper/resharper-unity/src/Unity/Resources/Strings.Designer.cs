@@ -505,6 +505,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string UnityOptionsPage_Profiler_Integration_Auto_Fetching => ResourceManager.GetString("UnityOptionsPage_Profiler_Integration_Auto_Fetching");
     public static string UnityOptionsPage_Profiler_Integration_Manual_Fetching => ResourceManager.GetString("UnityOptionsPage_Profiler_Integration_Manual_Fetching");
     public static string UnityOptionsPage_Profiler_Integration_Help_Link_Text => ResourceManager.GetString("UnityOptionsPage_Profiler_Integration_Help_Link_Text");
+    public static string UnityOptionsPage_Profiler_New_Profiler_Highlightings => ResourceManager.GetString("UnityOptionsPage_Profiler_New_Profiler_Highlightings");
+    public static string UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default => ResourceManager.GetString("UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default");
+    public static string UnityOptionsPage_Profiler_New_Profiler_Highlightings_Minimized => ResourceManager.GetString("UnityOptionsPage_Profiler_New_Profiler_Highlightings_Minimized");
+    public static string UnityOptionsPage_Profiler_New_Profiler_Highlightings_Hidden => ResourceManager.GetString("UnityOptionsPage_Profiler_New_Profiler_Highlightings_Hidden");
     public static string UnityPerformanceCriticalCodeLineMarker_Performance_critical_context => ResourceManager.GetString("UnityPerformanceCriticalCodeLineMarker_Performance_critical_context");
     public static string UnityProjects_Text => ResourceManager.GetString("UnityProjects_Text");
     public static string UnityRuntimeFolder_Text => ResourceManager.GetString("UnityRuntimeFolder_Text");
@@ -546,6 +550,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string UnitySettings_t_Unity_plugin_settings => ResourceManager.GetString("UnitySettings_t_Unity_plugin_settings");
     public static string UnitySettings_Dots_Header => ResourceManager.GetString("UnitySettings_Dots_Header");
     public static string UnitySettings_Profiler_Integration_Snapshot_Fetching => ResourceManager.GetString("UnitySettings_Profiler_Integration_Snapshot_Fetching");
+    public static string UnitySettings_Profiler_New_Highlighting_Enabled => ResourceManager.GetString("UnitySettings_Profiler_New_Highlighting_Enabled");
     public static string UnitySettings_Dots_Hide_generated_code_from_navigation => ResourceManager.GetString("UnitySettings_Dots_Hide_generated_code_from_navigation");
     public static string UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute => ResourceManager.GetString("UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute");
     public static string UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml => ResourceManager.GetString("UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml");

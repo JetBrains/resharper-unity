@@ -1374,6 +1374,18 @@ float values with full precision.</value>
     <data name="UnityOptionsPage_Profiler_Integration_Help_Link_Text" xml:space="preserve">
         <value>Learn more</value>
     </data>
+    <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings" xml:space="preserve">
+        <value>Enable Profiler Guttermarks</value>
+    </data>
+    <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default" xml:space="preserve">
+        <value>Default</value>
+    </data>
+    <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings_Minimized" xml:space="preserve">
+        <value>Minimized</value>
+    </data>
+    <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings_Hidden" xml:space="preserve">
+        <value>Hidden</value>
+    </data>
     <data name="UnityPerformanceCriticalCodeLineMarker_Performance_critical_context" xml:space="preserve">
         <value>Performance-critical context</value>
     </data>
@@ -1496,6 +1508,9 @@ float values with full precision.</value>
     </data>
     <data name="UnitySettings_Profiler_Integration_Snapshot_Fetching" xml:space="preserve">
         <value>Unity profiler integration</value>
+    </data>
+    <data name="UnitySettings_Profiler_New_Highlighting_Enabled" xml:space="preserve">
+        <value>Enable new profiler highlightings</value>
     </data>
     <data name="UnitySettings_Dots_Hide_generated_code_from_navigation" xml:space="preserve">
         <value>Exclude DOTS-generated code from navigation results</value>
