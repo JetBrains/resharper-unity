@@ -12,14 +12,10 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
 import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunProfile
 import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.run.*
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorSettingsEditor
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityConfigurationFactoryBase
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationOptions
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityRunConfigurationBase
-import com.jetbrains.rider.plugins.unity.run.configurations.populateStateFromProcess
+import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
+import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPointAndPlay
+import com.jetbrains.rider.plugins.unity.run.UnityProcess
+import com.jetbrains.rider.plugins.unity.run.configurations.*
 import com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider
 import com.jetbrains.rider.run.devices.ActiveDeviceManager
 import com.jetbrains.rider.run.devices.DevicesConfiguration
@@ -27,7 +23,7 @@ import com.jetbrains.rider.run.devices.DevicesProvider
 import icons.UnityIcons
 import javax.swing.JComponent
 
-class UnityDevicePlayerConfiguration(project: Project, factory: UnityDevicePlayerFactory) :
+internal class UnityDevicePlayerConfiguration(project: Project, factory: UnityDevicePlayerFactory) :
     UnityRunConfigurationBase(project, factory),
     DevicesConfiguration,
     IMixedModeDebugAwareRunProfile {
@@ -107,7 +103,7 @@ class UnityDevicePlayerConfiguration(project: Project, factory: UnityDevicePlaye
     override fun useMixedDebugMode(): Boolean = activeRunConfiguration?.useMixedDebugMode() ?: false
 }
 
-class UnityDevicePlayerFactory(type: ConfigurationType) : UnityConfigurationFactoryBase(type) {
+internal class UnityDevicePlayerFactory(type: ConfigurationType) : UnityConfigurationFactoryBase(type) {
     override fun createTemplateConfiguration(project: Project): UnityDevicePlayerConfiguration =
         UnityDevicePlayerConfiguration(project, this)
 
