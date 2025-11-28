@@ -20,32 +20,16 @@ using JetBrains.UI.ThemedIcons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.RunMarkers
 {
-    public class UnityStaticMethodRunMarkerGutterMark : RunMarkerGutterMark
+    public class UnityStaticMethodRunMarkerGutterMark : RunMarkerGutterMark<UnityRunMarkerHighlighting>
     {
         public UnityStaticMethodRunMarkerGutterMark()
             : base(RunMarkersThemedIcons.RunActions.Id)
         {
         }
 
-        public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
-        {
-            if (highlighter.GetHighlighting() is not UnityRunMarkerHighlighting runMarker) yield break;
-
-            var solution = Shell.Instance.GetComponent<SolutionsManager>().Solution;
-            if (solution == null) yield break;
-
-            switch (runMarker.AttributeId)
-            {
-                case UnityRunMarkerAttributeIds.RUN_METHOD_MARKER_ID:
-                    foreach (var item in GetRunMethodItems(solution, runMarker)) yield return item;
-                    yield break;
-
-                default:
-                    yield break;
-            }
-        }
-
-        private static IEnumerable<BulbMenuItem> GetRunMethodItems(ISolution solution, UnityRunMarkerHighlighting runMarker)
+        protected override IEnumerable<BulbMenuItem> GetBulbMenuItems(ISolution solution,
+            UnityRunMarkerHighlighting runMarker,
+            IHighlighter highlighter)
         {
             var backendUnityHost = solution.GetComponent<BackendUnityHost>();
             var notificationsModel = solution.GetComponent<NotificationsModel>();
