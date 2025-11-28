@@ -1,5 +1,5 @@
 ﻿<!--This file is auto-generated-->
-<api minimumVersion="5.0" maximumVersion="2023.1">
+<api minimumVersion="5.0" maximumVersion="6000.0">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="CanOpenForEdit" static="True" minimumVersion="2020.2" path="Documentation/en/ScriptReference/AssetModificationProcessor.CanOpenForEdit.html">
       <descriptions>
@@ -506,7 +506,7 @@
     <message name="OnPreprocessCameraDescription" static="False" minimumVersion="2021.2" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessCameraDescription.html">
       <descriptions>
         <description text="Add this function to a subclass to recieve a notification when a camera is imported from a Model Importer." langCode="zh" />
-        <description text="Add this function to a subclass to recieve a notification when a camera is imported from a Model Importer." langCode="iv" />
+        <description text="Add this function to a subclass to receive a notification when a camera is imported from a Model Importer." langCode="iv" />
         <description text="Add this function to a subclass to recieve a notification when a camera is imported from a Model Importer." langCode="ja" />
         <description text="Add this function to a subclass to recieve a notification when a camera is imported from a Model Importer." langCode="ko" />
       </descriptions>
@@ -835,7 +835,7 @@
     <message name="OnTriggerEnter" static="False" path="Documentation/en/ScriptReference/Collider.OnTriggerEnter.html">
       <descriptions>
         <description text="GameObject 与另一个 GameObject 碰撞时，Unity 会调用 OnTriggerEnter。" langCode="zh" />
-        <description text="When a GameObject collides with another GameObject, Unity calls OnTriggerEnter." langCode="iv" />
+        <description text="Called when a Collider with the Collider.isTrigger property overlaps another Collider." langCode="iv" />
         <description text="When a GameObject collides with another GameObject, Unity calls OnTriggerEnter." langCode="ja" />
         <description text="When a GameObject collides with another GameObject, Unity calls OnTriggerEnter." langCode="ko" />
       </descriptions>
@@ -1330,7 +1330,7 @@
     <message name="Awake" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.Awake.html">
       <descriptions>
         <description text="Awake 在加载脚本实例时调用。" langCode="zh" />
-        <description text="Awake is called when an enabled script instance is being loaded." langCode="iv" />
+        <description text="Unity calls Awake when loading an instance of a script component." langCode="iv" />
         <description text="スクリプトのインスタンスがロードされたときに呼び出されます" langCode="ja" />
         <description text="Awake is called when the script instance is being loaded." langCode="ko" />
       </descriptions>
@@ -1339,7 +1339,7 @@
     <message name="FixedUpdate" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.FixedUpdate.html">
       <descriptions>
         <description text="用于物理计算且独立于帧率的 MonoBehaviour.FixedUpdate 消息。" langCode="zh" />
-        <description text="Frame-rate independent MonoBehaviour.FixedUpdate message for physics calculations." langCode="iv" />
+        <description text="Update called at regular, fixed intervals as part of Unity's physics update loop." langCode="iv" />
         <description text="Frame-rate independent MonoBehaviour.FixedUpdate message for physics calculations." langCode="ja" />
         <description text="Frame-rate independent MonoBehaviour.FixedUpdate message for physics calculations." langCode="ko" />
       </descriptions>
@@ -1404,14 +1404,14 @@
     <message name="OnApplicationPause" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationPause.html">
       <descriptions>
         <description text="当应用程序暂停时，发送给所有 GameObject。" langCode="zh" />
-        <description text="Sent to all GameObjects when the application pauses." langCode="iv" />
+        <description text="Sent to all GameObjects when the playing application pauses or resumes on losing or regaining focus." langCode="iv" />
         <description text="プレイヤーが一時停止したときにすべてのゲームオブジェクトに送信されます" langCode="ja" />
         <description text="Sent to all GameObjects when the application pauses." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="System.Boolean" array="False" name="pauseStatus">
           <descriptions>
-            <description text="True if the application is paused, else False." langCode="iv" />
+            <description text="True if the application is paused, False if playing." langCode="iv" />
             <description text="如果应用程序暂停，则为 true，否则为 false。" langCode="zh" />
             <description text="アプリケーションが起動していれば true、そうでなければ false。" langCode="ja" />
             <description text="True if the application is paused, else False." langCode="ko" />
@@ -1459,7 +1459,7 @@
     <message name="OnBecameInvisible" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnBecameInvisible.html">
       <descriptions>
         <description text="OnBecameInvisible 在渲染器对任何摄像机都不可见时调用。" langCode="zh" />
-        <description text="OnBecameInvisible is called when the renderer is no longer visible by any camera." langCode="iv" />
+        <description text="Called when the renderer is no longer visible to any camera." langCode="iv" />
         <description text="OnBecameInvisible はレンダラーがカメラから見えなくなったときに呼び出されます" langCode="ja" />
         <description text="OnBecameInvisible is called when the renderer is no longer visible by any camera." langCode="ko" />
       </descriptions>
@@ -1468,9 +1468,15 @@
     <message name="OnBecameVisible" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnBecameVisible.html">
       <descriptions>
         <description text="OnBecameVisible 在渲染器变为对任意摄像机可见时调用。" langCode="zh" />
-        <description text="OnBecameVisible is called when the renderer became visible by any camera." langCode="iv" />
+        <description text="Called when the renderer becomes visible to any camera." langCode="iv" />
         <description text="OnBecameVisible はレンダラーが任意のカメラから見えるようになると呼び出されます" langCode="ja" />
         <description text="OnBecameVisible is called when the renderer became visible by any camera." langCode="ko" />
+      </descriptions>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnChildRectTransformDimensionsChange" static="False" minimumVersion="6000.0" path="ScriptReference/MonoBehaviour.OnChildRectTransformDimensionsChange.html">
+      <descriptions>
+        <description text="Called when a child RectTransform's dimensions change." langCode="iv" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
@@ -1482,7 +1488,7 @@
         <description text="OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
+        <parameter type="UnityEngine.Collision" array="False" name="collision" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
           <descriptions>
             <description text="The Collision data associated with this collision." langCode="iv" />
             <description text="与该碰撞关联的 Collision 数据。" langCode="zh" />
@@ -1520,7 +1526,7 @@
         <description text="OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
+        <parameter type="UnityEngine.Collision" array="False" name="collision" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
           <descriptions>
             <description text="The Collision data associated with this collision." langCode="iv" />
             <description text="与该碰撞关联的碰撞数据。" langCode="zh" />
@@ -1588,7 +1594,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnConnectedToServer" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.OnConnectedToServer.html">
+    <message name="OnConnectedToServer" static="False" maximumVersion="2023.2" path="Documentation/en/ScriptReference/MonoBehaviour.OnConnectedToServer.html">
       <descriptions>
         <description text="成功连接到服务器后在客户端上调用。" langCode="zh" />
         <description text="Called on the client when you have successfully connected to a server." langCode="iv" />
@@ -1600,19 +1606,23 @@
     <message name="OnControllerColliderHit" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.OnControllerColliderHit.html">
       <descriptions>
         <description text="当该控制器在执行 Move 时撞到碰撞体时调用 OnControllerColliderHit。" langCode="zh" />
-        <description text="OnControllerColliderHit is called when the controller hits a collider while performing a Move." langCode="iv" />
+        <description text="OnControllerColliderHit is called when the CharacterController component hits a collider while performing a Move." langCode="iv" />
         <description text="OnControllerColliderHit はキャラクターコントローラーが移動中にコライダーに衝突した際に、呼び出されます。" langCode="ja" />
         <description text="OnControllerColliderHit is called when the controller hits a collider while performing a Move." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.ControllerColliderHit" array="False" name="hit" />
+        <parameter type="UnityEngine.ControllerColliderHit" array="False" name="hit">
+          <descriptions>
+            <description text="The ControllerColliderHit data associated with this collision." langCode="iv" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnDestroy" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.OnDestroy.html">
       <descriptions>
         <description text="销毁附加的行为将导致游戏或场景收到 OnDestroy。" langCode="zh" />
-        <description text="Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy." langCode="iv" />
+        <description text="Called when a GameObject or component is about to be destroyed." langCode="iv" />
         <description text="Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy." langCode="ja" />
         <description text="Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy." langCode="ko" />
       </descriptions>
@@ -1621,7 +1631,7 @@
     <message name="OnDisable" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.OnDisable.html">
       <descriptions>
         <description text="该函数在行为被禁用时调用。" langCode="zh" />
-        <description text="This function is called when the behaviour becomes disabled." langCode="iv" />
+        <description text="Called when a component itself is disabled or its parent GameObject is deactivated." langCode="iv" />
         <description text="This function is called when the behaviour becomes disabled." langCode="ja" />
         <description text="This function is called when the behaviour becomes disabled." langCode="ko" />
       </descriptions>
@@ -1654,7 +1664,7 @@
     <message name="OnEnable" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.OnEnable.html">
       <descriptions>
         <description text="该函数在对象变为启用和激活状态时调用。" langCode="zh" />
-        <description text="This function is called when the object becomes enabled and active." langCode="iv" />
+        <description text="Called when a component of an active GameObject is first enabled." langCode="iv" />
         <description text="この関数はオブジェクトが有効/アクティブになったときに呼び出されます" langCode="ja" />
         <description text="This function is called when the object becomes enabled and active." langCode="ko" />
       </descriptions>
@@ -1720,7 +1730,7 @@
     <message name="OnMouseDown" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseDown.html">
       <descriptions>
         <description text="当用户在 Collider 上按下鼠标按钮时，将调用 OnMouseDown。" langCode="zh" />
-        <description text="OnMouseDown is called when the user has pressed the mouse button while over the Collider." langCode="iv" />
+        <description text="OnMouseDown is called when the user presses the left mouse button while over the Collider." langCode="iv" />
         <description text="OnMouseDown is called when the user has pressed the mouse button while over the Collider." langCode="ja" />
         <description text="OnMouseDown is called when the user has pressed the mouse button while over the Collider." langCode="ko" />
       </descriptions>
@@ -1765,7 +1775,7 @@
     <message name="OnMouseUp" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseUp.html">
       <descriptions>
         <description text="当用户松开鼠标按钮时，将调用 OnMouseUp。" langCode="zh" />
-        <description text="OnMouseUp is called when the user has released the mouse button." langCode="iv" />
+        <description text="Called on releasing the mouse button while the mouse pointer is over the Collider attached to this GameObject." langCode="iv" />
         <description text="OnMouseUp はユーザーがマウスボタンを離したときに呼び出されます" langCode="ja" />
         <description text="OnMouseUp is called when the user has released the mouse button." langCode="ko" />
       </descriptions>
@@ -1913,7 +1923,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnServerInitialized" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.OnServerInitialized.html">
+    <message name="OnServerInitialized" static="False" maximumVersion="2023.2" path="Documentation/en/ScriptReference/MonoBehaviour.OnServerInitialized.html">
       <descriptions>
         <description text="每当调用 Network.InitializeServer 并且完成时，对该服务器调用该函数。" langCode="zh" />
         <description text="Called on the server whenever a Network.InitializeServer was invoked and has completed." langCode="iv" />
@@ -1925,7 +1935,7 @@
     <message name="OnTransformChildrenChanged" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.OnTransformChildrenChanged.html">
       <descriptions>
         <description text="当 GameObject 的变换的子项列表发生更改时，将调用该函数。" langCode="zh" />
-        <description text="This function is called when the list of children of the transform of the GameObject has changed." langCode="iv" />
+        <description text="Called when the list of direct children of a GameObject's Transform changes." langCode="iv" />
         <description text="この関数は GameObject の Transform のすべての子の中で変更があったときに呼び出されます" langCode="ja" />
         <description text="This function is called when the list of children of the transform of the GameObject has changed." langCode="ko" />
       </descriptions>
@@ -1934,7 +1944,7 @@
     <message name="OnTransformParentChanged" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.OnTransformParentChanged.html">
       <descriptions>
         <description text="This function is called when a direct or indirect parent of the transform of the GameObject has changed." langCode="zh" />
-        <description text="This function is called when a direct or indirect parent of the transform of the GameObject has changed." langCode="iv" />
+        <description text="Called when a direct or indirect parent of a GameObject's Transform changes." langCode="iv" />
         <description text="This function is called when a direct or indirect parent of the transform of the GameObject has changed." langCode="ja" />
         <description text="This function is called when a direct or indirect parent of the transform of the GameObject has changed." langCode="ko" />
       </descriptions>
@@ -1943,14 +1953,14 @@
     <message name="OnTriggerEnter" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter.html">
       <descriptions>
         <description text="GameObject 与另一个 GameObject 碰撞时，Unity 会调用 OnTriggerEnter。" langCode="zh" />
-        <description text="When a GameObject collides with another GameObject, Unity calls OnTriggerEnter." langCode="iv" />
+        <description text="Called when a collider enters a trigger collider." langCode="iv" />
         <description text="When a GameObject collides with another GameObject, Unity calls OnTriggerEnter." langCode="ja" />
         <description text="When a GameObject collides with another GameObject, Unity calls OnTriggerEnter." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="UnityEngine.Collider" array="False" name="other">
           <descriptions>
-            <description text="A Collider involved in this collision." langCode="iv" />
+            <description text="The other Collider involved in this collision." langCode="iv" />
             <description text="该碰撞中涉及 Collider。" langCode="zh" />
             <description text="A Collider involved in this collision." langCode="ja" />
             <description text="A Collider involved in this collision." langCode="ko" />
@@ -1981,14 +1991,14 @@
     <message name="OnTriggerExit" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerExit.html">
       <descriptions>
         <description text="当 Collider other 已停止接触该触发器时调用 OnTriggerExit。" langCode="zh" />
-        <description text="OnTriggerExit is called when the Collider other has stopped touching the trigger." langCode="iv" />
+        <description text="OnTriggerExit is called when a collider stops touching a trigger." langCode="iv" />
         <description text="Collider が other のトリガーに触れるのをやめたときに OnTriggerExit は呼び出されます。" langCode="ja" />
         <description text="OnTriggerExit is called when the Collider other has stopped touching the trigger." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="UnityEngine.Collider" array="False" name="other">
           <descriptions>
-            <description text="The other Collider involved in this collision." langCode="iv" />
+            <description text="The other collider involved in this collision." langCode="iv" />
             <description text="该碰撞中涉及的其他 Collider。" langCode="zh" />
             <description text="この衝突に含まれるその他の Collider" langCode="ja" />
             <description text="The other Collider involved in this collision." langCode="ko" />
@@ -2019,7 +2029,7 @@
     <message name="OnTriggerStay" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay.html">
       <descriptions>
         <description text="对于接触触发器的每一个 Collider /other/，每次物理更新调用一次 OnTriggerStay。" langCode="zh" />
-        <description text="OnTriggerStay is called once per physics update for every Collider other that is touching the trigger." langCode="iv" />
+        <description text="Called once per physics update for every collider that is touching the trigger." langCode="iv" />
         <description text="OnTriggerStay is called once per physics update for every Collider other that is touching the trigger." langCode="ja" />
         <description text="OnTriggerStay is called once per physics update for every Collider other that is touching the trigger." langCode="ko" />
       </descriptions>
@@ -2038,7 +2048,7 @@
     <message name="OnTriggerStay2D" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerStay2D.html">
       <descriptions>
         <description text="在另一个对象位于附加到该对象的触发碰撞体之内时发送每个帧（仅限 2D 物理）。" langCode="zh" />
-        <description text="Sent each frame where another object is within a trigger collider attached to this object (2D physics only)." langCode="iv" />
+        <description text="Sent once per physics update when another object is within a trigger collider attached to this object (2D physics only)." langCode="iv" />
         <description text="トリガー状態のオブジェクトのコライダーと別のオブジェクトのコライダー衝突している間、毎フレーム呼び出され続けます。（2D 物理挙動のみ）" langCode="ja" />
         <description text="Sent each frame where another object is within a trigger collider attached to this object (2D physics only)." langCode="ko" />
       </descriptions>
@@ -2066,7 +2076,7 @@
     <message name="OnWillRenderObject" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.OnWillRenderObject.html">
       <descriptions>
         <description text="如果对象可见并且不是 UI 元素，则为每个摄像机调用 OnWillRenderObject。" langCode="zh" />
-        <description text="OnWillRenderObject is called for each camera if the object is visible and not a UI element." langCode="iv" />
+        <description text="Called for each camera if the object is visible and not a UI element." langCode="iv" />
         <description text="OnWillRenderObject is called for each camera if the object is visible and not a UI element." langCode="ja" />
         <description text="OnWillRenderObject is called for each camera if the object is visible and not a UI element." langCode="ko" />
       </descriptions>
@@ -2075,7 +2085,7 @@
     <message name="Reset" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.Reset.html">
       <descriptions>
         <description text="重置为默认值。" langCode="zh" />
-        <description text="Reset to default values." langCode="iv" />
+        <description text="Reset a component to default values." langCode="iv" />
         <description text="デフォルト値にリセットします" langCode="ja" />
         <description text="Reset to default values." langCode="ko" />
       </descriptions>
@@ -2257,7 +2267,7 @@
     <message name="Awake" static="False" minimumVersion="5.5" path="Documentation/en/ScriptReference/ScriptableObject.Awake.html">
       <descriptions>
         <description text="当 ScriptableObject 脚本启动时调用此函数。" langCode="zh" />
-        <description text="This function is called when the ScriptableObject script is started." langCode="iv" />
+        <description text="Called when an instance of ScriptableObject is created." langCode="iv" />
         <description text="ScriptableObject スクリプトを開始するとき、この関数は呼び出されます。" langCode="ja" />
         <description text="This function is called when the ScriptableObject script is started." langCode="ko" />
       </descriptions>
@@ -2401,70 +2411,130 @@
     <message name="OnStateEnter" static="False" path="Documentation/en/ScriptReference/StateMachineBehaviour.OnStateEnter.html">
       <descriptions>
         <description text="当状态机评估此状态时，在第一个 Update 帧上进行调用。" langCode="zh" />
-        <description text="Called on the first Update frame when a state machine evaluate this state." langCode="iv" />
+        <description text="Invoked on the first update frame when a state machine evaluates this state. Implement this message to react to a new state starting." langCode="iv" />
         <description text="Called on the first Update frame when a state machine evaluate this state." langCode="ja" />
         <description text="Called on the first Update frame when a state machine evaluate this state." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Animator" array="False" name="animator" />
-        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo" />
-        <parameter type="System.Int32" array="False" name="layerIndex" />
+        <parameter type="UnityEngine.Animator" array="False" name="animator">
+          <descriptions>
+            <description text="The Animator evaluating this state machine." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo">
+          <descriptions>
+            <description text="Information about the entered state." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Int32" array="False" name="layerIndex">
+          <descriptions>
+            <description text="The current layer being evaluated." langCode="iv" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnStateExit" static="False" path="Documentation/en/ScriptReference/StateMachineBehaviour.OnStateExit.html">
       <descriptions>
         <description text="当状态机评估此状态时，在最后一个 Update 帧上进行调用。" langCode="zh" />
-        <description text="Called on the last update frame when a state machine evaluate this state." langCode="iv" />
+        <description text="Invoked on the last update frame when a state machine evaluates this state. Implement this message to react to a state ending." langCode="iv" />
         <description text="Called on the last update frame when a state machine evaluate this state." langCode="ja" />
         <description text="Called on the last update frame when a state machine evaluate this state." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Animator" array="False" name="animator" />
-        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo" />
-        <parameter type="System.Int32" array="False" name="layerIndex" />
+        <parameter type="UnityEngine.Animator" array="False" name="animator">
+          <descriptions>
+            <description text="The Animator evaluating this state machine." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo">
+          <descriptions>
+            <description text="Information about the exited state." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Int32" array="False" name="layerIndex">
+          <descriptions>
+            <description text="The current layer being evaluated." langCode="iv" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnStateIK" static="False" path="Documentation/en/ScriptReference/StateMachineBehaviour.OnStateIK.html">
       <descriptions>
         <description text="刚好在 MonoBehaviour.OnAnimatorIK 后调用。" langCode="zh" />
-        <description text="Called right after MonoBehaviour.OnAnimatorIK." langCode="iv" />
+        <description text="Invoked during the Animator IK pass. Implement this message to modify the result of the animation after the evaluation of the state machine on a state by state basis." langCode="iv" />
         <description text="MonoBehaviour.OnAnimatorIK の直後に呼び出されます。" langCode="ja" />
         <description text="Called right after MonoBehaviour.OnAnimatorIK." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Animator" array="False" name="animator" />
-        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo" />
-        <parameter type="System.Int32" array="False" name="layerIndex" />
+        <parameter type="UnityEngine.Animator" array="False" name="animator">
+          <descriptions>
+            <description text="The Animator evaluating this state machine." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo">
+          <descriptions>
+            <description text="Information about the state being evaluated." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Int32" array="False" name="layerIndex">
+          <descriptions>
+            <description text="The current layer being evaluated." langCode="iv" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnStateMove" static="False" path="Documentation/en/ScriptReference/StateMachineBehaviour.OnStateMove.html">
       <descriptions>
         <description text="刚好在 MonoBehaviour.OnAnimatorMove 后调用。" langCode="zh" />
-        <description text="Called right after MonoBehaviour.OnAnimatorMove." langCode="iv" />
+        <description text="Invoked during the Animator Root Motion pass. Implement this message to modify the result of the animation root motion on a state by state basis." langCode="iv" />
         <description text="MonoBehaviour.OnAnimatorMove の直後に呼び出されます。" langCode="ja" />
         <description text="Called right after MonoBehaviour.OnAnimatorMove." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Animator" array="False" name="animator" />
-        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo" />
-        <parameter type="System.Int32" array="False" name="layerIndex" />
+        <parameter type="UnityEngine.Animator" array="False" name="animator">
+          <descriptions>
+            <description text="The Animator evaluating this state machine." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo">
+          <descriptions>
+            <description text="Information about the state being evaluated." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Int32" array="False" name="layerIndex">
+          <descriptions>
+            <description text="The current layer being evaluated." langCode="iv" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnStateUpdate" static="False" path="Documentation/en/ScriptReference/StateMachineBehaviour.OnStateUpdate.html">
       <descriptions>
         <description text="除第一帧和最后一帧外，在每个 Update 帧上进行调用。" langCode="zh" />
-        <description text="Called at each Update frame except for the first and last frame." langCode="iv" />
+        <description text="Invoked on each update frame except for the first and last frame. Implement this message to execute custom logic on a state by state basis." langCode="iv" />
         <description text="最初と最後のフレームを除いて Update フレームごとに呼び出されます。" langCode="ja" />
         <description text="Called at each Update frame except for the first and last frame." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Animator" array="False" name="animator" />
-        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo" />
-        <parameter type="System.Int32" array="False" name="layerIndex" />
+        <parameter type="UnityEngine.Animator" array="False" name="animator">
+          <descriptions>
+            <description text="The Animator evaluating this state machine." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.AnimatorStateInfo" array="False" name="animatorStateInfo">
+          <descriptions>
+            <description text="Information about the state being evaluated." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Int32" array="False" name="layerIndex">
+          <descriptions>
+            <description text="The current layer being evaluated." langCode="iv" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
