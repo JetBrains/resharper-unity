@@ -13,9 +13,6 @@
     <ProjectReference Include="..\..\debugger\ios-list-usb-devices\src\ios-list-usb-devices.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\unity\EditorPlugin\EditorPlugin.SinceUnity.2019.2.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\resharper-unity\src\Unity.Rider\Unity.Rider.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
