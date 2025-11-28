@@ -9,6 +9,7 @@ import org.jetbrains.intellij.platform.gradle.Constants
 import org.jetbrains.intellij.platform.gradle.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.*
 import kotlin.io.path.*
 
@@ -157,8 +158,6 @@ dependencies {
 
         jetbrainsRuntime()
 
-        instrumentationTools()
-
         bundledModule("intellij.rider.rdclient.dotnet.spellchecker")
         bundledModule("intellij.rider.cpp.core")
         bundledModule("intellij.rider.cpp.core.languages")
@@ -242,11 +241,6 @@ tasks {
         maxHeapSize = "1500m"
     }
 
-    named<Wrapper>("wrapper") {
-        gradleVersion = "8.1"
-        distributionType = Wrapper.DistributionType.BIN
-    }
-
     val patchPluginXml by named<PatchPluginXmlTask>("patchPluginXml") {
         changeNotes.set(
             """
@@ -309,17 +303,17 @@ tasks {
 
     named<KotlinCompile>("compileKotlin") {
         dependsOn(generateModels)
-        kotlinOptions {
-            freeCompilerArgs = listOf("-Xjvm-default=all")
-            jvmTarget = "21"
-            allWarningsAsErrors = warningsAsErrors
+        compilerOptions {
+            freeCompilerArgs.add("-Xjvm-default=all")
+            jvmTarget.set(JvmTarget.JVM_21)
+            allWarningsAsErrors.set(warningsAsErrors)
         }
     }
 
     named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions {
-            jvmTarget = "21"
-            allWarningsAsErrors = warningsAsErrors
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+            allWarningsAsErrors.set(warningsAsErrors)
         }
     }
 
