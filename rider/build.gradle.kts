@@ -584,10 +584,6 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         pausePointDllFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         listIosUsbDevicesFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         unityEditorDllFiles.forEach { from(it) { into("${pluginName}/EditorPlugin") } }
-
-        from("../resharper/resharper-unity/src/Unity/annotations") {
-            into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
-        }
     }
 
     withType<Test>().configureEach {
