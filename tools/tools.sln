@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testLibNupkgGenerator", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuiltInShadersExtractor", "BuiltInShadersExtractor\BuiltInShadersExtractor.csproj", "{0CFA8A25-5A25-4F81-88BE-2C4DEA4857BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Downloader", "apiParser\Downloader\Downloader.csproj", "{A54C6C4D-23F3-4BB3-B9E3-1F34B7C8CC3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{0CFA8A25-5A25-4F81-88BE-2C4DEA4857BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CFA8A25-5A25-4F81-88BE-2C4DEA4857BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CFA8A25-5A25-4F81-88BE-2C4DEA4857BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A54C6C4D-23F3-4BB3-B9E3-1F34B7C8CC3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A54C6C4D-23F3-4BB3-B9E3-1F34B7C8CC3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A54C6C4D-23F3-4BB3-B9E3-1F34B7C8CC3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A54C6C4D-23F3-4BB3-B9E3-1F34B7C8CC3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,5 +48,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D71C4B2E-8A62-4FCD-92EC-16C6069D16B0} = {AB8B6283-87A4-479C-BF73-B77840D7057E}
 		{55B304B3-5F66-4702-8119-21724F5F4060} = {AB8B6283-87A4-479C-BF73-B77840D7057E}
+		{A54C6C4D-23F3-4BB3-B9E3-1F34B7C8CC3A} = {AB8B6283-87A4-479C-BF73-B77840D7057E}
 	EndGlobalSection
 EndGlobal

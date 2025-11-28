@@ -345,6 +345,17 @@ namespace ApiParser
             }
 
             var parameters = details.Subsection(LocalizationUtil.GetParametersDivTextByLangCode(langCode)).ToArray();
+
+            // Drop header row if the first element is a table header like
+            // <th>Parameter</th><th>Description</th>. Data rows use <td>, so a
+            // simple check for presence of <th> is enough and language-agnostic.
+            if (parameters.Length > 0)
+            {
+                var firstRowHasHeaderCells = parameters[0].SelectOne("th") != null;
+                if (firstRowHasHeaderCells)
+                    parameters = parameters.Skip(1).ToArray();
+            }
+
             if (Enumerable.Any(parameters))
                 ParseMessageParameters(arguments, parameters, langCode);
         }
