@@ -11,6 +11,7 @@ import com.jetbrains.rider.test.logging.TestLoggerHelper
 import com.jetbrains.rider.test.scriptingApi.addArgsForUnityProcess
 import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
 import com.jetbrains.rider.test.shared.utils.ProcessCleanupUtils
+import com.jetbrains.rider.test.shared.utils.ProcessCleanupUtils.DefaultPolicy
 import org.testng.annotations.AfterSuite
 import org.testng.annotations.BeforeSuite
 import java.lang.reflect.Method
@@ -57,12 +58,12 @@ open class BaseTestWithUnitySetup : PerTestSolutionTestBase() {
 
     @BeforeSuite(alwaysRun = true)
     fun cleanUpUnityProcessesBefore() {
-        ProcessCleanupUtils.cleanupSuspiciousProcesses(ProcessCleanupUtils.Policy.Unity)
+        ProcessCleanupUtils.cleanupSuspiciousProcesses(DefaultPolicy.Unity)
     }
 
     @AfterSuite(alwaysRun = true)
     fun cleanUpUnityProcessesAfter() {
-        ProcessCleanupUtils.cleanupSuspiciousProcesses(ProcessCleanupUtils.Policy.Unity)
+        ProcessCleanupUtils.cleanupSuspiciousProcesses(DefaultPolicy.Unity)
     }
 
     protected fun getUnityTestSettingsAnnotation(method: Method? = null): UnityTestSettings =
