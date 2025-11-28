@@ -170,8 +170,14 @@ rdgen {
 }
 
 tasks.withType<RdGenTask> {
-    dependsOn(sourceSets["main"].runtimeClasspath)
-    classpath(sourceSets["main"].runtimeClasspath)
+    val classPath = sourceSets["main"].runtimeClasspath
+    dependsOn(classPath)
+    classpath(classPath)
+
+    // Ensure rdgen runs with JDK 21
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    })
 }
 
 dependencies {

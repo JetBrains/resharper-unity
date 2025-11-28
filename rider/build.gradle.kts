@@ -9,6 +9,7 @@ import org.jetbrains.intellij.platform.gradle.Constants
 import org.jetbrains.intellij.platform.gradle.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.*
 import kotlin.io.path.*
 
@@ -97,10 +98,12 @@ val listIosUsbDevicesFiles = files(
     "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json"
 )
 
-val unityEditorDllFiles = files(
-    "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/netstandard2.0/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
-    "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/netstandard2.0/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
-)
+ // EditorPlugin build was removed from github build
+// there are more versions of EditorPlugin, except 2019.2
+//val unityEditorDllFiles = files(
+//    "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/netstandard2.0/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
+//    "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/netstandard2.0/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
+//)
 
 val rdLibDirectory: () -> File = { file(intellijPlatform.platformPath.resolve("lib/rd/")) }
 
@@ -156,8 +159,6 @@ dependencies {
         }
 
         jetbrainsRuntime()
-
-        instrumentationTools()
 
         bundledModule("intellij.rider.rdclient.dotnet.spellchecker")
         bundledModule("intellij.rider.cpp.core")
@@ -242,11 +243,6 @@ tasks {
         maxHeapSize = "1500m"
     }
 
-    named<Wrapper>("wrapper") {
-        gradleVersion = "8.1"
-        distributionType = Wrapper.DistributionType.BIN
-    }
-
     val patchPluginXml by named<PatchPluginXmlTask>("patchPluginXml") {
         changeNotes.set(
             """
@@ -309,17 +305,17 @@ tasks {
 
     named<KotlinCompile>("compileKotlin") {
         dependsOn(generateModels)
-        kotlinOptions {
-            freeCompilerArgs = listOf("-Xjvm-default=all")
-            jvmTarget = "21"
-            allWarningsAsErrors = warningsAsErrors
+        compilerOptions {
+            freeCompilerArgs.add("-Xjvm-default=all")
+            jvmTarget.set(JvmTarget.JVM_21)
+            allWarningsAsErrors.set(warningsAsErrors)
         }
     }
 
     named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions {
-            jvmTarget = "21"
-            allWarningsAsErrors = warningsAsErrors
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+            allWarningsAsErrors.set(warningsAsErrors)
         }
     }
 
@@ -579,7 +575,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
             textureDebuggerDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             pausePointDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             listIosUsbDevicesFiles.forEach { if (!it.exists()) error("File $it does not exist") }
-            unityEditorDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
+//            unityEditorDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
         }
 
         val pluginName = intellijPlatform.projectName.get()
@@ -589,11 +585,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         textureDebuggerDllFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         pausePointDllFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         listIosUsbDevicesFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
-        unityEditorDllFiles.forEach { from(it) { into("${pluginName}/EditorPlugin") } }
-
-        from("../resharper/resharper-unity/src/Unity/annotations") {
-            into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
-        }
+//        unityEditorDllFiles.forEach { from(it) { into("${pluginName}/EditorPlugin") } }
     }
 
     withType<Test>().configureEach {

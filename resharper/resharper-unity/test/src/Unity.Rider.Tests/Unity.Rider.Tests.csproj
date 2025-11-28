@@ -39,8 +39,6 @@
     <PackageReference Include="NUnit.Console" />
   </ItemGroup>
   <ItemGroup Label="ProjectReference">
-    <ProjectReference Include="..\..\..\..\..\..\..\Psi.Features\src\Features\ReSpeller\Features.ReSpeller.csproj" />
-    <ProjectReference Include="..\..\..\..\..\..\..\Psi.Features\test\Framework\Features\Test.Framework.Features.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Rider\Unity.Rider.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
     <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
