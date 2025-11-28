@@ -6,6 +6,7 @@ using JetBrains.Application.Components;
 using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.Application.UI.ActionsRevised.Handlers;
 using JetBrains.Application.UI.ActionSystem.Text;
+using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -91,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 
     protected override void DoTest(Lifetime lifetime, IProject testProject)
     {
-      var positionsToCheck = GetCaretPositions().DefaultIfEmpty(GetCaretPosition()).ToList();
+      var positionsToCheck = GetCaretPositions().DefaultIfEmpty(GetCaretPosition().NotNull()).ToList();
       Assert.IsNotEmpty(positionsToCheck, "Nothing to check - put {caret} where necessary");
 
       var reparsedNodes = new List<ITreeNode>();
