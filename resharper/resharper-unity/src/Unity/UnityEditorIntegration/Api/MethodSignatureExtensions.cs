@@ -112,6 +112,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         private static bool HasMatchingReturnType(UnityEventFunction eventFunction, IMethod method)
         {
+            // ApiParser.ApiParser.ParseMessage sets return type as void, and marks `isCoroutine`
+            //  returnType = ApiType.Void; isCoroutine = true; 
             return DoTypesMatch(method.ReturnType, eventFunction.ReturnType)
                    || (eventFunction.CanBeCoroutine && IsEnumerator(method.ReturnType));
         }
@@ -162,7 +164,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         private static bool IsEnumerator(IType type)
         {
-            return type is IDeclaredType declaredType && Equals(declaredType.GetClrName(), PredefinedType.IENUMERATOR_FQN);
+            if (type is not IDeclaredType declaredType)
+                return false;
+
+            var typeElement = declaredType.GetTypeElement();
+            if (typeElement == null)
+                return false;
+
+            var iEnumeratorElement = typeElement.Module.GetPredefinedType().IEnumerator.GetTypeElement();
+            if (iEnumeratorElement == null)
+                throw new System.InvalidOperationException("Unable to resolve a type element of predefined type `IEnumerator`");
+
+            return typeElement.Equals(iEnumeratorElement) || typeElement.IsDescendantOf(iEnumeratorElement);
         }
 
         private static bool HasMatchingTypeParameters(IMethodDeclaration methodDeclaration)
