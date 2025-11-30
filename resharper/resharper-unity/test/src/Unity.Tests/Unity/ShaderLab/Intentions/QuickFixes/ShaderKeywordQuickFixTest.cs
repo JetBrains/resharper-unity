@@ -32,7 +32,7 @@ public class ShaderKeywordQuickFixTest : QuickFixTestBase<ShaderKeywordQuickFix>
     public void Test(string fileName) => DoTestSolution(fileName);
 
     protected override void DoTestOnTextControlAndExecuteWithGold(
-        IProject testProject, ITextControl textControl, IPsiSourceFile sourceFile)
+        IProject testProject, ITextControl textControl, IProjectFile? projectFile)
     {
         var shaderVariantsManager = testProject.GetComponent<ShaderVariantsManager>();
         ShaderApi? expectedShaderApi = null;
@@ -67,7 +67,7 @@ public class ShaderKeywordQuickFixTest : QuickFixTestBase<ShaderKeywordQuickFix>
 
         testProject.GetComponent<CppGlobalCacheImpl>().ResetCache();
 
-        base.DoTestOnTextControlAndExecuteWithGold(testProject, textControl, sourceFile);
+        base.DoTestOnTextControlAndExecuteWithGold(testProject, textControl, projectFile);
 
         if (expectedShaderApi.HasValue)
             Assert.That(shaderVariantsManager.ShaderApi, Is.EqualTo(expectedShaderApi.Value));
