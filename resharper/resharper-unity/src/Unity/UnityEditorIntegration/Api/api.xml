@@ -1,5 +1,5 @@
 ﻿<!--This file is auto-generated-->
-<api minimumVersion="5.0" maximumVersion="6000.0">
+<api minimumVersion="5.0" maximumVersion="6000.2">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="CanOpenForEdit" static="True" minimumVersion="2020.2" path="Documentation/en/ScriptReference/AssetModificationProcessor.CanOpenForEdit.html">
       <descriptions>
@@ -134,7 +134,7 @@
         <description text="Unity calls this method when it is about to create an Asset you haven't imported (for example, .meta files)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="System.String" array="False" name="assetName" />
+        <parameter type="System.String" array="False" name="path" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1213,7 +1213,7 @@
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnBecameInvisible" static="False" minimumVersion="2017.1" undocumented="True">
+    <message name="OnBecameInvisible" static="False" minimumVersion="2017.1" maximumVersion="2021.2" undocumented="True">
       <descriptions>
         <description text="Called when an editor window has been closed" langCode="iv" />
         <description text="エディターウィンドウが閉じられると呼び出されます" langCode="ja" />
@@ -1222,7 +1222,7 @@
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnBecameVisible" static="False" minimumVersion="2017.1" undocumented="True">
+    <message name="OnBecameVisible" static="False" minimumVersion="2017.1" maximumVersion="2021.2" undocumented="True">
       <descriptions>
         <description text="Called when an editor window has been opened" langCode="iv" />
         <description text="エディターウィンドウが開かれると呼び出されます" langCode="ja" />

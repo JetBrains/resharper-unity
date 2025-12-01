@@ -494,26 +494,6 @@ namespace ApiParser
                         { { RiderSupportedLanguages.iv, Strings.EditorWindow_ShowButton_rect_Description } });
                 type.MergeEventFunction(eventFunction, apiVersion);
 
-                // EditorWindow.OnBecameVisible has been around since at least 2017.1. Still undocumented as of 2020.2
-                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L302
-                eventFunction = new UnityApiEventFunction("OnBecameVisible", false, false, ApiType.Void, apiVersion,
-                    undocumented: true);
-                eventFunction.AddDescription(Strings.EditorWindow_OnBecameVisible_Description, RiderSupportedLanguages.iv);
-                eventFunction.AddDescription("エディターウィンドウが開かれると呼び出されます", RiderSupportedLanguages.ja);
-                eventFunction.AddDescription("에디터 창이 열렸을 때 호출됩니다", RiderSupportedLanguages.ko);
-                eventFunction.AddDescription("打开编辑器窗口时调用", RiderSupportedLanguages.zh);
-                type.MergeEventFunction(eventFunction, apiVersion);
-
-                // EditorWindow.OnBecameInvisible has been around since at least 2017.1. Still undocumented as of 2020.2
-                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L337
-                eventFunction = new UnityApiEventFunction("OnBecameInvisible", false, false, ApiType.Void, apiVersion,
-                    undocumented: true);
-                eventFunction.AddDescription(Strings.EditorWindow_OnBecameInvisible_Description, RiderSupportedLanguages.iv);
-                eventFunction.AddDescription("エディターウィンドウが閉じられると呼び出されます", RiderSupportedLanguages.ja);
-                eventFunction.AddDescription("에디터 창이 닫혔을 때 호출됩니다", RiderSupportedLanguages.ko);
-                eventFunction.AddDescription("关闭编辑器窗口时调用", RiderSupportedLanguages.zh);
-                type.MergeEventFunction(eventFunction, apiVersion);
-
                 // EditorWindow.OnDidOpenScene has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L163
                 eventFunction = new UnityApiEventFunction("OnDidOpenScene", false, false, ApiType.Void, apiVersion,
