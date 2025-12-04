@@ -33,19 +33,6 @@ jobs:
         with:
           name: nunit-reports
           path: rider\build\nunit\reports
-  linux:
-    needs: gradleValidation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Fetch Sources
-        uses: actions/checkout@v2
-      - name: Setup .NET CLI
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '8.0.x'
-      - name: Build
-        shell: bash
-        run: ./build.sh --info --stacktrace
   macos:
     needs: gradleValidation
     runs-on: macos-latest
