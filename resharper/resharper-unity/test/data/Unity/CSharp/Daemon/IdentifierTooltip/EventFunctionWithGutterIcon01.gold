@@ -1,6 +1,6 @@
 ﻿(event function) void A.OnDestroy()
 
-Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
+Called when a GameObject or component is about to be destroyed.
 Unity event function
 
-Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
+Called when a GameObject or component is about to be destroyed.
