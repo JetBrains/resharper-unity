@@ -16,7 +16,7 @@ public class UnityProfilerInfoCollector : CounterUsagesCollector
 
     public UnityProfilerInfoCollector(FeatureUsageLogger featureUsageLogger)
     {
-        myGroup = new EventLogGroup("dotnet.unity.profiler", "Unity Profiler Integration Information", 1, featureUsageLogger);
+        myGroup = new EventLogGroup("dotnet.unity.profiler", "Unity Profiler Integration Information", 2, featureUsageLogger);
         
         myNavigateFromProfiler = myGroup.RegisterEvent("navigated_from_unity_profiler",
             "User navigated from Unity Profiler window to the code");
