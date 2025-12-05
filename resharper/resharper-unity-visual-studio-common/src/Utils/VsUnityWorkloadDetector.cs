@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Utils
 
         public static bool IsUnityWorkloadInstalled()
         {
-            var instance = DevenvHostDiscovery.TryGetCurrentInstanceSinceVs15(DevenvHostDiscovery.EnumInstalledVsFlags.AddInstalledPackages, OnError.Ignore);
+            var instance = DevenvHostDiscovery.TryGetCurrentInstanceSinceVs15(OnError.Ignore);
             if (instance == null || instance.PackagesIfKnown == null)
                 return false;
 
