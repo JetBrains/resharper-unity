@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using JetBrains.Util;
+﻿using System;
+using System.Linq;
 using JetBrains.Util.DevEnv;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Utils
@@ -10,13 +10,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Utils
         // Workload marketing name: "Game development with Unity".
         private const string VsUnityWorkloadName = "Microsoft.VisualStudio.Workload.ManagedGame";
 
-        public static bool IsUnityWorkloadInstalled()
-        {
-            var instance = DevenvHostDiscovery.TryGetCurrentInstanceSinceVs15(OnError.Ignore);
-            if (instance == null || instance.PackagesIfKnown == null)
-                return false;
+        private readonly IVsEnvironmentStaticInformation myVsEnvironment;
 
-            return instance.PackagesIfKnown.Any(pkg => pkg.Type == DevenvHostDiscovery.InstalledVsPackage.WellKnownTypes.Workload && pkg.Id == VsUnityWorkloadName);
+        protected VsUnityWorkloadDetector(IVsEnvironmentStaticInformation vsEnvironment)
+        {
+            myVsEnvironment = vsEnvironment;
+        }
+
+        public bool IsUnityWorkloadInstalled() => IsUnityWorkloadInstalled(myVsEnvironment);
+
+        public static bool IsUnityWorkloadInstalled(IVsEnvironmentStaticInformation vsEnvironment)
+        {
+            if (DevenvHostDiscovery.ShouldIgnoreDetectedWorkloads())
+                return true;
+
+            if (vsEnvironment.InstalledWorkloads.IsDefault)
+                return true;  // We don't know installed VS workloads, enable the plugin
+
+            return vsEnvironment.InstalledWorkloads.Any(name => name.StartsWith(VsUnityWorkloadName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
