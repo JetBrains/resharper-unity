@@ -6,21 +6,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Utils
 {
     public abstract class VsUnityWorkloadDetector
     {
-        // https://learn.microsoft.com/en-us/visualstudio/gamedev/unity/get-started/getting-started-with-visual-studio-tools-for-unity?pivots=windows
-        // Workload marketing name: "Game development with Unity".
-        private const string VsUnityWorkloadName = "Microsoft.VisualStudio.Workload.ManagedGame";
-
-        private readonly IVsEnvironmentStaticInformation myVsEnvironment;
+        protected readonly Lazy<bool> IsUnityWorkloadInstalled;
 
         protected VsUnityWorkloadDetector(IVsEnvironmentStaticInformation vsEnvironment)
         {
-            myVsEnvironment = vsEnvironment;
+            IsUnityWorkloadInstalled = new Lazy<bool>(() => GetIsUnityWorkloadInstalled(vsEnvironment));
         }
 
-        public bool IsUnityWorkloadInstalled() => IsUnityWorkloadInstalled(myVsEnvironment);
-
-        public static bool IsUnityWorkloadInstalled(IVsEnvironmentStaticInformation vsEnvironment)
+        public static bool GetIsUnityWorkloadInstalled(IVsEnvironmentStaticInformation vsEnvironment)
         {
+            // https://learn.microsoft.com/en-us/visualstudio/gamedev/unity/get-started/getting-started-with-visual-studio-tools-for-unity?pivots=windows
+            // Workload marketing name: "Game development with Unity".
+            const string VsUnityWorkloadName = "Microsoft.VisualStudio.Workload.ManagedGame";
+
             if (DevenvHostDiscovery.ShouldIgnoreDetectedWorkloads())
                 return true;
 
