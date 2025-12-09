@@ -1,4 +1,4 @@
-﻿(event function) |void(ReSharper C# Keyword)| |A(ReSharper C# Class Identifier)|.|OnMouseExit(ReSharper C# Method Identifier)|()
+﻿(event function) |void(ReSharper C# Keyword)| |A(ReSharper C# Class Identifier)|.|OnMouseExit(ReSharper C# Method Declaration Identifier)|()
 
 Called when the mouse is not any longer over the Collider.
 This function can be a coroutine.
