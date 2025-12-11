@@ -7,6 +7,13 @@ public enum ProfilerSnapshotFetchingSettings
     ManualFetch
 }
 
+public enum ProfilerSnapshotHighlightingSettings
+{
+    Hidden,
+    Default,
+    Minimized
+}
+
 public enum SerializedFieldRefactoringSettings
 {
     ShowPopup,

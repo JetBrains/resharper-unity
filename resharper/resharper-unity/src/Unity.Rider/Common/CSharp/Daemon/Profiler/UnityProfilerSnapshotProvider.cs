@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
@@ -32,6 +31,7 @@ public interface IUnityProfilerSnapshotDataProvider
 {
     public bool TryGetSamplesByQualifiedName(string qualifiedName, ref IList<PooledSample> samples);
     public bool TryGetTypeSamples(string qualifiedName, ref IList<PooledSample> samples);
+    public ProfilerSnapshotHighlightingSettings GetGutterMarkSettings();
 }
 
 [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
@@ -45,7 +45,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 
     private readonly BackendUnityHost myBackendUnityHost;
     private readonly FrontendBackendHost myFrontendBackendHost;
-    private readonly IShellLocks myShellLocks;
     private readonly ILogger myLogger;
     private readonly ISolution mySolution;
     private PooledSamplesCache? myPooledSamplesCache;
@@ -55,6 +54,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
     private readonly IProperty<string> myFetchingProgressProperty = new Property<string>("SnapshotFetching::Description");
     private readonly IContextBoundSettingsStoreLive mySettingsStore;
     private readonly SettingsScalarEntry mySnapshotFetchingScalarEntry;
+    private readonly SettingsScalarEntry mySnapshotGutterMarksDisplaySettingsScalarEntry;
 
     private readonly BackgroundProgressManager myBackgroundProgressManager;
     private readonly UnityProfilerInfoCollector myUnityProfilerInfoCollector;
@@ -65,7 +65,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         BackendUnityHost backendUnityHost,
         FrontendBackendHost frontendBackendHost,
         ISettingsStore settingsStore,
-        IShellLocks shellLocks,
         BackgroundProgressManager backgroundProgressManager,
         UnityProfilerInfoCollector unityProfilerInfoCollector,
         ILogger logger)
@@ -74,7 +73,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         myRequestSnapshotSeqLifetimes = new SequentialLifetimes(myLifetime);
         myBackendUnityHost = backendUnityHost;
         myFrontendBackendHost = frontendBackendHost;
-        myShellLocks = shellLocks;
         myLogger = logger;
         myBackgroundProgressManager = backgroundProgressManager;
         myUnityProfilerInfoCollector = unityProfilerInfoCollector;
@@ -82,6 +80,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         mySettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.ApplicationWide);
 
         mySnapshotFetchingScalarEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.ProfilerSnapshotFetchingSettings);
+        mySnapshotGutterMarksDisplaySettingsScalarEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.ProfilerGutterMarksDisplaySettings);
 
         // Set up all advice and subscriptions
         AdviseOnSettingsChanges();
@@ -107,41 +106,63 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         
         mySettingsStore.AdviseAsyncChanged(myLifetime, async (lt, change) =>
         {
-            if (!change.ChangedEntries.Contains(mySnapshotFetchingScalarEntry))
-                return;
-
-            var fetchingSettings = GetSnapshotFetchingSettings();
-
-            var snapshotStatus = myBackendUnityHost.BackendUnityProfilerModel.Value?.ProfilerSnapshotStatus.Value;
-            
-
-            switch (fetchingSettings)
-            {
-                case ProfilerSnapshotFetchingSettings.AutoFetch:
-                case ProfilerSnapshotFetchingSettings.ManualFetch:
-                {
-                    myLogger.Verbose( $"Start snapshot auto fetching after settings changed to {fetchingSettings}");
-                    
-                    if (snapshotStatus == null)
-                        return;
-
-                    FrontendBackendProfilerModel.ProfilerSnapshotStatus.Value = snapshotStatus;
-                    
-                    var snapshotRequest = new ProfilerSnapshotRequest(snapshotStatus.FrameIndex, snapshotStatus.ThreadIndex);
-                    FetchProfilerSnapshotWithProgress(snapshotRequest);
-                    return;
-                }
-                case ProfilerSnapshotFetchingSettings.Disabled:
-                    myLogger.Verbose( $"Stop snapshot auto fetching after settings changed to {fetchingSettings}");
-                    FrontendBackendProfilerModel.ProfilerSnapshotStatus.Value = ourUnityProfilerSnapshotStatusDisabled;
-                    myRequestSnapshotSeqLifetimes.TerminateCurrent();
-                    UpdateSampleCache(null);
-                    await InvalidateDaemon(lt);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(fetchingSettings));
-            }
+            await HandleSnapshotFetchingSettingsChange(change, lt);
+            await HandleGutterMarkDisplaySettingsChange(change, lt);
         });
+    }
+
+    public ProfilerSnapshotHighlightingSettings GetGutterMarkSettings()
+    {
+        return mySettingsStore.GetValue(mySnapshotGutterMarksDisplaySettingsScalarEntry, null) is
+            ProfilerSnapshotHighlightingSettings
+            fetchingSettings
+            ? fetchingSettings
+            : ProfilerSnapshotHighlightingSettings.Default;
+    }
+
+    private async Task HandleGutterMarkDisplaySettingsChange(SettingsStoreChangeArgs change, Lifetime lifetime)
+    {
+        if (!change.ChangedEntries.Contains(mySnapshotGutterMarksDisplaySettingsScalarEntry))
+            return;
+
+        await InvalidateDaemon(lifetime);
+    }
+    
+    private async Task HandleSnapshotFetchingSettingsChange(SettingsStoreChangeArgs change, Lifetime lt)
+    {
+        if (!change.ChangedEntries.Contains(mySnapshotFetchingScalarEntry))
+            return;
+
+        var fetchingSettings = GetSnapshotFetchingSettings();
+
+        var snapshotStatus = myBackendUnityHost.BackendUnityProfilerModel.Value?.ProfilerSnapshotStatus.Value;
+            
+        switch (fetchingSettings)
+        {
+            case ProfilerSnapshotFetchingSettings.AutoFetch:
+            case ProfilerSnapshotFetchingSettings.ManualFetch:
+            {
+                myLogger.Verbose( $"Start snapshot auto fetching after settings changed to {fetchingSettings}");
+                    
+                if (snapshotStatus == null)
+                    return;
+
+                FrontendBackendProfilerModel.ProfilerSnapshotStatus.Value = snapshotStatus;
+                    
+                var snapshotRequest = new ProfilerSnapshotRequest(snapshotStatus.FrameIndex, snapshotStatus.ThreadIndex);
+                FetchProfilerSnapshotWithProgress(snapshotRequest);
+                return;
+            }
+            case ProfilerSnapshotFetchingSettings.Disabled:
+                myLogger.Verbose( $"Stop snapshot auto fetching after settings changed to {fetchingSettings}");
+                FrontendBackendProfilerModel.ProfilerSnapshotStatus.Value = ourUnityProfilerSnapshotStatusDisabled;
+                myRequestSnapshotSeqLifetimes.TerminateCurrent();
+                UpdateSampleCache(null);
+                await InvalidateDaemon(lt);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(fetchingSettings));
+        }
     }
 
     private void AdviseOnFrontendRequests()
@@ -155,6 +176,23 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 myLogger.Verbose($"Requesting snapshot requested by frontend: {request}");
                 FetchProfilerSnapshotWithProgress(request);
             });
+        FrontendBackendProfilerModel.NavigateByQualifiedName.Advise(myLifetime, async void (qualifiedName) =>
+        {
+            try
+            {
+                await myLifetime.StartReadAndMainThreadActionAsync(locks =>
+                {
+                    return locks.MainReadAction(() =>
+                    {
+                        ProfilerNavigationUtils.ParseAndNavigateToParent(mySolution, qualifiedName, myLogger);
+                    });
+                });
+            }
+            catch (Exception e)
+            {
+                myLogger.LogException(e);
+            }
+        });
     }
 
     private void AdviseOnUnityProfilerSnapshotStatus()
@@ -231,7 +269,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 
     private void StartCacheUpdateProgressTask(Lifetime lifetime, Property<double> cacheUpdatingProgressProperty)
     {
-        myShellLocks.StartMainRead(lifetime, () =>
+        lifetime.StartMainRead(() =>
             myBackgroundProgressManager.AddNewTask(lifetime,
                 BackgroundProgressBuilder.Create()
                     .WithHeader(Strings.UnityProfilerSnapshot_Update_Profiler_Snapshot_Cache_header)
@@ -243,7 +281,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 
     private void StartFetchingProgressTask(Lifetime lifetime)
     {
-        myShellLocks.StartMainRead(lifetime, () =>
+        lifetime.StartMainRead(() =>
             myBackgroundProgressManager.AddNewTask(lifetime,
                 BackgroundProgressBuilder.Create()
                     .WithHeader(Strings.UnityProfilerSnapshot_Fetching_Profiler_snapshot_header)
@@ -308,6 +346,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
             : ProfilerSnapshotFetchingSettings.Disabled;
     }
 
+    
     public bool TryGetSamplesByQualifiedName(string qualifiedName, ref IList<PooledSample> samples)
     {
         if (myPooledSamplesCache?.TryGetSamplesByQualifiedName(qualifiedName, ref samples) == true)

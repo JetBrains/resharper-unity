@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             AddHighlighting(consumer, documentRange, declaredElement, displayName, tooltip, moreText, iconModel, items, extraActions);
         }
 
-        public virtual void AddHighlighting(IHighlightingConsumer consumer,
+        protected void AddHighlighting(IHighlightingConsumer consumer,
             DocumentRange documentRange, IDeclaredElement declaredElement, string displayName,
             string tooltip, string moreText, IconModel iconModel, IEnumerable<BulbMenuItem> items,
             List<CodeVisionEntryExtraActionModel> extraActions)

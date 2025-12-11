@@ -340,6 +340,14 @@
       <action id="Unity_Internal_DumpSpellCheckWordLists"
               class="com.jetbrains.rider.plugins.unity.actions.internal.DumpSpellCheckWordListsAction"
               internal="true" />
+      <action id="unityProfiler.CloseAnnotations"
+              class="com.jetbrains.rider.plugins.unity.profiler.lineMarkers.ShowUnityProfilerGutterMarksAction">
+        <add-to-group group-id="EditorGutterVcsPopupMenu" anchor="after" relative-to-action="Annotate"/>
+      </action>
+      <action id="unityProfiler.ShowAnnotations"
+              class="com.jetbrains.rider.plugins.unity.profiler.lineMarkers.CloseUnityProfilerGutterMarksAction">
+        <add-to-group group-id="EditorGutterVcsPopupMenu" anchor="after" relative-to-action="Annotate"/>
+      </action>
     </group>
     <action id="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction"
             class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction"
@@ -377,6 +385,10 @@
                        key="notification.group.unity.unity.commit.failure"/>
     <iconMapper mappingFile="UnityIconMappings.json"/>
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.TextureDebuggerCollector"/>
+    
+    <!-- Unity Profiler line markers -->
+    <rdclient.markupExtension implementation="com.jetbrains.rider.plugins.unity.profiler.lineMarkers.UnityProfilerProtocolMarkupExtension"/>
+    <rdclient.highlighterModelSupport implementation="com.jetbrains.rider.plugins.unity.profiler.lineMarkers.UnityProfilerLineMarkerModelSupport"/>
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">

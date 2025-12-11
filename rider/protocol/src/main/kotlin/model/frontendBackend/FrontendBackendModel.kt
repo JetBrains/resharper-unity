@@ -228,8 +228,33 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
 //Separate model for the Unity profiler integration 
 object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
+    private val ProfilerGutterMarkRenderSettings = enum {
+        +"Hidden"
+        +"Default"
+        +"Minimized"
+    }
+    
+    private val ParentCalls = structdef {
+        field("qualifiedName", string)
+        field("duration", double)
+        field("framePercentage", double)
+        field("realParentQualifiedName", string.nullable)
+    }
+    
     init {
         property("profilerSnapshotStatus", Library.UnityProfilerSnapshotStatus).async
         signal("updateUnityProfilerSnapshotData", Library.ProfilerSnapshotRequest).async
+        signal("navigateByQualifiedName", string).async
+    }
+
+    val ProfilerHighlighterModel = structdef extends SolutionModel.HighlighterModel {
+        field("sampleInformation", structdef("ModelUnityProfilerSampleInfo") {
+            field("milliseconds", double)
+            field("framePercentage", double)
+            field("memoryAllocation", long)
+            field("toolTip", string)
+            field("parents", immutableList(ParentCalls).nullable)
+            field("renderSettings", ProfilerGutterMarkRenderSettings)
+        })
     }
 }
