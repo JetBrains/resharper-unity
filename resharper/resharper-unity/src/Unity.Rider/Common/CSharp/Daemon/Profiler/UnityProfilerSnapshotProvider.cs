@@ -193,6 +193,18 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 myLogger.LogException(e);
             }
         });
+        FrontendBackendProfilerModel.SetGutterMarksRenderSetting.Advise(myLifetime, async void (renderSetting) =>
+        {
+            try
+            {
+                var highlightingSettings = renderSetting.ToProfilerSnapshotHighlightingSettings();
+                mySettingsStore.SetValue(mySnapshotGutterMarksDisplaySettingsScalarEntry, highlightingSettings, null);
+            }
+            catch (Exception e)
+            {
+                myLogger.LogException(e);
+            }
+        });
     }
 
     private void AdviseOnUnityProfilerSnapshotStatus()

@@ -66,7 +66,7 @@ class UnityProfilerActiveLineMarkerRenderer(
                     val font = getCurrentFont(editor)
                     g2d.font = font
                     val fm = editor.component.getFontMetrics(font)
-                    getAggregator(editor, displaySettings)?.update(
+                    getOrCreateAggregator(editor, displaySettings)?.update(
                         this,
                         calculateReservationWidth(editor),
                         displaySettings
@@ -76,7 +76,7 @@ class UnityProfilerActiveLineMarkerRenderer(
 
                 ProfilerGutterMarkRenderSettings.Minimized -> {
                     val emptyLength = 2 * H_GAP_ABSOLUTE + H_LEFT_MARGIN_ABSOLUTE + H_RIGHT_MARGIN_ABSOLUTE
-                    getAggregator(editor, displaySettings)?.update(this, emptyLength, displaySettings)
+                    getOrCreateAggregator(editor, displaySettings)?.update(this, emptyLength, displaySettings)
                     paintMinimized(editor, g2d, r, baseColor)
                 }
 
@@ -247,17 +247,38 @@ class UnityProfilerActiveLineMarkerRenderer(
         // One reservation per editor
         private val aggregators = Collections.synchronizedMap(WeakHashMap<Editor, GutterReservationAggregator>())
 
-        private fun getAggregator(
+        fun editorRenderSettings(editor: Editor): ProfilerGutterMarkRenderSettings? {
+            if (!aggregators.containsKey(editor))
+                return null
+            
+            return aggregators[editor]?.getRenderSettings()
+        }
+        
+        private fun getOrCreateAggregator(
             editor: Editor,
             gutterMarksDisplaySettings: ProfilerGutterMarkRenderSettings,
         ): GutterReservationAggregator? {
             return try {
                 val gutter = editor.gutter as? EditorGutterComponentEx ?: return null
-                aggregators.getOrPut(editor) {
-                    GutterReservationAggregator(gutter, gutterMarksDisplaySettings).also { agg ->
-                        (editor as? Disposable)?.let { Disposer.register(it, agg) }
-                    }
+                // Find a reliable parent disposable tied to editor lifecycle
+                val parentDisposable: Disposable? = when (editor) {
+                    is EditorImpl -> editor.disposable
+                    is Disposable -> editor
+                    else -> null
                 }
+
+                if (parentDisposable == null) {
+                    logger.error("Cannot get parent disposable for editor ${editor.javaClass.name}")
+                    return null // do not create/capture aggregator without a parent
+                }
+                val cached = aggregators[editor]
+                if (cached != null && !Disposer.isDisposed(cached)) return cached
+
+                val created = GutterReservationAggregator(gutter, gutterMarksDisplaySettings)
+                Disposer.register(parentDisposable, created)
+                Disposer.register(parentDisposable) { aggregators.remove(editor) }
+                aggregators[editor] = created
+                created
             } catch (e: Exception) {
                 logger.error("Error getting gutter reservation aggregator", e)
                 null
@@ -329,7 +350,6 @@ class UnityProfilerActiveLineMarkerRenderer(
             }
         }
 
-        // Helpers mirroring LineMarker scaling logic
         private fun scale(editor: Editor, x: Int): Int = JBUI.scale(EditorUIUtil.scaleWidth(x, editor as EditorImpl))
 
         private fun hGap(editor: Editor): Int = scale(editor, H_GAP_ABSOLUTE)
@@ -365,9 +385,9 @@ class UnityProfilerActiveLineMarkerRenderer(
         private val widthsByRenderer = WeakHashMap<UnityProfilerActiveLineMarkerRenderer, Int>()
         private var currentReserved = -1
 
-        init {
-            Disposer.register(this, holder)
-        }
+        @Volatile
+        private var isDisposed = false
+        fun getRenderSettings() : ProfilerGutterMarkRenderSettings = gutterMarksDisplaySettings
 
         fun update(
             renderer: UnityProfilerActiveLineMarkerRenderer,
@@ -380,6 +400,7 @@ class UnityProfilerActiveLineMarkerRenderer(
                 } else {
                     widthsByRenderer[renderer] = width
                 }
+                if (isDisposed) return
                 val newMax = widthsByRenderer.values.maxOrNull() ?: 0
                 if (newMax == currentReserved && displaySettings == gutterMarksDisplaySettings) return
                 Disposer.dispose(holder)
@@ -394,6 +415,7 @@ class UnityProfilerActiveLineMarkerRenderer(
         }
 
         override fun dispose() {
+            isDisposed = true
             widthsByRenderer.clear()
             Disposer.dispose(holder)
         }

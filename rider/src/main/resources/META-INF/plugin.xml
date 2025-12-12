@@ -340,12 +340,12 @@
       <action id="Unity_Internal_DumpSpellCheckWordLists"
               class="com.jetbrains.rider.plugins.unity.actions.internal.DumpSpellCheckWordListsAction"
               internal="true" />
-      <action id="unityProfiler.CloseAnnotations"
-              class="com.jetbrains.rider.plugins.unity.profiler.lineMarkers.ShowUnityProfilerGutterMarksAction">
+      <action id="unityProfiler.MinimizeAnnotations"
+              class="com.jetbrains.rider.plugins.unity.profiler.lineMarkers.MinimizeUnityProfilerGutterMarksAction">
         <add-to-group group-id="EditorGutterVcsPopupMenu" anchor="after" relative-to-action="Annotate"/>
       </action>
-      <action id="unityProfiler.ShowAnnotations"
-              class="com.jetbrains.rider.plugins.unity.profiler.lineMarkers.CloseUnityProfilerGutterMarksAction">
+      <action id="unityProfiler.MaximizeAnnotations"
+              class="com.jetbrains.rider.plugins.unity.profiler.lineMarkers.MaximizeUnityProfilerGutterMarksAction">
         <add-to-group group-id="EditorGutterVcsPopupMenu" anchor="after" relative-to-action="Annotate"/>
       </action>
     </group>
