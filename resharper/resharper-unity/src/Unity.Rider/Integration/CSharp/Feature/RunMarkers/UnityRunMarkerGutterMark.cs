@@ -1,14 +1,14 @@
+#nullable enable
+
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.RunMarkers;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Rider.Model.Unity;
@@ -16,11 +16,9 @@ using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.RichText;
 using JetBrains.UI.ThemedIcons;
 
-#nullable enable
-
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.RunMarkers
 {
-    public class UnityStaticMethodRunMarkerGutterMark : RunMarkerGutterMark<UnityRunMarkerHighlighting>
+    public class UnityStaticMethodRunMarkerGutterMark : RunMarkerGutterMarkBase<UnityRunMarkerHighlighting>
     {
         public UnityStaticMethodRunMarkerGutterMark()
             : base(RunMarkersThemedIcons.RunActions.Id)
