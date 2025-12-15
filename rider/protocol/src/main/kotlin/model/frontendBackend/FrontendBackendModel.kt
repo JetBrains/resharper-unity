@@ -246,6 +246,8 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
         signal("updateUnityProfilerSnapshotData", Library.ProfilerSnapshotRequest).async
         signal("navigateByQualifiedName", string).async
         signal("setGutterMarksRenderSetting", ProfilerGutterMarkRenderSettings).async
+        //collectors
+        signal("showPopupAction", void).async
     }
 
     val ProfilerHighlighterModel = structdef extends SolutionModel.HighlighterModel {

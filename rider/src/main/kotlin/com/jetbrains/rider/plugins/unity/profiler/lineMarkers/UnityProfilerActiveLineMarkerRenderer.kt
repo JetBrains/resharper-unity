@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.profiler.lineMarkers
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
@@ -26,6 +27,7 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
+import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesDaemon
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendProfilerModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ModelUnityProfilerSampleInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerGutterMarkRenderSettings
@@ -140,6 +142,9 @@ class UnityProfilerActiveLineMarkerRenderer(
 
     override fun doAction(editor: Editor, e: MouseEvent) {
         try {
+            // Record usage for simple local statistics
+            project.service<UnityProfilerUsagesDaemon>().showPopupAction()
+            
             val parents = sampleInfo.parents?.takeIf { it.isNotEmpty() } ?: return
 
             val gutter = e.component as? EditorGutterComponentEx ?: return

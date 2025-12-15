@@ -184,6 +184,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 {
                     return locks.MainReadAction(() =>
                     {
+                        myUnityProfilerInfoCollector.OnNavigateToParentCall();
                         ProfilerNavigationUtils.ParseAndNavigateToParent(mySolution, qualifiedName, myLogger);
                     });
                 });
@@ -205,6 +206,8 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 myLogger.LogException(e);
             }
         });
+        
+        FrontendBackendProfilerModel.ShowPopupAction.Advise(myLifetime, () => myUnityProfilerInfoCollector.OnNavigationPopupShown());
     }
 
     private void AdviseOnUnityProfilerSnapshotStatus()
