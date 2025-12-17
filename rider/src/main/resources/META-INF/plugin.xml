@@ -441,5 +441,10 @@
 </p>
 ]]>
   </description>
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+  <dependencies>
+    <module name="intellij.rd.client"/>
+  </dependencies>
+  <!-- endregion -->
   <resource-bundle>messages.UnityPluginActionsBundle</resource-bundle>
 </idea-plugin>
