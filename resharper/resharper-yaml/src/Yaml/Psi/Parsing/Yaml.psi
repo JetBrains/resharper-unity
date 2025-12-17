@@ -85,7 +85,7 @@ options {
 
 yamlFile
 options {
-  stubBase="YamlFileElement";
+  stubBase="YamlFileElement"; elementTypeFlags="File";
 }
 :
   yamlDocument<DOCUMENT, Documents>*

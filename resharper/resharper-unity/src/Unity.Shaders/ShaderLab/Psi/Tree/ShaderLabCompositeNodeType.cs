@@ -4,8 +4,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree
 {
     public abstract class ShaderLabCompositeNodeType : CompositeNodeType
     {
-        protected ShaderLabCompositeNodeType(string s, int index)
-            : base(s, index)
+        protected ShaderLabCompositeNodeType(string s, int index, NodeTypeFlags flags)
+            : base(s, index, flags)
         {
         }
     }

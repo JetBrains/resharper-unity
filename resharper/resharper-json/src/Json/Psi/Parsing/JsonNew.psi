@@ -48,7 +48,7 @@ options
 
 errorhandling jsonNewFile
 options {
-  stubBase="JsonNewFileElement";
+  stubBase="JsonNewFileElement"; elementTypeFlags="File";
 }
 :
   jsonNewValue<VALUE, Value>

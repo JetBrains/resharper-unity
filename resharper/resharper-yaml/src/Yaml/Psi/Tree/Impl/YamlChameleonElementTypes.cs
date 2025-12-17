@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
     private sealed class CHAMELEON_DOCUMENT_BODY_INTERNAL : CompositeNodeType
     {
       public CHAMELEON_DOCUMENT_BODY_INTERNAL()
-        : base("CHAMELEON_DOCUMENT_BODY", CHAMELEON_DOCUMENT_BODY_INDEX)
+        : base("CHAMELEON_DOCUMENT_BODY", CHAMELEON_DOCUMENT_BODY_INDEX, NodeTypeFlags.None)
       {
       }
 
