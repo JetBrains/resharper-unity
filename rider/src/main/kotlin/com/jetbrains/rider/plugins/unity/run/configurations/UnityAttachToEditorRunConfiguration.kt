@@ -8,6 +8,7 @@ import com.intellij.execution.process.ProcessInfo
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
@@ -176,6 +177,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                 return false
             }
             val processInfo = processList.firstOrNull { it.pid == pid } ?: return false
+            LOG.info("Found Unity Editor process: $processInfo")
             runtimes = getAvailableRuntimes(processInfo, project)
 
             port = convertPidToDebuggerPort(pid!!)
@@ -189,6 +191,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
     private fun checkValidEditorProcess(pid: Int?, processList: Array<ProcessInfo>): Int? {
         if (pid != null && UnityRunUtil.isValidUnityEditorProcess(pid, processList)) {
+            LOG.info("Found valid editor process, PID: $pid")
             return pid
         }
         return null
@@ -197,7 +200,9 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     private fun findUnityEditorProcessFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
         val editorInstanceJson = EditorInstanceJson.getInstance(project)
         if (editorInstanceJson.validateStatus(processList) == EditorInstanceJsonStatus.Valid) {
-            return editorInstanceJson.contents!!.process_id
+            val processId = editorInstanceJson.contents!!.process_id
+            LOG.info("Found Unity Editor from EditorInstance.json, PID: $processId")
+            return processId
         }
 
         return null
@@ -215,14 +220,18 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             val expectedProjectName = project.solutionDirectory.name
             val entry = map.entries.firstOrNull { expectedProjectName.equals(it.value.projectName, true) }
             if (entry != null) {
-                return entry.key
+                val processId = entry.key
+                LOG.info("Found Unity Editor using project name, PID: $processId")
+                return processId
             }
 
             // We don't have a cached pid from a previous debug session, we don't have EditorInstance.json, we can't
             // find a process with a matching project name. Best guess fallback is to attach to an unnamed project
             val noNameProjects = map.entries.filter { it.value.projectName == null }
             if (noNameProjects.count() == 1) {
-                return noNameProjects[0].key
+                val processId = noNameProjects[0].key
+                LOG.info("Attaching to a single unnamed project, PID: $processId")
+                return processId
             }
 
             return null
@@ -256,3 +265,4 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     }
 }
 
+private val LOG = logger<UnityAttachToEditorRunConfiguration>()

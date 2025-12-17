@@ -15,7 +15,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.Key
 import com.intellij.util.NetworkUtils
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
@@ -55,7 +55,7 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         val runCmd = super.createWorkerRunInfo(lifetime, helper, port)
 
         remoteConfiguration.listenPortForConnections = true
-        remoteConfiguration.port = NetworkUtils.findFreePort(500013, setOf(port))
+        remoteConfiguration.port = NetworkUtils.findFreePort(56000, setOf(port))
         remoteConfiguration.address = "127.0.0.1"
 
         return runCmd
@@ -88,7 +88,7 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
             val res = frontendBackendModel.getScriptingBackend.start(lifetime, Unit)
             res.result.adviseNotNullOnce(lifetime) {
                 if (it is RdTaskResult.Fault) {
-                    thisLogger().warn("getScriptingBackend failed with ${it.error}")
+                    LOG.warn("getScriptingBackend failed with ${it.error}")
                     return@adviseNotNullOnce
                 }
                 if (it.unwrap() == 1) {
@@ -168,3 +168,5 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         return monoConnectResult
     }
 }
+
+private val LOG = logger<UnityExeDebugProfileState>()

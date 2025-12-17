@@ -7,7 +7,7 @@ import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.diagnostic.logger
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
@@ -59,7 +59,7 @@ class UnityAttachToEditorProfileState(
         // on the background thread
         return withContext(Dispatchers.Default) {
             if (!remoteConfiguration.updatePidAndPort()) {
-                thisLogger().trace("Have not found Unity, would start a new Unity Editor instead.")
+                LOG.info("Have not found Unity, would start a new Unity Editor instead.")
 
                 if (UnityInstallationFinder.getInstance(project).isCoreCLR.hasTrueValue()){
                     corRunDebugProfileState = exeDebugProfileState.exeConfiguration.getDotNetCoreDebugProfile(executionEnvironment)
@@ -98,7 +98,7 @@ class UnityAttachToEditorProfileState(
                 if (event == AddRemove.Add) {
                     debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
                         if (it == DebuggerInitializingState.Initialized) {
-                            thisLogger().info("Pass value to backend, which will push Unity to enter play mode.")
+                            LOG.info("Pass value to backend, which will push Unity to enter play mode.")
                             var prevState = false
                             lt.bracketIfAlive(opening = {
                                 // pass value to backend, which will push Unity to enter play mode.
@@ -136,3 +136,5 @@ class UnityAttachToEditorProfileState(
         return super.execute(executor, runner, workerProcessHandler)
     }
 }
+
+private val LOG = logger<UnityAttachToEditorProfileState>()

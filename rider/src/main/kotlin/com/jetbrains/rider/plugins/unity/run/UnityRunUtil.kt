@@ -54,8 +54,6 @@ object UnityRunUtil {
         }
         else name
 
-        logger.debug("isUnityEditorProcess: '$name', '$canonicalName'")
-
         // Based on Unity's own VS Code debugger, we simply look for "Unity" or "Unity Editor". Java's
         // ProcessInfo#executableDisplayName is the executable name with `.exe` removed. This matches the behaviour of
         // .NET's Process.ProcessName
@@ -70,11 +68,13 @@ object UnityRunUtil {
                     || canonicalName.equals("$engineName Editor", true)
                     || canonicalName.equals("${engineName}_s.debug", true)
                    )
+            {
+                logger.debug("isUnityEditorProcess? TRUE!: '", name, "', '", canonicalName, "'")
                 return true
+            }
         }
-        
+        logger.debug("isUnityEditorProcess? FALSE!: '", name, "', '", canonicalName, "'")
         return false
-
     }
 
     fun isValidUnityEditorProcess(pid: Int, processList: Array<out ProcessInfo>): Boolean {
