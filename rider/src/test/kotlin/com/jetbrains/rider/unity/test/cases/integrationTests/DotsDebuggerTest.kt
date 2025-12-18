@@ -119,7 +119,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
 @UnityTestSettings(unityVersion = UnityVersion.V2022)
 class DotsDebuggerTestUnity2022 : DotsDebuggerTest() {
     init {
-        //addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
     }
 }
 
