@@ -271,9 +271,17 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
 
             var bulbMenuItems = new List<BulbMenuItem>();
             using var pooledHashSet = PooledHashSet<PooledSample>.GetInstance();
+            
+            double durationSum = 0;
+            double percentageSum = 0;
+            long memoryAllocation = 0;
 
             foreach (var s in samples)
             {
+                durationSum += s.Duration;
+                percentageSum += s.FramePercentage;
+                memoryAllocation += s.MemoryAllocation;
+                
                 if (s.Parent == null)
                     continue;
                 pooledHashSet.Add(s.Parent);
@@ -300,10 +308,6 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
                     parents.Add(new ParentCalls(sample.QualifiedName, sample.Duration, sample.FramePercentage, realParentQualifiedName));
                 }
             }
-
-            var durationSum = samples.Sum(s => s.Duration);
-            var percentageSum = samples.Sum(s => s.FramePercentage);
-            var memoryAllocation = samples.Sum(s => s.MemoryAllocation);
 
             var navigationRange = declaration.GetNavigationRange();
 
@@ -379,17 +383,23 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
             ILazy<IUnityProfilerSnapshotDataProvider> snapshotDataProvider)
         {
             using var samples = PooledList<PooledSample>.GetInstance();
+            double durationSum = 0;
+            double percentageSum = 0;
+            long allocations = 0;
             foreach (var child in children)
             {
                 if (child.QualifiedName.Equals(qualifiedName))
-                   samples.Add(child); 
+                {
+                    samples.Add(child); 
+                    durationSum += child.Duration;
+                    percentageSum += child.FramePercentage;
+                    allocations += child.MemoryAllocation;
+                }
             }
             
             if (samples.Count == 0)
                 return;
-            var durationSum = samples.Sum(s => s.Duration);
-            var percentageSum = samples.Sum(s => s.FramePercentage);
-            var allocations = samples.Sum(s => s.MemoryAllocation);
+            
             var memory = StringUtil.StrFormatByteSize(allocations);
 
             var displayName = string.Format(highlightingString.DisplayName, durationSum, percentageSum, samples.Count, memory);
