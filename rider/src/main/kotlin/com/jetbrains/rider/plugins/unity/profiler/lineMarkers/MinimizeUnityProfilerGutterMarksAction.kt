@@ -23,7 +23,6 @@ class MinimizeUnityProfilerGutterMarksAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         project.solution.frontendBackendModel.frontendBackendProfilerModel.setGutterMarksRenderSetting.fire(ProfilerGutterMarkRenderSettings.Minimized)
-//        LineProfilerUsageCollector.logShowPerformanceHints(project)
     }
 }
 
@@ -41,7 +40,5 @@ class MaximizeUnityProfilerGutterMarksAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         project.solution.frontendBackendModel.frontendBackendProfilerModel.setGutterMarksRenderSetting.fire(ProfilerGutterMarkRenderSettings.Default)
-//        LineProfilerService.getInstance(project).showAnnotations()
-//        LineProfilerUsageCollector.logShowPerformanceHints(project)
     }
 }

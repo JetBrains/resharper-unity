@@ -4,6 +4,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
@@ -56,7 +57,7 @@ class UnityProfilerActiveLineMarkerRenderer(
     override fun getPosition(): LineMarkerRendererEx.Position = LineMarkerRendererEx.Position.LEFT
 
     override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
-        try {
+        logger.runAndLogException {
             val displaySettings = sampleInfo.renderSettings
             if (displaySettings == ProfilerGutterMarkRenderSettings.Hidden) return
 
@@ -86,8 +87,6 @@ class UnityProfilerActiveLineMarkerRenderer(
                     logger.warn("Unknown display settings: $displaySettings")
                 }
             }
-        } catch (e: Exception) {
-            logger.error("Error painting profiler line marker", e)
         }
     }
 
@@ -141,7 +140,7 @@ class UnityProfilerActiveLineMarkerRenderer(
     override fun canDoAction(e: MouseEvent): Boolean = true
 
     override fun doAction(editor: Editor, e: MouseEvent) {
-        try {
+        logger.runAndLogException {
             // Record usage for simple local statistics
             project.service<UnityProfilerUsagesDaemon>().showPopupAction()
             
@@ -158,26 +157,20 @@ class UnityProfilerActiveLineMarkerRenderer(
                 // use qualifiedName for filtering and selection callback as requested
                 .setNamerForFiltering { it.qualifiedName }
                 .setItemChosenCallback { element ->
-                    try {
+                    logger.runAndLogException {
                         if (element == null) return@setItemChosenCallback
                         UnityProjectLifetimeService.getScope(project).launch(Dispatchers.EDT, CoroutineStart.UNDISPATCHED) {
-                            try {
+                            logger.runAndLogException {
                                 if (element.realParentQualifiedName != null)
                                     profilerModel.navigateByQualifiedName.fire(element.realParentQualifiedName)
-                            } catch (e: Exception) {
-                                logger.error("Error navigating to parent qualified name: ${element.realParentQualifiedName}", e)
                             }
                         }
-                    } catch (e: Exception) {
-                        logger.error("Error handling item chosen callback", e)
                     }
                 }
                 .createPopup()
 
             val point = Point(e.x, e.y + JBUI.scale(3))
             popup.show(RelativePoint(gutter, point))
-        } catch (e: Exception) {
-            logger.error("Error showing profiler parent calls popup", e)
         }
     }
 
@@ -228,17 +221,15 @@ class UnityProfilerActiveLineMarkerRenderer(
     }
 
     private fun calculateReservationWidth(editor: Editor): Int {
-        try {
+        logger.runAndLogException {
             if (labelText.isBlank()) return 0
             editor as EditorImpl
             val currentFont = getCurrentFont(editor)
             val unscaledFont = currentFont.deriveFont(currentFont.size2D / JBUIScale.scale(editor.getScale()))
             val textWidth = editor.component.getFontMetrics(unscaledFont).stringWidth(labelText)
             return textWidth + 2 * H_GAP_ABSOLUTE + H_LEFT_MARGIN_ABSOLUTE + H_RIGHT_MARGIN_ABSOLUTE
-        } catch (e: Exception) {
-            logger.error("Error calculating reservation width", e)
-            return 0
         }
+        return 0
     }
 
     companion object {
@@ -263,7 +254,7 @@ class UnityProfilerActiveLineMarkerRenderer(
             editor: Editor,
             gutterMarksDisplaySettings: ProfilerGutterMarkRenderSettings,
         ): GutterReservationAggregator? {
-            return try {
+            return logger.runAndLogException {
                 val gutter = editor.gutter as? EditorGutterComponentEx ?: return null
                 // Find a reliable parent disposable tied to editor lifecycle
                 val parentDisposable: Disposable? = when (editor) {
@@ -284,9 +275,6 @@ class UnityProfilerActiveLineMarkerRenderer(
                 Disposer.register(parentDisposable) { aggregators.remove(editor) }
                 aggregators[editor] = created
                 created
-            } catch (e: Exception) {
-                logger.error("Error getting gutter reservation aggregator", e)
-                null
             }
         }
 
@@ -399,7 +387,7 @@ class UnityProfilerActiveLineMarkerRenderer(
             width: Int,
             displaySettings: ProfilerGutterMarkRenderSettings,
         ) {
-            try {
+            logger.runAndLogException {
                 if (width <= 0) {
                     widthsByRenderer.remove(renderer)
                 } else {
@@ -414,8 +402,6 @@ class UnityProfilerActiveLineMarkerRenderer(
                 holder = GutterSizeReservation(newMax)
                 gutter.reserveLeftFreePaintersAreaWidth(holder, newMax)
                 gutter.revalidateMarkup()
-            } catch (e: Exception) {
-                logger.error("Error updating gutter reservation", e)
             }
         }
 
