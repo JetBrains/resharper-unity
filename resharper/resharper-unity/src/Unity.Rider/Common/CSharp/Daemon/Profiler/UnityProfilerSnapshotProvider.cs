@@ -176,25 +176,25 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 myLogger.Verbose($"Requesting snapshot requested by frontend: {request}");
                 FetchProfilerSnapshotWithProgress(request);
             });
-        FrontendBackendProfilerModel.NavigateByQualifiedName.Advise(myLifetime, async void (qualifiedName) =>
+        FrontendBackendProfilerModel.NavigateByQualifiedName.Advise(myLifetime, void (qualifiedName) =>
         {
             try
             {
-                await myLifetime.StartReadAndMainThreadActionAsync(locks =>
+                myLifetime.StartReadAndMainThreadActionAsync(locks =>
                 {
                     return locks.MainReadAction(() =>
                     {
                         myUnityProfilerInfoCollector.OnNavigateToParentCall();
                         ProfilerNavigationUtils.ParseAndNavigateToParent(mySolution, qualifiedName, myLogger);
                     });
-                });
+                }).NoAwait();
             }
             catch (Exception e)
             {
                 myLogger.LogException(e);
             }
         });
-        FrontendBackendProfilerModel.SetGutterMarksRenderSetting.Advise(myLifetime, async void (renderSetting) =>
+        FrontendBackendProfilerModel.SetGutterMarksRenderSetting.Advise(myLifetime, void (renderSetting) =>
         {
             try
             {
