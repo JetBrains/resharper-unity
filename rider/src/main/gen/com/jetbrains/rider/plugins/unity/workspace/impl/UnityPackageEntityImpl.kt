@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 package com.jetbrains.rider.plugins.unity.workspace.impl
 
 import com.intellij.platform.workspace.storage.*
@@ -16,14 +14,12 @@ import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntityBuilder
 @GeneratedCodeApiVersion(3)
 @GeneratedCodeImplVersion(7)
 @OptIn(WorkspaceEntityInternalApi::class)
-internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData) : UnityPackageEntity, WorkspaceEntityBase(
-  dataSource) {
+internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData) : UnityPackageEntity,
+                                                                                        WorkspaceEntityBase(dataSource) {
 
   private companion object {
 
-
-    private val connections = listOf<ConnectionId>(
-    )
+    private val connections = listOf<ConnectionId>()
 
   }
 
@@ -44,8 +40,8 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
   }
 
 
-  internal class Builder(result: UnityPackageEntityData?) : ModifiableWorkspaceEntityBase<UnityPackageEntity, UnityPackageEntityData>(
-    result), UnityPackageEntityBuilder {
+  internal class Builder(result: UnityPackageEntityData?) :
+    ModifiableWorkspaceEntityBase<UnityPackageEntity, UnityPackageEntityData>(result), UnityPackageEntityBuilder {
     internal constructor() : this(UnityPackageEntityData())
 
     override fun applyToBuilder(builder: MutableEntityStorage) {
@@ -58,15 +54,13 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
           error("Entity UnityPackageEntity is already created in a different builder")
         }
       }
-
       this.diff = builder
       addToBuilder()
       this.id = getEntityData().createEntityId()
-      // After adding entity data to the builder, we need to unbind it and move the control over entity data to builder
-      // Builder may switch to snapshot at any moment and lock entity data to modification
+// After adding entity data to the builder, we need to unbind it and move the control over entity data to builder
+// Builder may switch to snapshot at any moment and lock entity data to modification
       this.currentEntityData = null
-
-      // Process linked entities that are connected without a builder
+// Process linked entities that are connected without a builder
       processLinkedEntities(builder)
       checkInitialization() // TODO uncomment and check failed tests
     }
@@ -102,7 +96,6 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
         changedProperty.add("entitySource")
 
       }
-
     override var descriptor: UnityPackage
       get() = getEntityData().descriptor
       set(value) {
@@ -114,6 +107,7 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
 
     override fun getEntityClass(): Class<UnityPackageEntity> = UnityPackageEntity::class.java
   }
+
 }
 
 @OptIn(WorkspaceEntityInternalApi::class)
@@ -149,8 +143,7 @@ internal class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>(
   }
 
   override fun createDetachedEntity(parents: List<WorkspaceEntityBuilder<*>>): WorkspaceEntityBuilder<*> {
-    return UnityPackageEntity(descriptor, entitySource) {
-    }
+    return UnityPackageEntity(descriptor, entitySource)
   }
 
   override fun getRequiredParents(): List<Class<out WorkspaceEntity>> {
@@ -161,9 +154,7 @@ internal class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>(
   override fun equals(other: Any?): Boolean {
     if (other == null) return false
     if (this.javaClass != other.javaClass) return false
-
     other as UnityPackageEntityData
-
     if (this.entitySource != other.entitySource) return false
     if (this.descriptor != other.descriptor) return false
     return true
@@ -172,9 +163,7 @@ internal class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>(
   override fun equalsIgnoringEntitySource(other: Any?): Boolean {
     if (other == null) return false
     if (this.javaClass != other.javaClass) return false
-
     other as UnityPackageEntityData
-
     if (this.descriptor != other.descriptor) return false
     return true
   }
