@@ -1,3 +1,4 @@
+using System;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -20,8 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
 
         public abstract class UxmlCompositeNodeType : XmlCompositeNodeType
         {
-            protected UxmlCompositeNodeType(string s, XmlElementTypes types, int index)
-                : base(s, types, index)
+            protected UxmlCompositeNodeType(string s, XmlElementTypes types, int index, Type nodeType)
+                : base(s, types, index, nodeType)
             {
             }
 
@@ -31,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
         private class NAMESPACE_ALIAS_TYPE : UxmlCompositeNodeType
         {
             public NAMESPACE_ALIAS_TYPE(XmlElementTypes types, int index)
-                : base("NAMESPACE_ALIAS", types, index)
+                : base("NAMESPACE_ALIAS", types, index, typeof(UxmlNamespaceAliasAttribute))
             {
             }
         

@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
     private sealed class CHAMELEON_DOCUMENT_BODY_INTERNAL : CompositeNodeType
     {
       public CHAMELEON_DOCUMENT_BODY_INTERNAL()
-        : base("CHAMELEON_DOCUMENT_BODY", CHAMELEON_DOCUMENT_BODY_INDEX, NodeTypeFlags.None)
+        : base("CHAMELEON_DOCUMENT_BODY", CHAMELEON_DOCUMENT_BODY_INDEX, typeof(ChameleonDocumentBody))
       {
       }
 
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
     
     private sealed class CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT : CompositeNodeWithArgumentType
     {
-      public CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT() : base("CHAMELEON_MAP_ENTRY_CONTENT", CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_INDEX)
+      public CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT() : base("CHAMELEON_MAP_ENTRY_CONTENT", CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_INDEX, typeof(ChameleonContentNode))
       {
       }
 
@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       public override CompositeElement Create(object message) => new ChameleonContentNode((ContentContext) message);
     }
 
-     public static readonly CompositeNodeType MAP_VALUE_CHAMELEON = new CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT();
+    public static readonly CompositeNodeType MAP_VALUE_CHAMELEON = new CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT();
 
     public const int CHAMELEON_DOCUMENT_BODY_INDEX = 3000;
     public const int CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_INDEX = 3001;

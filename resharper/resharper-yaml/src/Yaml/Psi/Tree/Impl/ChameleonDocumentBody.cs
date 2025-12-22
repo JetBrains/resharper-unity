@@ -36,6 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       OpenChameleonFrom(openedChameleon);
     }
 
+    public override NodeType NodeType => YamlChameleonElementTypes.CHAMELEON_DOCUMENT_BODY;
+
     public bool IsOpened
     {
       get
