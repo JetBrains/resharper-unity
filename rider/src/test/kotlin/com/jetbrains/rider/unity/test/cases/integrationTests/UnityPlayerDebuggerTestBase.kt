@@ -66,42 +66,42 @@ class UnityPlayerDebuggerTest {
     @UnityTestSettings(unityVersion = UnityVersion.V2022, unityBackend = UnityBackend.Mono)
     class TestMonoUnityBuild2022 : UnityPlayerDebuggerTestBase(){
         init {
-            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+            addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
     @UnityTestSettings(unityVersion = UnityVersion.V6, unityBackend = UnityBackend.Mono)
     class TestMonoUnityBuild6 : UnityPlayerDebuggerTestBase(){
         init {
-            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+            addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
     @UnityTestSettings(unityVersion = UnityVersion.V6_2, unityBackend = UnityBackend.Mono)
     class TestMonoUnityBuild6_2 : UnityPlayerDebuggerTestBase() {
         init {
-            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+            addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
     @UnityTestSettings(unityVersion = UnityVersion.V2022, unityBackend = UnityBackend.Il2CPP)
     class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase() {
         init {
-            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+            addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
     @UnityTestSettings(unityVersion = UnityVersion.V6, unityBackend = UnityBackend.Il2CPP)
     class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase() {
         init {
-            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+            addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
     @UnityTestSettings(unityVersion = UnityVersion.V6_2, unityBackend = UnityBackend.Il2CPP)
     class TestIL2CPPUnityBuild6_2 : UnityPlayerDebuggerTestBase() {
         init {
-            addMute(Mute("RIDER-127915", platforms = [PlatformType.MAC_OS_ALL]), ::checkBreakpoint)
+            addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 }
