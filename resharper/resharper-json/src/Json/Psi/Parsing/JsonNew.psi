@@ -5,6 +5,8 @@ options
 // Parser class name and namespace
   parserPackage="JetBrains.ReSharper.Plugins.Json.Psi.Gen";
   parserClassName="JsonNewParserGenerated";
+// Language type
+  languageType="JetBrains.ReSharper.Plugins.Json.Psi.JsonNewLanguage";
 // Strongly type the lexer we're using. ILexer<int> is the caching lexer instance
   "lexerClassName"="JetBrains.ReSharper.Psi.Parsing.ILexer<int>";
 // FQN of (non-generated) class that provides messages for the parser

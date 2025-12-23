@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
   {
   }
 
-  public static partial class YamlTokenType
+  public partial class YamlTokenType
   {
     public abstract class YamlTokenNodeType : TokenNodeType, IYamlTokenNodeType
     {

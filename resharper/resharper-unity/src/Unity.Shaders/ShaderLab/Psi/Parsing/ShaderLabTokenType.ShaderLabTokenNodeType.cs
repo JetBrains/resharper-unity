@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
         ShaderLabKeywordType GetKeywordType(ITreeNode placement); // recognize keyword type (i.e. command keyword, block command keyword etc for analysis and intentions)
     }
 
-    public static partial class ShaderLabTokenType
+    public partial class ShaderLabTokenType
     {
         public abstract class ShaderLabTokenNodeType : TokenNodeType, IShaderLabTokenNodeType
         {

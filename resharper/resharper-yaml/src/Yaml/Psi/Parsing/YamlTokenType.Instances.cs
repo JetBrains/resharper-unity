@@ -2,7 +2,7 @@
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
-  public static partial class YamlTokenType
+  public partial class YamlTokenType
   {
     public const int C_DOUBLE_QUOTED_MULTI_LINE_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 1;
     public const int C_DOUBLE_QUOTED_SINGLE_LINE_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 2;

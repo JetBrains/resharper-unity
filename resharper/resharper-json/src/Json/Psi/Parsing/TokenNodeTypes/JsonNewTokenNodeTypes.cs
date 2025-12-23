@@ -2,7 +2,7 @@
 
 namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes
 {
-    public static partial class JsonNewTokenNodeTypes
+    public partial class JsonNewTokenNodeTypes
     {
         public static readonly TokenNodeType BAD_CHARACTER = new JsonNewGenericTokenNodeType("BAD_CHARACTER", LAST_GENERATED_TOKEN_TYPE_INDEX + 1, "�");
 

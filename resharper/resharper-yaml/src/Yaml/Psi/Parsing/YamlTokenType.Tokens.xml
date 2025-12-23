@@ -20,6 +20,7 @@
   <BaseTokenNodeTypeIndex>1000</BaseTokenNodeTypeIndex>
   <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing</TokenTypeNamespace>
   <TokenTypeClass>YamlTokenType</TokenTypeClass>
+  <LanguageType>JetBrains.ReSharper.Plugins.Yaml.Psi.YamlLanguage</LanguageType>
 
   <Tokens NodeType="FixedTokenNodeType">
     <Token name="AMP" representation="&amp;" />

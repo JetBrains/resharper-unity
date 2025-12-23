@@ -7,6 +7,9 @@
   parserPackage="JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Gen";
   parserClassName="ShaderLabParserGenerated";
 
+  // Language type
+  languageType="JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.ShaderLabLanguage";
+
   // Strongly type the lexer we're using. ILexer<int> is the caching lexer instance
   "lexerClassName"="JetBrains.ReSharper.Psi.Parsing.ILexer<int>";
 

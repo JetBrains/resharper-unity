@@ -1,10 +1,12 @@
 ﻿using System;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.TreeBuilder;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
 {
-  public static class YamlChameleonElementTypes
+  [Language(typeof(YamlLanguage))]
+  public class YamlChameleonElementTypes : INodeTypesInitializer
   {
     // ReSharper disable once InconsistentNaming
     private sealed class CHAMELEON_DOCUMENT_BODY_INTERNAL : CompositeNodeType

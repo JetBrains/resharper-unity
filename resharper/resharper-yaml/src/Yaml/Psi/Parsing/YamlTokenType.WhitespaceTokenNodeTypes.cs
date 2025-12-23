@@ -5,7 +5,7 @@ using JetBrains.Text;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
-  public static partial class YamlTokenType
+  public partial class YamlTokenType
   {
     private sealed class WhitespaceNodeType : YamlTokenNodeType
     {

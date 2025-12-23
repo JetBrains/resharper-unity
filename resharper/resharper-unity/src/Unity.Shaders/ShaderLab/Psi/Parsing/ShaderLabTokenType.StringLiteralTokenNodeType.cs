@@ -6,7 +6,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 {
-    public static partial class ShaderLabTokenType
+    public partial class ShaderLabTokenType
     {
         private sealed class StringLiteralNodeType : ShaderLabTokenNodeType
         {

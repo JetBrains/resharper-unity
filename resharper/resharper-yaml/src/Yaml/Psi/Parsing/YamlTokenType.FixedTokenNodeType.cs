@@ -5,7 +5,7 @@ using JetBrains.Text;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
-  public static partial class YamlTokenType
+  public partial class YamlTokenType
   {
     // A fixed length token node type, e.g. keyword, symbol, etc.
     private sealed class FixedTokenNodeType : YamlTokenNodeType

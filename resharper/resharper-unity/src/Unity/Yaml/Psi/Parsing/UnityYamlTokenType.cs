@@ -6,7 +6,8 @@ using JetBrains.Text;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 {
-    public class UnityYamlTokenType
+    [Language(typeof(UnityYamlLanguage))]
+    public class UnityYamlTokenType : INodeTypesInitializer
     {
         private class UnityDocumentTokenType : YamlTokenType.YamlTokenNodeType
         {

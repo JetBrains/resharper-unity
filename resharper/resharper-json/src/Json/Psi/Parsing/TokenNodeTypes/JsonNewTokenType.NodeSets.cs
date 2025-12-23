@@ -2,7 +2,7 @@
 
 namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes
 {
-    public static partial class JsonNewTokenNodeTypes
+    public partial class JsonNewTokenNodeTypes
     {
         public static readonly NodeTypeSet LITERALS;
         public static readonly NodeTypeSet COMMENTS_AND_WHITESPACES;

@@ -6,6 +6,9 @@ options {
   parserPackage="JetBrains.ReSharper.Plugins.Yaml.Psi.Gen";
   parserClassName="YamlParserGenerated";
 
+  // Language type
+  languageType="JetBrains.ReSharper.Plugins.Yaml.Psi.YamlLanguage";
+
   // Strongly type the lexer we're using. ILexer<int> is the caching lexer instance
   "lexerClassName"="JetBrains.ReSharper.Psi.Parsing.ILexer<int>";
 

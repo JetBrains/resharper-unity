@@ -20,6 +20,7 @@
   <BaseTokenNodeTypeIndex>1000</BaseTokenNodeTypeIndex>
   <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing</TokenTypeNamespace>
   <TokenTypeClass>ShaderLabTokenType</TokenTypeClass>
+  <LanguageType>JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.ShaderLabLanguage</LanguageType>
 
   <!-- CG_INCLUDE/CG_PROGRAM et al are handled by a pre-processor. *INCLUDE can be anywhere in the
        file, and are simply removed by the pre-processor. When *PROGRAM is processed by the shader

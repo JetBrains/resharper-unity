@@ -20,6 +20,7 @@
   <BaseTokenNodeTypeIndex>1000</BaseTokenNodeTypeIndex>
   <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes</TokenTypeNamespace>
   <TokenTypeClass>JsonNewTokenNodeTypes</TokenTypeClass>
+  <LanguageType>JetBrains.ReSharper.Plugins.Json.Psi.JsonNewLanguage</LanguageType>
 
   <Tokens NodeType="JsonNewFixedLengthTokenNodeType">
     <Token name="LBRACE" representation="{" />
