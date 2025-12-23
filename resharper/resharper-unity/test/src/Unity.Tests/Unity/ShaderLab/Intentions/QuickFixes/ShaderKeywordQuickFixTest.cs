@@ -21,7 +21,7 @@ public class ShaderKeywordQuickFixTest : QuickFixTestBase<ShaderKeywordQuickFix>
 
     protected override string RelativeTestDataPath=> @"ShaderLab\Intentions\QuickFixes\ShaderKeyword";
 
-    protected override bool DumpBulbText => true;
+    protected override bool DumpBulbActionText => true;
 
     [TestCase("Test01.shader")]
     [TestCase("Test02.shader")]

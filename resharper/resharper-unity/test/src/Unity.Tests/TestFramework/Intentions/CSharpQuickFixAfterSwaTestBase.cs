@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
             }
         }
 
-        protected override QuickFixInstance? CreateBulbAction(IProject project, ITextControl textControl)
+        protected override QuickFixInstance? CreateBulbActionOwner(IProject project, ITextControl textControl)
         {
             var solution = project.GetSolution();
             var solutionAnalysisService = solution.GetComponent<SolutionAnalysisService>();
@@ -37,17 +37,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
 
                 using (SyncReanalyzeCookie.Create(solution.Locks, SolutionAnalysisManager.GetInstance(solution)))
                 {
-                    var errorInfo = RunErrorFinder(project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
+                    var errorInfo = RunErrorInfoFinderByQuickFixType(project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
                     var quickFixes = Shell.Instance.GetComponent<IQuickFixes>();
 
                     return quickFixes.InstantiateQuickFixNoAvailabilityCheck(errorInfo, typeof(TQuickFix));
                 }
             }
-        }
-
-        protected override void OnQuickFixNotAvailable(ITextControl textControl, QuickFixInstance action)
-        {
-            textControl.PutData(TextControlBannerKey, "NOT_AVAILABLE\r\n");
         }
     }
 }
