@@ -1,3 +1,4 @@
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.SolutionAnalysis;
@@ -37,9 +38,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
 
                 using (SyncReanalyzeCookie.Create(solution.Locks, SolutionAnalysisManager.GetInstance(solution)))
                 {
-                    var errorInfo = RunErrorInfoFinderByQuickFixType(project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
-                    var quickFixes = Shell.Instance.GetComponent<IQuickFixes>();
+                    var errorInfo = RunErrorInfoFinderByQuickFixType(
+                        project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
+                    if (errorInfo is null) return null;
 
+                    var quickFixes = Shell.Instance.GetComponent<IQuickFixes>();
                     return quickFixes.InstantiateQuickFixNoAvailabilityCheck(errorInfo, typeof(TQuickFix));
                 }
             }
