@@ -2,5 +2,5 @@
 
 public class Foo : MonoBehaviour
 {
-    [Range(0, 1{caret})] public int myValue;
+    [Range({spotstart#1}0{spotend#1}, {spotstart#2}1{spotend#2}{caret})] public int myValue;
 }

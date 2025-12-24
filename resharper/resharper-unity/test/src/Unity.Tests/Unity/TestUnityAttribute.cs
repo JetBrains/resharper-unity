@@ -44,13 +44,19 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
     // ReSharper restore InconsistentNaming
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class TestUnityAttribute : TestAspectAttribute, ITestPackagesProvider,
-        ITestFlavoursProvider, ITestTargetFrameworkIdProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute, IReuseSolutionScopeAttribute
+    public class TestUnityAttribute : TestAspectAttribute,
+        ITestPackagesProvider,
+        ITestFlavoursProvider,
+        ITestTargetFrameworkIdProvider,
+        ITestFileExtensionProvider,
+        ICustomProjectPropertyAttribute,
+        IReuseSolutionScopeAttribute,
+        ITestDataPackagesProvider
     {
         private static readonly Version ourDefaultVersion = ToVersion(UnityVersion.DefaultTestVersion);
         private static readonly Version ourMinNetworkingVersion = new(5, 5);
         private static readonly Version ourMaxNetworkingVersion = new(2018, 4, int.MaxValue);
-        
+
         private readonly Version myVersion;
 
         public TestUnityAttribute() : this(ourDefaultVersion) { }
@@ -71,11 +77,16 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
             return TargetFrameworkId.Create(FrameworkIdentifier.NetFramework, new Version(4, 0));
         }
 
-        public IEnumerable<PackageDependency> GetPackages(TargetFrameworkId? targetFrameworkId)
+        IEnumerable<PackageDependency> ITestPackagesProvider.GetPackages(TargetFrameworkId? targetFrameworkId)
         {
             // unlisted on nuget.org
             return from name in GetPackageNames()
                 select TestPackagesAttribute.ParsePackageDependency(name);
+        }
+
+        IEnumerable<PackageDependency> ITestDataPackagesProvider.GetPackages(TargetFrameworkId? targetFrameworkId)
+        {
+            return [];
         }
 
         private IEnumerable<string> GetPackageNames()
@@ -97,7 +108,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
             return new[] {UnityProjectFlavor.UnityProjectFlavorGuid};
         }
 
-        public bool Inherits => false;
+        bool ITestTargetFrameworkIdProvider.Inherits => false;
+
+        bool ITestFlavoursProvider.Inherits => false;
+
+        bool ITestPackagesProvider.Inherits => false;
+
+        bool ITestDataPackagesProvider.Inherits => false;
+
         public string Extension => CSharpProjectFileType.CS_EXTENSION;
 
         public string DefineConstants

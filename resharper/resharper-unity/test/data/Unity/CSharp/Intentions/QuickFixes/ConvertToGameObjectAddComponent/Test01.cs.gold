@@ -4,6 +4,6 @@ public class Foo : MonoBehaviour
 {
     public static void DoSomething()
     {
-        var foo = {selstart}gameObject{selend}.AddComponent<Foo>();
+        var foo = {spotstart#1}gameObject{spotend#1}{caret}.AddComponent<Foo>();
     }
 }

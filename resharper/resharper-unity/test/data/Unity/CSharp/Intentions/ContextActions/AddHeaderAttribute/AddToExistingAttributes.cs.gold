@@ -2,5 +2,5 @@
 
 public class Foo : MonoBehaviour
 {
-    [Header("myValue{caret}")] [SerializeField] public int myValue;
+    [Header("{spotstart#1}myValue{spotend#1}{caret}")] [SerializeField] public int myValue;
 }
