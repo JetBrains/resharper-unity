@@ -1022,7 +1022,7 @@ ppLineDirective
 //
 // **************************************************************************
 
-shaderLabFile options { stubBase="ShaderLabFileElement"; elementTypeFlags="File"; }
+shaderLabFile options { stubBase="ShaderLabFileElement"; }
 :
   shaderCommand<SHADER_LAB_COMMAND, Command>
 ;
