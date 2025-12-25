@@ -173,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         Advance();
       myBuilder.AlterToken(mark2, YamlTokenType.CHAMELEON);
 
-      Done(mark, YamlChameleonElementTypes.CHAMELEON_DOCUMENT_BODY);
+      Done(mark, ElementType.CHAMELEON_DOCUMENT_BODY);
     }
 
     public void ParseDocumentBody()
@@ -548,7 +548,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         {
           var valueMark = MarkNoSkipWhitespace();
           Advance();
-          myBuilder.Done(valueMark, YamlChameleonElementTypes.MAP_VALUE_CHAMELEON,
+          myBuilder.Done(valueMark, ElementType.MAP_VALUE_CHAMELEON,
             new ContentContext(myCurrentLineIndent, ((YamlTokenType.ChameleonTokenNodeType)currentToken).LexerIndent, expectedIndent));
         }
         else if (!myBuilder.Eof())
