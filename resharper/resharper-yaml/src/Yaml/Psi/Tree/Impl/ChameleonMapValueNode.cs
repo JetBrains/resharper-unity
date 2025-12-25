@@ -42,8 +42,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       myExpectedIndent = data.ExpectedIndent;
     }
 
-    public override NodeType NodeType => YamlChameleonElementTypes.MAP_VALUE_CHAMELEON;
-
     public bool IsOpened
     {
       get
