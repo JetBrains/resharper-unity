@@ -7,7 +7,7 @@ namespace DefaultNamespace
         public void Test()
         {
           var ray = new Ray();
-          var size = Physics.RaycastNonAlloc(ray, {selstart}results{selend});
+          var size = Physics.RaycastNonAlloc(ray, {spotstart#1}{selstart}results{spotend#1}{selend});
         }
     }
 }

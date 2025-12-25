@@ -86,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
 
         IEnumerable<PackageDependency> ITestDataPackagesProvider.GetPackages(TargetFrameworkId? targetFrameworkId)
         {
-            return [];
+            return TestPlatformAttribute.GetCompatiblePackages(GetTargetFrameworkId());
         }
 
         private IEnumerable<string> GetPackageNames()

@@ -6,7 +6,7 @@ namespace DefaultNamespace
     {
         public void Test()
         {
-          var size = Physics.OverlapBoxNonAlloc(Vector3.zero, new Vector3(1, 1, 1), {selstart}results{selend}, Quaternion.identity, layerMask: 0, queryTriggerInteraction: QueryTriggerInteraction.Collide);
+          var size = Physics.OverlapBoxNonAlloc(Vector3.zero, new Vector3(1, 1, 1), {spotstart#1}{selstart}results{spotend#1}{selend}, Quaternion.identity, layerMask: 0, queryTriggerInteraction: QueryTriggerInteraction.Collide);
         }
     }
 }

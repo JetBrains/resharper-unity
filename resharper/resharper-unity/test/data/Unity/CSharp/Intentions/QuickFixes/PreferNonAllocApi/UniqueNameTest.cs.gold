@@ -8,7 +8,7 @@ namespace DefaultNamespace
         {
             var size = 0;
             Collider[] results = null;
-            var size1 = Physics.OverlapBoxNonAlloc(Vector3.zero, new Vector3(1, 1, 1), {selstart}results1{selend}, Quaternion.identity, 0, QueryTriggerInteraction.Collide);
+            var size1 = Physics.OverlapBoxNonAlloc(Vector3.zero, new Vector3(1, 1, 1), {spotstart#1}{selstart}results1{spotend#1}{selend}, Quaternion.identity, 0, QueryTriggerInteraction.Collide);
         }
     }
 }
