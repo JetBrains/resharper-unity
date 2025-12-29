@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.filter
 import kotlin.collections.forEach
 import kotlin.collections.mutableListOf
+import kotlin.io.path.exists
+import kotlin.io.path.readText
 import kotlin.text.contains
 
 open class BaseTestWithUnitySetup : PerTestSolutionTestBase() {
@@ -31,7 +33,7 @@ open class BaseTestWithUnitySetup : PerTestSolutionTestBase() {
             args.add(getEngineExecutableInstallationPath(unityVersion).canonicalPath.toString())
             val logFile = TestLoggerHelper.getClassLogDirectory(javaClass).resolve("UnityEditorCheck.log")
             val unityArgs = addArgsForUnityProcess(
-                logPath = logFile,
+                logPath = logFile.toFile(),
                 resetEditorPrefs = false,
                 useRiderTestPath = false,
                 batchMode = true,

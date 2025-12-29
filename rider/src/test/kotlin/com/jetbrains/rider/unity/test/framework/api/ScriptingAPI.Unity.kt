@@ -168,7 +168,7 @@ fun TestProcessor<*>.startUnity(project: Project,
                                         resetEditorPrefs: Boolean,
                                         useRiderTestPath: Boolean,
                                         batchMode: Boolean) =
-    startUnity(project, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
+    startUnity(project, testMethod.logDirectory.resolve("UnityEditor.log").toFile(), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 
 fun TestProcessor<*>.startUnity(executable: String,
                                         projectPath: String,
@@ -178,7 +178,7 @@ fun TestProcessor<*>.startUnity(executable: String,
                                         batchMode: Boolean,
                                         generateSolution: Boolean = false): ProcessHandle {
     val args = mutableListOf(executable).withProjectPath(projectPath)
-    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode,
+    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log").toFile(), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode,
                       generateSolution)
 }
 
@@ -367,7 +367,7 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
     var session: XDebugSession? = null
 
     try {
-        val pair = startUnityStandaloneProject(playerFile, testMethod.logDirectory.resolve("UnityPlayer.log"))
+        val pair = startUnityStandaloneProject(playerFile, testMethod.logDirectory.resolve("UnityPlayer.log").toFile())
         val unityProcess: UnityProcess? = pair.first
         startGameExecutable = pair.second
 

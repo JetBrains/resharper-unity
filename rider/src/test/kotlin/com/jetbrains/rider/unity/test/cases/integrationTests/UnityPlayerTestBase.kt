@@ -29,6 +29,7 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.pathString
 import kotlin.test.assertNotNull
 
 abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
@@ -80,13 +81,13 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
             "-batchmode", "-quit",
             "-projectPath", unityProjectPath.absolutePath,
             "-executeMethod", "BuildScript.Build",
-            "-logFile", buildLogFile.canonicalPath,
+            "-logFile", buildLogFile.toRealPath().pathString,
             "-buildTarget", buildTarget,
             "-backend", unityBackend.toString()
         ).start()
         try {
             process.waitFor(5, TimeUnit.MINUTES)
-            assert(process.exitValue() == 0) { "Unity Build failed! Check logs at: ${buildLogFile.canonicalPath}" }
+            assert(process.exitValue() == 0) { "Unity Build failed! Check logs at: ${buildLogFile.toRealPath().pathString}" }
             // On macOS need to explicitly allow listening to the incoming connections
             if (OS.CURRENT == OS.macOS) {
                 unityPlayerFile = getPlayerFile()
