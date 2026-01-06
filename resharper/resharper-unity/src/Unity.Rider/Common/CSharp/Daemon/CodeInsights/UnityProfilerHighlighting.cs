@@ -1,9 +1,10 @@
+#nullable enable
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.TextControl.DocumentMarkup;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsights;
 
 [RegisterHighlighter(
      ID,
