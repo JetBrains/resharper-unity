@@ -6,17 +6,17 @@ namespace CommentRootsTests
     {
 
         // ReSharper restore Unity.PerformanceCriticalContext
-        |public static void F1()
+        public static void |F1|(0)()
         {
-            |F2|(0)();
+            |F2|(1)();
             F3();
-            |GetComponent|(1)<int>();
-        }|(2)
+            |GetComponent|(2)<int>();
+        }
         
         // ReSharper restore Unity.ExpensiveCode
-        |public void F2()
+        public void |F2|(3)()
         {
-        }|(3)
+        }
 
         // ReSharper disable Unity.PerformanceAnalysis
         public void F3()
@@ -26,7 +26,7 @@ namespace CommentRootsTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (3): ReSharper Unity Performance Critical Line Marker: Performance-critical context

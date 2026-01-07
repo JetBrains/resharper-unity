@@ -5,24 +5,24 @@ namespace DefaultNamespace
     public class UnityObjectEqTest : MonoBehaviour
     {
         private GameObject gameObject = null;
-        |public void Update()
+        public void |Update|(0)()
         {
-            |IndirectCostly|(0)();
-        }|(1)
+            |IndirectCostly|(1)();
+        }
 
-        |private void IndirectCostly()
+        private void |IndirectCostly|(2)()
         {
-            if (gameObject |==|(2) null)
+            if (gameObject |==|(3) null)
             {
-                |GetComponent|(3)<Transform>();
+                |GetComponent|(4)<Transform>();
                 // smth..
             }
-        }|(4)
+        }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(1): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(2): ReSharper Unity Expensive Null Comparison: Comparison to 'null' is expensive
-(3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(4): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(3): ReSharper Unity Expensive Null Comparison: Comparison to 'null' is expensive
+(4): ReSharper Unity Expensive Method Invocation: Expensive method invocation

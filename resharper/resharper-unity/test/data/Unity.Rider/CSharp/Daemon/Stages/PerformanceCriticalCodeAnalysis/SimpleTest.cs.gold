@@ -5,27 +5,27 @@ namespace DefaultNamespace
     public class SimpleTest : MonoBehaviour
     {
         private RigidBody2D myRigidBody2D;
-        |public void Update()
+        public void |Update|(0)()
         {
             if (myRigidBody2D == null)
             {
-                myRigidBody2D = |GetComponent|(0)<RigidBody2D>();
+                myRigidBody2D = |GetComponent|(1)<RigidBody2D>();
             }
             
-            Debug.|Log|(1)("");
-            Debug.|LogFormat|(2)("");
-            Debug.|LogError|(3)("");
-            Debug.|LogErrorFormat|(4)("");
-            Debug.|LogException|(5)("");
-            Debug.|LogWarning|(6)("");
-            Debug.|LogWarningFormat|(7)("");
-            Debug.|LogAssertion|(8)("");
-            Debug.|LogAssertionFormat|(9)("");
-        }|(10)
+            Debug.|Log|(2)("");
+            Debug.|LogFormat|(3)("");
+            Debug.|LogError|(4)("");
+            Debug.|LogErrorFormat|(5)("");
+            Debug.|LogException|(6)("");
+            Debug.|LogWarning|(7)("");
+            Debug.|LogWarningFormat|(8)("");
+            Debug.|LogAssertion|(9)("");
+            Debug.|LogAssertionFormat|(10)("");
+        }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -35,4 +35,4 @@ namespace DefaultNamespace
 (7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (8): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(10): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(10): ReSharper Unity Expensive Method Invocation: Expensive method invocation

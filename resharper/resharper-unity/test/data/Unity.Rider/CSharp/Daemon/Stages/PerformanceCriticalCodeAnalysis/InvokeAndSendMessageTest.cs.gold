@@ -22,114 +22,114 @@ public class Test : MonoBehaviour
         gameObject.BroadcastMessage("Message", SendMessageOptions.RequireReceiver);
     }
 
-    |private void IndirectlyCalled()
+    private void |IndirectlyCalled|(0)()
     {
-        |Invoke|(0)("MessageIC", 5f);
-        myOther.|Invoke|(1)("MessageIC", 5f);
+        |Invoke|(1)("MessageIC", 5f);
+        myOther.|Invoke|(2)("MessageIC", 5f);
 
-        |InvokeRepeating|(2)("MessageIC", 5f, 2f);
-        myOther.|InvokeRepeating|(3)("MessageIC", 5f, 2f);
+        |InvokeRepeating|(3)("MessageIC", 5f, 2f);
+        myOther.|InvokeRepeating|(4)("MessageIC", 5f, 2f);
 
-        gameObject.|SendMessage|(4)("MessageIC");
-        gameObject.|SendMessage|(5)("MessageIC", SendMessageOptions.RequireReceiver);
+        gameObject.|SendMessage|(5)("MessageIC");
+        gameObject.|SendMessage|(6)("MessageIC", SendMessageOptions.RequireReceiver);
 
-        gameObject.|SendMessageUpwards|(6)("MessageIC");
-        gameObject.|SendMessageUpwards|(7)("MessageIC", SendMessageOptions.RequireReceiver);
+        gameObject.|SendMessageUpwards|(7)("MessageIC");
+        gameObject.|SendMessageUpwards|(8)("MessageIC", SendMessageOptions.RequireReceiver);
 
-        gameObject.|BroadcastMessage|(8)("MessageIC");
-        gameObject.|BroadcastMessage|(9)("MessageIC", SendMessageOptions.RequireReceiver);
-    }|(10)
+        gameObject.|BroadcastMessage|(9)("MessageIC");
+        gameObject.|BroadcastMessage|(10)("MessageIC", SendMessageOptions.RequireReceiver);
+    }
 
-    |public void FixedUpdate()
+    public void |FixedUpdate|(11)()
     {
-        |Invoke|(11)("MessageFU", 5f);
-        myOther.|Invoke|(12)("MessageFU", 5f);
+        |Invoke|(12)("MessageFU", 5f);
+        myOther.|Invoke|(13)("MessageFU", 5f);
 
-        |InvokeRepeating|(13)("MessageFU", 5f, 2f);
-        myOther.|InvokeRepeating|(14)("MessageFU", 5f, 2f);
+        |InvokeRepeating|(14)("MessageFU", 5f, 2f);
+        myOther.|InvokeRepeating|(15)("MessageFU", 5f, 2f);
 
-        gameObject.|SendMessage|(15)("MessageFU");
-        gameObject.|SendMessage|(16)("MessageFU", SendMessageOptions.RequireReceiver);
+        gameObject.|SendMessage|(16)("MessageFU");
+        gameObject.|SendMessage|(17)("MessageFU", SendMessageOptions.RequireReceiver);
 
-        gameObject.|SendMessageUpwards|(17)("MessageFU");
-        gameObject.|SendMessageUpwards|(18)("MessageFU", SendMessageOptions.RequireReceiver);
+        gameObject.|SendMessageUpwards|(18)("MessageFU");
+        gameObject.|SendMessageUpwards|(19)("MessageFU", SendMessageOptions.RequireReceiver);
 
-        gameObject.|BroadcastMessage|(19)("MessageFU");
-        gameObject.|BroadcastMessage|(20)("MessageFU", SendMessageOptions.RequireReceiver);
+        gameObject.|BroadcastMessage|(20)("MessageFU");
+        gameObject.|BroadcastMessage|(21)("MessageFU", SendMessageOptions.RequireReceiver);
 
-        |IndirectlyCalled|(21)();
-    }|(22)
+        |IndirectlyCalled|(22)();
+    }
 
-    |public void Update()
+    public void |Update|(23)()
     {
-        |Invoke|(23)("MessageCalledSeveralTimesFromPCC", 5f);
-        myOther.|Invoke|(24)("MessageCalledSeveralTimesFromPCC", 5f);
+        |Invoke|(24)("MessageCalledSeveralTimesFromPCC", 5f);
+        myOther.|Invoke|(25)("MessageCalledSeveralTimesFromPCC", 5f);
 
-        |InvokeRepeating|(25)("MessageCalledSeveralTimesFromPCC", 5f, 2f);
-        myOther.|InvokeRepeating|(26)("MessageCalledSeveralTimesFromPCC", 5f, 2f);
+        |InvokeRepeating|(26)("MessageCalledSeveralTimesFromPCC", 5f, 2f);
+        myOther.|InvokeRepeating|(27)("MessageCalledSeveralTimesFromPCC", 5f, 2f);
 
-        gameObject.|SendMessage|(27)("MessageCalledSeveralTimesFromPCC");
-        gameObject.|SendMessage|(28)("MessageCalledSeveralTimesFromPCC", SendMessageOptions.RequireReceiver);
+        gameObject.|SendMessage|(28)("MessageCalledSeveralTimesFromPCC");
+        gameObject.|SendMessage|(29)("MessageCalledSeveralTimesFromPCC", SendMessageOptions.RequireReceiver);
 
-        gameObject.|SendMessageUpwards|(29)("MessageCalledSeveralTimesFromPCC");
-        gameObject.|SendMessageUpwards|(30)("MessageCalledSeveralTimesFromPCC", SendMessageOptions.RequireReceiver);
+        gameObject.|SendMessageUpwards|(30)("MessageCalledSeveralTimesFromPCC");
+        gameObject.|SendMessageUpwards|(31)("MessageCalledSeveralTimesFromPCC", SendMessageOptions.RequireReceiver);
 
-        gameObject.|BroadcastMessage|(31)("MessageCalledSeveralTimesFromPCC");
-        gameObject.|BroadcastMessage|(32)("MessageCalledSeveralTimesFromPCC", SendMessageOptions.RequireReceiver);
-    }|(33)
+        gameObject.|BroadcastMessage|(32)("MessageCalledSeveralTimesFromPCC");
+        gameObject.|BroadcastMessage|(33)("MessageCalledSeveralTimesFromPCC", SendMessageOptions.RequireReceiver);
+    }
 
-    |public void LateUpdate()
+    public void |LateUpdate|(34)()
     {
-        |Invoke|(34)("MessageFromPCC_1", 5f);
-        myOther.|Invoke|(35)("MessageFromPCC_2", 5f);
+        |Invoke|(35)("MessageFromPCC_1", 5f);
+        myOther.|Invoke|(36)("MessageFromPCC_2", 5f);
 
-        |InvokeRepeating|(36)("MessageFromPCC_3", 5f, 2f);
-        myOther.|InvokeRepeating|(37)("MessageFromPCC_4", 5f, 2f);
+        |InvokeRepeating|(37)("MessageFromPCC_3", 5f, 2f);
+        myOther.|InvokeRepeating|(38)("MessageFromPCC_4", 5f, 2f);
 
-        gameObject.|SendMessage|(38)("MessageFromPCC_5");
-        gameObject.|SendMessage|(39)("MessageFromPCC_6", SendMessageOptions.RequireReceiver);
+        gameObject.|SendMessage|(39)("MessageFromPCC_5");
+        gameObject.|SendMessage|(40)("MessageFromPCC_6", SendMessageOptions.RequireReceiver);
 
-        gameObject.|SendMessageUpwards|(40)("MessageFromPCC_7");
-        gameObject.|SendMessageUpwards|(41)("MessageFromPCC_8", SendMessageOptions.RequireReceiver);
+        gameObject.|SendMessageUpwards|(41)("MessageFromPCC_7");
+        gameObject.|SendMessageUpwards|(42)("MessageFromPCC_8", SendMessageOptions.RequireReceiver);
 
-        gameObject.|BroadcastMessage|(42)("MessageFromPCC_9");
-        gameObject.|BroadcastMessage|(43)("MessageFromPCC_10", SendMessageOptions.RequireReceiver);
-    }|(44)
+        gameObject.|BroadcastMessage|(43)("MessageFromPCC_9");
+        gameObject.|BroadcastMessage|(44)("MessageFromPCC_10", SendMessageOptions.RequireReceiver);
+    }
 
     public void Message()
     {
     }
 
-    |public void MessageFU()
+    public void |MessageFU|(45)()
     {
         
-    }|(45)
+    }
 
-    |public void MessageIC()
+    public void |MessageIC|(46)()
     {
         
-    }|(46)
+    }
     
-    |public void MessageFromStartInvokeRepeating()
+    public void |MessageFromStartInvokeRepeating|(47)()
     {
         
-    }|(47)
+    }
     
-    |public void MessageCalledSeveralTimesFromPCC()
+    public void |MessageCalledSeveralTimesFromPCC|(48)()
     {
-    }|(48)
+    }
     
-    |public void MessageFromPCC_1()
+    public void |MessageFromPCC_1|(49)()
     {
-    }|(49)
+    }
     
     public void MessageFromPCC_2()
     {
     }
     
-    |public void MessageFromPCC_3()
+    public void |MessageFromPCC_3|(50)()
     {
-    }|(50)
+    }
     
     public void MessageFromPCC_4()
     {
@@ -161,7 +161,7 @@ public class Test : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -171,8 +171,8 @@ public class Test : MonoBehaviour
 (7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (8): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(10): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(11): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(10): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(11): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (12): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (13): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (14): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -183,8 +183,8 @@ public class Test : MonoBehaviour
 (19): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (20): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (21): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(22): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(23): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(22): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(23): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (24): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (25): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (26): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -194,8 +194,8 @@ public class Test : MonoBehaviour
 (30): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (31): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (32): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(33): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(34): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(33): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(34): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (35): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (36): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (37): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -205,7 +205,7 @@ public class Test : MonoBehaviour
 (41): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (42): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (43): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(44): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(44): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (45): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (46): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (47): ReSharper Unity Performance Critical Line Marker: Performance-critical context

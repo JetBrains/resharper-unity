@@ -190,71 +190,79 @@ static class NotSerialisableStaticClass
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): UnityCodeInsights: Script | Script | Unity script
+(1): Unity Gutter Icon: Unity script
 (2): ReSharper Unity Implicitly Used Identifier: 
-(3): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(3): Unity Gutter Icon: This field is initialized from Inspector
 (4): ReSharper Unity Implicitly Used Identifier: 
-(5): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(5): Unity Gutter Icon: This field is initialized from Inspector
 (6): ReSharper Unity Implicitly Used Identifier: 
-(7): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(7): Unity Gutter Icon: This field is initialized from Inspector
 (8): ReSharper Unity Implicitly Used Identifier: 
-(9): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(9): Unity Gutter Icon: This field is initialized from Inspector
 (10): ReSharper Unity Implicitly Used Identifier: 
-(11): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(11): Unity Gutter Icon: This field is initialized from Inspector
 (12): ReSharper Unity Implicitly Used Identifier: 
-(13): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(13): Unity Gutter Icon: This field is initialized from Inspector
 (14): ReSharper Unity Implicitly Used Identifier: 
-(15): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(15): Unity Gutter Icon: This field is initialized from Inspector
 (16): ReSharper Unity Implicitly Used Identifier: 
-(17): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(17): Unity Gutter Icon: This field is initialized from Inspector
 (18): ReSharper Unity Implicitly Used Identifier: 
-(19): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(19): Unity Gutter Icon: This field is initialized from Inspector
 (20): ReSharper Unity Implicitly Used Identifier: 
-(21): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(21): Unity Gutter Icon: This field is initialized from Inspector
 (22): ReSharper Unity Implicitly Used Identifier: 
-(23): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(23): Unity Gutter Icon: This field is initialized from Inspector
 (24): ReSharper Unity Implicitly Used Identifier: 
-(25): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(25): Unity Gutter Icon: This field is initialized from Inspector
 (26): ReSharper Unity Implicitly Used Identifier: 
-(27): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(27): Unity Gutter Icon: This field is initialized from Inspector
 (28): ReSharper Unity Implicitly Used Identifier: 
-(29): UnityCodeInsights: Event function | Event function | Called when a GameObject or component is about to be destroyed.
+(29): Unity Gutter Icon: Unity event function
+
+Called when a GameObject or component is about to be destroyed.
 (30): ReSharper Unity Implicitly Used Identifier: 
-(31): UnityCodeInsights: Event function | Event function | Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
+(31): Unity Gutter Icon: Unity event function
+
+Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
+This function can be a coroutine.
 (32): ReSharper Unity Implicitly Used Identifier: 
-(33): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
-(34): UnityCodeInsights: Used implicitly | Used implicitly | Called when Unity first launches the editor or the player, or when it recompiles scripts
+(33): Unity Gutter Icon: Unity event function
+
+OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
+This function can be a coroutine.
+(34): Unity Gutter Icon: Called when Unity first launches the editor or the player, or when it recompiles scripts
 (35): ReSharper Unity Implicitly Used Identifier: 
-(36): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(36): Unity Gutter Icon: This field is serialized by Unity
 (37): ReSharper Unity Implicitly Used Identifier: 
-(38): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(38): Unity Gutter Icon: This field is serialized by Unity
 (39): ReSharper Unity Implicitly Used Identifier: 
-(40): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(40): Unity Gutter Icon: This field is serialized by Unity
 (41): ReSharper Unity Implicitly Used Identifier: 
-(42): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(42): Unity Gutter Icon: This field is serialized by Unity
 (43): ReSharper Unity Implicitly Used Identifier: 
-(44): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(44): Unity Gutter Icon: This field is serialized by Unity
 (45): ReSharper Unity Implicitly Used Identifier: 
-(46): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(46): Unity Gutter Icon: This field is serialized by Unity
 (47): ReSharper Unity Implicitly Used Identifier: 
-(48): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(48): Unity Gutter Icon: This field is serialized by Unity
 (49): ReSharper Unity Implicitly Used Identifier: 
-(50): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(50): Unity Gutter Icon: This field is serialized by Unity
 (51): ReSharper Unity Implicitly Used Identifier: 
-(52): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(52): Unity Gutter Icon: This field is serialized by Unity
 (53): ReSharper Unity Implicitly Used Identifier: 
-(54): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(54): Unity Gutter Icon: This field is serialized by Unity
 (55): ReSharper Unity Implicitly Used Identifier: 
-(56): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(56): Unity Gutter Icon: This field is serialized by Unity
 (57): ReSharper Unity Implicitly Used Identifier: 
-(58): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(58): Unity Gutter Icon: This field is serialized by Unity
 (59): ReSharper Unity Implicitly Used Identifier: 
-(60): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(60): Unity Gutter Icon: This field is serialized by Unity
 (61): ReSharper Unity Implicitly Used Identifier: 
-(62): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(62): Unity Gutter Icon: This field is serialized by Unity
 (63): ReSharper Unity Implicitly Used Identifier: 
-(64): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(64): Unity Gutter Icon: This field is serialized by Unity
 (65): ReSharper Unity Implicitly Used Identifier: 
-(66): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(66): Unity Gutter Icon: This field is serialized by Unity
 (67): ReSharper Unity Implicitly Used Identifier: 
-(68): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(68): Unity Gutter Icon: This field is serialized by Unity

@@ -7,39 +7,39 @@ namespace DefaultNamespace
   {
     private Action action = AnotherMethodName;
 
-    |private static void AnotherMethodName()
+    private static void |AnotherMethodName|(0)()
     {
       var test = new CommonTest();
-      test.|AnotherMethodNameA|(0)();
-    }|(1)
+      test.|AnotherMethodNameA|(1)();
+    }
 
-    |private void AnotherMethodNameA()
+    private void |AnotherMethodNameA|(2)()
     {
-      |Test|(2)();
+      |Test|(3)();
 
       void F()
       {
-        |GetComponent|(3)<CommonTest>();
+        |GetComponent|(4)<CommonTest>();
       }
 
       void Test()
       {
-        |F|(4)();
+        |F|(5)();
       }
-    }|(5)
+    }
 
-    |private void Update()
+    private void |Update|(6)()
     {
-      |action|(6)();
-    }|(7)
+      |action|(7)();
+    }
   }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(1): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (4): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(5): ReSharper Unity Performance Critical Line Marker: Performance-critical context
-(6): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(7): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(5): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(6): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
