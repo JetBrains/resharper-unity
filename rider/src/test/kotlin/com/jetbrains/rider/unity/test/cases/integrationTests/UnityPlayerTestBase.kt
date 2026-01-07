@@ -1,6 +1,7 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.io.toCanonicalPath
 import com.intellij.util.system.OS
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -81,7 +82,7 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
             "-batchmode", "-quit",
             "-projectPath", unityProjectPath.absolutePath,
             "-executeMethod", "BuildScript.Build",
-            "-logFile", buildLogFile.toRealPath().pathString,
+            "-logFile", buildLogFile.toCanonicalPath(),
             "-buildTarget", buildTarget,
             "-backend", unityBackend.toString()
         ).start()
