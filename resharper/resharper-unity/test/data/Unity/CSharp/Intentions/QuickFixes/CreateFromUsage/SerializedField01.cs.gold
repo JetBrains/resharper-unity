@@ -2,10 +2,13 @@
 
 public class Foo : MonoBehaviour
 {
-  [SerializeField] private object foo{caret};
+  [SerializeField] private {spotstart#1}object{spotend#1} foo{caret};
 
   public void Whatever()
   {
     var thing = foo
   }
 }
+
+LOOKUP ITEMS IN HOTSPOTS:
+  spot#1 [Count: 1, Focus: Hard] object

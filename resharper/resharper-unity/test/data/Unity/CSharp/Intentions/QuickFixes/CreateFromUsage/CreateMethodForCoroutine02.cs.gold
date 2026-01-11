@@ -8,8 +8,13 @@ public class Foo : MonoBehaviour
     StartCoroutine("MyCoroutine", 10f);
   }
 
-  private IEnumerator MyCoroutine(float f)
+  private {spotstart#1}IEnumerator{spotend#1} MyCoroutine({spotstart#2}float{spotend#2} {spotstart#3}f{spotend#3})
   {
     {selstart}throw new System.NotImplementedException();{selend}
   }
 }
+
+LOOKUP ITEMS IN HOTSPOTS:
+  spot#1 [Count: 1, Focus: Hard] IEnumerator
+  spot#2 [Count: 1, Focus: Hard] float
+  spot#3 [Count: 1, Focus: HardAtStart] f

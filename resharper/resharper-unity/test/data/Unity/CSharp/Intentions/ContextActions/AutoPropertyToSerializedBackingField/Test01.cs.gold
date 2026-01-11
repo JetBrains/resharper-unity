@@ -6,7 +6,7 @@ public class Foo : MonoBehaviour
 
   public int MyAutoProp1{caret}
   {
-    get => myMyAutoProp1;
+    get => {spotstart#1}myMyAutoProp1{spotend#1};
     set => myMyAutoProp1 = value;
   }
 }

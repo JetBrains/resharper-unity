@@ -4,3 +4,7 @@ public class Foo : MonoBehaviour
 {
     [Range({spotstart#1}0{spotend#1}, {spotstart#2}1{spotend#2}{caret})] public int myValue;
 }
+
+LOOKUP ITEMS IN HOTSPOTS:
+  spot#1 [Count: 1, Focus: HardAtStart] 0
+  spot#2 [Count: 1, Focus: HardAtStart] 1

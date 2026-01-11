@@ -6,3 +6,6 @@ public class Foo : MonoBehaviour
   [Header("{spotstart#1}myValue2{spotend#1}{caret}")] [SerializeField] private int myValue2;
   [SerializeField] private int myValue3;
 }
+
+LOOKUP ITEMS IN HOTSPOTS:
+  spot#1 [Count: 1, Focus: HardAtStart] "myValue2"

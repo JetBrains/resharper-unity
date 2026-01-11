@@ -4,3 +4,8 @@
 public class Foo : ScriptableObject
 {
 }
+
+LOOKUP ITEMS IN HOTSPOTS:
+  spot#1 [Count: 1, Focus: HardAtStart] "Create Foo"
+  spot#2 [Count: 1, Focus: HardAtStart] "Foo"
+  spot#3 [Count: 1, Focus: HardAtStart] 0

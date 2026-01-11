@@ -8,8 +8,11 @@ public class Foo : MonoBehaviour
     StartCoroutine("MyCoroutine",);
   }
 
-  private IEnumerator MyCoroutine()
+  private {spotstart#1}IEnumerator{spotend#1} MyCoroutine()
   {
     {selstart}throw new System.NotImplementedException();{selend}
   }
 }
+
+LOOKUP ITEMS IN HOTSPOTS:
+  spot#1 [Count: 1, Focus: Hard] IEnumerator

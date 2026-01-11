@@ -7,3 +7,6 @@ public class Foo : MonoBehaviour
         var foo = {spotstart#1}gameObject{spotend#1}{caret}.AddComponent<Foo>();
     }
 }
+
+LOOKUP ITEMS IN HOTSPOTS:
+  spot#1 [Count: 1, Focus: Hard] gameObject

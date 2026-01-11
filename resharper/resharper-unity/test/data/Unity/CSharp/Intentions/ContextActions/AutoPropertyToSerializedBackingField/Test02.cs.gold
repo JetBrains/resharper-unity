@@ -2,7 +2,7 @@
 
 public class Foo : MonoBehaviour
 {
-  [SerializeField] private int myMyAutoProp1;
+  [SerializeField] private int {spotstart#1}myMyAutoProp1{spotend#1};
 
   public int MyAutoProp1{caret} => myMyAutoProp1;
 }
