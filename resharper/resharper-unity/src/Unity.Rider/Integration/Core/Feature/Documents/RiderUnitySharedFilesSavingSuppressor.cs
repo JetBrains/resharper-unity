@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Docum
             if (modifiedProjectFile == null)
                 return false;
 
-            var documentModel = modifiedProjectFile.GetDocumentIdAndModel()?.documentModel;
+            var documentModel = modifiedProjectFile.GetDocumentIdAndModel()?.DocumentModel;
             return documentModel != null && !documentModel.TextControls.IsEmpty();
         }
     }

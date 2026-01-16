@@ -217,7 +217,7 @@ public class ShaderVariantsHost : IShaderVariantsHost, IChangeProvider, IUnityPr
     {
         myFrontendBackendHost?.Do(model =>
         {
-            if (myDocumentManager.TryGetProjectFile(offset.Document)?.GetDocumentIdAndModel() is { documentId: {} documentId })
+            if (myDocumentManager.TryGetProjectFile(offset.Document)?.GetDocumentIdAndModel() is { DocumentId: {} documentId })
                 model.ShowShaderVariantInteraction(new ShowShaderVariantInteractionArgs(documentId, offset.Offset, origin, scopeKeywords?.ToList()));
         });
     }
