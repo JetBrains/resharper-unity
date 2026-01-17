@@ -5,7 +5,7 @@ using JetBrains.ReSharper.ExternalSources.ILViewer.Extensibility;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ILViewer;
 
 [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
 public class UnityProjectOutputProvider(UnitySolutionTracker unitySolutionTracker) : IProjectOutputProvider
