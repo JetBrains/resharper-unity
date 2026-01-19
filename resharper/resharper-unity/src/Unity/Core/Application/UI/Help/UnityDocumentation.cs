@@ -47,11 +47,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
             var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
             var root = contentsPath.Combine("Documentation");
 
-            // I see /home/ivan-shakhov/Unity/Hub/Editor/2021.2.4f1/Editor/Data/Documentation/Documentation/en path on
-            // my machine. Most likely Linux only peculiarity
+            // ~/Unity/Hub/Editor/2021.2.4f1/Editor/Data/Documentation/Documentation/en path on my machine. Most likely Linux only peculiarity
             var potentialRoot = root.Combine("Documentation");
             if (potentialRoot is { IsAbsolute: true, ExistsDirectory: true })
                 root = potentialRoot;
+            
+            // /Applications/Unity/Hub/Editor/6000.0.61f1/Documentation
+            // /Applications/Unity/Hub/Editor/6000.4.0b2/Documentation.
+            var potentialRoot2 = appPath.Parent.Combine("Documentation");
+            if (potentialRoot2 is { IsAbsolute: true, ExistsDirectory: true })
+                root = potentialRoot2;
 
             if (root.IsEmpty || !root.ExistsDirectory)
                 return FileSystemPath.Empty;

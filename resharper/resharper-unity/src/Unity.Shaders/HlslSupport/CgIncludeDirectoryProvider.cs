@@ -28,7 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
                 return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
 
             var contentPath = UnityInstallationFinder.GetApplicationContentsPath(path);
-            return contentPath.Combine("CGIncludes");
+            var cgIncludePath = contentPath.Combine("CGIncludes");
+            if (!cgIncludePath.ExistsDirectory)
+                cgIncludePath = contentPath.Combine("Resources/CGIncludes");
+            return cgIncludePath;
         }        
     }
 }
