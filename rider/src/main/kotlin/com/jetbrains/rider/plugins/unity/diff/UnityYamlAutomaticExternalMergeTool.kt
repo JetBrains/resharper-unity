@@ -16,6 +16,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.delete
+import com.intellij.util.io.isFile
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.toIOFile
@@ -26,6 +27,7 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
 import kotlin.io.path.exists
+import kotlin.io.path.isRegularFile
 import kotlin.io.path.pathString
 import kotlin.io.path.readBytes
 
@@ -37,7 +39,7 @@ class UnityYamlAutomaticExternalMergeTool : AutomaticExternalMergeTool {
     override fun show(project: Project?, request: MergeRequest) {
         project ?: return
 
-        val appDataPath = UnityInstallationFinder.getInstance(project).getApplicationContentsPath() ?: return
+        val appContentsPath = UnityInstallationFinder.getInstance(project).getApplicationContentsPath() ?: return
         val extension = when {
             SystemInfo.isWindows -> ".exe"
             else -> ""
@@ -49,13 +51,16 @@ class UnityYamlAutomaticExternalMergeTool : AutomaticExternalMergeTool {
 
         try {
             val isMergeTrustExitCode = true
-            val mergeToolName = if (appDataPath.pathString.contains(EngineConstants.TuanjieEngineName)) {
+            val mergeToolName = if (appContentsPath.pathString.contains(EngineConstants.TuanjieEngineName)) {
                 "${EngineConstants.TuanjieEngineName}YAMLMerge"
             } else {
                 "${EngineConstants.UnityEngineName}YAMLMerge"
             }
             
-            val mergeExePath = appDataPath.resolve("Tools/$mergeToolName" + extension).toString()
+            var exePath = appContentsPath.resolve("Tools/$mergeToolName$extension")
+            // /Applications/Unity/Hub/Editor/6000.3.1f1/Unity.app/Contents/Helpers/UnityYAMLMerge
+            if (!exePath.isRegularFile())
+                exePath = appContentsPath.resolve("Helpers/UnityYAMLMerge$extension")
             val mergeParametersFromBackend = project.solution.frontendBackendModel.backendSettings.mergeParameters.valueOrThrow
             val mergeParameters = if (mergeParametersFromBackend.contains(" -p ")) {
                 "$mergeParametersFromBackend $premergedBase $premergedRight"
@@ -64,8 +69,8 @@ class UnityYamlAutomaticExternalMergeTool : AutomaticExternalMergeTool {
                 mergeParametersFromBackend
             }
 
-            myLogger.info("PreMerge with $mergeExePath $mergeParameters")
-            val externalTool = ExternalDiffSettings.ExternalTool(programPath = mergeExePath, argumentPattern = mergeParameters,
+            myLogger.info("PreMerge with $exePath $mergeParameters")
+            val externalTool = ExternalDiffSettings.ExternalTool(programPath = exePath.pathString, argumentPattern = mergeParameters,
                                                                  isMergeTrustExitCode = isMergeTrustExitCode,
                                                                  groupName = ExternalDiffSettings.ExternalToolGroup.MERGE_TOOL
             )

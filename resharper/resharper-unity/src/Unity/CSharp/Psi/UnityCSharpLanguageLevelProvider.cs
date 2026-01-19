@@ -153,7 +153,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                     var roslynDir = contentPath.Combine("Tools").Combine("Roslyn"); // older location
                     if (!roslynDir.ExistsDirectory)
                         roslynDir = contentPath.Combine("DotNetSdkRoslyn"); // Unity 6 location and maybe others
-
+                    
+                    // /Applications/Unity/Hub/Editor/6000.3.1f1/Unity.app/Contents/Resources/Scripting/DotNetSdkRoslyn
+                    if (!roslynDir.ExistsDirectory)
+                        roslynDir = contentPath.Combine("Resources/Scripting/DotNetSdkRoslyn"); // Unity 6.3+
+                    
                     if (roslynDir.ExistsDirectory)
                     {
                         var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();
