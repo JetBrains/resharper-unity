@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Feature.Services.OptionPages;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeStyle;
 using JetBrains.ReSharper.Features.Altering.CodeFormatter.CSharp;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting.CodeEditing
 {
     [FormattingSettingsPresentationComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class UnityCSharpFormattingSettingsSchema : OthersPageSchemaPart
