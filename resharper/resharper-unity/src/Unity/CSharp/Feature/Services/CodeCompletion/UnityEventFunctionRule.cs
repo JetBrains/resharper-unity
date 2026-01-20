@@ -891,10 +891,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             [CanBeNull] public IType ExpectedReturnType { get; }
 
-            public bool HasOverrideKeywordTail => ExpectedReturnType == null && HasOverrideTail(ModifiersList);
-            public bool HasOverrideKeyword => ModifiersList.HasModifier(CSharpTokenType.OVERRIDE_KEYWORD);
-            [NotNull] public PsiLanguageType Language => TypeDeclaration.Language;
-
             public MemberGenerationContext(
                 [NotNull] ITypeDeclaration typeDeclaration,
                 [CanBeNull] IModifiersList modifiersList,
@@ -918,14 +914,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             {
                 var modifier = modifiersList?.FindPreviousModifier(anchor: null);
                 return modifier != null && modifier.GetTokenType() == CSharpTokenType.OVERRIDE_KEYWORD;
-            }
-
-            [Pure]
-            public bool MatchesAccessRights([NotNull] IAccessRightsOwner accessRightsOwner)
-            {
-                if (ExpectedAccessRights == AccessRights.NONE) return true;
-
-                return ExpectedAccessRights == accessRightsOwner.GetAccessRightsVisibleToModule(PsiModule);
             }
         }
     }
