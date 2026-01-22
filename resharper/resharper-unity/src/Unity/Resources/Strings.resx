@@ -1375,7 +1375,7 @@ float values with full precision.</value>
         <value>Learn more</value>
     </data>
     <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings" xml:space="preserve">
-        <value>Enable Profiler Guttermarks</value>
+        <value>Enable profiler gutter marks</value>
     </data>
     <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default" xml:space="preserve">
         <value>Default</value>
