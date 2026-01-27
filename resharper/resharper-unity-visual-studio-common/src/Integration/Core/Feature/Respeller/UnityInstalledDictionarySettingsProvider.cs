@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.Featur
         public void InitialiseSolutionSettings(ISettingsStorageMountPoint mountPoint)
         {
             var entry = mySettingsSchema.GetIndexedEntry((InstalledDictionariesSettings s) => s.InstalledDictionaries);
-            var path = (FileSystemPath.Parse(GetType().Assembly.Location).Parent / "Extensions/JetBrains.unity/dictionaries/unity.dic").FullPath;
+            var path = (FileSystemPath.Parse(GetType().Assembly.Location).Parent / "Extensions/JetBrains.unity/dictionaries/com/jetbrains/rider/plugins/unity/spellchecker/unity.dic").FullPath;
             ScalarSettingsStoreAccess.SetIndexedValue(mountPoint, entry, path, null, true, null, myLogger);
         }
     }
