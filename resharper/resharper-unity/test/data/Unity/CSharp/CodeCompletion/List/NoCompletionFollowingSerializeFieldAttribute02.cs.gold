@@ -49,7 +49,7 @@ ỌṇeWayAttribute |(in System.Runtime.Remoting.Messaging)
 ỌṇlineState |(in UnityEditor.VersionControl)
                             [CamelHumpsCaseMatch, NotImportedType, FromFullEvaluation]
 ỌbjectṆames |(in UnityEditor)
-                            [Other^, NormalSelectionPriority^, NotImportedType, ObsoleteRuleApplied^, NotObsolete^, TypesAndNamespaces^, FromFullEvaluation, FromSingleCompletion^]
+                            [FromSingleCompletion^, TypesAndNamespaces^, NotImportedType, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation, Other^]
 ActionỌṇDotNetUnhandledException |(in UnityEditor)
 AndroidShowActivityIndicatorỌṇLoading |(in UnityEditor)
 CriticalHandleMinusỌṇeIsInvalid |(in Microsoft.Win32.SafeHandles)

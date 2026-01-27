@@ -12,7 +12,7 @@ _̣ṢḤẠP̣Ẹ_B                    <==
 _̣ṢḤẠP̣Ẹ_C
 _̣ṢḤẠP̣Ẹ_E
 _̣ṢḤẠP̣Ẹ_F
-                            [PrefixMatch^, FromLightAndDynamicEvaluation^, FromSingleCompletion^, 15, NormalSelectionPriority, Other]
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, PrefixMatch^, 15, NormalSelectionPriority, Other]
 _̣ṢḤẠP̣Ẹ_A
 _̣ṢḤẠP̣Ẹ_D
 

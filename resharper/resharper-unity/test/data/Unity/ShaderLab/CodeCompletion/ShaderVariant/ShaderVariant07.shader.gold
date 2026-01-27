@@ -10,7 +10,7 @@ Range: "#if _SHAPE♦ "
                             [16]
 _̣ṢḤẠP̣Ẹ_B                    <==
 _̣ṢḤẠP̣Ẹ_C
-                            [PrefixMatch^, FromLightAndDynamicEvaluation^, FromSingleCompletion^, 15, NormalSelectionPriority, Other]
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, PrefixMatch^, 15, NormalSelectionPriority, Other]
 _̣ṢḤẠP̣Ẹ_A
 
 ##### ALPHABETIC SORT #####

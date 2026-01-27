@@ -147,7 +147,7 @@ XREarlyỤp̣date |(in UnityEngine.PlayerLoop.Initialization)
 XRFixedỤp̣date |(in UnityEngine.PlayerLoop.FixedUpdate)
 XRỤp̣date |(in UnityEngine.PlayerLoop.EarlyUpdate)
 XboxOnePackageỤp̣dateGranularity |(in UnityEditor)
-                            [Other^, TypesAndNamespaces, NotImportedType, NormalSelectionPriority^, ObsoleteRuleApplied^, FromFullEvaluation, FromSingleCompletion^]
+                            [FromSingleCompletion^, TypesAndNamespaces, NotImportedType, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation, Other^]
 ỤCOMIConnectionP̣oint| |(in System.Runtime.InteropServices)
 ỤCOMIConnectionP̣ointContainer| |(in System.Runtime.InteropServices)
 ỤCOMIEnumConnectionP̣oints| |(in System.Runtime.InteropServices)

@@ -49,7 +49,7 @@ OnCanvasGroupChanged|() { ... }    OrderStr=OnCanvasGroupChanged()
 OnCanvasHierarchyChanged|() { ... }    OrderStr=OnCanvasHierarchyChanged()
 OnDidApplyAnimationProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
 OnRectTransformDimensionsChange|() { ... }    OrderStr=OnRectTransformDimensionsChange()
-                            [Other^, ObsoleteRuleApplied^, Keywords, LiveTemplates, NotObsolete^, FromLightAndDynamicEvaluation^, NormalSelectionPriority, FromSingleCompletion^]
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, Keywords, LiveTemplates, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority, Other^]
 operator
 this
 

@@ -13,7 +13,7 @@ G̣ameỌbject                  <==
                             [FromLightAndDynamicEvaluation^, ImportedType^]
 G̣UILayoutỌption
 ParticleSystemG̣ameỌbjectFilter
-                            [Other^, NormalSelectionPriority^, NotImportedType, ObsoleteRuleApplied^, NotObsolete^, TypesAndNamespaces^, FromFullEvaluation, FromSingleCompletion^]
+                            [FromSingleCompletion^, TypesAndNamespaces^, NotImportedType, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation, Other^]
 AddedG̣ameỌbject |(in UnityEditor.SceneManagement)
 ComponentG̣uaranteesỌptions |(in System.Runtime.Versioning)
 G̣ameỌbjectRecorder |(in UnityEditor.Animations)

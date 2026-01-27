@@ -344,7 +344,7 @@ fixed4x1
 fixed4x2
 fixed4x3
 fixed4x4
-                            [Other^, FromLightAndDynamicEvaluation^, 15, HighSelectionPriority, NormalSelectionPriority, FromSingleCompletion^]
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 15, HighSelectionPriority, NormalSelectionPriority, Other^]
 tile_static
 
 ##### ALPHABETIC SORT #####

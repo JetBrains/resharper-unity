@@ -13,7 +13,7 @@ ỌṇẠṇịṃạtorIK|(int) { ... }    OrderStr=OnAnimatorIK(int)    <==
 ỌṇẠṇịṃạtorMove|() { ... }    OrderStr=OnAnimatorMove()
                             [Methods^, GenerateItems^, MemberOfCurrentType^]
 ỌṇDidApplyẠṇịṃạtionProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
-                            [Other^, ObsoleteRuleApplied^, NotObsolete^, FromLightAndDynamicEvaluation^, NormalSelectionPriority, FromSingleCompletion^]
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority, Other^]
 myỌṇẠṇịṃạ
 
 ##### ALPHABETIC SORT #####

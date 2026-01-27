@@ -324,7 +324,7 @@ AnimationClipPair
 ProceduralTexture
 SerializePrivateVariables
 WWW
-                            [Other^, NormalSelectionPriority^, ObsoleteRuleApplied^, NotObsolete, TypesAndNamespaces^, FromLightAndDynamicEvaluation^, FromSingleCompletion^]
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, TypesAndNamespaces^, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority^, Other^]
 AI
 Accessibility
 Advertisements

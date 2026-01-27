@@ -7,14 +7,14 @@ Range: "#if ♦"
 
                             [MemberOfObject]
 defined                     <==
-                            [16, Other^, NormalSelectionPriority^]
+                            [16, NormalSelectionPriority^, Other^]
 HLSL_VERSION
 SHADER_API_D3D11
 SHADER_API_DESKTOP
 SHADER_TARGET
 UNIFIED_RT_BACKEND_COMPUTE
 UNITY_VERSION
-                            [FromLightAndDynamicEvaluation^, FromSingleCompletion^, 16]
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 16]
 SHADER_API_D3D11_9X
 SHADER_API_GLCORE
 SHADER_API_GLES

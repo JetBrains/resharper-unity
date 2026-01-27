@@ -770,7 +770,7 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
-                            [Other^, ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority, FromFullEvaluation, FromSingleCompletion^]
+                            [FromSingleCompletion^, ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority, FromFullEvaluation, Other^]
 public override |Equals|(object) |{ … }    bool    OrderStr=Equals
 public override |GetHashCode|() |{ … }    int    OrderStr=GetHashCode
 public override |ToString|() |{ … }    string    OrderStr=ToString

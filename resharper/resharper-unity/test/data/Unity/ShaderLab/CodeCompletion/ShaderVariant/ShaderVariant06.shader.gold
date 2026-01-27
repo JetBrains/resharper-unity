@@ -12,7 +12,7 @@ _̣B
 _̣C
                             [PrefixNoCaseMatch^, 15, NormalSelectionPriority, Other]
 _̣A
-                            [FromLightAndDynamicEvaluation^, FromSingleCompletion^, 16]
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 16]
 SHADER_̣API_D3D11_9X
 SHADER_̣API_GLCORE
 SHADER_̣API_GLES

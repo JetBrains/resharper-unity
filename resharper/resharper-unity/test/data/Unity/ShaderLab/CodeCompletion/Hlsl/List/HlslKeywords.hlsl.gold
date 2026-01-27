@@ -323,7 +323,7 @@ TriangleStream
 SHADER_API_D3D11
 SHADER_API_DESKTOP
 UNITY_VERSION
-                            [Other^, FromLightAndDynamicEvaluation^, 15, HighSelectionPriority, NormalSelectionPriority, FromSingleCompletion^]
+                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 15, HighSelectionPriority, NormalSelectionPriority, Other^]
 tile_static
 
 ##### ALPHABETIC SORT #####
