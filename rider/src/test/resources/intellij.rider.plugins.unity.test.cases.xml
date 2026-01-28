@@ -22,6 +22,7 @@
     <module name="intellij.platform.lang"/>
     <module name="intellij.platform.lang.impl"/>
     <module name="intellij.platform.projectModel"/>
+    <module name="intellij.rider.languages"/>
     <module name="intellij.platform.statistics"/>
     <module name="intellij.rider.plugins.unity.model"/>
   </dependencies>

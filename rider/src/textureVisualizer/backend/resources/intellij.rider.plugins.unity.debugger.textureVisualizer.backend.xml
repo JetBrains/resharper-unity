@@ -1,11 +1,13 @@
 <idea-plugin>
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
+    <module name="intellij.rd.client"/>
     <module name="intellij.rd.ide.model.generated"/>
     <module name="intellij.platform.rpc.backend"/>
     <module name="intellij.rider"/>
     <module name="intellij.rider.plugins.unity.model"/>
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.common"/>
+    <module name="intellij.rider.rdclient.dotnet"/>
   </dependencies>
   <!-- endregion -->
 
