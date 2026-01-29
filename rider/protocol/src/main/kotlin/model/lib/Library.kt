@@ -92,24 +92,51 @@ object Library : Root() {
         field("unityProfilerApiPath", string)
         field("needRestartScripts", bool)
     }
+    val SnapshotStatus  = enum {
+        +"Disabled"
+        +"NoSnapshotDataAvailable"
+        +"HasNewSnapshotDataToFetch"
+        +"SnapshotDataFetchingInProgress"
+        +"SnapshotDataIsUpToDate"
+    }
 
     val UnityProfilerSnapshotStatus = structdef {
         field("frameIndex", int)
         field("threadIndex", int)
         field("threadName", string)
         field("samplesCount", int)
-        field("status", enum("SnapshotStatus") {
-            +"Disabled"
-            +"NoSnapshotDataAvailable"
-            +"HasNewSnapshotDataToFetch"
-            +"SnapshotDataFetchingInProgress"
-            +"SnapshotDataIsUpToDate"
-        })
+        field("status", SnapshotStatus)
         field("fetchingProgress", float)
+    }
+    
+    val ProfilerThread = structdef {
+        field("index", int)
+        field("name", string)
     }
     
     val ProfilerSnapshotRequest = structdef{
         field("frameIndex", int)
         field("threadIndex", int)
+    }
+
+    val ProfilerSampleTimingInfo = structdef {
+        field(
+            "samples", immutableList(
+                structdef("timingInfo")
+                {
+                    field("frameId", int)
+                    field("ms", float)
+                })
+        )
+    }
+    val ProfilerSampleThreadsInfo = structdef {
+        field(
+            "threads", immutableList(
+                structdef("threadInfo")
+                {
+                    field("threadId", int)
+                    field("threadName", string)
+                })
+        )
     }
 }

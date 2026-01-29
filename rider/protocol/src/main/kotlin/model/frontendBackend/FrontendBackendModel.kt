@@ -9,6 +9,7 @@ import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
 import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlId
 import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlExtension
 import model.lib.Library
+import kotlin.reflect.KProperty
 
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to
@@ -241,11 +242,33 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
         field("realParentQualifiedName", string.nullable)
     }
     
+    private val ProfilerModelSample = structdef {
+        field("qualifiedName", string)
+        field("duration", double)
+        field("framePercentage", double)
+        field("memoryAllocation", long)
+        field("childrenCount", int)
+        field("IsProfilerMarker", bool)
+    }
+    
+    private val FrontendModelSnapshot = structdef {
+        field("samples", immutableList(ProfilerModelSample))
+        field("timings", Library.ProfilerSampleTimingInfo)
+    }
+    
     init {
+        property("selectedFrameIndex", int).async
+        property("selectedThread", Library.ProfilerThread).async
+        property("snapshotStatus", Library.SnapshotStatus).async
+        property("samplesCount", int).async
+        property("fetchingProgress", float).async
+        
         property("profilerSnapshotStatus", Library.UnityProfilerSnapshotStatus).async
         signal("updateUnityProfilerSnapshotData", Library.ProfilerSnapshotRequest).async
         signal("navigateByQualifiedName", string).async
         signal("setGutterMarksRenderSetting", ProfilerGutterMarkRenderSettings).async
+        property("currentSnapshot", FrontendModelSnapshot.nullable).async
+        
         //collectors
         signal("showPopupAction", void).async
     }
