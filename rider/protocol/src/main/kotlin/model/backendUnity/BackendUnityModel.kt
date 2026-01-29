@@ -215,5 +215,6 @@ object UnityProfilerModel : Ext(BackendUnityModel) {
         callback("openFileBySampleInfo", SampleStackInfo, void).documentation = "Called from Unity to navigate from selected profiler sample"
         call("getUnityProfilerSnapshot", Library.ProfilerSnapshotRequest, UnityProfilerSnapshot.nullable).async.documentation = "Polled from the backend to get current frame profiler snapshot data"
         property("profilerSnapshotStatus", Library.UnityProfilerSnapshotStatus).async
+        call("getProfilerFrameSamplesTiming", void, Library.ProfilerSampleTimingInfo).async
     }
 }
