@@ -9,14 +9,18 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.ui.SimpleTextAttributes
 import com.intellij.platform.backend.workspace.WorkspaceModel
+import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
 import com.jetbrains.rider.plugins.unity.workspace.tryGetPackage
-import com.jetbrains.rider.projectView.views.*
+import com.jetbrains.rider.projectView.views.FileSystemNodeBase
+import com.jetbrains.rider.projectView.views.NestingNode
+import com.jetbrains.rider.projectView.views.SolutionViewNode
+import com.jetbrains.rider.projectView.views.addAdditionalMark
+import com.jetbrains.rider.projectView.views.navigateToSolutionView
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
 

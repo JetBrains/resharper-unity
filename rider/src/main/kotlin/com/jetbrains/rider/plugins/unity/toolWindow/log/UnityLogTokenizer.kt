@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.openapi.util.NlsSafe
 import java.awt.Color
-import java.util.*
+import java.util.Locale
 
 class UnityLogTokenizer {
 

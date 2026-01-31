@@ -1,12 +1,12 @@
 package com.jetbrains.rider.unity.test.cases.uss
 
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
-import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.TestSettings
+import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.PlatformType

@@ -8,7 +8,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.backend.workspace.virtualFile
 import com.jetbrains.rd.util.getOrCreate
 import com.jetbrains.rider.model.RdCustomLocation
-import com.jetbrains.rider.projectView.workspace.*
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntityReference
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntityVisitor
+import com.jetbrains.rider.projectView.workspace.isAssemblyReference
+import com.jetbrains.rider.projectView.workspace.toReference
 import icons.UnityIcons
 
 class ReferenceRootNode(project: Project) : AbstractTreeNode<Any>(project, key) {

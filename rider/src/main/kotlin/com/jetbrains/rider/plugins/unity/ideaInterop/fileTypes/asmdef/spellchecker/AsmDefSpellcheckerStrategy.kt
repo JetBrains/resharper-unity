@@ -1,7 +1,11 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.spellchecker
 
 import com.intellij.json.JsonSpellcheckerStrategy
-import com.intellij.json.psi.*
+import com.intellij.json.psi.JsonArray
+import com.intellij.json.psi.JsonFile
+import com.intellij.json.psi.JsonObject
+import com.intellij.json.psi.JsonProperty
+import com.intellij.json.psi.JsonStringLiteral
 import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import com.intellij.spellchecker.tokenizer.Tokenizer

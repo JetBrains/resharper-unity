@@ -5,7 +5,12 @@ import com.intellij.execution.Executor
 import com.intellij.execution.KillableProcess
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.process.*
+import com.intellij.execution.process.AnsiEscapeDecoder
+import com.intellij.execution.process.KillableProcessHandler
+import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
@@ -34,9 +39,13 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.run.*
+import com.jetbrains.rider.run.ConsoleKind
+import com.jetbrains.rider.run.ExternalConsoleMediator
+import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.TerminalMode
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
+import com.jetbrains.rider.run.createEmptyConsoleCommandLine
+import com.jetbrains.rider.run.pid
 import com.jetbrains.rider.shared.run.withRawParameters
 import java.nio.file.Path
 

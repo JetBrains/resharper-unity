@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.ConfigurationTypeUtil
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
@@ -23,7 +22,15 @@ import com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDeviceP
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
-import com.jetbrains.rider.plugins.unity.util.*
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.util.toProgramParameters
+import com.jetbrains.rider.plugins.unity.util.withBatchMode
+import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
+import com.jetbrains.rider.plugins.unity.util.withEditorLog
+import com.jetbrains.rider.plugins.unity.util.withProjectPath
+import com.jetbrains.rider.plugins.unity.util.withRunTests
+import com.jetbrains.rider.plugins.unity.util.withTestPlatform
+import com.jetbrains.rider.plugins.unity.util.withTestResults
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
 import java.nio.file.Paths

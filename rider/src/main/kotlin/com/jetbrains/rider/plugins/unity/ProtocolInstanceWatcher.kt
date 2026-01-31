@@ -4,9 +4,9 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.application
-import com.jetbrains.rider.ijent.extensions.toRd
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
+import com.jetbrains.rider.ijent.extensions.toRd
 import com.jetbrains.rider.model.RdDelta
 import com.jetbrains.rider.model.RdDeltaBatch
 import com.jetbrains.rider.model.RdDeltaType

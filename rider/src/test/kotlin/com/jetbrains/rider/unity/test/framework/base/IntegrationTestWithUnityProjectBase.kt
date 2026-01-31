@@ -9,7 +9,11 @@ import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.framework.testData.InheritanceBasedTestDataStorage
 import com.jetbrains.rider.test.framework.testData.TestDataStorage
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
+import com.jetbrains.rider.test.scriptingApi.putUnityProjectToTempTestDir
+import com.jetbrains.rider.test.scriptingApi.riderPackageVersion
+import com.jetbrains.rider.test.scriptingApi.setRiderPackageVersion
+import com.jetbrains.rider.test.scriptingApi.waitForSlnGeneratedByUnity
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.startUnity
 import org.testng.annotations.BeforeMethod

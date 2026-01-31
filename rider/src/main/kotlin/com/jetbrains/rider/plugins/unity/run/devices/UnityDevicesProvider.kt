@@ -15,7 +15,12 @@ import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
 import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPointAndPlay
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.projectView.solutionDirectory
-import com.jetbrains.rider.run.devices.*
+import com.jetbrains.rider.run.devices.ActiveDeviceAction
+import com.jetbrains.rider.run.devices.ActiveDeviceManager
+import com.jetbrains.rider.run.devices.CompatibilityProblem
+import com.jetbrains.rider.run.devices.Device
+import com.jetbrains.rider.run.devices.DeviceKind
+import com.jetbrains.rider.run.devices.DevicesProvider
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 

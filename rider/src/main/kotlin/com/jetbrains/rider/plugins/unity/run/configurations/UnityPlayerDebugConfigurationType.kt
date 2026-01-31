@@ -1,14 +1,20 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.*
+import com.intellij.execution.configurations.ConfigurationType
+import com.intellij.execution.configurations.ConfigurationTypeBase
+import com.intellij.execution.configurations.RunConfiguration
+import com.intellij.execution.configurations.RunConfigurationOptions
+import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.configurations.VirtualConfigurationType
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.ComponentPredicate
 import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.run.*
+import com.jetbrains.rider.plugins.unity.run.UnityCustomPlayer
+import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteForm
 import icons.UnityIcons
 import javax.swing.JComponent

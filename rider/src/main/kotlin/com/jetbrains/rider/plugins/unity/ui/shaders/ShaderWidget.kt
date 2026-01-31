@@ -1,7 +1,11 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Editor
@@ -15,7 +19,11 @@ import com.jetbrains.rdclient.document.getDocumentId
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.editors.resolveContextWidget.WidgetAction
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.*
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.AutoShaderContextData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.SelectShaderContextDataInteraction
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solution
 import icons.UnityIcons

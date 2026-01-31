@@ -9,7 +9,11 @@ import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.executeWithGold
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.disableAllFindUsagesGroups
+import com.jetbrains.rider.test.scriptingApi.requestFindUsages
+import com.jetbrains.rider.test.scriptingApi.setCaretToPosition
+import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
+import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.DataProvider
 import java.time.Duration

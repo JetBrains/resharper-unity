@@ -7,7 +7,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CheckinProjectPanel
 import com.intellij.openapi.vcs.changes.CommitContext
 import com.intellij.openapi.vcs.changes.ui.BooleanCommitOption.Companion.create
-import com.intellij.openapi.vcs.checkin.*
+import com.intellij.openapi.vcs.checkin.CheckinHandler
+import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
+import com.intellij.openapi.vcs.checkin.CommitCheck
+import com.intellij.openapi.vcs.checkin.CommitInfo
+import com.intellij.openapi.vcs.checkin.CommitProblem
+import com.intellij.openapi.vcs.checkin.CommitProblemWithDetails
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent
 import com.jetbrains.rd.framework.impl.RpcTimeouts
 import com.jetbrains.rider.plugins.unity.isUnityProject

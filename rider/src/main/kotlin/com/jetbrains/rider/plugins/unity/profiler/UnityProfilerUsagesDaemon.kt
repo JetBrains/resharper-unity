@@ -7,7 +7,6 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendPr
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendProfilerModel
 import com.jetbrains.rider.projectView.solution
-import java.util.concurrent.atomic.AtomicLong
 
 @Service(Service.Level.PROJECT)
 class UnityProfilerUsagesDaemon(project: Project) {

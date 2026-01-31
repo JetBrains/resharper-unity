@@ -32,10 +32,10 @@ import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesBase
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityPluginScopeService
-import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTexturePropertiesData
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalActionParams
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalActionResult
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTexturePropertiesData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +43,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.intellij.images.editor.impl.ImageEditorManagerImpl
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.CardLayout
+import java.awt.GraphicsConfiguration
+import java.awt.GraphicsEnvironment
+import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage

@@ -6,7 +6,7 @@ import com.jetbrains.rider.ideaInterop.fileTypes.msbuild.CsprojFileType
 import com.jetbrains.rider.ideaInterop.fileTypes.sln.SolutionFileType
 import com.jetbrains.rider.plugins.unity.css.uss.UssFileType
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType
-import java.util.*
+import java.util.Locale
 
 private val nonEditableExtensions = getExtensions()
 

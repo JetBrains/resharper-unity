@@ -11,25 +11,25 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rd.util.threading.coroutines.launch
-import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityBundleInfo
-import com.jetbrains.rider.plugins.unity.run.*
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator.Companion.RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME
+import com.jetbrains.rider.plugins.unity.run.UnityAndroidAdbProcess
+import com.jetbrains.rider.plugins.unity.run.UnityEditor
+import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
+import com.jetbrains.rider.plugins.unity.run.UnityEditorHelper
+import com.jetbrains.rider.plugins.unity.run.UnityIosUsbProcess
+import com.jetbrains.rider.plugins.unity.run.UnityLocalUwpPlayer
+import com.jetbrains.rider.plugins.unity.run.UnityProcess
+import com.jetbrains.rider.plugins.unity.run.UnityVirtualPlayer
 import com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDevicePlayerDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
-import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.run.devices.ActiveDeviceManager
 import com.jetbrains.rider.run.devices.Device
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
-import org.jetbrains.concurrency.runAsync
-import kotlin.coroutines.coroutineContext
 
 /**
  * Returns true if any "Attach to Unity Editor" or "Attach to Unity Editor & Play" run configuration is running

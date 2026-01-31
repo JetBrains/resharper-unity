@@ -2,7 +2,15 @@ package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.*
+import com.intellij.ui.DoubleClickListener
+import com.intellij.ui.ErrorLabel
+import com.intellij.ui.GroupedElementsRenderer
+import com.intellij.ui.PortField
+import com.intellij.ui.SeparatorWithText
+import com.intellij.ui.SimpleColoredComponent
+import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.SpeedSearchComparator
+import com.intellij.ui.TreeSpeedSearch
 import com.intellij.ui.components.dialog
 import com.intellij.ui.components.noteComponent
 import com.intellij.ui.dsl.builder.Align
@@ -24,8 +32,16 @@ import java.awt.Graphics
 import java.awt.Insets
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
-import javax.swing.*
-import javax.swing.tree.*
+import javax.swing.JButton
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.JTree
+import javax.swing.KeyStroke
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.DefaultTreeModel
+import javax.swing.tree.TreeNode
+import javax.swing.tree.TreePath
+import javax.swing.tree.TreeSelectionModel
 
 class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
 

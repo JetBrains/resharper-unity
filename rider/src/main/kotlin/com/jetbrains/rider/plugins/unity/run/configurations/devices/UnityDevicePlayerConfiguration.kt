@@ -2,7 +2,13 @@ package com.jetbrains.rider.plugins.unity.run.configurations.devices
 
 import com.intellij.execution.CantRunException
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.*
+import com.intellij.execution.configurations.ConfigurationType
+import com.intellij.execution.configurations.ConfigurationTypeBase
+import com.intellij.execution.configurations.ConfigurationTypeUtil
+import com.intellij.execution.configurations.RunConfiguration
+import com.intellij.execution.configurations.RunConfigurationSingletonPolicy
+import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.configurations.VirtualConfigurationType
 import com.intellij.execution.impl.CheckableRunConfigurationEditor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.internal.statistic.eventLog.events.EventPair
@@ -15,7 +21,13 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
 import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPointAndPlay
 import com.jetbrains.rider.plugins.unity.run.UnityProcess
-import com.jetbrains.rider.plugins.unity.run.configurations.*
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorSettingsEditor
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityConfigurationFactoryBase
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationOptions
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityRunConfigurationBase
+import com.jetbrains.rider.plugins.unity.run.configurations.populateStateFromProcess
 import com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider
 import com.jetbrains.rider.run.devices.ActiveDeviceManager
 import com.jetbrains.rider.run.devices.DevicesConfiguration

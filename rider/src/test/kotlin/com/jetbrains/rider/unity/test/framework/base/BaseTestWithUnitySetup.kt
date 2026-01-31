@@ -16,12 +16,8 @@ import org.testng.annotations.AfterSuite
 import org.testng.annotations.BeforeSuite
 import java.lang.reflect.Method
 import java.util.concurrent.TimeUnit
-import kotlin.collections.filter
-import kotlin.collections.forEach
-import kotlin.collections.mutableListOf
 import kotlin.io.path.exists
 import kotlin.io.path.readText
-import kotlin.text.contains
 
 open class BaseTestWithUnitySetup : PerTestSolutionTestBase() {
 

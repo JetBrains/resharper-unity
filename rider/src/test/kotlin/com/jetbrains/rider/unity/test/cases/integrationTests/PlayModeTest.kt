@@ -1,6 +1,10 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Solution
+import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.UnityTestSettings
 import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
@@ -11,7 +15,16 @@ import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.rebuildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.replaceFileContent
-import com.jetbrains.rider.unity.test.framework.api.*
+import com.jetbrains.rider.unity.test.framework.api.attachDebuggerToUnityEditor
+import com.jetbrains.rider.unity.test.framework.api.attachDebuggerToUnityEditorAndPlay
+import com.jetbrains.rider.unity.test.framework.api.pause
+import com.jetbrains.rider.unity.test.framework.api.play
+import com.jetbrains.rider.unity.test.framework.api.refreshUnityModel
+import com.jetbrains.rider.unity.test.framework.api.step
+import com.jetbrains.rider.unity.test.framework.api.stopPlaying
+import com.jetbrains.rider.unity.test.framework.api.unpause
+import com.jetbrains.rider.unity.test.framework.api.waitForEditorLogsAfterAction
+import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPlayMode
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import org.testng.annotations.Test
 

@@ -2,7 +2,11 @@ package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbAwareAction
@@ -12,9 +16,20 @@ import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.ui.*
+import com.intellij.ui.CheckBoxList
+import com.intellij.ui.Gray
+import com.intellij.ui.JBColor
+import com.intellij.ui.ListSpeedSearch
+import com.intellij.ui.RelativeFont
+import com.intellij.ui.SeparatorComponent
+import com.intellij.ui.SeparatorOrientation
 import com.intellij.ui.awt.RelativePoint
-import com.intellij.ui.components.*
+import com.intellij.ui.components.ActionLink
+import com.intellij.ui.components.AnActionLink
+import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBPanel
+import com.intellij.ui.components.JBRadioButton
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.components.panels.HorizontalLayout
 import com.intellij.ui.components.panels.ListLayout
@@ -27,7 +42,14 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.common.ui.ToggleButtonModel
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.*
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.CreateShaderVariantInteractionArgs
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdUrtCompilationMode
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteraction
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteractionOrigin
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShowShaderVariantInteractionArgs
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +60,12 @@ import java.awt.Dimension
 import java.awt.Font
 import java.awt.event.ItemEvent
 import java.awt.font.TextAttribute
-import javax.swing.*
+import javax.swing.ButtonGroup
+import javax.swing.JCheckBox
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.SwingConstants
 
 class ShaderVariantPopup(private val project: Project,
                          private val interaction: ShaderVariantInteraction,

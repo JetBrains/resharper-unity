@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.CantRunException
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.configurations.WithoutOwnBeforeRunSteps
@@ -14,7 +13,18 @@ import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.run.*
+import com.jetbrains.rider.plugins.unity.run.AndroidDeviceListener
+import com.jetbrains.rider.plugins.unity.run.UnityAndroidAdbProcess
+import com.jetbrains.rider.plugins.unity.run.UnityCustomPlayer
+import com.jetbrains.rider.plugins.unity.run.UnityEditor
+import com.jetbrains.rider.plugins.unity.run.UnityEditorHelper
+import com.jetbrains.rider.plugins.unity.run.UnityEditorListener
+import com.jetbrains.rider.plugins.unity.run.UnityIosUsbProcess
+import com.jetbrains.rider.plugins.unity.run.UnityLocalProcess
+import com.jetbrains.rider.plugins.unity.run.UnityLocalUwpPlayer
+import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
+import com.jetbrains.rider.plugins.unity.run.UnityProcess
+import com.jetbrains.rider.plugins.unity.run.UnityVirtualPlayer
 import com.jetbrains.rider.run.RiderRunBundle
 import com.jetbrains.rider.run.configurations.AsyncRunConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration

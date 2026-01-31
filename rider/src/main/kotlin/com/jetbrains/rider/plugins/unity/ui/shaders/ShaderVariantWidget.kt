@@ -1,7 +1,11 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider
@@ -17,7 +21,12 @@ import com.jetbrains.rider.editors.resolveContextWidget.WidgetAction
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderVariantExtension
-import java.awt.*
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Insets
+import java.awt.Rectangle
+import java.awt.RenderingHints
 import java.net.URL
 import javax.swing.JComponent
 import javax.swing.JLabel

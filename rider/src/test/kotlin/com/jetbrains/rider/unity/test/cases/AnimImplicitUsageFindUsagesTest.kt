@@ -2,7 +2,9 @@ package com.jetbrains.rider.unity.test.cases
 import com.jetbrains.rd.ide.model.findUsagesHost
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.Solution
+import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity

@@ -7,7 +7,10 @@ import com.jetbrains.rdclient.client.frontendProjectSession
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.inTests.TestHost
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Solution
+import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
@@ -17,7 +20,11 @@ import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.assertLookupContains
+import com.jetbrains.rider.test.scriptingApi.assertLookupNotContains
+import com.jetbrains.rider.test.scriptingApi.replaceFileContent
+import com.jetbrains.rider.test.scriptingApi.typeWithLatency
+import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.SettingsHelper
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.AfterMethod

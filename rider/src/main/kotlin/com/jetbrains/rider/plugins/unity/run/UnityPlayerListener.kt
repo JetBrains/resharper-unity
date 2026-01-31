@@ -6,7 +6,13 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import kotlinx.coroutines.delay
-import java.net.*
+import java.net.Inet4Address
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.NetworkInterface
+import java.net.SocketException
+import java.net.StandardProtocolFamily
+import java.net.StandardSocketOptions
 import java.nio.ByteBuffer
 import java.nio.channels.DatagramChannel
 import java.nio.channels.SelectionKey

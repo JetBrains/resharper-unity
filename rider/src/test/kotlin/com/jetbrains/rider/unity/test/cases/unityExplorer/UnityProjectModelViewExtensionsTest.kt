@@ -2,8 +2,9 @@ package com.jetbrains.rider.unity.test.cases.unityExplorer
 
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.Solution
+import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Issue
@@ -14,10 +15,17 @@ import com.jetbrains.rider.test.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.advancedSettings.AdvancedSettingsList
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.callUndo
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
-import com.jetbrains.rider.unity.test.framework.api.*
+import com.jetbrains.rider.unity.test.framework.api.addNewItem2
+import com.jetbrains.rider.unity.test.framework.api.cutItem2
+import com.jetbrains.rider.unity.test.framework.api.deleteElement
+import com.jetbrains.rider.unity.test.framework.api.doActionAndWait
+import com.jetbrains.rider.unity.test.framework.api.dump
+import com.jetbrains.rider.unity.test.framework.api.pasteItem2
+import com.jetbrains.rider.unity.test.framework.api.renameItem
 import org.testng.Assert
 import org.testng.annotations.Test
 import java.io.File

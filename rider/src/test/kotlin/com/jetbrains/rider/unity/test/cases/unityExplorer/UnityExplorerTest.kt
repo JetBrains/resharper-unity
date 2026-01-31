@@ -6,7 +6,10 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Issue
@@ -21,7 +24,11 @@ import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import com.jetbrains.rider.test.scriptingApi.withSolution
-import com.jetbrains.rider.unity.test.framework.api.*
+import com.jetbrains.rider.unity.test.framework.api.addNewFolder2
+import com.jetbrains.rider.unity.test.framework.api.addNewItem2
+import com.jetbrains.rider.unity.test.framework.api.dump
+import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
+import com.jetbrains.rider.unity.test.framework.api.withUnityExplorerPane
 import org.testng.annotations.Test
 import java.time.Duration
 

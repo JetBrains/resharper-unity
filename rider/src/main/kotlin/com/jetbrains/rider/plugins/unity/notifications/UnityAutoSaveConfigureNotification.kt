@@ -18,7 +18,11 @@ import com.intellij.ui.LightColors
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
-import com.jetbrains.rd.util.reactive.*
+import com.jetbrains.rd.util.reactive.fire
+import com.jetbrains.rd.util.reactive.hasValue
+import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rd.util.reactive.valueOrThrow
+import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.document.getFirstEditor
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService

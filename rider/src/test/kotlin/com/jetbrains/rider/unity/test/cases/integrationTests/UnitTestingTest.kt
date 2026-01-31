@@ -1,17 +1,21 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.jetbrains.rider.test.scriptingApi.waitForDaemon
-import com.jetbrains.rider.test.annotations.*
+import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Solution
+import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.UnityTestSettings
 import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.enums.UnityVersion
+import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
 import com.jetbrains.rider.test.scriptingApi.changeFileContent
+import com.jetbrains.rider.test.scriptingApi.waitForDaemon
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase

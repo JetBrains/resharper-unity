@@ -3,7 +3,13 @@ package com.jetbrains.rider.plugins.unity
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.client.ClientProjectSession
-import com.intellij.openapi.components.*
+import com.intellij.openapi.components.BaseState
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.SimplePersistentStateComponent
+import com.intellij.openapi.components.State
+import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.StoragePathMacros
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.framework.impl.RdProperty

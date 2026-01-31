@@ -5,7 +5,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.util.getOrCreateUserDataUnsafe
-import com.intellij.xdebugger.attach.*
+import com.intellij.xdebugger.attach.LocalAttachHost
+import com.intellij.xdebugger.attach.XAttachDebugger
+import com.intellij.xdebugger.attach.XAttachDebuggerProvider
+import com.intellij.xdebugger.attach.XAttachHost
+import com.intellij.xdebugger.attach.XAttachPresentationGroup
 import com.jetbrains.rider.debugger.attach.mono.MonoDebuggersProvider
 import com.jetbrains.rider.plugins.unity.run.UnityLocalProcessExtraDetails
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil

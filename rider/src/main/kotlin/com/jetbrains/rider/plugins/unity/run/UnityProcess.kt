@@ -5,10 +5,10 @@ package com.jetbrains.rider.plugins.unity.run
 import com.intellij.openapi.util.NlsSafe
 import com.jetbrains.rider.plugins.unity.run.devices.UnityCustomPlayerDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
-import com.jetbrains.rider.plugins.unity.run.devices.UnityUsbDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityLocalPlayerDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityLocalUwpPlayerDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityRemotePlayerDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityUsbDeviceKind
 import com.jetbrains.rider.plugins.unity.run.devices.UnityVirtualPlayerDeviceKind
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.run.devices.Device

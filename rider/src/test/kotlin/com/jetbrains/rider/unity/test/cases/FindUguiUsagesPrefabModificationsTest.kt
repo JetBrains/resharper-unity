@@ -1,17 +1,17 @@
 package com.jetbrains.rider.unity.test.cases
-import com.jetbrains.rider.test.annotations.report.ChecklistItems
-import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.annotations.report.Feature
+import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
+import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.annotations.TestSettings
+import com.jetbrains.rider.test.annotations.report.ChecklistItems
+import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.annotations.Solution
-import com.jetbrains.rider.unity.test.framework.base.FindUsagesAssetTestBase
-import com.jetbrains.rider.test.annotations.TestSettings
-import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
+import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.unity.test.framework.base.FindUsagesAssetTestBase
 import org.testng.annotations.Test
 
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)

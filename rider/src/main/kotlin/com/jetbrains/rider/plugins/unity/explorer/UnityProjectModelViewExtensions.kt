@@ -7,7 +7,13 @@ import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.ProjectElementView
 import com.jetbrains.rider.projectView.ProjectEntityView
 import com.jetbrains.rider.projectView.ProjectModelViewExtensions
-import com.jetbrains.rider.projectView.workspace.*
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
+import com.jetbrains.rider.projectView.workspace.containingProjectEntity
+import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
+import com.jetbrains.rider.projectView.workspace.isProjectFile
+import com.jetbrains.rider.projectView.workspace.isProjectFolder
+import com.jetbrains.rider.projectView.workspace.isSolution
+import com.jetbrains.rider.projectView.workspace.isSolutionFolder
 
 class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtensions(project) {
 

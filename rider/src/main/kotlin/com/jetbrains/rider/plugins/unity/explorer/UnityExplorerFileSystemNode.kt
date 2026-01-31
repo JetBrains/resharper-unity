@@ -6,9 +6,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.ui.SimpleTextAttributes
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.platform.backend.workspace.virtualFile
+import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
@@ -23,7 +23,7 @@ import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSuppo
 import com.jetbrains.rider.projectView.workspace.isProject
 import icons.UnityIcons
 import java.awt.Color
-import java.util.*
+import java.util.Locale
 import javax.swing.Icon
 
 enum class AncestorNodeType {

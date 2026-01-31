@@ -4,10 +4,17 @@ import com.jetbrains.rdclient.client.frontendProjectSession
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.facades.build.BuildApiFacade.BuildSettings
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
+import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
+import com.jetbrains.rider.test.scriptingApi.waitBackendDocumentChange
 import com.jetbrains.rider.test.scriptingApi.waitFirstScriptCompilation
-import com.jetbrains.rider.unity.test.framework.api.*
-
+import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import com.jetbrains.rider.unity.test.framework.api.checkSweaInSolution
+import com.jetbrains.rider.unity.test.framework.api.killUnity
+import com.jetbrains.rider.unity.test.framework.api.refreshUnityModel
+import com.jetbrains.rider.unity.test.framework.api.startUnity
+import com.jetbrains.rider.unity.test.framework.api.waitConnectionToUnityEditor
+import com.jetbrains.rider.unity.test.framework.api.waitForUnityRunConfigurations
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File

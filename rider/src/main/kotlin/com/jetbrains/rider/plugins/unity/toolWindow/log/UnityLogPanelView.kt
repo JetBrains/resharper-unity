@@ -5,7 +5,11 @@ import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.DumbAwareAction
@@ -19,8 +23,8 @@ import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.intellij.util.application
@@ -43,8 +47,13 @@ import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import java.text.SimpleDateFormat
-import java.util.*
-import javax.swing.*
+import java.util.Date
+import java.util.TimeZone
+import javax.swing.Icon
+import javax.swing.JComponent
+import javax.swing.JMenuItem
+import javax.swing.JPopupMenu
+import javax.swing.ScrollPaneConstants
 import javax.swing.event.DocumentEvent
 
 class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel, toolWindow: ToolWindow) {

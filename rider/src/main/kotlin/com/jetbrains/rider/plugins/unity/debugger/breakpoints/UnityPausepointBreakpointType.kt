@@ -14,7 +14,7 @@ import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import icons.UnityIcons
 import org.jetbrains.annotations.Nls
-import java.util.*
+import java.util.EnumSet
 import javax.swing.Icon
 
 class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
