@@ -1,8 +1,9 @@
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.CreateFromUsage;
+using JetBrains.ReSharper.Feature.Services.CreateFromUsage.CreateDeclaration;
+using JetBrains.ReSharper.Feature.Services.CreateFromUsage.DeclarationBuilders;
 using JetBrains.ReSharper.Feature.Services.Intentions;
-using JetBrains.ReSharper.Feature.Services.Intentions.CreateDeclaration;
-using JetBrains.ReSharper.Feature.Services.Intentions.Impl.DeclarationBuilders;
 using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Plugins.Unity.Resources;

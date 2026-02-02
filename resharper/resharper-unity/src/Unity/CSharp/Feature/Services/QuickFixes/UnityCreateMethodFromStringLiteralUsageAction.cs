@@ -1,6 +1,6 @@
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Feature.Services.Intentions.CreateDeclaration;
-using JetBrains.ReSharper.Feature.Services.Intentions.DataProviders;
+using JetBrains.ReSharper.Feature.Services.CreateFromUsage.CreateDeclaration;
+using JetBrains.ReSharper.Feature.Services.CreateFromUsage.DataProviders;
 using JetBrains.ReSharper.Intentions.CreateFromUsage;
 using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;

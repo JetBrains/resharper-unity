@@ -1,10 +1,11 @@
-﻿using JetBrains.ReSharper.Feature.Services.CSharp.Intentions.DataProviders;
+﻿using JetBrains.ReSharper.Feature.Services.CreateFromUsage;
+using JetBrains.ReSharper.Feature.Services.CreateFromUsage.CreateDeclaration;
+using JetBrains.ReSharper.Feature.Services.CreateFromUsage.DataProviders;
+using JetBrains.ReSharper.Feature.Services.CreateFromUsage.DeclarationBuilders;
+using JetBrains.ReSharper.Feature.Services.CreateFromUsage.TemplateFieldHolders;
+using JetBrains.ReSharper.Feature.Services.CSharp.Intentions.DataProviders;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Feature.Services.Intentions;
-using JetBrains.ReSharper.Feature.Services.Intentions.CreateDeclaration;
-using JetBrains.ReSharper.Feature.Services.Intentions.DataProviders;
-using JetBrains.ReSharper.Feature.Services.Intentions.Impl.DeclarationBuilders;
-using JetBrains.ReSharper.Feature.Services.Intentions.Impl.TemplateFieldHolders;
 using JetBrains.ReSharper.Intentions.CreateFromUsage;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
