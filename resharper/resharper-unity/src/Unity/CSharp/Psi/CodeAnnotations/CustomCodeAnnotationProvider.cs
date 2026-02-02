@@ -24,7 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class CustomCodeAnnotationProvider : ICustomCodeAnnotationProvider, IInvalidatingCache
     {
-        private static readonly IClrTypeName ourMustUseReturnValueAttributeFullName = new ClrTypeName(typeof(MustUseReturnValueAttribute).FullName);
         private static readonly IClrTypeName ourMeansImplicitUseAttribute = new ClrTypeName(typeof(MeansImplicitUseAttribute).FullName);
         private static readonly IClrTypeName ourPublicAPIAttribute = new ClrTypeName(typeof(PublicAPIAttribute).FullName);
         private static readonly IClrTypeName ourUsedImplicitlyAttributeFullName = new ClrTypeName(typeof(UsedImplicitlyAttribute).FullName);
@@ -57,36 +56,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         public ICollection<IAttributeInstance> GetSpecialAttributeInstances(IClrDeclaredElement element,
                                                                             AttributeInstanceCollection existingAttributes)
         {
-            if (GetCoroutineMustUseReturnValueAttribute(element, out var collection)) return collection;
-            if (GetPublicAPIImplicitlyUsedAttribute(element, existingAttributes, out collection)) return collection;
+            if (GetPublicAPIImplicitlyUsedAttribute(element, existingAttributes, out var collection)) return collection;
             if (GetValueRangeAttribute(element, existingAttributes, out collection)) return collection;
 
             return EmptyList<IAttributeInstance>.Instance;
-        }
-
-        private bool GetCoroutineMustUseReturnValueAttribute(IClrDeclaredElement element,
-                                                             out ICollection<IAttributeInstance> collection)
-        {
-            collection = EmptyList<IAttributeInstance>.Instance;
-
-            var method = element as IMethod;
-            var type = method?.GetContainingType();
-            if (method == null || type == null || !myUnityApi.IsUnityType(type)) return false;
-
-            var returnType = method.ReturnType;
-            var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.Module);
-            if (!Equals(returnType, predefinedType.IEnumerator)) return false;
-
-            // The ctorArguments lambda result is not cached, so let's allocate everything up front
-            var args = new[]
-            {
-                new AttributeValue(ConstantValue.String("Coroutine will not continue if return value is ignored", method.Module))
-            };
-            collection = new[]
-            {
-                new SpecialAttributeInstance(ourMustUseReturnValueAttributeFullName, GetModule(element), () => args)
-            };
-            return true;
         }
 
         // Unity ships annotations, but they're out of date. Specifically, the [PublicAPI] attribute is
