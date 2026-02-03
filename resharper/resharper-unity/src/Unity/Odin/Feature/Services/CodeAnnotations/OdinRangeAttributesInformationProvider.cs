@@ -1,46 +1,51 @@
-using System;
+using System.Collections.Generic;
 using JetBrains.Application.Parts;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.CodeAnnotations;
+using JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlow.IntValuesAnalysis;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeAnnotations;
 
 [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-public class OdinRangeAttributesInformationProvider : IUnityRangeAttributeProvider
+public class OdinRangeAttributesInformationProvider(UnityApi unityApi) : ICustomIntValueRangeAnnotationProvider
 {
-    public bool IsApplicable(IAttributeInstance attributeInstance)
+    public IEnumerable<IClrTypeName> AttributeNames => [
+        OdinKnownAttributes.MinMaxSliderAttribute,
+        OdinKnownAttributes.ProgressBarAttribute,
+        OdinKnownAttributes.PropertyRangeAttribute,
+        OdinKnownAttributes.WrapAttribute
+    ];
+
+    public bool IsApplicable(IAttributesOwner attributesOwner)
     {
-        if (!attributeInstance.GetClrName().Equals(OdinKnownAttributes.MinMaxSliderAttribute) 
-            && !attributeInstance.GetClrName().Equals(OdinKnownAttributes.ProgressBarAttribute)
-            && !attributeInstance.GetClrName().Equals(OdinKnownAttributes.PropertyRangeAttribute)
-            && !attributeInstance.GetClrName().Equals(OdinKnownAttributes.WrapAttribute))
-            return false;
-        
-        var unityMinValue = attributeInstance.PositionParameter(0);
-        var unityMaxValue = attributeInstance.PositionParameter(1);
-
-        if (!OdinCodeAnnotationUtil.IsApplicable(unityMinValue.ConstantValue))
-            return false;
-        
-        if (!OdinCodeAnnotationUtil.IsApplicable(unityMaxValue.ConstantValue))
-            return false;
-
-        return true;
+        return UnityValueRangeAnnotationUtil.IsApplicable(attributesOwner, unityApi);
     }
 
-    // Even though the constructor for ValueRange takes long, it only works with int.MaxValue
-    public long GetMinValue(IAttributeInstance attributeInstance)
+    public bool TryApplyAnnotation(IAttributeInstance attributeInstance, AbstractValue.Builder builder)
     {
-        var unityMinValue = attributeInstance.PositionParameter(0);
-        return OdinCodeAnnotationUtil.GetMinValue(unityMinValue.ConstantValue);
-    }
+        if (attributeInstance.PositionParameterCount == 2)
+        {
+            var firstValue = attributeInstance.PositionParameter(0);
+            var secondValue = attributeInstance.PositionParameter(1);
 
-    public long GetMaxValue(IAttributeInstance attributeInstance)
-    {
-        var unityMinValue = attributeInstance.PositionParameter(1);
-        return OdinCodeAnnotationUtil.GetMaxValue(unityMinValue.ConstantValue);
+            if (OdinCodeAnnotationUtil.IsApplicable(firstValue.ConstantValue) && OdinCodeAnnotationUtil.IsApplicable(secondValue.ConstantValue))
+            {
+                var minValue = OdinCodeAnnotationUtil.GetMinValue(firstValue.ConstantValue);
+                var maxValue = OdinCodeAnnotationUtil.GetMaxValue(secondValue.ConstantValue);
+
+                if (minValue <= maxValue)
+                {
+                    builder.Add(new AbstractValue.LongInterval(minValue, maxValue));
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

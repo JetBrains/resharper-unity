@@ -1,37 +1,39 @@
+using System.Collections.Generic;
 using JetBrains.Application.Parts;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Plugins.Unity.Odin.Attributes;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.CodeAnnotations;
+using JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlow.IntValuesAnalysis;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Odin.Feature.Services.CodeAnnotations;
 
 [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-public class OdinMinAttributeInformationProvider : IUnityRangeAttributeProvider
+public class OdinMinAttributeInformationProvider(UnityApi unityApi) : ICustomIntValueRangeAnnotationProvider
 {
-    public bool IsApplicable(IAttributeInstance attributeInstance)
+    public IEnumerable<IClrTypeName> AttributeNames => [OdinKnownAttributes.MinValueAttribute];
+
+    public bool IsApplicable(IAttributesOwner attributesOwner)
     {
-        if (!attributeInstance.GetClrName().Equals(OdinKnownAttributes.MinValueAttribute))
-            return false;
-        
-        var unityMinValue = attributeInstance.PositionParameter(0);
-        var unityMaxValue = attributeInstance.PositionParameter(1);
-
-        if (!OdinCodeAnnotationUtil.IsApplicable(unityMinValue.ConstantValue) && !OdinCodeAnnotationUtil.IsApplicable(unityMaxValue.ConstantValue))
-            return false;
-
-        return true;
+        return UnityValueRangeAnnotationUtil.IsApplicable(attributesOwner, unityApi);
     }
 
-    // Even though the constructor for ValueRange takes long, it only works with int.MaxValue
-    public long GetMinValue(IAttributeInstance attributeInstance)
+    public bool TryApplyAnnotation(IAttributeInstance attributeInstance, AbstractValue.Builder builder)
     {
-        var unityMinValue = attributeInstance.PositionParameter(0);
-        return OdinCodeAnnotationUtil.GetMinValue(unityMinValue.ConstantValue);
-    }
+        if (attributeInstance.PositionParameterCount == 1)
+        {
+            var attributeValue = attributeInstance.PositionParameter(0);
+            if (OdinCodeAnnotationUtil.IsApplicable(attributeValue.ConstantValue))
+            {
+                var minValue = OdinCodeAnnotationUtil.GetMinValue(attributeValue.ConstantValue);
+                builder.Add(new AbstractValue.LongInterval(minValue, long.MaxValue));
+                return true;
+            }
+        }
 
-    public long GetMaxValue(IAttributeInstance attributeInstance)
-    {
-        return long.MaxValue;
+        return false;
     }
 }

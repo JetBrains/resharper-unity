@@ -1,41 +1,49 @@
-using System;
+using System.Collections.Generic;
 using JetBrains.Application.Parts;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.CodeAnnotations;
+using JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlow.IntValuesAnalysis;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations;
 
 [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-public class UnityRangeAttributeInformationProvider : IUnityRangeAttributeProvider
+public class UnityRangeAttributeInformationProvider(UnityApi unityApi) : ICustomIntValueRangeAnnotationProvider
 {
-    public bool IsApplicable(IAttributeInstance attributeInstance)
+    public IEnumerable<IClrTypeName> AttributeNames => [KnownTypes.RangeAttribute];
+
+    public bool IsApplicable(IAttributesOwner attributesOwner)
     {
-        if (!attributeInstance.GetClrName().Equals(KnownTypes.RangeAttribute))
-            return false;
-        
-        var unityFrom = attributeInstance.PositionParameter(0);
-        var unityTo = attributeInstance.PositionParameter(1);
-
-        // Values are floats, but applied to an integer field. Convert to integer values
-        if (!unityFrom.ConstantValue.IsFloat() || !unityTo.ConstantValue.IsFloat())
-            return false;
-
-        return true;
+        return UnityValueRangeAnnotationUtil.IsApplicable(attributesOwner, unityApi);
     }
 
-    // The check above means this is not null. We take the floor, because that's how Unity works.
-    // E.g. Unity's Inspector treats [Range(1.7f, 10.9f)] as between 1 and 10 inclusive
-    
-    public long GetMinValue(IAttributeInstance attributeInstance)
+    public bool TryApplyAnnotation(IAttributeInstance attributeInstance, AbstractValue.Builder builder)
     {
-        var unityFrom = attributeInstance.PositionParameter(0);
-        return Convert.ToInt64(Math.Floor(unityFrom.ConstantValue.FloatValue));
-    }
+        if (attributeInstance.PositionParameterCount == 2)
+        {
+            var unityFrom = attributeInstance.PositionParameter(0);
+            var unityTo = attributeInstance.PositionParameter(1);
 
-    public long GetMaxValue(IAttributeInstance attributeInstance)
-    {
-        var unityTo = attributeInstance.PositionParameter(1);
-        return Convert.ToInt64(Math.Floor(unityTo.ConstantValue.FloatValue));
+            if (unityFrom.ConstantValue.IsFloat() && unityTo.ConstantValue.IsFloat())
+            {
+                //
+                // Take the floor, because that's how Unity works.
+                // E.g. Unity's Inspector treats [Range(1.7f, 10.9f)] as between 1 and 10 inclusive
+                //
+
+                var fromLongValue = UnityValueRangeAnnotationUtil.ConvertToLong(unityFrom.ConstantValue);
+                var toLongValue = UnityValueRangeAnnotationUtil.ConvertToLong(unityTo.ConstantValue);
+
+                if (fromLongValue <= toLongValue)
+                {
+                    builder.Add(new AbstractValue.LongInterval(fromLongValue, toLongValue));
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

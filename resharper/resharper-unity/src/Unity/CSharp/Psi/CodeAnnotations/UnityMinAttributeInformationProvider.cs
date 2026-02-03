@@ -1,36 +1,37 @@
-using System;
+using System.Collections.Generic;
 using JetBrains.Application.Parts;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.CodeAnnotations;
+using JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlow.IntValuesAnalysis;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations;
 
 [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-public class UnityMinAttributeInformationProvider : IUnityRangeAttributeProvider
+public class UnityMinAttributeInformationProvider(UnityApi unityApi) : ICustomIntValueRangeAnnotationProvider
 {
-    public bool IsApplicable(IAttributeInstance attributeInstance)
+    public IEnumerable<IClrTypeName> AttributeNames => [KnownTypes.MinAttribute];
+
+    public bool IsApplicable(IAttributesOwner attributesOwner)
     {
-        if (!attributeInstance.GetClrName().Equals(KnownTypes.MinAttribute))
-            return false;
-        
-        var unityMinValue = attributeInstance.PositionParameter(0);
-
-        if (!unityMinValue.ConstantValue.IsFloat())
-            return false;
-
-        return true;
+        return UnityValueRangeAnnotationUtil.IsApplicable(attributesOwner, unityApi);
     }
 
-    // Even though the constructor for ValueRange takes long, it only works with int.MaxValue
-    public long GetMinValue(IAttributeInstance attributeInstance)
+    public bool TryApplyAnnotation(IAttributeInstance attributeInstance, AbstractValue.Builder builder)
     {
-        var unityMinValue = attributeInstance.PositionParameter(0);
-        return Convert.ToInt64(Math.Floor(unityMinValue.ConstantValue.FloatValue));
-    }
+        if (attributeInstance.PositionParameterCount == 1)
+        {
+            var unityMinValue = attributeInstance.PositionParameter(0);
+            if (unityMinValue.ConstantValue.IsFloat())
+            {
+                var minLongValue = UnityValueRangeAnnotationUtil.ConvertToLong(unityMinValue.ConstantValue);
+                builder.Add(new AbstractValue.LongInterval(minLongValue, long.MaxValue));
+                return true;
+            }
+        }
 
-    public long GetMaxValue(IAttributeInstance attributeInstance)
-    {
-        return long.MaxValue;
+        return false;
     }
 }
