@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
+import com.intellij.platform.debugger.impl.ui.XDebuggerEntityConverter
 import com.intellij.util.application
 import com.intellij.util.ui.UIUtil
 import com.intellij.xdebugger.XDebuggerManager
@@ -16,10 +17,8 @@ import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XBreakpoint
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
-import com.intellij.xdebugger.impl.breakpoints.XBreakpointBase
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointManagerImpl
 import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory
-import com.intellij.xdebugger.impl.proxy.asProxy
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
@@ -105,7 +104,7 @@ private fun tryGetEditor(project: Project, providedEditor: Editor?): Editor? {
 private fun tryGetGutterIconRenderer(breakpoint: XBreakpoint<*>, providedIconRenderer: GutterIconRenderer?): GutterIconRenderer? {
     if (providedIconRenderer != null) return providedIconRenderer
 
-    val breakpointProxy = (breakpoint as? XBreakpointBase<*, *, *>)?.asProxy() ?: return null
+    val breakpointProxy = XDebuggerEntityConverter.asProxy(breakpoint) ?: return null
     return breakpointProxy.getGutterIconRenderer()
 }
 
@@ -113,7 +112,8 @@ private fun tryEditBreakpoint(project: Project, breakpoint: XBreakpoint<*>, wher
     val editor = tryGetEditor(project, providedEditor) ?: return
 
     // Don't show the balloon if the dialog is already open
-    if (breakpoint is XBreakpointBase<*, *, *> && !BreakpointsDialogFactory.getInstance(project).popupRequested(breakpoint.asProxy())) {
+    val breakpointProxy = XDebuggerEntityConverter.asProxy(breakpoint)
+    if (breakpointProxy != null && !BreakpointsDialogFactory.getInstance(project).popupRequested(breakpointProxy)) {
         val gutterComponent = (editor as? EditorEx)?.gutterComponentEx ?: return
         DebuggerUIUtil.showXBreakpointEditorBalloon(project, whereToShow, gutterComponent, false, breakpoint)
     }
