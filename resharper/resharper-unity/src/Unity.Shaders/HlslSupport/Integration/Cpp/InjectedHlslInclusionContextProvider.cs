@@ -35,20 +35,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             Lifetime lifetime)
         {
             var solution = cache.Solution;
-            var sourceFile = rootFile.GetRandomSourceFile(solution);
+            var sourceFile = rootFile.GetRandomSourceFile(cache.CppModule);
             var randomProjectFile = sourceFile.ToProjectFile() ?? rootFile.GetRandomProjectFile(solution);
-            
+            var project = randomProjectFile.GetProject();
+                
             // retrieve shader program info
             if (!solution.GetComponent<ShaderProgramCache>().TryGetOrReadUpToDateProgramInfo(sourceFile, rootFile, out var shaderProgramInfo))
                 Assertion.Fail($"Shader program info is missing for {rootFile}");
          
             // create compilation properties
             var compilationPropertiesProvider = cache.Solution.GetComponent<UnityHlslCppCompilationPropertiesProvider>();
-            var compilationProperties = compilationPropertiesProvider.GetShaderLabHlslCompilationProperties(solution, randomProjectFile.GetProject(), rootFile, shaderProgramInfo);
+            var compilationProperties = compilationPropertiesProvider.GetShaderLabHlslCompilationProperties(solution, project, rootFile, shaderProgramInfo);
             
             // create inclusion context
             var languageDialect = CppProjectConfigurationUtil.GetLanguageDialect(compilationProperties);
-            var inclusionContext = CppRootInclusionContext.Create(compilationProperties, randomProjectFile.GetProject(),
+            var inclusionContext = CppRootInclusionContext.Create(compilationProperties, project,
                 randomProjectFile, cache, rootFile, options.File, languageDialect, 
                 cacheVersion, options.AllowPendingActions, options.CollectPPUsages, lifetime, symbolScope);
 
