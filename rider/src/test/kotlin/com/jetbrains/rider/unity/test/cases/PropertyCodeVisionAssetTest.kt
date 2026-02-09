@@ -1,8 +1,8 @@
 package com.jetbrains.rider.unity.test.cases
+import com.intellij.codeInsight.codeVision.lensContextIfCreated
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.codeVision.frontendLensContextOrThrow
 import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -171,7 +171,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
                 val timeout = Duration.ofSeconds(60)
                 waitForLenses()
                 pumpMessages(timeout) {
-                    frontendLensContextOrThrow.resubmitThings()
+                    lensContextIfCreated!!.resubmitThings()
                     currentBeforeActionInlaysTextBuilder.clear()
                     currentBeforeActionInlaysTextBuilder.appendLine("before change")
                     currentBeforeActionInlaysTextBuilder.append(dumpLenses())
@@ -182,7 +182,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
                     val currentAfterActionInlaysTextBuilder = StringBuilder(expectedInlaysText.length)
                     waitForLenses()
                     pumpMessages(timeout) {
-                        frontendLensContextOrThrow.resubmitThings()
+                        lensContextIfCreated!!.resubmitThings()
                         currentAfterActionInlaysTextBuilder.clear()
                         currentAfterActionInlaysTextBuilder.append(currentBeforeActionInlaysTextBuilder.toString())
                         currentAfterActionInlaysTextBuilder.appendLine("after change")
