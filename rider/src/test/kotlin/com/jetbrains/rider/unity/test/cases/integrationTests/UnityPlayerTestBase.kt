@@ -30,6 +30,7 @@ import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rider.unity.test.framework.base.BaseTestWithUnitySetup
 import kotlinx.coroutines.CompletableDeferred
+import org.testng.ITestResult
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File
@@ -151,10 +152,10 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
     }
 
     @BeforeMethod(alwaysRun = true)
-    override fun setUpTestCaseSolution() {
+    override fun setUpTestCaseSolution(testResult: ITestResult) {
         unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null)
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
-        super.setUpTestCaseSolution()
+        super.setUpTestCaseSolution(testResult)
         prepareAssemblies(project, activeSolutionDirectory)
         buildUnityPlayer(unityBackend)
     }
