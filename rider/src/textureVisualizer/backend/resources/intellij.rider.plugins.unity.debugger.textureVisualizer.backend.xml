@@ -1,0 +1,16 @@
+<idea-plugin>
+  <dependencies>
+    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+    <plugin id="com.intellij.resharper.unity"/>
+    <module name="intellij.platform.rpc.backend"/>
+    <module name="intellij.rd.ide.model.generated"/>
+    <module name="intellij.rider"/>
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer"/>
+    <!-- endregion -->
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <platform.rpc.backend.remoteApiProvider
+      implementation="intellij.rider.plugins.unity.debugger.textureVisualizer.backend.RiderTextureDataApiProvider"/>
+  </extensions>
+</idea-plugin>

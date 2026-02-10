@@ -9,7 +9,7 @@ import com.intellij.internal.statistic.eventLog.events.VarargEventId
 import com.intellij.internal.statistic.service.fus.collectors.CounterUsagesCollector
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.AtomicReference
-import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
+import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
 import java.util.concurrent.TimeUnit
 
 internal class TextureDebuggerCollector : CounterUsagesCollector() {
