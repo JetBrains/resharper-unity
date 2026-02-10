@@ -21,6 +21,6 @@ QUICKFIXES:
 Remove redundant type parameter 'T'
 1: Method 'UnityEngine.GameObject.AddComponent(string)' is obsolete: 'GameObject.AddComponent with string argument has been deprecated. Use GameObject.AddComponent<T>() instead. (UnityUpgradable).'
 QUICKFIXES:
-Make method Test obsolete
+Mark containing method 'Test' as obsolete
 2: Incorrect number of type parameters in reference to class 'DefaultNamespace.Foo<T>'
 NO QUICKFIXES

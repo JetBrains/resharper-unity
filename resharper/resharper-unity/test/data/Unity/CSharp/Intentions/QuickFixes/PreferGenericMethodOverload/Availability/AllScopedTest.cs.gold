@@ -55,7 +55,7 @@ Convert to 'GetComponent<SomethingElse>()'
 --Use strongly typed overloads in solution
 2: Method 'UnityEngine.GameObject.AddComponent(string)' is obsolete: 'GameObject.AddComponent with string argument has been deprecated. Use GameObject.AddComponent<T>() instead. (UnityUpgradable).'
 QUICKFIXES:
-Make method Method2 obsolete
+Mark containing method 'Method2' as obsolete
 3: String based type lookup is inefficient, use generic overload
 QUICKFIXES:
 Convert to 'AddComponent<SomethingElse>()'
