@@ -20,6 +20,9 @@
     <module name="intellij.rider.plugins.unity/yaml" />
     <module name="intellij.rider.plugins.unity/css" />
     <module name="intellij.rider.plugins.unity/javascript" />
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer" loading="embedded"/>
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.backend" />
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend" />
   </content>
 
   <extensionPoints>
@@ -207,7 +210,6 @@
 
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
     <rider.unityDetector implementation="com.jetbrains.rider.plugins.unity.UnityDetectorImpl"/>
-    <rider.debugger.value.evaluator.factory implementation="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluatorFactory"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider" order="after projectAndFrameworkResolveContextWidget"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsService" order="after projectAndFrameworkResolveContextWidget"/>
     <iw.actionProvider id="ShaderVariantWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantWidgetActionProvider"/>

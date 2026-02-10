@@ -1,0 +1,41 @@
+### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "backend_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "backend",
+  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":backend_resources"],
+  deps = [
+    "@community//libraries/kotlinx/coroutines/core",
+    "@community//platform/kernel/rpc.backend",
+    "@community//platform/extensions",
+    "@community//platform/core-api:core",
+    "@community//platform/kernel/shared:kernel",
+    "@community//platform/util/concurrency",
+    "@community//platform/execution-impl",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//platform/xdebugger-api:debugger",
+    "@community//platform/xdebugger-impl:debugger-impl",
+    "@community//platform/xdebugger-impl/rpc",
+    "@community//platform/xdebugger-impl/shared",
+    "@community//platform/util/coroutines",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer",
+    "//rider/model/generated",
+    "//rider",
+    "//remote-dev/rd-client",
+    "//rider/rdclient-dotnet",
+    "//remote-dev/rd-ide-model-generated",
+    "@community//libraries/rd/framework",
+    "@community//libraries/rd/core",
+    "//dotnet/Plugins:rider-plugins-unity",
+  ]
+)
+### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` end

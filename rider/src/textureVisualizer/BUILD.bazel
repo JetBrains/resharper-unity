@@ -1,0 +1,29 @@
+### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "textureVisualizer_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "textureVisualizer",
+  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":textureVisualizer_resources"],
+  deps = [
+    "@community//platform/kernel/shared:kernel",
+    "@community//platform/xdebugger-api:debugger",
+    "@community//platform/xdebugger-impl/shared",
+    "@community//libraries/kotlinx/serialization/core",
+    "@community//libraries/kotlinx/serialization/json",
+    "@community//platform/xdebugger-impl:debugger-impl",
+    "@community//platform/core-api:core",
+    "@community//platform/xdebugger-impl/rpc",
+    "@lib//:jetbrains-annotations",
+    "@community//platform/util/multiplatform",
+  ]
+)
+### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer` end

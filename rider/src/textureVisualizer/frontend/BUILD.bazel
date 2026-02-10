@@ -1,0 +1,51 @@
+### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.frontend` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "frontend_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "frontend",
+  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.frontend",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":frontend_resources"],
+  deps = [
+    "@community//platform/xdebugger-impl:debugger-impl",
+    "//rider",
+    "@community//platform/core-api:core",
+    "@community//platform/platform-api:ide",
+    "//rider/model/generated",
+    "//rider/rdclient-dotnet",
+    "@community//platform/xdebugger-api:debugger",
+    "@community//grid/impl",
+    "@community//grid/core-impl",
+    "@community//platform/lang-impl",
+    "@community//platform/core-ui",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//platform/analysis-api:analysis",
+    "@community//platform/util/concurrency",
+    "@community//platform/xdebugger-impl/shared",
+    "@community//platform/xdebugger-impl/ui",
+    "//remote-dev/rd-client",
+    "//remote-dev/rd-platform",
+    "//rider/languages",
+    "@community//libraries/rd/framework",
+    "@community//libraries/rd/core",
+    "//remote-dev/rd-ide-model-generated",
+    "@community//platform/rd-platform-community:rd-community",
+    "//rider/icons",
+    "@community//platform/xdebugger-impl/rpc",
+    "@community//fleet/rpc",
+    "@community//platform/util/coroutines",
+    "@community//platform/xdebugger-impl/frontend",
+    "@community//platform/statistics",
+    "//dotnet/Plugins:rider-plugins-unity",
+    "@community//images",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer",
+  ]
+)
+### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.frontend` end
