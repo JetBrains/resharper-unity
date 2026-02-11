@@ -41,11 +41,11 @@ object Library : Root() {
             +"RecompileAfterFinishedPlaying"
             +"StopPlayingAndRecompile"
         })
-        signal("profilerSnapshotFetchingSettings", int).async.documentation = "What's new action to enable Unity Profiler integration feature"
     }
 
     val UnityProjectSettings = aggregatedef("UnityProjectSettings") {
-        property("buildLocation", string).documentation = "Path to the executable of the last built Standalone player, if it exists. Can be empty"
+        property("buildLocation", string).documentation =
+            "Path to the executable of the last built Standalone player, if it exists. Can be empty"
     }
 
     val RunMethodData = structdef {
@@ -92,51 +92,36 @@ object Library : Root() {
         field("unityProfilerApiPath", string)
         field("needRestartScripts", bool)
     }
-    val SnapshotStatus  = enum {
-        +"Disabled"
-        +"NoSnapshotDataAvailable"
-        +"HasNewSnapshotDataToFetch"
-        +"SnapshotDataFetchingInProgress"
-        +"SnapshotDataIsUpToDate"
-    }
 
-    val UnityProfilerSnapshotStatus = structdef {
-        field("frameIndex", int)
-        field("threadIndex", int)
-        field("threadName", string)
-        field("samplesCount", int)
-        field("status", SnapshotStatus)
-        field("fetchingProgress", float)
-    }
-    
     val ProfilerThread = structdef {
         field("index", int)
         field("name", string)
     }
-    
-    val ProfilerSnapshotRequest = structdef{
+
+    val ProfilerSnapshotRequest = structdef {
         field("frameIndex", int)
-        field("threadIndex", int)
+        field("thread", ProfilerThread)
     }
 
-    val ProfilerSampleTimingInfo = structdef {
-        field(
-            "samples", immutableList(
-                structdef("timingInfo")
-                {
+    val UnityProfilerRecordInfo = structdef {
+        field("firstFrameId", int)
+        field("lastFrameId", int)
+        field("firstFrameNs", ulong)
+        field("lastFrameNs", ulong)
+    }
+
+    val SelectionState = structdef {
+        field("selectedFrameIndex", int)
+        field("selectedThread", Library.ProfilerThread)
+    }
+
+    val MainFrameTimingsAndThreads = structdef {
+        field("samples", immutableList(
+            structdef("timingInfo") {
                     field("frameId", int)
                     field("ms", float)
-                })
+                }).nullable
         )
-    }
-    val ProfilerSampleThreadsInfo = structdef {
-        field(
-            "threads", immutableList(
-                structdef("threadInfo")
-                {
-                    field("threadId", int)
-                    field("threadName", string)
-                })
-        )
+        field("threads", immutableList(ProfilerThread).nullable)
     }
 }

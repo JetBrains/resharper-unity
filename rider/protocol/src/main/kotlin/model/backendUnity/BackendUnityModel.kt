@@ -203,18 +203,36 @@ object UnityProfilerModel : Ext(BackendUnityModel) {
         field("frameIndex", int)
         field("startTimeMs", double)
         field("frameTimeMs", float)
-        field("threadIndex", int)
-        field("threadName", string)
+        field("thread", Library.ProfilerThread)
         field("markerIdToName", immutableList(MarkerToNamePair))
         field("samples", immutableList(SampleInfo))
-        field("status", Library.UnityProfilerSnapshotStatus)
+    }
+    val TaskStatus = enum {
+        +"Running"
+        +"Completed"
+        +"Failed"
+        +"Cancelled"
     }
 
+    val SnapshotRequestTask = aggregatedef("SnapshotRequestTask") {
+        property("frameIndex", int).readonly
+        property("thread", Library.ProfilerThread).readonly
+        property("progress", float).async
+        property("status", TaskStatus).async  // NEW: Running, Completed, Failed, Cancelled
+        property("errorMessage", string.nullable).async  // NEW: Error details if failed
+        property("snapshot", UnityProfilerSnapshot.nullable).async
+    }
+
+    
     init {
         //Unity profiler integration
         callback("openFileBySampleInfo", SampleStackInfo, void).documentation = "Called from Unity to navigate from selected profiler sample"
-        call("getUnityProfilerSnapshot", Library.ProfilerSnapshotRequest, UnityProfilerSnapshot.nullable).async.documentation = "Polled from the backend to get current frame profiler snapshot data"
-        property("profilerSnapshotStatus", Library.UnityProfilerSnapshotStatus).async
-        call("getProfilerFrameSamplesTiming", void, Library.ProfilerSampleTimingInfo).async
+        
+        //new API
+        property("selectionState", Library.SelectionState.nullable).async
+        property("currentProfilerRecordInfo", Library.UnityProfilerRecordInfo.nullable).async
+        property("mainThreadTimingsAndThreads", Library.MainFrameTimingsAndThreads.nullable).async
+        
+        call("requestFrameSnapshot", Library.ProfilerSnapshotRequest, SnapshotRequestTask).async
     }
 }
