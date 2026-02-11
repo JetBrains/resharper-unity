@@ -56,6 +56,8 @@
     <rd.solutionExtListener endpoint="IDE Frontend"
                             listener="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManagerProtocolListener"/>
     <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerToolWindowManagerProtocolListener"/>
+    <rd.solutionExtListener endpoint="IDE Frontend"
                             listener="com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState$ProtocolListener"/>
     <rd.solutionExtListener endpoint="IDE Frontend"
                             listener="com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder$ProtocolListener"/>
@@ -215,7 +217,6 @@
     <iw.actionProvider id="ShaderVariantWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantWidgetActionProvider"/>
     <iw.actionProvider id="ShaderWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetActionProvider"/>
 
-    <iw.actionProvider id="ProfilerIntegrationWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.profilerIntegration.ProfilerIntegrationWidgetActionProvider"/>
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantEventLogger"/>
 
     <rider.completion.csharpIdentifierPartHelper implementation="com.jetbrains.rider.plugins.unity.csharp.completion.OdinLayoutAttributeCSharpIdentifierPartHelper"/>
@@ -225,6 +226,14 @@
                 secondary="false"
                 icon="UnityIcons.ToolWindows.UnityLog"
                 factoryClass="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
+
+    <!-- Unity Profiler tool window -->
+    <toolWindow id="Unity Profiler"
+                anchor="right"
+                secondary="false"
+                canCloseContents="false"
+                icon="UnityIcons.ToolWindows.UnityProfiler"
+                factoryClass="com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerToolWindowFactory"/>
 
     <rider.gotoCustomizer implementation="com.jetbrains.rider.plugins.unity.gotoType.UnityGotoCustomizer"/>
   </extensions>
@@ -255,9 +264,6 @@
             class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction"
             icon="AllIcons.General.Settings" />
 
-    <action id="EnableAutoProfilerSnapshotFetching"
-            class="com.jetbrains.rider.plugins.unity.actions.EnableAutoProfilerSnapshotFetchingSettings" />
-
     <action id="RiderUnityOpenEditorLogAction"
             class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction"
             icon="UnityIcons.Actions.OpenEditorLog" />
@@ -274,9 +280,6 @@
     <action id="ShaderWidgetAction"
             class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetAction" />
 
-    <action id="ProfilerIntegrationWidgetAction"
-            class="com.jetbrains.rider.plugins.unity.ui.profilerIntegration.ProfilerIntegrationWidgetAction" />
-    
     <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionBar" anchor="after" />
       <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionBar" anchor="after" />
