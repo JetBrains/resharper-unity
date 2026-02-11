@@ -1,10 +1,9 @@
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 
-public enum ProfilerSnapshotFetchingSettings
+public enum ProfilerSnapshotFetchingMode
 {
-    Disabled,
-    AutoFetch,
-    ManualFetch
+    Auto,
+    Manual
 }
 
 public enum ProfilerSnapshotHighlightingSettings
