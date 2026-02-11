@@ -43,14 +43,15 @@ import com.jetbrains.rider.unity.test.framework.api.unpause
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPauseMode
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPlayMode
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureDataApi
-import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
-import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureHyperLink
-import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider
+//import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureDataApi
+//import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
+//import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureHyperLink
+//import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider
 import kotlinx.coroutines.launch
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 import kotlin.test.assertNotNull
+import kotlin.test.fail
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Editor")
@@ -79,42 +80,43 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
     @ChecklistItems(["Breakpoints/Texture breakpoint"])
     @Mute("RIDER-135697 Unity test for texture visualizer isn't compatible with the new split mode debugger yet")
     fun checkTextureDebugging() {
-        attachDebuggerToUnityEditorAndPlay(
-            beforeRun = {
-                toggleBreakpoint("TextureDebuggingScript.cs", 13) //  Debug.Log(texture2D);
-            },
-            test = {
-                waitForPause()
-                dumpFullCurrentData()
-                try {
-                    val stackFrame = (session.currentStackFrame as DotNetStackFrame)
-
-                    assertNotNull(stackFrame)
-
-                    val valueNode = evaluateNode("texture2D", refreshIfNeeded = true)
-                    val EP_NAME = ExtensionPointName<XDebuggerNodeLinkActionProvider>("com.intellij.xdebugger.nodeLinkActionProvider")
-                    val unityTextureExtension = EP_NAME.extensionList.firstOrNull { it is UnityTextureLinkProvider }
-                    assertNotNull(unityTextureExtension)
-
-                    var textureInfo: UnityTextureInfo? = null
-                    val job = (project as ComponentManagerEx).getCoroutineScope().launch {
-                        val link = with (unityTextureExtension) {
-                            provideHyperlink(project, valueNode)
-                        } as? UnityTextureHyperLink
-                        assertNotNull(link)
-                        val result = RiderTextureDataApi.getInstance().evaluateTexture(link.accessorId, 10000)
-                        textureInfo = result.unityTextureInfo
-                    }
-
-                    pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
-                        job.isCompleted
-                    }
-                    assertNotNull(textureInfo)
-                    printlnIndented(textureInfo.printToString())
-                }
-                finally {
-                }
-            }, goldFile = testGoldFile)
+        fail("Not supported, see RIDER-135697")
+//        attachDebuggerToUnityEditorAndPlay(
+//            beforeRun = {
+//                toggleBreakpoint("TextureDebuggingScript.cs", 13) //  Debug.Log(texture2D);
+//            },
+//            test = {
+//                waitForPause()
+//                dumpFullCurrentData()
+//                try {
+//                    val stackFrame = (session.currentStackFrame as DotNetStackFrame)
+//
+//                    assertNotNull(stackFrame)
+//
+//                    val valueNode = evaluateNode("texture2D", refreshIfNeeded = true)
+//                    val EP_NAME = ExtensionPointName<XDebuggerNodeLinkActionProvider>("com.intellij.xdebugger.nodeLinkActionProvider")
+//                    val unityTextureExtension = EP_NAME.extensionList.firstOrNull { it is UnityTextureLinkProvider }
+//                    assertNotNull(unityTextureExtension)
+//
+//                    var textureInfo: UnityTextureInfo? = null
+//                    val job = (project as ComponentManagerEx).getCoroutineScope().launch {
+//                        val link = with (unityTextureExtension) {
+//                            provideHyperlink(project, valueNode)
+//                        } as? UnityTextureHyperLink
+//                        assertNotNull(link)
+//                        val result = RiderTextureDataApi.getInstance().evaluateTexture(link.accessorId, 10000)
+//                        textureInfo = result.unityTextureInfo
+//                    }
+//
+//                    pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
+//                        job.isCompleted
+//                    }
+//                    assertNotNull(textureInfo)
+//                    printlnIndented(textureInfo.printToString())
+//                }
+//                finally {
+//                }
+//            }, goldFile = testGoldFile)
     }
 
     @Test(description = "Check Unity pause point in debugging for simple Unity App")
