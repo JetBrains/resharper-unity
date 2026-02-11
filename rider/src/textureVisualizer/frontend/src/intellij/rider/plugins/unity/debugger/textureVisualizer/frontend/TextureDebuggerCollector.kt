@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.debugger.valueEvaluators
+package intellij.rider.plugins.unity.debugger.textureVisualizer.frontend
 
 import com.intellij.internal.statistic.IdeActivityDefinition
 import com.intellij.internal.statistic.StructuredIdeActivity
