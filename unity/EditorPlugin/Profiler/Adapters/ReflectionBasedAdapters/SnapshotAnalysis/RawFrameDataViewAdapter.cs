@@ -57,6 +57,28 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       }
     }
 
+    public ulong FrameTimeNs
+    {
+      get
+      {
+        if (myReflectionData == null)
+        {
+          ourLogger.Verbose($"Can't get {nameof(FrameTimeNs)}: {nameof(myReflectionData)} is null.");
+          return 0;
+        }
+
+        try
+        {
+          return (ulong)myReflectionData.FrameTimeNsProperty.GetValue(myRawFrameDataViewObject);
+        }
+        catch (Exception ex)
+        {
+          ourLogger.Verbose("Failed to access FrameTimeNsProperty", ex);
+          return 0;
+        }
+      }
+    }
+
     public double GetSampleTimeMs(int sampleIndex)
     {
       if (myReflectionData == null)

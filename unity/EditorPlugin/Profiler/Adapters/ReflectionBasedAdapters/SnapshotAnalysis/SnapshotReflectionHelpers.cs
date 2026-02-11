@@ -9,20 +9,34 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
   {
     private const string ProfilerDriverTypeName = "UnityEditorInternal.ProfilerDriver";
     private const string GetRawFrameDataViewMethodName = "GetRawFrameDataView";
-    public readonly MethodInfo GetRawFrameDataViewMethod;
-    private readonly Type ProfilerDriverType;
+    private const string FirstFrameIndexFieldName = "firstFrameIndex";
+    private const string LastFrameIndexFieldName = "lastFrameIndex";
+    private const string ProfileLoadedFieldName = "profileLoaded";
+    private const string ProfileClearedFieldName = "profileCleared";
+    public readonly MethodInfo? GetRawFrameDataViewMethod;
+    public readonly FieldInfo? FirstFrameIndexField;
+    public readonly FieldInfo? LastFrameIndexField;
+    public readonly FieldInfo? ProfileLoadedField;
+    public readonly FieldInfo? ProfileClearedField;
+    private readonly Type? myProfilerDriverType;
 
     public ProfilerSnapshotDriverReflectionData()
     {
-      ProfilerDriverType = Assembly.GetAssembly(typeof(EditorWindow)).GetType(ProfilerDriverTypeName);
+      myProfilerDriverType = Assembly.GetAssembly(typeof(EditorWindow)).GetType(ProfilerDriverTypeName);
       GetRawFrameDataViewMethod =
-        ProfilerDriverType.GetMethod(GetRawFrameDataViewMethodName, BindingFlags.Static | BindingFlags.Public);
+        myProfilerDriverType.GetMethod(GetRawFrameDataViewMethodName, BindingFlags.Static | BindingFlags.Public);
+      FirstFrameIndexField = myProfilerDriverType.GetField(FirstFrameIndexFieldName, BindingFlags.Static | BindingFlags.Public);
+      LastFrameIndexField = myProfilerDriverType.GetField(LastFrameIndexFieldName, BindingFlags.Static | BindingFlags.Public);
+      ProfileLoadedField = myProfilerDriverType.GetField(ProfileLoadedFieldName, BindingFlags.Static | BindingFlags.Public);
+      ProfileClearedField = myProfilerDriverType.GetField(ProfileClearedFieldName, BindingFlags.Static | BindingFlags.Public);
     }
 
     public bool IsValid()
     {
-      return ProfilerDriverType != null
-             && GetRawFrameDataViewMethod != null;
+      return myProfilerDriverType != null
+             && GetRawFrameDataViewMethod != null
+             && FirstFrameIndexField != null
+             && LastFrameIndexField != null;
     }
   }
 
@@ -39,6 +53,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     private const string GetSampleMetadataAsLongMethodName = "GetSampleMetadataAsLong";
     private const string FrameStartTimeMsPropertyName = "frameStartTimeMs";
     private const string FrameTimeMsPropertyName = "frameTimeMs";
+    private const string FrameTimeNsPropertyName = "frameTimeNs";
     private const string SampleCountPropertyName = "sampleCount";
     private const string ThreadNamePropertyName = "threadName";
     private const string ThreadIndexPropertyName = "threadIndex";
@@ -46,6 +61,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
 
     public readonly PropertyInfo FrameStartTimeMsProperty;
     public readonly PropertyInfo FrameTimeMsProperty;
+    public readonly PropertyInfo FrameTimeNsProperty;
     public readonly MethodInfo GetSampleChildrenCountMethod;
     public readonly MethodInfo GetSampleMarkerIdMethod;
     public readonly MethodInfo GetSampleNameMethod;
@@ -87,6 +103,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
         RawFrameDataViewType.GetProperty(FrameStartTimeMsPropertyName, BindingFlags.Instance | BindingFlags.Public);
       FrameTimeMsProperty =
         RawFrameDataViewType.GetProperty(FrameTimeMsPropertyName, BindingFlags.Instance | BindingFlags.Public);
+      FrameTimeNsProperty =
+        RawFrameDataViewType.GetProperty(FrameTimeNsPropertyName, BindingFlags.Instance | BindingFlags.Public);
       SampleCountProperty =
         RawFrameDataViewType.GetProperty(SampleCountPropertyName, BindingFlags.Instance | BindingFlags.Public);
       ThreadNameProperty =
@@ -109,6 +127,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
              && GetSampleMetadataAsLongMethod != null
              && FrameStartTimeMsProperty != null
              && FrameTimeMsProperty != null
+             && FrameTimeNsProperty != null
              && SampleCountProperty != null
              && ThreadNameProperty != null
              && ThreadIndexProperty != null;

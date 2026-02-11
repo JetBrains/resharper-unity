@@ -69,5 +69,6 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.UnityApiBasedAdapters
     public string ThreadName => myRawFrameDataView?.threadName ?? string.Empty;
     public double FrameStartTimeMs => myRawFrameDataView?.frameStartTimeMs ?? -1;
     public float FrameTimeMs => myRawFrameDataView?.frameTimeMs ?? -1;
+    public ulong FrameTimeNs => myRawFrameDataView?.frameTimeNs ?? 0;
   }
 }
