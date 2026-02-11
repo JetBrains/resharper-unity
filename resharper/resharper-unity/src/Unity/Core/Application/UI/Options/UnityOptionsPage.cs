@@ -58,26 +58,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddInternalSection(productConfigurations);
         }
 
-        private void AddProfilerSection()
-        {
-            if (!OptionsPageContext.IsRider) return;
-            AddHeader(Strings.UnityOptionsPage_Profiler_Integration);
-            AddComboOption((UnitySettings s) => s.ProfilerSnapshotFetchingSettings,
-                Strings.UnityOptionsPage_Profiler_Integration_Snapshot_Fetching, string.Empty, string.Empty,
-                new RadioOptionPoint(ProfilerSnapshotFetchingSettings.Disabled, Strings.UnityOptionsPage_Profiler_Integration_Fetching_Disabled),
-                new RadioOptionPoint(ProfilerSnapshotFetchingSettings.AutoFetch, Strings.UnityOptionsPage_Profiler_Integration_Auto_Fetching),
-                new RadioOptionPoint(ProfilerSnapshotFetchingSettings.ManualFetch, Strings.UnityOptionsPage_Profiler_Integration_Manual_Fetching)
-                    );
-            AddLinkButton("UnityProfilerIntegration", Strings.UnityOptionsPage_Profiler_Integration_Help_Link_Text,
-                () => { Shell.Instance.GetComponent<HelpSystem>().ShowProductHelp(HelpId.Settings_Unity_Engine_Profiler_Integration); });
-            
-            AddComboOption((UnitySettings s) => s.ProfilerGutterMarksDisplaySettings,
-                Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings, string.Empty, string.Empty,
-                new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Default, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default),
-                new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Minimized, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Minimized),
-                new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Hidden, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Hidden)
-            );
-        }
+    private void AddProfilerSection()
+    {
+        if (!OptionsPageContext.IsRider) return;
+        AddHeader(Strings.UnityOptionsPage_Profiler_Integration);
+        AddBoolOption((UnitySettings s) => s.EnableProfilerSnapshotFetching,
+            Strings.UnitySettings_Enable_Profiler_Snapshot_Fetching);
+        AddComboOption((UnitySettings s) => s.ProfilerSnapshotFetchingMode,
+            Strings.UnitySettings_Profiler_Snapshot_Fetching_Mode, string.Empty, string.Empty,
+            new RadioOptionPoint(ProfilerSnapshotFetchingMode.Auto, Strings.UnityOptionsPage_Profiler_Integration_Auto_Fetching),
+            new RadioOptionPoint(ProfilerSnapshotFetchingMode.Manual, Strings.UnityOptionsPage_Profiler_Integration_Manual_Fetching)
+        );
+        AddLinkButton("UnityProfilerIntegration", Strings.UnityOptionsPage_Profiler_Integration_Help_Link_Text,
+            () => { Shell.Instance.GetComponent<HelpSystem>().ShowProductHelp(HelpId.Settings_Unity_Engine_Profiler_Integration); });
+        
+        AddComboOption((UnitySettings s) => s.ProfilerGutterMarksDisplaySettings,
+            Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings, string.Empty, string.Empty,
+            new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Default, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default),
+            new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Minimized, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Minimized),
+            new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Hidden, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Hidden)
+        );
+    }
 
         private void AddGeneralSection()
         {

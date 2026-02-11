@@ -191,6 +191,14 @@ internal object MetadataStorageImpl : MetadataStorageBase() {
         )
 
         addMetadata(typeMetadata)
+
+        typeMetadata = FinalClassMetadata.ObjectMetadata(
+            fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater\$RiderUnityPackageEntitySource",
+            properties = listOf(),
+            supertypes = listOf("com.jetbrains.rider.projectView.workspace.RiderEntitySource")
+        )
+
+        addMetadata(typeMetadata)
     }
 
     override fun initializeMetadataHash() {

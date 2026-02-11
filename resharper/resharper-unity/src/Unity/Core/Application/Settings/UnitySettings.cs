@@ -97,8 +97,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         public bool HideGeneratedCodeFromNavigation;
         
         // Profiler snapshot fetching settings
-        [SettingsEntry(ProfilerSnapshotFetchingSettings.AutoFetch, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Profiler_Integration_Snapshot_Fetching))]
-        public ProfilerSnapshotFetchingSettings ProfilerSnapshotFetchingSettings;
+        [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Enable_Profiler_Snapshot_Fetching))]
+        public bool EnableProfilerSnapshotFetching;
+
+        [SettingsEntry(ProfilerSnapshotFetchingMode.Auto, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Profiler_Snapshot_Fetching_Mode))]
+        public ProfilerSnapshotFetchingMode ProfilerSnapshotFetchingMode;
 
         [SettingsEntry(ProfilerSnapshotHighlightingSettings.Default, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Profiler_New_Highlighting_Enabled))]
         public ProfilerSnapshotHighlightingSettings ProfilerGutterMarksDisplaySettings;
