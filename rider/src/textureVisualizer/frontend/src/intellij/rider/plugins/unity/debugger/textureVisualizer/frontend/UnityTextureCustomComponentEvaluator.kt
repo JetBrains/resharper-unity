@@ -4,6 +4,7 @@ import com.intellij.internal.statistic.StructuredIdeActivity
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.rd.createNestedDisposable
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.platform.debugger.impl.shared.proxy.XDebugSessionProxy
 import com.intellij.ui.ErrorLabel
@@ -46,8 +47,6 @@ object UnityTextureCustomComponentEvaluator {
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun unityTextureAdditionalActionResult(
         accessorId: RiderTextureAccessorId,
-        //TODO(Korovin): This lifetime should be passed to the backend, coroutine scope?
-        lifetime: Lifetime,
         timeoutForAdvanceUnityEvaluation: Int,
         onErrorCallback: (String) -> Unit
     ): UnityTextureAdditionalActionResult? {
@@ -76,7 +75,7 @@ object UnityTextureCustomComponentEvaluator {
             TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.TEXTURE_PIXELS_REQUEST)
 
         val unityTextureAdditionalActionResult = unityTextureAdditionalActionResult(
-            accessorId, lifetime,
+            accessorId,
             timeoutForAdvanceUnityEvaluation, errorCallback
         )
 
@@ -145,7 +144,7 @@ object UnityTextureCustomComponentEvaluator {
                         unityTextureInfo
                     )
                     withContext(Dispatchers.EDT) {
-                        showTexture(unityTextureInfo, jbLoadingPanel, parentPanel)
+                        showTexture(lifetime, unityTextureInfo, jbLoadingPanel, parentPanel)
                     }
                     TextureDebuggerCollector.finishActivity(stagedActivity, ExecutionResult.Succeed)
                 }
@@ -156,6 +155,7 @@ object UnityTextureCustomComponentEvaluator {
     }
 
     private fun showTexture(
+        lifetime: Lifetime,
         textureInfo: UnityTextureInfo,
         jbLoadingPanel: JBLoadingPanel,
         parentPanel: JBPanel<JBPanel<*>>
@@ -164,7 +164,8 @@ object UnityTextureCustomComponentEvaluator {
         try {
             LOG.trace("Preparing texture to show:\"${textureInfo.textureName}\"")
 
-            val texturePanel = createPanelWithImage(textureInfo)
+            val texturePanel = createPanelWithImage(lifetime, textureInfo)
+
             jbLoadingPanel.stopLoading()
 
             texturePanel.background = parentPanel.background
@@ -204,7 +205,7 @@ object UnityTextureCustomComponentEvaluator {
 
 
     @Suppress("INACCESSIBLE_TYPE")
-    private fun createPanelWithImage(textureInfo: UnityTextureInfo): JPanel {
+    private fun createPanelWithImage(lifetime: Lifetime, textureInfo: UnityTextureInfo): JPanel {
 
         val defaultConfiguration = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice.defaultConfiguration
         val dummyGraphicsConfiguration = object : GraphicsConfiguration() {
@@ -230,9 +231,12 @@ object UnityTextureCustomComponentEvaluator {
             }
         }
 
-        return ImageEditorManagerImpl.createImageEditorUI(
+        val imageEditorUI = ImageEditorManagerImpl.createImageEditorUI(
             bufferedImage,
             "  ${textureInfo.textureName}  ${textureInfo.graphicsTextureFormat}"
         )
+        lifetime.onTermination { Disposer.dispose(imageEditorUI) }
+
+        return imageEditorUI
     }
 }
