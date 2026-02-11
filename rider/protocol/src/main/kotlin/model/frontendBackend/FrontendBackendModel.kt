@@ -253,21 +253,24 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
     
     private val FrontendModelSnapshot = structdef {
         field("samples", immutableList(ProfilerModelSample))
-        field("timings", Library.ProfilerSampleTimingInfo)
     }
     
     init {
-        property("selectedFrameIndex", int).async
-        property("selectedThread", Library.ProfilerThread).async
-        property("snapshotStatus", Library.SnapshotStatus).async
-        property("samplesCount", int).async
-        property("fetchingProgress", float).async
-        
-        property("profilerSnapshotStatus", Library.UnityProfilerSnapshotStatus).async
         signal("updateUnityProfilerSnapshotData", Library.ProfilerSnapshotRequest).async
         signal("navigateByQualifiedName", string).async
-        signal("setGutterMarksRenderSetting", ProfilerGutterMarkRenderSettings).async
         property("currentSnapshot", FrontendModelSnapshot.nullable).async
+
+        property("selectionState", Library.SelectionState.nullable).async
+        property("currentProfilerRecordInfo", Library.UnityProfilerRecordInfo.nullable).async
+        property("mainThreadTimingsAndThreads", Library.MainFrameTimingsAndThreads.nullable).async
+        
+        //Settings
+        property("isIntegraionEnable", bool).async
+        property("fetchingMode", enum("FetchingMode") {
+            +"Auto"
+            +"Manual"
+        }).async
+        property("gutterMarksRenderSettings", ProfilerGutterMarkRenderSettings).async
         
         //collectors
         signal("showPopupAction", void).async
@@ -278,9 +281,14 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
             field("milliseconds", double)
             field("framePercentage", double)
             field("memoryAllocation", long)
-            field("toolTip", string)
             field("parents", immutableList(ParentCalls).nullable)
-            field("renderSettings", ProfilerGutterMarkRenderSettings)
+            field("callesCount", int)
+            field("stats", structdef("Stats") {
+                field("min", double)
+                field("max", double)
+                field("avg", double)
+            })
+            field("qualifiedName", string)
         })
     }
 }
