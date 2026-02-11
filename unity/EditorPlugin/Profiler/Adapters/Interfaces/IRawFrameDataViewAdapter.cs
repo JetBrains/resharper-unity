@@ -11,6 +11,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.Interfaces
     double FrameStartTimeMs { get; }
     float FrameTimeMs { get; }
     bool Valid { get; }
+    ulong FrameTimeNs { get; }
     double GetSampleTimeMs(int sampleIndex);
     int GetSampleMarkerId(int index);
     int GetSampleChildrenCount(int index);

@@ -19,7 +19,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
     private static readonly ILog ourLogger = Log.GetLog(nameof(ProfilerWindowEventsHandler));
 
     private static IProfilerAdaptersFactory? ourProfilerAdaptersFactory;
-    private static IProfilerWindowTypeChecker? ourProfilerWindwowTypeChecker;
+    private static IProfilerWindowTypeChecker? ourProfilerWindowTypeChecker;
 
     private static EditorWindow? ourLastProfilerWindow;
     private static EditorWindow? ourProfilerWindow;
@@ -77,7 +77,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
 
     private static EditorWindow? TryGetProfilerWindow(EditorWindow? focusedWindow)
     {
-      return ourProfilerWindwowTypeChecker?.IsProfilerWindow(focusedWindow) == true
+      return ourProfilerWindowTypeChecker?.IsProfilerWindow(focusedWindow) == true
         ? focusedWindow
         : null;
     }
@@ -103,12 +103,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
 #endif
           ourLogger.Verbose("ProfilerWindowEventsHandler.Initialize");
           ourProfilerWindowDataProvider = ourProfilerAdaptersFactory!.CreateProfilerWindowFacade();
-          ourProfilerWindwowTypeChecker = ourProfilerAdaptersFactory!.CreateProfilerWindowTypeChecker();
+          ourProfilerWindowTypeChecker = ourProfilerAdaptersFactory!.CreateProfilerWindowTypeChecker();
 
-          ourSnapshotCollectorDaemon = new SnapshotCollectorDaemon(ourProfilerAdaptersFactory, appDomainLifetime);
+          ourSnapshotCollectorDaemon = new SnapshotCollectorDaemonV2(ourProfilerAdaptersFactory, appDomainLifetime);
 
           //find an already opened profiler window
-          var profilerWindowObjects = ourProfilerWindwowTypeChecker?.FindProfilerWindows() ?? Array.Empty<Object>();
+          var profilerWindowObjects = ourProfilerWindowTypeChecker?.FindProfilerWindows() ?? Array.Empty<Object>();
           ourLastProfilerWindow = profilerWindowObjects.Length > 0 ? profilerWindowObjects[0] as EditorWindow : null;
 
           EditorApplication.update += InternalUpdate;

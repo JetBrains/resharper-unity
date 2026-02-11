@@ -53,6 +53,21 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       }
     }
 
+    public void SetSelectedFrameIndex(int frameIndex)
+    {
+      throw new NotImplementedException();
+    }
+
+    public void SetSelectedThread(int threadId)
+    {
+      throw new NotImplementedException();
+    }
+    
+    public int GetSelectedThreadId()
+    {
+      throw new NotImplementedException();
+    }
+
     public ICPUProfilerModuleAdapter? GetCpuProfilerModule()
     {
       if (myCPUProfilerModuleReflectionData == null)

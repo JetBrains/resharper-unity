@@ -7,6 +7,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.Interfaces
   {
     object? ProfilerWindowObject { get; }
     int GetSelectedFrameIndex();
+    void SetSelectedFrameIndex(int frameIndex);
     ICPUProfilerModuleAdapter? GetCpuProfilerModule();
+    void SetSelectedThread(int threadId);
+    int GetSelectedThreadId();
   }
 }
