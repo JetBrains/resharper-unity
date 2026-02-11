@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-<component name="FacetManager">
+  <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
       <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false">
         <compilerSettings>
@@ -33,15 +33,15 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-     <orderEntry type="module" module-name="intellij.platform.kernel" />
-     <orderEntry type="module" module-name="intellij.platform.debugger" />
-     <orderEntry type="module" module-name="intellij.platform.debugger.impl.shared" />
-     <orderEntry type="module" module-name="intellij.libraries.kotlinx.serialization.core" />
-     <orderEntry type="module" module-name="intellij.libraries.kotlinx.serialization.json" />
-     <orderEntry type="module" module-name="intellij.platform.debugger.impl" />
-     <orderEntry type="module" module-name="intellij.platform.core" />
-     <orderEntry type="module" module-name="intellij.platform.debugger.impl.rpc" />
-     <orderEntry type="library" name="jetbrains-annotations" level="project" />
-     <orderEntry type="module" module-name="intellij.platform.util.multiplatform" />
+    <orderEntry type="module" module-name="intellij.platform.kernel" />
+    <orderEntry type="module" module-name="intellij.platform.debugger" />
+    <orderEntry type="module" module-name="intellij.platform.debugger.impl.shared" />
+    <orderEntry type="module" module-name="intellij.libraries.kotlinx.serialization.core" />
+    <orderEntry type="module" module-name="intellij.libraries.kotlinx.serialization.json" />
+    <orderEntry type="module" module-name="intellij.platform.debugger.impl" />
+    <orderEntry type="module" module-name="intellij.platform.core" />
+    <orderEntry type="module" module-name="intellij.platform.debugger.impl.rpc" />
+    <orderEntry type="library" name="jetbrains-annotations" level="project" />
+    <orderEntry type="module" module-name="intellij.platform.util.multiplatform" />
   </component>
 </module>
