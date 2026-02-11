@@ -31,7 +31,12 @@ public static class ProfilerNavigationUtils
             var occurrence = visitor.Result;
 
             if (occurrence != null)
-                occurrence.Navigate(solution, solution.GetComponent<IMainWindowPopupWindowContext>().Source, true);
+            {
+                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                {
+                    occurrence.Navigate(solution, solution.GetComponent<IMainWindowPopupWindowContext>().Source, true);
+                }
+            }
             else
                 logger.Verbose($"No occurrence found for '{parentQualifiedName}'");
         }

@@ -44,7 +44,6 @@ internal static class SamplesCacheUtils
             return PooledSamplesCache.GetInstance();
 
         var samplesCache = PooledSamplesCache.GetInstance();
-        samplesCache.SnapshotInfo = snapshot.Status;
 
         using var stack = ourSamplesStackPool.Allocate();
         using var markerIdToName = ourIdNameDictionaryPool.Allocate();
@@ -126,6 +125,8 @@ internal static class SamplesCacheUtils
             }
         }
 
+        samplesCache.UpdateFrontendModelSamples();
+        
         return samplesCache;
     }
 

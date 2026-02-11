@@ -34,12 +34,9 @@ public interface IUnityProfilerSnapshotDataProvider
     public ProfilerSnapshotHighlightingSettings GetGutterMarkSettings();
 }
 
-[SolutionComponent(Instantiation.DemandAnyThreadSafe)]
+[SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
 public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 {
-    private static readonly UnityProfilerSnapshotStatus ourUnityProfilerSnapshotStatusDisabled =
-        new(-1, -1, string.Empty, -1, SnapshotStatus.Disabled, 0);
-
     private readonly Lifetime myLifetime;
     private readonly SequentialLifetimes myRequestSnapshotSeqLifetimes;
 
@@ -53,7 +50,8 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 
     private readonly IProperty<string> myFetchingProgressProperty = new Property<string>("SnapshotFetching::Description");
     private readonly IContextBoundSettingsStoreLive mySettingsStore;
-    private readonly SettingsScalarEntry mySnapshotFetchingScalarEntry;
+    private readonly SettingsScalarEntry myEnableSnapshotFetchingScalarEntry;
+    private readonly SettingsScalarEntry mySnapshotFetchingModeScalarEntry;
     private readonly SettingsScalarEntry mySnapshotGutterMarksDisplaySettingsScalarEntry;
 
     private readonly BackgroundProgressManager myBackgroundProgressManager;
@@ -79,31 +77,18 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         mySolution = solution;
         mySettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.ApplicationWide);
 
-        mySnapshotFetchingScalarEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.ProfilerSnapshotFetchingSettings);
+        myEnableSnapshotFetchingScalarEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.EnableProfilerSnapshotFetching);
+        mySnapshotFetchingModeScalarEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.ProfilerSnapshotFetchingMode);
         mySnapshotGutterMarksDisplaySettingsScalarEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.ProfilerGutterMarksDisplaySettings);
 
         // Set up all advice and subscriptions
         AdviseOnSettingsChanges();
         AdviseOnFrontendRequests();
-        AdviseOnUnityProfilerSnapshotStatus();
+        AdviseOnUnityProfilerModel();
     }
 
     private void AdviseOnSettingsChanges()
     {
-        myFrontendBackendHost.Model.NotNull().UnityApplicationSettings.ProfilerSnapshotFetchingSettings.Advise(myLifetime,
-            settings =>
-            {
-                try
-                {
-                    var profilerSnapshotFetchingSettings = settings.ToEnum<ProfilerSnapshotFetchingSettings>();
-                    mySettingsStore.SetValue(mySnapshotFetchingScalarEntry, profilerSnapshotFetchingSettings, null);
-                }
-                catch (Exception e)
-                {
-                    myLogger.LogException(e);
-                }
-            });
-        
         mySettingsStore.AdviseAsyncChanged(myLifetime, async (lt, change) =>
         {
             await HandleSnapshotFetchingSettingsChange(change, lt);
@@ -125,43 +110,35 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         if (!change.ChangedEntries.Contains(mySnapshotGutterMarksDisplaySettingsScalarEntry))
             return;
 
+        FrontendBackendProfilerModel.GutterMarksRenderSettings.Value =
+            GetGutterMarkSettings().ToProfilerGutterMarkRenderSettings();
         await InvalidateDaemon(lifetime);
     }
     
     private async Task HandleSnapshotFetchingSettingsChange(SettingsStoreChangeArgs change, Lifetime lt)
     {
-        if (!change.ChangedEntries.Contains(mySnapshotFetchingScalarEntry))
+        if (!change.ChangedEntries.Contains(myEnableSnapshotFetchingScalarEntry) &&
+            !change.ChangedEntries.Contains(mySnapshotFetchingModeScalarEntry))
             return;
 
-        var fetchingSettings = GetSnapshotFetchingSettings();
+        var frontendBackendModel = myFrontendBackendHost.Model.GetFrontendBackendProfilerModel();
 
-        var snapshotStatus = myBackendUnityHost.BackendUnityProfilerModel.Value?.ProfilerSnapshotStatus.Value;
-            
-        switch (fetchingSettings)
+        var snapshotFetchingEnabled = GetSnapshotFetchingEnabled();
+        var fetchingMode = GetSnapshotFetchingMode();
+        
+        frontendBackendModel?.IsIntegraionEnable.Value = snapshotFetchingEnabled;
+        frontendBackendModel?.FetchingMode.Value = fetchingMode == ProfilerSnapshotFetchingMode.Auto ? FetchingMode.Auto : FetchingMode.Manual;
+        
+        if (snapshotFetchingEnabled)
         {
-            case ProfilerSnapshotFetchingSettings.AutoFetch:
-            case ProfilerSnapshotFetchingSettings.ManualFetch:
-            {
-                myLogger.Verbose( $"Start snapshot auto fetching after settings changed to {fetchingSettings}");
-                    
-                if (snapshotStatus == null)
-                    return;
-
-                FrontendBackendProfilerModel.ProfilerSnapshotStatus.Value = snapshotStatus;
-                    
-                var snapshotRequest = new ProfilerSnapshotRequest(snapshotStatus.FrameIndex, snapshotStatus.ThreadIndex);
-                FetchProfilerSnapshotWithProgress(snapshotRequest);
-                return;
-            }
-            case ProfilerSnapshotFetchingSettings.Disabled:
-                myLogger.Verbose( $"Stop snapshot auto fetching after settings changed to {fetchingSettings}");
-                FrontendBackendProfilerModel.ProfilerSnapshotStatus.Value = ourUnityProfilerSnapshotStatusDisabled;
-                myRequestSnapshotSeqLifetimes.TerminateCurrent();
-                UpdateSampleCache(null);
-                await InvalidateDaemon(lt);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(fetchingSettings));
+            myLogger.Verbose($"Snapshot fetching enabled, mode: {fetchingMode}");
+        }
+        else
+        {
+            myLogger.Verbose("Stop snapshot fetching after settings changed to Disabled");
+            myRequestSnapshotSeqLifetimes.TerminateCurrent();
+            UpdateSampleCache(null);
+            await InvalidateDaemon(lt);
         }
     }
 
@@ -170,7 +147,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         FrontendBackendProfilerModel.UpdateUnityProfilerSnapshotData
             .Advise(myLifetime, request =>
             {
-                if (GetSnapshotFetchingSettings() == ProfilerSnapshotFetchingSettings.Disabled)
+                if (!GetSnapshotFetchingEnabled())
                     return;
 
                 myLogger.Verbose($"Requesting snapshot requested by frontend: {request}");
@@ -189,70 +166,128 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                     });
                 }).NoAwait();
             }
-            catch (Exception e)
+            catch (Exception e) when (e is not OperationCanceledException)
             {
                 myLogger.LogException(e);
             }
         });
-        FrontendBackendProfilerModel.SetGutterMarksRenderSetting.Advise(myLifetime, void (renderSetting) =>
+        
+        //settings
+        FrontendBackendProfilerModel.IsIntegraionEnable.Value = GetSnapshotFetchingEnabled();
+
+        FrontendBackendProfilerModel.IsIntegraionEnable.Advise(myLifetime,
+            enabled => { mySettingsStore.SetValue(myEnableSnapshotFetchingScalarEntry, enabled, null); });
+        
+        FrontendBackendProfilerModel.FetchingMode.Value = GetSnapshotFetchingMode() == ProfilerSnapshotFetchingMode.Auto ? FetchingMode.Auto : FetchingMode.Manual;
+        FrontendBackendProfilerModel.FetchingMode.Advise(myLifetime, mode => {
+                var fetchingMode = mode switch
+                {
+                    FetchingMode.Auto => ProfilerSnapshotFetchingMode.Auto,
+                    FetchingMode.Manual => ProfilerSnapshotFetchingMode.Manual,
+                    _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+                };
+                
+                mySettingsStore.SetValue(mySnapshotFetchingModeScalarEntry, fetchingMode, null);
+            });
+
+        FrontendBackendProfilerModel.GutterMarksRenderSettings.Value =
+            GetGutterMarkSettings().ToProfilerGutterMarkRenderSettings();
+        FrontendBackendProfilerModel.GutterMarksRenderSettings.Advise(myLifetime, void (renderSetting) =>
         {
             try
             {
                 var highlightingSettings = renderSetting.ToProfilerSnapshotHighlightingSettings();
                 mySettingsStore.SetValue(mySnapshotGutterMarksDisplaySettingsScalarEntry, highlightingSettings, null);
             }
-            catch (Exception e)
+            catch (Exception e) when (e is not OperationCanceledException)
             {
                 myLogger.LogException(e);
             }
         });
         
+        //TODO move collectors to frontend
         FrontendBackendProfilerModel.ShowPopupAction.Advise(myLifetime, () => myUnityProfilerInfoCollector.OnNavigationPopupShown());
     }
 
-    private void AdviseOnUnityProfilerSnapshotStatus()
+    private void AdviseOnUnityProfilerModel()
     {
         myBackendUnityHost.BackendUnityProfilerModel!.ViewNotNull<UnityProfilerModel>(
             myLifetime, (lt, unityProfilerModel) =>
-                unityProfilerModel.ProfilerSnapshotStatus.AdviseNotNull(lt, async void (status) =>
+            {
+                unityProfilerModel.MainThreadTimingsAndThreads.FlowIntoRdSafe(lt, FrontendBackendProfilerModel.MainThreadTimingsAndThreads);
+                unityProfilerModel.CurrentProfilerRecordInfo.FlowIntoRdSafe(lt, FrontendBackendProfilerModel.CurrentProfilerRecordInfo);
+                
+                unityProfilerModel.SelectionState.FlowIntoRdSafe(lt, FrontendBackendProfilerModel.SelectionState);
+                FrontendBackendProfilerModel.SelectionState.FlowIntoRdSafe(lt, unityProfilerModel.SelectionState);
+                unityProfilerModel.SelectionState.Advise(lt, state =>
                 {
-                    try
+                    FrontendBackendProfilerModel.SelectionState.Set(state);
+                });
+                FrontendBackendProfilerModel.SelectionState.Advise(lt, 
+                    state=>
                     {
-                        await HandleSnapshotStatusChange(status, lt);
-                    }
-                    catch (Exception e)
-                    {
-                        myLogger.LogException(e);
-                    }
-                }));
+                        unityProfilerModel.SelectionState.Set(state);
+                    });
+            });
     }
 
     private void FetchProfilerSnapshotWithProgress(ProfilerSnapshotRequest snapshotRequest)
     {
         var requestLifetime = myRequestSnapshotSeqLifetimes.Next();
-        var fetchingProgressLifetimeDefinition = new SequentialLifetimes(requestLifetime);
-        StartFetchingProgressTask(fetchingProgressLifetimeDefinition.Next());
+        StartFetchingProgressTask(requestLifetime);
         requestLifetime.StartBackgroundAsync(async () =>
         {
             myLogger.Verbose($"Requesting snapshot {snapshotRequest}");
             try
             {
-                var getUnityProfilerSnapshotCall = myBackendUnityHost.BackendUnityProfilerModel.Maybe.ValueOrDefault?
-                    .GetUnityProfilerSnapshot;
+                var requestFrameSnapshotCall = myBackendUnityHost.BackendUnityProfilerModel.Maybe.ValueOrDefault?
+                    .RequestFrameSnapshot;
 
-                if (getUnityProfilerSnapshotCall == null)
+                if (requestFrameSnapshotCall == null)
                     return;
 
-                var currentProfilerFrameSnapshot =
-                    await getUnityProfilerSnapshotCall.Start(requestLifetime, snapshotRequest);
+                var snapshotRequestTask = await requestFrameSnapshotCall.Start(requestLifetime, snapshotRequest);
+                
+                if (snapshotRequestTask == null)
+                {
+                    myLogger.Warn("RequestFrameSnapshot returned null");
+                    return;
+                }
+
+                // Observe progress updates
+                snapshotRequestTask.Progress.Advise(requestLifetime, progress =>
+                {
+                    myProgress.Value = progress;
+                    myLogger.Trace($"Snapshot fetching progress: {progress:P1}");
+                });
+
+                // Observe status updates
+                snapshotRequestTask.Status.Advise(requestLifetime, status =>
+                {
+                    myLogger.Verbose($"Snapshot request status: {status}");
+                });
+
+                // Wait for snapshot to be available using TaskCompletionSource
+                var snapshotTcs = new TaskCompletionSource<UnityProfilerSnapshot?>();
+                requestLifetime.Bracket(
+                    () => snapshotRequestTask.Snapshot.Advise(requestLifetime, snapshot =>
+                    {
+                        if (snapshot != null)
+                            snapshotTcs.TrySetResult(snapshot);
+                    }),
+                    () => snapshotTcs.TrySetCanceled()
+                );
+                
+                var currentProfilerFrameSnapshot = await snapshotTcs.Task;
+                
                 var samplesCount = currentProfilerFrameSnapshot?.Samples.Count ?? -1;
-                myLogger.Verbose($"Succesfully recived snapthot information, samples count {samplesCount}");
+                myLogger.Verbose($"Successfully received snapshot information, samples count {samplesCount}");
 
                 try
                 {
                     var cacheUpdatingProgressProperty = new Property<double>("SnapshotCacheCalculation::Progress", 0.0).EnsureNotOutside(0.0, 1.0);
                     var cacheUpdatingProgress = new Progress<double>(value => cacheUpdatingProgressProperty.Value = value);
-                    StartCacheUpdateProgressTask(fetchingProgressLifetimeDefinition.Next(), cacheUpdatingProgressProperty);
+                    StartCacheUpdateProgressTask(requestLifetime, cacheUpdatingProgressProperty);
                     UpdateSampleCache(currentProfilerFrameSnapshot, cacheUpdatingProgress);
                     if (samplesCount > 0)
                         myUnityProfilerInfoCollector.OnSnapshotFetched(samplesCount);
@@ -265,13 +300,13 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 await InvalidateDaemon(requestLifetime);
                   
             }
-            catch (Exception e)
+            catch (Exception e) when (e is not OperationCanceledException)
             {
                 myLogger.LogException(e);
             }
             finally
             {
-                fetchingProgressLifetimeDefinition.TerminateCurrent();
+                myRequestSnapshotSeqLifetimes.TerminateCurrent();
             }
         }).NoAwait();
     }
@@ -307,58 +342,16 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         );
     }
 
-    private async Task HandleSnapshotStatusChange(UnityProfilerSnapshotStatus snapshotStatus, Lifetime lifetime)
+    private bool GetSnapshotFetchingEnabled()
     {
-        myLogger.Verbose($"Updated snapshot status: {snapshotStatus}");
-
-        if(snapshotStatus.Status == SnapshotStatus.HasNewSnapshotDataToFetch)
-            myUnityProfilerInfoCollector.OnUnityProfilerFrameSelected(snapshotStatus.SamplesCount);
-        
-        if (GetSnapshotFetchingSettings() == ProfilerSnapshotFetchingSettings.Disabled)
-        {
-            FrontendBackendProfilerModel.ProfilerSnapshotStatus.Set(ourUnityProfilerSnapshotStatusDisabled);
-            // Ensure any ongoing snapshot request and related progress tasks are terminated to avoid leaks
-            myRequestSnapshotSeqLifetimes.TerminateCurrent();
-            return;
-        }
-
-        FrontendBackendProfilerModel.ProfilerSnapshotStatus.Set(snapshotStatus);
-
-        UpdateProgressbarDescription(snapshotStatus);
-        
-        
-        if(snapshotStatus.Status == SnapshotStatus.NoSnapshotDataAvailable)
-        {
-            UpdateSampleCache(null);
-            await InvalidateDaemon(lifetime);
-        }
-
-        if (snapshotStatus.Status != SnapshotStatus.HasNewSnapshotDataToFetch)
-            return;
-        if (snapshotStatus.Equals(myPooledSamplesCache?.SnapshotInfo))
-            return;
-        if (GetSnapshotFetchingSettings() != ProfilerSnapshotFetchingSettings.AutoFetch)
-            return;
-
-        myLogger.Verbose($"Auto fetching snapshot {snapshotStatus}");
-        var snapshotRequest = new ProfilerSnapshotRequest(snapshotStatus.FrameIndex, snapshotStatus.ThreadIndex);
-        FetchProfilerSnapshotWithProgress(snapshotRequest);
+        return mySettingsStore.GetValue(myEnableSnapshotFetchingScalarEntry, null) is true;
     }
 
-    private void UpdateProgressbarDescription(UnityProfilerSnapshotStatus snapshotStatus)
+    private ProfilerSnapshotFetchingMode GetSnapshotFetchingMode()
     {
-        myProgress.Value = snapshotStatus.FetchingProgress;
-        myFetchingProgressProperty.Value =
-            string.Format(Strings.UnityProfilerSnapshot_Fetching_Profiler_snapshot_description,
-                snapshotStatus.FrameIndex, snapshotStatus.ThreadName);
-    }
-
-    private ProfilerSnapshotFetchingSettings GetSnapshotFetchingSettings()
-    {
-        return mySettingsStore.GetValue(mySnapshotFetchingScalarEntry, null) is ProfilerSnapshotFetchingSettings
-            fetchingSettings
-            ? fetchingSettings
-            : ProfilerSnapshotFetchingSettings.Disabled;
+        return mySettingsStore.GetValue(mySnapshotFetchingModeScalarEntry, null) is ProfilerSnapshotFetchingMode mode
+            ? mode
+            : ProfilerSnapshotFetchingMode.Auto;
     }
 
     
@@ -387,5 +380,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         var oldCache = Interlocked.Exchange(ref myPooledSamplesCache,
             SamplesCacheUtils.ConstructCache(snapshotResult, cacheUpdatingProgress));
         oldCache?.Dispose();
+        FrontendBackendProfilerModel.CurrentSnapshot.Set(myPooledSamplesCache?.GetFrontendModelSnapshot());
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Application.Components;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
@@ -83,6 +82,7 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
         ILogger logger)
         : IDaemonStageProcess
     {
+        //todo remove it
         private static readonly HighlightingString ourMethodCallSingle =
             new(Strings.UnityProfilerSnapshot_Single_Method_Highlighting_display_name,
                 Strings.UnityProfilerSnapshot_Single_Method_Highlighting_tooltip,
@@ -197,7 +197,7 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
                 foreach (var child in sample.Children)
                 {
                     pooledChildrenSamples.Add(child);
-                    if (child.IsProfilerMarker)
+                    if (child.IsProfilerMarker)//TODO: go until the parent is not a marker
                         pooledChildrenSamples.AddRange(child.Children);
                 }
             }
@@ -215,8 +215,8 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
                     {
                         var beginSampleArgument = invocationExpression.ArgumentsEnumerable.FirstOrDefault();
                         var name = beginSampleArgument?.Value?.GetText().Trim('"');
-                        ExtractSamplesAndAddHighlighting(pooledChildrenSamples, sharpExpression, declaration,
-                            codeInsightProvider, consumer, name ?? string.Empty, ourInternalCall, snapshotDataProvider);
+                        ExtractSamplesAndAddHighlighting(pooledChildrenSamples, sharpExpression,
+                            codeInsightProvider, consumer, name ?? string.Empty, snapshotDataProvider);
                         continue;
                     }
 
@@ -265,27 +265,29 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
             UnityProfilerInsightProvider insightProvider, ILogger logger, ISolution solution,
             ILazy<IUnityProfilerSnapshotDataProvider> profilerSnapshotDataProvider)
         {
-            var info = declaration is IClassLikeDeclaration
-                ? CalculateDeclarationText(samples, ourClassSingle, ourClassMultiple)
-                : CalculateDeclarationText(samples, ourMethodCallSingle, ourMethodCallMultiple);
-
-            var bulbMenuItems = new List<BulbMenuItem>();
             using var pooledHashSet = PooledHashSet<PooledSample>.GetInstance();
             
             double durationSum = 0;
             double percentageSum = 0;
             long memoryAllocation = 0;
+            var min = double.MaxValue;
+            var max = double.MinValue;
+            double avg = 0;
 
             foreach (var s in samples)
             {
                 durationSum += s.Duration;
                 percentageSum += s.FramePercentage;
                 memoryAllocation += s.MemoryAllocation;
+                min = Math.Min(min, s.Duration);
+                max = Math.Max(max, s.Duration);
                 
                 if (s.Parent == null)
                     continue;
                 pooledHashSet.Add(s.Parent);
             }
+            
+            avg = durationSum / samples.Count;
 
             List<ParentCalls> parents = null;
             if (!pooledHashSet.IsEmpty())
@@ -293,14 +295,6 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
                 parents = new List<ParentCalls>();
                 foreach (var sample in pooledHashSet)
                 {
-                    var bulb = new ShowProfilerCallsBulbAction(sample, logger);
-                    var bulbMenuItem =
-                        new IntentionAction(bulb, null, BulbMenuAnchors.FirstClassContextItems)
-                            .ToBulbMenuItem(solution, textControl);
-
-                    bulbMenuItems.Add(bulbMenuItem);
-
-
                     var realParentQualifiedName = sample.QualifiedName;
                     if (sample.IsProfilerMarker)
                         realParentQualifiedName = sample.Parent?.QualifiedName;
@@ -311,56 +305,17 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
 
             var navigationRange = declaration.GetNavigationRange();
 
-            var displaySettings = profilerSnapshotDataProvider.Value.GetGutterMarkSettings();
-
             var modelUnityProfilerSampleInfo = new ModelUnityProfilerSampleInfo(
                 durationSum, 
                 percentageSum,
                 memoryAllocation, 
-                info.Tooltip,
                 parents, 
-                displaySettings.ToProfilerGutterMarkRenderSettings());
-            
+                samples.Count, new Stats(min, max, avg), GetCLRName(declaration));
+
+            var displaySettings = profilerSnapshotDataProvider.Value.GetGutterMarkSettings().ToProfilerGutterMarkRenderSettings();
             insightProvider.AddProfilerHighlighting(
                 modelUnityProfilerSampleInfo,
-                consumer, new DocumentRange(navigationRange.StartOffset, navigationRange.StartOffset + 1), declaration.DeclaredElement,
-                info.DisplayName,
-                info.Tooltip,
-                info.MoreText,
-                null, bulbMenuItems, new());
-        }
-
-        private readonly struct FunctionDeclarationSnapshotInfo(string displayName, string tooltip, string moreText)
-        {
-            public readonly string DisplayName = displayName;
-            public readonly string Tooltip = tooltip;
-            public readonly string MoreText = moreText;
-        }
-
-        private static FunctionDeclarationSnapshotInfo CalculateDeclarationText(IReadOnlyList<PooledSample> samples,
-            HighlightingString single, HighlightingString multiple)
-        {
-            var totalDuration = samples.Sum(s => s.Duration);
-            var totalPercentage = samples.Sum(s => s.FramePercentage);
-            var totalAllocation = StringUtil.StrFormatByteSize(samples.Sum(s => s.MemoryAllocation));
-            
-            if (samples.Count == 1)
-            {
-                return new FunctionDeclarationSnapshotInfo(
-                    string.Format(single.DisplayName, totalDuration, totalPercentage, totalAllocation),
-                    string.Format(single.Tooltip, totalDuration, totalPercentage, totalAllocation),
-                    string.Format(single.MoreText, totalDuration, totalPercentage, totalAllocation));
-            }
-
-
-            var min = samples.Min(s => s.Duration);
-            var max = samples.Max(s => s.Duration);
-            var avg = samples.Average(s => s.Duration);
-            return new(
-                string.Format(multiple.DisplayName, totalDuration, totalPercentage, samples.Count, totalAllocation),
-                string.Format(multiple.Tooltip, totalDuration, totalPercentage, min, max, avg, totalAllocation, samples.Count),
-                string.Format(multiple.MoreText, totalDuration, totalPercentage, min, max, avg, totalAllocation, samples.Count)
-            );
+                consumer, new DocumentRange(navigationRange.StartOffset, navigationRange.StartOffset + 1), displaySettings);
         }
 
         private void ExtractHighlightingInformation(List<PooledSample> children,
@@ -372,50 +327,44 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
             var qualifiedName =
                 $"{clrDeclaredElement.GetContainingType()?.GetClrName()}.{clrDeclaredElement.ShortName}";
 
-            ExtractSamplesAndAddHighlighting(children, sharpExpression, declaration, insightProvider, consumer,
-                qualifiedName, ourInternalCall, snapshotDataProvider);
+            ExtractSamplesAndAddHighlighting(children, sharpExpression, insightProvider, consumer,
+                qualifiedName, snapshotDataProvider);
         }
 
         private static void ExtractSamplesAndAddHighlighting(List<PooledSample> children,
-            ICSharpExpression sharpExpression,
-            ICSharpDeclaration declaration, UnityProfilerInsightProvider insightProvider,
-            FilteringHighlightingConsumer consumer, string qualifiedName, HighlightingString highlightingString,
+            ICSharpExpression sharpExpression, UnityProfilerInsightProvider insightProvider,
+            FilteringHighlightingConsumer consumer, string qualifiedName,
             ILazy<IUnityProfilerSnapshotDataProvider> snapshotDataProvider)
         {
             using var samples = PooledList<PooledSample>.GetInstance();
             double durationSum = 0;
             double percentageSum = 0;
             long allocations = 0;
+            var min = double.MaxValue;
+            var max = double.MinValue;
+
             foreach (var child in children)
             {
-                if (child.QualifiedName.Equals(qualifiedName))
-                {
-                    samples.Add(child); 
-                    durationSum += child.Duration;
-                    percentageSum += child.FramePercentage;
-                    allocations += child.MemoryAllocation;
-                }
+                if (!child.QualifiedName.Equals(qualifiedName)) 
+                    continue;
+                samples.Add(child); 
+                durationSum += child.Duration;
+                percentageSum += child.FramePercentage;
+                allocations += child.MemoryAllocation;
+                min = Math.Min(min, child.Duration);
+                max = Math.Max(max, child.Duration);
             }
+            
+            var avg = durationSum / samples.Count;
             
             if (samples.Count == 0)
                 return;
-            
-            var memory = StringUtil.StrFormatByteSize(allocations);
-
-            var displayName = string.Format(highlightingString.DisplayName, durationSum, percentageSum, samples.Count, memory);
-            var tooltip = string.Format(highlightingString.Tooltip, qualifiedName, durationSum, percentageSum, memory,
-                samples.Count);
-            var moreText = string.Format(highlightingString.MoreText, qualifiedName, durationSum, percentageSum, memory,
-                samples.Count);
-
-            var renderSettings = snapshotDataProvider.Value.GetGutterMarkSettings().ToProfilerGutterMarkRenderSettings();
             var profilerSampleInfo =
-                new ModelUnityProfilerSampleInfo(durationSum, percentageSum, allocations, tooltip, null, renderSettings);
-            insightProvider.AddProfilerHighlighting(
-                profilerSampleInfo
-                , consumer, sharpExpression.GetDocumentRange(), declaration.DeclaredElement,
-                displayName, tooltip, moreText, null
-                , EmptyList<BulbMenuItem>.Instance, []);
+                new ModelUnityProfilerSampleInfo(durationSum, percentageSum, allocations, null,
+                    samples.Count, new Stats(min, max, avg), qualifiedName);
+            
+            var renderSettings = snapshotDataProvider.Value.GetGutterMarkSettings().ToProfilerGutterMarkRenderSettings();
+            insightProvider.AddProfilerHighlighting(profilerSampleInfo, consumer, sharpExpression.GetDocumentRange(), renderSettings);
         }
 
         public IDaemonProcess DaemonProcess { get; } = process;
