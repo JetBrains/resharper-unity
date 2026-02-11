@@ -12,8 +12,8 @@ import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.XSourcePosition
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
-import com.intellij.xdebugger.impl.XDebuggerManagerImpl
 import com.intellij.xdebugger.impl.XSourcePositionImpl
+import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.jetbrains.rider.plugins.unity.actions.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.actions.valueOrDefault
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
@@ -55,7 +55,7 @@ class AddPauseBreakpoint : DumbAwareAction() {
                 if (gutter is EditorGutterComponentEx) {
                     var lineNumber = gutter.getClientProperty("active.line.number")
                     if (lineNumber !is Int) {
-                        lineNumber = e.getData(XDebuggerManagerImpl.ACTIVE_LINE_NUMBER)
+                        lineNumber = e.getData(DebuggerUIUtil.ACTIVE_LINE_NUMBER)
                     }
                     if (lineNumber != null) {
                         val pos = LogicalPosition(
