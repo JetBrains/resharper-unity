@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.Rider.Model.Unity;
-using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util.DataStructures.Collections;
 using JetBrains.Util.DataStructures.Specialized;
 
@@ -18,13 +18,17 @@ internal class PooledSamplesCache : IDisposable
     private PooledDictionary<string, PooledList<PooledSample>> myTypeNameToSamples;
     private PooledDictionary<string, PooledList<PooledSample>> myQualifiedNameToSamples;
     private PooledList<PooledSample> mySamples;
+    private PooledList<ProfilerModelSample> myProfilerModelSamples;
 
+    public FrontendModelSnapshot GetFrontendModelSnapshot()
+    {
+        return new FrontendModelSnapshot(myProfilerModelSamples);
+    }
+    
     private PooledSamplesCache(ObjectPool<PooledSamplesCache> pool)
     {
         myPool = pool;
     }
-
-    public UnityProfilerSnapshotStatus SnapshotInfo { get; set; }
 
     public void Dispose()
     {
@@ -32,6 +36,12 @@ internal class PooledSamplesCache : IDisposable
         {
             mySamples.Dispose();
             mySamples = null;
+        }
+
+        if (myProfilerModelSamples != null)
+        {
+            myProfilerModelSamples.Dispose();
+            myProfilerModelSamples = null;
         }
 
         if (myAssemblyToSamples != null)
@@ -77,6 +87,7 @@ internal class PooledSamplesCache : IDisposable
         var pooledSamplesCache = ourGlobalPool.Allocate();
 
         pooledSamplesCache.mySamples = PooledList<PooledSample>.GetInstance();
+        pooledSamplesCache.myProfilerModelSamples = PooledList<ProfilerModelSample>.GetInstance();
         pooledSamplesCache.myAssemblyToSamples = PooledDictionary<string, PooledList<PooledSample>>.GetInstance();
         pooledSamplesCache.myTypeNameToSamples = PooledDictionary<string, PooledList<PooledSample>>.GetInstance();
         pooledSamplesCache.myQualifiedNameToSamples = PooledDictionary<string, PooledList<PooledSample>>.GetInstance();
@@ -129,5 +140,11 @@ internal class PooledSamplesCache : IDisposable
             myQualifiedNameToSamples.Add(qualifiedName, qualifiedNameSamples = PooledList<PooledSample>.GetInstance());
 
         qualifiedNameSamples.Add(sample);
+    }
+
+    public void UpdateFrontendModelSamples()
+    {
+        foreach (var sample in mySamples)
+            myProfilerModelSamples.Add(sample.ToProfilerModelSample());
     }
 }

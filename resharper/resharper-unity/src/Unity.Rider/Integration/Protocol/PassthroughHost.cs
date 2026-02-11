@@ -91,14 +91,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Pause);
             frontendBackendModel.PlayControls.Step.Advise(lifetime, () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Step.Fire());
 
-
-            frontendBackendModel.UnityApplicationSettings.ProfilerSnapshotFetchingSettings.Advise(lifetime,
-                settingValue =>
-                {
-                    backendUnityModelProperty.Maybe.ValueOrDefault?.UnityApplicationSettings
-                        .ProfilerSnapshotFetchingSettings.Fire(settingValue);
-                });
-
             // Called from frontend to generate the UIElements schema files
             frontendBackendModel.GenerateUIElementsSchema.SetAsync((l, u) =>
             {

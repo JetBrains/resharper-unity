@@ -28,14 +28,10 @@ public class UnityProfilerInsightProvider(IFrontendBackendHost frontendBackendHo
 
     public void AddProfilerHighlighting(ModelUnityProfilerSampleInfo sampleInfo,
         FilteringHighlightingConsumer consumer,
-        DocumentRange documentRange, IDeclaredElement declaredElement, string displayName, string tooltip,
-        string moreText,
-        IconModel iconModel, IEnumerable<BulbMenuItem> items, List<CodeVisionEntryExtraActionModel> extraActions)
+        DocumentRange documentRange, ProfilerGutterMarkRenderSettings renderSettings)
     {
-       AddHighlighting(consumer, documentRange, declaredElement, displayName, tooltip, moreText, iconModel, items, extraActions);
-       if(sampleInfo.RenderSettings == ProfilerGutterMarkRenderSettings.Hidden)
+       if(renderSettings == ProfilerGutterMarkRenderSettings.Hidden)
            return;
-       
        
        //adds new custom gutter mark
        var highlighting = new UnityProfilerHighlighting(documentRange, sampleInfo);

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
 using JetBrains.Util.DataStructures.Specialized;
@@ -161,5 +162,14 @@ public class PooledSample : IDisposable
     {
         Children.Add(sample);
         sample.Parent = this;
+    }
+}
+
+internal static class PooledSampleExtensions
+{
+    public static ProfilerModelSample ToProfilerModelSample(this PooledSample sample)
+    {
+        return new ProfilerModelSample(sample.QualifiedName, sample.Duration, sample.FramePercentage,
+            sample.MemoryAllocation, sample.ChildrenCount, sample.IsProfilerMarker);
     }
 }
