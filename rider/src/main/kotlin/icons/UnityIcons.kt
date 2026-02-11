@@ -160,6 +160,7 @@ class UnityIcons {
             @JvmField
             val UnityLog = Common.UnityToolWindow
             val UnityExplorer = Common.UnityToolWindow
+            @JvmField val UnityProfiler = Profiler.UpToDate
         }
     }
     
