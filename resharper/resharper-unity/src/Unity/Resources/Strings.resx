@@ -1509,6 +1509,12 @@ float values with full precision.</value>
     <data name="UnitySettings_Profiler_Integration_Snapshot_Fetching" xml:space="preserve">
         <value>Unity profiler integration</value>
     </data>
+    <data name="UnitySettings_Enable_Profiler_Snapshot_Fetching" xml:space="preserve">
+        <value>Enable Unity profiler integration</value>
+    </data>
+    <data name="UnitySettings_Profiler_Snapshot_Fetching_Mode" xml:space="preserve">
+        <value>Unity profiler snapshot fetching mode</value>
+    </data>
     <data name="UnitySettings_Profiler_New_Highlighting_Enabled" xml:space="preserve">
         <value>Enable new profiler highlightings</value>
     </data>

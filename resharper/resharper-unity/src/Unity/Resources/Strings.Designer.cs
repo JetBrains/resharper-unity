@@ -550,6 +550,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string UnitySettings_t_Unity_plugin_settings => ResourceManager.GetString("UnitySettings_t_Unity_plugin_settings");
     public static string UnitySettings_Dots_Header => ResourceManager.GetString("UnitySettings_Dots_Header");
     public static string UnitySettings_Profiler_Integration_Snapshot_Fetching => ResourceManager.GetString("UnitySettings_Profiler_Integration_Snapshot_Fetching");
+    public static string UnitySettings_Enable_Profiler_Snapshot_Fetching => ResourceManager.GetString("UnitySettings_Enable_Profiler_Snapshot_Fetching");
+    public static string UnitySettings_Profiler_Snapshot_Fetching_Mode => ResourceManager.GetString("UnitySettings_Profiler_Snapshot_Fetching_Mode");
     public static string UnitySettings_Profiler_New_Highlighting_Enabled => ResourceManager.GetString("UnitySettings_Profiler_New_Highlighting_Enabled");
     public static string UnitySettings_Dots_Hide_generated_code_from_navigation => ResourceManager.GetString("UnitySettings_Dots_Hide_generated_code_from_navigation");
     public static string UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute => ResourceManager.GetString("UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute");
