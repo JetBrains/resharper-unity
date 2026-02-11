@@ -1,19 +1,17 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.intellij.openapi.components.ComponentManagerEx
-import com.intellij.openapi.rd.util.lifetime
+import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.intellij.xdebugger.impl.collection.visualizer.XDebuggerNodeLinkActionProvider
 import com.jetbrains.rd.util.string.printToString
 import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rider.debugger.DotNetStackFrame
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
-//import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator
-//import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator.Companion.getUnityTextureInfo
-import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
 import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -30,8 +28,7 @@ import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.DebugTestExecutionContext
 import com.jetbrains.rider.test.scriptingApi.dumpFullCurrentData
 import com.jetbrains.rider.test.scriptingApi.evaluateExpression
-import com.jetbrains.rider.test.scriptingApi.getNamedValue
-import com.jetbrains.rider.test.scriptingApi.getPresentation
+import com.jetbrains.rider.test.scriptingApi.evaluateNode
 import com.jetbrains.rider.test.scriptingApi.removeAllBreakpoints
 import com.jetbrains.rider.test.scriptingApi.resumeSession
 import com.jetbrains.rider.test.scriptingApi.stepInto
@@ -46,11 +43,14 @@ import com.jetbrains.rider.unity.test.framework.api.unpause
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPauseMode
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPlayMode
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
+import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureDataApi
+import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
+import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureHyperLink
+import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider
 import kotlinx.coroutines.launch
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 import kotlin.test.assertNotNull
-import kotlin.test.fail
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Editor")
@@ -75,49 +75,47 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
             }, testGoldFile)
     }
 
-//TODO(Korovin): Fix test
+    @Test(description = "Check texture debugging in simple Unity App")
+    @ChecklistItems(["Breakpoints/Texture breakpoint"])
+    @Mute("RIDER-135697 Unity test for texture visualizer isn't compatible with the new split mode debugger yet")
+    fun checkTextureDebugging() {
+        attachDebuggerToUnityEditorAndPlay(
+            beforeRun = {
+                toggleBreakpoint("TextureDebuggingScript.cs", 13) //  Debug.Log(texture2D);
+            },
+            test = {
+                waitForPause()
+                dumpFullCurrentData()
+                try {
+                    val stackFrame = (session.currentStackFrame as DotNetStackFrame)
 
-//    @Test(description = "Check texture debugging in simple Unity App")
-//    @ChecklistItems(["Breakpoints/Texture breakpoint"])
-//    fun checkTextureDebugging() {
-//        attachDebuggerToUnityEditorAndPlay(
-//            beforeRun = {
-//                toggleBreakpoint("TextureDebuggingScript.cs", 13) //  Debug.Log(texture2D);
-//            },
-//            test = {
-//                waitForPause()
-//                dumpFullCurrentData()
-//                try {
-//                    val stackFrame = (session.currentStackFrame as DotNetStackFrame)
-//
-//                    assertNotNull(stackFrame)
-//                    val value = stackFrame.getNamedValue("texture2D")
-//                    assertNotNull(value)
-//                    val texture2DPresentation = value.getPresentation()
-//                    val unityTextureCustomComponentEvaluator = texture2DPresentation.myFullValueEvaluator as UnityTextureCustomComponentEvaluator
-//
-//                    assertNotNull(unityTextureCustomComponentEvaluator)
-//
-//
-//                    val lifetime = this.project.lifetime
-//                    var textureInfo: UnityTextureInfo? = null
-//                    val job = (project as ComponentManagerEx).getCoroutineScope().launch {
-//                        textureInfo = getUnityTextureInfo(
-//                            value, value.objectProperties!!, lifetime, 10000, null) {
-//                            fail(it)
-//                        }
-//                    }
-//
-//                    pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
-//                        job.isCompleted
-//                    }
-//                    assertNotNull(textureInfo)
-//                    printlnIndented(textureInfo.printToString())
-//                }
-//                finally {
-//                }
-//            }, goldFile = testGoldFile)
-//    }
+                    assertNotNull(stackFrame)
+
+                    val valueNode = evaluateNode("texture2D", refreshIfNeeded = true)
+                    val EP_NAME = ExtensionPointName<XDebuggerNodeLinkActionProvider>("com.intellij.xdebugger.nodeLinkActionProvider")
+                    val unityTextureExtension = EP_NAME.extensionList.firstOrNull { it is UnityTextureLinkProvider }
+                    assertNotNull(unityTextureExtension)
+
+                    var textureInfo: UnityTextureInfo? = null
+                    val job = (project as ComponentManagerEx).getCoroutineScope().launch {
+                        val link = with (unityTextureExtension) {
+                            provideHyperlink(project, valueNode)
+                        } as? UnityTextureHyperLink
+                        assertNotNull(link)
+                        val result = RiderTextureDataApi.getInstance().evaluateTexture(link.accessorId, 10000)
+                        textureInfo = result.unityTextureInfo
+                    }
+
+                    pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
+                        job.isCompleted
+                    }
+                    assertNotNull(textureInfo)
+                    printlnIndented(textureInfo.printToString())
+                }
+                finally {
+                }
+            }, goldFile = testGoldFile)
+    }
 
     @Test(description = "Check Unity pause point in debugging for simple Unity App")
     @ChecklistItems(["Breakpoints/Unity Pause Points"])

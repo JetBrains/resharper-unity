@@ -4,8 +4,6 @@ import com.intellij.internal.statistic.StructuredIdeActivity
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.rd.createNestedDisposable
-import com.intellij.openapi.ui.FrameWrapper
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.platform.debugger.impl.shared.proxy.XDebugSessionProxy
 import com.intellij.ui.ErrorLabel
@@ -19,9 +17,6 @@ import com.jetbrains.rd.util.printlnError
 import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityPluginScopeService
-import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.ExecutionResult
-import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.StageType
-import com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.TextureDebuggerCollector
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureAccessorId
@@ -34,7 +29,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.intellij.images.editor.impl.ImageEditorManagerImpl
 import java.awt.BorderLayout
-import java.awt.CardLayout
 import java.awt.GraphicsConfiguration
 import java.awt.GraphicsEnvironment
 import java.awt.Rectangle

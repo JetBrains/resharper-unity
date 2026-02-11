@@ -386,7 +386,7 @@
     <notificationGroup id="Unity commit failure" displayType="BALLOON" bundle="messages.UnityBundle"
                        key="notification.group.unity.unity.commit.failure"/>
     <iconMapper mappingFile="UnityIconMappings.json"/>
-    <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.TextureDebuggerCollector"/>
+    <statistics.counterUsagesCollector implementationClass="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.TextureDebuggerCollector"/>
     
     <!-- Unity Profiler line markers -->
     <rdclient.markupExtension implementation="com.jetbrains.rider.plugins.unity.profiler.lineMarkers.UnityProfilerProtocolMarkupExtension"/>
