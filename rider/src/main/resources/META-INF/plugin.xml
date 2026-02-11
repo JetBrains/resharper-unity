@@ -445,7 +445,6 @@
   <dependencies>
     <module name="intellij.rd.client"/>
     <module name="intellij.rider.languages"/>
-    <module name="intellij.rider.model.generated"/>
     <module name="intellij.rider.rdclient.dotnet"/>
     <module name="intellij.rider.shared"/>
   </dependencies>
