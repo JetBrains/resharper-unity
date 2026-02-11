@@ -17,6 +17,7 @@
     <RepositoryUrl>https://github.com/JetBrains/resharper-unity/</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations.Sources"/>

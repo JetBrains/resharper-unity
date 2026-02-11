@@ -10,6 +10,7 @@
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
         <Nullable>enable</Nullable>
+        <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
     </PropertyGroup>
     <Import Project="..\..\usbmuxd\usbmuxd.projitems" Label="Shared" />
 </Project>
