@@ -1,5 +1,7 @@
 <idea-plugin>
   <dependencies>
+    <module name="intellij.platform.frontend"/>
+
     <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
     <plugin id="com.intellij.platform.images"/>
     <plugin id="com.intellij.resharper.unity"/>
