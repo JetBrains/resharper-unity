@@ -126,7 +126,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         var snapshotFetchingEnabled = GetSnapshotFetchingEnabled();
         var fetchingMode = GetSnapshotFetchingMode();
         
-        frontendBackendModel?.IsIntegraionEnable.Value = snapshotFetchingEnabled;
+        frontendBackendModel?.IsIntegrationEnable.Value = snapshotFetchingEnabled;
         frontendBackendModel?.FetchingMode.Value = fetchingMode == ProfilerSnapshotFetchingMode.Auto ? FetchingMode.Auto : FetchingMode.Manual;
         
         if (snapshotFetchingEnabled)
@@ -173,9 +173,9 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         });
         
         //settings
-        FrontendBackendProfilerModel.IsIntegraionEnable.Value = GetSnapshotFetchingEnabled();
+        FrontendBackendProfilerModel.IsIntegrationEnable.Value = GetSnapshotFetchingEnabled();
 
-        FrontendBackendProfilerModel.IsIntegraionEnable.Advise(myLifetime,
+        FrontendBackendProfilerModel.IsIntegrationEnable.Advise(myLifetime,
             enabled => { mySettingsStore.SetValue(myEnableSnapshotFetchingScalarEntry, enabled, null); });
         
         FrontendBackendProfilerModel.FetchingMode.Value = GetSnapshotFetchingMode() == ProfilerSnapshotFetchingMode.Auto ? FetchingMode.Auto : FetchingMode.Manual;

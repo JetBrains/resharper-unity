@@ -16,6 +16,7 @@ class UnityProfilerSnapshotModel(val profilerModel: FrontendBackendProfilerModel
     val isDataUpToDate: IProperty<Boolean> = Property(false)
 
     val fetchingMode: IOptProperty<FetchingMode> get() = profilerModel.fetchingMode
+    private val isIntegrationEnable: IOptProperty<Boolean> get() = profilerModel.isIntegrationEnable
     private val selectionState get() = profilerModel.selectionState
 
     init {
@@ -38,7 +39,12 @@ class UnityProfilerSnapshotModel(val profilerModel: FrontendBackendProfilerModel
         }
         
         fetchingMode.advise(lifetime) { mode ->
-            if(mode == FetchingMode.Manual) return@advise
+            if (mode == FetchingMode.Manual) return@advise
+            requestNewSnapshot()
+        }
+        
+        isIntegrationEnable.advise(lifetime) { isEnable ->
+            if (!isEnable) return@advise
             requestNewSnapshot()
         }
     }
@@ -47,30 +53,17 @@ class UnityProfilerSnapshotModel(val profilerModel: FrontendBackendProfilerModel
         selection: SelectionState?,
         snapshot: FrontendModelSnapshot?
     ) {
-        if (selection == null) {
-            isDataUpToDate.set(false)
-            return
-        }
-
-        if (snapshot == null) {
-            isDataUpToDate.set(false)
-            return
-        }
-
-        if (selection != snapshot?.selectionState) {
-            isDataUpToDate.set(false)
-            return
-        }
-
-        isDataUpToDate.set(true)
+        isDataUpToDate.set(
+            selection != null && snapshot != null && selection == snapshot.selectionState
+        )
     }
 
     fun requestNewSnapshot() {
-        if(selectionState.value == null) return
+        val selection = selectionState.value ?: return
         requestNewSnapshot(
             ProfilerSnapshotRequest(
-                selectionState.value!!.selectedFrameIndex,
-                selectionState.value!!.selectedThread
+                selection.selectedFrameIndex,
+                selection.selectedThread
             ),
             true
         )

@@ -14,6 +14,8 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendPr
 import com.jetbrains.rider.projectView.solution
 
 abstract class ProfilerGutterMarksAction : DumbAwareAction() {
+    //todo add UnityProfilerUsagesDaemon to get access to the data
+    
     abstract val targetSettings: ProfilerGutterMarkRenderSettings
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
