@@ -266,7 +266,7 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
         property("mainThreadTimingsAndThreads", Library.MainFrameTimingsAndThreads.nullable).async
         
         //Settings
-        property("isIntegraionEnable", bool).async
+        property("isIntegrationEnable", bool).async
         property("fetchingMode", enum("FetchingMode") {
             +"Auto"
             +"Manual"
