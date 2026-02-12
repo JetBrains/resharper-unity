@@ -16,6 +16,7 @@ import com.jetbrains.rider.test.scriptingApi.setRiderPackageVersion
 import com.jetbrains.rider.test.scriptingApi.waitForSlnGeneratedByUnity
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.startUnity
+import org.testng.ITestResult
 import org.testng.annotations.BeforeMethod
 import java.io.File
 import java.time.Duration
@@ -49,7 +50,7 @@ abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGenera
     override val solutionApiFacade: SolutionApiFacade by lazy { RiderExistingSolutionApiFacade() }
 
     @BeforeMethod
-    override fun setUpTestCaseSolution() {
+    override fun setUpTestCaseSolution(testResult: ITestResult) {
         unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null, testWorkDirectory, solutionSourceRootDirectory,
                                                         testDataDirectory)
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
@@ -76,7 +77,7 @@ abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGenera
             else
                 frameworkLogger.info("Sln/csproj structure hasn't been created")
         }
-        super.setUpTestCaseSolution()
+        super.setUpTestCaseSolution(testResult)
     }
 
     @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
