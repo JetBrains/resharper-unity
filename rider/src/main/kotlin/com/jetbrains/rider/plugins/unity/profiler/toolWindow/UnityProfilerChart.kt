@@ -15,6 +15,7 @@ import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rider.plugins.unity.model.ProfilerThread
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerStyle
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerChartViewModel
+import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerSnapshotModel
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import kotlinx.coroutines.*
 import java.awt.*
@@ -27,8 +28,10 @@ import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 class UnityProfilerChart(
-    private val viewModel: UnityProfilerChartViewModel, 
-    private val lifetime: Lifetime) {
+    private val viewModel: UnityProfilerChartViewModel,
+    private val snapshotModel: UnityProfilerSnapshotModel,
+    private val lifetime: Lifetime
+) {
 
     private val chart = lineChart<Double> {
         dataset {
@@ -250,7 +253,7 @@ class UnityProfilerChart(
         font = JBUI.Fonts.label().deriveFont(JBUI.scale(12f))
     }
 
-    private val splitButton = UnityProfilerModeButton(viewModel, lifetime)
+    private val splitButton = UnityProfilerModeButton(snapshotModel, lifetime)
 
     private val statusLabel = JBLabel(UnityUIBundle.message("unity.profiler.integration.data.up.to.date")).apply {
         foreground = UnityProfilerStyle.gridLabelForeground
@@ -307,9 +310,20 @@ class UnityProfilerChart(
         setupFrameDurationsBinding(chartLifetime)
         setupThreadSelectionBinding(chartLifetime)
         setupThreadNamesBinding(chartLifetime)
+        setupDataStatusBinding(chartLifetime)
 
         // Initialize thread selector with current values
         updateThreadSelectorItems()
+    }
+
+    private fun setupDataStatusBinding(chartLifetime: Lifetime) {
+        snapshotModel.isDataUpToDate.advise(chartLifetime) { isUpToDate ->
+            statusLabel.text = if (isUpToDate) {
+                UnityUIBundle.message("unity.profiler.integration.data.up.to.date")
+            } else {
+                UnityUIBundle.message("unity.profiler.integration.has.new.data")
+            }
+        }
     }
 
     private fun setupFrameSelectionBinding(chartLifetime: Lifetime) {
