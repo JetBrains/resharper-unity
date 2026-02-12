@@ -28,7 +28,7 @@ class UnityProfilerUsagesDaemon(project: Project) : Disposable {
     //view models
     val snapshotModel: UnityProfilerSnapshotModel = UnityProfilerSnapshotModel(frontendBackendProfilerModel, lifetime)
     val chartViewModel: UnityProfilerChartViewModel = UnityProfilerChartViewModel(frontendBackendProfilerModel, lifetime)
-    val treeViewModel: UnityProfilerTreeViewModel = UnityProfilerTreeViewModel(frontendBackendProfilerModel, lifetime)
+    val treeViewModel: UnityProfilerTreeViewModel = UnityProfilerTreeViewModel(frontendBackendProfilerModel, snapshotModel, lifetime)
     val lineMarkerViewModel: UnityProfilerLineMarkerViewModel = UnityProfilerLineMarkerViewModel(frontendBackendProfilerModel)
     val settingsModel: UnityProfilerIntegrationSettingsModel = UnityProfilerIntegrationSettingsModel(frontendBackendProfilerModel, lifetime)
 

@@ -3,8 +3,8 @@ package com.jetbrains.rider.plugins.unity.profiler.viewModels
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import com.jetbrains.rd.util.lifetime.isAlive
+import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
-import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.flowInto
 import com.jetbrains.rider.plugins.unity.model.UnityProfilerRecordInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendProfilerModel
@@ -42,6 +42,7 @@ import javax.swing.tree.DefaultMutableTreeNode
  */
 class UnityProfilerTreeViewModel(
     val profilerModel: FrontendBackendProfilerModel,
+    val snapshotModel: UnityProfilerSnapshotModel,
     val lifetime: Lifetime
 ) {
     private val updateTreeLifetimes = SequentialLifetimes(lifetime)
@@ -56,7 +57,7 @@ class UnityProfilerTreeViewModel(
     )
 
     val currentProfilerRecordInfo: Property<UnityProfilerRecordInfo?> = Property(null)
-    val currentSnapshot: Property<FrontendModelSnapshot?> = Property(null)
+    val currentSnapshot: IProperty<FrontendModelSnapshot?> get() = snapshotModel.currentSnapshot
     val filterText: Property<String> = Property("")
     val isExactFilter: Property<Boolean> = Property(false)
     val activeSortColumn: Property<UnityProfilerSortColumn> = Property(UnityProfilerSortColumn.MS)
@@ -66,9 +67,6 @@ class UnityProfilerTreeViewModel(
 
     init {
         profilerModel.currentProfilerRecordInfo.flowInto(lifetime, currentProfilerRecordInfo)
-        profilerModel.currentSnapshot.adviseNotNull(lifetime) { snapshot ->
-            currentSnapshot.set(snapshot)
-        }
 
         // Set up debounced filter input (300ms delay to prevent excessive rebuilds during typing)
         filterInputFlow
