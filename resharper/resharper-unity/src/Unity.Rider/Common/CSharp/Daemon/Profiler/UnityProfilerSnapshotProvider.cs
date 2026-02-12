@@ -204,9 +204,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 myLogger.LogException(e);
             }
         });
-        
-        //TODO move collectors to frontend
-        FrontendBackendProfilerModel.ShowPopupAction.Advise(myLifetime, () => myUnityProfilerInfoCollector.OnNavigationPopupShown());
     }
 
     private void AdviseOnUnityProfilerModel()
