@@ -271,9 +271,6 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
             +"Manual"
         }).async
         property("gutterMarksRenderSettings", ProfilerGutterMarkRenderSettings).async
-        
-        //collectors
-        signal("showPopupAction", void).async
     }
 
     val ProfilerHighlighterModel = structdef extends SolutionModel.HighlighterModel {

@@ -146,8 +146,6 @@ class UnityProfilerActiveLineMarkerRenderer(
 
     override fun doAction(editor: Editor, e: MouseEvent) {
         logger.runAndLogException {
-            markerViewModel.showPopupAction()
-
             val gutter = e.component as? EditorGutterComponentEx ?: return
             e.consume()
 

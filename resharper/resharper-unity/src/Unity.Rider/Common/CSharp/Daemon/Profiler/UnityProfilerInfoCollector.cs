@@ -13,12 +13,11 @@ public class UnityProfilerInfoCollector : CounterUsagesCollector
     private readonly EventId myNavigateFromProfiler;
     private readonly EventId1<int> myProfilerFrameSelected;
     private readonly EventId1<int> mySnapshotFetched;
-    private readonly EventId myNavigationPopupShown;
     private readonly EventId myNavigateToParentCall;
 
     public UnityProfilerInfoCollector(FeatureUsageLogger featureUsageLogger)
     {
-        myGroup = new EventLogGroup("dotnet.unity.profiler", "Unity Profiler Integration Information", 3,
+        myGroup = new EventLogGroup("dotnet.unity.profiler", "Unity Profiler Integration Information", 4,
             featureUsageLogger);
 
         myNavigateFromProfiler = myGroup.RegisterEvent("navigated_from_unity_profiler",
@@ -32,9 +31,6 @@ public class UnityProfilerInfoCollector : CounterUsagesCollector
             "Unity profiler snapshot fetched from the editor to Rider",
             EventFields.RoundedInt("samples_count", "Number of samples in fetched snapshot"));
 
-        myNavigationPopupShown = myGroup.RegisterEvent("navigation_popup_shown", 
-            "Navigation popup shown on mouse click on custom Unity Profiler gutter mark");
-        
         myNavigateToParentCall = myGroup.RegisterEvent("navigate_to_parent_call", "Navigate to parent call from custom Unity Profiler gutter mark");
     }
 
@@ -53,11 +49,6 @@ public class UnityProfilerInfoCollector : CounterUsagesCollector
     public void OnUnityProfilerFrameSelected(int numberOfSamples)
     {
         myProfilerFrameSelected.Log(numberOfSamples);
-    }
-
-    public void OnNavigationPopupShown()
-    {
-        myNavigationPopupShown.Log();
     }
     
     public void OnNavigateToParentCall()
