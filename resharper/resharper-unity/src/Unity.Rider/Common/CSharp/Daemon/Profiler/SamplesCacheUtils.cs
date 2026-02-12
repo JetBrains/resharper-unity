@@ -43,7 +43,7 @@ internal static class SamplesCacheUtils
         if(snapshot == null)
             return PooledSamplesCache.GetInstance();
 
-        var samplesCache = PooledSamplesCache.GetInstance();
+        var samplesCache = PooledSamplesCache.GetInstance(snapshot.FrameIndex, snapshot.Thread);
 
         using var stack = ourSamplesStackPool.Allocate();
         using var markerIdToName = ourIdNameDictionaryPool.Allocate();

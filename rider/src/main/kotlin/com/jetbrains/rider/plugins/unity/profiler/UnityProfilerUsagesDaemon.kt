@@ -12,6 +12,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendProfilerModel
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerChartViewModel
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerLineMarkerViewModel
+import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerSnapshotModel
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerTreeViewModel
 import com.jetbrains.rider.projectView.solution
 
@@ -25,6 +26,7 @@ class UnityProfilerUsagesDaemon(project: Project) : Disposable {
     val lifetime: Lifetime = UnityProjectLifetimeService.getLifetime(project)
 
     //view models
+    val snapshotModel: UnityProfilerSnapshotModel = UnityProfilerSnapshotModel(frontendBackendProfilerModel, lifetime)
     val chartViewModel: UnityProfilerChartViewModel = UnityProfilerChartViewModel(frontendBackendProfilerModel, lifetime)
     val treeViewModel: UnityProfilerTreeViewModel = UnityProfilerTreeViewModel(frontendBackendProfilerModel, lifetime)
     val lineMarkerViewModel: UnityProfilerLineMarkerViewModel = UnityProfilerLineMarkerViewModel(frontendBackendProfilerModel)

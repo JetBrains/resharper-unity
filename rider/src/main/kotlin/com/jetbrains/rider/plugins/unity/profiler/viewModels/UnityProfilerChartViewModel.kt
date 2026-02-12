@@ -109,16 +109,6 @@ class UnityProfilerChartViewModel(
                 isUpdatingThreadSelection = false
             }
         }
-
-
-        profilerModel.selectionState.adviseNotNull(lifetime) { selectionState ->
-            profilerModel.updateUnityProfilerSnapshotData.fire(
-                ProfilerSnapshotRequest(
-                    selectionState.selectedFrameIndex,
-                    selectionState.selectedThread
-                )
-            )
-        }
     }
 
     private fun updateFrameDurations(timings: List<TimingInfo>) {

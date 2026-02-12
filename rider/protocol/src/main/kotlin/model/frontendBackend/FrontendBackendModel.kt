@@ -253,6 +253,7 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
     
     private val FrontendModelSnapshot = structdef {
         field("samples", immutableList(ProfilerModelSample))
+        field("selectionState", Library.SelectionState)
     }
     
     init {

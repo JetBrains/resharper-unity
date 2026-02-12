@@ -16,9 +16,9 @@ using UnityEditorInternal;
 
 namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 {
-  internal class SnapshotCollectorDaemonV2 : ISnapshotCollectorDaemon
+  internal class SnapshotCollectorDaemon : ISnapshotCollectorDaemon
   {
-    private static readonly ILog ourLogger = Log.GetLog(nameof(SnapshotCollectorDaemonV2));
+    private static readonly ILog ourLogger = Log.GetLog(nameof(SnapshotCollectorDaemon));
 
     private readonly ProfilerSnapshotCrawler mySnapshotCrawler;
     private readonly IProfilerAdaptersFactory myAdaptersFactory;
@@ -30,7 +30,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
     private IProfilerWindowAdapter? myWindowAdapter;
 
-    internal SnapshotCollectorDaemonV2(IProfilerAdaptersFactory adaptersFactory, Lifetime appDomainLifetime)
+    internal SnapshotCollectorDaemon(IProfilerAdaptersFactory adaptersFactory, Lifetime appDomainLifetime)
     {
       myAdaptersFactory = adaptersFactory;
       mySnapshotCrawler = new ProfilerSnapshotCrawler(adaptersFactory.CreateProfilerSnapshotDriverAdapter());

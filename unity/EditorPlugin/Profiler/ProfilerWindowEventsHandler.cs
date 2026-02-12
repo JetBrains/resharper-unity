@@ -105,7 +105,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler
           ourProfilerWindowDataProvider = ourProfilerAdaptersFactory!.CreateProfilerWindowFacade();
           ourProfilerWindowTypeChecker = ourProfilerAdaptersFactory!.CreateProfilerWindowTypeChecker();
 
-          ourSnapshotCollectorDaemon = new SnapshotCollectorDaemonV2(ourProfilerAdaptersFactory, appDomainLifetime);
+          ourSnapshotCollectorDaemon = new SnapshotCollectorDaemon(ourProfilerAdaptersFactory, appDomainLifetime);
 
           //find an already opened profiler window
           var profilerWindowObjects = ourProfilerWindowTypeChecker?.FindProfilerWindows() ?? Array.Empty<Object>();

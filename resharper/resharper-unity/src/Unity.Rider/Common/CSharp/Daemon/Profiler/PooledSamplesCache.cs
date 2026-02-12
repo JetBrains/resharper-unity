@@ -19,10 +19,13 @@ internal class PooledSamplesCache : IDisposable
     private PooledDictionary<string, PooledList<PooledSample>> myQualifiedNameToSamples;
     private PooledList<PooledSample> mySamples;
     private PooledList<ProfilerModelSample> myProfilerModelSamples;
+    
+    private int myFrameIndex;
+    private ProfilerThread mySnapshotThread;
 
     public FrontendModelSnapshot GetFrontendModelSnapshot()
     {
-        return new FrontendModelSnapshot(myProfilerModelSamples);
+        return new FrontendModelSnapshot(myProfilerModelSamples, new SelectionState(myFrameIndex, mySnapshotThread));
     }
     
     private PooledSamplesCache(ObjectPool<PooledSamplesCache> pool)
@@ -82,7 +85,7 @@ internal class PooledSamplesCache : IDisposable
 
     [Pure]
     [MustDisposeResource]
-    public static PooledSamplesCache GetInstance()
+    public static PooledSamplesCache GetInstance(int frameIndex = -1, [CanBeNull] ProfilerThread snapshotThread = null)
     {
         var pooledSamplesCache = ourGlobalPool.Allocate();
 
@@ -91,7 +94,10 @@ internal class PooledSamplesCache : IDisposable
         pooledSamplesCache.myAssemblyToSamples = PooledDictionary<string, PooledList<PooledSample>>.GetInstance();
         pooledSamplesCache.myTypeNameToSamples = PooledDictionary<string, PooledList<PooledSample>>.GetInstance();
         pooledSamplesCache.myQualifiedNameToSamples = PooledDictionary<string, PooledList<PooledSample>>.GetInstance();
-
+        
+        pooledSamplesCache.myFrameIndex = frameIndex;
+        pooledSamplesCache.mySnapshotThread = snapshotThread ?? new ProfilerThread(-1, string.Empty);
+        
         return pooledSamplesCache;
     }
 
