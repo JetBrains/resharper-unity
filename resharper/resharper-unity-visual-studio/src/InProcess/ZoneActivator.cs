@@ -6,14 +6,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.InProcess
     [ZoneActivator]
     public class ZoneActivator : IActivateDynamic<IUnityPluginZone>, IActivateDynamic<IUnityShaderZone>
     {
-        private readonly VisualStudioProtocolConnector myConnector;
+        private readonly VisualStudioOutOfProcessMode myOopMode;
 
-        public ZoneActivator(VisualStudioProtocolConnector connector)
+        public ZoneActivator(VisualStudioOutOfProcessMode oopMode)
         {
-            myConnector = connector;
+            myOopMode = oopMode;
         }
 
-        bool IActivateDynamic<IUnityPluginZone>.ActivatorEnabled() => !myConnector.IsOutOfProcess;
-        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !myConnector.IsOutOfProcess;
+        bool IActivateDynamic<IUnityPluginZone>.ActivatorEnabled() => !myOopMode.IsOutOfProcess;
+        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !myOopMode.IsOutOfProcess;
     }
 }
