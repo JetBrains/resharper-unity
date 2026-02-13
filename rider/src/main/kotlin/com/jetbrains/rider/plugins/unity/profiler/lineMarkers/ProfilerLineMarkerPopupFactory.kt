@@ -4,8 +4,9 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionUiKind
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.impl.PresentationFactory
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.runAndLogException
@@ -17,7 +18,11 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupChooserBuilder
 import com.intellij.openapi.ui.popup.util.RoundedCellRenderer
 import com.intellij.ui.SeparatorComponent
+import com.intellij.ui.popup.ActionPopupOptions
+import com.intellij.ui.popup.ActionPopupStep
+import com.intellij.ui.popup.PopupFactoryImpl
 import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
@@ -27,8 +32,11 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.ModelUnityProfile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ParentCalls
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerGutterMarkRenderSettings
 import com.jetbrains.rider.plugins.unity.profiler.actions.ShowUnityProfilerSettingsAction
+import com.jetbrains.rider.plugins.unity.profiler.actions.ToggleUnityProfilerGutterMarksAction
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerToolWindowFactory
+import com.jetbrains.rider.plugins.unity.profiler.utils.UnityProfilerFormatUtils
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerLineMarkerViewModel
+import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,8 +57,8 @@ object ProfilerLineMarkerPopupFactory {
         e: MouseEvent
     ): JBPopup {
         val parents = sampleInfo.parents ?: emptyList()
-        val actions = createActions(project, markerViewModel, sampleInfo)
-        val items = parents + actions
+        val actionItems = createActionItems(project, markerViewModel, sampleInfo)
+        val items = parents + actionItems
 
         val builder = JBPopupFactory.getInstance()
             .createPopupChooserBuilder(items)
@@ -58,7 +66,7 @@ object ProfilerLineMarkerPopupFactory {
             .setNamerForFiltering { item ->
                 when (item) {
                     is ParentCalls -> item.qualifiedName
-                    is AnAction -> item.templatePresentation.text ?: ""
+                    is PopupFactoryImpl.ActionItem -> item.text
                     else -> ""
                 }
             }
@@ -72,21 +80,35 @@ object ProfilerLineMarkerPopupFactory {
         return builder.createPopup()
     }
 
-    private fun createActions(project: Project, markerViewModel: UnityProfilerLineMarkerViewModel, sampleInfo: ModelUnityProfilerSampleInfo): List<AnAction> {
+    private fun createActionItems(project: Project, markerViewModel: UnityProfilerLineMarkerViewModel, sampleInfo: ModelUnityProfilerSampleInfo): List<PopupFactoryImpl.ActionItem> {
         val gutterMarkRenderSettings = markerViewModel.gutterMarksRenderSettings.valueOrDefault(ProfilerGutterMarkRenderSettings.Default)
-        return listOfNotNull(
-            when (gutterMarkRenderSettings) {
-                ProfilerGutterMarkRenderSettings.Default -> MinimizeUnityProfilerGutterMarksWithIconAction()
-                ProfilerGutterMarkRenderSettings.Minimized -> MaximizeUnityProfilerGutterMarksWithIconAction()
-                else -> null
-            },
-            object : DumbAwareAction("Show in Unity Profiler Toolwindow", null, AllIcons.Actions.MoveTo2) {
+        
+        val actionGroup = DefaultActionGroup().apply {
+            add(object : DumbAwareAction("Show in Unity Profiler Toolwindow", null, AllIcons.Actions.MoveTo2) {
                 override fun actionPerformed(e: AnActionEvent) {
                     UnityProfilerToolWindowFactory.showAndNavigate(project, sampleInfo.qualifiedName)
                 }
-            },
-            HideUnityProfilerGutterMarksWithIconAction(),
-            ShowUnityProfilerSettingsAction()
+            })
+            
+            when (gutterMarkRenderSettings) {
+                ProfilerGutterMarkRenderSettings.Default -> add(MinimizeUnityProfilerGutterMarksWithIconAction())
+                ProfilerGutterMarkRenderSettings.Minimized -> add(MaximizeUnityProfilerGutterMarksWithIconAction())
+                else -> {}
+            }
+            
+            add(ToggleUnityProfilerGutterMarksAction(markerViewModel.gutterMarksRenderSettings))
+            add(ShowUnityProfilerSettingsAction())
+        }
+        
+        val dataContext = DataManager.getInstance().dataContext
+        val presentationFactory = PresentationFactory()
+        
+        return ActionPopupStep.createActionItems(
+            actionGroup,
+            dataContext,
+            ActionPlaces.UNKNOWN,
+            presentationFactory,
+            ActionPopupOptions.showDisabled()
         )
     }
 
@@ -108,10 +130,11 @@ object ProfilerLineMarkerPopupFactory {
                         }
                     }
                 }
-                is AnAction -> {
+                is PopupFactoryImpl.ActionItem -> {
                     val dataContext = DataManager.getInstance().getDataContext(gutter)
-                    val event = AnActionEvent.createEvent(element, dataContext, element.templatePresentation.clone(), ActionPlaces.UNKNOWN, ActionUiKind.NONE, e)
-                    element.actionPerformed(event)
+                    val presentation = element.action.templatePresentation.clone()
+                    val event = AnActionEvent.createEvent(element.action, dataContext, presentation, ActionPlaces.UNKNOWN, ActionUiKind.NONE, e)
+                    element.action.actionPerformed(event)
                 }
             }
         }
@@ -119,28 +142,33 @@ object ProfilerLineMarkerPopupFactory {
 
     private fun createHeader(sampleInfo: ModelUnityProfilerSampleInfo): JComponent {
         val headerBackground = JBUI.CurrentTheme.Editor.Tooltip.BACKGROUND
-        val headerForeground = JBUI.CurrentTheme.Editor.Tooltip.FOREGROUND
+        val headerForeground = SimpleTextAttributes.GRAYED_ATTRIBUTES.fgColor
 
         val panel = JPanel().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
             this.background = headerBackground
             border = JBUI.Borders.empty(8, 12)
 
-            val cpuText = "CPU: ${ProfilerFormattingUtils.formatFixedWidthDuration(sampleInfo.milliseconds).trim()} (${String.format(Locale.US, "%.1f%%", sampleInfo.framePercentage * 100.0)})"
-            val statsText = "Stats: ${String.format(Locale.US, "%d calls (Min: %.2f ms, Max: %.2f ms, Avg: %.2f ms)", sampleInfo.callesCount, sampleInfo.stats.min, sampleInfo.stats.max, sampleInfo.stats.avg)}"
-            val allocationsText = "Allocations: ${ProfilerFormattingUtils.formatMemory(sampleInfo.memoryAllocation)}"
+            val cpuText = UnityUIBundle.message("gutter.popup.label.cpu", UnityProfilerFormatUtils.formatMs(sampleInfo.milliseconds).trim(),UnityProfilerFormatUtils.formatPercentage(sampleInfo.framePercentage))
+            val allocationsText = UnityUIBundle.message("gutter.popup.label.gc.alloc", UnityProfilerFormatUtils.formatFileSize(sampleInfo.memoryAllocation))
+            val statsText = UnityUIBundle.message("gutter.popup.label.stats",
+                sampleInfo.callesCount,
+                UnityProfilerFormatUtils.formatMs(sampleInfo.stats.min),
+                UnityProfilerFormatUtils.formatMs(sampleInfo.stats.max),
+                UnityProfilerFormatUtils.formatMs(sampleInfo.stats.avg)
+            )
 
             add(JBLabel(cpuText).apply {
                 this.foreground = headerForeground
                 this.font = UIUtil.getToolTipFont()
                 alignmentX = Component.LEFT_ALIGNMENT
             })
-            add(JBLabel(statsText).apply {
+            add(JBLabel(allocationsText).apply {
                 this.foreground = headerForeground
                 this.font = UIUtil.getToolTipFont()
                 alignmentX = Component.LEFT_ALIGNMENT
             })
-            add(JBLabel(allocationsText).apply {
+            add(JBLabel(statsText).apply {
                 this.foreground = headerForeground
                 this.font = UIUtil.getToolTipFont()
                 alignmentX = Component.LEFT_ALIGNMENT
@@ -166,9 +194,8 @@ object ProfilerLineMarkerPopupFactory {
                     @Suppress("UNCHECKED_CAST")
                     parentCallsRenderer.getListCellRendererComponent(list as JList<out ParentCalls>, value, index, isSelected, cellHasFocus)
                 }
-                is AnAction -> {
-                    val presentation = value.templatePresentation
-                    val label = JBLabel(presentation.text ?: "", presentation.icon, JBLabel.LEFT).apply {
+                is PopupFactoryImpl.ActionItem -> {
+                    val label = JBLabel(value.text, value.getIcon(isSelected), JBLabel.LEFT).apply {
                         iconTextGap = JBUI.scale(8)
                         border = JBUI.Borders.empty(4, 4)
                     }
@@ -214,7 +241,7 @@ object ProfilerLineMarkerPopupFactory {
 
             // Right side: duration and percentage, formatted like label used in gutter
             val right = JPanel(BorderLayout(JBUI.scale(2), 0)).apply {
-                val text = ProfilerFormattingUtils.formatLabel("", value.duration, value.framePercentage)
+                val text = "${UnityProfilerFormatUtils.formatMs(value.duration)} (${UnityProfilerFormatUtils.formatPercentage(value.framePercentage)})"
                 // text comes as " 99.99ms (9.9%)" after trimming empty name
                 add(JBLabel(text), BorderLayout.EAST)
             }

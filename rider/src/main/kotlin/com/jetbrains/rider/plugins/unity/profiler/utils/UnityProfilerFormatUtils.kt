@@ -1,6 +1,8 @@
-package com.jetbrains.rider.plugins.unity.profiler.toolWindow
+package com.jetbrains.rider.plugins.unity.profiler.utils
 
+import com.intellij.openapi.util.NlsSafe
 import java.text.DecimalFormat
+import java.util.Locale
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -33,5 +35,19 @@ object UnityProfilerFormatUtils {
         if (fileSize < 0) throw IllegalArgumentException("Invalid value: $fileSize")
         if (fileSize == 0L) return 0
         return ((log10(fileSize.toDouble()) + 0.0000021214742112756872) / log10(1024.0)).toInt().coerceIn(0, 6)
+    }
+
+    fun formatFixedWidthDuration(durationMs: Double): String {
+        return if (durationMs >= 100.0) {
+            ">100 ms"
+        } else {
+            formatMs(durationMs)
+        }
+    }
+
+    @NlsSafe
+    fun formatLabel(name: String, durationMs: Double, frameFraction: Double): String {
+        val percent = frameFraction * 100.0
+        return String.Companion.format(Locale.US, "%s %.2fms (%.1f%%)", name, durationMs, percent)
     }
 }

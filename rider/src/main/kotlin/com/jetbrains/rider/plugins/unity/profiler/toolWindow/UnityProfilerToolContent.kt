@@ -88,7 +88,7 @@ class UnityProfilerToolContent(
             toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
                 add(ToggleUnityProfilerIntegrationAction(settings))
                 add(ToggleUnityProfilerAutoFetchAction(settings))
-                add(ToggleUnityProfilerGutterMarksAction(settings))
+                add(ToggleUnityProfilerGutterMarksAction(settings.gutterMarksRenderSettings))
                 add(Separator.getInstance())
                 add(ShowUnityProfilerSettingsAction())
             })
