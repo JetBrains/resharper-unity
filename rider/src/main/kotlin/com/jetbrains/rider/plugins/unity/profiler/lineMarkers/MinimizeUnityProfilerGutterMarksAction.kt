@@ -47,26 +47,6 @@ class MaximizeUnityProfilerGutterMarksAction : ProfilerGutterMarksAction() {
     }
 }
 
-class MinimizeUnityProfilerGutterMarksWithIconAction : ProfilerGutterMarksAction() {
-    override val targetSettings: ProfilerGutterMarkRenderSettings = ProfilerGutterMarkRenderSettings.Minimized
-
-    init {
-        templatePresentation.text = UnityPluginActionsBundle.message("action.unityProfiler.MinimizeAnnotations.text")
-        templatePresentation.description = UnityPluginActionsBundle.message("action.unityProfiler.MinimizeAnnotations.description")
-        templatePresentation.icon = AllIcons.General.CollapseComponent
-    }
-}
-
-class MaximizeUnityProfilerGutterMarksWithIconAction : ProfilerGutterMarksAction() {
-    override val targetSettings: ProfilerGutterMarkRenderSettings = ProfilerGutterMarkRenderSettings.Default
-
-    init {
-        templatePresentation.text = UnityPluginActionsBundle.message("action.unityProfiler.MaximizeAnnotations.text")
-        templatePresentation.description = UnityPluginActionsBundle.message("action.unityProfiler.MaximizeAnnotations.description")
-        templatePresentation.icon = AllIcons.General.ExpandComponent
-    }
-}
-
 private fun gutterMarkRenderSettings(e: AnActionEvent): ProfilerGutterMarkRenderSettings? =
     gutterMarkRenderSettingsProperty(e)?.valueOrDefault(
         ProfilerGutterMarkRenderSettings.Default
