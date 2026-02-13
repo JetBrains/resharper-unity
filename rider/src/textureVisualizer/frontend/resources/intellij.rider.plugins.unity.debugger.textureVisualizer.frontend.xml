@@ -9,6 +9,7 @@
     <module name="intellij.rd.ide.model.generated"/>
     <module name="intellij.rd.platform"/>
     <module name="intellij.rider"/>
+    <module name="intellij.rider.debugger.shared"/>
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer"/>
   </dependencies>
   <!-- endregion -->

@@ -90,6 +90,7 @@ jvm_library(
     "//dotnet/Plugins:rider-plugins-unity_test_lib",
     "@community//images:images_test_lib",
     "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer:textureVisualizer_test_lib",
+    "//rider/debugger/shared:shared_test_lib",
   ]
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.frontend` end
