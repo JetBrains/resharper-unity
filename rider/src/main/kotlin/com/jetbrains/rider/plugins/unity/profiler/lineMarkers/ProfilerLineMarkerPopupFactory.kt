@@ -84,7 +84,7 @@ object ProfilerLineMarkerPopupFactory {
         val gutterMarkRenderSettings = markerViewModel.gutterMarksRenderSettings.valueOrDefault(ProfilerGutterMarkRenderSettings.Default)
         
         val actionGroup = DefaultActionGroup().apply {
-            add(object : DumbAwareAction("Show in Unity Profiler Toolwindow", null, AllIcons.Actions.MoveTo2) {
+            add(object : DumbAwareAction(UnityUIBundle.message("action.show.in.unity.profiler.toolwindow.text"), null, AllIcons.Actions.MoveTo2) {
                 override fun actionPerformed(e: AnActionEvent) {
                     UnityProfilerToolWindowFactory.showAndNavigate(project, sampleInfo.qualifiedName)
                 }
@@ -96,7 +96,7 @@ object ProfilerLineMarkerPopupFactory {
                 else -> {}
             }
             
-            add(ToggleUnityProfilerGutterMarksAction(markerViewModel.gutterMarksRenderSettings))
+            add(ToggleUnityProfilerGutterMarksAction(markerViewModel.isGutterMarksEnabled))
             add(ShowUnityProfilerSettingsAction())
         }
         

@@ -72,11 +72,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         AddLinkButton("UnityProfilerIntegration", Strings.UnityOptionsPage_Profiler_Integration_Help_Link_Text,
             () => { Shell.Instance.GetComponent<HelpSystem>().ShowProductHelp(HelpId.Settings_Unity_Engine_Profiler_Integration); });
         
+        AddBoolOption((UnitySettings s) => s.IsProfilerGutterMarksDisplayEnabled,
+            Strings.UnitySettings_Profiler_New_Highlighting_Enabled);
+        
         AddComboOption((UnitySettings s) => s.ProfilerGutterMarksDisplaySettings,
             Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings, string.Empty, string.Empty,
             new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Default, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default),
-            new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Minimized, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Minimized),
-            new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Hidden, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Hidden)
+            new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Minimized, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Minimized)
         );
     }
 

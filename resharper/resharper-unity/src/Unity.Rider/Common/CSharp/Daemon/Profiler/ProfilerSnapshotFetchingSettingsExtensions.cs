@@ -12,7 +12,6 @@ public static class ProfilerSnapshotFetchingSettingsExtensions
     {
         return settings switch
         {
-            ProfilerSnapshotHighlightingSettings.Hidden => ProfilerGutterMarkRenderSettings.Hidden,
             ProfilerSnapshotHighlightingSettings.Default => ProfilerGutterMarkRenderSettings.Default,
             ProfilerSnapshotHighlightingSettings.Minimized => ProfilerGutterMarkRenderSettings.Minimized,
             _ => throw new ArgumentOutOfRangeException(nameof(settings), settings, null)
@@ -24,7 +23,6 @@ public static class ProfilerSnapshotFetchingSettingsExtensions
     {
         return settings switch
         {
-            ProfilerGutterMarkRenderSettings.Hidden => ProfilerSnapshotHighlightingSettings.Hidden,
             ProfilerGutterMarkRenderSettings.Default => ProfilerSnapshotHighlightingSettings.Default,
             ProfilerGutterMarkRenderSettings.Minimized => ProfilerSnapshotHighlightingSettings.Minimized,
             _ => throw new ArgumentOutOfRangeException(nameof(settings), settings, null)

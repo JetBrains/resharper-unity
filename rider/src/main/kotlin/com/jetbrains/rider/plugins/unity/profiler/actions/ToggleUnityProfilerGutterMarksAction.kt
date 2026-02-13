@@ -5,22 +5,20 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.jetbrains.rd.util.reactive.IOptProperty
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerGutterMarkRenderSettings
-import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerIntegrationSettingsModel
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 
 class ToggleUnityProfilerGutterMarksAction(
-    private val property: IOptProperty<ProfilerGutterMarkRenderSettings>
+    private val property: IOptProperty<Boolean>
 ) : ToggleAction(
     UnityUIBundle.message("unity.profiler.integration.gutter.marks.enable"),
     null,
     null
 ) {
     override fun isSelected(e: AnActionEvent): Boolean =
-        property.valueOrDefault(ProfilerGutterMarkRenderSettings.Default) != ProfilerGutterMarkRenderSettings.Hidden
+        property.valueOrDefault(false)
 
     override fun setSelected(e: AnActionEvent, state: Boolean): Unit =
-        property.set(if (state) ProfilerGutterMarkRenderSettings.Default else ProfilerGutterMarkRenderSettings.Hidden)
+        property.set(state)
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 }

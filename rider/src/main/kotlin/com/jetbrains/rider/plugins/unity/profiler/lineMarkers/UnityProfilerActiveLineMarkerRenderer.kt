@@ -70,9 +70,10 @@ class UnityProfilerActiveLineMarkerRenderer(
 
         // Paint operations - errors are logged but don't prevent future paint attempts
         logger.runAndLogException {
-            val displaySettings = markerViewModel.gutterMarksRenderSettings.valueOrDefault(ProfilerGutterMarkRenderSettings.Default)
-            if (displaySettings == ProfilerGutterMarkRenderSettings.Hidden) return@runAndLogException
+            val isEnabled = markerViewModel.isGutterMarksEnabled.valueOrDefault(false)
+            if (!isEnabled) return@runAndLogException
 
+            val displaySettings = markerViewModel.gutterMarksRenderSettings.valueOrDefault(ProfilerGutterMarkRenderSettings.Default)
             val (backgroundColor, borderColor) = Utils.computeMarkerColors(sampleInfo.framePercentage)
             val g2d = g as Graphics2D
 

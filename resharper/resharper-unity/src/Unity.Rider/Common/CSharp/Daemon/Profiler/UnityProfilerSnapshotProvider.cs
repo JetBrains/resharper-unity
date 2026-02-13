@@ -32,6 +32,7 @@ public interface IUnityProfilerSnapshotDataProvider
     public bool TryGetSamplesByQualifiedName(string qualifiedName, ref IList<PooledSample> samples);
     public bool TryGetTypeSamples(string qualifiedName, ref IList<PooledSample> samples);
     public ProfilerSnapshotHighlightingSettings GetGutterMarkSettings();
+    public bool IsGutterMarksEnabled();
 }
 
 [SolutionComponent(Instantiation.ContainerAsyncAnyThreadSafe)]
@@ -52,6 +53,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
     private readonly IContextBoundSettingsStoreLive mySettingsStore;
     private readonly SettingsScalarEntry myEnableSnapshotFetchingScalarEntry;
     private readonly SettingsScalarEntry mySnapshotFetchingModeScalarEntry;
+    private readonly SettingsScalarEntry myIsGutterMarksEnabledEntry;
     private readonly SettingsScalarEntry mySnapshotGutterMarksDisplaySettingsScalarEntry;
 
     private readonly BackgroundProgressManager myBackgroundProgressManager;
@@ -79,6 +81,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 
         myEnableSnapshotFetchingScalarEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.EnableProfilerSnapshotFetching);
         mySnapshotFetchingModeScalarEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.ProfilerSnapshotFetchingMode);
+        myIsGutterMarksEnabledEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.IsProfilerGutterMarksDisplayEnabled);
         mySnapshotGutterMarksDisplaySettingsScalarEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.ProfilerGutterMarksDisplaySettings);
 
         // Set up all advice and subscriptions
@@ -93,9 +96,15 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         {
             await HandleSnapshotFetchingSettingsChange(change, lt);
             await HandleGutterMarkDisplaySettingsChange(change, lt);
+            await HandleGutterEnabledSettingsChange(change, lt);
         });
     }
 
+    public bool IsGutterMarksEnabled()
+    {
+        return mySettingsStore.GetValue(myIsGutterMarksEnabledEntry, null) is true;
+    }
+    
     public ProfilerSnapshotHighlightingSettings GetGutterMarkSettings()
     {
         return mySettingsStore.GetValue(mySnapshotGutterMarksDisplaySettingsScalarEntry, null) is
@@ -105,6 +114,15 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
             : ProfilerSnapshotHighlightingSettings.Default;
     }
 
+    private async Task HandleGutterEnabledSettingsChange(SettingsStoreChangeArgs change, Lifetime lifetime)
+    {
+        if (!change.ChangedEntries.Contains(myIsGutterMarksEnabledEntry))
+            return;
+
+        FrontendBackendProfilerModel.IsGutterMarksEnabled.Value = IsGutterMarksEnabled();
+        await InvalidateDaemon(lifetime);
+    }
+    
     private async Task HandleGutterMarkDisplaySettingsChange(SettingsStoreChangeArgs change, Lifetime lifetime)
     {
         if (!change.ChangedEntries.Contains(mySnapshotGutterMarksDisplaySettingsScalarEntry))
@@ -190,6 +208,10 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 mySettingsStore.SetValue(mySnapshotFetchingModeScalarEntry, fetchingMode, null);
             });
 
+        FrontendBackendProfilerModel.IsGutterMarksEnabled.Value = IsGutterMarksEnabled();
+        FrontendBackendProfilerModel.IsGutterMarksEnabled.Advise(myLifetime,
+            enabled => { mySettingsStore.SetValue(myIsGutterMarksEnabledEntry, enabled, null); });
+        
         FrontendBackendProfilerModel.GutterMarksRenderSettings.Value =
             GetGutterMarkSettings().ToProfilerGutterMarkRenderSettings();
         FrontendBackendProfilerModel.GutterMarksRenderSettings.Advise(myLifetime, void (renderSetting) =>

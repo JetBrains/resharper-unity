@@ -9,5 +9,6 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerGutterMar
 class UnityProfilerIntegrationSettingsModel(val frontendBackendProfilerModel: FrontendBackendProfilerModel, lifetime: Lifetime) {
     val isIntegrationEnabled: IOptProperty<Boolean> get() = frontendBackendProfilerModel.isIntegrationEnable
     val fetchingMode: IOptProperty<FetchingMode> get() = frontendBackendProfilerModel.fetchingMode
+    val isGutterMarksEnabled: IOptProperty<Boolean> get() = frontendBackendProfilerModel.isGutterMarksEnabled
     val gutterMarksRenderSettings: IOptProperty<ProfilerGutterMarkRenderSettings> get() = frontendBackendProfilerModel.gutterMarksRenderSettings
 }
