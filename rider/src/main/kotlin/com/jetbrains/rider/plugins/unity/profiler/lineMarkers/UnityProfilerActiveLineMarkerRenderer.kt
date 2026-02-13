@@ -26,6 +26,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.ModelUnityProfile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ParentCalls
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerGutterMarkRenderSettings
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerStyle
+import com.jetbrains.rider.plugins.unity.profiler.utils.UnityProfilerFormatUtils
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerLineMarkerViewModel
 import kotlinx.coroutines.*
 import java.awt.*
@@ -41,7 +42,7 @@ class UnityProfilerActiveLineMarkerRenderer(
     val lifetime: Lifetime,
 ) : LineMarkerRendererEx, ActiveGutterRenderer {
 
-    private val labelText: String = ProfilerFormattingUtils.formatFixedWidthDuration(sampleInfo.milliseconds)
+    private val labelText: String = UnityProfilerFormatUtils.formatFixedWidthDuration(sampleInfo.milliseconds)
 
     @Volatile
     private var registered = false

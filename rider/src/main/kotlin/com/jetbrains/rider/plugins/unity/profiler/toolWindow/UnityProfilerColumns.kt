@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.profiler.toolWindow
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.ui.treeStructure.treetable.TreeColumnInfo
 import com.intellij.util.ui.ColumnInfo
+import com.jetbrains.rider.plugins.unity.profiler.utils.UnityProfilerFormatUtils
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import java.text.Collator
 import javax.swing.JLabel

@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.profiler.toolWindow
 
+import com.jetbrains.rider.plugins.unity.profiler.utils.UnityProfilerFormatUtils
 import javax.swing.tree.DefaultMutableTreeNode
 
 data class UnityProfilerNodeData(
