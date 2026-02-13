@@ -67,15 +67,6 @@ class MaximizeUnityProfilerGutterMarksWithIconAction : ProfilerGutterMarksAction
     }
 }
 
-class HideUnityProfilerGutterMarksWithIconAction : ProfilerGutterMarksAction() {
-    override val targetSettings: ProfilerGutterMarkRenderSettings = ProfilerGutterMarkRenderSettings.Hidden
-
-    init {
-        templatePresentation.text = UnityPluginActionsBundle.message("action.unityProfiler.HideAnnotations.text")
-        templatePresentation.description = UnityPluginActionsBundle.message("action.unityProfiler.HideAnnotations.description")
-        templatePresentation.icon = AllIcons.Actions.Cancel
-    }
-}
 private fun gutterMarkRenderSettings(e: AnActionEvent): ProfilerGutterMarkRenderSettings? =
     gutterMarkRenderSettingsProperty(e)?.valueOrDefault(
         ProfilerGutterMarkRenderSettings.Default

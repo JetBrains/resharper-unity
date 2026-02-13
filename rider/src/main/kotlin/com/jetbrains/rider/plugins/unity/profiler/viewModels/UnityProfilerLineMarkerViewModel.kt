@@ -6,6 +6,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerGutterMar
 
 class UnityProfilerLineMarkerViewModel(val frontendBackendProfilerModel: FrontendBackendProfilerModel) {
     val gutterMarksRenderSettings: IOptProperty<ProfilerGutterMarkRenderSettings> get() = frontendBackendProfilerModel.gutterMarksRenderSettings
+    val isGutterMarksEnabled: IOptProperty<Boolean> get() = frontendBackendProfilerModel.isGutterMarksEnabled
     fun navigateByQualifiedName(realParentQualifiedName: String) {
        frontendBackendProfilerModel.navigateByQualifiedName.fire(realParentQualifiedName) 
     }

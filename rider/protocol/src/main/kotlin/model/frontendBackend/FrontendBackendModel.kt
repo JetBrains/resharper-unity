@@ -230,7 +230,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 //Separate model for the Unity profiler integration 
 object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
     private val ProfilerGutterMarkRenderSettings = enum {
-        +"Hidden"
         +"Default"
         +"Minimized"
     }
@@ -271,6 +270,7 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
             +"Auto"
             +"Manual"
         }).async
+        property("isGutterMarksEnabled", bool).async
         property("gutterMarksRenderSettings", ProfilerGutterMarkRenderSettings).async
     }
 

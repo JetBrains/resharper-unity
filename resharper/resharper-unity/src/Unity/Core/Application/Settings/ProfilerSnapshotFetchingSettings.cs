@@ -8,7 +8,6 @@ public enum ProfilerSnapshotFetchingMode
 
 public enum ProfilerSnapshotHighlightingSettings
 {
-    Hidden,
     Default,
     Minimized
 }

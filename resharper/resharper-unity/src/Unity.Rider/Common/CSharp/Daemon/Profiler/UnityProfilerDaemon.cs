@@ -56,6 +56,9 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
     {
         if (!mySolution.HasUnityReference())
             return false;
+        
+        if(!mySnapshotDataProvider.Value.IsGutterMarksEnabled())
+            return false;
 
         var projectFile = sourceFile.ToProjectFile();
         var project = projectFile?.GetProject();
@@ -312,10 +315,9 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
                 parents, 
                 samples.Count, new Stats(min, max, avg), GetCLRName(declaration));
 
-            var displaySettings = profilerSnapshotDataProvider.Value.GetGutterMarkSettings().ToProfilerGutterMarkRenderSettings();
             insightProvider.AddProfilerHighlighting(
                 modelUnityProfilerSampleInfo,
-                consumer, new DocumentRange(navigationRange.StartOffset, navigationRange.StartOffset + 1), displaySettings);
+                consumer, new DocumentRange(navigationRange.StartOffset, navigationRange.StartOffset + 1));
         }
 
         private void ExtractHighlightingInformation(List<PooledSample> children,
@@ -362,9 +364,8 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
             var profilerSampleInfo =
                 new ModelUnityProfilerSampleInfo(durationSum, percentageSum, allocations, null,
                     samples.Count, new Stats(min, max, avg), qualifiedName);
-            
-            var renderSettings = snapshotDataProvider.Value.GetGutterMarkSettings().ToProfilerGutterMarkRenderSettings();
-            insightProvider.AddProfilerHighlighting(profilerSampleInfo, consumer, sharpExpression.GetDocumentRange(), renderSettings);
+
+            insightProvider.AddProfilerHighlighting(profilerSampleInfo, consumer, sharpExpression.GetDocumentRange());
         }
 
         public IDaemonProcess DaemonProcess { get; } = process;
