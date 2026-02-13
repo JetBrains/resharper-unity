@@ -18,12 +18,12 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupChooserBuilder
 import com.intellij.openapi.ui.popup.util.RoundedCellRenderer
 import com.intellij.ui.SeparatorComponent
-import com.intellij.ui.popup.ActionPopupOptions
-import com.intellij.ui.popup.ActionPopupStep
-import com.intellij.ui.popup.PopupFactoryImpl
 import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBLabel
+import com.intellij.ui.popup.ActionPopupOptions
+import com.intellij.ui.popup.ActionPopupStep
+import com.intellij.ui.popup.PopupFactoryImpl
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.reactive.valueOrDefault
@@ -44,7 +44,6 @@ import kotlinx.coroutines.launch
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.MouseEvent
-import java.util.*
 import javax.swing.*
 
 object ProfilerLineMarkerPopupFactory {
@@ -82,8 +81,6 @@ object ProfilerLineMarkerPopupFactory {
     }
 
     private fun createActionItems(project: Project, markerViewModel: UnityProfilerLineMarkerViewModel, sampleInfo: ModelUnityProfilerSampleInfo): List<PopupFactoryImpl.ActionItem> {
-        val gutterMarkRenderSettings = markerViewModel.gutterMarksRenderSettings.valueOrDefault(ProfilerGutterMarkRenderSettings.Default)
-        
         val actionGroup = DefaultActionGroup().apply {
             add(object : DumbAwareAction(UnityUIBundle.message("action.show.in.unity.profiler.toolwindow.text"), null, AllIcons.Actions.MoveTo2) {
                 override fun actionPerformed(e: AnActionEvent) {
