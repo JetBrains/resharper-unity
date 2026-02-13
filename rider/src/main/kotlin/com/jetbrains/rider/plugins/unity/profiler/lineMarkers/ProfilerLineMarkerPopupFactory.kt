@@ -32,6 +32,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.ModelUnityProfile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ParentCalls
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerGutterMarkRenderSettings
 import com.jetbrains.rider.plugins.unity.profiler.actions.ShowUnityProfilerSettingsAction
+import com.jetbrains.rider.plugins.unity.profiler.actions.ToggleGutterMarksViewAction
 import com.jetbrains.rider.plugins.unity.profiler.actions.ToggleUnityProfilerGutterMarksAction
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerToolWindowFactory
 import com.jetbrains.rider.plugins.unity.profiler.utils.UnityProfilerFormatUtils
@@ -89,14 +90,9 @@ object ProfilerLineMarkerPopupFactory {
                     UnityProfilerToolWindowFactory.showAndNavigate(project, sampleInfo.qualifiedName)
                 }
             })
-            
-            when (gutterMarkRenderSettings) {
-                ProfilerGutterMarkRenderSettings.Default -> add(MinimizeUnityProfilerGutterMarksWithIconAction())
-                ProfilerGutterMarkRenderSettings.Minimized -> add(MaximizeUnityProfilerGutterMarksWithIconAction())
-                else -> {}
-            }
-            
             add(ToggleUnityProfilerGutterMarksAction(markerViewModel.isGutterMarksEnabled))
+            if(markerViewModel.isGutterMarksEnabled.valueOrDefault(false))
+                add(ToggleGutterMarksViewAction(markerViewModel.gutterMarksRenderSettings))
             add(ShowUnityProfilerSettingsAction())
         }
         
