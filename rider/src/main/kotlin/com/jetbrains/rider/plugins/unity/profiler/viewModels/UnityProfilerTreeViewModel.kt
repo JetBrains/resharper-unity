@@ -12,6 +12,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendModelSnap
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerSortColumn
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerTreeBuilder
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.nodeData
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
@@ -40,6 +41,7 @@ import javax.swing.tree.DefaultMutableTreeNode
  * @property profilerModel RD Protocol model for communicating with backend
  * @property lifetime Lifecycle for subscriptions and coroutines
  */
+@OptIn(FlowPreview::class)
 class UnityProfilerTreeViewModel(
     val profilerModel: FrontendBackendProfilerModel,
     val snapshotModel: UnityProfilerSnapshotModel,
@@ -119,18 +121,23 @@ class UnityProfilerTreeViewModel(
     }
 
     /**
-     * Sets the filter text and mode with debouncing to prevent excessive tree rebuilds.
-     *
-     * Filter changes are debounced (300ms delay) to reduce CPU usage during rapid typing.
-     * The actual filter application happens asynchronously after the debounce period.
+     * Sets the filter text and mode.
      *
      * @param text Filter text to match against node names
-     * @param exact If true, requires exact match; if false, uses contains match (case-insensitive)
+     * @param exact If true, applies filter immediately (for programmatic navigation);
+     *              if false, debounces (300ms) to reduce CPU usage during typing
      *
-     * Thread-safety: Can be called from any thread; debouncing handled by coroutine flow.
+     * Thread-safety: Can be called from any thread.
      */
     fun setFilter(text: String, exact: Boolean) {
-        filterInputFlow.tryEmit(text to exact)
+        if (exact) {
+            // Programmatic navigation - apply immediately to avoid race with UI updates
+            filterText.set(text)
+            isExactFilter.set(true)
+        } else {
+            // User typing - debounce to reduce excessive tree rebuilds
+            filterInputFlow.tryEmit(text to exact)
+        }
     }
 
     /**

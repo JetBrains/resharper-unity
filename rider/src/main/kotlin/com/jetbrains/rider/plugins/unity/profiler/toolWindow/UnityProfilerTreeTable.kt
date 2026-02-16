@@ -1,6 +1,12 @@
 package com.jetbrains.rider.plugins.unity.profiler.toolWindow
 
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.ToggleAction
+import com.intellij.openapi.application.runInEdt
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.treeStructure.treetable.ListTreeTableModelOnColumns
@@ -15,7 +21,9 @@ import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import java.awt.Component
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.KeyStroke
+import javax.swing.RowSorter
 import javax.swing.table.TableCellRenderer
 import javax.swing.table.TableColumn
 import javax.swing.table.TableModel
@@ -69,26 +77,28 @@ class UnityProfilerTreeTable(
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED)
 
         viewModel.treeRoot.advise(viewModel.lifetime.intersect(lifetime)) { root ->
-            val tree = tree
-            val expanded = TreeUtil.collectExpandedPaths(tree)
-            val selected = tree.selectionPaths ?: emptyArray()
+            runInEdt {
+                val tree = tree
+                val expanded = TreeUtil.collectExpandedPaths(tree)
+                val selected = tree.selectionPaths ?: emptyArray()
 
-            (tableModel as ListTreeTableModelOnColumns).setRoot(root ?: DefaultMutableTreeNode())
+                (tableModel as ListTreeTableModelOnColumns).setRoot(root ?: DefaultMutableTreeNode())
 
-            if (root != null) {
-                if (viewModel.filterText.value.isEmpty()) {
-                    expandDefaultNodes(root)
-                } else {
-                    expandToMatches(root, viewModel.filterText.value, viewModel.isExactFilter.value)
+                if (root != null) {
+                    if (viewModel.filterText.value.isEmpty()) {
+                        expandDefaultNodes(root)
+                    } else {
+                        expandToMatches(root, viewModel.filterText.value, viewModel.isExactFilter.value)
+                    }
                 }
-            }
 
-            TreeUtil.restoreExpandedPaths(tree, expanded)
-            if (selected.isNotEmpty()) {
-                tree.selectionPaths = selected
-            }
+                TreeUtil.restoreExpandedPaths(tree, expanded)
+                if (selected.isNotEmpty()) {
+                    tree.selectionPaths = selected
+                }
 
-            updateColumnSizes()
+                updateColumnSizes()
+            }
         }
     }
 
