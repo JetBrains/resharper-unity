@@ -23,15 +23,23 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.UnityPluginScopeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ModelUnityProfilerSampleInfo
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ParentCalls
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerGutterMarkRenderSettings
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerStyle
 import com.jetbrains.rider.plugins.unity.profiler.utils.UnityProfilerFormatUtils
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerLineMarkerViewModel
-import kotlinx.coroutines.*
-import java.awt.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import java.awt.Color
+import java.awt.Font
+import java.awt.FontMetrics
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Point
+import java.awt.Rectangle
 import java.awt.event.MouseEvent
-import java.util.*
+import java.util.Collections
+import java.util.WeakHashMap
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -276,7 +284,7 @@ class UnityProfilerActiveLineMarkerRenderer(
     }
 
     // Reserving left gutter width holder used by the aggregator
-    private class GutterSizeReservation(var requestedWidth: Int) : Disposable {
+    private class GutterSizeReservation() : Disposable {
         var isDisposed: Boolean = false
 
         override fun dispose() {
@@ -289,7 +297,7 @@ class UnityProfilerActiveLineMarkerRenderer(
         private val gutter: EditorGutterComponentEx,
         project: Project,
     ) : Disposable {
-        private var holder = GutterSizeReservation(0)
+        private var holder = GutterSizeReservation()
         private val renderers = Collections.newSetFromMap(WeakHashMap<UnityProfilerActiveLineMarkerRenderer, Boolean>())
         private var currentReserved = -1
         private var currentDisplaySettings: ProfilerGutterMarkRenderSettings? = null
@@ -333,7 +341,7 @@ class UnityProfilerActiveLineMarkerRenderer(
                     if (isDisposed) return@launch
                     val oldHolder = holder
                     currentReserved = maxWidth
-                    holder = GutterSizeReservation(maxWidth)
+                    holder = GutterSizeReservation()
                     gutter.reserveLeftFreePaintersAreaWidth(holder, maxWidth)
                     // Dispose old holder AFTER registering the new one to ensure proper shrinking
                     Disposer.dispose(oldHolder)

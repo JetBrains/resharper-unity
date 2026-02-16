@@ -1,12 +1,13 @@
 package com.jetbrains.rider.plugins.unity.profiler.viewModels
 
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.*
-import com.jetbrains.rider.plugins.unity.model.ProfilerSnapshotRequest
+import com.jetbrains.rd.util.reactive.IProperty
+import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.Signal
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rider.plugins.unity.model.ProfilerThread
 import com.jetbrains.rider.plugins.unity.model.SelectionState
 import com.jetbrains.rider.plugins.unity.model.TimingInfo
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.FetchingMode
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendProfilerModel
 
 class UnityProfilerChartViewModel(
@@ -14,7 +15,7 @@ class UnityProfilerChartViewModel(
     val lifetime: Lifetime
 ) {
     companion object {
-        val Y_STEPS = listOf(1.0, 2.0, 4.0, 8.0, 16.0, 33.0, 66.0, 80.0)
+        val Y_STEPS: List<Double> = listOf(1.0, 2.0, 4.0, 8.0, 16.0, 33.0, 66.0, 80.0)
     }
 
     val frameDurations: IProperty<List<Double>> = Property(emptyList())
@@ -29,7 +30,6 @@ class UnityProfilerChartViewModel(
     val chartYMax: Property<Double> = Property(Y_STEPS.last())
     val startIndex: IProperty<Int> = Property(0)
     val lastIndex: IProperty<Int> = Property(0)
-    val fetchingMode: IOptProperty<FetchingMode> get() = profilerModel.fetchingMode
 
     // Guard flags to prevent circular update loops
     private var isUpdatingFrameSelection = false
