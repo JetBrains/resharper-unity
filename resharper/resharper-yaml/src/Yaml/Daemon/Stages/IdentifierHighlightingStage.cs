@@ -15,8 +15,9 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
 {
-  [DaemonStage(Instantiation.DemandAnyThreadSafe, StagesBefore = new[] {typeof(GlobalFileStructureCollectorStage)},
-    StagesAfter = new[] {typeof(CollectUsagesStage)})]
+  [DaemonStage(Instantiation.DemandAnyThreadSafe,
+    StagesBefore = [typeof(GlobalFileStructureCollectorStage)],
+    StagesAfter = [typeof(CollectUsagesStage)])]
   public class IdentifierHighlightingStage : YamlDaemonStageBase
   {
     private readonly ResolveHighlighterRegistrar myRegistrar;
@@ -38,9 +39,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
     protected override bool IsSupported(IPsiSourceFile sourceFile)
     {
       // Don't check PSI properties - a syntax error is a syntax error
-      if (sourceFile == null || !sourceFile.IsValid())
-        return false;
-      
       return sourceFile.IsLanguageSupported<YamlLanguage>();
     }
 

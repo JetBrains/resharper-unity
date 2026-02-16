@@ -34,15 +34,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             myLogger = logger;
         }
 
+        protected override bool IsSupported(IPsiSourceFile sourceFile)
+        {
+            if (!base.IsSupported(sourceFile))
+                return false;
+
+            if (!sourceFile.GetProject().IsUnityProject())
+                return false;
+            if (!mySwaExtensionProvider.Value.IsApplicable(sourceFile))
+                return false;
+
+            return true;
+        }
+
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process,
             IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            var sourceFile = file.GetSourceFile();
-
-            if (!file.GetProject().IsUnityProject() || !mySwaExtensionProvider.Value.IsApplicable(sourceFile))
-                return null;
-
             return new CallGraphProcess(process, processKind, file, myLogger, myContextProviders, myProblemAnalyzers);
         }
     }

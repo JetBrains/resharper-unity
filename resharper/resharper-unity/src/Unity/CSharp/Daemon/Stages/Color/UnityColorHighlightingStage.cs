@@ -12,26 +12,28 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 {
-    [DaemonStage(Instantiation.DemandAnyThreadSafe, StagesBefore = new[] {typeof(IdentifierHighlightingStage)})]
+    [DaemonStage(Instantiation.DemandAnyThreadSafe,
+        StagesBefore = [typeof(IdentifierHighlightingStage)],
+        HighlightingTypes = [typeof(UnityColorHighlighterProcess)])]
     public class UnityColorHighlightingStage : CSharpDaemonStageBase
     {
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            if (processKind == DaemonProcessKind.VISIBLE_DOCUMENT &&
-                settings.GetValue(HighlightingSettingsAccessor.ColorUsageHighlightingEnabled))
+            if (settings.GetValue(HighlightingSettingsAccessor.ColorUsageHighlightingEnabled))
             {
-                return new UnityColorHighlighterProcess(file.GetSolution().GetComponents<IUnityColorReferenceProvider>(), process, settings, file);
+                var unityColorReferenceProviders = file.GetSolution().GetComponents<IUnityColorReferenceProvider>();
+                return new UnityColorHighlighterProcess(
+                    unityColorReferenceProviders, process, settings, file);
             }
+
             return null;
         }
 
-        protected override bool IsSupported(IPsiSourceFile sourceFile)
+        public override bool IsApplicable(IPsiSourceFile sourceFile, DaemonProcessKind processKind)
         {
-            if (sourceFile == null || !sourceFile.IsValid())
-                return false;
-
-            return sourceFile.IsLanguageSupported<CSharpLanguage>();
+            return processKind == DaemonProcessKind.VISIBLE_DOCUMENT
+                   && sourceFile.IsLanguageSupported<CSharpLanguage>();
         }
     }
 }

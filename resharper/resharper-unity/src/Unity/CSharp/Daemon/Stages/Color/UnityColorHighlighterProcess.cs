@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
-using JetBrains.ReSharper.Daemon.VisualElements;
 using JetBrains.ReSharper.Feature.Services.ColorHints;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors;
@@ -17,6 +16,7 @@ using JetBrains.Util.Media;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 {
+    [HighlightingSource(HighlightingTypes = [typeof(ColorHintHighlighting)])]
     public class UnityColorHighlighterProcess : CSharpIncrementalDaemonStageProcessBase
     {
         private readonly IEnumerable<IUnityColorReferenceProvider> myProviders;
@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             {
                 var result = ReferenceFromInvocation(qualifier, referenceExpression, settingsStore)
                     ?? ReferenceFromProperty(qualifier, referenceExpression, settingsStore);
-                
+
                 if (result != null)
                     return result;
             }
@@ -69,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
                 if (result != null)
                     return result;
             }
-            
+
             return null;
         }
 

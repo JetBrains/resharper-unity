@@ -36,13 +36,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
             CommonIconProvider = commonIconProvider;
         }
 
+        protected override bool IsSupported(IPsiSourceFile sourceFile)
+        {
+            if (!base.IsSupported(sourceFile))
+                return false;
+
+            var project = sourceFile.GetProject();
+            if (!project.IsUnityProject())
+                return false;
+
+            return true;
+        }
+
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process,
             IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            if (!file.GetProject().IsUnityProject())
-                return null;
-
             return new UnityHighlightingProcess(process, file, HighlightingProviders, API,
                 CommonIconProvider, processKind);
         }

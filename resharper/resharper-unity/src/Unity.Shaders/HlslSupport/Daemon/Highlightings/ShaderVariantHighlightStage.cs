@@ -27,21 +27,42 @@ using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
-[DaemonStage(Instantiation.DemandAnyThreadUnsafe, StagesBefore = [typeof(GlobalFileStructureCollectorStage), typeof(CppIdentifierHighlightingStage)])]
-public class ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, ShaderProgramCache shaderProgramCache, UnitySolutionTracker unitySolutionTracker, ShaderVariantsManager shaderVariantsManager, IInactiveShaderBranchHighlightFactory? inactiveShaderBranchHighlightFactory = null)
+[DaemonStage(Instantiation.DemandAnyThreadUnsafe,
+    StagesBefore = [typeof(GlobalFileStructureCollectorStage), typeof(CppIdentifierHighlightingStage)])]
+public class ShaderVariantHighlightStage(
+    ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar,
+    ShaderProgramCache shaderProgramCache,
+    UnitySolutionTracker unitySolutionTracker,
+    ShaderVariantsManager shaderVariantsManager,
+    IInactiveShaderBranchHighlightFactory? inactiveShaderBranchHighlightFactory = null)
     : CppDaemonStageBase(elementProblemAnalyzerRegistrar)
 {
-    protected override IDaemonStageProcess? CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, CppFile file) =>
-        processKind switch
+    protected override IDaemonStageProcess? CreateProcess(
+        IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, CppFile file)
+    {
+        if (file.InclusionContext.RootContext is { BaseFile: var rootFile, LanguageDialect: var dialect }
+            && shaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo))
         {
-            DaemonProcessKind.VISIBLE_DOCUMENT when unitySolutionTracker.IsUnityProjectOrHasUnityReference && 
-                                                    file.InclusionContext.RootContext is { BaseFile: var rootFile, LanguageDialect: var dialect } && 
-                                                    shaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) 
-                => new ShaderKeywordsHighlightProcess(process, settings, file, shaderProgramInfo, shaderVariantsManager.ShaderApi, shaderVariantsManager.ShaderPlatform, shaderVariantsManager.GetEnabledKeywords(rootFile), dialect.Pragmas, inactiveShaderBranchHighlightFactory),
-            _ => null
-        };
+            return new ShaderKeywordsHighlightProcess(process, settings, file, shaderProgramInfo,
+                shaderVariantsManager.ShaderApi, shaderVariantsManager.ShaderPlatform,
+                shaderVariantsManager.GetEnabledKeywords(rootFile), dialect.Pragmas,
+                inactiveShaderBranchHighlightFactory);
+        }
+
+        return null;
+    }
 
     protected override bool ShouldWorkInNonUserFile() => false;
+
+    protected override bool IsSupported(IPsiSourceFile sourceFile, DaemonProcessKind processKind)
+    {
+        if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT)
+            return false;
+        if (!unitySolutionTracker.IsUnityProjectOrHasUnityReference)
+            return false;
+
+        return base.IsSupported(sourceFile, processKind);
+    }
 }
 
 file struct BranchingState
@@ -50,7 +71,16 @@ file struct BranchingState
     public ITreeNode? InactiveNode;
 }
 
-file class ShaderKeywordsHighlightProcess(IDaemonProcess process, IContextBoundSettingsStore settingsStore, CppFile file, ShaderProgramInfo shaderProgramInfo, ShaderApi shaderApi, ShaderPlatform shaderPlatform, ISet<string> enabledKeywords, IReadOnlyDictionary<string, PragmaCommand> pragmas, IInactiveShaderBranchHighlightFactory? inactiveShaderBranchHighlightFactory)
+file class ShaderKeywordsHighlightProcess(
+    IDaemonProcess process,
+    IContextBoundSettingsStore settingsStore,
+    CppFile file,
+    ShaderProgramInfo shaderProgramInfo,
+    ShaderApi shaderApi,
+    ShaderPlatform shaderPlatform,
+    ISet<string> enabledKeywords,
+    IReadOnlyDictionary<string, PragmaCommand> pragmas,
+    IInactiveShaderBranchHighlightFactory? inactiveShaderBranchHighlightFactory)
     : IDaemonStageProcess, IRecursiveElementProcessor<IHighlightingConsumer>
 {
     private readonly Stack<BranchingState> myBranchingStack = new();
@@ -85,7 +115,12 @@ file class ShaderKeywordsHighlightProcess(IDaemonProcess process, IContextBoundS
         committer(new DaemonStageResult(consumer.CollectHighlightings()));
     }
 
-    public bool InteriorShouldBeProcessed(ITreeNode element, IHighlightingConsumer context) => element.NodeType != CppCompositeNodeTypes.MACRO_REF && (myDirectiveNode != null || element is not ICppDirective);
+    public bool InteriorShouldBeProcessed(ITreeNode element, IHighlightingConsumer context)
+    {
+        return element.NodeType != CppCompositeNodeTypes.MACRO_REF
+               && (myDirectiveNode != null || element is not ICppDirective);
+    }
+
     public bool IsProcessingFinished(IHighlightingConsumer context) => Interruption.Current.Check();
 
     public void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)

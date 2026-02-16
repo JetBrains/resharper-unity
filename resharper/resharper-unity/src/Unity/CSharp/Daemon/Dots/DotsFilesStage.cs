@@ -1,28 +1,24 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Dots
 {
-    [DaemonStage(Instantiation.DemandAnyThreadSafe, StagesBefore = new[] { typeof(CollectUsagesStage) }, StagesAfter = new[] { typeof(CSharpErrorStage) })]
+    [DaemonStage(Instantiation.DemandAnyThreadSafe,
+        StagesBefore = [typeof(CollectUsagesStage)],
+        StagesAfter = [typeof(CSharpErrorStage)])]
     public class DotsFilesStage : CSharpDaemonStageBase
     {
         protected override bool IsSupported(IPsiSourceFile sourceFile)
         {
-            if (sourceFile == null)
-                return false;
-            
             var solution = sourceFile.GetSolution();
-
             if (!solution.HasUnityReference())
                 return false;
 

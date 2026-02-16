@@ -10,19 +10,14 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Json.Feature.Services.Daemon
 {
-    public abstract class JsonNewDaemonStageBase : IDaemonStage
+    public abstract class JsonNewDaemonStageBase : IModernDaemonStage
     {
         public IEnumerable<IDaemonStageProcess> CreateProcess(IDaemonProcess process,
                                                               IContextBoundSettingsStore settings,
                                                               DaemonProcessKind processKind)
         {
-            if (!IsSupported(process.SourceFile))
-                return EmptyList<IDaemonStageProcess>.Instance;
-
-            if (!ShouldRunOnGenerated && process.SourceFile.Properties.IsGeneratedFile)
-                return EmptyList<IDaemonStageProcess>.Instance;
-
-            process.SourceFile.GetPsiServices().Files.AssertAllDocumentAreCommitted();
+            var psiServices = process.SourceFile.GetPsiServices();
+            psiServices.Files.AssertAllDocumentAreCommitted();
 
             var files = process.SourceFile.GetPsiFiles<JsonNewLanguage>();
             return files.SelectNotNull(file => CreateProcess(process, settings, processKind, (IJsonNewFile)file));
@@ -34,11 +29,19 @@ namespace JetBrains.ReSharper.Plugins.Json.Feature.Services.Daemon
                                                              IContextBoundSettingsStore settings,
                                                              DaemonProcessKind processKind, IJsonNewFile file);
 
-        protected virtual bool IsSupported(IPsiSourceFile sourceFile)
+        bool IModernDaemonStage.IsApplicable(IPsiSourceFile sourceFile, DaemonProcessKind processKind)
         {
-            if (sourceFile == null || !sourceFile.IsValid())
+            if (!IsSupported(sourceFile))
                 return false;
 
+            if (!ShouldRunOnGenerated && sourceFile.Properties.IsGeneratedFile)
+                return false;
+
+            return true;
+        }
+
+        protected virtual bool IsSupported(IPsiSourceFile sourceFile)
+        {
             return sourceFile.GetLanguages().Any(x => x.Is<JsonNewLanguage>());
         }
     }
