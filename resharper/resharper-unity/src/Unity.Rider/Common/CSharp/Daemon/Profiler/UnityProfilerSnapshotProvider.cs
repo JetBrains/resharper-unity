@@ -252,80 +252,203 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
 
     private void FetchProfilerSnapshotWithProgress(ProfilerSnapshotRequest snapshotRequest)
     {
+        myLogger.Info($"FetchProfilerSnapshotWithProgress: Starting snapshot fetch for request: {snapshotRequest}");
+        
         var requestLifetime = myRequestSnapshotSeqLifetimes.Next();
+        myLogger.Verbose("FetchProfilerSnapshotWithProgress: Created new request lifetime");
+        
         StartFetchingProgressTask(requestLifetime);
+        myLogger.Verbose("FetchProfilerSnapshotWithProgress: Started progress task");
+        
         requestLifetime.StartBackgroundAsync(async () =>
         {
-            myLogger.Verbose($"Requesting snapshot {snapshotRequest}");
+            myLogger.Info($"FetchProfilerSnapshotWithProgress: Background task started for snapshot {snapshotRequest}");
             try
             {
+                myLogger.Verbose("FetchProfilerSnapshotWithProgress: Retrieving BackendUnityProfilerModel");
                 var requestFrameSnapshotCall = myBackendUnityHost.BackendUnityProfilerModel.Maybe.ValueOrDefault?
                     .RequestFrameSnapshot;
 
                 if (requestFrameSnapshotCall == null)
+                {
+                    myLogger.Warn("FetchProfilerSnapshotWithProgress: RequestFrameSnapshot is null, aborting");
                     return;
+                }
 
+                myLogger.Verbose("FetchProfilerSnapshotWithProgress: Calling RequestFrameSnapshot.Start");
                 var snapshotRequestTask = await requestFrameSnapshotCall.Start(requestLifetime, snapshotRequest);
                 
                 if (snapshotRequestTask == null)
                 {
-                    myLogger.Warn("RequestFrameSnapshot returned null");
+                    myLogger.Warn("FetchProfilerSnapshotWithProgress: RequestFrameSnapshot returned null task");
                     return;
                 }
 
-                // Observe progress updates
-                snapshotRequestTask.Progress.Advise(requestLifetime, progress =>
-                {
-                    myProgress.Value = progress;
-                    myLogger.Trace($"Snapshot fetching progress: {progress:P1}");
-                });
-
-                // Observe status updates
-                snapshotRequestTask.Status.Advise(requestLifetime, status =>
-                {
-                    myLogger.Verbose($"Snapshot request status: {status}");
-                });
+                myLogger.Verbose("FetchProfilerSnapshotWithProgress: Successfully started snapshot request task");
 
                 // Wait for snapshot to be available using TaskCompletionSource
+                myLogger.Verbose("FetchProfilerSnapshotWithProgress: Setting up snapshot completion listener");
                 var snapshotTcs = new TaskCompletionSource<UnityProfilerSnapshot?>();
-                requestLifetime.Bracket(
-                    () => snapshotRequestTask.Snapshot.Advise(requestLifetime, snapshot =>
-                    {
-                        if (snapshot != null)
-                            snapshotTcs.TrySetResult(snapshot);
-                    }),
-                    () => snapshotTcs.TrySetCanceled()
-                );
                 
+                // Check initial status - if already completed/failed, we might have missed the update
+                var initialStatus = snapshotRequestTask.Status.Value;
+                myLogger.Verbose($"FetchProfilerSnapshotWithProgress: Initial task status: {initialStatus}");
+                
+                // Check if snapshot is already available (race condition: snapshot completed before we set up advisors)
+                if (snapshotRequestTask.Snapshot.HasValue())
+                {
+                    var existingSnapshot = snapshotRequestTask.Snapshot.Value;
+                    var count = existingSnapshot?.Samples.Count ?? 0;
+                    myLogger.Info($"FetchProfilerSnapshotWithProgress: Snapshot already available with {count} samples");
+                    snapshotTcs.TrySetResult(existingSnapshot);
+                }
+                else if (initialStatus != JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Running)
+                {
+                    // Task already completed but no snapshot was set
+                    myLogger.Warn($"FetchProfilerSnapshotWithProgress: Task status is {initialStatus} but no snapshot available");
+                    if (initialStatus == JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Failed)
+                    {
+                        myLogger.Error($"FetchProfilerSnapshotWithProgress: Task failed: {snapshotRequestTask.ErrorMessage.Value}");
+                        snapshotTcs.TrySetResult(null);
+                    }
+                    else if (initialStatus == JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Cancelled)
+                    {
+                        myLogger.Info("FetchProfilerSnapshotWithProgress: Task was cancelled");
+                        snapshotTcs.TrySetCanceled();
+                    }
+                    else
+                    {
+                        // Completed without snapshot - treat as null result
+                        myLogger.Warn("FetchProfilerSnapshotWithProgress: Task completed but snapshot not set, treating as null");
+                        snapshotTcs.TrySetResult(null);
+                    }
+                }
+                else
+                {
+                    myLogger.Verbose("FetchProfilerSnapshotWithProgress: Setting up property observers");
+                    
+                    // Observe progress updates
+                    snapshotRequestTask.Progress.Advise(requestLifetime, progress =>
+                    {
+                        myProgress.Value = progress;
+                        myLogger.Trace($"FetchProfilerSnapshotWithProgress: Progress update: {progress:P1}");
+                    });
+
+                    // Set up snapshot observer
+                    requestLifetime.Bracket(
+                        () =>
+                        {
+                            myLogger.Verbose("FetchProfilerSnapshotWithProgress: Registering Snapshot.Advise");
+                            snapshotRequestTask.Snapshot.Advise(requestLifetime, snapshot =>
+                            {
+                                var count = snapshot?.Samples.Count ?? 0;
+                                myLogger.Info($"FetchProfilerSnapshotWithProgress: !!! Snapshot.Advise callback fired with {count} samples");
+                                
+                                // Complete the task regardless of whether snapshot is null or not
+                                if (snapshot != null)
+                                {
+                                    myLogger.Info($"FetchProfilerSnapshotWithProgress: Snapshot received successfully, completing task");
+                                    var setResult = snapshotTcs.TrySetResult(snapshot);
+                                    myLogger.Verbose($"FetchProfilerSnapshotWithProgress: TrySetResult returned {setResult}");
+                                }
+                                else
+                                {
+                                    myLogger.Info($"FetchProfilerSnapshotWithProgress: Snapshot received with null value, completing task with null");
+                                    if(snapshotRequestTask.ErrorMessage.HasValue())
+                                        myLogger.Error($"FetchProfilerSnapshotWithProgress: Snapshot request failed with error: {snapshotRequestTask.ErrorMessage.Value}");
+                                    
+                                    var setResult = snapshotTcs.TrySetResult(null);
+                                    myLogger.Verbose($"FetchProfilerSnapshotWithProgress: TrySetResult(null) returned {setResult}");
+                                }
+                            });
+                        },
+                        () =>
+                        {
+                            myLogger.Verbose("FetchProfilerSnapshotWithProgress: Request lifetime terminated, canceling snapshot task");
+                            snapshotTcs.TrySetCanceled();
+                        }
+                    );
+                    
+                    // Also observe Status to complete the task if it fails or is cancelled
+                    myLogger.Verbose("FetchProfilerSnapshotWithProgress: Registering Status.Advise");
+                    snapshotRequestTask.Status.Advise(requestLifetime, status =>
+                    {
+                        myLogger.Info($"FetchProfilerSnapshotWithProgress: !!! Status.Advise callback fired: {status}, TCS completed: {snapshotTcs.Task.IsCompleted}");
+                        
+                        // If task failed/cancelled but snapshot wasn't set yet, complete the TCS
+                        if (!snapshotTcs.Task.IsCompleted)
+                        {
+                            if (status == JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Failed)
+                            {
+                                myLogger.Warn($"FetchProfilerSnapshotWithProgress: Task failed: {snapshotRequestTask.ErrorMessage.Value}");
+                                snapshotTcs.TrySetResult(null);
+                            }
+                            else if (status == JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Cancelled)
+                            {
+                                myLogger.Info("FetchProfilerSnapshotWithProgress: Task cancelled");
+                                snapshotTcs.TrySetCanceled();
+                            }
+                            else if (status == JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Completed)
+                            {
+                                myLogger.Warn("FetchProfilerSnapshotWithProgress: Status changed to Completed but snapshot not yet received");
+                            }
+                        }
+                    });
+                    
+                    myLogger.Verbose("FetchProfilerSnapshotWithProgress: All observers registered");
+                    snapshotRequestTask.StartSignal.Fire();
+                }
+                
+                myLogger.Verbose("FetchProfilerSnapshotWithProgress: Awaiting snapshot data");
                 var currentProfilerFrameSnapshot = await snapshotTcs.Task;
                 
                 var samplesCount = currentProfilerFrameSnapshot?.Samples.Count ?? -1;
-                myLogger.Verbose($"Successfully received snapshot information, samples count {samplesCount}");
+                myLogger.Info($"FetchProfilerSnapshotWithProgress: Successfully received snapshot, samples count: {samplesCount}");
 
                 try
                 {
+                    myLogger.Verbose("FetchProfilerSnapshotWithProgress: Starting cache update");
                     var cacheUpdatingProgressProperty = new Property<double>("SnapshotCacheCalculation::Progress", 0.0).EnsureNotOutside(0.0, 1.0);
                     var cacheUpdatingProgress = new Progress<double>(value => cacheUpdatingProgressProperty.Value = value);
                     StartCacheUpdateProgressTask(requestLifetime, cacheUpdatingProgressProperty);
                     UpdateSampleCache(currentProfilerFrameSnapshot, cacheUpdatingProgress);
+                    myLogger.Verbose("FetchProfilerSnapshotWithProgress: Cache update completed");
+                    
                     if (samplesCount > 0)
+                    {
+                        myLogger.Verbose($"FetchProfilerSnapshotWithProgress: Notifying profiler info collector about {samplesCount} samples");
                         myUnityProfilerInfoCollector.OnSnapshotFetched(samplesCount);
+                    }
                 }
                 catch (Exception e)
                 {
+                    myLogger.Error("FetchProfilerSnapshotWithProgress: Error during cache update", e);
                     myLogger.LogException(e);
                 }
 
+                myLogger.Verbose("FetchProfilerSnapshotWithProgress: Invalidating daemon");
                 await InvalidateDaemon(requestLifetime);
+                myLogger.Info("FetchProfilerSnapshotWithProgress: Snapshot fetching completed successfully");
                   
             }
-            catch (Exception e) when (e is not OperationCanceledException)
+            catch (TaskCanceledException e)
             {
+                myLogger.Info($"FetchProfilerSnapshotWithProgress: Snapshot fetch was canceled: {e.Message}");
+            }
+            catch (OperationCanceledException e)
+            {
+                myLogger.Info($"FetchProfilerSnapshotWithProgress: Operation was canceled: {e.Message}");
+            }
+            catch (Exception e)
+            {
+                myLogger.Error("FetchProfilerSnapshotWithProgress: Unexpected error during snapshot fetch", e);
                 myLogger.LogException(e);
             }
             finally
             {
+                myLogger.Verbose("FetchProfilerSnapshotWithProgress: Terminating request lifetime");
                 myRequestSnapshotSeqLifetimes.TerminateCurrent();
+                myLogger.Verbose("FetchProfilerSnapshotWithProgress: Cleanup completed");
             }
         }).NoAwait();
     }

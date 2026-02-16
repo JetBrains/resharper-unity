@@ -123,15 +123,17 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       }
 
       // Get raw frame data
+      ourLogger.Verbose($"GetUnityProfilerSnapshotAsync: Getting raw frame data view for frame {request.FrameIndex}, thread {request.Thread.Index}");
       using var rawFrameDataView = myProfilerSnapshotDriverAdapter?.GetRawFrameDataView(request.FrameIndex, request.Thread.Index);
 
       if (rawFrameDataView is not { Valid: true })
       {
-        ourLogger.Verbose("GetUnityProfilerSnapshotAsync: rawFrameDataView is null or invalid");
+        ourLogger.Verbose($"GetUnityProfilerSnapshotAsync: rawFrameDataView is null or invalid (adapter null: {myProfilerSnapshotDriverAdapter == null}, valid: {rawFrameDataView?.Valid})");
         return Task.FromResult<UnityProfilerSnapshot?>(null);
       }
 
       var sampleCount = rawFrameDataView.SampleCount;
+      ourLogger.Verbose($"GetUnityProfilerSnapshotAsync: sampleCount={sampleCount}");
       if (sampleCount == 0)
       {
         ourLogger.Verbose("GetUnityProfilerSnapshotAsync: no samples available");
@@ -185,6 +187,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
       // Final progress
       progress?.Report(1.0f);
+      ourLogger.Verbose($"GetUnityProfilerSnapshotAsync: Creating snapshot with {samples.Count} samples, {markerIdToName.Count} unique markers");
 
       // Create snapshot
       var snapshot = new UnityProfilerSnapshot(
@@ -195,7 +198,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         markerIdToName,
         samples);
 
-      ourLogger.Verbose($"GetUnityProfilerSnapshotAsync: snapshot ready - {samples.Count} samples, {markerIdToName.Count} unique markers");
+      ourLogger.Verbose($"GetUnityProfilerSnapshotAsync: Returning snapshot - frame {snapshot.FrameIndex}, {snapshot.Samples.Count} samples");
       return Task.FromResult<UnityProfilerSnapshot?>(snapshot);
     }
   }
