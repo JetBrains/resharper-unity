@@ -25,7 +25,7 @@ object UnityProfilerColumns {
     private abstract class UnityProfilerColumnInfo<T>(@NlsContexts.ColumnName name: String) : ColumnInfo<Any, T>(name) {
         override fun isCellEditable(item: Any?) = false
         override fun getPreferredStringValue() = "000.00"
-        override fun getMaxStringValue(): String = "000,000.00 MB"
+        override fun getMaxStringValue(): String = "0,000.00 MB"
 
         override fun getCustomizedRenderer(item: Any?, renderer: TableCellRenderer): TableCellRenderer {
             if (renderer is JLabel) {
@@ -66,6 +66,7 @@ object UnityProfilerColumns {
             val percentage = (item as? DefaultMutableTreeNode)?.nodeData?.framePercentage ?: 0.0
             return UnityProfilerFormatUtils.formatPercentage(percentage)
         }
+        override fun getMaxStringValue(): String = "000.00%"
         override fun getColumnClass() = String::class.java
         override fun getComparator() = createNodeComparator { d1, d2 ->
             d1.framePercentage.compareTo(d2.framePercentage).takeIf { it != 0 } ?: d1.name.compareTo(d2.name)
