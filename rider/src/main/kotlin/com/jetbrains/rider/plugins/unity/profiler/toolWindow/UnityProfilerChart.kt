@@ -1,12 +1,30 @@
 package com.jetbrains.rider.plugins.unity.profiler.toolWindow
 
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.ui.*
-import com.intellij.ui.charts.*
+import com.intellij.ui.CollectionComboBoxModel
+import com.intellij.ui.ColorUtil
+import com.intellij.ui.JBColor
+import com.intellij.ui.SimpleColoredComponent
+import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.charts.CategoryLineChart
+import com.intellij.ui.charts.LineStepped
+import com.intellij.ui.charts.Overlay
+import com.intellij.ui.charts.dataset
+import com.intellij.ui.charts.enumerator
+import com.intellij.ui.charts.grid
+import com.intellij.ui.charts.lineChart
+import com.intellij.ui.charts.margins
+import com.intellij.ui.charts.ranges
+import com.intellij.ui.charts.yPainter
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -17,8 +35,21 @@ import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerStyle
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerChartViewModel
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerSnapshotModel
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
-import kotlinx.coroutines.*
-import java.awt.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.awt.BasicStroke
+import java.awt.BorderLayout
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.FlowLayout
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.RenderingHints
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.awt.geom.Path2D
@@ -146,7 +177,7 @@ class UnityProfilerChart(
                 val sortedYLines = UnityProfilerChartViewModel.Y_STEPS.sortedDescending()
                 for (yValue in sortedYLines) {
                     if (yValue > yMax) continue
-                    val py = (gridH - gridH * (yValue.toDouble() - yMin) / (yMax - yMin)).toInt() + chart.margins.top
+                    val py = (gridH - gridH * (yValue - yMin) / (yMax - yMin)).toInt() + chart.margins.top
                     
                     val label = "%.0fms".format(yValue)
                     g.font = labelFont10

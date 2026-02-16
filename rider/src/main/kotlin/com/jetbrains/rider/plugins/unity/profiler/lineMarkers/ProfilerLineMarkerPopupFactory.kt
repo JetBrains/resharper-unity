@@ -30,7 +30,6 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ModelUnityProfilerSampleInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ParentCalls
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerGutterMarkRenderSettings
 import com.jetbrains.rider.plugins.unity.profiler.actions.ShowUnityProfilerSettingsAction
 import com.jetbrains.rider.plugins.unity.profiler.actions.ToggleGutterMarksViewAction
 import com.jetbrains.rider.plugins.unity.profiler.actions.ToggleUnityProfilerGutterMarksAction
@@ -44,7 +43,11 @@ import kotlinx.coroutines.launch
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.MouseEvent
-import javax.swing.*
+import javax.swing.BoxLayout
+import javax.swing.JComponent
+import javax.swing.JList
+import javax.swing.JPanel
+import javax.swing.ListCellRenderer
 
 object ProfilerLineMarkerPopupFactory {
     private val logger = Logger.getInstance(ProfilerLineMarkerPopupFactory::class.java)
