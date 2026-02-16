@@ -77,12 +77,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         {
             myBackendUnityHost.BackendUnityModel.ViewNotNull(lt, (l, model) =>
             {
-                model.RiderPackagePotentialUpdateVersion.Advise(l, result =>
+                myShellLocks.ExecuteOrQueueReadLockEx(l, "RiderPackageUpdateAvailabilityChecker.BindToProtocol.Subscribe", () =>
                 {
-                    if (!string.IsNullOrEmpty(result) && JetSemanticVersion.TryParse(result, out var resultVersion))
+                    model.RiderPackagePotentialUpdateVersion.Advise(l, result =>
                     {
-                        ShowNotificationIfNeeded(l, resultVersion);
-                    }
+                        if (!string.IsNullOrEmpty(result) && JetSemanticVersion.TryParse(result, out var resultVersion))
+                        {
+                            ShowNotificationIfNeeded(l, resultVersion);
+                        }
+                    });
                 });
             });
         }
