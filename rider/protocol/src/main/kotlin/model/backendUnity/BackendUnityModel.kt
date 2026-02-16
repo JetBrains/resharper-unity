@@ -221,6 +221,7 @@ object UnityProfilerModel : Ext(BackendUnityModel) {
         property("status", TaskStatus).async  // NEW: Running, Completed, Failed, Cancelled
         property("errorMessage", string.nullable).async  // NEW: Error details if failed
         property("snapshot", UnityProfilerSnapshot.nullable).async
+        signal("startSignal", void).async
     }
 
     

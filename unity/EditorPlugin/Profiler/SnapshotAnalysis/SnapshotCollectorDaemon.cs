@@ -86,13 +86,11 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         task.FrameIndex.Set(request.FrameIndex);
         task.Thread.Set(request.Thread);
         task.Progress.Set(0.0f);
-        task.Status.Set(JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Running);
-        task.ErrorMessage.Set(null);
-        task.Snapshot.Set(null);
+        task.Status.Set(Model.Unity.BackendUnity.TaskStatus.Running);
         
         StartSnapshotFetchTask(lifetime, request, task);
         
-        return RdTask<SnapshotRequestTask>.Successful(task);
+        return RdTask.Successful(task);
       });
 
       // Allow backend to update selection
@@ -293,7 +291,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       if (myWindowAdapter == null)
       {
         ourLogger.Verbose("StartSnapshotFetchTask: window adapter is null");
-        task.Status.Set(JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Failed);
+        task.Status.Set(Model.Unity.BackendUnity.TaskStatus.Failed);
         task.ErrorMessage.Set("Profiler window adapter is not available");
         task.Snapshot.Set(null);
         return;
@@ -302,7 +300,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       if (!IsFrameInValidRange(request.FrameIndex, out _, out _))
       {
         ourLogger.Verbose($"StartSnapshotFetchTask: frame {request.FrameIndex} is outside valid range");
-        task.Status.Set(JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Failed);
+        task.Status.Set(Model.Unity.BackendUnity.TaskStatus.Failed);
         task.ErrorMessage.Set($"Frame {request.FrameIndex} is outside valid range");
         task.Snapshot.Set(null);
         return;
@@ -318,52 +316,70 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         }
       });
 
-      // Start background task
-      Task.Run(async () =>
+      ourLogger.Verbose($"StartSnapshotFetchTask: About to set up StartSignal handler for frame {request.FrameIndex}");
+      
+      // Set up handler that starts work when backend signals
+      task.StartSignal.Advise(lifetime, _ =>
       {
-        try
+        ourLogger.Verbose($"StartSnapshotFetchTask: StartSignal received, starting async work for frame {request.FrameIndex}");
+        
+        // Start background task when signaled
+        Task.Run(async () =>
         {
-          var snapshot = await mySnapshotCrawler.GetUnityProfilerSnapshotAsync(request, lifetime, progress);
-          
-          if (lifetime.IsAlive)
+          try
           {
-            task.Snapshot.Set(snapshot);
-            task.Progress.Set(1.0f);
-            task.Status.Set(JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Completed);
-            ourLogger.Verbose($"Snapshot fetched: frame {snapshot?.FrameIndex}, {snapshot?.Samples.Count} samples");
+            ourLogger.Verbose($"StartSnapshotFetchTask: Starting async snapshot fetch for frame {request.FrameIndex}");
+            var snapshot = await mySnapshotCrawler.GetUnityProfilerSnapshotAsync(request, lifetime, progress);
+
+            ourLogger.Verbose(
+              $"StartSnapshotFetchTask: GetUnityProfilerSnapshotAsync completed, snapshot is {(snapshot == null ? "null" : "not null")}");
+
+            if (lifetime.IsAlive)
+            {
+              task.Snapshot.Set(snapshot);
+              task.Progress.Set(1.0f);
+              task.Status.Set(Model.Unity.BackendUnity.TaskStatus.Completed);
+              ourLogger.Verbose($"Snapshot fetched: frame {snapshot?.FrameIndex}, {snapshot?.Samples.Count} samples");
+            }
+            else
+            {
+              ourLogger.Verbose("StartSnapshotFetchTask: Lifetime not alive after snapshot fetch");
+            }
           }
-        }
-        catch (LifetimeCanceledException)
-        {
-          ourLogger.Verbose("StartSnapshotFetchTask was canceled (lifetime)");
-          if (lifetime.IsAlive)
+          catch (LifetimeCanceledException)
           {
-            task.Status.Set(JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Cancelled);
-            task.ErrorMessage.Set("Operation was cancelled");
-            task.Snapshot.Set(null);
+            ourLogger.Verbose("StartSnapshotFetchTask was canceled (lifetime)");
+            if (lifetime.IsAlive)
+            {
+              task.Status.Set(Model.Unity.BackendUnity.TaskStatus.Cancelled);
+              task.ErrorMessage.Set("Operation was cancelled");
+              task.Snapshot.Set(null);
+            }
           }
-        }
-        catch (OperationCanceledException)
-        {
-          ourLogger.Verbose("StartSnapshotFetchTask was canceled (operation)");
-          if (lifetime.IsAlive)
+          catch (OperationCanceledException)
           {
-            task.Status.Set(JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Cancelled);
-            task.ErrorMessage.Set("Operation was cancelled");
-            task.Snapshot.Set(null);
+            ourLogger.Verbose("StartSnapshotFetchTask was canceled (operation)");
+            if (lifetime.IsAlive)
+            {
+              task.Status.Set(Model.Unity.BackendUnity.TaskStatus.Cancelled);
+              task.ErrorMessage.Set("Operation was cancelled");
+              task.Snapshot.Set(null);
+            }
           }
-        }
-        catch (Exception ex)
-        {
-          ourLogger.Error("StartSnapshotFetchTask failed", ex);
-          if (lifetime.IsAlive)
+          catch (Exception ex)
           {
-            task.Status.Set(JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus.Failed);
-            task.ErrorMessage.Set(ex.Message);
-            task.Snapshot.Set(null);
+            ourLogger.Error("StartSnapshotFetchTask failed", ex);
+            if (lifetime.IsAlive)
+            {
+              task.Status.Set(Model.Unity.BackendUnity.TaskStatus.Failed);
+              task.ErrorMessage.Set(ex.Message);
+              task.Snapshot.Set(null);
+            }
           }
-        }
-      }, lifetime).NoAwait();
+        }, lifetime).NoAwait();
+      });
+      
+      ourLogger.Verbose($"StartSnapshotFetchTask: StartSignal handler registered, waiting for backend signal");
     }
   }
 }
