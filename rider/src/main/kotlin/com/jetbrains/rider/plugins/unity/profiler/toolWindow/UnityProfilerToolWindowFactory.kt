@@ -45,6 +45,10 @@ class UnityProfilerToolWindowFactory : RiderToolWindowFactory() {
         }
     }
 
+    override fun shouldBeAvailable(project: Project): Boolean {
+        return false
+    }
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow, lifetime: Lifetime) {
         toolWindow.isAvailable = true
 
