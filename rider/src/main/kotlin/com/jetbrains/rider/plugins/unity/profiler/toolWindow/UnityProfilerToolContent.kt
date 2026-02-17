@@ -31,8 +31,8 @@ class UnityProfilerToolContent(
 
     private val daemon = project.service<UnityProfilerUsagesDaemon>()
     private val lifetime = Lifetime.intersect(projectLifetime, daemon.lifetime)
-    private val chart = UnityProfilerChart(daemon.chartViewModel, daemon.snapshotModel, lifetime)
-    private val treeTable = UnityProfilerTreeTable(daemon.treeViewModel, lifetime)
+    private val chart = UnityProfilerChart(daemon.chartViewModel, daemon.snapshotModel, project, lifetime)
+    private val treeTable = UnityProfilerTreeTable(daemon.treeViewModel, project, lifetime)
     private val filterField = UnityProfilerFilterField(daemon.treeViewModel, lifetime)
     private val settings get() = daemon.settingsModel
 

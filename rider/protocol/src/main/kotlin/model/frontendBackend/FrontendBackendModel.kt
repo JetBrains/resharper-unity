@@ -272,6 +272,15 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
         }).async
         property("isGutterMarksEnabled", bool).async
         property("gutterMarksRenderSettings", ProfilerGutterMarkRenderSettings).async
+        
+        
+        //Counters
+        sink("logSelectedFrameInUnityProfiler", int).async
+        sink("logNavigatedFromUnityProfiler", void).async
+        sink("logSnapshotFetched", structdef("logSnapshotFetchedArgs") {
+            field("frameIndex", int)
+            field("duration", long)
+        }).async
     }
 
     val ProfilerHighlighterModel = structdef extends SolutionModel.HighlighterModel {

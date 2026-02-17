@@ -20,6 +20,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.StackTrace;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
@@ -28,7 +29,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 public class UnityProfilerEventsHost(
     ILogger logger,
     ISolution solution,
-    UnityProfilerInfoCollector unityProfilerInfoCollector,
     Lifetime componentLifetime)
 {
     public void AdviseOpenFileByMethodName(UnityProfilerModel unityProfilerModel,
@@ -40,9 +40,10 @@ public class UnityProfilerEventsHost(
             if (string.IsNullOrEmpty(sampleStackInfo.SampleStack) || string.IsNullOrEmpty(sampleStackInfo.SampleName))
                 return result;
 
+            frontendBackendHost.Model.GetFrontendBackendProfilerModel()?.LogNavigatedFromUnityProfiler();
+            
             using (ReadLockCookie.Create())
             {
-                unityProfilerInfoCollector.OnOpenFileBySampleInfo();
                 try
                 {
                     NavigateToCode(sampleStackInfo.SampleStack);

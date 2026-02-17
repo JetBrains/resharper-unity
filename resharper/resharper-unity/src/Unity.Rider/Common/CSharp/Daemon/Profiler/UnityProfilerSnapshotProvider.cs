@@ -23,6 +23,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Threading;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 using TaskStatus = JetBrains.Rider.Model.Unity.BackendUnity.TaskStatus;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
@@ -58,7 +59,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
     private readonly SettingsScalarEntry mySnapshotGutterMarksDisplaySettingsScalarEntry;
 
     private readonly BackgroundProgressManager myBackgroundProgressManager;
-    private readonly UnityProfilerInfoCollector myUnityProfilerInfoCollector;
     private FrontendBackendProfilerModel FrontendBackendProfilerModel => myFrontendBackendHost.Model.GetFrontendBackendProfilerModel().NotNull();
     
     public UnityProfilerSnapshotProvider(Lifetime lifetime,
@@ -67,7 +67,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         FrontendBackendHost frontendBackendHost,
         ISettingsStore settingsStore,
         BackgroundProgressManager backgroundProgressManager,
-        UnityProfilerInfoCollector unityProfilerInfoCollector,
         ILogger logger)
     {
         myLifetime = lifetime;
@@ -76,7 +75,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         myFrontendBackendHost = frontendBackendHost;
         myLogger = logger;
         myBackgroundProgressManager = backgroundProgressManager;
-        myUnityProfilerInfoCollector = unityProfilerInfoCollector;
         mySolution = solution;
         mySettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.ApplicationWide);
 
@@ -180,7 +178,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 {
                     return locks.MainReadAction(() =>
                     {
-                        myUnityProfilerInfoCollector.OnNavigateToParentCall();
                         ProfilerNavigationUtils.ParseAndNavigateToParent(mySolution, qualifiedName, myLogger);
                     });
                 }).NoAwait();
@@ -242,6 +239,8 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 unityProfilerModel.SelectionState.Advise(lt, state =>
                 {
                     FrontendBackendProfilerModel.SelectionState.Set(state);
+                    if (state != null)
+                        FrontendBackendProfilerModel.LogSelectedFrameInUnityProfiler(state.SelectedFrameIndex);
                 });
                 FrontendBackendProfilerModel.SelectionState.Advise(lt, 
                     state=>
@@ -268,29 +267,39 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         
         requestLifetime.StartBackgroundAsync(async () =>
         {
-            try
+            UnityProfilerSnapshot? snapshot = null;
+            var startTime = DateTime.UtcNow;
+            
+            using (myLogger.WhenInfo()?.StopwatchCookie("fetch_snapshot", $"frame={snapshotRequest.FrameIndex},thread={snapshotRequest.Thread.Index}"))
             {
-                var snapshot = await FetchSnapshotAsync(requestLifetime, snapshotRequest);
-                await ProcessSnapshotAsync(requestLifetime, snapshot);
-                myLogger.Info($"Snapshot fetch completed: {snapshot?.Samples.Count ?? 0} samples");
+                try
+                {
+                    snapshot = await FetchSnapshotAsync(requestLifetime, snapshotRequest);
+                    await ProcessSnapshotAsync(requestLifetime, snapshot);
+                    myLogger.Info($"Snapshot fetch completed: {snapshot?.Samples.Count ?? 0} samples");
+                }
+                catch (TaskCanceledException)
+                {
+                    myLogger.Info("Snapshot fetch canceled");
+                }
+                catch (OperationCanceledException)
+                {
+                    myLogger.Info("Snapshot fetch canceled");
+                }
+                catch (Exception e)
+                {
+                    myLogger.Error($"Snapshot fetch failed {e}");
+                    myLogger.LogException(e);
+                }
+                finally
+                {
+                    myRequestSnapshotSeqLifetimes.TerminateCurrent();
+                }
             }
-            catch (TaskCanceledException)
-            {
-                myLogger.Info("Snapshot fetch canceled");
-            }
-            catch (OperationCanceledException)
-            {
-                myLogger.Info("Snapshot fetch canceled");
-            }
-            catch (Exception e)
-            {
-                myLogger.Error($"Snapshot fetch failed {e}");
-                myLogger.LogException(e);
-            }
-            finally
-            {
-                myRequestSnapshotSeqLifetimes.TerminateCurrent();
-            }
+            
+            // Notify collector with timing information
+            var elapsedMilliseconds = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+            FrontendBackendProfilerModel.LogSnapshotFetched(new LogSnapshotFetchedArgs(snapshot?.Samples.Count ?? 0, elapsedMilliseconds));
         }).NoAwait();
     }
 
@@ -394,9 +403,6 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
             var cacheProgress = new Property<double>("SnapshotCacheCalculation::Progress", 0.0).EnsureNotOutside(0.0, 1.0);
             StartCacheUpdateProgressTask(lifetime, cacheProgress);
             UpdateSampleCache(snapshot, new Progress<double>(p => cacheProgress.Value = p));
-            
-            // Notify collector
-            myUnityProfilerInfoCollector.OnSnapshotFetched(snapshot.Samples.Count);
         }
         catch (Exception e)
         {

@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.PresentationFactory
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
@@ -30,6 +31,8 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ModelUnityProfilerSampleInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ParentCalls
+import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector
+import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesDaemon
 import com.jetbrains.rider.plugins.unity.profiler.actions.ShowUnityProfilerSettingsAction
 import com.jetbrains.rider.plugins.unity.profiler.actions.ToggleGutterMarksViewAction
 import com.jetbrains.rider.plugins.unity.profiler.actions.ToggleUnityProfilerGutterMarksAction
@@ -59,6 +62,9 @@ object ProfilerLineMarkerPopupFactory {
         gutter: EditorGutterComponentEx,
         e: MouseEvent
     ): JBPopup {
+        // Log gutter click event
+        project.service<UnityProfilerUsagesDaemon>().incrementGutterClick()
+        
         val parents = sampleInfo.parents ?: emptyList()
         val actionItems = createActionItems(project, markerViewModel, sampleInfo)
         val items = parents + actionItems
@@ -87,6 +93,7 @@ object ProfilerLineMarkerPopupFactory {
         val actionGroup = DefaultActionGroup().apply {
             add(object : DumbAwareAction(UnityUIBundle.message("action.show.in.unity.profiler.toolwindow.text"), null, AllIcons.Actions.MoveTo2) {
                 override fun actionPerformed(e: AnActionEvent) {
+                    UnityProfilerUsagesCollector.logNavigateGutterToProfiler(project)
                     UnityProfilerToolWindowFactory.showAndNavigate(project, sampleInfo.qualifiedName)
                 }
             })
