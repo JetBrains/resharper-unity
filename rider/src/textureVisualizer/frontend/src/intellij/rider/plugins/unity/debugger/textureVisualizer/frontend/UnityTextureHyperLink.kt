@@ -11,20 +11,22 @@ import com.intellij.xdebugger.frame.XDebuggerTreeNodeHyperlink
 import com.jetbrains.rd.util.threading.coroutines.withLifetime
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureAccessorId
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.awt.CardLayout
 import java.awt.event.MouseEvent
 import javax.swing.JPanel
 
-class UnityTextureHyperLink(val cs: CoroutineScope, val session: XDebugSessionProxy, val accessorId: RiderTextureAccessorId)
+class UnityTextureHyperLink(val scope: CoroutineScope, val session: XDebugSessionProxy, val accessorId: RiderTextureAccessorId)
     : XDebuggerTreeNodeHyperlink(XDebuggerBundle.message("node.test.show.full.value")) {
 
     override fun onClick(event: MouseEvent?) {
-        cs.launch {
+        scope.launch {
             showDialog(session, accessorId)
         }
     }
@@ -34,39 +36,42 @@ class UnityTextureHyperLink(val cs: CoroutineScope, val session: XDebugSessionPr
         session: XDebugSessionProxy,
         accessorId: RiderTextureAccessorId
     ) {
-        val componentScope = childScope("${coroutineContext[CoroutineName.Key] ?: "debugger suspend scope"} (limited to a window)")
-        withContext(Dispatchers.EDT) {
-            //TODO(Korovin): Check lifetime here
-            withLifetime { lifetime ->
-                val project = session.project
-                val component = JPanel(CardLayout())
-                component.add(
-                    UnityTextureCustomComponentEvaluator.createTextureDebugView(
-                        session,
-                        accessorId,
-                        lifetime
+        try {
+            withContext(Dispatchers.EDT + CoroutineName("${coroutineContext[CoroutineName.Key] ?: "debugger suspend scope"} (limited to a window)")) {
+                withLifetime { lifetime ->
+                    val project = session.project
+                    val component = JPanel(CardLayout())
+                    component.add(
+                        UnityTextureCustomComponentEvaluator.createTextureDebugView(
+                            session,
+                            accessorId,
+                            lifetime
+                        )
                     )
-                )
-                val frame = FrameWrapper(
-                    project = project,
-                    dimensionKey = "texture-debugger",
-                    title = UnityBundle.Companion.message("debugging.texture.preview.title"),
-                    isDialog = true,
-                    component = component,
-                    coroutineScope = componentScope
-                )
-                frame.apply {
-                    awaitCancellationAndInvoke {
-                        // outer scope canceled -> caused by change in program suspend state;
-                        // IDE should close the dialog explicitly
-                        // as the dialog is not disposed of yet, lambda in setOnCloseHandler will be called
-                        close()
+                    val frame = FrameWrapper(
+                        project = project,
+                        dimensionKey = "texture-debugger",
+                        title = UnityBundle.Companion.message("debugging.texture.preview.title"),
+                        isDialog = true,
+                        component = component,
+                        coroutineScope = this
+                    )
+                    frame.apply {
+                        awaitCancellationAndInvoke {
+                            // outer scope canceled -> caused by change in program suspend state;
+                            // IDE should close the dialog explicitly
+                            // as the dialog is not disposed of yet, lambda in setOnCloseHandler will be called
+                            close()
+                        }
+                        closeOnEsc()
+                        show()
                     }
-                    closeOnEsc()
-                    show()
                 }
+            }
+        } catch (e: CancellationException) {
+            if (!isActive) {
+                throw e
             }
         }
     }
-
 }
