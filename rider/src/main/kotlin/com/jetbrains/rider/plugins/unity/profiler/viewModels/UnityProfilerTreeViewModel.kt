@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.profiler.viewModels
 
+import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import com.jetbrains.rd.util.lifetime.isAlive
@@ -9,6 +10,7 @@ import com.jetbrains.rd.util.reactive.flowInto
 import com.jetbrains.rider.plugins.unity.model.UnityProfilerRecordInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendProfilerModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendModelSnapshot
+import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerSortColumn
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerTreeBuilder
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.nodeData
@@ -45,6 +47,7 @@ import javax.swing.tree.DefaultMutableTreeNode
 class UnityProfilerTreeViewModel(
     val profilerModel: FrontendBackendProfilerModel,
     val snapshotModel: UnityProfilerSnapshotModel,
+    private val project: Project,
     val lifetime: Lifetime
 ) {
     private val updateTreeLifetimes = SequentialLifetimes(lifetime)
@@ -174,6 +177,7 @@ class UnityProfilerTreeViewModel(
         val targetNode = findFirstNonProfilerMarkerNode(node) ?: return
         val qualifiedName = targetNode.nodeData?.name ?: return
         profilerModel.navigateByQualifiedName.fire(qualifiedName)
+        UnityProfilerUsagesCollector.logNavigateTreeToCode(project)
     }
 
     private fun findFirstNonProfilerMarkerNode(node: DefaultMutableTreeNode): DefaultMutableTreeNode? {

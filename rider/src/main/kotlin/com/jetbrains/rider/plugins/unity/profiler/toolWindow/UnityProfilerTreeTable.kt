@@ -7,6 +7,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.components.service
+import com.intellij.openapi.project.Project
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.treeStructure.treetable.ListTreeTableModelOnColumns
@@ -15,6 +17,7 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.tree.TreeUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.intersect
+import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesDaemon
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerTreeViewModel
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
@@ -31,6 +34,7 @@ import javax.swing.tree.DefaultMutableTreeNode
 
 class UnityProfilerTreeTable(
     private val viewModel: UnityProfilerTreeViewModel,
+    private val project: Project,
     lifetime: Lifetime
 ) : TreeTable(ListTreeTableModelOnColumns(DefaultMutableTreeNode(), UnityProfilerColumns.allColumns)) {
 
@@ -44,6 +48,12 @@ class UnityProfilerTreeTable(
 
         addMouseListener(object : PopupHandler() {
             override fun invokePopup(comp: Component, x: Int, y: Int) = showPopupMenu(comp, x, y)
+            
+            override fun mouseClicked(e: MouseEvent) {
+                super.mouseClicked(e)
+                // Log tree interaction (any click on the tree)
+                project.service<UnityProfilerUsagesDaemon>().incrementTreeInteraction()
+            }
         })
 
         tableHeader.addMouseListener(object : PopupHandler() {

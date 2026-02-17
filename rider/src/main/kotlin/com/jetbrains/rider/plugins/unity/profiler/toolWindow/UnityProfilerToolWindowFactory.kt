@@ -6,6 +6,7 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesDaemon
 import com.jetbrains.rider.ui.RiderToolWindowFactory
 
@@ -29,10 +30,14 @@ class UnityProfilerToolWindowFactory : RiderToolWindowFactory() {
         fun show(project: Project) {
             val toolWindow = getToolWindow(project)
             toolWindow?.show()
+            UnityProfilerUsagesCollector.logToolWindowOpened(project)
         }
 
         fun showAndNavigate(project: Project, navigationText: String) {
             val toolWindow = getToolWindow(project) ?: return
+            if(!toolWindow.isVisible)
+                UnityProfilerUsagesCollector.logToolWindowOpened(project)
+            
             toolWindow.show {
                 val daemon = project.service<UnityProfilerUsagesDaemon>()
                 daemon.treeViewModel.setFilter(navigationText, true)

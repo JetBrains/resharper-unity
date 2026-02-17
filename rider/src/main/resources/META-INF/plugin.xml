@@ -218,6 +218,7 @@
     <iw.actionProvider id="ShaderWidgetActionProvider" implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetActionProvider"/>
 
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantEventLogger"/>
+    <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector"/>
 
     <rider.completion.csharpIdentifierPartHelper implementation="com.jetbrains.rider.plugins.unity.csharp.completion.OdinLayoutAttributeCSharpIdentifierPartHelper"/>
 

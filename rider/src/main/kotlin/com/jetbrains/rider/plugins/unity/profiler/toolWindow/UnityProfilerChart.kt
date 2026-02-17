@@ -7,7 +7,9 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.ui.ColorUtil
@@ -32,6 +34,7 @@ import com.jetbrains.rd.util.lifetime.intersect
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rider.plugins.unity.model.ProfilerThread
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerStyle
+import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesDaemon
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerChartViewModel
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerSnapshotModel
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
@@ -61,6 +64,7 @@ import kotlin.math.roundToInt
 class UnityProfilerChart(
     private val viewModel: UnityProfilerChartViewModel,
     private val snapshotModel: UnityProfilerSnapshotModel,
+    private val project: Project,
     private val lifetime: Lifetime
 ) {
 
@@ -236,6 +240,7 @@ class UnityProfilerChart(
                 val count = viewModel.frameDurations.value.size
                 if (count <= 1) return
                 val index = (xInGrid.toDouble() / chartWidth * (count - 1)).roundToInt().coerceIn(0, count - 1)
+                project.service<UnityProfilerUsagesDaemon>().incrementGraphClick()
                 viewModel.selectFrame(index + viewModel.startIndex.value)
             }
         })
