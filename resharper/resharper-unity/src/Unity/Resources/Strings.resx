@@ -1357,7 +1357,7 @@ float values with full precision.</value>
         <value>Text-based assets</value>
     </data>
     <data name="UnityOptionsPage_Profiler_Integration" xml:space="preserve">
-        <value>Profiler Integration (Experimental)</value>
+        <value>Profiler Integration</value>
     </data>
     <data name="UnityOptionsPage_Profiler_Integration_Snapshot_Fetching" xml:space="preserve">
         <value>Fetch profiler snapshot:</value>
@@ -1375,7 +1375,7 @@ float values with full precision.</value>
         <value>Learn more</value>
     </data>
     <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings" xml:space="preserve">
-        <value>Enable profiler gutter marks</value>
+        <value>Profiler highlightings view mode</value>
     </data>
     <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default" xml:space="preserve">
         <value>Default</value>
