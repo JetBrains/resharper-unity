@@ -36,6 +36,7 @@ jvm_library(
     "@community//libraries/rd/framework",
     "@community//libraries/rd/core",
     "//dotnet/Plugins:rider-plugins-unity",
+    "@community//platform/xdebugger-impl/ui",
   ]
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` end

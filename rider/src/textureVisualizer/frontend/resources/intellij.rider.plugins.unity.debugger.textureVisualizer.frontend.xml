@@ -1,8 +1,6 @@
 <idea-plugin>
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
-    <module name="intellij.platform.frontend"/>
-
-    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
     <plugin id="com.intellij.platform.images"/>
     <plugin id="com.intellij.resharper.unity"/>
     <module name="intellij.grid.core.impl"/>
@@ -12,8 +10,8 @@
     <module name="intellij.rd.platform"/>
     <module name="intellij.rider"/>
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer"/>
-    <!-- endregion -->
   </dependencies>
+  <!-- endregion -->
 
   <extensions defaultExtensionNs="com.intellij">
     <xdebugger.nodeLinkActionProvider implementation="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider"/>
