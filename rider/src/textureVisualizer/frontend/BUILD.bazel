@@ -47,6 +47,7 @@ jvm_library(
     "//dotnet/Plugins:rider-plugins-unity",
     "@community//images",
     "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer",
+    "//rider/debugger/shared",
   ]
 )
 

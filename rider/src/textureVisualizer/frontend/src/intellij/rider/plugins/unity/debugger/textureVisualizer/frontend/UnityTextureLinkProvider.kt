@@ -4,7 +4,7 @@ import com.intellij.platform.debugger.impl.shared.proxy.XDebugManagerProxy
 import com.intellij.platform.debugger.impl.shared.proxy.XDebugSessionProxy
 import com.intellij.xdebugger.frame.XDebuggerTreeNodeHyperlink
 import com.intellij.xdebugger.frame.XValue
-import com.jetbrains.rider.debugger.RiderDebuggerLinkProvider
+import com.jetbrains.rider.debugger.shared.RiderDebuggerLinkProvider
 import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureDataApi
 import kotlinx.coroutines.CoroutineScope
 
