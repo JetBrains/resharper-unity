@@ -43,7 +43,7 @@ import kotlin.io.path.readText
 class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
 
     override val advancedSettings: AdvancedSettingsList
-        get() = AdvancedSettingsList(boolSettings = mapOf(("repository.view.enabled" to true)))
+        get() = AdvancedSettingsList(boolSettings = mapOf(("repository.view.enabled.v2" to true)))
 
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
