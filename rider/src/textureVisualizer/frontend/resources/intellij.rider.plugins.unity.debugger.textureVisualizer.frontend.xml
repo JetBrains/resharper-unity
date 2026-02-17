@@ -14,7 +14,7 @@
   <!-- endregion -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <xdebugger.nodeLinkActionProvider implementation="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider"/>
+    <rider.debugger.link.provider implementation="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider"/>
     <statistics.counterUsagesCollector implementationClass="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.TextureDebuggerCollector"/>
   </extensions>
 </idea-plugin>
