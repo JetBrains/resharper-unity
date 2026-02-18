@@ -49,4 +49,46 @@ jvm_library(
     "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer",
   ]
 )
+
+jvm_library(
+  name = "frontend_test_lib",
+  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.frontend",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":frontend",
+    "@community//platform/xdebugger-impl:debugger-impl_test_lib",
+    "//rider:rider_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/platform-api:ide_test_lib",
+    "//rider/model/generated:generated_test_lib",
+    "//rider/rdclient-dotnet:rdclient-dotnet_test_lib",
+    "@community//platform/xdebugger-api:debugger_test_lib",
+    "@community//grid/impl:impl_test_lib",
+    "@community//grid/core-impl:core-impl_test_lib",
+    "@community//platform/lang-impl:lang-impl_test_lib",
+    "@community//platform/core-ui:core-ui_test_lib",
+    "@community//platform/platform-impl:ide-impl_test_lib",
+    "@community//platform/analysis-api:analysis_test_lib",
+    "@community//platform/util/concurrency:concurrency_test_lib",
+    "@community//platform/xdebugger-impl/shared:shared_test_lib",
+    "@community//platform/xdebugger-impl/ui:ui_test_lib",
+    "//remote-dev/rd-client:rd-client_test_lib",
+    "//remote-dev/rd-platform:rd-platform_test_lib",
+    "//rider/languages:languages_test_lib",
+    "@community//libraries/rd/framework:framework_test_lib",
+    "@community//libraries/rd/core:core_test_lib",
+    "//remote-dev/rd-ide-model-generated:rd-ide-model-generated_test_lib",
+    "@community//platform/rd-platform-community:rd-community_test_lib",
+    "//rider/icons:icons_test_lib",
+    "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
+    "@community//fleet/rpc:rpc_test_lib",
+    "@community//platform/util/coroutines:coroutines_test_lib",
+    "@community//platform/xdebugger-impl/frontend:frontend_test_lib",
+    "@community//platform/statistics:statistics_test_lib",
+    "//dotnet/Plugins:rider-plugins-unity_test_lib",
+    "@community//images:images_test_lib",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer:textureVisualizer_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.frontend` end

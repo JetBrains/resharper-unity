@@ -39,4 +39,37 @@ jvm_library(
     "@community//platform/xdebugger-impl/ui",
   ]
 )
+
+jvm_library(
+  name = "backend_test_lib",
+  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":backend",
+    "@community//libraries/kotlinx/coroutines/core:core_test_lib",
+    "@community//platform/kernel/rpc.backend:rpc.backend_test_lib",
+    "@community//platform/extensions:extensions_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/kernel/shared:kernel_test_lib",
+    "@community//platform/util/concurrency:concurrency_test_lib",
+    "@community//platform/execution-impl:execution-impl_test_lib",
+    "@community//platform/platform-impl:ide-impl_test_lib",
+    "@community//platform/xdebugger-api:debugger_test_lib",
+    "@community//platform/xdebugger-impl:debugger-impl_test_lib",
+    "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
+    "@community//platform/xdebugger-impl/shared:shared_test_lib",
+    "@community//platform/util/coroutines:coroutines_test_lib",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer:textureVisualizer_test_lib",
+    "//rider/model/generated:generated_test_lib",
+    "//rider:rider_test_lib",
+    "//remote-dev/rd-client:rd-client_test_lib",
+    "//rider/rdclient-dotnet:rdclient-dotnet_test_lib",
+    "//remote-dev/rd-ide-model-generated:rd-ide-model-generated_test_lib",
+    "@community//libraries/rd/framework:framework_test_lib",
+    "@community//libraries/rd/core:core_test_lib",
+    "//dotnet/Plugins:rider-plugins-unity_test_lib",
+    "@community//platform/xdebugger-impl/ui:ui_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` end

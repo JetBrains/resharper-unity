@@ -26,4 +26,23 @@ jvm_library(
     "@community//platform/util/multiplatform",
   ]
 )
+
+jvm_library(
+  name = "textureVisualizer_test_lib",
+  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":textureVisualizer",
+    "@community//platform/kernel/shared:kernel_test_lib",
+    "@community//platform/xdebugger-api:debugger_test_lib",
+    "@community//platform/xdebugger-impl/shared:shared_test_lib",
+    "@community//libraries/kotlinx/serialization/core:core_test_lib",
+    "@community//libraries/kotlinx/serialization/json:json_test_lib",
+    "@community//platform/xdebugger-impl:debugger-impl_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
+    "@community//platform/util/multiplatform:multiplatform_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer` end
