@@ -153,9 +153,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         else
         {
             myLogger.Verbose("Stop snapshot fetching after settings changed to Disabled");
-            myRequestSnapshotSeqLifetimes.TerminateCurrent();
-            UpdateSampleCache(null);
-            await InvalidateDaemon(lt);
+            TerminateSnapshotAndInvalidateDaemon(lt).NoAwait();
         }
     }
 
@@ -233,6 +231,12 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
             {
                 unityProfilerModel.MainThreadTimingsAndThreads.FlowIntoRdSafe(lt, FrontendBackendProfilerModel.MainThreadTimingsAndThreads);
                 unityProfilerModel.CurrentProfilerRecordInfo.FlowIntoRdSafe(lt, FrontendBackendProfilerModel.CurrentProfilerRecordInfo);
+                unityProfilerModel.CurrentProfilerRecordInfo.Advise(lt, info =>
+                {
+                    if (info != null || !IsGutterMarksEnabled() || !GetSnapshotFetchingEnabled()) return;
+                    myLogger.Verbose("ProfilerRecordInfo is null, clearing snapshot cache and invalidating daemon");
+                    TerminateSnapshotAndInvalidateDaemon(lt).NoAwait();
+                });
                 
                 unityProfilerModel.SelectionState.FlowIntoRdSafe(lt, FrontendBackendProfilerModel.SelectionState);
                 FrontendBackendProfilerModel.SelectionState.FlowIntoRdSafe(lt, unityProfilerModel.SelectionState);
@@ -248,14 +252,19 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                         unityProfilerModel.SelectionState.Set(state);
                     });
             });
-        
+
         myBackendUnityHost.BackendUnityProfilerModel!.ViewNull<UnityProfilerModel>(myLifetime, lt =>
         {
             myLogger.Verbose("UnityProfilerModel was null, clearing snapshot cache and invalidating daemon");
-            myRequestSnapshotSeqLifetimes.TerminateCurrent();
-            UpdateSampleCache(null);
-            InvalidateDaemon(lt).NoAwait();
+            TerminateSnapshotAndInvalidateDaemon(lt).NoAwait();
         });
+    }
+
+    private async Task TerminateSnapshotAndInvalidateDaemon(Lifetime lt)
+    {
+        myRequestSnapshotSeqLifetimes.TerminateCurrent();
+        UpdateSampleCache(null);
+        await InvalidateDaemon(lt);
     }
 
     private void FetchProfilerSnapshotWithProgress(ProfilerSnapshotRequest snapshotRequest)
@@ -392,8 +401,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
     {
         if (snapshot == null)
         {
-            UpdateSampleCache(null);
-            await InvalidateDaemon(lifetime);
+            await TerminateSnapshotAndInvalidateDaemon(lifetime);
             return;
         }
 
