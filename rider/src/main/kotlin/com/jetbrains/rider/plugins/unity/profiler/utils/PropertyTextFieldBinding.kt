@@ -1,7 +1,9 @@
 package com.jetbrains.rider.plugins.unity.profiler.utils
 
+import com.intellij.openapi.application.runInEdt
 import com.intellij.ui.DocumentAdapter
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.IProperty
 import javax.swing.event.DocumentEvent
 import javax.swing.text.JTextComponent
@@ -39,11 +41,15 @@ fun <T : JTextComponent> bindTextFieldToProperty(
 
     property.advise(lifetime) { newValue ->
         if (textComponent.text != newValue) {
-            updatingFromProperty = true
-            try {
-                textComponent.text = newValue
-            } finally {
-                updatingFromProperty = false
+            runInEdt {
+                if (lifetime.isAlive) {
+                    updatingFromProperty = true
+                    try {
+                        textComponent.text = newValue
+                    } finally {
+                        updatingFromProperty = false
+                    }
+                }
             }
         }
     }
