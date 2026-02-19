@@ -55,17 +55,120 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
 
     public void SetSelectedFrameIndex(int frameIndex)
     {
-      throw new NotImplementedException();
+      if (myReflectionData == null)
+      {
+        ourLogger.Verbose($"Can't set {nameof(SetSelectedFrameIndex)}: {nameof(myReflectionData)} is null.");
+        return;
+      }
+
+      if (myReflectionData.SetSelectedFrameIndexMethodInfo == null)
+      {
+        ourLogger.Verbose(
+          $"Can't set {nameof(SetSelectedFrameIndex)}: {nameof(myReflectionData.SetSelectedFrameIndexMethodInfo)} is null.");
+        return;
+      }
+
+      try
+      {
+        myReflectionData.SetSelectedFrameIndexMethodInfo.Invoke(ProfilerWindowObject, new object[] { frameIndex });
+      }
+      catch (Exception e)
+      {
+        ourLogger.Verbose($"Invoke of {myReflectionData.SetSelectedFrameIndexMethodInfo.Name} has failed. {e}");
+      }
     }
 
     public void SetSelectedThread(int threadId)
     {
-      throw new NotImplementedException();
+      if (myReflectionData == null)
+      {
+        ourLogger.Verbose($"Can't set {nameof(SetSelectedThread)}: {nameof(myReflectionData)} is null.");
+        return;
+      }
+
+      if (myReflectionData.GetCPUModuleMethodInfo == null)
+      {
+        ourLogger.Verbose(
+          $"Can't set {nameof(SetSelectedThread)}: {nameof(myReflectionData.GetCPUModuleMethodInfo)} is null.");
+        return;
+      }
+
+      if (myCPUProfilerModuleReflectionData == null)
+      {
+        ourLogger.Verbose(
+          $"Can't set {nameof(SetSelectedThread)}: {nameof(myCPUProfilerModuleReflectionData)} is null.");
+        return;
+      }
+
+      if (myCPUProfilerModuleReflectionData.FocusedThreadIndexPropertyInfo == null)
+      {
+        ourLogger.Verbose(
+          $"Can't set {nameof(SetSelectedThread)}: {nameof(myCPUProfilerModuleReflectionData.FocusedThreadIndexPropertyInfo)} is null.");
+        return;
+      }
+
+      try
+      {
+        var cpuModule = myReflectionData.GetCPUModuleMethodInfo.Invoke(ProfilerWindowObject, new object[] { "CPU Usage" });
+        if (cpuModule == null)
+        {
+          ourLogger.Verbose("CPU Usage Module not found in Profiler Window.");
+          return;
+        }
+
+        myCPUProfilerModuleReflectionData.FocusedThreadIndexPropertyInfo.SetValue(cpuModule, threadId);
+      }
+      catch (Exception e)
+      {
+        ourLogger.Verbose($"Failed to set selected thread: {e}");
+      }
     }
-    
+
     public int GetSelectedThreadId()
     {
-      throw new NotImplementedException();
+      if (myReflectionData == null)
+      {
+        ourLogger.Verbose($"Can't get {nameof(GetSelectedThreadId)}: {nameof(myReflectionData)} is null.");
+        return -1;
+      }
+
+      if (myReflectionData.GetCPUModuleMethodInfo == null)
+      {
+        ourLogger.Verbose(
+          $"Can't get {nameof(GetSelectedThreadId)}: {nameof(myReflectionData.GetCPUModuleMethodInfo)} is null.");
+        return -1;
+      }
+
+      if (myCPUProfilerModuleReflectionData == null)
+      {
+        ourLogger.Verbose(
+          $"Can't get {nameof(GetSelectedThreadId)}: {nameof(myCPUProfilerModuleReflectionData)} is null.");
+        return -1;
+      }
+
+      if (myCPUProfilerModuleReflectionData.FocusedThreadIndexPropertyInfo == null)
+      {
+        ourLogger.Verbose(
+          $"Can't get {nameof(GetSelectedThreadId)}: {nameof(myCPUProfilerModuleReflectionData.FocusedThreadIndexPropertyInfo)} is null.");
+        return -1;
+      }
+
+      try
+      {
+        var cpuModule = myReflectionData.GetCPUModuleMethodInfo.Invoke(ProfilerWindowObject, new object[] { "CPU Usage" });
+        if (cpuModule == null)
+        {
+          ourLogger.Verbose("CPU Usage Module not found in Profiler Window.");
+          return -1;
+        }
+
+        return (int)myCPUProfilerModuleReflectionData.FocusedThreadIndexPropertyInfo.GetValue(cpuModule);
+      }
+      catch (Exception e)
+      {
+        ourLogger.Verbose($"Failed to get selected thread: {e}");
+        return -1;
+      }
     }
 
     public ICPUProfilerModuleAdapter? GetCpuProfilerModule()

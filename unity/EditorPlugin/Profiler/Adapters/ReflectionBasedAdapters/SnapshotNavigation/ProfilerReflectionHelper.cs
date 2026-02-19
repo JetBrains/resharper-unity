@@ -31,6 +31,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     public readonly Type? CPUProfilerModuleType;
     public readonly FieldInfo? FrameDataHierarchyView;
     public readonly FieldInfo? TimeLineGUIFieldInfo;
+    public readonly PropertyInfo? FocusedThreadIndexPropertyInfo;
 
 
     public CPUProfilerModuleReflectionData()
@@ -41,11 +42,14 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
         CPUProfilerModuleType?.GetField("m_TimelineGUI", BindingFlags.Instance | BindingFlags.NonPublic);
       FrameDataHierarchyView = CPUProfilerModuleType?.GetField("m_FrameDataHierarchyView",
         BindingFlags.Instance | BindingFlags.NonPublic);
+      FocusedThreadIndexPropertyInfo = CPUProfilerModuleType?.GetProperty("focusedThreadIndex",
+        BindingFlags.Instance | BindingFlags.Public);
     }
 
     public bool IsValid()
     {
-      return CPUProfilerModuleType != null && FrameDataHierarchyView != null && TimeLineGUIFieldInfo != null;
+      return CPUProfilerModuleType != null && FrameDataHierarchyView != null && TimeLineGUIFieldInfo != null
+             && FocusedThreadIndexPropertyInfo != null;
     }
   }
 
@@ -129,10 +133,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     public bool IsValid()
     {
       return ItemDoubleClickedCallbackPropertyInfo != null
-      && ItemDoubleClickedCallbackPropertyInfo.PropertyType == typeof(Action<int>)
-      && ContextClickItemCallback != null
-      && ContextClickItemCallback.PropertyType == typeof(Action<int>)
-      ;
+             && ItemDoubleClickedCallbackPropertyInfo.PropertyType == typeof(Action<int>)
+             && ContextClickItemCallback != null
+             && ContextClickItemCallback.PropertyType == typeof(Action<int>)
+        ;
     }
   }
 }
