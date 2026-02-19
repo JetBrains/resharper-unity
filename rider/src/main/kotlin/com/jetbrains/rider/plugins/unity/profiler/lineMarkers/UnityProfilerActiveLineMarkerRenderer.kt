@@ -40,6 +40,7 @@ import java.awt.Rectangle
 import java.awt.event.MouseEvent
 import java.util.Collections
 import java.util.WeakHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -52,28 +53,18 @@ class UnityProfilerActiveLineMarkerRenderer(
 
     private val labelText: String = UnityProfilerFormatUtils.formatFixedWidthDuration(sampleInfo.milliseconds)
 
-    @Volatile
-    private var registered = false
-    private val registrationLock = Any()
+    private val registered = AtomicBoolean(false)
 
     override fun getPosition(): LineMarkerRendererEx.Position = LineMarkerRendererEx.Position.LEFT
 
     override fun paint(editor: Editor, g: Graphics, r: Rectangle) {
-        // Register on first paint with double-checked locking to prevent race condition
-        // Registration failures are retried on subsequent paint calls
-        if (!registered) {
+        // Register on first paint
+        if (registered.compareAndSet(false, true)) {
             logger.runAndLogException {
-                synchronized(registrationLock) {
-                    if (!registered) {
-                        registerRenderer(editor, this)
-                        val displaySettings = markerViewModel.gutterMarksRenderSettings.valueOrDefault(ProfilerGutterMarkRenderSettings.Default)
-                        updateRenderers(editor, displaySettings)
-                        registered = true
-                    }
-                }
+                registerRenderer(editor, this)
+                val displaySettings = markerViewModel.gutterMarksRenderSettings.valueOrDefault(ProfilerGutterMarkRenderSettings.Default)
+                updateRenderers(editor, displaySettings)
             }
-            // If registration failed, skip painting this frame and retry on next paint
-            if (!registered) return
         }
 
         // Paint operations - errors are logged but don't prevent future paint attempts
@@ -186,8 +177,6 @@ class UnityProfilerActiveLineMarkerRenderer(
                 ProfilerGutterMarkRenderSettings.Minimized -> {
                     return 2 * H_GAP_ABSOLUTE + H_LEFT_MARGIN_ABSOLUTE + H_RIGHT_MARGIN_ABSOLUTE
                 }
-
-                else -> return 0
             }
         }
         return 0
@@ -266,15 +255,6 @@ class UnityProfilerActiveLineMarkerRenderer(
             }
         }
 
-        fun unregisterRenderer(
-            editor: Editor,
-            renderer: UnityProfilerActiveLineMarkerRenderer,
-        ) {
-            logger.runAndLogException {
-                aggregators[editor]?.removeRenderer(renderer)
-            }
-        }
-
         fun updateRenderers(editor: Editor, displaySettings: ProfilerGutterMarkRenderSettings) {
             logger.runAndLogException {
                 aggregators[editor]?.updateDisplaySettings(displaySettings)
@@ -308,11 +288,6 @@ class UnityProfilerActiveLineMarkerRenderer(
 
         fun addRenderer(renderer: UnityProfilerActiveLineMarkerRenderer) {
             renderers.add(renderer)
-            recalculateAndUpdate()
-        }
-
-        fun removeRenderer(renderer: UnityProfilerActiveLineMarkerRenderer) {
-            renderers.remove(renderer)
             recalculateAndUpdate()
         }
 

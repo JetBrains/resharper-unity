@@ -287,11 +287,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                     await ProcessSnapshotAsync(requestLifetime, snapshot);
                     myLogger.Info($"Snapshot fetch completed: {snapshot?.Samples.Count ?? 0} samples");
                 }
-                catch (TaskCanceledException)
-                {
-                    myLogger.Info("Snapshot fetch canceled");
-                }
-                catch (OperationCanceledException)
+                catch (Exception exception) when (exception.IsOperationCanceled())
                 {
                     myLogger.Info("Snapshot fetch canceled");
                 }
@@ -333,7 +329,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
         myLogger.Verbose($"Snapshot request task started, initial status: {snapshotRequestTask.Status.Value}");
 
         // Set up completion source
-        var tcs = new TaskCompletionSource<UnityProfilerSnapshot?>();
+        var tcs = lifetime.CreateTaskCompletionSource<UnityProfilerSnapshot?>();
 
         // Register observers BEFORE signaling Unity to start work
         SetupProgressObserver(lifetime, snapshotRequestTask);
@@ -411,6 +407,10 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
             var cacheProgress = new Property<double>("SnapshotCacheCalculation::Progress", 0.0).EnsureNotOutside(0.0, 1.0);
             StartCacheUpdateProgressTask(lifetime, cacheProgress);
             UpdateSampleCache(snapshot, new Progress<double>(p => cacheProgress.Value = p));
+        }
+        catch (Exception e) when (e.IsOperationCanceled())
+        {
+            myLogger.Info("Cache update canceled");
         }
         catch (Exception e)
         {

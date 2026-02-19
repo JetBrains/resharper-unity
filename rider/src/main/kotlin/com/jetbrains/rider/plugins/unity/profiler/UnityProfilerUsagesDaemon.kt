@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity.profiler
 
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -19,7 +18,7 @@ import com.jetbrains.rider.projectView.solution
 import java.util.concurrent.atomic.AtomicInteger
 
 @Service(Service.Level.PROJECT)
-class UnityProfilerUsagesDaemon(private val project: Project) : Disposable {
+class UnityProfilerUsagesDaemon(private val project: Project) {
 
     private val frontendBackendModel: FrontendBackendModel = project.solution.frontendBackendModel
     private val frontendBackendProfilerModel: FrontendBackendProfilerModel = frontendBackendModel.frontendBackendProfilerModel
