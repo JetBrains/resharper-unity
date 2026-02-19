@@ -35,6 +35,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       // Initialize GC allocation marker ID in constructor
       try
       {
+        if(!Valid)
+        {
+          myGCAllocMarkerId = -1;
+          return;
+        }
+        
         myGCAllocMarkerId = (int)myReflectionData.GetMarkerIdMethod.Invoke(myRawFrameDataViewObject, new object[] { "GC.Alloc" });
       }
       catch (Exception ex)

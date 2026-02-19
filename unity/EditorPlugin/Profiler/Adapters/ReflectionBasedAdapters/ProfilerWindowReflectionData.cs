@@ -9,9 +9,13 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
   {
     public const string UnityEditorProfilerWindowType = "UnityEditor.ProfilerWindow";
     private const string SelectedFrameIndexPropertyName = "GetActiveVisibleFrameIndex";
+    private const string SetSelectedFrameIndexPropertyName = "SetActiveVisibleFrameIndex";
+    private const string GetCPUModuleMethodName = "GetFrameTimeViewSampleSelectionController";
     public readonly FieldInfo? ProfilerModulesFieldInfo;
     public readonly Type? ProfilerWindowType;
     public readonly MethodInfo? SelectedFrameIndexMethodInfo;
+    public readonly MethodInfo? SetSelectedFrameIndexMethodInfo;
+    public readonly MethodInfo? GetCPUModuleMethodInfo;
 
     public ProfilerWindowReflectionData()
     {
@@ -21,6 +25,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
         ?? ProfilerWindowType?.GetField("m_AllModules", BindingFlags.Instance | BindingFlags.NonPublic);
       SelectedFrameIndexMethodInfo = ProfilerWindowType?.GetMethod(SelectedFrameIndexPropertyName,
         BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+      SetSelectedFrameIndexMethodInfo = ProfilerWindowType?.GetMethod(SetSelectedFrameIndexPropertyName,
+        BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+      GetCPUModuleMethodInfo = ProfilerWindowType?.GetMethod(GetCPUModuleMethodName,
+        BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
     }
 
     public bool IsValid()
@@ -28,6 +36,8 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       return ProfilerWindowType != null
              && ProfilerModulesFieldInfo != null
              && SelectedFrameIndexMethodInfo != null
+             && SetSelectedFrameIndexMethodInfo != null
+             && GetCPUModuleMethodInfo != null
         ;
     }
   }

@@ -14,10 +14,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
     private const string ProfileLoadedFieldName = "profileLoaded";
     private const string ProfileClearedFieldName = "profileCleared";
     public readonly MethodInfo? GetRawFrameDataViewMethod;
-    public readonly FieldInfo? FirstFrameIndexField;
-    public readonly FieldInfo? LastFrameIndexField;
-    public readonly FieldInfo? ProfileLoadedField;
-    public readonly FieldInfo? ProfileClearedField;
+    public readonly PropertyInfo? FirstFrameIndexField;
+    public readonly PropertyInfo? LastFrameIndexField;
+    public readonly EventInfo? ProfileLoadedField;
+    public readonly EventInfo? ProfileClearedField;
     private readonly Type? myProfilerDriverType;
 
     public ProfilerSnapshotDriverReflectionData()
@@ -25,10 +25,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       myProfilerDriverType = Assembly.GetAssembly(typeof(EditorWindow)).GetType(ProfilerDriverTypeName);
       GetRawFrameDataViewMethod =
         myProfilerDriverType.GetMethod(GetRawFrameDataViewMethodName, BindingFlags.Static | BindingFlags.Public);
-      FirstFrameIndexField = myProfilerDriverType.GetField(FirstFrameIndexFieldName, BindingFlags.Static | BindingFlags.Public);
-      LastFrameIndexField = myProfilerDriverType.GetField(LastFrameIndexFieldName, BindingFlags.Static | BindingFlags.Public);
-      ProfileLoadedField = myProfilerDriverType.GetField(ProfileLoadedFieldName, BindingFlags.Static | BindingFlags.Public);
-      ProfileClearedField = myProfilerDriverType.GetField(ProfileClearedFieldName, BindingFlags.Static | BindingFlags.Public);
+      FirstFrameIndexField = myProfilerDriverType.GetProperty(FirstFrameIndexFieldName, BindingFlags.Static | BindingFlags.Public);
+      LastFrameIndexField = myProfilerDriverType.GetProperty(LastFrameIndexFieldName, BindingFlags.Static | BindingFlags.Public);
+      ProfileLoadedField = myProfilerDriverType.GetEvent(ProfileLoadedFieldName, BindingFlags.Static | BindingFlags.Public);
+      ProfileClearedField = myProfilerDriverType.GetEvent(ProfileClearedFieldName, BindingFlags.Static | BindingFlags.Public);
     }
 
     public bool IsValid()
@@ -36,7 +36,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       return myProfilerDriverType != null
              && GetRawFrameDataViewMethod != null
              && FirstFrameIndexField != null
-             && LastFrameIndexField != null;
+             && LastFrameIndexField != null
+             && ProfileLoadedField != null
+             && ProfileClearedField != null;
     }
   }
 

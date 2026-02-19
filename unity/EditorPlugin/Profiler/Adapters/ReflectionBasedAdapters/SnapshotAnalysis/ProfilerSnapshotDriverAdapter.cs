@@ -36,18 +36,16 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       {
         if (myReflectionData?.ProfileLoadedField != null)
         {
-          var profileLoadedDelegate = myReflectionData.ProfileLoadedField.GetValue(null);
-          var delegateType = myReflectionData.ProfileLoadedField.FieldType;
-          var handler = Delegate.CreateDelegate(delegateType, this, nameof(OnProfileLoaded));
-          myReflectionData.ProfileLoadedField.SetValue(null, Delegate.Combine(profileLoadedDelegate as Delegate, handler));
+          var eventHandlerType = myReflectionData.ProfileLoadedField.EventHandlerType;
+          var handler = Delegate.CreateDelegate(eventHandlerType, this, nameof(OnProfileLoaded));
+          myReflectionData.ProfileLoadedField.AddEventHandler(null, handler);
         }
 
         if (myReflectionData?.ProfileClearedField != null)
         {
-          var profileClearedDelegate = myReflectionData.ProfileClearedField.GetValue(null);
-          var delegateType = myReflectionData.ProfileClearedField.FieldType;
-          var handler = Delegate.CreateDelegate(delegateType, this, nameof(OnProfileCleared));
-          myReflectionData.ProfileClearedField.SetValue(null, Delegate.Combine(profileClearedDelegate as Delegate, handler));
+          var eventHandlerType = myReflectionData.ProfileClearedField.EventHandlerType;
+          var handler = Delegate.CreateDelegate(eventHandlerType, this, nameof(OnProfileCleared));
+          myReflectionData.ProfileClearedField.AddEventHandler(null, handler);
         }
       }
       catch (Exception e)
@@ -89,7 +87,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.Adapters.ReflectionBasedAdapters
       int threadIdx = 0;
       while (true)
       {
-        using var rawFrameDataView = GetRawFrameDataView(FirstFrameIndex, threadIdx);
+        using var rawFrameDataView = GetRawFrameDataView(frameIndex, threadIdx);
         if (rawFrameDataView == null || !rawFrameDataView.Valid)
           break;
         threads.Add(new ProfilerThread(threadIdx, rawFrameDataView.ThreadName));
