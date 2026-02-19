@@ -329,6 +329,13 @@ class UnityProfilerChart(
 
     init {
         setupBindings()
+        
+        // Trigger initial render if data already exists
+        if (viewModel.frameDurations.value.isNotEmpty()) {
+            coroutineScope.launch(Dispatchers.EDT) {
+                updateChartData()
+            }
+        }
     }
 
     /**
@@ -374,20 +381,24 @@ class UnityProfilerChart(
         }
     }
 
+    private fun updateChartData() {
+        val count = viewModel.frameDurations.value.size
+        chart.ranges.yMax = viewModel.chartYMax.value
+        chart.ranges.xMin = 0
+        chart.ranges.xMax = if (count > 1) count - 1 else 0
+        chart.grid.xOrigin = count
+        chart.getDataset().values = viewModel.frameDurations.value
+        chart.update()
+        updateFooter(viewModel.selectedFrameIndex.value)
+    }
+
     private fun setupFrameDurationsBinding(chartLifetime: Lifetime) {
         viewModel.frameDurationsUpdated.advise(chartLifetime) {
             // Debounce chart updates to prevent excessive repaints (16ms = ~60fps)
             frameDurationsUpdateJob?.cancel()
             frameDurationsUpdateJob = coroutineScope.launch(Dispatchers.EDT) {
                 delay(16)
-                val count = viewModel.frameDurations.value.size
-                chart.ranges.yMax = viewModel.chartYMax.value
-                chart.ranges.xMin = 0
-                chart.ranges.xMax = if (count > 1) count - 1 else 0
-                chart.grid.xOrigin = count
-                chart.getDataset().values = viewModel.frameDurations.value
-                chart.update()
-                updateFooter(viewModel.selectedFrameIndex.value)
+                updateChartData()
             }
         }
     }

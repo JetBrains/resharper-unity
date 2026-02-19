@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.profiler.viewModels
 
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.SequentialLifetimes
@@ -14,10 +15,12 @@ import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerSortColumn
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerTreeBuilder
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.nodeData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.swing.SortOrder
@@ -76,6 +79,7 @@ class UnityProfilerTreeViewModel(
         // Set up debounced filter input (300ms delay to prevent excessive rebuilds during typing)
         filterInputFlow
             .debounce(300)
+            .flowOn(Dispatchers.EDT)
             .onEach { (text, exact) ->
                 filterText.set(text)
                 isExactFilter.set(exact)
@@ -139,7 +143,7 @@ class UnityProfilerTreeViewModel(
             isExactFilter.set(true)
         } else {
             // User typing - debounce to reduce excessive tree rebuilds
-            filterInputFlow.tryEmit(text to exact)
+            filterInputFlow.tryEmit(text to false)
         }
     }
 
