@@ -4,6 +4,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.IOptProperty
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
@@ -30,6 +31,8 @@ class UnityProfilerUsagesDaemon(private val project: Project) : Disposable {
     private val gutterClickCount = AtomicInteger(0)
     private val graphClickCount = AtomicInteger(0)
     private val treeInteractionCount = AtomicInteger(0)
+    
+    val unityEditorConnected: IOptProperty<Boolean> get() = frontendBackendModel.unityEditorConnected
 
     //view models
     val settingsModel: UnityProfilerIntegrationSettingsModel = UnityProfilerIntegrationSettingsModel(frontendBackendProfilerModel, lifetime)
@@ -77,11 +80,6 @@ class UnityProfilerUsagesDaemon(private val project: Project) : Disposable {
         val treeInteractions = treeInteractionCount.getAndSet(0)
 
         UnityProfilerUsagesCollector.logSessionInteractions(project, gutterClicks, graphClicks, treeInteractions)
-    }
-
-    override fun dispose() {
-        // ViewModels and RD models are disposed via the lifetime
-        // Note: lifetime.onTermination already handles flushing statistics
     }
 }
 
