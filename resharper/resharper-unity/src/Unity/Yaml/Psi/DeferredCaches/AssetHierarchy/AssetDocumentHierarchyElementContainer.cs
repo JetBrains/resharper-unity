@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy
@@ -170,7 +171,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public void Drop(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement hierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
-            myPrefabImportCache.OnHierarchyRemoved(currentAssetSourceFile, unityAssetDataElement as AssetDocumentHierarchyElement);
+            using (WriteLockCookie.Create())
+            {
+                myPrefabImportCache.OnHierarchyRemoved(currentAssetSourceFile, unityAssetDataElement as AssetDocumentHierarchyElement);
+            }
             myAssetDocumentsHierarchy.TryRemove(currentAssetSourceFile, out _);
         }
 
@@ -180,7 +184,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             myAssetDocumentsHierarchy[currentAssetSourceFile] = unityAssetDataElementPointer;
             element.RestoreHierarchy(this, currentAssetSourceFile);
 
-            myPrefabImportCache.OnHierarchyCreated(currentAssetSourceFile, element);
+            using (WriteLockCookie.Create())
+            {
+                myPrefabImportCache.OnHierarchyCreated(currentAssetSourceFile, element);
+            }
         }
 
         public IHierarchyElement GetHierarchyElement(IHierarchyReference reference, bool prefabImport)
