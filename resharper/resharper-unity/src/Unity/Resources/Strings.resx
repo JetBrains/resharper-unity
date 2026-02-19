@@ -1375,7 +1375,7 @@ float values with full precision.</value>
         <value>Learn more</value>
     </data>
     <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings" xml:space="preserve">
-        <value>Profiler highlightings view mode</value>
+        <value>Profiler highlightings view mode:</value>
     </data>
     <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default" xml:space="preserve">
         <value>Default</value>
@@ -1510,13 +1510,13 @@ float values with full precision.</value>
         <value>Enable Unity profiler integration</value>
     </data>
     <data name="UnitySettings_Profiler_Snapshot_Fetching_Mode" xml:space="preserve">
-        <value>Unity profiler snapshot fetching mode</value>
+        <value>Unity profiler snapshot fetching mode: </value>
     </data>
     <data name="UnitySettings_Profiler_New_Highlighting_Enabled" xml:space="preserve">
-        <value>Enable new profiler highlightings</value>
+        <value>Enable profiler highlightings</value>
     </data>
     <data name="UnitySettings_Profiler_Highlighting_View_Mode" xml:space="preserve">
-        <value>Profiler highlightings view mode</value>
+        <value>Profiler highlightings view mode: </value>
     </data>
     <data name="UnitySettings_Dots_Hide_generated_code_from_navigation" xml:space="preserve">
         <value>Exclude DOTS-generated code from navigation results</value>
