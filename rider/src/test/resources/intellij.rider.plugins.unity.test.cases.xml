@@ -2,6 +2,7 @@
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
     <plugin id="com.intellij.resharper.unity"/>
+    <plugin id="com.jetbrains.rider.fsharp"/>
     <module name="intellij.rider.test.framework"/>
     <module name="intellij.rider.test.framework.integration.testng"/>
     <module name="intellij.rider.test.framework.integration.testng._test"/>
