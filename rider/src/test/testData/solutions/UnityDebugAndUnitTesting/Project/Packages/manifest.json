@@ -1,7 +1,8 @@
 {
     "disableProjectUpdate": true,
     "dependencies": {
-    "com.unity.ide.rider": "{{VERSION}}",
-    "com.unity.test-framework": "1.3.9"
-  }
+        "com.unity.ide.rider": "{{VERSION}}",
+        "com.unity.modules.physics": "1.0.0",
+        "com.unity.test-framework": "1.3.9"
+    }
 }

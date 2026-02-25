@@ -1,0 +1,7 @@
+.idea
+Logs
+obj
+UserSettings
+Library/*
+!Library/zero
+Assets/SceneDependencyCache*
