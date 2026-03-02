@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger
 @Service(Service.Level.PROJECT)
 class UnityProfilerUsagesDaemon(private val project: Project) {
 
+    private val eventsCountTillDump = 64
+
     private val frontendBackendModel: FrontendBackendModel = project.solution.frontendBackendModel
     private val frontendBackendProfilerModel: FrontendBackendProfilerModel = frontendBackendModel.frontendBackendProfilerModel
 
@@ -62,15 +64,21 @@ class UnityProfilerUsagesDaemon(private val project: Project) {
 
     // Telemetry API - increment session counters
     fun incrementGutterClick() {
-        gutterClickCount.incrementAndGet()
+        if (gutterClickCount.incrementAndGet() >= eventsCountTillDump) {
+            flushTelemetry()
+        }
     }
 
     fun incrementGraphClick() {
-        graphClickCount.incrementAndGet()
+        if (graphClickCount.incrementAndGet() >= eventsCountTillDump) {
+            flushTelemetry()
+        }
     }
 
     fun incrementTreeInteraction() {
-        treeInteractionCount.incrementAndGet()
+        if (treeInteractionCount.incrementAndGet() >= eventsCountTillDump) {
+            flushTelemetry()
+        }
     }
 
     private fun flushTelemetry() {
