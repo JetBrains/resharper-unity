@@ -10,6 +10,7 @@
     <module name="intellij.rider.test.framework.testng"/>
     <module name="intellij.platform.debugger.impl.shared"/>
     <module name="intellij.platform.debugger.impl.ui"/>
+    <module name="intellij.platform.execution"/>
   </dependencies>
   <!-- endregion -->
 </idea-plugin>
