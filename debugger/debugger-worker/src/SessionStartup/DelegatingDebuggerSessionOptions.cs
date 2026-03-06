@@ -18,6 +18,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         public bool StepOverPropertiesAndOperators => DebuggerSessionOptionsImplementation.StepOverPropertiesAndOperators;
         public bool ProjectAssembliesOnly => DebuggerSessionOptionsImplementation.ProjectAssembliesOnly;
         public IViewableProperty<bool> ProcessExceptionsOutsideMyCode => DebuggerSessionOptionsImplementation.ProcessExceptionsOutsideMyCode;
+
+        public IViewableProperty<bool> SupportForDebuggerBreakWhenUserUnhandledExceptionEnabled => DebuggerSessionOptionsImplementation.SupportForDebuggerBreakWhenUserUnhandledExceptionEnabled;
         public bool BreakOnUserUnhandledExceptions => DebuggerSessionOptionsImplementation.BreakOnUserUnhandledExceptions;
         public IReadOnlyList<string> UserUnhandledExceptionsIgnoreList => DebuggerSessionOptionsImplementation.UserUnhandledExceptionsIgnoreList;
         public virtual bool BreakOnUnhandledExceptions => DebuggerSessionOptionsImplementation.BreakOnUnhandledExceptions;
