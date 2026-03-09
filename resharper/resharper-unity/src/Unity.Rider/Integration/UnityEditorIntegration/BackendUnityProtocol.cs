@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Notifications;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
@@ -15,6 +17,7 @@ using JetBrains.Rd.Impl;
 using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Components;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Threading;
@@ -36,11 +39,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
+        private readonly IHostProductInfo myHostProductInfo;
+        private readonly UserNotifications myUserNotifications;
         private readonly JetHashSet<VirtualFileSystemPath> myPluginInstallations;
 
         public readonly IViewableProperty<bool> Connected = new ViewableProperty<bool> { Value = false };
-        public readonly DataFlow.ISignal<Lifetime> OutOfSync = new DataFlow.Signal<Lifetime>("BackendUnityProtocol.OutOfSync");
-
         private DateTime myLastChangeTime;
         private readonly SequentialScheduler myBackgroundScheduler;
 
@@ -50,7 +53,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             IScheduler dispatcher,
             IShellLocks locks,
             ISolution solution,
-            IFileSystemTracker fileSystemTracker)
+            IFileSystemTracker fileSystemTracker,
+            IHostProductInfo hostProductInfo,
+            UserNotifications userNotifications
+            )
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -60,6 +66,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
+            myHostProductInfo = hostProductInfo;
+            myUserNotifications = userNotifications;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
             myBackgroundScheduler = new SequentialScheduler("BackendUnityProtocol");
 
@@ -211,7 +219,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
             myPluginInstallations.Add(mySolution.SolutionFilePath);
             
-            OutOfSync.Fire(lifetime);
+            ShowOutOfSyncNotification(lifetime);
+        }
+
+        private void ShowOutOfSyncNotification(Lifetime lifetime)
+        {
+            var notificationLifetime = lifetime.CreateNested();
+            myUserNotifications.CreateNotification(notificationLifetime.Lifetime, NotificationSeverity.WARNING,
+                Strings.AdvancedUnityIntegrationIsUnavailable_Text,
+                string.Format(Strings.MakeSureRider_IsSetAsTheExternalEditor_Text, myHostProductInfo.VersionMarketingString));
         }
     }
 
