@@ -56,7 +56,7 @@ public class B<T> : MonoBehaviour
 [Serializable]
 public abstract class Track
 {
-    public string |name|(31);
+    public string name;
 }
 
 ---------------------------------------------------------
@@ -91,5 +91,4 @@ public abstract class Track
 (28): ReSharper Warning [CS0169]: Serialised field 'possiblySerialisedArray2' is never used
 (29): ReSharper Dead Code: Serialised field 'possiblySerialisedList' is never used
 (30): ReSharper Warning [CS0169]: Serialised field 'possiblySerialisedList2' is never used
-(31): ReSharper Dead Code: Serialised field 'name' is never used
 

@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.UsageChecking
 
         [Test] public void MonoBehaviourMethods01() { DoNamedTest(); }
         [Test] public void MonoBehaviourFields01() { DoNamedTest(); }
-        [Test] public void SerializableClassFields01() { DoNamedTest(); }
+        [Test, Ignore("SerializableAttribute has MeansImplicitUseAttribute")] public void SerializableClassFields01() { DoNamedTest(); }
         [Test] public void PreprocessBuildInterface01() { DoNamedTest(); }
         [Test] public void PreprocessBuildInterface02() { DoNamedTest(); }
         [Test] public void MethodWithAttributeWithRequiredSignature() { DoNamedTest(); }
