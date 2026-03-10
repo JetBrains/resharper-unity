@@ -1,12 +1,12 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
+import com.intellij.util.ui.update.DebouncedUpdates
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.fire
@@ -18,6 +18,8 @@ import com.jetbrains.rider.plugins.unity.model.LogEventType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.projectView.solution
+import kotlinx.coroutines.Dispatchers
+import kotlin.time.Duration.Companion.milliseconds
 
 @Service(Service.Level.PROJECT)
 class UnityLogPanelModel(val project: Project) {
@@ -30,14 +32,18 @@ class UnityLogPanelModel(val project: Project) {
     private val lock = Object()
     val maxItemsCount = 10000
 
-    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelModel->onChanged", 250, true,
-                                                        toolWindow?.component).setRestartTimerOnAdd(false)
-    private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->onChanged") {
-        override fun run() {
-            if (toolWindow != null && toolWindow.isVisible)
-                onChanged.fire(getVisibleEvents())
-        }
+    private fun fireOnChanged() {
+        if (toolWindow != null && toolWindow.isVisible)
+            onChanged.fire(getVisibleEvents())
     }
+
+    private val toolwindowOnChangedQueue = DebouncedUpdates.forScope<Unit>(
+        lifetime.coroutineScope,
+        "UnityLogPanelModel->onChanged",
+        250.milliseconds
+    ).withContext(Dispatchers.EDT)
+        .let { if (toolWindow?.component != null) it.withComponentModality(toolWindow.component) else it }
+        .runLatest { fireOnChanged() }
 
     inner class TypeFilters {
         private var showErrors = true
@@ -191,7 +197,7 @@ class UnityLogPanelModel(val project: Project) {
     val onChanged = Signal<List<LogEvent>>()
     val onCleared = Signal.Void()
 
-    fun queueUpdate() = mergingUpdateQueue.queue(mergingUpdateQueueAction)
+    fun queueUpdate() = toolwindowOnChangedQueue.queue(Unit)
 
     var selectedItem: LogPanelItem? = null
 
@@ -214,7 +220,7 @@ class UnityLogPanelModel(val project: Project) {
                             super.toolWindowShown(tw)
 
                             if (tw.id == toolWindow.id) {
-                                mergingUpdateQueueAction.run()
+                                fireOnChanged()
                             }
                         }
                     }
