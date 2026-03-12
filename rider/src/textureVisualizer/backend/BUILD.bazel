@@ -32,6 +32,7 @@ jvm_library(
     "@community//libraries/rd/framework",
     "@community//libraries/rd/core",
     "//dotnet/Plugins:rider-plugins-unity-model",
+    "@community//fleet/rhizomedb",
   ]
 )
 
@@ -60,6 +61,7 @@ jvm_library(
     "@community//libraries/rd/framework:framework_test_lib",
     "@community//libraries/rd/core:core_test_lib",
     "//dotnet/Plugins:rider-plugins-unity-model_test_lib",
+    "@community//fleet/rhizomedb:rhizomedb_test_lib",
   ]
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` end

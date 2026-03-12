@@ -51,5 +51,6 @@
     <orderEntry type="module" module-name="intellij.libraries.rd.framework" />
     <orderEntry type="module" module-name="intellij.libraries.rd.core" />
     <orderEntry type="module" module-name="intellij.rider.plugins.unity.model" />
+    <orderEntry type="module" module-name="fleet.rhizomedb" />
   </component>
 </module>
