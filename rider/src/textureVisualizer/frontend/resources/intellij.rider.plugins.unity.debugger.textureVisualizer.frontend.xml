@@ -2,13 +2,11 @@
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
     <plugin id="com.intellij.platform.images"/>
-    <plugin id="com.intellij.resharper.unity"/>
     <module name="intellij.grid.core.impl"/>
     <module name="intellij.grid.impl"/>
     <module name="intellij.platform.debugger.impl.frontend"/>
     <module name="intellij.rd.ide.model.generated"/>
     <module name="intellij.rd.platform"/>
-    <module name="intellij.rider"/>
     <module name="intellij.rider.debugger.shared"/>
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer"/>
   </dependencies>

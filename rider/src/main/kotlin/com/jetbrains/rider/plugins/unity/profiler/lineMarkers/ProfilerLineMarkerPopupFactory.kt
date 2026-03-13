@@ -128,8 +128,9 @@ object ProfilerLineMarkerPopupFactory {
                 is ParentCalls -> {
                     UnityProjectLifetimeService.getScope(project).launch(Dispatchers.EDT, CoroutineStart.UNDISPATCHED) {
                         logger.runAndLogException {
-                            if (element.realParentQualifiedName != null)
-                                markerViewModel.navigateByQualifiedName(element.realParentQualifiedName)
+                            val realParentQualifiedName = element.realParentQualifiedName
+                            if (realParentQualifiedName != null)
+                                markerViewModel.navigateByQualifiedName(realParentQualifiedName)
                         }
                     }
                 }

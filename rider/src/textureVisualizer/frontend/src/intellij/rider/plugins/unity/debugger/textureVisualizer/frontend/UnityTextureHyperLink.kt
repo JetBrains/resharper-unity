@@ -3,13 +3,11 @@ package intellij.rider.plugins.unity.debugger.textureVisualizer.frontend
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.ui.FrameWrapper
 import com.intellij.platform.debugger.impl.shared.proxy.XDebugSessionProxy
-import com.intellij.platform.util.coroutines.childScope
 import com.intellij.util.AwaitCancellationAndInvoke
 import com.intellij.util.awaitCancellationAndInvoke
 import com.intellij.xdebugger.XDebuggerBundle
 import com.intellij.xdebugger.frame.XDebuggerTreeNodeHyperlink
 import com.jetbrains.rd.util.threading.coroutines.withLifetime
-import com.jetbrains.rider.plugins.unity.UnityBundle
 import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureAccessorId
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
@@ -43,6 +41,7 @@ class UnityTextureHyperLink(val scope: CoroutineScope, val session: XDebugSessio
                     val component = JPanel(CardLayout())
                     component.add(
                         UnityTextureCustomComponentEvaluator.createTextureDebugView(
+                            this,
                             session,
                             accessorId,
                             lifetime
@@ -51,7 +50,7 @@ class UnityTextureHyperLink(val scope: CoroutineScope, val session: XDebugSessio
                     val frame = FrameWrapper(
                         project = project,
                         dimensionKey = "texture-debugger",
-                        title = UnityBundle.Companion.message("debugging.texture.preview.title"),
+                        title = TextureVisualizerBundle.message("debugging.texture.preview.title"),
                         isDialog = true,
                         component = component,
                         coroutineScope = this

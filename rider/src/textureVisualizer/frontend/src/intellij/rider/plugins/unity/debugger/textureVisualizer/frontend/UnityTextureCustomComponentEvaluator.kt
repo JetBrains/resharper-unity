@@ -15,15 +15,11 @@ import com.intellij.util.ui.ImageUtil
 import com.jetbrains.rd.util.AtomicReference
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.printlnError
-import com.jetbrains.rd.util.reactive.valueOrThrow
-import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.UnityPluginScopeService
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.projectView.solution
 import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureAccessorId
 import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureDataApi
 import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureAdditionalActionResult
 import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -100,6 +96,7 @@ object UnityTextureCustomComponentEvaluator {
 
     @Suppress("LABEL_NAME_CLASH")
     fun createTextureDebugView(
+        cs: CoroutineScope,
         session: XDebugSessionProxy,
         accessorId: RiderTextureAccessorId,
         lifetime: Lifetime
@@ -120,19 +117,20 @@ object UnityTextureCustomComponentEvaluator {
 
 
         TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.REQUEST_ADDITIONAL_ACTIONS)
-        val timeoutForAdvanceUnityEvaluation =
-            session.project.solution.frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.valueOrThrow
+        //TODO(Korovin): Get from the backend
+        val timeoutForAdvanceUnityEvaluation = 3000
+//            session.project.solution.frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.valueOrThrow
 
         fun errorCallback(it: String) {
             showErrorMessage(
                 jbLoadingPanel,
                 parentPanel,
-                UnityBundle.message("debugging.cannot.get.texture.debug.information", it)
+                TextureVisualizerBundle.message("debugging.cannot.get.texture.debug.information", it)
             )
             TextureDebuggerCollector.finishActivity(stagedActivity, ExecutionResult.Failed)
         }
 
-        UnityPluginScopeService.getScope().launch {
+        cs.launch {
             when (val unityTextureInfo = getUnityTextureInfo(
                 accessorId, lifetime,
                 timeoutForAdvanceUnityEvaluation, stagedActivity, ::errorCallback
@@ -160,7 +158,6 @@ object UnityTextureCustomComponentEvaluator {
         jbLoadingPanel: JBLoadingPanel,
         parentPanel: JBPanel<JBPanel<*>>
     ) {
-
         try {
             LOG.trace("Preparing texture to show:\"${textureInfo.textureName}\"")
 
@@ -178,10 +175,9 @@ object UnityTextureCustomComponentEvaluator {
             showErrorMessage(
                 jbLoadingPanel,
                 parentPanel,
-                UnityBundle.message("debugging.cannot.get.texture.debug.information", t)
+                TextureVisualizerBundle.message("debugging.cannot.get.texture.debug.information", t)
             )
         }
-
 
         parentPanel.revalidate()
         parentPanel.repaint()
