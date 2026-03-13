@@ -8,8 +8,8 @@ import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.intellij.platform.gradle.Constants
 import org.jetbrains.intellij.platform.gradle.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 import kotlin.io.path.*
 
@@ -169,6 +169,7 @@ dependencies {
         bundledPlugin("com.intellij.css")
         bundledPlugin("org.jetbrains.plugins.yaml")
         bundledPlugin("com.intellij.modules.json")
+        bundledPlugin("com.intellij.modules.spellchecker")
         bundledPlugin("com.jetbrains.dotCover")
         bundledPlugin("com.intellij.platform.images")
 
@@ -611,7 +612,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     wrapper {
-        gradleVersion = "8.7"
+        gradleVersion = "8.14.3"
         distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip"
     }
 }
