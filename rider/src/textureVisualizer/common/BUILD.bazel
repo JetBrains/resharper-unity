@@ -1,0 +1,42 @@
+### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.common` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "common_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "common",
+  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.common",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":common_resources"],
+  deps = [
+    "@community//platform/kernel/shared:kernel",
+    "@community//libraries/kotlinx/serialization/core",
+    "@community//platform/xdebugger-impl/rpc",
+    "@lib//:jetbrains-annotations",
+  ]
+)
+
+jvm_library(
+  name = "common_test_lib",
+  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.common",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":common",
+    "@community//platform/kernel/shared:kernel_test_lib",
+    "@community//libraries/kotlinx/serialization/core:core_test_lib",
+    "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
+  ]
+)
+### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.common` end
+
+### auto-generated section `iml intellij.rider.plugins.unity.debugger.textureVisualizer.common` start
+exports_files([
+  "intellij.rider.plugins.unity.debugger.textureVisualizer.common.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.rider.plugins.unity.debugger.textureVisualizer.common` end

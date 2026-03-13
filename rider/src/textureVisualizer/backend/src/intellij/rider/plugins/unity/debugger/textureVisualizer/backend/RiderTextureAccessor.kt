@@ -6,8 +6,8 @@ import com.jetbrains.rider.debugger.DotNetValue
 import com.jetbrains.rider.debugger.IDotNetValue
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalActionParams
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTexturePropertiesData
-import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureAdditionalActionResult
-import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.UnityTextureAdditionalActionResult
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.UnityTextureInfo
 
 interface RiderTextureAccessor {
     suspend fun evaluateTexture(timeoutForAdvanceUnityEvaluation: Int): UnityTextureAdditionalActionResult

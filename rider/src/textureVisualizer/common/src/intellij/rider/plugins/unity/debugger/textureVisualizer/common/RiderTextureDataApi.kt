@@ -1,5 +1,5 @@
 // Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
-package intellij.rider.plugins.unity.debugger.textureVisualizer
+package intellij.rider.plugins.unity.debugger.textureVisualizer.common
 
 import com.intellij.platform.debugger.impl.rpc.TimeoutSafeResult
 import com.intellij.platform.debugger.impl.rpc.XValueId

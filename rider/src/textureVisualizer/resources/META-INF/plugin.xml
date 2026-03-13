@@ -1,0 +1,22 @@
+<idea-plugin allow-bundled-update="true">
+  <id>com.jetbrains.rider.plugins.unity.debugger.textureVisualizer</id>
+  <name>Texture visualizer for Unity debugger</name>
+  <vendor>JetBrains</vendor>
+  <category>Other Tools</category>
+  <description><![CDATA[
+    <p>Allows rendering textures during Unity project debugging.</p>
+]]></description>
+
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+  <dependencies>
+    <module name="intellij.rider.debugger.shared"/>
+  </dependencies>
+  <!-- endregion -->
+
+  <content namespace="jetbrains">
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.common" loading="required"/>
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend"/>
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.backend"/>
+  </content>
+
+</idea-plugin>

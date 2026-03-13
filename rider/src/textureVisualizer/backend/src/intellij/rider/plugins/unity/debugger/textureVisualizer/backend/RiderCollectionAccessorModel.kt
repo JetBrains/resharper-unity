@@ -5,7 +5,7 @@ import com.intellij.platform.kernel.ids.BackendValueIdType
 import com.intellij.platform.kernel.ids.findValueById
 import com.intellij.platform.kernel.ids.storeValueGlobally
 import com.intellij.xdebugger.impl.XDebugSessionImpl
-import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureAccessorId
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.RiderTextureAccessorId
 import kotlinx.coroutines.CoroutineScope
 import org.jetbrains.annotations.ApiStatus
 

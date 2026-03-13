@@ -14,20 +14,15 @@ jvm_library(
   srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
   resources = [":backend_resources"],
   deps = [
-    "@community//libraries/kotlinx/coroutines/core",
     "@community//platform/kernel/rpc.backend",
-    "@community//platform/extensions",
-    "@community//platform/core-api:core",
     "@community//platform/kernel/shared:kernel",
-    "@community//platform/util/concurrency",
-    "@community//platform/execution-impl",
     "@community//platform/platform-impl:ide-impl",
     "@community//platform/xdebugger-api:debugger",
     "@community//platform/xdebugger-impl:debugger-impl",
-    "@community//platform/xdebugger-impl/rpc",
     "@community//platform/xdebugger-impl/shared",
+    "@community//platform/xdebugger-impl/rpc",
     "@community//platform/util/coroutines",
-    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common",
     "//rider/model/generated",
     "//rider",
     "//remote-dev/rd-client",
@@ -36,7 +31,6 @@ jvm_library(
     "@community//libraries/rd/framework",
     "@community//libraries/rd/core",
     "//dotnet/Plugins:rider-plugins-unity-model",
-    "@community//platform/xdebugger-impl/ui",
   ]
 )
 
@@ -47,20 +41,15 @@ jvm_library(
   srcs = glob([], allow_empty = True),
   runtime_deps = [
     ":backend",
-    "@community//libraries/kotlinx/coroutines/core:core_test_lib",
     "@community//platform/kernel/rpc.backend:rpc.backend_test_lib",
-    "@community//platform/extensions:extensions_test_lib",
-    "@community//platform/core-api:core_test_lib",
     "@community//platform/kernel/shared:kernel_test_lib",
-    "@community//platform/util/concurrency:concurrency_test_lib",
-    "@community//platform/execution-impl:execution-impl_test_lib",
     "@community//platform/platform-impl:ide-impl_test_lib",
     "@community//platform/xdebugger-api:debugger_test_lib",
     "@community//platform/xdebugger-impl:debugger-impl_test_lib",
-    "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
     "@community//platform/xdebugger-impl/shared:shared_test_lib",
+    "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
     "@community//platform/util/coroutines:coroutines_test_lib",
-    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer:textureVisualizer_test_lib",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common:common_test_lib",
     "//rider/model/generated:generated_test_lib",
     "//rider:rider_test_lib",
     "//remote-dev/rd-client:rd-client_test_lib",
@@ -69,7 +58,6 @@ jvm_library(
     "@community//libraries/rd/framework:framework_test_lib",
     "@community//libraries/rd/core:core_test_lib",
     "//dotnet/Plugins:rider-plugins-unity-model_test_lib",
-    "@community//platform/xdebugger-impl/ui:ui_test_lib",
   ]
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` end

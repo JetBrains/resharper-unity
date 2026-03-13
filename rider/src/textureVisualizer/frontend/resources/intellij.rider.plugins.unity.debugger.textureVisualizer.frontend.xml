@@ -8,7 +8,7 @@
     <module name="intellij.rd.ide.model.generated"/>
     <module name="intellij.rd.platform"/>
     <module name="intellij.rider.debugger.shared"/>
-    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer"/>
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.common"/>
   </dependencies>
   <!-- endregion -->
 
@@ -16,5 +16,7 @@
     <rider.debugger.link.provider implementation="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider"/>
     <xdebugger.nodeLinkActionProvider implementation="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureXDebuggerNodeLinkProvider"/>
     <statistics.counterUsagesCollector implementationClass="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.TextureDebuggerCollector"/>
+
   </extensions>
+
 </idea-plugin>

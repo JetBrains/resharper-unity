@@ -15,10 +15,10 @@ import com.intellij.util.ui.ImageUtil
 import com.jetbrains.rd.util.AtomicReference
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.printlnError
-import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureAccessorId
-import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureDataApi
-import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureAdditionalActionResult
-import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.RiderTextureAccessorId
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.RiderTextureDataApi
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.UnityTextureAdditionalActionResult
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.UnityTextureInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

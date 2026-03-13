@@ -15,9 +15,9 @@ import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesBase
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesProxy
 import com.jetbrains.rider.model.debuggerWorker.ValueFlags
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTexturePropertiesData
-import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureAccessorId
-import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureDataApi
-import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureAdditionalActionResult
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.RiderTextureAccessorId
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.RiderTextureDataApi
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.UnityTextureAdditionalActionResult
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 

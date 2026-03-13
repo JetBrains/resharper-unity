@@ -12,7 +12,7 @@ import com.intellij.xdebugger.impl.collection.visualizer.XDebuggerNodeLinkAction
 import com.intellij.xdebugger.impl.frame.XDebugView
 import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
 import com.jetbrains.rider.debugger.shared.RiderDebuggerLinkProvider
-import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureDataApi
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.RiderTextureDataApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

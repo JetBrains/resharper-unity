@@ -20,10 +20,7 @@
     <module name="intellij.rider.plugins.unity/yaml" />
     <module name="intellij.rider.plugins.unity/css" />
     <module name="intellij.rider.plugins.unity/javascript" />
-    <module name="intellij.rider.plugins.unity.model" />
-    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer" />
-    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.backend" />
-    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend" />
+    <module name="intellij.rider.plugins.unity.model" loading="embedded" />
   </content>
 
   <extensionPoints>

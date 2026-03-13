@@ -8,7 +8,7 @@ import com.intellij.util.awaitCancellationAndInvoke
 import com.intellij.xdebugger.XDebuggerBundle
 import com.intellij.xdebugger.frame.XDebuggerTreeNodeHyperlink
 import com.jetbrains.rd.util.threading.coroutines.withLifetime
-import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureAccessorId
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.RiderTextureAccessorId
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope

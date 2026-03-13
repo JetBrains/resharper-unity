@@ -9,22 +9,9 @@ resourcegroup(
 
 jvm_library(
   name = "textureVisualizer",
-  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer",
   visibility = ["//visibility:public"],
-  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
-  resources = [":textureVisualizer_resources"],
-  deps = [
-    "@community//platform/kernel/shared:kernel",
-    "@community//platform/xdebugger-api:debugger",
-    "@community//platform/xdebugger-impl/shared",
-    "@community//libraries/kotlinx/serialization/core",
-    "@community//libraries/kotlinx/serialization/json",
-    "@community//platform/xdebugger-impl:debugger-impl",
-    "@community//platform/core-api:core",
-    "@community//platform/xdebugger-impl/rpc",
-    "@lib//:jetbrains-annotations",
-    "@community//platform/util/multiplatform",
-  ]
+  srcs = glob([], allow_empty = True),
+  resources = [":textureVisualizer_resources"]
 )
 
 jvm_library(
@@ -32,18 +19,7 @@ jvm_library(
   module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer",
   visibility = ["//visibility:public"],
   srcs = glob([], allow_empty = True),
-  runtime_deps = [
-    ":textureVisualizer",
-    "@community//platform/kernel/shared:kernel_test_lib",
-    "@community//platform/xdebugger-api:debugger_test_lib",
-    "@community//platform/xdebugger-impl/shared:shared_test_lib",
-    "@community//libraries/kotlinx/serialization/core:core_test_lib",
-    "@community//libraries/kotlinx/serialization/json:json_test_lib",
-    "@community//platform/xdebugger-impl:debugger-impl_test_lib",
-    "@community//platform/core-api:core_test_lib",
-    "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
-    "@community//platform/util/multiplatform:multiplatform_test_lib",
-  ]
+  runtime_deps = [":textureVisualizer"]
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer` end
 
