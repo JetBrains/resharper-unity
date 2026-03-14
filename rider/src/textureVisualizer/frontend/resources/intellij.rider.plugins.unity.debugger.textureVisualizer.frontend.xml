@@ -2,16 +2,13 @@
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
     <plugin id="com.intellij.platform.images"/>
+    <module name="intellij.rd.ide.model.generated"/>
+    <module name="intellij.rd.platform"/>
     <module name="intellij.grid.core.impl"/>
     <module name="intellij.grid.impl"/>
     <module name="intellij.platform.debugger.impl.frontend"/>
-    <module name="intellij.rd.client"/>
-    <module name="intellij.rd.ide.model.generated"/>
-    <module name="intellij.rd.platform"/>
     <module name="intellij.rider.debugger.shared"/>
-    <module name="intellij.rider.languages"/>
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.common"/>
-    <module name="intellij.rider.rdclient.dotnet"/>
   </dependencies>
   <!-- endregion -->
 
