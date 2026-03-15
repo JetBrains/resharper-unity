@@ -8,6 +8,7 @@
     <module name="intellij.rider.test.framework.integration.testng._test"/>
     <module name="intellij.rider.test.framework.core"/>
     <module name="intellij.rider.test.framework.testng"/>
+    <module name="intellij.libraries.kotlinx.coroutines.core"/>
     <module name="intellij.platform.core"/>
     <module name="intellij.platform.core.ui"/>
     <module name="intellij.platform.debugger.impl.shared"/>
