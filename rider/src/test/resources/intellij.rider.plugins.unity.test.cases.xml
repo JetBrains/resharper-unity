@@ -5,7 +5,7 @@
     <plugin id="com.jetbrains.rider.fsharp"/>
     <module name="intellij.rider.test.framework"/>
     <module name="intellij.rider.test.framework.integration.testng"/>
-    <module name="intellij.rider.test.framework.integration.testng._test"/>
+    <module name="intellij.rider.test.framework.integration.testng.tests"/>
     <module name="intellij.rider.test.framework.core"/>
     <module name="intellij.rider.test.framework.testng"/>
     <module name="intellij.libraries.gson"/>
