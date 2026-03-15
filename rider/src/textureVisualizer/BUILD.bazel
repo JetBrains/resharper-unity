@@ -46,3 +46,9 @@ jvm_library(
   ]
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer` end
+
+### auto-generated section `iml intellij.rider.plugins.unity.debugger.textureVisualizer` start
+exports_files([
+  "intellij.rider.plugins.unity.debugger.textureVisualizer.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.rider.plugins.unity.debugger.textureVisualizer` end
