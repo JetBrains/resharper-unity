@@ -274,6 +274,9 @@
             class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
             icon="UnityIcons.Actions.RefreshInUnity" />
 
+    <action id="ShowUnityProfilerToolwindowAction"
+            class="com.jetbrains.rider.plugins.unity.actions.ShowUnityProfilerToolwindowAction" />
+
     <action id="ShaderVariantWidgetAction"
             class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantWidgetAction" />
 
