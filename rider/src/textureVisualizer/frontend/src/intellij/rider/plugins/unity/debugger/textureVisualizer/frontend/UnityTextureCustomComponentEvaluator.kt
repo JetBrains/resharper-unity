@@ -43,7 +43,6 @@ object UnityTextureCustomComponentEvaluator {
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun unityTextureAdditionalActionResult(
         accessorId: RiderTextureAccessorId,
-        timeoutForAdvanceUnityEvaluation: Int,
         onErrorCallback: (String) -> Unit
     ): UnityTextureAdditionalActionResult? {
 
@@ -51,7 +50,7 @@ object UnityTextureCustomComponentEvaluator {
 
         try {
             withContext(Dispatchers.EDT) {
-                additionalActionResult = RiderTextureDataApi.getInstance().evaluateTexture(accessorId, timeoutForAdvanceUnityEvaluation)
+                additionalActionResult = RiderTextureDataApi.getInstance().evaluateTexture(accessorId)
             }
             return additionalActionResult
         } catch (t: Throwable) {
@@ -63,7 +62,6 @@ object UnityTextureCustomComponentEvaluator {
     suspend fun getUnityTextureInfo(
         accessorId: RiderTextureAccessorId,
         lifetime: Lifetime,
-        timeoutForAdvanceUnityEvaluation: Int,
         stagedActivity: AtomicReference<StructuredIdeActivity?>?,
         errorCallback: (String) -> Unit
     ): UnityTextureInfo? {
@@ -71,8 +69,7 @@ object UnityTextureCustomComponentEvaluator {
             TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.TEXTURE_PIXELS_REQUEST)
 
         val unityTextureAdditionalActionResult = unityTextureAdditionalActionResult(
-            accessorId,
-            timeoutForAdvanceUnityEvaluation, errorCallback
+            accessorId, errorCallback
         )
 
         if (unityTextureAdditionalActionResult == null) {
@@ -117,9 +114,6 @@ object UnityTextureCustomComponentEvaluator {
 
 
         TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.REQUEST_ADDITIONAL_ACTIONS)
-        //TODO(Korovin): Get from the backend
-        val timeoutForAdvanceUnityEvaluation = 3000
-//            session.project.solution.frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.valueOrThrow
 
         fun errorCallback(it: String) {
             showErrorMessage(
@@ -133,7 +127,7 @@ object UnityTextureCustomComponentEvaluator {
         cs.launch {
             when (val unityTextureInfo = getUnityTextureInfo(
                 accessorId, lifetime,
-                timeoutForAdvanceUnityEvaluation, stagedActivity, ::errorCallback
+                stagedActivity, ::errorCallback
             )) {
                 null -> errorCallback("textureInfo is null")
                 else -> {

@@ -52,17 +52,16 @@ internal class BackendRiderTextureDataApi : RiderTextureDataApi {
             val unityTextureAdditionalAction = properties.additionalData.filterIsInstance<UnityTexturePropertiesData>().firstOrNull()
             if (unityTextureAdditionalAction == null)
                 return null
-            return RiderTextureAccessorImpl(dotNetValue, unityTextureAdditionalAction)
+            return RiderTextureAccessorImpl(session.project, dotNetValue, unityTextureAdditionalAction)
         }
         return null
     }
 
     override suspend fun evaluateTexture(
-        accessorId: RiderTextureAccessorId,
-        timeoutForAdvanceUnityEvaluation: Int
+        accessorId: RiderTextureAccessorId
     ): UnityTextureAdditionalActionResult {
         val accessorModel = accessorId.accessorModelOrNull() ?: error("Cannot find accessor for $accessorId")
-        return accessorModel.accessor.evaluateTexture(timeoutForAdvanceUnityEvaluation)
+        return accessorModel.accessor.evaluateTexture()
     }
 
     private fun RiderTextureAccessorId.accessorModelOrNull(): RiderTextureAccessorModel? {

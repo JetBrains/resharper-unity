@@ -23,7 +23,6 @@ interface RiderTextureDataApi : RemoteApi<Unit> {
 
     suspend fun evaluateTexture(
         accessorId: RiderTextureAccessorId,
-        timeoutForAdvanceUnityEvaluation: Int
     ): UnityTextureAdditionalActionResult
 
     companion object {
