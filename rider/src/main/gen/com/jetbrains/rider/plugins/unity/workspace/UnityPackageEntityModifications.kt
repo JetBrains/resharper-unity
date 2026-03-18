@@ -2,11 +2,12 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.workspace.storage.*
-import com.jetbrains.rdclient.util.idea.toVirtualFile
+import com.intellij.platform.workspace.storage.EntitySource
+import com.intellij.platform.workspace.storage.EntityType
+import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
+import com.intellij.platform.workspace.storage.MutableEntityStorage
+import com.intellij.platform.workspace.storage.WorkspaceEntityBuilder
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 
 @GeneratedCodeApiVersion(3)
 interface UnityPackageEntityBuilder : WorkspaceEntityBuilder<UnityPackageEntity> {
