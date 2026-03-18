@@ -17,6 +17,29 @@ internal object MetadataStorageImpl : MetadataStorageBase() {
 
         var typeMetadata: StorageTypeMetadata
 
+        typeMetadata = FinalClassMetadata.ObjectMetadata(
+            fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater\$RiderUnityPackageEntitySource",
+            properties = listOf(
+                OwnPropertyMetadata(
+                    isComputable = false,
+                    isKey = false,
+                    isOpen = false,
+                    name = "virtualFileUrl",
+                    valueType = ValueTypeMetadata.SimpleType.CustomType(
+                        isNullable = true,
+                        typeMetadata = FinalClassMetadata.KnownClass(fqName = "com.intellij.platform.workspace.storage.url.VirtualFileUrl")
+                    ),
+                    withDefault = false
+                )
+            ),
+            supertypes = listOf(
+                "com.intellij.platform.workspace.storage.EntitySource",
+                "com.jetbrains.rider.projectView.workspace.RiderEntitySource"
+            )
+        )
+
+        addMetadata(typeMetadata)
+
         typeMetadata = EntityMetadata(
             fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity",
             entityDataFqName = "com.jetbrains.rider.plugins.unity.workspace.impl.UnityPackageEntityData",
@@ -191,14 +214,6 @@ internal object MetadataStorageImpl : MetadataStorageBase() {
         )
 
         addMetadata(typeMetadata)
-
-        typeMetadata = FinalClassMetadata.ObjectMetadata(
-            fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater\$RiderUnityPackageEntitySource",
-            properties = listOf(),
-            supertypes = listOf("com.jetbrains.rider.projectView.workspace.RiderEntitySource")
-        )
-
-        addMetadata(typeMetadata)
     }
 
     override fun initializeMetadataHash() {
@@ -210,10 +225,10 @@ internal object MetadataStorageImpl : MetadataStorageBase() {
         )
         addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityGitDetails", metadataHash = 1682386701)
         addMetadataHash(typeFqn = "com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource", metadataHash = -2597683)
-        addMetadataHash(typeFqn = "com.intellij.platform.workspace.storage.EntitySource", metadataHash = 1637225356)
+        addMetadataHash(typeFqn = "com.intellij.platform.workspace.storage.EntitySource", metadataHash = 936337075)
         addMetadataHash(
             typeFqn = "com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater\$RiderUnityPackageEntitySource",
-            metadataHash = 2037898425
+            metadataHash = -984570695
         )
     }
 }
