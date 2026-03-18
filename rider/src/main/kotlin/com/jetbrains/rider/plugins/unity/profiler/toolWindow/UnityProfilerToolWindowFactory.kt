@@ -28,8 +28,9 @@ class UnityProfilerToolWindowFactory : RiderToolWindowFactory() {
         }
 
         fun show(project: Project) {
-            val toolWindow = getToolWindow(project)
-            toolWindow?.show()
+            val toolWindow = getToolWindow(project) ?: return
+            toolWindow.isAvailable = true
+            toolWindow.show()
             UnityProfilerUsagesCollector.logToolWindowOpened(project)
         }
 
