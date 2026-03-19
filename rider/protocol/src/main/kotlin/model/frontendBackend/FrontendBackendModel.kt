@@ -287,6 +287,11 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
             field("frameIndex", int)
             field("duration", long)
         }).async
+
+        // MCP-dedicated calls (separate from UI data path)
+        call("requestMcpOverview", Library.McpOverviewRequest, Library.McpOverviewResponse).async
+        call("requestMcpFrameAnalysis", Library.McpFrameAnalysisRequest, Library.McpFrameAnalysisResponse).async
+        call("requestMcpBatchAnalyze", Library.McpBatchAnalyzeRequest, Library.McpBatchAnalyzeResponse).async
     }
 
     val ProfilerHighlighterModel = structdef extends SolutionModel.HighlighterModel {

@@ -21,6 +21,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
     private static readonly ILog ourLogger = Log.GetLog(nameof(SnapshotCollectorDaemon));
 
     private readonly ProfilerSnapshotCrawler mySnapshotCrawler;
+    private readonly McpProfilerAnalyzer? myMcpAnalyzer;
     private readonly IProfilerAdaptersFactory myAdaptersFactory;
     private readonly SequentialLifetimes myTimingsAndThreadsFetchLifetimes;
 
@@ -33,7 +34,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
     internal SnapshotCollectorDaemon(IProfilerAdaptersFactory adaptersFactory, Lifetime appDomainLifetime)
     {
       myAdaptersFactory = adaptersFactory;
-      mySnapshotCrawler = new ProfilerSnapshotCrawler(adaptersFactory.CreateProfilerSnapshotDriverAdapter());
+      var adapter = adaptersFactory.CreateProfilerSnapshotDriverAdapter();
+      mySnapshotCrawler = new ProfilerSnapshotCrawler(adapter);
+      myMcpAnalyzer = adapter != null ? new McpProfilerAnalyzer(adapter) : null;
       myTimingsAndThreadsFetchLifetimes = new SequentialLifetimes(appDomainLifetime);
       
       mySnapshotCrawler.ProfileLoaded += OnProfileLoaded;
@@ -92,6 +95,63 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         
         return RdTask.Successful(task);
       });
+
+      // MCP-dedicated handlers (separate from UI data path, uses McpProfilerAnalyzer)
+      if (myMcpAnalyzer != null)
+      {
+        var mcpAnalyzer = myMcpAnalyzer;
+
+        model.RequestMcpOverview.SetAsync((lifetime, request) =>
+        {
+          return Task.Run(() =>
+          {
+            try
+            {
+              var result = mcpAnalyzer.GetOverview(request, lifetime);
+              return result ?? throw new InvalidOperationException("No profiler data available");
+            }
+            catch (Exception ex) when (ex is not LifetimeCanceledException)
+            {
+              ourLogger.Error("RequestMcpOverview failed", ex);
+              throw;
+            }
+          }, lifetime);
+        });
+
+        model.RequestMcpFrameAnalysis.SetAsync((lifetime, request) =>
+        {
+          return Task.Run(() =>
+          {
+            try
+            {
+              var result = mcpAnalyzer.GetFrameAnalysis(request, lifetime);
+              return result ?? throw new InvalidOperationException("No profiler data available for the requested frame");
+            }
+            catch (Exception ex) when (ex is not LifetimeCanceledException)
+            {
+              ourLogger.Error("RequestMcpFrameAnalysis failed", ex);
+              throw;
+            }
+          }, lifetime);
+        });
+
+        model.RequestMcpBatchAnalyze.SetAsync((lifetime, request) =>
+        {
+          return Task.Run(() =>
+          {
+            try
+            {
+              var result = mcpAnalyzer.GetBatchAnalyze(request, lifetime);
+              return result ?? throw new InvalidOperationException("No profiler data available for analysis");
+            }
+            catch (Exception ex) when (ex is not LifetimeCanceledException)
+            {
+              ourLogger.Error("RequestMcpBatchAnalyze failed", ex);
+              throw;
+            }
+          }, lifetime);
+        });
+      }
 
       // Allow backend to update selection
       model.SelectionState.Advise(connectionLifetime, state =>

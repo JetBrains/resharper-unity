@@ -124,4 +124,92 @@ object Library : Root() {
         )
         field("threads", immutableList(ProfilerThread).nullable)
     }
+
+    // region MCP Profiler types
+
+    val McpOverviewRequest = structdef {
+        field("thresholdMs", double)
+        field("limit", int)
+        field("sortBy", string)  // "duration" | "time" | "memory"
+    }
+
+    val McpOverviewResponse = structdef {
+        field("filePath", string)
+        field("totalFrames", int)
+        field("startFrameId", int)
+        field("framesWritten", int)
+        field("averageMs", double)
+        field("p50Ms", double)
+        field("p95Ms", double)
+        field("p99Ms", double)
+    }
+
+    val McpHotspotEntry = structdef {
+        field("qualifiedName", string)
+        field("path", string)
+        field("totalDurationMs", double)
+        field("callCount", int)
+        field("totalMemoryBytes", long)
+    }
+
+    val McpCallstackEntry = structdef {
+        field("qualifiedName", string)
+        field("path", string)
+        field("durationMs", double)
+        field("framePercentage", double)
+        field("memoryAllocationBytes", long)
+        field("depth", int)
+        field("childrenCount", int)
+        field("isTarget", bool)
+    }
+
+    val McpFrameAnalysisRequest = structdef {
+        field("frameIndex", int)
+        field("threadName", string)
+        field("focusOn", string.nullable)
+        field("sortBy", string)  // "duration" | "memory"
+        field("limit", int)
+    }
+
+    val McpFrameAnalysisResponse = structdef {
+        field("frameIndex", int)
+        field("threadName", string)
+        field("frameDurationMs", double)
+        field("totalAllocBytes", long)
+        field("totalSampleCount", int)
+        field("hotspots", immutableList(McpHotspotEntry))
+        field("callstack", immutableList(McpCallstackEntry).nullable)
+    }
+
+    val McpCrossFrameHotspot = structdef {
+        field("qualifiedName", string)
+        field("totalDurationMs", double)
+        field("callCount", int)
+        field("avgDurationMs", double)
+        field("maxSingleDurationMs", double)
+        field("totalMemoryBytes", long)
+        field("framesPresent", int)
+    }
+
+    val McpBatchAnalyzeRequest = structdef {
+        field("startFrame", int)       // -1 = recording start
+        field("limit", int)
+        field("thresholdMs", double)
+        field("threadName", string)
+        field("snapshotLimit", int)
+        field("minSampleDurationMs", double)
+        field("sortBy", string)  // "duration" | "memory"
+    }
+
+    val McpBatchAnalyzeResponse = structdef {
+        field("filePath", string)
+        field("framesAnalyzed", int)
+        field("snapshotsFetched", int)
+        field("threadName", string)
+        field("totalDurationMs", double)
+        field("totalAllocBytes", long)
+        field("topHotspots", immutableList(McpCrossFrameHotspot))
+    }
+
+    // endregion
 }

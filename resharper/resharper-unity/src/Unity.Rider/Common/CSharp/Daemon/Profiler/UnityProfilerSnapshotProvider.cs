@@ -253,6 +253,25 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                     {
                         unityProfilerModel.SelectionState.Set(state);
                     });
+
+                // MCP proxy: forward frontend MCP calls to Unity editor
+                FrontendBackendProfilerModel.RequestMcpOverview.SetAsync((callLt, request) =>
+                {
+                    myLogger.Verbose($"Proxying RequestMcpOverview to Unity: threshold={request.ThresholdMs}");
+                    return unityProfilerModel.RequestMcpOverview.Start(callLt, request).ToRdTask(callLt);
+                });
+
+                FrontendBackendProfilerModel.RequestMcpFrameAnalysis.SetAsync((callLt, request) =>
+                {
+                    myLogger.Verbose($"Proxying RequestMcpFrameAnalysis to Unity: frame={request.FrameIndex}");
+                    return unityProfilerModel.RequestMcpFrameAnalysis.Start(callLt, request).ToRdTask(callLt);
+                });
+
+                FrontendBackendProfilerModel.RequestMcpBatchAnalyze.SetAsync((callLt, request) =>
+                {
+                    myLogger.Verbose($"Proxying RequestMcpBatchAnalyze to Unity: limit={request.Limit}, snapshots={request.SnapshotLimit}");
+                    return unityProfilerModel.RequestMcpBatchAnalyze.Start(callLt, request).ToRdTask(callLt);
+                });
             });
 
         myBackendUnityHost.BackendUnityProfilerModel!.ViewNull<UnityProfilerModel>(myLifetime, _ =>

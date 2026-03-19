@@ -235,5 +235,10 @@ object UnityProfilerModel : Ext(BackendUnityModel) {
         property("mainThreadTimingsAndThreads", Library.MainFrameTimingsAndThreads.nullable).async
         
         call("requestFrameSnapshot", Library.ProfilerSnapshotRequest, SnapshotRequestTask).async
+
+        // MCP-dedicated calls (separate from UI data path)
+        call("requestMcpOverview", Library.McpOverviewRequest, Library.McpOverviewResponse).async
+        call("requestMcpFrameAnalysis", Library.McpFrameAnalysisRequest, Library.McpFrameAnalysisResponse).async
+        call("requestMcpBatchAnalyze", Library.McpBatchAnalyzeRequest, Library.McpBatchAnalyzeResponse).async
     }
 }

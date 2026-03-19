@@ -22,7 +22,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
     public ProfilerSnapshotCrawler(IProfilerSnapshotDriverAdapter? profilerSnapshotDriverAdapter)
     {
       myProfilerSnapshotDriverAdapter = profilerSnapshotDriverAdapter;
-      
+
       if (myProfilerSnapshotDriverAdapter != null)
       {
         myProfilerSnapshotDriverAdapter.ProfileLoaded += OnProfileLoaded;
@@ -59,19 +59,19 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       var lastFrameIndex = GetProfilerRecordLastFrameIndex();
       if(lastFrameIndex == -1)
         return null;
-      
+
       using var firstRawData = myProfilerSnapshotDriverAdapter?.GetRawFrameDataView(firstFrameIndex, 0);
-      
+
       if(firstRawData is not { Valid: true })
         return null;
-      
+
       using var lastRawData = myProfilerSnapshotDriverAdapter?.GetRawFrameDataView(lastFrameIndex, 0);
       if(lastRawData is not { Valid: true })
         return null;
-      
+
       return new UnityProfilerRecordInfo(firstFrameIndex, lastFrameIndex, firstRawData.FrameTimeNs, lastRawData.FrameTimeNs);
     }
-    
+
     public List<TimingInfo>? GetProfilerFrameSamplesTiming(int firstFrameIndex, int lastFrameIndex)
     {
       ourLogger.Verbose(nameof(GetProfilerFrameSamplesTiming));
@@ -83,7 +83,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
 
       ourLogger.Verbose($"{nameof(GetProfilerFrameSamplesTiming)}: {nameof(firstFrameIndex)}:{firstFrameIndex} {nameof(lastFrameIndex)}:{lastFrameIndex}");
-      
+
       var data = new List<TimingInfo>(lastFrameIndex - firstFrameIndex + 1);
       myProfilerSnapshotDriverAdapter.CollectFrameMs(firstFrameIndex, lastFrameIndex, data);
 
@@ -146,7 +146,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       // Pre-allocate collections
       var markerIdToName = new List<MarkerToNamePair>(sampleCount / 4);
       var samples = new List<SampleInfo>(sampleCount);
-      
+
 #if UNITY_2022_3_OR_NEWER
       var knownMarkerIds = new HashSet<int>(sampleCount / 4);
 #else
