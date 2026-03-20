@@ -1,0 +1,46 @@
+### auto-generated section `build intellij.rider.plugins.unity.javascript` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "javascript_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "javascript",
+  module_name = "intellij.rider.plugins.unity.javascript",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":javascript_resources"],
+  deps = [
+    "@lib//:kotlin-stdlib",
+    "@community//libraries/rd/core",
+    "@community//platform/core-api:core",
+    "@community//platform/util",
+    "//rider/plugins/plugins-appender/javascript",
+    "//dotnet/Plugins:rider-plugins-unity",
+  ]
+)
+
+jvm_library(
+  name = "javascript_test_lib",
+  module_name = "intellij.rider.plugins.unity.javascript",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":javascript",
+    "@community//libraries/rd/core:core_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/util:util_test_lib",
+    "//rider/plugins/plugins-appender/javascript:javascript_test_lib",
+    "//dotnet/Plugins:rider-plugins-unity_test_lib",
+  ]
+)
+### auto-generated section `build intellij.rider.plugins.unity.javascript` end
+
+### auto-generated section `iml intellij.rider.plugins.unity.javascript` start
+exports_files([
+  "intellij.rider.plugins.unity.javascript.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.rider.plugins.unity.javascript` end
