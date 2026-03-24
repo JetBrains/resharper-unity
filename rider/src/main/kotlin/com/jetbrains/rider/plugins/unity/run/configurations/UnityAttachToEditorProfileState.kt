@@ -7,6 +7,7 @@ import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
+import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.diagnostic.logger
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
@@ -87,10 +88,13 @@ class UnityAttachToEditorProfileState(
         }
     }
 
-    override suspend fun execute(executor: Executor,
-                         runner: ProgramRunner<*>,
-                         workerProcessHandler: DebuggerWorkerProcessHandler,
-                         lifetime: Lifetime): ExecutionResult {
+    override suspend fun execute(
+        executor: Executor,
+        runner: ProgramRunner<*>,
+        workerConsole: ConsoleView,
+        workerProcessHandler: DebuggerWorkerProcessHandler,
+        lifetime: Lifetime
+    ): ExecutionResult {
         if (remoteConfiguration.play) {
             val lt = lifetime.createNested().lifetime
             val processTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
@@ -126,14 +130,14 @@ class UnityAttachToEditorProfileState(
         // We couldn't find a running instance, start a new one
         if (remoteConfiguration.pid == null) {
             if (::corRunDebugProfileState.isInitialized)
-                return corRunDebugProfileState.execute(executor, runner, workerProcessHandler, lifetime)
-            return exeDebugProfileState.execute(executor, runner, workerProcessHandler, lifetime)
+                return corRunDebugProfileState.execute(executor, runner, workerConsole, workerProcessHandler, lifetime)
+            return exeDebugProfileState.execute(executor, runner, workerConsole, workerProcessHandler, lifetime)
         }
 
         if (::corAttachDebugProfileState.isInitialized)
-            return corAttachDebugProfileState.execute(executor, runner, workerProcessHandler, lifetime)
+            return corAttachDebugProfileState.execute(executor, runner, workerConsole, workerProcessHandler, lifetime)
 
-        return super.execute(executor, runner, workerProcessHandler)
+        return super.execute(executor, runner, workerConsole, workerProcessHandler)
     }
 }
 

@@ -70,10 +70,13 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         return runCmd
     }
 
-    override suspend fun execute(executor: Executor,
-                         runner: ProgramRunner<*>,
-                         workerProcessHandler: DebuggerWorkerProcessHandler,
-                         lifetime: Lifetime): ExecutionResult {
+    override suspend fun execute(
+        executor: Executor,
+        runner: ProgramRunner<*>,
+        workerConsole: ConsoleView,
+        workerProcessHandler: DebuggerWorkerProcessHandler,
+        lifetime: Lifetime
+    ): ExecutionResult {
         val runCommandLine = createEmptyConsoleCommandLine(exeConfiguration.parameters.terminalMode)
             .withEnvironment(exeConfiguration.parameters.envs)
             .withEnvironment("MONO_ARGUMENTS",
@@ -89,7 +92,7 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
 
         val commandLineString = runCommandLine.commandLineString
 
-        val monoConnectResult = super.execute(executor, runner, workerProcessHandler)
+        val monoConnectResult = super.execute(executor, runner, workerConsole, workerProcessHandler)
 
         if (exeConfiguration.name == DefaultRunConfigurationGenerator.RUN_DEBUG_STANDALONE_CONFIGURATION_NAME) {
             // check if scripting backend is IL2CPP, only start the game and show red balloon
