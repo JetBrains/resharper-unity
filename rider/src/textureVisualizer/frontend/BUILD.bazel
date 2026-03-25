@@ -35,6 +35,7 @@ jvm_library(
     "@community//platform/xdebugger-impl/frontend",
     "@community//platform/statistics",
     "@community//images",
+    "@community//platform/util:util-ui",
     "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common",
     "//rider/debugger/shared",
   ]
@@ -67,6 +68,7 @@ jvm_library(
     "@community//platform/xdebugger-impl/frontend:frontend_test_lib",
     "@community//platform/statistics:statistics_test_lib",
     "@community//images:images_test_lib",
+    "@community//platform/util:util-ui_test_lib",
     "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common:common_test_lib",
     "//rider/debugger/shared:shared_test_lib",
   ]

@@ -54,6 +54,7 @@
     <orderEntry type="module" module-name="intellij.platform.debugger.impl.frontend" />
     <orderEntry type="module" module-name="intellij.platform.statistics" />
     <orderEntry type="module" module-name="intellij.platform.images" />
+    <orderEntry type="module" module-name="intellij.platform.util.ui" />
     <orderEntry type="module" module-name="intellij.rider.plugins.unity.debugger.textureVisualizer.common" />
     <orderEntry type="module" module-name="intellij.rider.debugger.shared" />
   </component>
