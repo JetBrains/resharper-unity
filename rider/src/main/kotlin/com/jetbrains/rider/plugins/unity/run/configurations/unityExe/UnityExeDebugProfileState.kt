@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.run.configurations.unityExe
 
 import com.intellij.execution.ExecutionResult
-import com.intellij.execution.Executor
 import com.intellij.execution.KillableProcess
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
@@ -12,7 +11,6 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.ide.BrowserUtil
@@ -71,8 +69,6 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
     }
 
     override suspend fun execute(
-        executor: Executor,
-        runner: ProgramRunner<*>,
         workerConsole: ConsoleView,
         workerProcessHandler: DebuggerWorkerProcessHandler,
         lifetime: Lifetime
@@ -92,7 +88,7 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
 
         val commandLineString = runCommandLine.commandLineString
 
-        val monoConnectResult = super.execute(executor, runner, workerConsole, workerProcessHandler)
+        val monoConnectResult = super.execute(workerConsole, workerProcessHandler, lifetime)
 
         if (exeConfiguration.name == DefaultRunConfigurationGenerator.RUN_DEBUG_STANDALONE_CONFIGURATION_NAME) {
             // check if scripting backend is IL2CPP, only start the game and show red balloon

@@ -1,13 +1,9 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.process.ProcessAdapter
-import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.flowInto
-import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityStartInfo
@@ -33,33 +29,6 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
                                    val isEditor: Boolean = false)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
 
-    final override suspend fun createDebuggerWorker(
-        workerCmd: GeneralCommandLine,
-        protocolModel: DebuggerWorkerModel,
-        protocolServerPort: Int,
-        projectLifetime: Lifetime
-    ): DebuggerWorkerProcessHandler {
-
-        val debuggerWorkerLifetime = projectLifetime.createNested()
-
-        val frontendBackendModel = executionEnvironment.project.solution.frontendBackendModel
-        frontendBackendModel.backendSettings.enableDebuggerExtensions.flowInto(debuggerWorkerLifetime,
-            protocolModel.unityDebuggerWorkerModel.showCustomRenderers)
-        frontendBackendModel.backendSettings.ignoreBreakOnUnhandledExceptionsForIl2Cpp.flowInto(debuggerWorkerLifetime,
-            protocolModel.unityDebuggerWorkerModel.ignoreBreakOnUnhandledExceptionsForIl2Cpp)
-        frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.flowInto(debuggerWorkerLifetime,
-            protocolModel.unityDebuggerWorkerModel.forcedTimeoutForAdvanceUnityEvaluation)
-        frontendBackendModel.backendSettings.breakpointTraceOutput.flowInto(debuggerWorkerLifetime,
-            protocolModel.unityDebuggerWorkerModel.breakpointTraceOutput)
-
-        return super.createDebuggerWorker(workerCmd, protocolModel, protocolServerPort, projectLifetime).apply {
-            addProcessListener(object : ProcessAdapter() {
-                override fun processTerminated(event: ProcessEvent) { debuggerWorkerLifetime.terminate() }
-            })
-
-        }
-    }
-
     override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
         return UnityDebuggerOutputListener(
             executionEnvironment.project,
@@ -67,6 +36,19 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
             targetName,
             isEditor
         )
+    }
+
+    override fun bindSettings(lifetime: Lifetime, workerModel: DebuggerWorkerModel) {
+        val frontendBackendModel = executionEnvironment.project.solution.frontendBackendModel
+        frontendBackendModel.backendSettings.enableDebuggerExtensions.flowInto(lifetime,
+            workerModel.unityDebuggerWorkerModel.showCustomRenderers)
+        frontendBackendModel.backendSettings.ignoreBreakOnUnhandledExceptionsForIl2Cpp.flowInto(lifetime,
+            workerModel.unityDebuggerWorkerModel.ignoreBreakOnUnhandledExceptionsForIl2Cpp)
+        frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.flowInto(lifetime,
+            workerModel.unityDebuggerWorkerModel.forcedTimeoutForAdvanceUnityEvaluation)
+        frontendBackendModel.backendSettings.breakpointTraceOutput.flowInto(lifetime,
+            workerModel.unityDebuggerWorkerModel.breakpointTraceOutput)
+        super.bindSettings(lifetime, workerModel)
     }
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {

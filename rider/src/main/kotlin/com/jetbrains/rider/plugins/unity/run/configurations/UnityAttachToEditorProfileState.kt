@@ -3,10 +3,8 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.ExecutionResult
-import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.diagnostic.logger
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -89,8 +87,6 @@ class UnityAttachToEditorProfileState(
     }
 
     override suspend fun execute(
-        executor: Executor,
-        runner: ProgramRunner<*>,
         workerConsole: ConsoleView,
         workerProcessHandler: DebuggerWorkerProcessHandler,
         lifetime: Lifetime
@@ -130,14 +126,14 @@ class UnityAttachToEditorProfileState(
         // We couldn't find a running instance, start a new one
         if (remoteConfiguration.pid == null) {
             if (::corRunDebugProfileState.isInitialized)
-                return corRunDebugProfileState.execute(executor, runner, workerConsole, workerProcessHandler, lifetime)
-            return exeDebugProfileState.execute(executor, runner, workerConsole, workerProcessHandler, lifetime)
+                return corRunDebugProfileState.execute(workerConsole, workerProcessHandler, lifetime)
+            return exeDebugProfileState.execute(workerConsole, workerProcessHandler, lifetime)
         }
 
         if (::corAttachDebugProfileState.isInitialized)
-            return corAttachDebugProfileState.execute(executor, runner, workerConsole, workerProcessHandler, lifetime)
+            return corAttachDebugProfileState.execute(workerConsole, workerProcessHandler, lifetime)
 
-        return super.execute(executor, runner, workerConsole, workerProcessHandler)
+        return super.execute(workerConsole, workerProcessHandler, lifetime)
     }
 }
 

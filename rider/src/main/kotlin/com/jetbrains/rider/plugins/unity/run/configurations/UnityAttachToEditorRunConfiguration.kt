@@ -21,7 +21,7 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.debugger.DotNetDebugRunner
+import com.jetbrains.rider.debugger.RiderDebugRunner
 import com.jetbrains.rider.debugger.attach.util.getAvailableRuntimes
 import com.jetbrains.rider.model.ProcessRuntimeInformation
 import com.jetbrains.rider.plugins.unity.UnityBundle
@@ -151,7 +151,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         runnerSettings: RunnerSettings?,
         configurationPerRunnerSettings: ConfigurationPerRunnerSettings?
     ) {
-        if (runner is DotNetDebugRunner) {
+        if (runner is RiderDebugRunner) {
             // This method lets us check settings before run. If we throw an instance of RuntimeConfigurationError, the Run
             // Configuration editor is displayed. It's called on the EDT, so there's not a lot we can do - e.g. we can't get
             // a process list.

@@ -11,7 +11,6 @@ class UnityCorAttachDebugProfileState(val processId: Int, executionEnvironment: 
     executionEnvironment) {
     override val consoleKind: ConsoleKind = ConsoleKind.AttachedProcess
     override val attached: Boolean = true
-    override val remoteDebug: Boolean = false
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase = DotNetCoreAttachStartInfo(processId)
 }
