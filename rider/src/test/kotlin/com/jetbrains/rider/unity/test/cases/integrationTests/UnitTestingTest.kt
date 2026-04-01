@@ -20,6 +20,7 @@ import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import org.testng.annotations.Test
+import kotlin.io.path.absolutePathString
 
 @Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
 @Feature("Unit Testing in Unity solution with started Unity Editor")
@@ -48,7 +49,7 @@ abstract class UnitTestingTest() : IntegrationTestWithUnityProjectBase() {
     @ChecklistItems(["Refresh assets before test"])
     fun checkRefreshBeforeTest() {
         val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-        withOpenedEditor(file.absolutePath) { // the nature of exploration for Unity requires file to be opened
+        withOpenedEditor(file.absolutePathString()) { // the nature of exploration for Unity requires file to be opened
             withUtFacade(project!!) {
                 it.waitForDiscovering()
                 it.runAllTestsInProject(
@@ -60,7 +61,7 @@ abstract class UnitTestingTest() : IntegrationTestWithUnityProjectBase() {
 
                 it.closeAllSessions()
 
-                changeFileContent(project, file) {
+                changeFileContent(project, file.toFile()) {
                     it.replace("NewTestScriptSimplePasses(", "NewTestScriptSimplePasses2(")
                 }
 

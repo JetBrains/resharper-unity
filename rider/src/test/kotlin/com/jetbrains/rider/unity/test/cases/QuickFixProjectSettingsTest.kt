@@ -22,6 +22,8 @@ import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.readText
 
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity quick fix project settings")
@@ -71,7 +73,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
         }
     }
 
-    private fun getProjectSettingsFromSolution(solutionFolder : File) : File {
+    private fun getProjectSettingsFromSolution(solutionFolder : Path) : Path {
         return solutionFolder.combine("ProjectSettings", "EditorBuildSettings.asset")
             .combine()
     }

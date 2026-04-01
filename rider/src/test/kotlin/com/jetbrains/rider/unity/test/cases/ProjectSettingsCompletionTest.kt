@@ -31,6 +31,7 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
+import kotlin.io.path.name
 
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity project settings completion")

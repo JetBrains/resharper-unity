@@ -47,9 +47,10 @@ import com.jetbrains.rider.test.scriptingApi.waitForWorkspaceModelReady
 import com.jetbrains.rider.test.scriptingApi.waitRefreshIsFinished
 import com.jetbrains.rider.util.idea.syncFromBackend
 import java.io.File
+import java.nio.file.Path
 import javax.swing.JTree
 
-fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDirectory: File, action: () -> Unit) {
+fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDirectory: Path, action: () -> Unit) {
 
     doActionAndWait(project, action, true)
     val treeDump = dumpUnityExplorerTree(project, tempTestDirectory)
@@ -69,14 +70,14 @@ fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDire
     treeOutput.appendLine(projectModelDump?.maskCacheFiles())
     treeOutput.appendLine()
 
-    dumpFiles(fileOutput, tempTestDirectory, false, this.profile)
+    dumpFiles(fileOutput, tempTestDirectory.toFile(), false, this.profile)
 }
 
-private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: File) : String {
+private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: Path) : String {
     val tree = UnityExplorer.getInstance(project).tree
     return dumpExplorerTree(project, tree)
-        .replace(tempTestDirectory.toPath().toUri().toString(), "")
-        .replace(tempTestDirectory.toPath().toUri().toString().replace("file:///", "file://"), "")
+        .replace(tempTestDirectory.toUri().toString(), "")
+        .replace(tempTestDirectory.toUri().toString().replace("file:///", "file://"), "")
 }
 
 

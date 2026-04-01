@@ -106,7 +106,7 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
             preprocessTempDirectory = {
                 prepareAssemblies(it)
                 val processBuilder = ProcessBuilder("mkdir", "..\\")
-                processBuilder.directory(it.resolve("Assets"))
+                processBuilder.directory(it.resolve("Assets").toFile())
                 processBuilder.start()
             }
         }) {

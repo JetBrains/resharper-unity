@@ -36,6 +36,7 @@ import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.time.Duration
+import kotlin.io.path.name
 
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity code vision")

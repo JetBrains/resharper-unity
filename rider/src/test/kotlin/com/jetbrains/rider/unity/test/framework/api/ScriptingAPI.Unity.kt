@@ -73,6 +73,7 @@ import com.jetbrains.rider.utils.NullPrintStream
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.PrintStream
+import java.nio.file.Path
 import java.time.Duration
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -89,16 +90,16 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer(RiderTestExecutionTarget.fromCurrentMachine(), "Unity3d-2022.2.15f1-06-09-2023.zip")
 
-fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {
+fun prepareAssemblies(project: Project, activeSolutionDirectory: Path) {
     prepareAssemblies(activeSolutionDirectory)
     refreshFileSystem(project)
 }
 
-fun prepareAssemblies(activeSolutionDirectory: File) {
+fun prepareAssemblies(activeSolutionDirectory: Path) {
     //moving all UnityEngine* and UnityEditor*, netstandard and mscorlib ref-asm dlls to test solution folder
     for (file in unity2022_2_15f1_ref_asm.root.listFiles()!!) {
         val target = activeSolutionDirectory.combine(file.name)
-        file.copyTo(target)
+        file.copyTo(target.toFile())
     }
 }
 

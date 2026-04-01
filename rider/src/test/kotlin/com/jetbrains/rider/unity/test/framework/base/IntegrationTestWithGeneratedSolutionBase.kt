@@ -46,7 +46,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
             val newBehaviourScript = "NewBehaviourScript.cs"
             val sourceScript = testCaseSourceDirectory.resolve(newBehaviourScript)
             if (sourceScript.exists()) {
-                sourceScript.copyTo(it.resolve("Assets").resolve(newBehaviourScript), true)
+                sourceScript.copyTo(it.resolve("Assets").resolve(newBehaviourScript).toFile(), true)
             }
         }
     }
