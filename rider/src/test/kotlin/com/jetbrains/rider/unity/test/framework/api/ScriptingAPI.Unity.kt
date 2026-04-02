@@ -257,7 +257,7 @@ fun FrontendBackendModel.refreshUnityModel() {
 
 fun SolutionApiFacade.refreshUnityModel() = frontendBackendModel.refreshUnityModel()
 
-private fun SolutionApiFacade.executeMethod(runMethodData: RunMethodData): RunMethodResult {
+internal fun SolutionApiFacade.executeMethod(runMethodData: RunMethodData): RunMethodResult {
     frameworkLogger.info(
         "Executing method ${runMethodData.methodName} from ${runMethodData.typeName} (assembly: ${runMethodData.assemblyName})")
     val runMethodResult = frontendBackendModel.runMethodInUnity.callSynchronously(runMethodData, frontendBackendModel.protocolOrThrow)!!

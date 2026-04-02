@@ -33,7 +33,7 @@ public static class ProfilerAutomation
     /// </summary>
     public class TestConfiguration
     {
-        public string ScenePath = "Assets/Scenes/ProfilerTestScene.unity";
+        public string ScenePath = "Assets/Scenes/SampleScene.unity";
         public string TargetScriptName = "UnoptimizedMonoBehaviour";
         public Type ComponentType = typeof(UnoptimizedMonoBehaviour);
         public int FramesToRun = 100;
