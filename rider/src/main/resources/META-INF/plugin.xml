@@ -231,6 +231,11 @@
                 canCloseContents="false"
                 icon="UnityIcons.ToolWindows.UnityProfiler"
                 factoryClass="com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerToolWindowFactory"/>
+    <projectSettings service="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinState"/>
+    <projectSettings service="com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState"/>
+    <projectSettings service="com.jetbrains.rider.plugins.unity.UnityProjectDiscovererState"/>
+    <projectSettings service="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
+    <projectSettings service="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedCheckinState"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.jetbrains.rider">
