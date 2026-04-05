@@ -1,5 +1,5 @@
 using JetBrains.Application.BuildScript.Application.Zones;
-using JetBrains.Platform.VisualStudio.Protocol.BuildScript;
+using JetBrains.Platform.VisualStudio.AnyEnd.BuildScript;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.OutOfProcess
 {
