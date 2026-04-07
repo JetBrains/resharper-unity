@@ -253,10 +253,12 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                     });
             });
 
-        myBackendUnityHost.BackendUnityProfilerModel!.ViewNull<UnityProfilerModel>(myLifetime, lt =>
+        myBackendUnityHost.BackendUnityProfilerModel!.ViewNull<UnityProfilerModel>(myLifetime, _ =>
         {
-            myLogger.Verbose("UnityProfilerModel was null, clearing snapshot cache and invalidating daemon");
-            TerminateSnapshotAndInvalidateDaemon(lt).NoAwait();
+            // Terminate in-flight snapshot requests but keep the cached snapshot —
+            // it's still valid display data. Fresh data will arrive when Unity reconnects.
+            myLogger.Verbose("UnityProfilerModel became null, terminating in-flight requests");
+            myRequestSnapshotSeqLifetimes.TerminateCurrent();
         });
     }
 
@@ -298,7 +300,11 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 }
                 finally
                 {
-                    myRequestSnapshotSeqLifetimes.TerminateCurrent();
+                    // Only terminate if this request was not already superseded by a newer one.
+                    // When Next() is called for a new request, requestLifetime is terminated externally;
+                    // calling TerminateCurrent() here would kill that newer request instead.
+                    if (requestLifetime.IsAlive)
+                        myRequestSnapshotSeqLifetimes.TerminateCurrent();
                 }
             }
             

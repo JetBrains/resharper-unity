@@ -447,7 +447,7 @@ class UnityProfilerChart(
             }
         }
 
-        override fun getActionUpdateThread() = ActionUpdateThread.EDT
+        override fun getActionUpdateThread() = ActionUpdateThread.BGT
     }
 
     private fun createToolbar(): ActionToolbar {

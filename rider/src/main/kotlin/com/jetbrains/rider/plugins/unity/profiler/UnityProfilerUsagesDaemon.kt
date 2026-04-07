@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.profiler
 
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -18,8 +17,6 @@ import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerLineMa
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerSnapshotModel
 import com.jetbrains.rider.plugins.unity.profiler.viewModels.UnityProfilerTreeViewModel
 import com.jetbrains.rider.projectView.solution
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
 @Service(Service.Level.PROJECT)
@@ -117,9 +114,7 @@ class UnityProfilerUsagesDaemon(private val project: Project) {
 
         properties.setValue(TOOL_WINDOW_AUTO_SHOWN_KEY, true)
 
-        lifetime.coroutineScope.launch(Dispatchers.EDT) {
-            UnityProfilerToolWindowFactory.show(project)
-        }
+        UnityProfilerToolWindowFactory.show(project)
     }
 }
 

@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.profiler.viewModels
 
+import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.IOptProperty
 import com.jetbrains.rd.util.reactive.IProperty
@@ -42,10 +43,24 @@ class UnityProfilerSnapshotModel(val profilerModel: FrontendBackendProfilerModel
             if (mode == FetchingMode.Manual) return@advise
             requestNewSnapshot()
         }
-        
+
         isIntegrationEnable.advise(lifetime) { isEnable ->
             if (!isEnable) return@advise
             requestNewSnapshot()
+        }
+
+        profilerModel.mainThreadTimingsAndThreads.advise(lifetime) { timings ->
+            if (timings == null) return@advise
+            if (selectionState.value != null) {
+                // Reconnection: timings reloaded, frame already selected — re-request snapshot
+                requestNewSnapshot()
+                return@advise
+            }
+            // Headless/batch: no frame selected — auto-select first available frame
+            val threads = timings.threads?.takeIf { it.isNotEmpty() } ?: return@advise
+            val recordInfo = profilerModel.currentProfilerRecordInfo.value ?: return@advise
+            val mainThread = threads.find { it.name.contains("Main", ignoreCase = true) } ?: threads.first()
+            profilerModel.selectionState.set(SelectionState(recordInfo.firstFrameId, mainThread))
         }
     }
 

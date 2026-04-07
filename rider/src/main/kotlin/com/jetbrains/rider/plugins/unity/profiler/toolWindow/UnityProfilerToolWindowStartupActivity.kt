@@ -1,15 +1,16 @@
 package com.jetbrains.rider.plugins.unity.profiler.toolWindow
 
-import com.intellij.openapi.application.EDT
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesDaemon
 
 /**
- * Makes Unity Profiler tool window available when a Unity project is loaded.
+ * Makes Unity Profiler tool window available when a Unity project is loaded, and ensures
+ * [UnityProfilerUsagesDaemon] is initialized so its currentSnapshot advise is registered
+ * before profiling data arrives.
  */
 internal class UnityProfilerToolWindowStartupActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
@@ -17,9 +18,12 @@ internal class UnityProfilerToolWindowStartupActivity : ProjectActivity {
 
         UnityProjectDiscoverer.getInstance(project).isUnityProject.advise(lifetime) { isUnity ->
             if (isUnity) {
-                lifetime.coroutineScope.launch(Dispatchers.EDT) {
-                    UnityProfilerToolWindowFactory.makeAvailable(project)
-                }
+                UnityProfilerToolWindowFactory.makeAvailable(project)
+                // Eagerly initialize the daemon so currentSnapshot.advise is registered.
+                // Without this, auto-open won't fire if profiling data arrives before any
+                // file is opened (which happens when the test runs in isolation, or when a
+                // recording is loaded before navigating to source).
+                project.service<UnityProfilerUsagesDaemon>()
             }
         }
     }
