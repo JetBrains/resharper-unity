@@ -504,7 +504,7 @@
         <inline id="color" min="0"/>
         <length min="2" max="3"/>
       </group>
-      <inline id="wide-keywords" inline="yes"/>
+      <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
 <!--  transform-origin: already works -->

@@ -1,7 +1,6 @@
 package com.jetbrains.rider.unity.test.cases.uss
 
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
@@ -18,7 +17,6 @@ import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.Test
 
-@Mute("Test wasn't in te right package, so it never run")
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @TestEnvironment(platform = [PlatformType.ALL])
