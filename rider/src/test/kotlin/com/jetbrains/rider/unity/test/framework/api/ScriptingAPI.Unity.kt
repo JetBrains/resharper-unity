@@ -79,6 +79,8 @@ import java.nio.file.Path
 import java.time.Duration
 import kotlin.io.path.copyTo
 import kotlin.io.path.exists
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -101,9 +103,9 @@ fun prepareAssemblies(project: Project, activeSolutionDirectory: Path) {
 
 fun prepareAssemblies(activeSolutionDirectory: Path) {
     //moving all UnityEngine* and UnityEditor*, netstandard and mscorlib ref-asm dlls to test solution folder
-    for (file in unity2022_2_15f1_ref_asm.root.listFiles()!!) {
+    for (file in unity2022_2_15f1_ref_asm.root.listDirectoryEntries()) {
         val target = activeSolutionDirectory.combine(file.name)
-        file.copyTo(target.toFile())
+        file.copyTo(target)
     }
 }
 
