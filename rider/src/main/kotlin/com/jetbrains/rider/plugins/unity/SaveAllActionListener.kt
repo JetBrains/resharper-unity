@@ -13,6 +13,7 @@ class SaveAllActionListener : AnActionListener {
     override fun afterActionPerformed(action: AnAction, event: AnActionEvent, result: AnActionResult) {
         if (action !is SaveAllAction && action !is SaveDocumentAction) return
         val project = event.project ?: return
+        if (!project.isUnityProject.value) return
 
         project.solution.frontendBackendModel.refresh.fire(false)
         super.afterActionPerformed(action, event, result)
