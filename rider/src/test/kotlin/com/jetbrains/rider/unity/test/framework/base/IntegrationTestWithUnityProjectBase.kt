@@ -19,7 +19,10 @@ import com.jetbrains.rider.unity.test.framework.api.startUnity
 import org.testng.ITestResult
 import org.testng.annotations.BeforeMethod
 import java.io.File
+import java.nio.file.Path
 import java.time.Duration
+import kotlin.io.path.exists
+import kotlin.io.path.pathString
 
 abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGeneratedSolutionBase() {
     private lateinit var unityProjectPath: File
@@ -38,11 +41,11 @@ abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGenera
     override val customGoldSuffixes: List<String>
         get() = listOf("_${engineVersion.version.lowercase()}")
 
-    override val testGoldFile: File
+    override val testGoldFile: Path
         get() = getUnityDependentGoldFile(engineVersion, super.testGoldFile).takeIf { it.exists() }
                 ?: getUnityDependentGoldFile(
                     engineVersion,
-                    File(super.testGoldFile.path.replace(this::class.simpleName.toString(), ""))
+                    Path.of(super.testGoldFile.pathString.replace(this::class.simpleName.toString(), ""))
                 )
     override val testDataStorage: TestDataStorage by lazy { InheritanceBasedTestDataStorage(testProcessor) }
 
@@ -51,8 +54,7 @@ abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGenera
 
     @BeforeMethod
     override fun setUpTestCaseSolution(testResult: ITestResult) {
-        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null, testWorkDirectory, solutionSourceRootDirectory,
-                                                        testDataDirectory)
+        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null, testWorkDirectory.toFile(), solutionSourceRootDirectory.toFile(), testDataDirectory.toFile())
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
 
         val attemptsCount = 3

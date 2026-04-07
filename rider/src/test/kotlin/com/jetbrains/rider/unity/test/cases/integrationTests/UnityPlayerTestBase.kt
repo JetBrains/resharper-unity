@@ -34,7 +34,12 @@ import org.testng.ITestResult
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File
+import java.nio.file.Path
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
+import kotlin.io.path.name
 import kotlin.io.path.pathString
 import kotlin.test.assertNotNull
 
@@ -68,9 +73,9 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
 
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger
-    override val testClassDataDirectory: File
-        get() = super.testClassDataDirectory.parentFile.combine(DotsDebuggerTest::class.simpleName!!)
-    override val testCaseSourceDirectory: File
+    override val testClassDataDirectory: Path
+        get() = super.testClassDataDirectory.parent.combine(DotsDebuggerTest::class.simpleName!!)
+    override val testCaseSourceDirectory: Path
         get() = testClassDataDirectory.combine(super.testProcessor.testMethod.name).combine("source")
 
     private fun buildUnityPlayer(unityBackend: UnityBackend) {
@@ -127,12 +132,12 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
         return gameFullPath
     }
 
-    override val testGoldFile: File
+    override val testGoldFile: Path
         get() {
             return getUnityDependentGoldFile(engineVersion, super.testGoldFile, unityBackend.toString()).takeIf { it.exists() }
                    ?: getUnityDependentGoldFile(
                        engineVersion,
-                       File(super.testGoldFile.path.replace(this::class.simpleName.toString(), "")),
+                       Path.of(super.testGoldFile.pathString.replace(this::class.simpleName.toString(), "")),
                        unityBackend.toString().lowercase()
                    )
         }
@@ -140,20 +145,20 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,
         filter: ((File) -> Boolean)? = null,
-    ): File {
-        val solutionName: String = File(solutionDirectoryName).name
-        val workDirectory = File(testWorkDirectory, solutionName)
-        val sourceDirectory = File(solutionSourceRootDirectory, solutionDirectoryName)
+    ): Path {
+        val solutionName: String = Path.of(solutionDirectoryName).name
+        val workDirectory = testWorkDirectory.resolve(solutionName)
+        val sourceDirectory = solutionSourceRootDirectory.resolve(solutionDirectoryName)
         // Copy solution from sources
-        FileUtil.copyDir(sourceDirectory, workDirectory, filter)
-        workDirectory.isDirectory.shouldBeTrue("Expected '${workDirectory.absolutePath}' to be a directory")
+        FileUtil.copyDir(sourceDirectory.toFile(), workDirectory.toFile(), filter)
+        workDirectory.isDirectory().shouldBeTrue("Expected '${workDirectory.absolutePathString()}' to be a directory")
 
         return workDirectory
     }
 
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution(testResult: ITestResult) {
-        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null)
+        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null).toFile()
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
         super.setUpTestCaseSolution(testResult)
         prepareAssemblies(project, activeSolutionDirectory)

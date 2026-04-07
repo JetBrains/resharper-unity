@@ -70,7 +70,7 @@ fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDire
     treeOutput.appendLine(projectModelDump?.maskCacheFiles())
     treeOutput.appendLine()
 
-    dumpFiles(fileOutput, tempTestDirectory.toFile(), false, this.profile)
+    dumpFiles(fileOutput, tempTestDirectory, false, this.profile)
 }
 
 private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: Path) : String {

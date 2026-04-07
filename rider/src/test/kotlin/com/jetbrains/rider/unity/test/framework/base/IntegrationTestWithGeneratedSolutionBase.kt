@@ -18,6 +18,8 @@ import com.jetbrains.rider.unity.test.framework.api.waitForUnityRunConfiguration
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File
+import kotlin.io.path.copyTo
+import kotlin.io.path.exists
 
 /**
  * Class is used in tests where initial sln/csproj structure exists. We might regenerate afterwards, but Rider is opened
@@ -46,7 +48,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
             val newBehaviourScript = "NewBehaviourScript.cs"
             val sourceScript = testCaseSourceDirectory.resolve(newBehaviourScript)
             if (sourceScript.exists()) {
-                sourceScript.copyTo(it.resolve("Assets").resolve(newBehaviourScript).toFile(), true)
+                sourceScript.copyTo(it.resolve("Assets").resolve(newBehaviourScript), true)
             }
         }
     }

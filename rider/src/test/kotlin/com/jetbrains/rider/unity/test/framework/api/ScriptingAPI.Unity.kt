@@ -44,6 +44,7 @@ import com.jetbrains.rider.plugins.unity.util.getUnityArgs
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rider.projectView.solutionDirectoryPath
 import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.enums.EngineVersion
@@ -54,6 +55,7 @@ import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.flushQueues
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.framework.getFileWithNameSuffix
+import com.jetbrains.rider.test.framework.getGoldFile
 import com.jetbrains.rider.test.framework.processor.TestProcessor
 import com.jetbrains.rider.test.framework.testData.TestDataStorage
 import com.jetbrains.rider.test.scriptingApi.DebugTestExecutionContext
@@ -75,6 +77,8 @@ import java.io.File
 import java.io.PrintStream
 import java.nio.file.Path
 import java.time.Duration
+import kotlin.io.path.copyTo
+import kotlin.io.path.exists
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -244,7 +248,7 @@ fun withUnityProcess(
 context(solutionApiFacade: SolutionApiFacade, testDataStorage: TestDataStorage)
 fun executeScript(file: String) {
     val script = testDataStorage.testCaseSourceDirectory.combine(file)
-    script.copyTo(solutionApiFacade.project.solutionDirectory.combine("Assets", file))
+    script.copyTo(solutionApiFacade.project.solutionDirectoryPath.combine("Assets", file), true)
 
     frameworkLogger.info("Executing script '$file'")
     solutionApiFacade.project.solution.frontendBackendModel.refreshUnityModel()
@@ -379,7 +383,7 @@ fun SolutionApiFacade.restart() {
 fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
     playerFile: File,
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null) {
+    goldFile: Path? = null) {
 
     assert(playerFile.exists())
     var startGameExecutable: Process? = null
@@ -471,7 +475,7 @@ fun attachDebuggerToUnityEditorAndPlay(
     project: Project,
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null,
+    goldFile: Path? = null,
     customSuffixes: List<String> = emptyList()
 ) = attachDebuggerToUnityEditor(project, true, beforeRun, test, goldFile, customSuffixes)
 
@@ -479,26 +483,26 @@ context(solutionApiFacade: SolutionApiFacade, testDataStorage: TestDataStorage)
 fun attachDebuggerToUnityEditorAndPlay(
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null) = attachDebuggerToUnityEditorAndPlay(solutionApiFacade.project, beforeRun, test, goldFile, testDataStorage.customGoldSuffixes)
+    goldFile: Path? = null) = attachDebuggerToUnityEditorAndPlay(solutionApiFacade.project, beforeRun, test, goldFile, testDataStorage.customGoldSuffixes)
 
 fun attachDebuggerToUnityEditor(
     project: Project,
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null
+    goldFile: Path? = null
 ) = attachDebuggerToUnityEditor(project, false, beforeRun, test, goldFile)
 
 fun SolutionApiFacade.attachDebuggerToUnityEditor(
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null) = attachDebuggerToUnityEditor(project, beforeRun, test, goldFile)
+    goldFile: Path? = null) = attachDebuggerToUnityEditor(project, beforeRun, test, goldFile)
 
 private fun attachDebuggerToUnityEditor(
     project: Project,
     andPlay: Boolean,
     beforeRun: ExecutionEnvironment.() -> Unit = {},
     test: DebugTestExecutionContext.() -> Unit,
-    goldFile: File? = null,
+    goldFile: Path? = null,
     customSuffixes: List<String> = emptyList()
 ) {
     selectRunConfiguration(project, DefaultRunConfigurationGenerator.RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME)
@@ -569,7 +573,7 @@ fun getGoldFileUnityDependentSuffix(engineVersion: EngineVersion): String {
     return "_${engineVersion.version.lowercase().replace('.', '_')}"
 }
 
-fun getUnityDependentGoldFile(engineVersion: EngineVersion, testFile: File, backend: String? = null): File {
+fun getUnityDependentGoldFile(engineVersion: EngineVersion, testFile: Path, backend: String? = null): Path {
     val unitySuffix = getGoldFileUnityDependentSuffix(engineVersion)
 
     val candidates = buildList {
