@@ -1,10 +1,10 @@
-package com.jetbrains.rider.plugins.unity.ide.navigationToolbar
+package com.jetbrains.rider.plugins.unity.yaml.navigationToolbar
 
 import com.intellij.ide.navigationToolbar.AbstractNavBarModelExtension
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType
+import com.jetbrains.rider.plugins.unity.yaml.fileTypes.UnityYamlFileType
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 
 // This class hides .meta files from the navigation bar, and they can be shown again using the "show all files" setting
@@ -21,7 +21,7 @@ import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerVi
 class UnityNavBarModelExtension : AbstractNavBarModelExtension() {
     override fun getPresentableText(o: Any?): String? = null
 
-    override fun adjustElement(psiElement: PsiElement) =
+    override fun adjustElement(psiElement: PsiElement): PsiElement? =
         if (shouldHide(psiElement)) null else super.adjustElement(psiElement)
 
     private fun shouldHide(psiElement: PsiElement) = isMetaFile(psiElement) && !shouldShowMetaFiles(psiElement.project)

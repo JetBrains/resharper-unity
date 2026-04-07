@@ -1,7 +1,10 @@
-<idea-plugin package="com.jetbrains.rider.plugins.unity.javascript">
+<idea-plugin>
   <dependencies>
+    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+    <plugin id="com.intellij.resharper.unity"/>
+    <module name="intellij.rider"/>
     <module name="intellij.rider.plugins.appender.javascript"/>
-    <plugin id="JavaScript"/>
+    <!-- endregion -->
   </dependencies>
 
   <extensions defaultExtensionNs="JavaScript">

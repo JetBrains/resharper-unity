@@ -17,9 +17,9 @@
   <depends>com.intellij.rider.rdclient.spellchecker</depends>
 
   <content namespace="jetbrains">
-    <module name="intellij.rider.plugins.unity/yaml" />
-    <module name="intellij.rider.plugins.unity/css" />
-    <module name="intellij.rider.plugins.unity/javascript" />
+    <module name="intellij.rider.plugins.unity.yaml" />
+    <module name="intellij.rider.plugins.unity.css" />
+    <module name="intellij.rider.plugins.unity.javascript" />
     <module name="intellij.rider.plugins.unity.model" loading="embedded" />
   </content>
 
@@ -133,11 +133,8 @@
 
 
     <!-- YAML asset support -->
-    <fileType name="UnityYaml" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType" language="UnityYaml" extensions="meta;unity;scene;prefab;asset;controller;anim"/>
     <rd.languageAssociation backendLanguage="UnityYaml" frontendLanguage="UnityYaml" />
-    <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlIconProvider" />
     <lang.altEnter language="UnityYaml" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
-    <lang.parserDefinition language="UnityYaml" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlParserDefinition" />
     <backend.actions.support language="UnityYaml" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.markup.adapterFactory language="UnityYaml" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rider.editorActions.FrontendTypedHandler"/>
@@ -157,7 +154,6 @@
     <intentionsOrderProvider language="UXML" implementationClass="com.jetbrains.rider.spellChecker.BackendLanguageIntentionsOrderProvider"/>
     <lang.inspectionSuppressor language="UXML" order="first" implementationClass="com.jetbrains.rider.inspections.suppression.BackendXmlInspectionSuppressor"/>
 
-    <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UssDisabledEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
 
@@ -197,11 +193,7 @@
     <standardResourceProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutStandardResourceProvider"/>
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutSchemaProvider"/>
 
-    <navbar implementation="com.jetbrains.rider.plugins.unity.ide.navigationToolbar.UnityNavBarModelExtension"/>
-
     <solutionManagerExtensions implementation="com.jetbrains.rider.plugins.unity.workspace.UnitySolutionManagerExtensions"/>
-
-    <diff.merge.external.AutomaticExternalMergeTool implementation="com.jetbrains.rider.plugins.unity.diff.UnityYamlAutomaticExternalMergeTool"/>
 
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinHandlerFactory"/>
 
@@ -232,8 +224,6 @@
                 canCloseContents="false"
                 icon="UnityIcons.ToolWindows.UnityProfiler"
                 factoryClass="com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerToolWindowFactory"/>
-
-    <rider.gotoCustomizer implementation="com.jetbrains.rider.plugins.unity.gotoType.UnityGotoCustomizer"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.jetbrains.rider">

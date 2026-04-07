@@ -20,6 +20,7 @@ jvm_library(
     "@community//platform/util",
     "//rider/plugins/plugins-appender/javascript",
     "//dotnet/Plugins:rider-plugins-unity",
+    "//rider",
   ]
 )
 
@@ -35,6 +36,7 @@ jvm_library(
     "@community//platform/util:util_test_lib",
     "//rider/plugins/plugins-appender/javascript:javascript_test_lib",
     "//dotnet/Plugins:rider-plugins-unity_test_lib",
+    "//rider:rider_test_lib",
   ]
 )
 ### auto-generated section `build intellij.rider.plugins.unity.javascript` end

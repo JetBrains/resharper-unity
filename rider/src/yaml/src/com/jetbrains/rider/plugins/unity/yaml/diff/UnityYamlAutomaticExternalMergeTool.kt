@@ -15,12 +15,12 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.readBytes
 import com.intellij.util.io.delete
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rd.util.reactive.valueOrThrow
-import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.plugins.unity.EngineConstants
-import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType
+import com.jetbrains.rider.plugins.unity.yaml.fileTypes.UnityYamlFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
@@ -77,7 +77,7 @@ class UnityYamlAutomaticExternalMergeTool : AutomaticExternalMergeTool {
                 if (premergedBase.exists() && premergedRight.exists()) {
                     myLogger.info("PreMerge partially successful. Call ShowMergeBuiltin on pre-merged.")
                     val output: VirtualFile = (request.outputContent as FileContent).file
-                    val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
+                    val byteContents = listOf(output.readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
                     val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, request.title,
                                                                                         request.contentTitles)
                     MergeCallback.retarget(request, preMerged)

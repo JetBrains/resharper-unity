@@ -1,0 +1,73 @@
+### auto-generated section `build intellij.rider.plugins.unity.css` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "css_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "css",
+  module_name = "intellij.rider.plugins.unity.css",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":css_resources"],
+  deps = [
+    "@community//platform/core-api:core",
+    "@community//libraries/rd/core",
+    "@community//xml/xml-parser:parser",
+    "@community//platform/backend/workspace",
+    "@community//platform/core-impl",
+    "//plugins/css/backend",
+    "//plugins/css/codeinsight/actions",
+    "@community//platform/workspace/storage",
+    "@community//platform/util",
+    "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/analysis-impl",
+    "//plugins/css/common",
+    "//plugins/css/psi",
+    "@community//platform/analysis-api:analysis",
+    "@community//xml/xml-psi-impl:psi-impl",
+    "//rider",
+    "@community//platform/platform-api:ide",
+    "//dotnet/Plugins:rider-plugins-unity",
+    "@community//platform/platform-impl:ide-impl",
+  ]
+)
+
+jvm_library(
+  name = "css_test_lib",
+  module_name = "intellij.rider.plugins.unity.css",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":css",
+    "@community//platform/core-api:core_test_lib",
+    "@community//libraries/rd/core:core_test_lib",
+    "@community//xml/xml-parser:parser_test_lib",
+    "@community//platform/backend/workspace:workspace_test_lib",
+    "@community//platform/core-impl:core-impl_test_lib",
+    "//plugins/css/backend:backend_test_lib",
+    "//plugins/css/codeinsight/actions:actions_test_lib",
+    "@community//platform/workspace/storage:storage_test_lib",
+    "@community//platform/util:util_test_lib",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
+    "@community//platform/analysis-impl:analysis-impl_test_lib",
+    "//plugins/css/common:common_test_lib",
+    "//plugins/css/psi:psi_test_lib",
+    "@community//platform/analysis-api:analysis_test_lib",
+    "@community//xml/xml-psi-impl:psi-impl_test_lib",
+    "//rider:rider_test_lib",
+    "@community//platform/platform-api:ide_test_lib",
+    "//dotnet/Plugins:rider-plugins-unity_test_lib",
+    "@community//platform/platform-impl:ide-impl_test_lib",
+  ]
+)
+### auto-generated section `build intellij.rider.plugins.unity.css` end
+
+### auto-generated section `iml intellij.rider.plugins.unity.css` start
+exports_files([
+  "intellij.rider.plugins.unity.css.iml",
+], visibility = ["//visibility:public"])
+### auto-generated section `iml intellij.rider.plugins.unity.css` end

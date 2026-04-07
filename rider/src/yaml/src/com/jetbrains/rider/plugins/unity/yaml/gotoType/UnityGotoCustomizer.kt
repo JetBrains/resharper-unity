@@ -1,12 +1,12 @@
-package com.jetbrains.rider.plugins.unity.gotoType
+package com.jetbrains.rider.plugins.unity.yaml.gotoType
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.globalNavigation.GotoCustomizer
-import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType
 import com.jetbrains.rider.plugins.unity.isUnityProject
+import com.jetbrains.rider.plugins.unity.yaml.fileTypes.UnityYamlFileType
 import com.jetbrains.rider.projectView.solutionDirectory
 
 class UnityGotoCustomizer : GotoCustomizer {

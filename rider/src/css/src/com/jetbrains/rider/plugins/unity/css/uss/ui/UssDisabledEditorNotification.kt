@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ui
+package com.jetbrains.rider.plugins.unity.css.uss.ui
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.plugins.PluginManagerMain
@@ -10,11 +10,12 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.EditorNotifications
+import com.jetbrains.rider.plugins.unity.css.uss.impl.UnityCssBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import java.util.function.Function
 import javax.swing.JComponent
 
-private class UssDisabledEditorNotification : EditorNotificationProvider {
+internal class UssDisabledEditorNotification : EditorNotificationProvider {
 
     companion object {
         private const val DO_NOT_SHOW_AGAIN_KEY = "unity.uss.css.plugin.disabled.do.not.show"
@@ -29,8 +30,8 @@ private class UssDisabledEditorNotification : EditorNotificationProvider {
 
             return Function {
                 EditorNotificationPanel().also { panel ->
-                    panel.text(UnityUIBundle.message("uss.disabled.editor.notification.panel.text"))
-                    panel.createActionLabel(UnityUIBundle.message("uss.disabled.editor.notification.enable.css.plugin")) {
+                    panel.text(UnityCssBundle.message("uss.disabled.editor.notification.panel.text"))
+                    panel.createActionLabel(UnityCssBundle.message("uss.disabled.editor.notification.enable.css.plugin")) {
                         // TODO: Maybe in 2020.2 we can do this dynamically without restart?
                         // That would require enabling the CSS plugin dynamically, and then enabling our PluginCssPart.xml part
                         // dynamically, too
@@ -38,7 +39,7 @@ private class UssDisabledEditorNotification : EditorNotificationProvider {
                         PluginManagerMain.notifyPluginsUpdated(project)
                         EditorNotifications.getInstance(project).updateAllNotifications()
                     }
-                    panel.createActionLabel(UnityUIBundle.message("don.t.show.again")) {
+                    panel.createActionLabel(UnityCssBundle.message("don.t.show.again")) {
                         // Project level - do not show again for this project
                         PropertiesComponent.getInstance(project).setValue(DO_NOT_SHOW_AGAIN_KEY, true)
                         EditorNotifications.getInstance(project).updateAllNotifications()

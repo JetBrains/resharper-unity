@@ -21,7 +21,7 @@ import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBre
 class AddPauseBreakpoint : DumbAwareAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
-        val project = e.getRequiredData(CommonDataKeys.PROJECT)
+        val project = e.project ?: return
         val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
 
         val position = getLineBreakpointPosition(e)!!

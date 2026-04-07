@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml
+package com.jetbrains.rider.plugins.unity.yaml.fileTypes
 
 import com.intellij.ide.IconProvider
 import com.intellij.openapi.project.DumbAware

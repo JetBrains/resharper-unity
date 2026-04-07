@@ -1,8 +1,0 @@
-<idea-plugin package="com.jetbrains.rider.plugins.unity.yaml">
-    <dependencies>
-      <module name="intellij.yaml.backend"/>
-    </dependencies>
-    <extensions defaultExtensionNs="com.intellij">
-        <lang.syntaxHighlighterFactory language="UnityYaml" implementationClass="org.jetbrains.yaml.YAMLSyntaxHighlighterFactory" />
-    </extensions>
-</idea-plugin>
