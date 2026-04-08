@@ -1371,9 +1371,6 @@ float values with full precision.</value>
     <data name="UnityOptionsPage_Profiler_Integration_Manual_Fetching" xml:space="preserve">
         <value>Manually</value>
     </data>
-    <data name="UnityOptionsPage_Profiler_Integration_Help_Link_Text" xml:space="preserve">
-        <value>Learn more</value>
-    </data>
     <data name="UnityOptionsPage_Profiler_New_Profiler_Highlightings" xml:space="preserve">
         <value>Profiler highlightings view mode:</value>
     </data>

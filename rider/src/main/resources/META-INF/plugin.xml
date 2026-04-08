@@ -73,6 +73,12 @@
                              instance="com.jetbrains.rider.plugins.unity.settings.UnityPluginOptionsPage"
                              key="configurable.name.unity.engine"/>
 
+    <applicationConfigurable parentId="preferences.build.unityPlugin"
+                             id="preferences.build.unityPlugin.profiler"
+                             bundle="messages.UnityBundle"
+                             instance="com.jetbrains.rider.plugins.unity.settings.UnityProfilerOptionsPage"
+                             key="configurable.name.unity.profiler"/>
+
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
     <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
 

@@ -13,15 +13,15 @@ class ShowUnityProfilerSettingsAction : DumbAwareAction(
     AllIcons.General.Settings
 ) {
     companion object {
-        private const val unitySettingsPageId = "preferences.build.unityPlugin"
+        private const val profilerSettingsPageId = "preferences.build.unityPlugin.profiler"
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         ShowSettingsUtilImpl.showSettingsDialog(
             project,
-            unitySettingsPageId,
-            UnityUIBundle.message("unity.profiler.integration.widget.setting.filter")
+            profilerSettingsPageId,
+            null
         )
     }
 

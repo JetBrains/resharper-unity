@@ -54,34 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddTextBasedAssetsSection();
             AddShadersSection();
             AddDebuggingSection();
-            AddProfilerSection();
             AddInternalSection(productConfigurations);
         }
-
-    private void AddProfilerSection()
-    {
-        if (!OptionsPageContext.IsRider) return;
-        AddHeader(Strings.UnityOptionsPage_Profiler_Integration);
-        AddBoolOption((UnitySettings s) => s.EnableProfilerSnapshotFetching,
-            Strings.UnitySettings_Enable_Profiler_Snapshot_Fetching);
-        AddComboOption((UnitySettings s) => s.ProfilerSnapshotFetchingMode,
-            Strings.UnitySettings_Profiler_Snapshot_Fetching_Mode, string.Empty, string.Empty,
-            new RadioOptionPoint(ProfilerSnapshotFetchingMode.Auto, Strings.UnityOptionsPage_Profiler_Integration_Auto_Fetching),
-            new RadioOptionPoint(ProfilerSnapshotFetchingMode.Manual, Strings.UnityOptionsPage_Profiler_Integration_Manual_Fetching)
-        );
-        
-        AddBoolOption((UnitySettings s) => s.IsProfilerGutterMarksDisplayEnabled,
-            Strings.UnitySettings_Profiler_New_Highlighting_Enabled);
-        
-        AddComboOption((UnitySettings s) => s.ProfilerGutterMarksDisplaySettings,
-            Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings, string.Empty, string.Empty,
-            new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Default, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Default),
-            new RadioOptionPoint(ProfilerSnapshotHighlightingSettings.Minimized, Strings.UnityOptionsPage_Profiler_New_Profiler_Highlightings_Minimized)
-        );
-        
-        AddLinkButton("UnityProfilerIntegration", Strings.UnityOptionsPage_Profiler_Integration_Help_Link_Text,
-            () => { Shell.Instance.GetComponent<HelpSystem>().ShowProductHelp(HelpId.Settings_Unity_Engine_Profiler_Integration); });
-    }
 
         private void AddGeneralSection()
         {
