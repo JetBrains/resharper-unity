@@ -45,7 +45,7 @@ object UnityProfilerTreeBuilder {
         lifetime: Lifetime,
         initialComparator: Comparator<DefaultMutableTreeNode>? = null,
         filterPattern: String? = null,
-        isExactFilter: Boolean = false
+        filterMatchMode: FilterMatchMode = FilterMatchMode.CONTAINS
     ): DefaultMutableTreeNode? {
         val root = DefaultMutableTreeNode()
         if (samples.isEmpty()) return root
@@ -63,7 +63,7 @@ object UnityProfilerTreeBuilder {
         mergeNodesByQualifiedName(root)
 
         if (!filterPattern.isNullOrBlank()) {
-            if (!filterNode(root, filterPattern, isExactFilter, lifetime)) return null
+            if (!filterNode(root, filterPattern, filterMatchMode, lifetime)) return null
         }
 
         if (!lifetime.isAlive) return null
@@ -94,7 +94,7 @@ object UnityProfilerTreeBuilder {
     private fun filterNode(
         node: DefaultMutableTreeNode,
         pattern: String,
-        isExactFilter: Boolean,
+        filterMatchMode: FilterMatchMode,
         lifetime: Lifetime,
         keepAllChildren: Boolean = false
     ): Boolean {
@@ -103,11 +103,7 @@ object UnityProfilerTreeBuilder {
         if (!lifetime.isAlive) return false
 
         val name = node.nodeData?.name ?: ""
-        val nodeMatches = if (isExactFilter) {
-            name.equals(pattern, ignoreCase = true)
-        } else {
-            name.contains(pattern, ignoreCase = true)
-        }
+        val nodeMatches = filterMatchMode.matches(name, pattern)
 
         val shouldKeepAllChildren = keepAllChildren || nodeMatches
 
@@ -117,7 +113,7 @@ object UnityProfilerTreeBuilder {
             // Check cancellation periodically during filtering
             ProgressManager.checkCanceled()
             if (!lifetime.isAlive) return false
-            if (filterNode(child, pattern, isExactFilter, lifetime, shouldKeepAllChildren)) {
+            if (filterNode(child, pattern, filterMatchMode, lifetime, shouldKeepAllChildren)) {
                 anyChildMatches = true
             } else {
                 node.remove(child)

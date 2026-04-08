@@ -20,3 +20,4 @@ val DefaultMutableTreeNode.nodeData: UnityProfilerNodeData?
 
 fun DefaultMutableTreeNode.childrenNodes(): List<DefaultMutableTreeNode> =
     (0 until childCount).map { getChildAt(it) as DefaultMutableTreeNode }
+

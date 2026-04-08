@@ -12,6 +12,8 @@ import com.jetbrains.rider.plugins.unity.model.UnityProfilerRecordInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendProfilerModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendModelSnapshot
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector
+import com.jetbrains.rider.plugins.unity.profiler.toolWindow.FilterMatchMode
+import com.jetbrains.rider.plugins.unity.profiler.toolWindow.FilterState
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerSortColumn
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerTreeBuilder
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.nodeData
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.swing.SortOrder
 import javax.swing.tree.DefaultMutableTreeNode
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * ViewModel for Unity Profiler tree view that manages profiler data display and filtering.
@@ -59,15 +62,14 @@ class UnityProfilerTreeViewModel(
     private var isUpdatingFromModel = false
 
     // Debounced filter input to reduce rebuild frequency during typing
-    private val filterInputFlow = MutableSharedFlow<Pair<String, Boolean>>(
+    private val filterInputFlow = MutableSharedFlow<String>(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
     val currentProfilerRecordInfo: Property<UnityProfilerRecordInfo?> = Property(null)
     val currentSnapshot: IProperty<FrontendModelSnapshot?> get() = snapshotModel.currentSnapshot
-    val filterText: Property<String> = Property("")
-    val isExactFilter: Property<Boolean> = Property(false)
+    val filterState: Property<FilterState> = Property(FilterState())
     val activeSortColumn: Property<UnityProfilerSortColumn> = Property(UnityProfilerSortColumn.MS)
     val activeSortOrder: Property<SortOrder> = Property(SortOrder.DESCENDING)
     val visibleColumns: Property<Set<UnityProfilerSortColumn>> = Property(UnityProfilerSortColumn.entries.toSet())
@@ -78,11 +80,10 @@ class UnityProfilerTreeViewModel(
 
         // Set up debounced filter input (300ms delay to prevent excessive rebuilds during typing)
         filterInputFlow
-            .debounce(300)
+            .debounce(300.milliseconds)
             .flowOn(Dispatchers.EDT)
-            .onEach { (text, exact) ->
-                filterText.set(text)
-                isExactFilter.set(exact)
+            .onEach { text ->
+                filterState.set(FilterState(text, FilterMatchMode.CONTAINS))
             }
             .launchIn(lifetime.coroutineScope)
 
@@ -97,8 +98,7 @@ class UnityProfilerTreeViewModel(
             }
         }
         currentSnapshot.advise(lifetime, updateAction)
-        filterText.advise(lifetime, updateAction)
-        isExactFilter.advise(lifetime, updateAction)
+        filterState.advise(lifetime, updateAction)
         activeSortColumn.advise(lifetime, updateAction)
         activeSortOrder.advise(lifetime, updateAction)
     }
@@ -107,13 +107,14 @@ class UnityProfilerTreeViewModel(
         val snapshot = currentSnapshot.value ?: return
         val updateLifetime = updateTreeLifetimes.next()
         if (!updateLifetime.isAlive) return
+        val filter = filterState.value
 
         val root = UnityProfilerTreeBuilder.buildTree(
             snapshot.samples,
             updateLifetime,
             getCurrentComparator(),
-            filterText.value,
-            isExactFilter.value
+            filter.text,
+            filter.mode
         )
 
         if (updateLifetime.isAlive) {
@@ -128,23 +129,28 @@ class UnityProfilerTreeViewModel(
     }
 
     /**
-     * Sets the filter text and mode.
+     * Sets the filter text and mode, applying immediately.
+     * Use for programmatic navigation (gutter markers, context menu "Filter by").
      *
      * @param text Filter text to match against node names
-     * @param exact If true, applies filter immediately (for programmatic navigation);
-     *              if false, debounces (300ms) to reduce CPU usage during typing
+     * @param mode Filter match mode
      *
      * Thread-safety: Can be called from any thread.
      */
-    fun setFilter(text: String, exact: Boolean) {
-        if (exact) {
-            // Programmatic navigation - apply immediately to avoid race with UI updates
-            filterText.set(text)
-            isExactFilter.set(true)
-        } else {
-            // User typing - debounce to reduce excessive tree rebuilds
-            filterInputFlow.tryEmit(text to false)
-        }
+    fun setFilter(text: String, mode: FilterMatchMode) {
+        filterState.set(FilterState(text, mode))
+    }
+
+    /**
+     * Sets the filter text with debouncing (300ms) to reduce CPU usage during typing.
+     * Use for filter text field input.
+     *
+     * @param text Filter text to match against node names
+     *
+     * Thread-safety: Can be called from any thread.
+     */
+    fun setFilterFromInput(text: String) {
+        filterInputFlow.tryEmit(text)
     }
 
     /**

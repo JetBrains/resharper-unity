@@ -51,7 +51,7 @@ class UnityProfilerToolWindowFactory : RiderToolWindowFactory() {
             toolWindow.isAvailable = true
             toolWindow.show {
                 val daemon = project.service<UnityProfilerUsagesDaemon>()
-                daemon.treeViewModel.setFilter(navigationText, true)
+                daemon.treeViewModel.setFilter(navigationText, FilterMatchMode.PREFIX)
             }
         }
 
@@ -75,4 +75,3 @@ class UnityProfilerToolWindowFactory : RiderToolWindowFactory() {
         toolWindow.contentManager.addContent(content)
     }
 }
-

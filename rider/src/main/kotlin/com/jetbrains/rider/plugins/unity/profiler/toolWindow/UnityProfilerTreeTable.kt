@@ -40,6 +40,8 @@ class UnityProfilerTreeTable(
 
     init {
         setRootVisible(false)
+        // Disable double-click toggles the row.
+        tree.toggleClickCount = 0
         val sorter = UnityProfilerRowSorter()
         rowSorter = sorter
         viewModel.activeSortColumn.advise(lifetime) { sorter.update() }
@@ -95,10 +97,11 @@ class UnityProfilerTreeTable(
                 (tableModel as ListTreeTableModelOnColumns).setRoot(root ?: DefaultMutableTreeNode())
 
                 if (root != null) {
-                    if (viewModel.filterText.value.isEmpty()) {
+                    val filter = viewModel.filterState.value
+                    if (filter.text.isEmpty()) {
                         expandDefaultNodes(root)
                     } else {
-                        expandToMatches(root, viewModel.filterText.value, viewModel.isExactFilter.value)
+                        expandToMatches(root, filter.text, filter.mode)
                     }
                 }
 
@@ -192,21 +195,23 @@ class UnityProfilerTreeTable(
             .forEach { tree.expandPath(rootPath.pathByAddingChild(it)) }
     }
 
-    private fun expandToMatches(node: DefaultMutableTreeNode, pattern: String, isExactFilter: Boolean) {
+    private fun expandToMatches(node: DefaultMutableTreeNode, pattern: String, filterMatchMode: FilterMatchMode) {
         val name = node.nodeData?.name ?: ""
-        val matches = if (isExactFilter) {
-            name.equals(pattern, ignoreCase = true)
-        } else {
-            name.contains(pattern, ignoreCase = true)
-        }
+        val matches = filterMatchMode.matches(name, pattern)
 
         if (matches) {
-            tree.expandPath(TreeUtil.getPathFromRoot(node))
+            val path = TreeUtil.getPathFromRoot(node)
+            // expandPath is a no-op for leaf nodes, so expand parent to ensure leaf matches are visible
+            val parentPath = path.parentPath
+            if (parentPath != null) {
+                tree.expandPath(parentPath)
+            }
+            tree.expandPath(path)
         }
 
         node.children().asSequence()
             .filterIsInstance<DefaultMutableTreeNode>()
-            .forEach { expandToMatches(it, pattern, isExactFilter) }
+            .forEach { expandToMatches(it, pattern, filterMatchMode) }
     }
 
     private fun showPopupMenu(comp: Component, x: Int, y: Int) {
@@ -226,16 +231,16 @@ class UnityProfilerTreeTable(
         actionGroup.addSeparator()
         actionGroup.add(object : AnAction(UnityUIBundle.message("unity.profiler.toolwindow.filter.by", nodeData.name)) {
             override fun actionPerformed(e: AnActionEvent) {
-                viewModel.setFilter(nodeData.name, true)
+                viewModel.setFilter(nodeData.name, FilterMatchMode.EXACT)
             }
 
             override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
         })
 
-        if (viewModel.filterText.value.isNotEmpty()) {
+        if (viewModel.filterState.value.text.isNotEmpty()) {
             actionGroup.add(object : AnAction(UnityUIBundle.message("unity.profiler.toolwindow.clear.filter")) {
                 override fun actionPerformed(e: AnActionEvent) {
-                    viewModel.setFilter("", false)
+                    viewModel.setFilter("", FilterMatchMode.CONTAINS)
                 }
 
                 override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
