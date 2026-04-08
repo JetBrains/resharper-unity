@@ -31,12 +31,16 @@ import javax.swing.table.TableCellRenderer
 import javax.swing.table.TableColumn
 import javax.swing.table.TableModel
 import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.TreePath
 
 class UnityProfilerTreeTable(
     private val viewModel: UnityProfilerTreeViewModel,
     private val project: Project,
     lifetime: Lifetime
 ) : TreeTable(ListTreeTableModelOnColumns(DefaultMutableTreeNode(), UnityProfilerColumns.allColumns)) {
+
+    // Children expansion state saved on regular collapse — restored on regular expand.
+    private val savedExpansionState = HashMap<TreePath, List<TreePath>>()
 
     init {
         setRootVisible(false)
@@ -50,10 +54,9 @@ class UnityProfilerTreeTable(
 
         addMouseListener(object : PopupHandler() {
             override fun invokePopup(comp: Component, x: Int, y: Int) = showPopupMenu(comp, x, y)
-            
+
             override fun mouseClicked(e: MouseEvent) {
                 super.mouseClicked(e)
-                // Log tree interaction (any click on the tree)
                 project.service<UnityProfilerUsagesDaemon>().incrementTreeInteraction()
             }
         })
@@ -113,6 +116,39 @@ class UnityProfilerTreeTable(
                 updateColumnSizes()
             }
         }
+    }
+
+    override fun processMouseEvent(e: MouseEvent) {
+        if (e.id == MouseEvent.MOUSE_PRESSED) {
+            val path = tree.getClosestPathForLocation(e.x, e.y)
+            if (path != null) {
+                // Alt+Click: recursively expand or collapse the entire subtree.
+                if (e.isAltDown && !e.isPopupTrigger) {
+                    if (tree.isExpanded(path)) collapseSubtree(path) else expandSubtree(path)
+                    e.consume()
+                    return
+                }
+
+                // Regular click: save expanded children before the click is processed,
+                // so we can restore them if this click collapsed then re-expanded the node.
+                val wasExpanded = tree.isExpanded(path)
+                if (wasExpanded) {
+                    savedExpansionState[path] = TreeUtil.collectExpandedPaths(tree, path)
+                }
+
+                super.processMouseEvent(e)
+
+                // If the node was collapsed and is now expanded, restore saved children state
+                if (!wasExpanded && tree.isExpanded(path)) {
+                    val saved = savedExpansionState.remove(path)
+                    if (saved != null) {
+                        TreeUtil.restoreExpandedPaths(tree, saved)
+                    }
+                }
+                return
+            }
+        }
+        super.processMouseEvent(e)
     }
 
     override fun isTreeColumn(column: Int): Boolean = convertColumnIndexToModel(column) == UnityProfilerSortColumn.NAME.ordinal
@@ -184,6 +220,32 @@ class UnityProfilerTreeTable(
                 column.preferredWidth = width
             }
         }
+    }
+
+    private fun expandSubtree(path: TreePath) {
+        val node = path.lastPathComponent as? DefaultMutableTreeNode ?: return
+        val paths = mutableListOf(path)
+        collectDescendantPaths(node, path, paths)
+        TreeUtil.expandPaths(tree, paths)
+    }
+
+    private fun collapseSubtree(path: TreePath) {
+        val node = path.lastPathComponent as? DefaultMutableTreeNode ?: return
+        val paths = mutableListOf<TreePath>()
+        collectDescendantPaths(node, path, paths)
+        paths.reversed().forEach { tree.collapsePath(it) }
+        tree.collapsePath(path)
+    }
+
+    private fun collectDescendantPaths(node: DefaultMutableTreeNode, parentPath: TreePath, result: MutableList<TreePath>) {
+        node.children().asSequence()
+            .filterIsInstance<DefaultMutableTreeNode>()
+            .filter { it.childCount > 0 }
+            .forEach { child ->
+                val childPath = parentPath.pathByAddingChild(child)
+                result.add(childPath)
+                collectDescendantPaths(child, childPath, result)
+            }
     }
 
     private fun expandDefaultNodes(root: DefaultMutableTreeNode) {
