@@ -241,6 +241,11 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
         field("realParentQualifiedName", string.nullable)
     }
     
+    private val ProfilerNavigationRequest = structdef {
+        field("qualifiedName", string)
+        field("profilerMarkerName", string.nullable)
+    }
+
     private val ProfilerModelSample = structdef {
         field("qualifiedName", string)
         field("duration", double)
@@ -257,7 +262,7 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
     
     init {
         signal("updateUnityProfilerSnapshotData", Library.ProfilerSnapshotRequest).async
-        signal("navigateByQualifiedName", string).async
+        signal("navigateByQualifiedName", ProfilerNavigationRequest).async
         property("currentSnapshot", FrontendModelSnapshot.nullable).async
 
         property("selectionState", Library.SelectionState.nullable).async

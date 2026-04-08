@@ -168,7 +168,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 myLogger.Verbose($"Requesting snapshot requested by frontend: {request}");
                 FetchProfilerSnapshotWithProgress(request);
             });
-        FrontendBackendProfilerModel.NavigateByQualifiedName.Advise(myLifetime, void (qualifiedName) =>
+        FrontendBackendProfilerModel.NavigateByQualifiedName.Advise(myLifetime, void (request) =>
         {
             try
             {
@@ -176,7 +176,7 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 {
                     return locks.MainReadAction(() =>
                     {
-                        ProfilerNavigationUtils.ParseAndNavigateToParent(mySolution, qualifiedName, myLogger);
+                        ProfilerNavigationUtils.Navigate(mySolution, request, myLogger);
                     });
                 }).NoAwait();
             }

@@ -10,6 +10,7 @@ import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.RunMethodData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerNavigationRequest
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendProfilerModel
 import com.jetbrains.rider.plugins.unity.profiler.lineMarkers.UnityProfilerActiveLineMarkerRenderer
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerToolWindowFactory
@@ -31,7 +32,7 @@ fun SolutionApiFacade.runProfilerAutomation() {
     // UnityProfilerUsagesDaemon with null state (data not yet arrived). When profiler data arrives
     // ~10 seconds later, mainThreadTimingsAndThreads.advise fires ONE clean snapshot request.
     frameworkLogger.info("Simulating navigation from Unity Profiler to source (opens UnoptimizedMonoBehaviour.cs)")
-    frontendBackendModel.frontendBackendProfilerModel.navigateByQualifiedName.fire("UnoptimizedMonoBehaviour.Update")
+    frontendBackendModel.frontendBackendProfilerModel.navigateByQualifiedName.fire(ProfilerNavigationRequest("UnoptimizedMonoBehaviour.Update", null))
 }
 
 /**

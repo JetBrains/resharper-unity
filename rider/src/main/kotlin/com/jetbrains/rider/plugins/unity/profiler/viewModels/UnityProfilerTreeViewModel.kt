@@ -11,6 +11,7 @@ import com.jetbrains.rd.util.reactive.flowInto
 import com.jetbrains.rider.plugins.unity.model.UnityProfilerRecordInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendProfilerModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendModelSnapshot
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerNavigationRequest
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.FilterMatchMode
 import com.jetbrains.rider.plugins.unity.profiler.toolWindow.FilterState
@@ -184,9 +185,14 @@ class UnityProfilerTreeViewModel(
     }
 
     fun navigate(node: DefaultMutableTreeNode) {
-        val targetNode = findFirstNonProfilerMarkerNode(node) ?: return
-        val qualifiedName = targetNode.nodeData?.name ?: return
-        profilerModel.navigateByQualifiedName.fire(qualifiedName)
+        val nodeData = node.nodeData ?: return
+        if (nodeData.isProfilerMarker) {
+            val parentNode = findFirstNonProfilerMarkerNode(node) ?: return
+            val parentName = parentNode.nodeData?.name ?: return
+            profilerModel.navigateByQualifiedName.fire(ProfilerNavigationRequest(parentName, nodeData.name))
+        } else {
+            profilerModel.navigateByQualifiedName.fire(ProfilerNavigationRequest(nodeData.name, null))
+        }
         UnityProfilerUsagesCollector.logNavigateTreeToCode(project)
     }
 
