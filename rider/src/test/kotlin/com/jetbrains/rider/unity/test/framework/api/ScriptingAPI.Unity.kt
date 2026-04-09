@@ -16,7 +16,6 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.testFramework.getGoldFile
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
@@ -50,7 +49,7 @@ import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.enums.EngineVersion
 import com.jetbrains.rider.test.facades.environment.RiderTestExecutionTarget
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
-import com.jetbrains.rider.test.framework.combine
+import com.jetbrains.rider.test.scriptingApi.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.flushQueues
 import com.jetbrains.rider.test.framework.frameworkLogger

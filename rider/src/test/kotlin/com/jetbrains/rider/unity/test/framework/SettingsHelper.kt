@@ -1,6 +1,6 @@
 package com.jetbrains.rider.unity.test.framework
 
-import com.jetbrains.rider.test.framework.combine
+import com.jetbrains.rider.test.scriptingApi.combine
 import java.nio.file.Path
 import kotlin.io.path.writeText
 
