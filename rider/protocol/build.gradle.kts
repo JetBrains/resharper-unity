@@ -174,9 +174,9 @@ tasks.withType<RdGenTask> {
     dependsOn(classPath)
     classpath(classPath)
 
-    // Ensure rdgen runs with JDK 21
+    // Ensure rdgen runs with JDK 25
     javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     })
 }
 

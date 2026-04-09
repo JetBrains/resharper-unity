@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.io.path.*
 
 plugins {
-    id("com.ullink.nuget") version "2.23"
+    id("com.ullink.nuget") version "2.25"
     id("com.ullink.nunit") version "2.8"
     id("me.filippov.gradle.jvm.wrapper")
     id("org.jetbrains.changelog") version "2.0.0"
@@ -119,8 +119,8 @@ val resharperHostPluginSolution =  backendDir.resolve("resharper-unity.sln")
 version = "${pluginVersion}.$buildCounter"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 sourceSets {
@@ -153,7 +153,7 @@ dependencies {
 
                 else -> {
                     logger.lifecycle("*** Using Rider SDK from intellij-snapshots repository")
-                    rider("${productVersion}-SNAPSHOT", useInstaller = false)
+                    rider("${productVersion}-SNAPSHOT") { useInstaller = false }
                 }
             }
         }
@@ -287,7 +287,7 @@ tasks {
         }
     }
 
-    create("setDotNetVersionTcParam") {
+    register("setDotNetVersionTcParam") {
         group = ciGroup
         doLast {
             println("##teamcity[setParameter name='DotNetVersion' value='$version']")
@@ -301,7 +301,7 @@ tasks {
         }
     }
 
-    val generateModels = create("generateModels") {
+    val generateModels = register("generateModels") {
         dependsOn(":protocol:rdgen")
     }
 
@@ -309,14 +309,14 @@ tasks {
         dependsOn(generateModels)
         compilerOptions {
             freeCompilerArgs.add("-Xjvm-default=all")
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_25)
             allWarningsAsErrors.set(warningsAsErrors)
         }
     }
 
     named<KotlinCompile>("compileTestKotlin") {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_25)
             allWarningsAsErrors.set(warningsAsErrors)
         }
     }
@@ -369,7 +369,7 @@ tasks {
         }
     }
 
-    val buildReSharperHostPlugin = register("buildReSharperHostPlugin") {
+    val buildReSharperHostPlugin = register<Exec>("buildReSharperHostPlugin") {
         group = backendGroup
         description = "Builds the full ReSharper backend plugin solution"
         dependsOn(prepareNuGetConfig, generateModels)
@@ -377,41 +377,30 @@ tasks {
             skipDotnet.not()
         }
 
-        doLast {
-            val buildConfiguration = project.ext.get("BuildConfiguration").toString()
-            val warningsAsErrors = project.ext.get("warningsAsErrors").toString()
-            logger.info("Building $buildFile ($buildConfiguration)")
-
-            val dotNetCliPath = projectDir.parentFile.resolve("dotnet-sdk.cmd")
-            val buildArguments = listOf(
-                "build",
-                resharperHostPluginSolution.canonicalPath,
-                "-consoleLoggerParameters:ErrorsOnly",
-                "/p:Configuration=$buildConfiguration",
-                "/p:Version=${project.version}",
-                "/p:TreatWarningsAsErrors=$warningsAsErrors",
-                "/bl:${resharperHostPluginSolution.name + ".binlog"}",
-                "/nologo"
-            )
-
-            logger.info("dotnet call: '$dotNetCliPath' '$buildArguments' in '$backendDir'")
-            project.exec {
-                executable = dotNetCliPath.canonicalPath
-                args = buildArguments
-                workingDir = backendDir
-            }
-        }
+        val dotNetCliPath = projectDir.parentFile.resolve("dotnet-sdk.cmd")
+        executable = dotNetCliPath.canonicalPath
+        args(
+            "build",
+            resharperHostPluginSolution.canonicalPath,
+            "-consoleLoggerParameters:ErrorsOnly",
+            "/p:Configuration=$buildConfiguration",
+            "/p:Version=${project.version}",
+            "/p:TreatWarningsAsErrors=$warningsAsErrors",
+            "/bl:${resharperHostPluginSolution.name + ".binlog"}",
+            "/nologo"
+        )
+        workingDir = backendDir
     }
 
-    val packReSharperPlugin by creating(com.ullink.NuGetPack::class) {
-        // Don't know the way to rewrite this task in a lazy manner (using registering) because NuGetPack uses `project.afterEvaluate` in its implementation,
-        // so it's just a workaround to not download the Rider SDK in the monorepo mode
+    // NuGetPack uses project.afterEvaluate in its constructor, so it must be created eagerly
+    // (not via `registering`/`register`) to avoid "project is already evaluated" error in Gradle 9
+    val packReSharperPlugin = create("packReSharperPlugin", com.ullink.NuGetPack::class) {
         if (isMonorepo) {
             doFirst {
                 throw GradleException("This task is not expected to be run in the monorepo environment")
             }
 
-            return@creating
+            return@create
         }
 
 
@@ -612,7 +601,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     wrapper {
-        gradleVersion = "8.14.3"
+        gradleVersion = "9.4.1"
         distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip"
     }
 }
