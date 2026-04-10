@@ -106,9 +106,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
                 var declaredElementShortName = GetDeclaredElementNameDescription(classLikeDeclaration, typeParameterOfTypeDeclaration);
 
-                result.Add(elementId.Value,
-                    new TypeParameter(elementId.Value, declaredElementShortName, typeParameterOfTypeDeclaration.Index,
-                        new CountingSet<ElementId>()));
+                var typeParameter = new TypeParameter(elementId.Value, declaredElementShortName,
+                    typeParameterOfTypeDeclaration.Index, new CountingSet<ElementId>());
+
+                if (!result.TryAdd(elementId.Value, typeParameter))
+                {
+                    ourLogger.Warn("Duplicate ElementId {0} for type parameter '{1}' in {2}",
+                        elementId.Value, typeParameterOfTypeDeclaration.ShortName, classLikeDeclaration.GetClrName().FullName);
+                }
             }
 
             return result;
@@ -133,7 +138,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     (int)typeParameter.Index,
                     new CountingSet<ElementId>()
                 );
-                result.Add(elementId.Value, parameter);
+
+                if (!result.TryAdd(elementId.Value, parameter))
+                {
+                    ourLogger.Warn("Duplicate ElementId {0} for type parameter '{1}' in {2}",
+                        elementId.Value, typeParameter.Name, metadataTypeInfo.FullyQualifiedName);
+                }
             }
 
             return result;

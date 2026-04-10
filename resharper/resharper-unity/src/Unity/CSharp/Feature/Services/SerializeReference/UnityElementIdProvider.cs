@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     owner is ICompiledElement, null);
 
                 var typeElementIdWrapper = new TypeElementIdWrapper(
-                    typeParameter.ShortName + parameterIndex,
+                    typeParameter.ShortName + ":" + parameterIndex,
                     psiModule,
                     typeParameter is ICompiledElement,
                     ownerWrapper);
@@ -69,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     var ownerWrapper = new TypeElementIdWrapper(typeOwnerFullyQualifiedName,
                         assemblyFile.Module, true, null);
                     return GetElementId(new TypeElementIdWrapper(
-                        metadataTypeParameter.Name + metadataTypeParameter.Index,
+                        metadataTypeParameter.Name + ":" + metadataTypeParameter.Index,
                         assemblyFile.Module, true, ownerWrapper));
                 }
                 default:
@@ -91,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     var ownerWrapper = new TypeElementIdWrapper(typeOwnerFullyQualifiedName,
                         assemblyFile.Module, true, null);
                     return GetElementId(new TypeElementIdWrapper(
-                        parameterReferenceType.TypeParameter.Name + parameterReferenceType.TypeParameter.Index,
+                        parameterReferenceType.TypeParameter.Name + ":" + parameterReferenceType.TypeParameter.Index,
                         assemblyFile.Module, true, ownerWrapper));
                 }
                 default:

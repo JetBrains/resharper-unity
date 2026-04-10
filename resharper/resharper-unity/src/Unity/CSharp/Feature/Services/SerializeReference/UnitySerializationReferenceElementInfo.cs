@@ -15,7 +15,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference
 {
-    [PolymorphicMarshaller(6)]
+    [PolymorphicMarshaller(7)]
     internal class UnitySerializationReferenceElementInfo : ISwaExtensionInfo
     {
         public static readonly IUnsafeMarshaller<UnitySerializationReferenceElementInfo> SerializeRefInfoMarshaller = new UniversalMarshaller<UnitySerializationReferenceElementInfo>(
