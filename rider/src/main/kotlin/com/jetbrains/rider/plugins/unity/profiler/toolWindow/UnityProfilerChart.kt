@@ -15,7 +15,6 @@ import com.intellij.ui.CollectionComboBoxModel
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleColoredComponent
-import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.charts.CategoryLineChart
 import com.intellij.ui.charts.LineStepped
@@ -28,6 +27,7 @@ import com.intellij.ui.charts.margins
 import com.intellij.ui.charts.ranges
 import com.intellij.ui.charts.yPainter
 import com.intellij.ui.components.JBLabel
+import com.intellij.ui.dsl.listCellRenderer.textListCellRenderer
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.intersect
@@ -270,7 +270,7 @@ class UnityProfilerChart(
             return Dimension(size.width.coerceIn(JBUI.scale(150), JBUI.scale(250)), size.height)
         }
     }.apply {
-        renderer = SimpleListCellRenderer.create("", { it.name })
+        renderer = textListCellRenderer("", { it.name })
         addActionListener {
             val selected = selectedItem as? ProfilerThread
             if (selected != viewModel.selectedThread.value) {
