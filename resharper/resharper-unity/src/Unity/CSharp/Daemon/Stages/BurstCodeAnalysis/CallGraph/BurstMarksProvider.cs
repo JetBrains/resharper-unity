@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
@@ -225,13 +226,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         result.Add(function);
                     break;
                 }
+                case ILocalFunctionDeclaration { DeclaredElement: { } localFunction } localFunctionDeclaration:
+                {
+                    if (containingFunction == null)
+                        break;
+                    if (CheckBurstBannedAnalyzers(localFunctionDeclaration))
+                        result.Add(localFunction);
+                    break;
+                }
             }
 
 
             return result;
         }
 
-        private bool CheckBurstBannedAnalyzers(IFunctionDeclaration node)
+        private bool CheckBurstBannedAnalyzers(ITreeNode node)
         {
             var processor = new BurstBannedProcessor(myBurstBannedAnalyzers, node);
 

@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
@@ -51,6 +52,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         break;
                     if (BurstCodeAnalysisUtil.IsBurstProhibitedFunction(function))
                         result.Add(function);
+                    break;
+                }
+                case ILocalFunctionDeclaration { DeclaredElement: { } localFunction }:
+                {
+                    if (containingFunction == null)
+                        break;
+                    if (BurstCodeAnalysisUtil.IsBurstProhibitedLocalFunction(localFunction))
+                        result.Add(localFunction);
                     break;
                 }
             }

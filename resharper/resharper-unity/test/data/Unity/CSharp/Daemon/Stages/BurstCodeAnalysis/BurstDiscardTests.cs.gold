@@ -144,6 +144,21 @@ namespace BurstDiscardTests
                 var current = |new object()|(2);
             }
         }
+
+        [BurstCompile]
+        struct BurstDiscardTest4 : IJob
+        {
+            public void Execute()
+            {
+                DoManagedOnly();
+
+                [BurstDiscard]
+                void DoManagedOnly()
+                {
+                    var current = new object();
+                }
+            }
+        }
     }
 }
 ---------------------------------------------------------

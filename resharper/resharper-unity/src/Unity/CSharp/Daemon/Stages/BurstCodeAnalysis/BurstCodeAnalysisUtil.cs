@@ -3,6 +3,7 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.DeclaredElements;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
@@ -212,9 +213,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 case IInvocationExpression invocationExpression
                     when invocationExpression.Reference.Resolve().DeclaredElement is IMethod method &&
                          IsBurstDiscarded(method):
+                case IInvocationExpression invocationExpression2
+                    when invocationExpression2.Reference.Resolve().DeclaredElement is ILocalFunction localFunc &&
+                         IsBurstDiscarded(localFunc):
                 case IFunctionDeclaration functionDeclaration
                     when functionDeclaration.DeclaredElement is IFunction function &&
                          IsBurstProhibitedFunction(function):
+                case ILocalFunctionDeclaration localFunctionDeclaration
+                    when localFunctionDeclaration.DeclaredElement is ILocalFunction localFunction &&
+                         IsBurstProhibitedLocalFunction(localFunction):
                 case IAttributeSectionList _:
                     return true;
                 default:
@@ -231,6 +238,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return function is IMethod method && IsBurstDiscarded(method);
         }
 
+        public static bool IsBurstProhibitedLocalFunction([NotNull] ILocalFunction localFunction)
+        {
+            if (!IsBurstPossibleLocalFunction(localFunction))
+                return true;
+
+            return IsBurstDiscarded(localFunction);
+        }
+
+        public static bool IsBurstPossibleLocalFunction([NotNull] ILocalFunction localFunction)
+        {
+            return localFunction.IsStatic || localFunction.GetContainingTypeMember() is IStruct;
+        }
+
         public static bool IsBurstPossibleFunction([NotNull] IFunction function)
         {
             return function.IsStatic || function.GetContainingTypeMember() is IStruct;
@@ -239,6 +259,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public static bool IsBurstDiscarded([NotNull] IMethod method)
         {
             return method.HasAttributeInstance(KnownTypes.BurstDiscardAttribute, AttributesSource.Self);
+        }
+
+        public static bool IsBurstDiscarded([NotNull] ILocalFunction localFunction)
+        {
+            return localFunction.HasAttributeInstance(KnownTypes.BurstDiscardAttribute, AttributesSource.Self);
         }
 
         [ContractAnnotation("null => false")]
