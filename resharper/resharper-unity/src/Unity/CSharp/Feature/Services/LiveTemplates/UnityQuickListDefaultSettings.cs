@@ -68,6 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             AddToQuickList(mountPoint, myProjectMainPoint, "SystemBase", ++pos, "9C5472EF-F807-4BB4-8E39-56D5B38C96B5");
             AddToQuickList(mountPoint, myProjectMainPoint, "IJobEntity", ++pos, "60A9DD1A-9237-49A8-BFAA-D8510DF7FAE0");
             AddToQuickList(mountPoint, myProjectMainPoint, "AuthoringMonoBehaviour", ++pos, "E7134AFA-22FA-439E-AC0B-F572EA75D5FC");
+            AddToQuickList(mountPoint, myProjectMainPoint, "VisualElement", ++pos, "93FD2901-A77E-4914-ABE7-B3A8C6E28325");
         }
 
         private void InitialiseQuickList(ISettingsStorageMountPoint mountPoint, IMainScopePoint quickList)

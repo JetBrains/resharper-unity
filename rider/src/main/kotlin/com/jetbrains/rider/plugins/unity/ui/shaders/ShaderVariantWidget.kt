@@ -54,7 +54,7 @@ class ShaderVariantWidgetAction : WidgetAction("ShaderVariantsService"){
 
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent {
         val component = object : ActionButton(this, presentation, place, JBUI.size(18)) {
-            override fun getInsets(): Insets = JBUI.insets(2)
+            override fun getInsets(): Insets = JBUI.insets(2, 4)
             override fun paintComponent(g: Graphics?) {
                 val view = BasicHTML.createHTMLView(JLabel(), presentation.text)
                 // Enable anti-aliasing for smoother text

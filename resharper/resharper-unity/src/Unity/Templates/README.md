@@ -51,6 +51,7 @@ Categorised:
 | [Unity property with serialized backing field](Live/PropertyWithSerialisedBackingField.md) |
 | [Unity serialized field](Live/SerialisedField.md)                                          |
 | [Unlit Shader](File/UnlitShader.md)                                                        |
+| [Visual Element](File/VisualElement.md)                                                    |
 
 
 ### Live Templates
@@ -129,6 +130,7 @@ Categorised:
 | [Unity property with serialized backing field](Live/PropertyWithSerialisedBackingField.md) |
 | [Unity serialized field](Live/SerialisedField.md)                                          |
 | [Unlit Shader](File/UnlitShader.md)                                                        |
+| [Visual Element](File/VisualElement.md)                                                    |
 
 
 ### Live Templates
