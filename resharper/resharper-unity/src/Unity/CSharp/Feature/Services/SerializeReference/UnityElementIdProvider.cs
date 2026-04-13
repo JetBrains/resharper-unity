@@ -19,8 +19,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class UnityElementIdProvider : IUnityElementIdProvider
     {
-        ElementId? IUnityElementIdProvider.GetElementId(IDeclaredElement? element, ITypeElement? ownerType,
-            int index)
+        ElementId? IUnityElementIdProvider.GetElementId(IDeclaredElement? element, ITypeElement? ownerType, int index)
+            => GetElementIdInternal(element, ownerType, index);
+
+        ElementId? IUnityElementIdProvider.GetElementId(IMetadataEntity? metadataEntity, IPsiAssemblyFile assemblyFile)
+            => GetElementIdInternal(metadataEntity, assemblyFile);
+
+        ElementId? IUnityElementIdProvider.GetElementId(IMetadataType metadataType, IPsiAssemblyFile assemblyFile)
+            => GetElementIdInternal(metadataType, assemblyFile);
+
+        protected virtual ElementId? GetElementIdInternal(IDeclaredElement? element, ITypeElement? ownerType, int index)
         {
             if (element == null)
                 return null;
@@ -53,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             return null;
         }
 
-        ElementId? IUnityElementIdProvider.GetElementId(IMetadataEntity? metadataEntity, IPsiAssemblyFile assemblyFile)
+        protected virtual ElementId? GetElementIdInternal(IMetadataEntity? metadataEntity, IPsiAssemblyFile assemblyFile)
         {
             if (metadataEntity == null)
                 return null;
@@ -78,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             }
         }
 
-        ElementId? IUnityElementIdProvider.GetElementId(IMetadataType metadataType, IPsiAssemblyFile assemblyFile)
+        protected virtual ElementId? GetElementIdInternal(IMetadataType metadataType, IPsiAssemblyFile assemblyFile)
         {
             switch (metadataType)
             {

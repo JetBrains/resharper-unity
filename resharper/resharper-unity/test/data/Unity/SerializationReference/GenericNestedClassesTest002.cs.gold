@@ -39,7 +39,7 @@
 
        --------------------------------------------------------------------
 
-       {-243753046}  | GenericClassesLib02.OwnerClass+NestedClass`1<T_IN_NESTED[0]> | IsTypeParameter:True
+       {-1152523366}  | GenericClassesLib02.OwnerClass+NestedClass`1<T_IN_NESTED[0]> | IsTypeParameter:True
        SuperClasses: 0
 
        Inheritors: 1
@@ -52,7 +52,7 @@
 
        {-1475416536}  | GenericClassesLib02.X | IsTypeParameter:False
        SuperClasses: 1
-             {-243753046} :GenericClassesLib02.OwnerClass+NestedClass`1<T_IN_NESTED[0]> (1)
+             {-1152523366} :GenericClassesLib02.OwnerClass+NestedClass`1<T_IN_NESTED[0]> (1)
 
        Inheritors: 0
 

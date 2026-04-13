@@ -21,11 +21,11 @@
 
        --------------------------------------------------------------------
 
-       {848205004}  | GenericClassesLib01.A`1<T0_IN_A[0]> | IsTypeParameter:True
+       {-15004854}  | GenericClassesLib01.A`1<T0_IN_A[0]> | IsTypeParameter:True
        SuperClasses: 0
 
        Inheritors: 1
-             {-2034318600} :GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> (1)
+             {-907583320} :GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> (1)
 
        SerializeReferenceHolders: 1
              {440566548} :GenericClassesLib01.A`1 (1)
@@ -43,9 +43,9 @@
 
        --------------------------------------------------------------------
 
-       {-2034318600}  | GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> | IsTypeParameter:True
+       {-907583320}  | GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> | IsTypeParameter:True
        SuperClasses: 1
-             {848205004} :GenericClassesLib01.A`1<T0_IN_A[0]> (1)
+             {-15004854} :GenericClassesLib01.A`1<T0_IN_A[0]> (1)
 
        Inheritors: 1
              {2132960142} :GenericClassesLib01.X (1)
@@ -54,7 +54,7 @@
 
        --------------------------------------------------------------------
 
-       {1947604696}  | GenericClassesLib01.B`2<T1_IN_B[1]> | IsTypeParameter:True
+       {-1421927876}  | GenericClassesLib01.B`2<T1_IN_B[1]> | IsTypeParameter:True
        SuperClasses: 0
 
        Inheritors: 1
@@ -106,7 +106,7 @@
 
        {2132960142}  | GenericClassesLib01.X | IsTypeParameter:False
        SuperClasses: 1
-             {-2034318600} :GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> (1)
+             {-907583320} :GenericClassesLib01.B`2<T0_IN_B__FROM_T0_IN_A[0]> (1)
 
        Inheritors: 0
 
@@ -117,7 +117,7 @@
 
        {1223291230}  | GenericClassesLib01.Y | IsTypeParameter:False
        SuperClasses: 1
-             {1947604696} :GenericClassesLib01.B`2<T1_IN_B[1]> (1)
+             {-1421927876} :GenericClassesLib01.B`2<T1_IN_B[1]> (1)
 
        Inheritors: 0
 
