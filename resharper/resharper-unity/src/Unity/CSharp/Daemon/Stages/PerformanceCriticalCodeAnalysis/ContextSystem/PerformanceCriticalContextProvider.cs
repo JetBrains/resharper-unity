@@ -1,6 +1,5 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -20,19 +19,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public PerformanceCriticalContextProvider(
             Lifetime lifetime,
-            IShellLocks shellLocks,
             IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             IElementIdProvider elementIdProvider,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            PerformanceCriticalCodeMarksProvider marksProviderBase)
+            PerformanceCriticalCodeMarksProvider marksProviderBase
+        )
             : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
             myIsPerformanceAnalysisEnabledProperty =
                 applicationWideContextBoundSettingStore.BoundSettingsStore.GetValueProperty2(lifetime,
-                    (UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting, ApartmentForNotifications.Primary(shellLocks));
+                    (UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting, ApartmentForNotifications.Mta());
         }
 
         public override CallGraphContextTag ContextTag => CallGraphContextTag.PERFORMANCE_CRITICAL_CONTEXT;
+
         public override bool IsContextAvailable => myIsPerformanceAnalysisEnabledProperty.Value;
     }
 }

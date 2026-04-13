@@ -1,5 +1,5 @@
 using JetBrains.Application.Parts;
-using JetBrains.Application.Threading;
+using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -15,36 +15,29 @@ using JetBrains.Rider.Backend.Platform.Icons;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-    public sealed class BurstCodeVisionProvider : BurstGutterMarkProvider
+    public sealed class BurstCodeVisionProvider(
+        Lifetime lifetime,
+        IApplicationWideContextBoundSettingStore store,
+        BurstCodeInsightProvider burstCodeInsightProvider,
+        IconHost iconHost,
+        BurstCodeInsights codeInsights)
+        : BurstGutterMarkProvider(lifetime, store, codeInsights)
     {
-        private readonly IApplicationWideContextBoundSettingStore mySettingsStore;
-        private readonly BurstCodeInsightProvider myBurstCodeInsightProvider;
-        private readonly IconHost myIconHost;
-        private readonly BurstCodeInsights myCodeInsights;
-
-        public BurstCodeVisionProvider(
-            Lifetime lifetime,
-            IThreading threading,
-            IApplicationWideContextBoundSettingStore store,
-            BurstCodeInsightProvider burstCodeInsightProvider,
-            IconHost iconHost,
-            BurstCodeInsights codeInsights) : base(lifetime, threading, store, codeInsights)
-        {
-            mySettingsStore = store;
-            myBurstCodeInsightProvider = burstCodeInsightProvider;
-            myIconHost = iconHost;
-            myCodeInsights = codeInsights;
-        }
+        private readonly IApplicationWideContextBoundSettingStore mySettingsStore = store;
+        private readonly BurstCodeInsights myCodeInsights = codeInsights;
 
         public override bool IsGutterMarkEnabled
         {
             get
             {
                 var result = false;
-                var boundStore = mySettingsStore.BoundSettingsStore;
-                var providerId = myBurstCodeInsightProvider.ProviderId;
 
-                RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, () => result = base.IsGutterMarkEnabled, out _);
+                RiderIconProviderUtil.IsCodeVisionEnabled(
+                    mySettingsStore.BoundSettingsStore,
+                    burstCodeInsightProvider.ProviderId,
+                    () => result = base.IsGutterMarkEnabled,
+                    out _
+                );
 
                 return result;
             }
@@ -57,11 +50,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Bu
         {
             var isBurstIconsEnabled = base.IsGutterMarkEnabled;
             var boundStore = mySettingsStore.BoundSettingsStore;
-            var providerId = myBurstCodeInsightProvider.ProviderId;
+            var providerId = burstCodeInsightProvider.ProviderId;
             void Fallback() => base.Analyze(methodDeclaration, consumer, context);
 
             return isBurstIconsEnabled && !HasBurstAttributeInstance(methodDeclaration)
-                   && RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out _);
+                                       && RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback,
+                                           out _);
         }
 
         protected override void Analyze(IMethodDeclaration methodDeclaration,
@@ -71,10 +65,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Bu
                 return;
 
             var declaredElement = methodDeclaration.DeclaredElement;
-            var iconModel = myIconHost.Transform(InsightUnityIcons.InsightUnity.Id);
+            var iconModel = iconHost.Transform(InsightUnityIcons.InsightUnity.Id);
             var actions = myCodeInsights.GetBurstActions(methodDeclaration, context);
 
-            myBurstCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement,
+            burstCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement,
                 BurstCodeAnalysisUtil.BurstDisplayName,
                 BurstCodeAnalysisUtil.BurstTooltip,
                 BurstCodeAnalysisUtil.BurstDisplayName,

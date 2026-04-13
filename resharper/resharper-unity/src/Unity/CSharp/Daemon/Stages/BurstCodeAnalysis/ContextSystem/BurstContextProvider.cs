@@ -1,6 +1,5 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -22,11 +21,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private readonly IProperty<bool> myIsBurstEnabledProperty;
 
-        public BurstContextProvider(Lifetime lifetime, IElementIdProvider elementIdProvider, IApplicationWideContextBoundSettingStore store,
-            CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, BurstMarksProvider marksProviderBase, IShellLocks shellLocks)
+        public BurstContextProvider(
+            Lifetime lifetime,
+            IElementIdProvider elementIdProvider,
+            IApplicationWideContextBoundSettingStore store,
+            CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+            BurstMarksProvider marksProviderBase
+        )
             : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
-            myIsBurstEnabledProperty = store.BoundSettingsStore.GetValueProperty2(lifetime, (UnitySettings key) => key.EnableBurstCodeHighlighting, ApartmentForNotifications.Primary(shellLocks));
+            myIsBurstEnabledProperty = store.BoundSettingsStore.GetValueProperty2(lifetime,
+                (UnitySettings key) => key.EnableBurstCodeHighlighting, ApartmentForNotifications.Mta());
         }
 
         public override CallGraphContextTag ContextTag => CallGraphContextTag.BURST_CONTEXT;

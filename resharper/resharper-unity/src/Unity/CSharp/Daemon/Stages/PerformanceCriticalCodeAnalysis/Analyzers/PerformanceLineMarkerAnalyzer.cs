@@ -1,6 +1,5 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
@@ -19,11 +18,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         private readonly IProperty<PerformanceHighlightingMode> myLineMarkerStatus;
 
-        public PerformanceLineMarkerAnalyzer(Lifetime lifetime, IApplicationWideContextBoundSettingStore settingsStore, IThreading threading)
+        public PerformanceLineMarkerAnalyzer(Lifetime lifetime, IApplicationWideContextBoundSettingStore settingsStore)
         {
-            var apartmentForNotifications = ApartmentForNotifications.Primary(threading);
             myLineMarkerStatus = settingsStore.BoundSettingsStore
-                .GetValueProperty2(lifetime, (UnitySettings key) => key.PerformanceHighlightingMode, apartmentForNotifications);
+                .GetValueProperty2(lifetime, (UnitySettings key) => key.PerformanceHighlightingMode,
+                    ApartmentForNotifications.Mta());
         }
 
         protected sealed override void Analyze(IFunctionDeclaration functionDeclaration,
