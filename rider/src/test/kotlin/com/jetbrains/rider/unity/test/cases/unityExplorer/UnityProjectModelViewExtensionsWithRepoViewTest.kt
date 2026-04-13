@@ -130,6 +130,7 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
         }
     }
 
+    @Mute("RIDER-135141")
     @Test(description="Delete a script in the project")
     @ChecklistItems(["Unity explorer/Delete script"])
     fun testDeleteFile() {

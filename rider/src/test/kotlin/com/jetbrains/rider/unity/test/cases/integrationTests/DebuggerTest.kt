@@ -230,7 +230,11 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V2022)
-class DebuggerTestUnity2022 : DebuggerTest()
+class DebuggerTestUnity2022 : DebuggerTest() {
+    init {
+        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
+    }
+}
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6)

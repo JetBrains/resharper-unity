@@ -2,6 +2,7 @@ package com.jetbrains.rider.unity.test.cases.unityExplorer
 
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.OpenSolutionParams
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestSettings
@@ -127,6 +128,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
+    @Mute("RIDER-135141")
     @Test(description="Delete a script in the project")
     @ChecklistItems(["Unity explorer/Delete script"])
     fun testDeleteFile() {
