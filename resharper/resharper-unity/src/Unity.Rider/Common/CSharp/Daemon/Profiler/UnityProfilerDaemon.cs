@@ -85,39 +85,6 @@ public class UnityProfilerDaemon : CSharpDaemonStageBase
         ILogger logger)
         : IDaemonStageProcess
     {
-        //todo remove it
-        private static readonly HighlightingString ourMethodCallSingle =
-            new(Strings.UnityProfilerSnapshot_Single_Method_Highlighting_display_name,
-                Strings.UnityProfilerSnapshot_Single_Method_Highlighting_tooltip,
-                Strings.UnityProfilerSnapshot_Single_Method_Highlighting_moreinfo);
-
-        private static readonly HighlightingString ourMethodCallMultiple =
-            new(Strings.UnityProfilerSnapshot_Multiple_Method_Highlighting_display_name,
-                Strings.UnityProfilerSnapshot_Multiple_Method_Highlighting_tooltip,
-                Strings.UnityProfilerSnapshot_Multiple_Method_Highlighting_moreinfo);
-
-        private static readonly HighlightingString ourClassSingle =
-            new(Strings.UnityProfilerSnapshot_Single_Class_Highlighting_display_name,
-                Strings.UnityProfilerSnapshot_Single_Class_Highlighting_tooltip,
-                Strings.UnityProfilerSnapshot_Single_Class_Highlighting_moreinfo);
-
-        private static readonly HighlightingString ourClassMultiple =
-            new(Strings.UnityProfilerSnapshot_Multiple_Class_Highlighting_display_name,
-                Strings.UnityProfilerSnapshot_Multiple_Class_Highlighting_tooltip,
-                Strings.UnityProfilerSnapshot_Multiple_Class_Highlighting_moreinfo);
-
-        private static readonly HighlightingString ourInternalCall =
-            new(Strings.UnityProfilerSnapshot_Internal_Call_Highlighting_display_name,
-                Strings.UnityProfilerSnapshot_Internal_Call_Highlighting_tooltip,
-                Strings.UnityProfilerSnapshot_Internal_Call_Highlighting_moreinfo);
-
-        private readonly struct HighlightingString(string displayName, string tooltip, string moreText)
-        {
-            public readonly string DisplayName = displayName;
-            public readonly string Tooltip = tooltip;
-            public readonly string MoreText = moreText;
-        }
-
         public void Execute(Action<DaemonStageResult> committer)
         {
             var textControl = solution.GetComponent<ITextControlManager>().LastFocusedTextControlPerClient
