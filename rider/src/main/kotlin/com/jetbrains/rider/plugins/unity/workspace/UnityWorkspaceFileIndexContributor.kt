@@ -10,6 +10,7 @@ import com.intellij.workspaceModel.core.fileIndex.WorkspaceFileSetRegistrar
 import com.intellij.workspaceModel.core.fileIndex.impl.ModuleOrLibrarySourceRootData
 import com.intellij.workspaceModel.ide.impl.legacyBridge.module.findModule
 import com.jetbrains.rider.model.RdSolutionDescriptor
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.indexing.RiderModuleRootData
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.workspaceModel.getRiderModuleEntity
@@ -33,6 +34,7 @@ class UnityWorkspaceFileIndexContributor : WorkspaceFileIndexContributor<Project
         if (entity.descriptor is RdSolutionDescriptor) {
             val url = entity.url ?: return
             val module = storage.getRiderModuleEntity()!!.findModule(storage)!!
+            if (!module.project.isUnityProject.value) return
             val virtualFileManager = WorkspaceModel.getInstance(module.project).getVirtualFileUrlManager()
 
             val solFolder = url.virtualFile?.parent?:return
@@ -57,6 +59,11 @@ class UnityWorkspaceFileIndexContributor : WorkspaceFileIndexContributor<Project
             if (userSettingsDir != null)
                 registrar.registerFileSet(userSettingsDir.toVirtualFileUrl(virtualFileManager), WorkspaceFileKind.EXTERNAL_SOURCE, entity,
                                           UnityAssetsModulesFileSetData())
+
+            // workaround for VfsIterator behavior, which doesn't exclude folders that are NOT_UNDER_ROOTS
+            val libraryOcclusionDir = solFolder.findFileByRelativePath("Library/Occlusion")
+            if (libraryOcclusionDir != null)
+                registrar.registerExcludedRoot(libraryOcclusionDir.toVirtualFileUrl(virtualFileManager), entity)
 
             // we can't include this,
             // I haven't checked myself, but on big projects this would cause a big perf penalty, delay in indexing
