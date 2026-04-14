@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity;
@@ -20,12 +21,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       myAdapter = adapter;
     }
 
-    public McpOverviewResponse? GetOverview(McpOverviewRequest request, Lifetime lifetime)
+    public McpOverviewResponse? GetOverview(McpOverviewRequest request, Lifetime lifetime, int firstFrame, int lastFrame)
     {
-      ourLogger.Verbose($"GetOverview: threshold={request.ThresholdMs}, limit={request.Limit}, sortBy={request.SortBy}");
+      ourLogger.Verbose($"GetOverview: threshold={request.ThresholdMs}, limit={request.Limit}, sortBy={request.SortBy}, range=[{firstFrame},{lastFrame}]");
 
-      var firstFrame = myAdapter.FirstFrameIndex;
-      var lastFrame = myAdapter.LastFrameIndex;
       if (firstFrame == -1 || lastFrame == -1)
         return null;
 
@@ -151,12 +150,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       }
     }
 
-    public McpBatchAnalyzeResponse? GetBatchAnalyze(McpBatchAnalyzeRequest request, Lifetime lifetime)
+    public McpBatchAnalyzeResponse? GetBatchAnalyze(McpBatchAnalyzeRequest request, Lifetime lifetime, int firstFrame, int lastFrame)
     {
-      ourLogger.Verbose($"GetBatchAnalyze: start={request.StartFrame}, limit={request.Limit}, threshold={request.ThresholdMs}, snapshots={request.SnapshotLimit}");
+      ourLogger.Verbose($"GetBatchAnalyze: start={request.StartFrame}, limit={request.Limit}, threshold={request.ThresholdMs}, snapshots={request.SnapshotLimit}, range=[{firstFrame},{lastFrame}]");
 
-      var firstFrame = request.StartFrame >= 0 ? request.StartFrame : myAdapter.FirstFrameIndex;
-      var lastFrame = myAdapter.LastFrameIndex;
+      if (request.StartFrame >= 0)
+        firstFrame = request.StartFrame;
       if (firstFrame == -1 || lastFrame == -1)
         return null;
 
@@ -201,33 +200,50 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         totalDurationMs += frameDuration;
 
         var sampleCount = rawData.SampleCount;
-        for (var s = 1; s < sampleCount; s++)
+        var count = sampleCount - 1;
+        if (count <= 0) continue;
+
+        // First pass: read all sample data
+        var markerIds = new int[count];
+        var durations = new double[count];
+        var childrenCounts = new int[count];
+        var allocs = new long[count];
+
+        long frameSelfAlloc = 0;
+        for (var s = 0; s < count; s++)
         {
-          var markerId = rawData.GetSampleMarkerId(s);
-          if (!nameCache.TryGetValue(markerId, out var name))
-          {
-            name = CleanSampleName(rawData.GetSampleName(s));
-            nameCache[markerId] = name;
-          }
+          var raw = s + 1;
+          markerIds[s] = rawData.GetSampleMarkerId(raw);
+          durations[s] = rawData.GetSampleTimeMs(raw);
+          childrenCounts[s] = rawData.GetSampleChildrenCount(raw);
+          allocs[s] = rawData.GetAllocSize(raw);
+          frameSelfAlloc += allocs[s];
+          if (!nameCache.TryGetValue(markerIds[s], out _))
+            nameCache[markerIds[s]] = CleanSampleName(rawData.GetSampleName(raw));
+        }
+        totalAllocBytes += frameSelfAlloc;
 
-          var duration = rawData.GetSampleTimeMs(s);
-          var memAlloc = rawData.GetAllocSize(s);
-          totalAllocBytes += memAlloc;
+        // Propagate leaf allocations to parent functions
+        PropagateAllocationsToParents(childrenCounts, allocs, count);
 
-          if (duration < request.MinSampleDurationMs)
+        // Second pass: aggregate using inclusive allocations
+        for (var s = 0; s < count; s++)
+        {
+          if (durations[s] < request.MinSampleDurationMs)
             continue;
 
+          var name = nameCache[markerIds[s]];
           if (!aggregation.TryGetValue(name, out var agg))
           {
             agg = new Aggregator();
             aggregation[name] = agg;
           }
 
-          agg.TotalDurationMs += duration;
+          agg.TotalDurationMs += durations[s];
           agg.CallCount++;
-          agg.TotalMemoryBytes += memAlloc;
-          if (duration > agg.MaxSingleMs)
-            agg.MaxSingleMs = duration;
+          agg.TotalMemoryBytes += allocs[s];
+          if (durations[s] > agg.MaxSingleMs)
+            agg.MaxSingleMs = durations[s];
           agg.FrameIds.Add(frameId);
         }
       }
@@ -299,6 +315,54 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       return sorted[lower] * (1 - weight) + sorted[upper] * weight;
     }
 
+    /// <summary>
+    /// Propagates allocations from leaf GC.Alloc markers to parent functions.
+    /// After this call, allocs[i] contains inclusive allocation (self + all descendants).
+    /// Same approach as SamplesCacheUtils.ConstructCache / ShareMemoryAllocationsWithParent.
+    /// </summary>
+    private static void PropagateAllocationsToParents(int[] childrenCounts, long[] allocs, int count)
+    {
+      var stackIdx = new int[count];
+      var stackRem = new int[count];
+      var top = -1;
+
+      for (var i = 0; i < count; i++)
+      {
+        // Pop completed parents, propagating their inclusive alloc upward
+        while (top >= 0 && stackRem[top] == 0)
+        {
+          if (top > 0)
+            allocs[stackIdx[top - 1]] += allocs[stackIdx[top]];
+          top--;
+        }
+
+        // Current sample's parent is top of stack
+        if (top >= 0)
+        {
+          stackRem[top]--;
+          // Leaf: propagate directly to parent
+          if (childrenCounts[i] == 0)
+            allocs[stackIdx[top]] += allocs[i];
+        }
+
+        // Push if has children
+        if (childrenCounts[i] > 0)
+        {
+          top++;
+          stackIdx[top] = i;
+          stackRem[top] = childrenCounts[i];
+        }
+      }
+
+      // Unwind remaining stack
+      while (top >= 0)
+      {
+        if (top > 0)
+          allocs[stackIdx[top - 1]] += allocs[stackIdx[top]];
+        top--;
+      }
+    }
+
     // Mirrors SamplesCacheUtils.ParseSampleName logic (different runtime, can't share code)
     private static string CleanSampleName(string name)
     {
@@ -330,6 +394,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       public readonly double FramePercentage;
       public readonly long MemoryBytes;
       public readonly int ChildrenCount;
+      public long InclusiveMemoryBytes;
       public int Depth;
       public int ParentIndex = -1;
       public string Path = "";
@@ -341,6 +406,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         FramePercentage = framePercentage;
         MemoryBytes = memoryBytes;
         ChildrenCount = childrenCount;
+        InclusiveMemoryBytes = memoryBytes;
       }
     }
 
@@ -389,6 +455,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         for (var c = 0; c < sample.ChildrenCount; c++)
           Walk(depth + 1, currentIdx);
 
+        // Propagate inclusive alloc to parent (same as ShareMemoryAllocationsWithParent)
+        if (parentIdx >= 0)
+          samples[parentIdx].InclusiveMemoryBytes += sample.InclusiveMemoryBytes;
+
         sb.Length = lengthBefore;
       }
 
@@ -410,7 +480,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
         acc.TotalDurationMs += s.DurationMs;
         acc.CallCount++;
-        acc.TotalMemoryBytes += s.MemoryBytes;
+        acc.TotalMemoryBytes += s.InclusiveMemoryBytes;
         if (s.DurationMs > acc.BestDuration)
         {
           acc.BestDuration = s.DurationMs;
@@ -449,6 +519,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       {
         var target = samples[matchIdx];
 
+        // Ancestors: unique by path, callCount=1
         var ancestors = new List<int>();
         var pi = target.ParentIndex;
         while (pi >= 0)
@@ -465,30 +536,44 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
           {
             results.Add(new McpCallstackEntry(
               ancestor.Name, ancestor.Path, ancestor.DurationMs,
-              ancestor.FramePercentage, ancestor.MemoryBytes,
-              ancestor.Depth, ancestor.ChildrenCount, false));
+              ancestor.FramePercentage, ancestor.InclusiveMemoryBytes,
+              ancestor.Depth, ancestor.ChildrenCount, 1, false));
           }
         }
 
+        // Target: callCount=1
         if (addedPaths.Add(target.Path))
         {
           results.Add(new McpCallstackEntry(
             target.Name, target.Path, target.DurationMs,
-            target.FramePercentage, target.MemoryBytes,
-            target.Depth, target.ChildrenCount, true));
+            target.FramePercentage, target.InclusiveMemoryBytes,
+            target.Depth, target.ChildrenCount, 1, true));
         }
 
+        // Children: aggregate by name
+        var childAgg = new Dictionary<string, (double durationMs, double framePct, long memBytes, int maxChildren, int callCount)>();
         var ci = matchIdx + 1;
         var remaining = target.ChildrenCount;
+        var childDepth = target.Depth + 1;
         while (remaining > 0 && ci < samples.Count)
         {
           var child = samples[ci];
-          if (child.Depth == target.Depth + 1)
+          if (child.Depth == childDepth)
           {
-            results.Add(new McpCallstackEntry(
-              child.Name, child.Path, child.DurationMs,
-              child.FramePercentage, child.MemoryBytes,
-              child.Depth, child.ChildrenCount, false));
+            if (childAgg.TryGetValue(child.Name, out var prev))
+            {
+              childAgg[child.Name] = (
+                prev.durationMs + child.DurationMs,
+                prev.framePct + child.FramePercentage,
+                prev.memBytes + child.InclusiveMemoryBytes,
+                Math.Max(prev.maxChildren, child.ChildrenCount),
+                prev.callCount + 1);
+            }
+            else
+            {
+              childAgg[child.Name] = (child.DurationMs, child.FramePercentage,
+                child.InclusiveMemoryBytes, child.ChildrenCount, 1);
+            }
           }
           remaining--;
           ci++;
@@ -498,6 +583,14 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
             skip += samples[ci].ChildrenCount - 1;
             ci++;
           }
+        }
+
+        foreach (var (name, agg) in childAgg)
+        {
+          results.Add(new McpCallstackEntry(
+            name, target.Path + "/" + name, agg.durationMs,
+            agg.framePct, agg.memBytes,
+            childDepth, agg.maxChildren, agg.callCount, false));
         }
       }
 

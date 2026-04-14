@@ -160,6 +160,7 @@ object Library : Root() {
         field("memoryAllocationBytes", long)
         field("depth", int)
         field("childrenCount", int)
+        field("callCount", int)
         field("isTarget", bool)
     }
 

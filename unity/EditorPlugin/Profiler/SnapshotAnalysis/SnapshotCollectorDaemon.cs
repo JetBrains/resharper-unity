@@ -103,11 +103,14 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
         model.RequestMcpOverview.SetAsync((lifetime, request) =>
         {
+          // Read frame range on main thread (Unity API requirement), then dispatch to background
+          var firstFrame = mySnapshotCrawler.GetProfilerRecordFirstFrameIndex();
+          var lastFrame = mySnapshotCrawler.GetProfilerRecordLastFrameIndex();
           return Task.Run(() =>
           {
             try
             {
-              var result = mcpAnalyzer.GetOverview(request, lifetime);
+              var result = mcpAnalyzer.GetOverview(request, lifetime, firstFrame, lastFrame);
               return result ?? throw new InvalidOperationException("No profiler data available");
             }
             catch (Exception ex) when (ex is not LifetimeCanceledException)
@@ -137,11 +140,14 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
         model.RequestMcpBatchAnalyze.SetAsync((lifetime, request) =>
         {
+          // Read frame range on main thread (Unity API requirement), then dispatch to background
+          var firstFrame = mySnapshotCrawler.GetProfilerRecordFirstFrameIndex();
+          var lastFrame = mySnapshotCrawler.GetProfilerRecordLastFrameIndex();
           return Task.Run(() =>
           {
             try
             {
-              var result = mcpAnalyzer.GetBatchAnalyze(request, lifetime);
+              var result = mcpAnalyzer.GetBatchAnalyze(request, lifetime, firstFrame, lastFrame);
               return result ?? throw new InvalidOperationException("No profiler data available for analysis");
             }
             catch (Exception ex) when (ex is not LifetimeCanceledException)
