@@ -1,3 +1,4 @@
+using JetBrains.Application.Help;
 using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.Lifetimes;
@@ -12,6 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         typeof(LogoIcons.Unity),
         ParentId = InlayHintsOptionsPage.PID,
         NestingType = OptionPageNestingType.Child,
+        HelpKeyword = HelpId.Settings_Inlay_Hints_Unity,
         Sequence = 7)]
     public class UnityInlayHintsOptionsPage : InlayHintsOptionPageBase
     {
