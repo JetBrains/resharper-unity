@@ -17,11 +17,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Bu
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public sealed class BurstCodeVisionProvider(
         Lifetime lifetime,
+        ISettingsStore settingsStore,
         IApplicationWideContextBoundSettingStore store,
         BurstCodeInsightProvider burstCodeInsightProvider,
         IconHost iconHost,
         BurstCodeInsights codeInsights)
-        : BurstGutterMarkProvider(lifetime, store, codeInsights)
+        : BurstGutterMarkProvider(lifetime, settingsStore, codeInsights)
     {
         private readonly IApplicationWideContextBoundSettingStore mySettingsStore = store;
         private readonly BurstCodeInsights myCodeInsights = codeInsights;

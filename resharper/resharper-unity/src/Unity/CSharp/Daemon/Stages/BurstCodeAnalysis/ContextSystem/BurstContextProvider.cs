@@ -1,6 +1,5 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CallGraph;
@@ -11,7 +10,6 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.C
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.ContextSystem
@@ -19,23 +17,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public sealed class BurstContextProvider : CallGraphContextProviderBase
     {
-        private readonly IProperty<bool> myIsBurstEnabledProperty;
+        private readonly SettingsScalarEntry myIsBurstEnabledProperty;
+        private readonly IContextBoundSettingsStoreLive mySettingsStore;
 
         public BurstContextProvider(
             Lifetime lifetime,
             IElementIdProvider elementIdProvider,
-            IApplicationWideContextBoundSettingStore store,
+            ISettingsStore settingsStore,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             BurstMarksProvider marksProviderBase
         )
             : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
-            myIsBurstEnabledProperty = store.BoundSettingsStore.GetValueProperty2(lifetime,
-                (UnitySettings key) => key.EnableBurstCodeHighlighting, ApartmentForNotifications.Mta());
+            mySettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
+            myIsBurstEnabledProperty = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings key) => key.EnableBurstCodeHighlighting);
         }
 
         public override CallGraphContextTag ContextTag => CallGraphContextTag.BURST_CONTEXT;
-        public override bool IsContextAvailable => myIsBurstEnabledProperty.Value;
+        public override bool IsContextAvailable => mySettingsStore.GetValue(myIsBurstEnabledProperty, null) is true;
         public override bool IsContextChangingNode(ITreeNode node) => IsBurstProhibitedNode(node) || base.IsContextChangingNode(node);
 
         public override bool IsMarkedLocal(IDeclaredElement declaredElement, CallGraphDataElement dataElement)

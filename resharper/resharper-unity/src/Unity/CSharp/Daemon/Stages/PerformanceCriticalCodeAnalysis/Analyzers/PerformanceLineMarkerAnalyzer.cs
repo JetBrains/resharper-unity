@@ -1,6 +1,5 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.DataFlow;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -9,26 +8,25 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
 {
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class PerformanceLineMarkerAnalyzer : PerformanceProblemAnalyzerBase<IFunctionDeclaration>
     {
-        private readonly IProperty<PerformanceHighlightingMode> myLineMarkerStatus;
+        private readonly SettingsScalarEntry myLineMarkerEntry;
+        private readonly IContextBoundSettingsStoreLive mySettingsStore;
 
-        public PerformanceLineMarkerAnalyzer(Lifetime lifetime, IApplicationWideContextBoundSettingStore settingsStore)
+        public PerformanceLineMarkerAnalyzer(Lifetime lifetime, ISettingsStore settingsStore)
         {
-            myLineMarkerStatus = settingsStore.BoundSettingsStore
-                .GetValueProperty2(lifetime, (UnitySettings key) => key.PerformanceHighlightingMode,
-                    ApartmentForNotifications.Mta());
+            mySettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
+            myLineMarkerEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings key) => key.PerformanceHighlightingMode);
         }
 
         protected sealed override void Analyze(IFunctionDeclaration functionDeclaration,
             IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
-            if (myLineMarkerStatus.Value == PerformanceHighlightingMode.Always)
+            if (mySettingsStore.GetValue(myLineMarkerEntry, null) is PerformanceHighlightingMode.Always)
             {
                 consumer.AddHighlighting(
                     new UnityPerformanceCriticalCodeLineMarker(GetHighlightRange(functionDeclaration)));

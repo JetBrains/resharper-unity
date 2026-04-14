@@ -1,6 +1,5 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
@@ -8,29 +7,30 @@ using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem
 {
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public sealed class ExpensiveInvocationContextProvider : CallGraphContextProviderBase
     {
-        private readonly IProperty<bool> myIsPerformanceAnalysisEnabledProperty;
+        private readonly SettingsScalarEntry myIsPerformanceAnalysisEnabledProperty;
+        private readonly IContextBoundSettingsStoreLive mySettingsStore;
 
         public ExpensiveInvocationContextProvider(
             Lifetime lifetime,
-            IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
+            ISettingsStore settingsStore,
             IElementIdProvider elementIdProvider,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             ExpensiveCodeMarksProvider marksProviderBase)
             : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
-            myIsPerformanceAnalysisEnabledProperty =
-                applicationWideContextBoundSettingStore.BoundSettingsStore.GetValueProperty2(lifetime,
-                    (UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting, ApartmentForNotifications.Mta());
+            mySettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
+            myIsPerformanceAnalysisEnabledProperty = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings s) =>
+                s.EnablePerformanceCriticalCodeHighlighting);
         }
 
-        public override bool IsContextAvailable => myIsPerformanceAnalysisEnabledProperty.Value;
+        public override bool IsContextAvailable =>
+            mySettingsStore.GetValue(myIsPerformanceAnalysisEnabledProperty, null) is true;
 
         public override CallGraphContextTag ContextTag => CallGraphContextTag.EXPENSIVE_CONTEXT;
     }

@@ -1,6 +1,5 @@
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -10,7 +9,6 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
@@ -18,18 +16,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public class BurstGutterMarkProvider: BurstProblemAnalyzerBase<IMethodDeclaration>
     {
         private readonly BurstCodeInsights myBurstCodeInsights;
-        private readonly IProperty<bool> myBurstEnableIcons;
+        private readonly SettingsScalarEntry myBurstEnableIconsEntry;
+        private readonly IContextBoundSettingsStoreLive mySettingsStore;
 
         public BurstGutterMarkProvider(
             Lifetime lifetime,
-            IApplicationWideContextBoundSettingStore store,
+            ISettingsStore settingsStore,
             BurstCodeInsights burstCodeInsights)
         {
-            myBurstEnableIcons = store.BoundSettingsStore.GetValueProperty2(lifetime, (UnitySettings key) => key.EnableIconsForBurstCode, ApartmentForNotifications.Mta());
+            mySettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
+            myBurstEnableIconsEntry = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings key) => key.EnableIconsForBurstCode);
             myBurstCodeInsights = burstCodeInsights;
         }
 
-        public virtual bool IsGutterMarkEnabled => myBurstEnableIcons.Value;
+        public virtual bool IsGutterMarkEnabled => mySettingsStore.GetValue(myBurstEnableIconsEntry, null) is true;
 
         protected override bool CheckAndAnalyze(IMethodDeclaration methodDeclaration, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {

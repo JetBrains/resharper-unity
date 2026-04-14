@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
             return languageService?.GetPrimaryLexerFactory();
         }
 
-        protected override PsiLanguageType PsiLanguageType => myShaderLabSupport.IsParsingEnabled.Value && ShaderLabLanguage.Instance is { } shaderLabLanguage ? shaderLabLanguage : UnknownLanguage.Instance!;
+        protected override PsiLanguageType PsiLanguageType => myShaderLabSupport.IsParsingEnabled && ShaderLabLanguage.Instance is { } shaderLabLanguage ? shaderLabLanguage : UnknownLanguage.Instance!;
 
         /// Alexander.Bondarev:
         /// todo: it only defines default properties for ShaderLab files, actual properties provided in <see cref="UnityShaderModuleHandlerAndDecorator.GetFileProperties"/>.
