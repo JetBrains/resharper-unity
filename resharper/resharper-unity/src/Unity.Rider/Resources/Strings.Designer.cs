@@ -101,7 +101,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Resources
     public static string UnityProfilerSnapshot_Fetching_Profiler_snapshot_header => ResourceManager.GetString("UnityProfilerSnapshot_Fetching_Profiler_snapshot_header");
     public static string UnityProfilerSnapshot_Update_Profiler_Snapshot_Cache_header => ResourceManager.GetString("UnityProfilerSnapshot_Update_Profiler_Snapshot_Cache_header");
     public static string UnityProfilerSnapshot_Fetching_Profiler_snapshot_description => ResourceManager.GetString("UnityProfilerSnapshot_Fetching_Profiler_snapshot_description");
-    public static string UnityProfilerSnapshot_Parent_Sample_Information => ResourceManager.GetString("UnityProfilerSnapshot_Parent_Sample_Information");
+    public static string ProfilerNavigation_NoDeclarationFound => ResourceManager.GetString("ProfilerNavigation_NoDeclarationFound");
+    public static string ProfilerNavigation_UnexpectedError => ResourceManager.GetString("ProfilerNavigation_UnexpectedError");
     public static string UnityIsNotRunning_Text => ResourceManager.GetString("UnityIsNotRunning_Text");
     public static string UnityPathTemplateParameter_CreateContent_Custom => ResourceManager.GetString("UnityPathTemplateParameter_CreateContent_Custom");
     public static string UnityPathTemplateParameter_CreateContent_Custom__Unity_installation_was_not_found_ => ResourceManager.GetString("UnityPathTemplateParameter_CreateContent_Custom__Unity_installation_was_not_found_");

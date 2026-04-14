@@ -146,10 +146,15 @@
         <value>Frame index:{0}, {1}</value>
         <comment>parameter 1 - stands for the thread name</comment>
     </data>
-    <!-- Parent calls -->
-    <data name="UnityProfilerSnapshot_Parent_Sample_Information" xml:space="preserve">
-        <value>{0} {1:F2}ms ({2:P1})</value>
+    
+    <!-- Navigation errors -->
+    <data name="ProfilerNavigation_NoDeclarationFound" xml:space="preserve">
+        <value>Cannot navigate to '{0}': no matching declaration found in the solution</value>
     </data>
+    <data name="ProfilerNavigation_UnexpectedError" xml:space="preserve">
+        <value>Cannot navigate to '{0}': an unexpected error occurred</value>
+    </data>
+
     <data name="UnityIsNotRunning_Text" xml:space="preserve">
         <value>Unity is not running</value>
     </data>

@@ -176,7 +176,9 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
                 {
                     return locks.MainReadAction(() =>
                     {
-                        ProfilerNavigationUtils.Navigate(mySolution, request, myLogger);
+                        var warning = ProfilerNavigationUtils.Navigate(mySolution, request, myLogger);
+                        if (warning != null)
+                            FrontendBackendProfilerModel.NavigationWarning.Fire(warning);
                     });
                 }).NoAwait();
             }

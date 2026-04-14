@@ -1,6 +1,10 @@
 package com.jetbrains.rider.plugins.unity.profiler
 
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -60,6 +64,12 @@ class UnityProfilerUsagesDaemon(private val project: Project) {
 
         frontendBackendProfilerModel.logSnapshotFetched.advise(lifetime) { args ->
             UnityProfilerUsagesCollector.logSnapshotFetched(project, args.frameIndex, args.duration)
+        }
+
+        frontendBackendProfilerModel.navigationWarning.advise(lifetime) { message ->
+            val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity Profiler")
+            val notification = Notification(groupId.displayId, message, NotificationType.WARNING)
+            Notifications.Bus.notify(notification, project)
         }
 
         // Auto-open the tool window once when first valid snapshot is received

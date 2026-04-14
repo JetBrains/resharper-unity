@@ -263,6 +263,7 @@ object FrontendBackendProfilerModel : Ext(FrontendBackendModel) {
     init {
         signal("updateUnityProfilerSnapshotData", Library.ProfilerSnapshotRequest).async
         signal("navigateByQualifiedName", ProfilerNavigationRequest).async
+        signal("navigationWarning", string).async
         property("currentSnapshot", FrontendModelSnapshot.nullable).async
 
         property("selectionState", Library.SelectionState.nullable).async

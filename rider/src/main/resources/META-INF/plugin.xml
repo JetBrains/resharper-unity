@@ -391,6 +391,8 @@
                        key="notification.group.unity.connection.out.of.sync"/>
     <notificationGroup id="Unity commit failure" displayType="BALLOON" bundle="messages.UnityBundle"
                        key="notification.group.unity.unity.commit.failure"/>
+    <notificationGroup id="Unity Profiler" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.profiler"/>
     <iconMapper mappingFile="UnityIconMappings.json"/>
 
     <!-- Unity Profiler line markers -->
