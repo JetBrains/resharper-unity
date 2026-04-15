@@ -238,27 +238,15 @@ class DebuggerTestUnity2022 : DebuggerTest() {
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6)
-class DebuggerTestUnity6 : DebuggerTest() {
-    init {
-        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
-    }
-}
+class DebuggerTestUnity6 : DebuggerTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_2)
-class DebuggerTestUnity6_2 : DebuggerTest() {
-    init {
-        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
-    }
-}
+class DebuggerTestUnity6_2 : DebuggerTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
-class DebuggerTestUnity6_3 : DebuggerTest() {
-    init {
-        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
-    }
-}
+class DebuggerTestUnity6_3 : DebuggerTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")

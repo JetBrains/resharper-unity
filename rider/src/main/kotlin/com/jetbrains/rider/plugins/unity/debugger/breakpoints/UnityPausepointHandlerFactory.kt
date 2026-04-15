@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.debugger.breakpoints
 
+import com.intellij.execution.configurations.RunProfile
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XBreakpoint
 import com.intellij.xdebugger.breakpoints.XBreakpointHandler
@@ -12,8 +13,13 @@ import com.jetbrains.rider.debugger.breakpoint.IDotNetSupportedBreakpointHandler
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityPausepointAdditionalDataModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
+import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPointAndPlay
+import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
+import com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDevicePlayerConfiguration
+import com.jetbrains.rider.run.devices.ActiveDeviceManager
 import com.jetbrains.rider.projectView.solution
 
 class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBreakpointHandler<XLineBreakpoint<DotNetLineBreakpointProperties>>(
@@ -77,7 +83,14 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
     private fun isSupportedSession(): Boolean {
         val runProfile = debugProcess.session.runProfile
         return runProfile is UnityAttachToEditorRunConfiguration
-               || (runProfile is UnityAttachProfileState && runProfile.isEditor)
+            || (runProfile is UnityAttachProfileState && runProfile.isEditor)
+            || isEditorDevice(runProfile)
+    }
+
+    private fun isEditorDevice(runProfile: RunProfile?): Boolean {
+        if (runProfile !is UnityDevicePlayerConfiguration) return false
+        val device = ActiveDeviceManager.getInstance(debugProcess.project).getDevice<UnityProcess>()
+        return device is UnityEditorEntryPoint || device is UnityEditorEntryPointAndPlay
     }
 
     private fun isInPlayMode(): Boolean {
