@@ -36,6 +36,7 @@
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerToolWindowStartupActivity"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityLogToolWindowStartupActivity"/>
 
     <workspaceModel.fileIndexContributor implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceFileIndexContributor"/>
     <workspaceModel.fileIndexContributor implementation="com.jetbrains.rider.plugins.unity.workspace.UnityPackagesWorkspaceFileIndexContributor"/>

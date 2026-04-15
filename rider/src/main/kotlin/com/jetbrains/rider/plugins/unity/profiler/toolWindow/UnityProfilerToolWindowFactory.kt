@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.profiler.toolWindow
 
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -7,9 +8,13 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesDaemon
+import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.ui.RiderToolWindowFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Tool window for Unity Profiler integration. Content is provided by
@@ -24,8 +29,12 @@ class UnityProfilerToolWindowFactory : RiderToolWindowFactory() {
             ToolWindowManager.getInstance(project).getToolWindow(TOOLWINDOW_ID)
 
         fun makeAvailable(project: Project) {
-            val toolWindow = getToolWindow(project) ?: return
-            toolWindow.isAvailable = true
+            UnityProjectLifetimeService.getScope(project).launch(Dispatchers.EDT) {
+                val toolWindow = getToolWindow(project) ?: return@launch
+                if (!ToolWindowManager.getInstance(project).isStripeButtonShow(toolWindow)){
+                    toolWindow.isAvailable = true
+                }
+            }
         }
 
         fun show(project: Project) {

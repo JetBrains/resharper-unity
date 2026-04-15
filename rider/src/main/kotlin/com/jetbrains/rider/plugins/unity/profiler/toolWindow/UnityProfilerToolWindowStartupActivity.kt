@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.profiler.toolWindow
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
+import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesDaemon
@@ -16,7 +17,7 @@ internal class UnityProfilerToolWindowStartupActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
         val lifetime = UnityProjectLifetimeService.getLifetime(project)
 
-        UnityProjectDiscoverer.getInstance(project).isUnityProject.advise(lifetime) { isUnity ->
+        UnityProjectDiscoverer.getInstance(project).isUnityProject.adviseUntil(lifetime) { isUnity ->
             if (isUnity) {
                 UnityProfilerToolWindowFactory.makeAvailable(project)
                 // Eagerly initialize the daemon so currentSnapshot.advise is registered.
@@ -25,6 +26,7 @@ internal class UnityProfilerToolWindowStartupActivity : ProjectActivity {
                 // recording is loaded before navigating to source).
                 project.service<UnityProfilerUsagesDaemon>()
             }
+            isUnity
         }
     }
 }

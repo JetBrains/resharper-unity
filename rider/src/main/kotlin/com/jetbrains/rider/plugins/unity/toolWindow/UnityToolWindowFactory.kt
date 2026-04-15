@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
@@ -10,6 +11,8 @@ import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import com.jetbrains.rider.ui.RiderToolWindowFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class UnityToolWindowFactory : RiderToolWindowFactory() {
 
@@ -20,8 +23,12 @@ class UnityToolWindowFactory : RiderToolWindowFactory() {
         fun getToolWindow(project: Project): ToolWindow? = ToolWindowManager.getInstance(project).getToolWindow(TOOLWINDOW_ID)
 
         fun makeAvailable(project: Project) {
-            val toolWindow = getToolWindow(project) ?: return
-            toolWindow.isAvailable = true
+            UnityProjectLifetimeService.getScope(project).launch(Dispatchers.EDT) {
+                val toolWindow = getToolWindow(project) ?: return@launch
+                if (!ToolWindowManager.getInstance(project).isStripeButtonShow(toolWindow)){
+                    toolWindow.isAvailable = true
+                }
+            }
         }
 
         fun show(project: Project) {
