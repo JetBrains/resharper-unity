@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             }
             catch (Exception e)
             {
-                myLogger.Error(e, "An error occured during changing guid");
+                myLogger.Error(e, "An error occurred while changing guid");
             }
 
             RemoveFromLocalCache(sourceFile);
@@ -110,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             }
             catch (Exception e)
             {
-                myLogger.Error(e, "An error occured during changing guid");
+                myLogger.Error(e, "An error occurred while changing guid");
             }
 
             RemoveFromLocalCache(sourceFile);
