@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Daemon.ContextHighlight
     [TestFileExtension(".asmdef")]
     public class AsmDefUsageContextHighlighterTests : ContextHighlighterTestBase
     {
+        protected override bool InitDataPackagesInTestFixtureSetup => false;
         protected override string RelativeTestDataPath => @"AsmDef\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"AsmDefReferences";
 
