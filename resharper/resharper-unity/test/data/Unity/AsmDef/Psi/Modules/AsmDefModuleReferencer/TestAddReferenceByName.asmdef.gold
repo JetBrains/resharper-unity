@@ -1,0 +1,4 @@
+﻿{
+  "name": "TestAddReferenceByName",
+  "references":[ "TestAddReferenceByName_Target" ]
+}
