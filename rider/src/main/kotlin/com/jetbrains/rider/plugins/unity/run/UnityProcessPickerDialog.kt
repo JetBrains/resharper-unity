@@ -12,7 +12,6 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.SpeedSearchComparator
 import com.intellij.ui.TreeSpeedSearch
 import com.intellij.ui.components.dialog
-import com.intellij.ui.components.noteComponent
 import com.intellij.ui.dsl.builder.Align
 import com.intellij.ui.dsl.builder.bindIntValue
 import com.intellij.ui.dsl.builder.bindText
@@ -175,7 +174,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
         val model = CustomPlayerModel(name)
         val panel = panel {
-            row { cell(noteComponent(UnityBundle.message("enter.the.ip.address.of.the.unity.process"))) }
+            row { text(UnityBundle.message("enter.the.ip.address.of.the.unity.process")) }
             row(UnityBundle.message("name.colon")) {
                 textField().bindText(model::name)
                     .errorOnApply(UnityBundle.message("dialog.message.name.must.not.be.empty")) { it.text.isBlank() }
