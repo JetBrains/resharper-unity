@@ -1,3 +1,5 @@
+@file:OptIn(EntityStorageInstrumentationApi::class)
+
 package com.jetbrains.rider.plugins.unity.workspace.impl
 
 import com.intellij.platform.workspace.storage.ConnectionId
@@ -129,7 +131,6 @@ internal class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>(
         return modifiable
     }
 
-    @OptIn(EntityStorageInstrumentationApi::class)
     override fun createEntity(snapshot: EntityStorageInstrumentation): UnityPackageEntity {
         val entityId = createEntityId()
         return snapshot.initializeEntity(entityId) {
