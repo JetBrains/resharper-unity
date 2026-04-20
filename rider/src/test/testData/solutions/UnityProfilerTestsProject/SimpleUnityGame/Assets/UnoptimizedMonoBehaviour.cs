@@ -11,25 +11,25 @@ public partial class UnoptimizedMonoBehaviour : MonoBehaviour
 
     void Update()
     {
-        Profiler.BeginSample("1");
+        Profiler.BeginSample("StringOps");
         InefficientStringOperations();
         Profiler.EndSample();
-        Profiler.BeginSample("2");
+        Profiler.BeginSample("GameObjectOps");
         UnnecessaryGameObjectOperations();
         ExpensivePhysicsCalculations();
         Profiler.EndSample();
-        Profiler.BeginSample("3");
+        Profiler.BeginSample("MemoryAndSearch");
         FrequentMemoryAllocations();
         InefficientFindOperations();
         HeavyCalculations();
         ExcessiveGetComponentCalls();
         Profiler.EndSample();
-        Profiler.BeginSample("4");
+        Profiler.BeginSample("CollectionOps");
         InefficientCollectionOperations();
         BoxingAndUnboxing();
         InefficientLinqQueries();
         Profiler.EndSample();
-        Profiler.BeginSample("5");
+        Profiler.BeginSample("InstantiationOps");
         ExcessiveInstantiation();
         // InefficientCoroutineUsage();
         RedundantNullChecks();

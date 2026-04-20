@@ -3,8 +3,10 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 import com.jetbrains.rider.plugins.unity.model.ProfilerSnapshotRequest
 import com.jetbrains.rider.plugins.unity.model.SelectionState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendProfilerModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerNavigationRequest
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.annotations.UnityTestSettings
 import com.jetbrains.rider.test.annotations.report.ChecklistItems
@@ -96,6 +98,90 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
             textEditor?.file?.name == "UnoptimizedMonoBehaviour.cs"
                 && textEditor.editor.caretModel.logicalPosition.line + 1 == 12
         }) { "Caret should be at line 12 (Update method) in UnoptimizedMonoBehaviour.cs after profiler navigation" }
+    }
+
+    @Test(description = "Check navigation from Unity profiler to exact Profiler.BeginSample call")
+    @ChecklistItems(["Profiler/Navigation to BeginSample"])
+    fun checkNavigationToBeginSample() {
+        enableProfilerIntegration()
+        waitForProfilerIntegrationEnabled()
+
+        // runProfilerAutomation() opens UnoptimizedMonoBehaviour.cs via navigateByQualifiedName
+        runProfilerAutomation()
+        waitForProfilerSnapshotTimings()
+
+        val fem = FileEditorManager.getInstance(project)
+        waitAndPump(Duration.ofSeconds(10), {
+            fem.openFiles.any { it.name == "UnoptimizedMonoBehaviour.cs" }
+        }) { "UnoptimizedMonoBehaviour.cs should be opened after profiler automation" }
+
+        // Navigate to a specific BeginSample marker within Update()
+        val profilerModel = frontendBackendModel.frontendBackendProfilerModel
+        profilerModel.navigateByQualifiedName.fire(
+            ProfilerNavigationRequest("UnoptimizedMonoBehaviour.Update", "MemoryAndSearch")
+        )
+
+        // Profiler.BeginSample("MemoryAndSearch") is on line 21, far from Update() on line 12
+        waitAndPump(Duration.ofSeconds(10), {
+            val textEditor = fem.selectedEditor as? TextEditor
+            textEditor?.file?.name == "UnoptimizedMonoBehaviour.cs"
+                && textEditor.editor.caretModel.logicalPosition.line + 1 == 21
+        }) { "Caret should be at line 21 (Profiler.BeginSample(\"MemoryAndSearch\")) in UnoptimizedMonoBehaviour.cs" }
+    }
+
+    @Test(description = "Check navigation falls back to method when BeginSample marker not found")
+    @ChecklistItems(["Profiler/Navigation BeginSample Fallback"])
+    fun checkNavigationToBeginSampleFallback() {
+        enableProfilerIntegration()
+        waitForProfilerIntegrationEnabled()
+
+        runProfilerAutomation()
+        waitForProfilerSnapshotTimings()
+
+        val fem = FileEditorManager.getInstance(project)
+        waitAndPump(Duration.ofSeconds(10), {
+            fem.openFiles.any { it.name == "UnoptimizedMonoBehaviour.cs" }
+        }) { "UnoptimizedMonoBehaviour.cs should be opened after profiler automation" }
+
+        // Navigate with a marker name that does not exist in Update()
+        val profilerModel = frontendBackendModel.frontendBackendProfilerModel
+        profilerModel.navigateByQualifiedName.fire(
+            ProfilerNavigationRequest("UnoptimizedMonoBehaviour.Update", "NonExistentMarker")
+        )
+
+        // Should fall back to the Update() method declaration at line 12
+        waitAndPump(Duration.ofSeconds(10), {
+            val textEditor = fem.selectedEditor as? TextEditor
+            textEditor?.file?.name == "UnoptimizedMonoBehaviour.cs"
+                && textEditor.editor.caretModel.logicalPosition.line + 1 == 12
+        }) { "Caret should fall back to line 12 (Update method) when BeginSample marker not found" }
+    }
+
+    @Test(description = "Check navigationWarning fires when target is unresolvable")
+    @ChecklistItems(["Profiler/Navigation Warning"])
+    fun checkNavigationWarningOnUnresolvableTarget() {
+        enableProfilerIntegration()
+        waitForProfilerIntegrationEnabled()
+
+        runProfilerAutomation()
+        waitForProfilerSnapshotTimings()
+
+        val profilerModel = frontendBackendModel.frontendBackendProfilerModel
+        var receivedWarning: String? = null
+        profilerModel.navigationWarning.advise(project.lifetime) { warning ->
+            receivedWarning = warning
+        }
+
+        // Fire navigation with a completely unresolvable qualified name
+        profilerModel.navigateByQualifiedName.fire(
+            ProfilerNavigationRequest("NonExistent.ClassName.Method", null)
+        )
+
+        waitAndPump(Duration.ofSeconds(10), {
+            receivedWarning != null
+        }) { "navigationWarning should fire for unresolvable target" }
+        assertTrue(receivedWarning!!.contains("NonExistent.ClassName.Method"),
+            "Warning message should contain the unresolvable qualified name")
     }
 
     @Test(description = "Check profiler gutter marks appear in editor")
