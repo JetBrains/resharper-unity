@@ -89,7 +89,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                         // as separate modules, such as documentation or optional playback engines, as these changes
                         // would break code signing. However, Unity.app/Contents/Documentation is a symlink to
                         // Unity.app/../Documentation and optional playback engines live at Unity.app/../PlaybackEngines
-                        // (Unity.app/Content/PlaybackEngines contains MacStandaloneSupport by default)
+                        // (Unity.app/Contents/PlaybackEngines contains MacStandaloneSupport by default,
+                        // except in Unity 6.5+ where MacStandaloneSupport moved to PlaybackEngines outside Unity.app)
                         return applicationPath.Combine("Contents");
                     case JetPlatform.Linux:
                     case JetPlatform.Windows:

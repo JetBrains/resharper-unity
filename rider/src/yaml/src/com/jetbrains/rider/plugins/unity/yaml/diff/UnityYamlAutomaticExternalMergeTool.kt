@@ -17,6 +17,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.readBytes
 import com.intellij.util.io.delete
+import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rider.plugins.unity.EngineConstants
@@ -26,7 +27,6 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
 import kotlin.io.path.exists
-import kotlin.io.path.isRegularFile
 import kotlin.io.path.pathString
 import kotlin.io.path.readBytes
 
@@ -57,9 +57,15 @@ class UnityYamlAutomaticExternalMergeTool : AutomaticExternalMergeTool {
             }
             
             var exePath = appContentsPath.resolve("Tools/$mergeToolName$extension")
-            // /Applications/Unity/Hub/Editor/6000.3.1f1/Unity.app/Contents/Helpers/UnityYAMLMerge
-            if (!exePath.isRegularFile())
+
+            if (!exePath.exists()) // /Applications/Unity/Hub/Editor/6000.3.1f1/Unity.app/Contents/Helpers/UnityYAMLMerge
                 exePath = appContentsPath.resolve("Helpers/UnityYAMLMerge$extension")
+            if (!exePath.exists()) {
+                val unityVersion = UnityInstallationFinder.getInstance(project).getApplicationVersion(2)
+                if (VersionComparatorUtil.compare(unityVersion, "6000.0") >= 0)
+                    myLogger.error("UnityYAMLMerge not found at known locations for Unity 6000+ Contents path: $appContentsPath")
+            }
+
             val mergeParametersFromBackend = project.solution.frontendBackendModel.backendSettings.mergeParameters.valueOrThrow
             val mergeParameters = if (mergeParametersFromBackend.contains(" -p ")) {
                 "$mergeParametersFromBackend $premergedBase $premergedRight"

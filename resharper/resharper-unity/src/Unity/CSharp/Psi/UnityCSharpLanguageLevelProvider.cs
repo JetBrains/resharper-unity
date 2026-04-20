@@ -17,6 +17,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
 {
@@ -81,6 +82,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
         private sealed class CachedProjectLanguageLevel([NotNull] IProject project)
             : CachedProjectItemAnyChange<IProject, (CSharpLanguageLevel? languageLevel, CSharpLanguageLevel? latestAvailableLanguageValue, CSharpLanguageLevel? previewAvailableLanguageValue)>(project.GetSolution().Timestamps, project, Evaluate)
         {
+            private static readonly ILogger ourLogger = Logger.GetLogger<UnityCSharpLanguageLevelProvider>();
+
             private static (CSharpLanguageLevel? languageLevel, CSharpLanguageLevel? latestAvailableLanguageValue, CSharpLanguageLevel? previewAvailableLanguageValue) Evaluate(IProject project)
             {
                 #region Explanation
@@ -157,7 +160,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                     // /Applications/Unity/Hub/Editor/6000.3.1f1/Unity.app/Contents/Resources/Scripting/DotNetSdkRoslyn
                     if (!roslynDir.ExistsDirectory)
                         roslynDir = contentPath.Combine("Resources/Scripting/DotNetSdkRoslyn"); // Unity 6.3+
-                    
+
+                    if (!roslynDir.ExistsDirectory)
+                    {
+                        var version = unityProjectFileCacheProvider.GetUnityVersion(project);
+                        if (version?.Major >= 6000)
+                            ourLogger.Error($"DotNetSdkRoslyn not found at known locations for Unity 6+. Contents path: {contentPath}");    
+                    }
+
                     if (roslynDir.ExistsDirectory)
                     {
                         var languageLevelProjectProperty = project.GetComponent<CSharpLanguageLevelProjectProperty>();
