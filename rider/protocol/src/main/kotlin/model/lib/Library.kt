@@ -126,11 +126,16 @@ object Library : Root() {
     }
 
     // region MCP Profiler types
-
+    val ProfilerSortingType = enum {
+        +"duration"
+        +"memory"
+        +"frameId"
+    }
+    
     val McpOverviewRequest = structdef {
         field("thresholdMs", double)
         field("limit", int)
-        field("sortBy", string)  // "duration" | "time" | "memory"
+        field("sortBy", ProfilerSortingType) 
     }
 
     val McpOverviewResponse = structdef {
@@ -168,7 +173,7 @@ object Library : Root() {
         field("frameIndex", int)
         field("threadName", string)
         field("focusOn", string.nullable)
-        field("sortBy", string)  // "duration" | "memory"
+        field("sortBy", ProfilerSortingType) 
         field("limit", int)
     }
 
@@ -199,7 +204,7 @@ object Library : Root() {
         field("threadName", string)
         field("snapshotLimit", int)
         field("minSampleDurationMs", double)
-        field("sortBy", string)  // "duration" | "memory"
+        field("sortBy", ProfilerSortingType)
     }
 
     val McpBatchAnalyzeResponse = structdef {

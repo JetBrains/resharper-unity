@@ -113,9 +113,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
               var result = mcpAnalyzer.GetOverview(request, lifetime, firstFrame, lastFrame);
               return result ?? throw new InvalidOperationException("No profiler data available");
             }
-            catch (Exception ex) when (ex is not LifetimeCanceledException)
+            catch (Exception ex) when (!ex.IsOperationCanceled())
             {
-              ourLogger.Error("RequestMcpOverview failed", ex);
+              ourLogger.Error("RequestMcpOverview failed: {0}", ex);
               throw;
             }
           }, lifetime);
@@ -130,9 +130,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
               var result = mcpAnalyzer.GetFrameAnalysis(request, lifetime);
               return result ?? throw new InvalidOperationException("No profiler data available for the requested frame");
             }
-            catch (Exception ex) when (ex is not LifetimeCanceledException)
+            catch (Exception ex) when (!ex.IsOperationCanceled())
             {
-              ourLogger.Error("RequestMcpFrameAnalysis failed", ex);
+              ourLogger.Error("RequestMcpFrameAnalysis failed: {0}", ex);
               throw;
             }
           }, lifetime);
@@ -150,9 +150,9 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
               var result = mcpAnalyzer.GetBatchAnalyze(request, lifetime, firstFrame, lastFrame);
               return result ?? throw new InvalidOperationException("No profiler data available for analysis");
             }
-            catch (Exception ex) when (ex is not LifetimeCanceledException)
+            catch (Exception ex) when (!ex.IsOperationCanceled())
             {
-              ourLogger.Error("RequestMcpBatchAnalyze failed", ex);
+              ourLogger.Error("RequestMcpBatchAnalyze failed: {0}", ex);
               throw;
             }
           }, lifetime);

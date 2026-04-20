@@ -66,10 +66,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
       switch (request.SortBy)
       {
-        case SortByTime:
+        case ProfilerSortingType.frameId:
           frames.Sort((a, b) => a.frameId.CompareTo(b.frameId));
           break;
-        case SortByMemory:
+        case ProfilerSortingType.memory:
           frames.Sort((a, b) => b.allocBytes.CompareTo(a.allocBytes));
           break;
         default:
@@ -85,12 +85,12 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         writer.WriteLine("# UNITY PROFILER OVERVIEW v1");
         writer.WriteLine($"# Recording: {firstFrame}..{lastFrame}");
         writer.WriteLine($"# SortBy: {request.SortBy}");
-        writer.WriteLine($"# Threshold: {request.ThresholdMs}");
+        writer.WriteLine(FormattableString.Invariant($"# Threshold: {request.ThresholdMs}"));
         writer.WriteLine("frame_id\tduration_ms\talloc_bytes");
         for (var w = 0; w < writeCount; w++)
         {
           var (frameId, durationMs, allocBytes) = frames[w];
-          writer.WriteLine($"{frameId}\t{durationMs:F2}\t{allocBytes}");
+          writer.WriteLine(FormattableString.Invariant($"{frameId}\t{durationMs:F2}\t{allocBytes}"));
         }
       }
 
@@ -248,7 +248,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         }
       }
 
-      var sorted = request.SortBy == SortByMemory
+      var sorted = request.SortBy == ProfilerSortingType.memory
         ? aggregation.OrderByDescending(kv => kv.Value.TotalMemoryBytes)
         : aggregation.OrderByDescending(kv => kv.Value.TotalDurationMs);
 
@@ -273,7 +273,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         writer.WriteLine($"# SortBy: {request.SortBy}");
         writer.WriteLine("qualified_name\ttotal_duration_ms\tcall_count\tavg_duration_ms\tmax_single_ms\ttotal_memory_bytes\tframes_present");
         foreach (var h in hotspots)
-          writer.WriteLine($"{h.QualifiedName}\t{h.TotalDurationMs:F2}\t{h.CallCount}\t{h.AvgDurationMs:F2}\t{h.MaxSingleDurationMs:F2}\t{h.TotalMemoryBytes}\t{h.FramesPresent}");
+          writer.WriteLine(FormattableString.Invariant($"{h.QualifiedName}\t{h.TotalDurationMs:F2}\t{h.CallCount}\t{h.AvgDurationMs:F2}\t{h.MaxSingleDurationMs:F2}\t{h.TotalMemoryBytes}\t{h.FramesPresent}"));
       }
 
       var top5 = hotspots.Take(5).ToList();
@@ -285,8 +285,6 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
     #region Helpers
 
-    private const string SortByTime = "time";
-    private const string SortByMemory = "memory";
 
     private int ResolveThreadIndex(int frameIndex, string threadName)
     {
@@ -466,7 +464,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         Walk(0, -1);
     }
 
-    private static List<McpHotspotEntry> BuildHotspots(List<SampleNode> samples, string sortBy, int limit)
+    private static List<McpHotspotEntry> BuildHotspots(List<SampleNode> samples, ProfilerSortingType sortBy, int limit)
     {
       var grouped = new Dictionary<string, HotspotAccumulator>();
 
@@ -488,7 +486,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         }
       }
 
-      var sorted = sortBy == SortByMemory
+      var sorted = sortBy == ProfilerSortingType.memory
         ? grouped.OrderByDescending(kv => kv.Value.TotalMemoryBytes)
         : grouped.OrderByDescending(kv => kv.Value.TotalDurationMs);
 
