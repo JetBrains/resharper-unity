@@ -30,7 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 if (memberSourceFile == null) 
                     return false;
 
-                return typeMember is IDeclaredElement element && element.ShortName.StartsWith("__") &&
+                return typeMember is IDeclaredElement element &&
+                       (element.ShortName.Contains("__") || element.ShortName.Contains("___")) &&
                        memberSourceFile.IsSourceGeneratedFile() && typeMember.ContainingType.IsDotsImplicitlyUsedType();
             });
         }

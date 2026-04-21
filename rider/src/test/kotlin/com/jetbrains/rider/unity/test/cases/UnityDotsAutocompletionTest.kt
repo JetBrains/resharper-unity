@@ -59,7 +59,6 @@ class UnityDotsAutocompletionTest : PerTestSolutionTestBase() {
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages",
             *LogTraceScenarios.Roslyn.categories.toTypedArray())
 
-    @Mute("RIDER-95438")
     @Test(description="DOTS Source GenCompletion")
     @ChecklistItems(["DOTS Source GenCompletion"])
     fun test_DotsSourceGenCompletion() {
