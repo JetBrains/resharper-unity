@@ -2,6 +2,7 @@ using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -22,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         public BurstContextProvider(
             Lifetime lifetime,
+            ISolution solution,
             IElementIdProvider elementIdProvider,
             ISettingsStore settingsStore,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
@@ -29,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         )
             : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
-            mySettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
+            mySettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             myIsBurstEnabledProperty = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings key) => key.EnableBurstCodeHighlighting);
         }
 
