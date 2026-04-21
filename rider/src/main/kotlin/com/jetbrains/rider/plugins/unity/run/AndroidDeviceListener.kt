@@ -9,6 +9,8 @@ import com.intellij.openapi.diagnostic.trace
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.diagnostics.doActivity
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.adviseOnce
+import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -18,12 +20,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.nio.file.Path
+import kotlin.coroutines.resume
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
+import kotlin.time.Duration.Companion.milliseconds
 
-class AndroidDeviceListener() {
+class AndroidDeviceListener {
 
     companion object {
         private val logger = Logger.getInstance(AndroidDeviceListener::class.java)
@@ -59,6 +65,16 @@ class AndroidDeviceListener() {
     private suspend fun getAdbPath(project: Project, lifetime: Lifetime): Path? {
         try {
             val model = project.solution.frontendBackendModel
+
+            // Postpone the call to getAndroidSdkRoot a bit until backend has initialized endpoint for it.
+            withTimeoutOrNull(1000L.milliseconds) {
+                suspendCancellableCoroutine { continuation ->
+                    model.unityApplicationData.adviseOnce(lifetime) { data ->
+                        continuation.resume(Unit)
+                    }
+                }
+            }
+
             val sdkRoot = model.getAndroidSdkRoot.startSuspending(lifetime, Unit)?.let { Path.of(it) }
                 ?.takeIf { it.isDirectory() } ?: run {
                 logger.trace("No Android SDK root from model. Trying to find manually")
