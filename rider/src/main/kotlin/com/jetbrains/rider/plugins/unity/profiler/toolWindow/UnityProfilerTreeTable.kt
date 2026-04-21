@@ -24,9 +24,9 @@ import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import java.awt.Component
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
-import javax.swing.JComponent
 import javax.swing.KeyStroke
 import javax.swing.RowSorter
+import javax.swing.SwingUtilities
 import javax.swing.table.TableCellRenderer
 import javax.swing.table.TableColumn
 import javax.swing.table.TableModel
@@ -89,7 +89,7 @@ class UnityProfilerTreeTable(
 
         registerKeyboardAction({
             navigateToRow(selectedRow)
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED)
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), WHEN_FOCUSED)
 
         viewModel.treeRoot.advise(viewModel.lifetime.intersect(lifetime)) { root ->
             runInEdt {
@@ -120,11 +120,13 @@ class UnityProfilerTreeTable(
 
     override fun processMouseEvent(e: MouseEvent) {
         if (e.id == MouseEvent.MOUSE_PRESSED) {
-            val path = tree.getClosestPathForLocation(e.x, e.y)
+            val row = rowAtPoint(e.point)
+            val path = if (row >= 0) tree.getPathForRow(row) else null
             if (path != null) {
-                // Alt+Click: recursively expand or collapse the entire subtree.
-                if (e.isAltDown && !e.isPopupTrigger) {
+                // Alt+Left-Click: recursively expand or collapse the entire subtree.
+                if (SwingUtilities.isLeftMouseButton(e) && e.isAltDown && !e.isPopupTrigger) {
                     if (tree.isExpanded(path)) collapseSubtree(path) else expandSubtree(path)
+                    setRowSelectionInterval(row, row)
                     e.consume()
                     return
                 }
