@@ -4,7 +4,6 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rd.ide.model.RdDndOrderType
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
@@ -46,7 +45,6 @@ import com.jetbrains.rider.test.scriptingApi.waitForProjectModelReady
 import com.jetbrains.rider.test.scriptingApi.waitForWorkspaceModelReady
 import com.jetbrains.rider.test.scriptingApi.waitRefreshIsFinished
 import com.jetbrains.rider.util.idea.syncFromBackend
-import java.io.File
 import java.nio.file.Path
 import javax.swing.JTree
 
@@ -96,7 +94,7 @@ fun addNewItem2(project: Project, path: Array<String>, template: TemplateType, i
     val dataContext = createDataContextForUnityExplorer(project, arrayOf(path))
     changeFileSystem(project) {
         val createdFile = executeNewItemAction(dataContext, template.type, template.group!!, itemName)
-        this.affectedFiles.add(createdFile.parentFile)
+        this.affectedFiles.add(createdFile.parent)
     }
     persistAllFilesOnDisk()
     frameworkLogger.info("New item '$itemName' is added")
@@ -113,7 +111,7 @@ private fun addNewFolder2(project: Project,
                          folderName: String) {
     changeFileSystem(project) {
         val createdFile = RiderNewDirectoryAction().execute(dataContext, folderName)
-        this.affectedFiles.add(VfsUtil.virtualToIoFile(createdFile!!))
+        this.affectedFiles.add(createdFile!!.toNioPath())
     }
     persistAllFilesOnDisk()
     frameworkLogger.info("New folder '$folderName' is added")

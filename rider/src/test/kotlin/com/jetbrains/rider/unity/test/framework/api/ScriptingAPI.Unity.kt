@@ -284,7 +284,7 @@ fun waitConnectionToUnityEditor(project: Project) {
 }
 
 fun checkSweaInSolution(project: Project) {
-    changeFileSystem2(project) { arrayOf(project.solutionDirectory.resolve("Assembly-CSharp.csproj")) }
+    changeFileSystem2(project) { arrayOf(project.solutionDirectoryPath.resolve("Assembly-CSharp.csproj")) }
     checkSwea(project, 0)
 }
 
