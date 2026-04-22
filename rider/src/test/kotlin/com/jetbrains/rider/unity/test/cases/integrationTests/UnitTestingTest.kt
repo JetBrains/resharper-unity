@@ -61,7 +61,7 @@ abstract class UnitTestingTest() : IntegrationTestWithUnityProjectBase() {
 
                 it.closeAllSessions()
 
-                changeFileContent(project, file.toFile()) {
+                changeFileContent(project, file) {
                     it.replace("NewTestScriptSimplePasses(", "NewTestScriptSimplePasses2(")
                 }
 

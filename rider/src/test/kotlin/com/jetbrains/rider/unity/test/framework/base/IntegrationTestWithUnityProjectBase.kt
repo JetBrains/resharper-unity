@@ -54,7 +54,7 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
 
     @BeforeMethod
     override fun setUpTestCaseSolution(testResult: ITestResult) {
-        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null, testWorkDirectory, solutionSourceRootDirectory, testDataDirectory)
+        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, testWorkDirectory, solutionSourceRootDirectory, testDataDirectory)
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
 
         val attemptsCount = 3
