@@ -8,6 +8,7 @@ import com.jetbrains.rider.test.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.logging.TestLoggerHelper
+import com.jetbrains.rider.test.scriptingApi.absoluteCanonicalPath
 import com.jetbrains.rider.test.scriptingApi.addArgsForUnityProcess
 import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
 import com.jetbrains.rider.test.shared.utils.ProcessCleanupUtils
@@ -26,10 +27,10 @@ open class BaseTestWithUnitySetup : PerTestSolutionTestBase() {
         if (!isUnderTeamCity) return
         UnityVersion.entries.filter { it.isUnity() }.forEach { unityVersion ->
             val args = mutableListOf<String>()
-            args.add(getEngineExecutableInstallationPath(unityVersion).canonicalPath.toString())
+            args.add(getEngineExecutableInstallationPath(unityVersion).absoluteCanonicalPath)
             val logFile = TestLoggerHelper.getClassLogDirectory(javaClass).resolve("UnityEditorCheck.log")
             val unityArgs = addArgsForUnityProcess(
-                logPath = logFile.toFile(),
+                logPath = logFile,
                 resetEditorPrefs = false,
                 useRiderTestPath = false,
                 batchMode = true,

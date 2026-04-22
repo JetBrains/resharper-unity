@@ -1,6 +1,5 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.io.toCanonicalPath
 import com.intellij.util.system.OS
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
@@ -17,11 +16,14 @@ import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.enums.UnityBackend
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
-import com.jetbrains.rider.test.scriptingApi.combine
+import com.jetbrains.rider.test.scriptingApi.absoluteCanonicalPath
 import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
+import com.jetbrains.rider.test.scriptingApi.combine
+import com.jetbrains.rider.test.scriptingApi.copyRecursivelyTo
 import com.jetbrains.rider.test.scriptingApi.createLibraryFolderIfNotExist
 import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
 import com.jetbrains.rider.test.scriptingApi.riderPackageVersion
+import com.jetbrains.rider.test.scriptingApi.setExecutablePermissions
 import com.jetbrains.rider.test.scriptingApi.setRiderPackageVersion
 import com.jetbrains.rider.unity.test.framework.FirewallHelper.addAllowRuleToFirewall
 import com.jetbrains.rider.unity.test.framework.FirewallHelper.removeRuleFromFirewall
@@ -33,7 +35,6 @@ import kotlinx.coroutines.CompletableDeferred
 import org.testng.ITestResult
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
-import java.io.File
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.absolutePathString
@@ -43,7 +44,7 @@ import kotlin.io.path.name
 import kotlin.io.path.pathString
 import kotlin.test.assertNotNull
 
-abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
+abstract class UnityPlayerTestBase : BaseTestWithUnitySetup() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
         params.waitForCaches = true
@@ -66,10 +67,10 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
         get() = getUnityTestSettingsAnnotation().unityBackend
 
 
-    private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
-    private lateinit var unityProjectPath: File
+    private val unityExecutable: Path by lazy { getEngineExecutableInstallationPath(engineVersion) }
+    private lateinit var unityProjectPath: Path
     private lateinit var lifetimeDefinition: LifetimeDefinition
-    private lateinit var unityPlayerFile: File
+    private lateinit var unityPlayerFile: Path
 
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger
@@ -88,9 +89,9 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
         }
 
         val process = ProcessBuilder(
-            unityExecutable.absolutePath,
+            unityExecutable.absolutePathString(),
             "-batchmode", "-quit",
-            "-projectPath", unityProjectPath.absolutePath,
+            "-projectPath", unityProjectPath.absolutePathString(),
             "-executeMethod", "BuildScript.Build",
             "-logFile", buildLogFile.toCanonicalPath(),
             "-buildTarget", buildTarget,
@@ -102,15 +103,15 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
             // On macOS need to explicitly allow listening to the incoming connections
             if (OS.CURRENT == OS.macOS) {
                 unityPlayerFile = getPlayerFile()
-                addAllowRuleToFirewall(unityPlayerFile.canonicalPath)
+                addAllowRuleToFirewall(unityPlayerFile.absoluteCanonicalPath)
             }
         } finally {
           process.destroyForcibly()
         }
     }
 
-    protected fun getPlayerFile(): File {
-        val buildDir = File(unityProjectPath, "Builds")
+    protected fun getPlayerFile(): Path {
+        val buildDir = unityProjectPath.resolve("Builds")
         val executableName =  unityProjectPath.name
         val gameFilePath = when (OS.CURRENT) {
             OS.macOS -> "$executableName.app"
@@ -127,7 +128,7 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
             buildDir.resolve(gameFilePath)
         }
         require(gameFullPath.exists()) {
-            "Built Unity player not found at expected path: ${gameFullPath.absolutePath}"
+            "Built Unity player not found at expected path: ${gameFullPath.absolutePathString()}"
         }
         return gameFullPath
     }
@@ -144,13 +145,12 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
 
     private fun putUnityProjectToTempTestDir(
         solutionDirectoryName: String,
-        filter: ((File) -> Boolean)? = null,
     ): Path {
         val solutionName: String = Path.of(solutionDirectoryName).name
         val workDirectory = testWorkDirectory.resolve(solutionName)
         val sourceDirectory = solutionSourceRootDirectory.resolve(solutionDirectoryName)
         // Copy solution from sources
-        FileUtil.copyDir(sourceDirectory.toFile(), workDirectory.toFile(), filter)
+        sourceDirectory.copyRecursivelyTo(workDirectory)
         workDirectory.isDirectory().shouldBeTrue("Expected '${workDirectory.absolutePathString()}' to be a directory")
 
         return workDirectory
@@ -158,7 +158,7 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
 
     @BeforeMethod(alwaysRun = true)
     override fun setUpTestCaseSolution(testResult: ITestResult) {
-        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null).toFile()
+        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name)
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
         super.setUpTestCaseSolution(testResult)
         prepareAssemblies(project, activeSolutionDirectory)
@@ -180,7 +180,7 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
     @AfterMethod
     fun cleanupFirewallRules() {
         if (OS.CURRENT == OS.macOS && ::unityPlayerFile.isInitialized) {
-            removeRuleFromFirewall(unityPlayerFile.canonicalPath)
+            removeRuleFromFirewall(unityPlayerFile.absoluteCanonicalPath)
         }
     }
 
@@ -210,13 +210,13 @@ abstract class UnityPlayerTestBase() : BaseTestWithUnitySetup() {
         return result.await()
     }
 
-    fun startGameExecutable(playerFile: File, logPath: File): Process? {
+    fun startGameExecutable(playerFile: Path, logPath: Path): Process? {
         assertNotNull(playerFile, "Game executable not found after build!")
 
         return try {
             logger.info("Starting game process: $playerFile")
-            playerFile.setExecutable(true)
-            val process = ProcessBuilder(mutableListOf(playerFile.path, "-logfile", logPath.toString(), "-batchMode")).start()
+            playerFile.setExecutablePermissions()
+            val process = ProcessBuilder(mutableListOf(playerFile.pathString, "-logfile", logPath.toString(), "-batchMode")).start()
             logger.info("Game process started: ${process.info()}")
             process
         } catch (exception: Throwable) {

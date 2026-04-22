@@ -9,6 +9,7 @@ import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.framework.testData.InheritanceBasedTestDataStorage
 import com.jetbrains.rider.test.framework.testData.TestDataStorage
+import com.jetbrains.rider.test.scriptingApi.absoluteCanonicalPath
 import com.jetbrains.rider.test.scriptingApi.getEngineExecutableInstallationPath
 import com.jetbrains.rider.test.scriptingApi.putUnityProjectToTempTestDir
 import com.jetbrains.rider.test.scriptingApi.riderPackageVersion
@@ -18,14 +19,13 @@ import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.startUnity
 import org.testng.ITestResult
 import org.testng.annotations.BeforeMethod
-import java.io.File
 import java.nio.file.Path
 import java.time.Duration
 import kotlin.io.path.exists
 import kotlin.io.path.pathString
 
-abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGeneratedSolutionBase() {
-    private lateinit var unityProjectPath: File
+abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGeneratedSolutionBase() {
+    private lateinit var unityProjectPath: Path
 
   protected val engineVersion: EngineVersion
     get() {
@@ -36,7 +36,7 @@ abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGenera
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger
     
-    private val unityExecutable: File by lazy { getEngineExecutableInstallationPath(engineVersion) }
+    private val unityExecutable: Path by lazy { getEngineExecutableInstallationPath(engineVersion) }
 
     override val customGoldSuffixes: List<String>
         get() = listOf("_${engineVersion.version.lowercase()}")
@@ -54,14 +54,14 @@ abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGenera
 
     @BeforeMethod
     override fun setUpTestCaseSolution(testResult: ITestResult) {
-        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null, testWorkDirectory.toFile(), solutionSourceRootDirectory.toFile(), testDataDirectory.toFile())
+        unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, null, testWorkDirectory, solutionSourceRootDirectory, testDataDirectory)
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
 
         val attemptsCount = 3
         for (i in 1..attemptsCount) {
             val unityProcessHandle = startUnity(
-                executable = unityExecutable.canonicalPath,
-                projectPath = unityProjectPath.canonicalPath,
+                executable = unityExecutable.absoluteCanonicalPath,
+                projectPath = unityProjectPath.absoluteCanonicalPath,
                 withCoverage = false,
                 resetEditorPrefs = resetEditorPrefs,
                 useRiderTestPath = useRiderTestPath,
@@ -72,7 +72,7 @@ abstract class IntegrationTestWithUnityProjectBase() : IntegrationTestWithGenera
             //Generate sln and csproj
             frameworkLogger.info(
                 "Unity Editor has been started, waiting for sln/csproj structure to be generated, attempt:$i/$attemptsCount")
-            val isSolutionGenerated = waitForSlnGeneratedByUnity(unityProcessHandle, unityProjectPath.canonicalPath,
+            val isSolutionGenerated = waitForSlnGeneratedByUnity(unityProcessHandle, unityProjectPath.absoluteCanonicalPath,
                                                                  Duration.ofMinutes(2L * i))
             if (isSolutionGenerated)
                 frameworkLogger.info("Sln/csproj structure has been created, opening project in Rider")

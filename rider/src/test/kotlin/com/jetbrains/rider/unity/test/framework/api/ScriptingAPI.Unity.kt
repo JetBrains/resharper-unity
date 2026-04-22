@@ -42,14 +42,12 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.getUnityArgs
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.solutionDirectoryPath
 import com.jetbrains.rider.projectView.solutionName
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.enums.EngineVersion
 import com.jetbrains.rider.test.facades.environment.RiderTestExecutionTarget
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
-import com.jetbrains.rider.test.scriptingApi.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.flushQueues
 import com.jetbrains.rider.test.framework.frameworkLogger
@@ -58,9 +56,11 @@ import com.jetbrains.rider.test.framework.getGoldFile
 import com.jetbrains.rider.test.framework.processor.TestProcessor
 import com.jetbrains.rider.test.framework.testData.TestDataStorage
 import com.jetbrains.rider.test.scriptingApi.DebugTestExecutionContext
+import com.jetbrains.rider.test.scriptingApi.absoluteCanonicalPath
 import com.jetbrains.rider.test.scriptingApi.addArgsForUnityProcess
 import com.jetbrains.rider.test.scriptingApi.changeFileSystem2
 import com.jetbrains.rider.test.scriptingApi.checkSwea
+import com.jetbrains.rider.test.scriptingApi.combine
 import com.jetbrains.rider.test.scriptingApi.debugProgram
 import com.jetbrains.rider.test.scriptingApi.destroyProcess
 import com.jetbrains.rider.test.scriptingApi.refreshFileSystem
@@ -72,14 +72,16 @@ import com.jetbrains.rider.test.tooling.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
 import com.jetbrains.rider.utils.NullPrintStream
 import kotlinx.coroutines.launch
-import java.io.File
 import java.io.PrintStream
 import java.nio.file.Path
 import java.time.Duration
 import kotlin.io.path.copyTo
+import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -113,7 +115,7 @@ fun prepareAssemblies(activeSolutionDirectory: Path) {
 //region Connection
 
 fun replaceUnityVersionOnCurrent(project: Project) {
-    val projectVersionFile = project.solutionDirectory.resolve("ProjectSettings/ProjectVersion.txt")
+    val projectVersionFile = project.solutionDirectoryPath.resolve("ProjectSettings/ProjectVersion.txt")
     val oldVersion = projectVersionFile.readText().split(Regex("\\s+"))[1]
 
     val newVersion = UnityInstallationFinder.getInstance(project).getApplicationVersion()
@@ -130,7 +132,7 @@ fun SolutionApiFacade.activateRiderFrontendTest() {
 }
 
 fun startUnity(project: Project,
-               logPath: File,
+               logPath: Path,
                withCoverage: Boolean,
                resetEditorPrefs: Boolean,
                useRiderTestPath: Boolean,
@@ -140,7 +142,7 @@ fun startUnity(project: Project,
 }
 
 fun startUnity(args: MutableList<String>,
-                       logPath: File,
+                       logPath: Path,
                        withCoverage: Boolean,
                        resetEditorPrefs: Boolean,
                        useRiderTestPath: Boolean,
@@ -149,7 +151,7 @@ fun startUnity(args: MutableList<String>,
     val unityArgs = addArgsForUnityProcess(logPath, resetEditorPrefs, useRiderTestPath, batchMode, generateSolution)
     args.addAll(unityArgs)
 
-    val riderPath = getRiderDevAppPath().canonicalPath
+    val riderPath = getRiderDevAppPath().absoluteCanonicalPath
     args.addAll(arrayOf("-riderPath", riderPath))
 
     frameworkLogger.info("Starting unity process${if (withCoverage) " with Coverage" else ""}")
@@ -171,18 +173,18 @@ fun getUnityProcessHandle(project: Project): ProcessHandle {
     return ProcessHandle.of(unityApplicationData.valueOrNull?.unityProcessId!!.toLong()).get()
 }
 
-fun getRiderDevAppPath(): File {
-    val editorPluginFolderPath = UnityPluginEnvironment.getBundledFile("EditorPlugin")
+fun getRiderDevAppPath(): Path {
+    val editorPluginFolderPath = UnityPluginEnvironment.getBundledFile("EditorPlugin").toPath()
     val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
 
-    val riderDevAppPath = editorPluginFolderPath.resolve("rider-dev.app").apply { mkdirs() }
+    val riderDevAppPath = editorPluginFolderPath.resolve("rider-dev.app").apply { createDirectories() }
     val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
 
     val file = editorPluginFolderPath.resolve(assemblyName)
     if (!file.exists())
         throw IllegalStateException("editor plugin $file doesn't exist")
 
-    riderDevBatPath.writeText(file.canonicalPath)
+    riderDevBatPath.writeText(file.absoluteCanonicalPath)
 
     return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
 }
@@ -192,7 +194,7 @@ fun TestProcessor<*>.startUnity(project: Project,
                                         resetEditorPrefs: Boolean,
                                         useRiderTestPath: Boolean,
                                         batchMode: Boolean) =
-    startUnity(project, testMethod.logDirectory.resolve("UnityEditor.log").toFile(), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
+    startUnity(project, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 
 fun TestProcessor<*>.startUnity(executable: String,
                                         projectPath: String,
@@ -202,7 +204,7 @@ fun TestProcessor<*>.startUnity(executable: String,
                                         batchMode: Boolean,
                                         generateSolution: Boolean = false): ProcessHandle {
     val args = mutableListOf(executable).withProjectPath(projectPath)
-    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log").toFile(), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode,
+    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode,
                       generateSolution)
 }
 
@@ -382,7 +384,7 @@ fun SolutionApiFacade.restart() {
 //region RunDebug
 
 fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
-    playerFile: File,
+    playerFile: Path,
     test: DebugTestExecutionContext.() -> Unit,
     goldFile: Path? = null) {
 
@@ -391,7 +393,7 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
     var session: XDebugSession? = null
 
     try {
-        val pair = startUnityStandaloneProject(playerFile, testMethod.logDirectory.resolve("UnityPlayer.log").toFile())
+        val pair = startUnityStandaloneProject(playerFile, testMethod.logDirectory.resolve("UnityPlayer.log"))
         val unityProcess: UnityProcess? = pair.first
         startGameExecutable = pair.second
 
@@ -428,7 +430,7 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
     }
 }
 
-private fun UnityPlayerDebuggerTestBase.startUnityStandaloneProject(playerFile: File, logPath: File)
+private fun UnityPlayerDebuggerTestBase.startUnityStandaloneProject(playerFile: Path, logPath: Path)
     : Pair<UnityProcess?, Process?> {
 
     val startGameExecutable = startGameExecutable(playerFile, logPath)
