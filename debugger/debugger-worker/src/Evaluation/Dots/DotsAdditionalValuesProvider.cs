@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Debugger.Model.Plugins.Unity;
+using JetBrains.Lifetimes;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
@@ -63,7 +64,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
                 myHasEntityPackage = false;
         }
 
-        public IEnumerable<IValueEntity> GetAdditionalLocals(IStackFrame frame)
+        public IEnumerable<IValueEntity> GetAdditionalLocals(IStackFrame frame, Lifetime lifetime)
         {
             // Do nothing if the entity package is not in the project
             // Do nothing if "Allow property evaluations..." option is disabled.
@@ -73,20 +74,20 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
                 yield break;
             }
 
-            var currentEntity = GetCurrentEntity(frame);
+            var currentEntity = GetCurrentEntity(frame, lifetime);
             if (currentEntity != null)
                 yield return currentEntity.ToValue(myValueServices);
         }
 
-        private IValueReference<TValue>? GetCurrentEntity(IStackFrame frame)
+        private IValueReference<TValue>? GetCurrentEntity(IStackFrame frame, Lifetime lifetime)
         {
             return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>?>(
-                () => TryGetValueFromParentFrame(frame),
+                () => TryGetValueFromParentFrame(frame, lifetime),
                 exception =>
                     myLogger.LogThrownUnityException(exception, frame, myValueServices, mySession.EvaluationOptions));
         }
 
-        private IValueReference<TValue>? TryGetValueFromParentFrame(IStackFrame frame)
+        private IValueReference<TValue>? TryGetValueFromParentFrame(IStackFrame frame, Lifetime lifetime)
         {
             var containingReifiedType = frame.GetContainingReifiedType();
             if (containingReifiedType == null || !containingReifiedType.MetadataType
@@ -106,6 +107,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
             IValue<TValue>? entityIndexInChunkValue = null;
             foreach (var value in localVariables2)
             {
+                lifetime.ThrowIfNotAlive();
+
                 if (value.SimpleName.Equals("chunk"))
                     chunkValue = value as IValue<TValue>;
                 else if (value.SimpleName.Equals("entityIndexInChunk") || value.SimpleName.Equals("entityIndex"))
@@ -133,6 +136,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
             IValue<TValue>? entitiesArray = null;
             foreach (var valueEntity in valueEntities)
             {
+                lifetime.ThrowIfNotAlive();
+
                 if (!valueEntity.SimpleName.Equals("Entities")) continue;
 
                 entitiesArray = valueEntity as IValue<TValue>;
@@ -143,6 +148,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
                 return null;
 
             var arrayValueRole = entitiesArray.ValueReference.AsArray(mySession.EvaluationOptions);
+            lifetime.ThrowIfNotAlive();
+
             var element = arrayValueRole.GetElement(entityIndexInChunk.Value);
             if (element == null)
                 return null;

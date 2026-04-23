@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values;
+using JetBrains.Lifetimes;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
@@ -48,7 +49,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             myFactory = factory;
         }
 
-        public IEnumerable<IValueEntity> GetAdditionalLocals(IStackFrame frame)
+        public IEnumerable<IValueEntity> GetAdditionalLocals(IStackFrame frame, Lifetime lifetime)
         {
             // Do nothing if "Allow property evaluations..." option is disabled.
             // The debugger works in two steps - get value entities/references, and then get value presentation.
@@ -60,36 +61,40 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 yield break;
 
             // Add "Active Scene" as a top level item to mimic the Hierarchy window in Unity
-            var activeScene = GetActiveScene(frame);
+            var activeScene = GetActiveScene(frame, lifetime);
             if (activeScene != null)
                 yield return activeScene;
 
-            var dontDestroyOnLoadScene = GetDontDestroyOnLoadScene(frame);
+            var dontDestroyOnLoadScene = GetDontDestroyOnLoadScene(frame, lifetime);
             if(dontDestroyOnLoadScene != null)
                 yield return dontDestroyOnLoadScene;
 
             // If `this` is a MonoBehaviour, promote `this.gameObject` to top level to make it easier to find,
             // especially if inherited properties are hidden
-            var thisGameObject = GetThisGameObjectForMonoBehaviour(frame);
+            var thisGameObject = GetThisGameObjectForMonoBehaviour(frame, lifetime);
             if (thisGameObject != null)
                 yield return thisGameObject.ToValue(myValueServices);
         }
 
-        private IValueEntity? GetDontDestroyOnLoadScene(IStackFrame frame)
+        private IValueEntity? GetDontDestroyOnLoadScene(IStackFrame frame, Lifetime lifetime)
         {
             return myLogger.CatchEvaluatorException<TValue, IValueEntity?>(() =>
                 {
+                    lifetime.ThrowIfNotAlive();
                     var editorSceneManagerType = GetEditorSceneManagerType(frame);
                     if (editorSceneManagerType == null)
                         return null;
+
+                    lifetime.ThrowIfNotAlive();
                     var getDontDestroyOnLoadMethod = GetDontDestroyOnLoadSceneMethod(editorSceneManagerType);
                     if (getDontDestroyOnLoadMethod == null)
                         return null;
 
-
+                    lifetime.ThrowIfNotAlive();
                     var dontDestroyOnLoadScene =
                         editorSceneManagerType.CallStaticMethod(frame, mySession.EvaluationOptions,
                             getDontDestroyOnLoadMethod);
+
                     if (dontDestroyOnLoadScene == null)
                     {
                         myLogger.Warn("Unexpected response: EditorSceneManager.GetDontDestroyOnLoadScene() == null");
@@ -102,7 +107,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                     myLogger.LogThrownUnityException(exception, frame, myValueServices, mySession.EvaluationOptions));
         }
         
-        private IValueEntity? GetActiveScene(IStackFrame frame)
+        private IValueEntity? GetActiveScene(IStackFrame frame, Lifetime lifetime)
         {
             return myLogger.CatchEvaluatorException<TValue, IValueEntity?>(() =>
                 {
@@ -114,21 +119,26 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                     if (getActiveSceneMethod == null)
                         return null;
 
+                    lifetime.ThrowIfNotAlive();
                     var getSceneCountProperty = GetSceneCountProperty(frame, sceneManagerType);
 
+                    lifetime.ThrowIfNotAlive();
                     var activeScene = GetActiveSceneValue(frame, sceneManagerType, getActiveSceneMethod);
-                    
+
+                    lifetime.ThrowIfNotAlive();
                     if (getSceneCountProperty == null)
                         return CreateValueEntity(activeScene, "Active scene", sceneManagerType.MetadataType, frame);
 
+                    lifetime.ThrowIfNotAlive();
                     var scenesCount = getSceneCountProperty.AsPrimitive(mySession.EvaluationOptions).GetPrimitiveSafe<int>();
 
                     var getSceneAtMethod = GetSceneAtMethod(sceneManagerType);
 
+                    lifetime.ThrowIfNotAlive();
                     if(getSceneAtMethod == null || scenesCount == null || scenesCount == 1)
                         return CreateValueEntity(activeScene, "Active scene", sceneManagerType.MetadataType, frame);
 
-                    var simpleValueReferences = GetLoadedScenes(frame, sceneManagerType, getSceneAtMethod, scenesCount.Value, activeScene);
+                    var simpleValueReferences = GetLoadedScenes(frame, sceneManagerType, getSceneAtMethod, scenesCount.Value, activeScene, lifetime);
                     return new SimpleEntityGroup("Loaded Scenes", simpleValueReferences, true);
 
                 },
@@ -144,13 +154,15 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         }
 
         private List<IValueEntity> GetLoadedScenes(IStackFrame frame, IReifiedType<TValue> sceneManagerType,
-            IMetadataMethodLite getSceneAtMethod, int scenesCount, TValue activeScene)
+            IMetadataMethodLite getSceneAtMethod, int scenesCount, TValue activeScene, Lifetime lifetime)
         {
             var activeSceneHandle = TryGetActiveSceneHandle(activeScene);
 
             var loadedScenes = new List<IValueEntity>();
             for (int i = 0; i < scenesCount; i++)
             {
+                lifetime.ThrowIfNotAlive();
+
                 var indexValue = myFactory.CreatePrimitive(frame, mySession.EvaluationOptions, i);
                 var sceneAtIndex =
                     sceneManagerType.CallStaticMethod(frame,
@@ -281,7 +293,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             return sceneManagerType;
         }
 
-        private IValueReference<TValue>? GetThisGameObjectForMonoBehaviour(IStackFrame frame)
+        private IValueReference<TValue>? GetThisGameObjectForMonoBehaviour(IStackFrame frame, Lifetime lifetime)
         {
             return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>?>(() =>
                 {
@@ -289,12 +301,14 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                     if (thisObj?.DeclaredType?.FindTypeThroughHierarchy("UnityEngine.MonoBehaviour") == null)
                         return null;
 
+                    lifetime.ThrowIfNotAlive();
                     if (!(thisObj.GetPrimaryRole(mySession.EvaluationOptions) is IObjectValueRole<TValue> role))
                     {
                         myLogger.Warn("Unable to get 'this' as object value");
                         return null;
                     }
 
+                    lifetime.ThrowIfNotAlive();
                     var gameObjectReference = role.GetInstancePropertyReference("gameObject", true);
                     if (gameObjectReference == null)
                     {
@@ -307,6 +321,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                     // version of the property value reference. We'll catch the exception and react gracefully. Note
                     // that if the gameObject property returned null (it won't), we'd still get a valid value here.
                     var gameObject = gameObjectReference.GetValue(mySession.EvaluationOptions);
+                    lifetime.ThrowIfNotAlive();
+
                     var gameObjectType = gameObjectReference.GetValueType(mySession.EvaluationOptions,
                         myValueServices.ValueMetadataProvider);
 
