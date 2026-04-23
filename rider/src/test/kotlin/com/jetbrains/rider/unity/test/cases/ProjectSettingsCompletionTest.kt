@@ -30,7 +30,8 @@ import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.pathString
 import kotlin.io.path.name
 
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
@@ -67,7 +68,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     @Test(description = "Test scene primitive completion")
     @ChecklistItems(["Project Settings Completion/Scene primitive"])
     fun testScene_PrimitiveCompletion() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "SceneCompletionTest.cs") {
             typeWithLatency("\"")
             assertLookupNotContains("\"ImpossibleShortName\"")
             assertLookupNotContains("\"ImpossibleShortName2\"")
@@ -84,7 +85,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     @Test(description = "Test Animator state primitive completion")
     @ChecklistItems(["Project Settings Completion/Animator state primitive"])
     fun testAnimatorState_PrimitiveCompletion() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "AnimatorStateCompletionTest.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "AnimatorStateCompletionTest.cs") {
             typeWithLatency("\"")
             assertLookupContains("\"Alerted\"", checkFocus = false)
             assertLookupContains("\"AttackLoop\"", checkFocus = false)
@@ -94,7 +95,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     @Test(description = "Test Input primitive completion")
     @ChecklistItems(["Project Settings Completion/Input primitive"])
     fun testInput_PrimitiveCompletion() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "InputCompletionTest.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "InputCompletionTest.cs") {
             typeWithLatency("\"")
             assertLookupContains(
                 "\"Jump\"",
@@ -123,12 +124,12 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     @Test(description = "Test Layer primitive completion")
     @ChecklistItems(["Project Settings Completion/Layer primitive"])
     fun testLayer_PrimitiveCompletion() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicLayers, checkFocus = false)
         }
 
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest2.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "LayerCompletionTest2.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicLayers, checkFocus = false)
         }
@@ -137,7 +138,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     @Test(description = "Test Layer primitive completion with turned off Yaml")
     @ChecklistItems(["Project Settings Completion/Layer primitive with turned off Yaml"])
     fun testLayer_PrimitiveCompletion_YamlOff() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicLayers, checkFocus = false)
         }
@@ -147,25 +148,25 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     @Mute("RIDER-84785")
     @ChecklistItems(["Project Settings Completion/Layer completion after modification"])
     fun testLayer_CompletionAfterModification() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicLayers, checkFocus = false)
         }
 
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest2.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "LayerCompletionTest2.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicLayers, checkFocus = false)
         }
 
-        replaceFileContent(project, File("ProjectSettings").resolve("TagManager.asset").path, "TagManager.asset")
+        replaceFileContent(project, Path.of("ProjectSettings", "TagManager.asset").pathString, "TagManager.asset")
         TestHost.getInstance(project.frontendProjectSession.appSession).backendWaitForCaches("waitForAllAnalysisFinished")
 
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicLayers, "\"Test1\"", checkFocus = false)
         }
 
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest2.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "LayerCompletionTest2.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicLayers, "\"Test1\"", checkFocus = false)
         }

@@ -17,8 +17,9 @@ import com.jetbrains.rider.unity.test.framework.api.waitConnectionToUnityEditor
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityRunConfigurations
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
-import java.io.File
 import kotlin.io.path.copyTo
+import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 
 /**
@@ -84,11 +85,11 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
         checkSweaInSolution()
     }
 
-    fun waitForDiscoveringWorkaround(file: File, elementsCount: Int, it: RiderUnitTestScriptingFacade) {
+    fun waitForDiscoveringWorkaround(file: Path, elementsCount: Int, it: RiderUnitTestScriptingFacade) {
         // see https://youtrack.jetbrains.com/issue/RIDER-55544
         // workaround the situation, when at first assemblies are not compiled, so discovery returns nothing
         // later Unity compiles assemblies, but discovery would not start again, till solution reload
-        withOpenedEditor(file.absolutePath) {
+        withOpenedEditor(file.absolutePathString()) {
             FrontendTextControlHost.getInstance(project!!.frontendProjectSession.appSession)
             waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile!!))
 

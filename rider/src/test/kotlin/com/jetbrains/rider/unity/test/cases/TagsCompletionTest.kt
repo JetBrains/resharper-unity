@@ -23,7 +23,8 @@ import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.pathString
 
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Tags Autocompletion")
@@ -63,32 +64,32 @@ class TagsCompletionTest : PerTestSolutionTestBase() {
     @Test(description="Check completion for basic tags (Finish, PLayer, Respawn, EditorOnly and etc.)")
     @ChecklistItems(["Tags Completion/Basic tags (Finish, Player, Respawn, EditorOnly)"])
     fun testTag_PrimitiveCompletion() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest1.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "TagCompletionTest1.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicTags, checkFocus = false)
         }
 
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest2.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "TagCompletionTest2.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicTags, checkFocus = false)
         }
 
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest3.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "TagCompletionTest3.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicTags, checkFocus = false)
         }
 
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest4.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "TagCompletionTest4.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicTags, checkFocus = false)
         }
 
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest5.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "TagCompletionTest5.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicTags, checkFocus = false)
         }
 
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest6.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "TagCompletionTest6.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicTags, checkFocus = false)
         }

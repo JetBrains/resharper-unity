@@ -28,7 +28,8 @@ import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.pathString
 
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Asset Database Autocompletion")
@@ -60,7 +61,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
     @ChecklistItems(["Asset Database Completion/Empty path"])
     fun test_EmptyPath() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "EmptyPathTest.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "EmptyPathTest.cs") {
             typeWithLatency("\"")
             assertLookupContains(
                 "Assets\"",
@@ -73,7 +74,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
     @ChecklistItems(["Asset Database Completion/Not full path"])
     fun test_NotFullAssetsPathTest() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "NotFullAssetsPathTest.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "NotFullAssetsPathTest.cs") {
             callBasicCompletion()
             assertLookupContains(
                 "Assets\"",
@@ -85,7 +86,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
     @ChecklistItems(["Asset Database Completion/Assets folder path"])
     fun test_AssetsFolderTest() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "AssetsFolderTest.cs") {
             typeWithLatency("/")
             assertLookupContains(
                 "Editor\"",
@@ -100,7 +101,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
     @ChecklistItems(["Asset Database Completion/Assets folder path with caret inside"])
     fun test_AssetsFolderCaretInside() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "AssetsFolderTest.cs") {
             callBasicCompletion()
             assertLookupContains(
                 "Editor\"",
@@ -112,7 +113,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
     @ChecklistItems(["Asset Database Completion/Assets internal folder path"])
     fun test_AssetsInternalFolderTest() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsInternalFolderTest.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "AssetsInternalFolderTest.cs") {
             typeWithLatency("/")
             assertLookupContains(
                 "from_res__EDITOR.bytes\"",
@@ -124,7 +125,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
     @ChecklistItems(["Asset Database Completion/Package folder path"])
     fun test_PackagesFolderTest() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesFolderTest.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "PackagesFolderTest.cs") {
             typeWithLatency("/")
             assertLookupContains(
                 "com.jetbrains.from_disk\"",
@@ -140,7 +141,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
     @ChecklistItems(["Asset Database Completion/Package internal folder path"])
     fun test_PackagesInternalFolderTest() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesInternalFolderTest.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "PackagesInternalFolderTest.cs") {
             typeWithLatency("/")
             assertLookupContains(
                 "Resources\"",

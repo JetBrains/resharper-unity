@@ -21,9 +21,9 @@ import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
-import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.readText
+import kotlin.io.path.pathString
 
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity quick fix project settings")
@@ -34,7 +34,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     @Test(description="Quick fix for adding to build settings")
     @ChecklistItems(["Quick Fix Project Settings/Adding to build settings"])
     fun testAddToBuildSettings() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
             waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile!!))
             callAltEnterMenu {
@@ -48,7 +48,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     @Test(description="Quick fix for enabling scene at build settings")
     @ChecklistItems(["Quick Fix Project Settings/Enabling scene at build settings"])
     fun testEnableSceneAtBuildSettings() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
+        withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
             waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile!!))
             callAltEnterMenu {
@@ -63,7 +63,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     @ChecklistItems(["Quick Fix Project Settings/Specifying full scene name"])
     fun testSpecifyFullSceneName() {
         doTestWithDumpDocument {
-            withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
+            withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "SceneCompletionTest.cs") {
                 FrontendTextControlHost.getInstance(project!!)
                 waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile!!))
                 callAltEnterMenu {

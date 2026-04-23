@@ -25,7 +25,8 @@ import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.pathString
 
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Resources Autocompletion")
@@ -55,7 +56,7 @@ class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
     @ChecklistItems(["Unity Resources Completion/Load"])
     fun test_UnityResourcesLoadCompletion() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadCompletion.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "UnityResourcesLoadCompletion.cs") {
             typeWithLatency("\"")
             assertLookupNotContains("\"EscapeFromRider\"")
             assertLookupNotContains("\"ImpossibleResourceName\"")
@@ -77,7 +78,7 @@ class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
     @ChecklistItems(["Unity Resources Completion/LoadAll"])
     fun test_UnityResourcesLoadAllCompletion() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAllCompletion.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "UnityResourcesLoadAllCompletion.cs") {
             typeWithLatency("\"")
             assertLookupNotContains("\"EscapeFromRider\"")
             assertLookupNotContains("\"ImpossibleResourceName\"")
@@ -99,7 +100,7 @@ class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
     @ChecklistItems(["Unity Resources Completion/LoadAsync"])
     fun test_UnityResourcesLoadAsyncCompletion() {
         waitForUnityPackagesCache()
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAsyncCompletion.cs") {
+        withOpenedEditor(Path.of("Assets", "EscapeFromRider.cs").pathString, "UnityResourcesLoadAsyncCompletion.cs") {
             typeWithLatency("\"")
             assertLookupNotContains("\"EscapeFromRider\"")
             assertLookupNotContains("\"ImpossibleResourceName\"")
