@@ -45,7 +45,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         private readonly object myLockObject = new();
         private static readonly ILogger ourLogger = Logger.GetLogger<UnitySerializedReferenceProvider>();
         private readonly IUnityElementIdProvider myProvider;
-        private readonly IPsiAssemblyFileLoader myPsiAssemblyFileLoader;
         private readonly IPsiModules myPsiModules;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
 
@@ -66,7 +65,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             : base(NAME, false)
         {
             myProvider = provider;
-            myPsiAssemblyFileLoader = psiAssemblyFileLoader;
             myPsiModules = psiModules;
             myUnitySolutionTracker = unitySolutionTracker;
             myIndex = new UnitySerializedReferenceInfoIndex(solutionAnalysisConfiguration, ourLogger);
@@ -117,45 +115,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         private AssemblyCache ShellCache => new AssemblyCache(myShellDataMap, myShellTimestampMap);
         private AssemblyCache SolutionCache =>  new AssemblyCache(mySolutionDataMap, mySolutionTimestampMap);
         private AssemblyCache GetAssemblyCache(IPsiAssembly assembly) => assembly.IsFrameworkAssembly ? ShellCache : SolutionCache;
-        object? IAssemblyCache.Build(IPsiAssembly assembly)
+
+        public bool IsApplicable(IPsiAssembly assembly, bool hasSourceProject)
         {
             if (!IsUnitySolution)
-                return null;
+                return false;
             if (!IsValidAssembly(assembly))
-                return null;
-
+                return false;
             if (myPsiModules.HasSourceProject(assembly))
-                return null;
+                return false;
+            return true;
+        }
 
+        public AssemblyCacheBuildParameters GetBuildParameters(IPsiAssembly assembly)
+        {
+            return AssemblyCacheBuildParameters.LoadMetadataAndAssemblyFile;
+        }
+
+        public object? Build(IPsiAssembly assembly, IMetadataAssembly? metadataAssembly, IPsiAssemblyFile? assemblyFile, object? context)
+        {
             UnitySerializationReferenceElementInfo? result = null;
 
-            myPsiAssemblyFileLoader.GetOrLoadAssembly(assembly, true,
-                (_, assemblyFile, metadataAssembly) =>
+            if (assemblyFile is not AssemblyPsiFile)
+                result = null;
+            else if (metadataAssembly is null || metadataAssembly.AssemblyName == null)
+                result = null;
+            else
+            {
+                var currentTimestamp = assemblyFile.Timestamp.Ticks;
+
+                var fullAssemblyId = new FullAssemblyId(assembly);
+                var (dataMap, timestampMap) = GetAssemblyCache(assembly);
+                if (timestampMap.TryGetValue(fullAssemblyId, out var cachedTimestamp) &&
+                    cachedTimestamp == currentTimestamp)
                 {
-                    if (assemblyFile is not AssemblyPsiFile)
-                        result = null;
-                    else if (metadataAssembly.AssemblyName == null)
-                        result = null;
-                    else
-                    {
-                        var currentTimestamp = assemblyFile.Timestamp.Ticks;
+                    dataMap.TryGetValue(fullAssemblyId, out result);
+                }
 
-                        var fullAssemblyId = new FullAssemblyId(assembly);
-                        var (dataMap, timestampMap) = GetAssemblyCache(assembly);
-                        if (timestampMap.TryGetValue(fullAssemblyId, out var cachedTimestamp) &&
-                            cachedTimestamp == currentTimestamp)
-                        {
-                            dataMap.TryGetValue(fullAssemblyId, out result);
-                        }
-
-                        if(result == null)
-                        {
-                            result = ProcessAssemblyFile(assemblyFile, metadataAssembly);
-                            dataMap[fullAssemblyId] = result;
-                            timestampMap[fullAssemblyId] = currentTimestamp;
-                        }
-                    }
-                });
+                if(result == null)
+                {
+                    result = ProcessAssemblyFile(assemblyFile, metadataAssembly);
+                    dataMap[fullAssemblyId] = result;
+                    timestampMap[fullAssemblyId] = currentTimestamp;
+                }
+            }
 
             return result; //result == null in case if assembly removed
         }
