@@ -8,32 +8,19 @@ import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.ui.ExperimentalUI.Companion.isNewUI
-import com.intellij.xdebugger.XDebuggerManager
-import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.XSourcePosition
-import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.impl.XSourcePositionImpl
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
 import com.jetbrains.rider.plugins.unity.actions.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.actions.valueOrDefault
-import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
+import com.jetbrains.rider.plugins.unity.debugger.breakpoints.addUnityPausepoint
 
 class AddPauseBreakpoint : DumbAwareAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
-
         val position = getLineBreakpointPosition(e)!!
-        val unityPausepointType = XDebuggerUtil.getInstance().findBreakpointType(UnityPausepointBreakpointType::class.java)
-        val properties = unityPausepointType.createBreakpointProperties(position.file, position.line)
-        breakpointManager.addLineBreakpoint(unityPausepointType,
-                                            position.file.url,
-                                            position.line,
-                                            properties)
-            .apply {
-                this.suspendPolicy = SuspendPolicy.NONE
-            }
+        addUnityPausepoint(project, position.file, position.line)
     }
 
     override fun update(e: AnActionEvent) {

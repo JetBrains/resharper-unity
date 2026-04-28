@@ -1,13 +1,8 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.intellij.xdebugger.XDebuggerManager
-import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
-import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
-import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
-import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
-import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.unity.test.framework.api.removeAllUnityPausepoints
 import com.jetbrains.rider.test.annotations.RiderTestTimeout
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -106,14 +101,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
     }
 
     @AfterMethod
-    fun removeAllUnityPausepoints() {
-        XDebuggerManager.getInstance(project).breakpointManager.allBreakpoints.filter {
-            it.type is UnityPausepointBreakpointType
-        }.forEach {
-            @Suppress("UNCHECKED_CAST")
-            (convertToLineBreakpoint(project,
-                                     it as XLineBreakpoint<DotNetLineBreakpointProperties>))
-        }
+    fun clearAllBreakpoints() {
         removeAllBreakpoints()
     }
 

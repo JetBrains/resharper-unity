@@ -7,9 +7,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.lifetime
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.WaitFor
+import com.intellij.util.application
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XDebuggerManager
-import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rd.framework.protocolOrThrow
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -24,7 +24,7 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
-import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoint
+import com.jetbrains.rider.plugins.unity.debugger.breakpoints.addUnityPausepoint
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.model.LogEvent
 import com.jetbrains.rider.plugins.unity.model.LogEventType
@@ -63,10 +63,10 @@ import com.jetbrains.rider.test.scriptingApi.checkSwea
 import com.jetbrains.rider.test.scriptingApi.combine
 import com.jetbrains.rider.test.scriptingApi.debugProgram
 import com.jetbrains.rider.test.scriptingApi.destroyProcess
+import com.jetbrains.rider.test.scriptingApi.getVirtualFileFromPath
 import com.jetbrains.rider.test.scriptingApi.refreshFileSystem
 import com.jetbrains.rider.test.scriptingApi.selectDevice
 import com.jetbrains.rider.test.scriptingApi.shutdownDebuggerSession
-import com.jetbrains.rider.test.scriptingApi.toggleBreakpoint
 import com.jetbrains.rider.test.scriptingApi.waitForNotNull
 import com.jetbrains.rider.test.tooling.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.unity.test.cases.integrationTests.UnityPlayerDebuggerTestBase
@@ -526,28 +526,26 @@ private fun attachDebuggerToUnityEditor(
 }
 
 fun toggleUnityPausepoint(project: Project,
-                                                   projectFile: String,
-                                                   lineNumber: Int,
-                                                   condition: String = ""): XLineBreakpoint<DotNetLineBreakpointProperties> {
-    @Suppress("UNCHECKED_CAST")
-    val breakpoint = toggleBreakpoint(project, projectFile, lineNumber)
-        as XLineBreakpoint<DotNetLineBreakpointProperties>
-
-    val unityPausepointType = XDebuggerUtil.getInstance()
-        .findBreakpointType(UnityPausepointBreakpointType::class.java)
-    val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
-
-    val oldPausepointsCount = breakpointManager.getBreakpoints(unityPausepointType).size
-    convertToPausepoint(project, breakpoint)
-    frameworkLogger.info("Convert line breakpoint to unity pausepoint")
-
-    waitAndPump(unityDefaultTimeout, { breakpointManager.getBreakpoints(unityPausepointType).size == oldPausepointsCount + 1 })
-    { "Pausepoint isn't created" }
-    val pausepoint = breakpointManager.getBreakpoints(unityPausepointType).first()
-    pausepoint.setCondition(condition)
-    frameworkLogger.info("Set pausepoint condition: '$condition'")
-
+                          projectFile: String,
+                          lineNumber: Int): XLineBreakpoint<DotNetLineBreakpointProperties> {
+    val virtualFile = getVirtualFileFromPath(projectFile, project.solutionDirectoryPath)
+    val zeroBasedLine = lineNumber - 1
+    val currentSession = XDebuggerManager.getInstance(project).currentSession
+    frameworkLogger.info("[toggleUnityPausepoint] Adding pausepoint at $projectFile:$lineNumber " +
+        "(zeroBasedLine=$zeroBasedLine, debugSession='${currentSession?.sessionName ?: "none"}')")
+    val pausepoint = addUnityPausepoint(project, virtualFile, zeroBasedLine)
+    frameworkLogger.info("[toggleUnityPausepoint] Added: enabled=${pausepoint.isEnabled}, " +
+        "suspendPolicy=${pausepoint.suspendPolicy}, type=${pausepoint.type.id}")
     return pausepoint
+}
+
+fun SolutionApiFacade.removeAllUnityPausepoints() {
+    application.runWriteAction {
+        val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
+        breakpointManager.allBreakpoints
+            .filter { it.type is UnityPausepointBreakpointType }
+            .forEach { breakpointManager.removeBreakpoint(it) }
+    }
 }
 
 //endregion

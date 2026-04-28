@@ -3,12 +3,15 @@
 
 package com.jetbrains.rider.plugins.unity.debugger.breakpoints
 
+import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.platform.debugger.impl.ui.XDebuggerEntityConverter
 import com.intellij.util.application
 import com.intellij.util.ui.UIUtil
@@ -24,6 +27,37 @@ import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 import java.awt.Point
 
+fun addUnityPausepoint(
+    project: Project,
+    file: VirtualFile,
+    line: Int,
+    properties: DotNetLineBreakpointProperties? = null,
+    configure: XLineBreakpoint<DotNetLineBreakpointProperties>.() -> Unit = {},
+): XLineBreakpoint<DotNetLineBreakpointProperties> =
+    WriteAction.computeAndWait<XLineBreakpoint<DotNetLineBreakpointProperties>, RuntimeException> {
+        val type = XDebuggerUtil.getInstance().findBreakpointType(UnityPausepointBreakpointType::class.java)
+        val resolvedProperties = properties ?: type.createBreakpointProperties(file, line)
+        XDebuggerManager.getInstance(project).breakpointManager
+            .addLineBreakpoint(type, file.url, line, resolvedProperties)
+            .apply {
+                suspendPolicy = SuspendPolicy.NONE
+                configure()
+            }
+    }
+
+fun addUnityPausepoint(
+    project: Project,
+    fileUrl: String,
+    line: Int,
+    properties: DotNetLineBreakpointProperties? = null,
+    configure: XLineBreakpoint<DotNetLineBreakpointProperties>.() -> Unit = {},
+): XLineBreakpoint<DotNetLineBreakpointProperties> {
+    val file = VirtualFileManager.getInstance().findFileByUrl(fileUrl)
+        ?: error("Cannot resolve VirtualFile for pausepoint at $fileUrl:$line")
+    return addUnityPausepoint(project, file, line, properties, configure)
+}
+
+
 fun convertToPausepoint(project: Project,
                         breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>,
                         providedEditor: Editor? = null,
@@ -38,14 +72,9 @@ fun convertToPausepoint(project: Project,
             val leaveEnabled = dependentBreakpointManager?.isLeaveEnabled(breakpoint) ?: false
             breakpointManager.removeBreakpoint(breakpoint)
 
-            val unityPausepointType = XDebuggerUtil.getInstance().findBreakpointType(UnityPausepointBreakpointType::class.java)
-            val newBreakpoint = breakpointManager.addLineBreakpoint(unityPausepointType, breakpoint.fileUrl, breakpoint.line,
-                                                                    breakpoint.properties).apply {
-                this.suspendPolicy = SuspendPolicy.NONE
-
-                // Copy over condition + dependent breakpoint details. Hit count is automatically copied from properties
+            // Copy over condition + dependent breakpoint details. Hit count is automatically copied from properties
+            val newBreakpoint = addUnityPausepoint(project, breakpoint.fileUrl, breakpoint.line, breakpoint.properties) {
                 this.conditionExpression = breakpoint.conditionExpression
-
                 if (masterBreakpoint != null) {
                     dependentBreakpointManager.setMasterBreakpoint(this, masterBreakpoint, leaveEnabled)
                 }

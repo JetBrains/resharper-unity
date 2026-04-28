@@ -1,17 +1,7 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.intellij.openapi.components.ComponentManagerEx
-import com.intellij.openapi.extensions.ExtensionPointName
-import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
-import com.intellij.xdebugger.impl.collection.visualizer.XDebuggerNodeLinkActionProvider
-import com.jetbrains.rd.util.string.printToString
-import com.jetbrains.rdclient.util.idea.pumpMessages
-import com.jetbrains.rider.debugger.DotNetStackFrame
-import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
-import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
-import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
 import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -25,10 +15,8 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.scriptingApi.DebugTestExecutionContext
 import com.jetbrains.rider.test.scriptingApi.dumpFullCurrentData
 import com.jetbrains.rider.test.scriptingApi.evaluateExpression
-import com.jetbrains.rider.test.scriptingApi.evaluateNode
 import com.jetbrains.rider.test.scriptingApi.removeAllBreakpoints
 import com.jetbrains.rider.test.scriptingApi.resumeSession
 import com.jetbrains.rider.test.scriptingApi.stepInto
@@ -37,6 +25,7 @@ import com.jetbrains.rider.test.scriptingApi.toggleBreakpoint
 import com.jetbrains.rider.test.scriptingApi.toggleSystemExceptionBreakpoint
 import com.jetbrains.rider.test.scriptingApi.waitForPause
 import com.jetbrains.rider.unity.test.framework.api.attachDebuggerToUnityEditorAndPlay
+import com.jetbrains.rider.unity.test.framework.api.removeAllUnityPausepoints
 import com.jetbrains.rider.unity.test.framework.api.restart
 import com.jetbrains.rider.unity.test.framework.api.toggleUnityPausepoint
 import com.jetbrains.rider.unity.test.framework.api.unpause
@@ -47,10 +36,8 @@ import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityPro
 //import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
 //import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureHyperLink
 //import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider
-import kotlinx.coroutines.launch
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
-import kotlin.test.assertNotNull
 import kotlin.test.fail
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
@@ -217,24 +204,14 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
     }
 
     @AfterMethod
-    fun removeAllUnityPausepoints() {
-        XDebuggerManager.getInstance(project).breakpointManager.allBreakpoints.filter {
-            it.type is UnityPausepointBreakpointType
-        }.forEach {
-            @Suppress("UNCHECKED_CAST")
-            convertToLineBreakpoint(project, it as XLineBreakpoint<DotNetLineBreakpointProperties>)
-        }
+    fun clearAllBreakpoints() {
         removeAllBreakpoints()
     }
 }
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V2022)
-class DebuggerTestUnity2022 : DebuggerTest() {
-    init {
-        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
-    }
-}
+class DebuggerTestUnity2022 : DebuggerTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6)
