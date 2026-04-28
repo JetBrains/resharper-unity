@@ -30,6 +30,7 @@ import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityPro
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.time.Duration
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -154,9 +155,9 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         waitForProfilerSnapshotTimings()
 
         val profilerModel = frontendBackendModel.frontendBackendProfilerModel
-        var receivedWarning: String? = null
+        val receivedWarning = AtomicReference<String?>(null)
         profilerModel.navigationWarning.advise(project.lifetime) { warning ->
-            receivedWarning = warning
+            receivedWarning.set(warning)
         }
 
         // Fire navigation with a completely unresolvable qualified name
@@ -165,9 +166,9 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         )
 
         waitAndPump(Duration.ofSeconds(10), {
-            receivedWarning != null
+            receivedWarning.get() != null
         }) { "navigationWarning should fire for unresolvable target" }
-        assertTrue(receivedWarning!!.contains("NonExistent.ClassName.Method"),
+        assertTrue(receivedWarning.get()!!.contains("NonExistent.ClassName.Method"),
             "Warning message should contain the unresolvable qualified name")
     }
 
