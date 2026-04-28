@@ -67,7 +67,7 @@ class UnityProfilerUsagesDaemon(private val project: Project) {
         }
 
         frontendBackendProfilerModel.navigationWarning.advise(lifetime) { message ->
-            val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity Profiler")
+            val groupId = NotificationGroupManager.getInstance().getNotificationGroup("unity.profiler.navigation.notification.groupId") ?: return@advise
             val notification = Notification(groupId.displayId, message, NotificationType.WARNING)
             Notifications.Bus.notify(notification, project)
         }
@@ -127,4 +127,3 @@ class UnityProfilerUsagesDaemon(private val project: Project) {
         UnityProfilerToolWindowFactory.show(project)
     }
 }
-
