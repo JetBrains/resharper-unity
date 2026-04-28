@@ -1,4 +1,4 @@
-@file:JvmName("UnityPackageEntityModifications")
+@file:JvmName("UnityPackageEntityModifications") @file:Suppress("UnstableApiUsage")
 
 package com.jetbrains.rider.plugins.unity.workspace
 
