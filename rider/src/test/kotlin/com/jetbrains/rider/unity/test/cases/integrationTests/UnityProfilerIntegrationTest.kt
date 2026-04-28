@@ -148,6 +148,31 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         }) { "Caret should fall back to line 12 (Update method) when BeginSample marker not found" }
     }
 
+    @Test(description = "Check navigation to first BeginSample when label is duplicated")
+    @ChecklistItems(["Profiler/Navigation to First Duplicate BeginSample"])
+    fun checkNavigationToDuplicateBeginSample() {
+        runProfilerAutomation()
+        waitForProfilerSnapshotTimings()
+
+        val fem = FileEditorManager.getInstance(project)
+        waitAndPump(Duration.ofSeconds(10), {
+            fem.openFiles.any { it.name == "UnoptimizedMonoBehaviour.cs" }
+        }) { "UnoptimizedMonoBehaviour.cs should be opened after profiler automation" }
+
+        // "StringOps" appears twice in Update(): first on line 14, duplicate on line 37.
+        // Navigation must land on the first occurrence.
+        val profilerModel = frontendBackendModel.frontendBackendProfilerModel
+        profilerModel.navigateByQualifiedName.fire(
+            ProfilerNavigationRequest("UnoptimizedMonoBehaviour.Update", "StringOps")
+        )
+
+        waitAndPump(Duration.ofSeconds(10), {
+            val textEditor = fem.selectedEditor as? TextEditor
+            textEditor?.file?.name == "UnoptimizedMonoBehaviour.cs"
+                && textEditor.editor.caretModel.logicalPosition.line + 1 == 14
+        }) { "Caret should be at line 14 (first Profiler.BeginSample(\"StringOps\")) not the duplicate at line 37" }
+    }
+
     @Test(description = "Check navigationWarning fires when target is unresolvable")
     @ChecklistItems(["Profiler/Navigation Warning"])
     fun checkNavigationWarningOnUnresolvableTarget() {

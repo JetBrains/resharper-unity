@@ -34,6 +34,8 @@ public partial class UnoptimizedMonoBehaviour : MonoBehaviour
         // InefficientCoroutineUsage();
         RedundantNullChecks();
         Profiler.EndSample();
+        Profiler.BeginSample("StringOps");
+        Profiler.EndSample();
     }
 
     private void InefficientStringOperations()
