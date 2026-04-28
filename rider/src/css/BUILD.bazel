@@ -38,6 +38,7 @@ jvm_library(
 
 jvm_library(
   name = "css_test_lib",
+  testonly = True,
   module_name = "intellij.rider.plugins.unity.css",
   visibility = ["//visibility:public"],
   srcs = glob([], allow_empty = True),

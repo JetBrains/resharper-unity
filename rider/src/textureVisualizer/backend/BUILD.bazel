@@ -38,6 +38,7 @@ jvm_library(
 
 jvm_library(
   name = "backend_test_lib",
+  testonly = True,
   module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
   visibility = ["//visibility:public"],
   srcs = glob([], allow_empty = True),

@@ -17,6 +17,7 @@ jvm_library(
 
 jvm_library(
   name = "textureVisualizer_test_lib",
+  testonly = True,
   module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer",
   visibility = ["//visibility:public"],
   srcs = glob([], allow_empty = True),
