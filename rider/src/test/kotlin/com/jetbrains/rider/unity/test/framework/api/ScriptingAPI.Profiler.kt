@@ -10,6 +10,7 @@ import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.RunMethodData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.FetchingMode
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerNavigationRequest
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendProfilerModel
 import com.jetbrains.rider.plugins.unity.profiler.lineMarkers.UnityProfilerActiveLineMarkerRenderer
@@ -65,22 +66,21 @@ fun SolutionApiFacade.waitForProfilerSnapshotTimings(timeout: Duration = Duratio
     frameworkLogger.info("Profiler data loaded successfully")
 }
 
-fun SolutionApiFacade.waitForProfilerIntegrationEnabled(timeout: Duration = Duration.ofSeconds(10)) {
-    frameworkLogger.info("Waiting for profiler integration to be enabled")
+fun SolutionApiFacade.setUpProfilerDefaults(timeout: Duration = Duration.ofSeconds(10)) {
+    frameworkLogger.info("Setting up profiler defaults")
     val profilerModel = frontendBackendModel.frontendBackendProfilerModel
-    waitAndPump(timeout, { profilerModel.isIntegrationEnable.valueOrDefault(false) })
+    
+    profilerModel.isIntegrationEnable.set(true)
+    profilerModel.fetchingMode.set(FetchingMode.Auto)
+    profilerModel.isGutterMarksEnabled.set(true)
+    
+    waitAndPump(timeout, {
+        profilerModel.isIntegrationEnable.valueOrDefault(false) 
+            && profilerModel.fetchingMode.valueOrDefault(FetchingMode.Auto) == FetchingMode.Auto 
+            && profilerModel.isGutterMarksEnabled.valueOrDefault(false)
+    })
     { "Profiler integration was not enabled within timeout" }
-    frameworkLogger.info("Profiler integration enabled")
-}
-
-fun SolutionApiFacade.enableProfilerIntegration() {
-    frameworkLogger.info("Enabling profiler integration")
-    frontendBackendModel.frontendBackendProfilerModel.isIntegrationEnable.set(true)
-}
-
-fun SolutionApiFacade.enableProfilerGutterMarks() {
-    frameworkLogger.info("Enabling profiler gutter marks")
-    frontendBackendModel.frontendBackendProfilerModel.isGutterMarksEnabled.set(true)
+    frameworkLogger.info("Profiler defaults configured")
 }
 
 /**

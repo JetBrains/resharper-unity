@@ -1,12 +1,15 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.rd.util.lifetime
+import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.ProfilerSnapshotRequest
 import com.jetbrains.rider.plugins.unity.model.SelectionState
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendProfilerModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerNavigationRequest
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendProfilerModel
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
-import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.annotations.UnityTestSettings
 import com.jetbrains.rider.test.annotations.report.ChecklistItems
@@ -16,19 +19,15 @@ import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.TextEditor
-import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.unity.test.framework.api.enableProfilerGutterMarks
-import com.jetbrains.rider.unity.test.framework.api.enableProfilerIntegration
 import com.jetbrains.rider.unity.test.framework.api.frontendBackendModel
 import com.jetbrains.rider.unity.test.framework.api.getProfilerToolWindow
 import com.jetbrains.rider.unity.test.framework.api.navigateFromGutterMarkToToolWindow
 import com.jetbrains.rider.unity.test.framework.api.runProfilerAutomation
+import com.jetbrains.rider.unity.test.framework.api.setUpProfilerDefaults
 import com.jetbrains.rider.unity.test.framework.api.waitForProfilerGutterMarks
-import com.jetbrains.rider.unity.test.framework.api.waitForProfilerIntegrationEnabled
 import com.jetbrains.rider.unity.test.framework.api.waitForProfilerSnapshotTimings
+import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
+import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.time.Duration
 import kotlin.test.assertEquals
@@ -41,13 +40,14 @@ import kotlin.test.assertTrue
 @Solution("UnityProfilerTestsProject/SimpleUnityGame")
 abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBase() {
 
+    @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
+    open fun setUpProfilerIntegration() {
+        setUpProfilerDefaults()
+    }
+
     @Test(description = "Check profiler timings data streaming from Unity")
     @ChecklistItems(["Profiler/Timings Loading"])
     fun checkProfilerTimingsLoading() {
-        // Enable profiler integration
-        enableProfilerIntegration()
-        waitForProfilerIntegrationEnabled()
-
         // Run profiler automation in Unity (starts play mode, profiles, stops)
         runProfilerAutomation()
 
@@ -72,10 +72,6 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
     @Test(description = "Check navigation from Unity profiler to source code")
     @ChecklistItems(["Profiler/Navigation from Unity Profiler"])
     fun checkNavigationFromUnityProfiler() {
-        // Enable profiler integration
-        enableProfilerIntegration()
-        waitForProfilerIntegrationEnabled()
-
         // Verify no file is open before profiler automation — proves that navigateByQualifiedName
         // inside runProfilerAutomation() is what opens the file.
         val fem = FileEditorManager.getInstance(project)
@@ -103,9 +99,6 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
     @Test(description = "Check navigation from Unity profiler to exact Profiler.BeginSample call")
     @ChecklistItems(["Profiler/Navigation to BeginSample"])
     fun checkNavigationToBeginSample() {
-        enableProfilerIntegration()
-        waitForProfilerIntegrationEnabled()
-
         // runProfilerAutomation() opens UnoptimizedMonoBehaviour.cs via navigateByQualifiedName
         runProfilerAutomation()
         waitForProfilerSnapshotTimings()
@@ -132,9 +125,6 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
     @Test(description = "Check navigation falls back to method when BeginSample marker not found")
     @ChecklistItems(["Profiler/Navigation BeginSample Fallback"])
     fun checkNavigationToBeginSampleFallback() {
-        enableProfilerIntegration()
-        waitForProfilerIntegrationEnabled()
-
         runProfilerAutomation()
         waitForProfilerSnapshotTimings()
 
@@ -160,9 +150,6 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
     @Test(description = "Check navigationWarning fires when target is unresolvable")
     @ChecklistItems(["Profiler/Navigation Warning"])
     fun checkNavigationWarningOnUnresolvableTarget() {
-        enableProfilerIntegration()
-        waitForProfilerIntegrationEnabled()
-
         runProfilerAutomation()
         waitForProfilerSnapshotTimings()
 
@@ -187,11 +174,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
     @Test(description = "Check profiler gutter marks appear in editor")
     @ChecklistItems(["Profiler/Gutter Marks"])
     fun checkProfilerGutterMarks() {
-        // Enable profiler integration and gutter marks
-        enableProfilerIntegration()
-        enableProfilerGutterMarks()
-        waitForProfilerIntegrationEnabled()
-
+        
         // runProfilerAutomation() also simulates a double-click in the Unity Profiler (fires
         // navigateByQualifiedName), which opens UnoptimizedMonoBehaviour.cs in Rider and
         // initializes UnityProfilerUsagesDaemon with null state before data arrives.
@@ -219,10 +202,6 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
     @Test(description = "Check frame selection updates profiler data")
     @ChecklistItems(["Profiler/Frame Selection"])
     fun checkFrameSelection() {
-        // Enable profiler integration
-        enableProfilerIntegration()
-        waitForProfilerIntegrationEnabled()
-
         // Run profiler automation
         runProfilerAutomation()
 
@@ -268,9 +247,6 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
     @Test(description = "Check profiler tool window availability")
     @ChecklistItems(["Profiler/Tool Window"])
     fun checkProfilerToolWindow() {
-        enableProfilerIntegration()
-        waitForProfilerIntegrationEnabled()
-
         runProfilerAutomation()
         waitForProfilerSnapshotTimings()
 
@@ -284,10 +260,6 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
     @Test(description = "Check navigation from gutter to profiler tool window (filter)")
     @ChecklistItems(["Profiler/Navigation from Gutter to Tool Window"])
     fun checkNavigationFromGutterToToolWindow() {
-        // Enable profiler integration and gutter marks
-        enableProfilerIntegration()
-        enableProfilerGutterMarks()
-        waitForProfilerIntegrationEnabled()
 
         // runProfilerAutomation() fires navigateByQualifiedName, opening UnoptimizedMonoBehaviour.cs
         // and initializing UnityProfilerUsagesDaemon with null state before profiler data arrives.
