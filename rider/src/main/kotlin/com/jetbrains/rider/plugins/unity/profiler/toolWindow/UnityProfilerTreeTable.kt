@@ -39,8 +39,13 @@ class UnityProfilerTreeTable(
     lifetime: Lifetime
 ) : TreeTable(ListTreeTableModelOnColumns(DefaultMutableTreeNode(), UnityProfilerColumns.allColumns)) {
 
-    // Children expansion state saved on regular collapse — restored on regular expand.
-    private val savedExpansionState = HashMap<TreePath, List<TreePath>>()
+    // For each currently-collapsed path, the descendants that were expanded at the
+    // moment of collapse. Captured in processMouseEvent before super dispatches to the
+    // collapse — this widget cascades collapse for nodes with expanded descendants and
+    // skips TreeWillExpandListener entirely, so the snapshot has to happen pre-cascade.
+    // Replayed in processMouseEvent right after super, when the matching click re-expands
+    // the path. Cleared on snapshot change.
+    private val savedExpansionState = mutableMapOf<TreePath, List<TreePath>>()
 
     init {
         setRootVisible(false)
@@ -93,9 +98,11 @@ class UnityProfilerTreeTable(
 
         viewModel.treeRoot.advise(viewModel.lifetime.intersect(lifetime)) { root ->
             runInEdt {
-                val tree = tree
-                val expanded = TreeUtil.collectExpandedPaths(tree)
                 val selected = tree.selectionPaths ?: emptyArray()
+
+                // A new snapshot replaces the root with freshly-built nodes — saved
+                // children state from the previous tree can't apply, drop it.
+                savedExpansionState.clear()
 
                 (tableModel as ListTreeTableModelOnColumns).setRoot(root ?: DefaultMutableTreeNode())
 
@@ -108,7 +115,6 @@ class UnityProfilerTreeTable(
                     }
                 }
 
-                TreeUtil.restoreExpandedPaths(tree, expanded)
                 if (selected.isNotEmpty()) {
                     tree.selectionPaths = selected
                 }
@@ -123,16 +129,23 @@ class UnityProfilerTreeTable(
             val row = rowAtPoint(e.point)
             val path = if (row >= 0) tree.getPathForRow(row) else null
             if (path != null) {
-                // Alt+Left-Click: recursively expand or collapse the entire subtree.
+                // Alt+Left-Click: recursively expand a collapsed node, or collapse an
+                // expanded node and reset saved children state under it (so a
+                // subsequent regular re-expand shows descendants as collapsed).
                 if (SwingUtilities.isLeftMouseButton(e) && e.isAltDown && !e.isPopupTrigger) {
-                    if (tree.isExpanded(path)) collapseSubtree(path) else expandSubtree(path)
+                    if (tree.isExpanded(path)) {
+                        savedExpansionState.keys.removeIf { path.isDescendant(it) }
+                        tree.collapsePath(path)
+                    } else {
+                        expandSubtree(path)
+                    }
                     setRowSelectionInterval(row, row)
                     e.consume()
                     return
                 }
 
-                // Regular click: save expanded children before the click is processed,
-                // so we can restore them if this click collapsed then re-expanded the node.
+                // Regular click: snapshot expanded descendants before the cascade
+                // collapse clears them; restore them after re-expand.
                 val wasExpanded = tree.isExpanded(path)
                 if (wasExpanded) {
                     savedExpansionState[path] = TreeUtil.collectExpandedPaths(tree, path)
@@ -140,10 +153,8 @@ class UnityProfilerTreeTable(
 
                 super.processMouseEvent(e)
 
-                // If the node was collapsed and is now expanded, restore saved children state
                 if (!wasExpanded && tree.isExpanded(path)) {
-                    val saved = savedExpansionState.remove(path)
-                    if (saved != null) {
+                    savedExpansionState.remove(path)?.let { saved ->
                         TreeUtil.restoreExpandedPaths(tree, saved)
                     }
                 }
@@ -229,14 +240,6 @@ class UnityProfilerTreeTable(
         val paths = mutableListOf(path)
         collectDescendantPaths(node, path, paths)
         TreeUtil.expandPaths(tree, paths)
-    }
-
-    private fun collapseSubtree(path: TreePath) {
-        val node = path.lastPathComponent as? DefaultMutableTreeNode ?: return
-        val paths = mutableListOf<TreePath>()
-        collectDescendantPaths(node, path, paths)
-        paths.reversed().forEach { tree.collapsePath(it) }
-        tree.collapsePath(path)
     }
 
     private fun collectDescendantPaths(node: DefaultMutableTreeNode, parentPath: TreePath, result: MutableList<TreePath>) {
