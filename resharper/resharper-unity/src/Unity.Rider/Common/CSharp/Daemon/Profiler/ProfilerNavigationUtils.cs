@@ -101,8 +101,8 @@ public static class ProfilerNavigationUtils
                     continue;
 
                 var argument = expression.ArgumentsEnumerable.FirstOrDefault();
-                var name = argument?.Value?.GetText().Trim('"');
-                if (!string.Equals(name, markerName, StringComparison.Ordinal))
+                var constantValue = (argument?.Value as ICSharpLiteralExpression)?.ConstantValue?.StringValue;
+                if (!string.Equals(constantValue, markerName, StringComparison.Ordinal))
                     continue;
                 
                 var sourceFile = expression.GetSourceFile();
