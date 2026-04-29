@@ -66,6 +66,7 @@ import com.jetbrains.rider.test.scriptingApi.destroyProcess
 import com.jetbrains.rider.test.scriptingApi.getVirtualFileFromPath
 import com.jetbrains.rider.test.scriptingApi.refreshFileSystem
 import com.jetbrains.rider.test.scriptingApi.selectDevice
+import com.jetbrains.rider.test.scriptingApi.withBreakpointSync
 import com.jetbrains.rider.test.scriptingApi.shutdownDebuggerSession
 import com.jetbrains.rider.test.scriptingApi.waitForNotNull
 import com.jetbrains.rider.test.tooling.packages.ZipFilePackagePreparer
@@ -527,7 +528,7 @@ private fun attachDebuggerToUnityEditor(
 
 fun toggleUnityPausepoint(project: Project,
                           projectFile: String,
-                          lineNumber: Int): XLineBreakpoint<DotNetLineBreakpointProperties> {
+                          lineNumber: Int): XLineBreakpoint<DotNetLineBreakpointProperties> = withBreakpointSync {
     val virtualFile = getVirtualFileFromPath(projectFile, project.solutionDirectoryPath)
     val zeroBasedLine = lineNumber - 1
     val currentSession = XDebuggerManager.getInstance(project).currentSession
