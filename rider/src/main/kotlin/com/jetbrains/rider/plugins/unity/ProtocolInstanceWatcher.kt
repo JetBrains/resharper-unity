@@ -12,7 +12,7 @@ import com.jetbrains.rider.model.RdDeltaBatch
 import com.jetbrains.rider.model.RdDeltaType
 import com.jetbrains.rider.model.fileSystemModel
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rider.projectView.solutionDirectoryPath
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.ClosedWatchServiceException
@@ -33,7 +33,7 @@ class ProtocolInstanceWatcher : ProjectActivity {
                 if (project.isUnityProject.value) {
                     thread(name = "ProtocolInstanceWatcher") {
                         val watchService: WatchService = FileSystems.getDefault().newWatchService()
-                        val libraryPath = project.solutionDirectory.resolve("Library").toPath()
+                        val libraryPath = project.solutionDirectoryPath.resolve("Library")
 
                         if (!(libraryPath.isDirectory())) // todo: rethink, see com.jetbrains.rider.UnityProjectDiscoverer.Companion.hasUnityFileStructure
                             return@thread
