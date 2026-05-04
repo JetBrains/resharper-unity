@@ -1,7 +1,14 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
+import com.intellij.xdebugger.XDebuggerManager
+import com.intellij.xdebugger.XDebuggerUtil
+import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
+import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
+import com.jetbrains.rider.plugins.unity.debugger.breakpoints.addUnityPausepoint
+import com.jetbrains.rider.projectView.solutionDirectoryPath
 import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -17,6 +24,7 @@ import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.dumpFullCurrentData
 import com.jetbrains.rider.test.scriptingApi.evaluateExpression
+import com.jetbrains.rider.test.scriptingApi.getVirtualFileFromPath
 import com.jetbrains.rider.test.scriptingApi.removeAllBreakpoints
 import com.jetbrains.rider.test.scriptingApi.resumeSession
 import com.jetbrains.rider.test.scriptingApi.stepInto
@@ -38,6 +46,7 @@ import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityPro
 //import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
+import kotlin.test.assertEquals
 import kotlin.test.fail
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
@@ -201,6 +210,29 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
                 dumpFullCurrentData()
                 resumeSession()
             }, testGoldFile)
+    }
+    
+    @Test(description = "Regression: addUnityPausepoint creates a pausepoint and never a line breakpoint")
+    @ChecklistItems(["Breakpoints/Unity Pause Points"])
+    fun checkAddUnityPausepointNeverCreatesLineBreakpoint() {
+        val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
+        val pausepointType = XDebuggerUtil.getInstance()
+            .findBreakpointType(UnityPausepointBreakpointType::class.java)
+        val lineBreakpointType = XDebuggerUtil.getInstance()
+            .findBreakpointType(DotNetLineBreakpointType::class.java)
+
+        val pausepointsBefore = breakpointManager.getBreakpoints(pausepointType).size
+        val lineBreakpointsBefore = breakpointManager.getBreakpoints(lineBreakpointType).size
+
+        val testFile = getVirtualFileFromPath("NewBehaviourScript.cs", project.solutionDirectoryPath)
+        val pausepoint = addUnityPausepoint(project, testFile.url, line = 0)
+
+        assertEquals(pausepointsBefore + 1, breakpointManager.getBreakpoints(pausepointType).size)
+        assertEquals(lineBreakpointsBefore, breakpointManager.getBreakpoints(lineBreakpointType).size)
+        assertEquals(SuspendPolicy.NONE, pausepoint.suspendPolicy)
+
+        removeAllUnityPausepoints()
+        assertEquals(0, breakpointManager.getBreakpoints(pausepointType).size)
     }
 
     @AfterMethod
