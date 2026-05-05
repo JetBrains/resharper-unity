@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <!-- RIDER-134819: explicit "first open" precondition for UnityProjectDiscovererTest.
+       isUnityProject=false ensures oldVal != isUnityProjectVal when the discoverer evaluates
+       the file structure, so the deferred Unity Explorer view-switch path is exercised. -->
+  <component name="UnityProjectDiscoverer">
+    <option name="hasUnityReference" value="false" />
+    <option name="unityProject" value="false" />
+    <option name="unityProjectFolder" value="false" />
+  </component>
+</project>

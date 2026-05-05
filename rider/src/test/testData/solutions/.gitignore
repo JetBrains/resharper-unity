@@ -1,5 +1,9 @@
 **/.idea/
 
+# RIDER-134819: explicit "first open" cached state for UnityProjectDiscovererTest
+!UnityProjectDiscovererTestData/.idea/
+!UnityProjectDiscovererTestData/.idea/**
+
 **/Assets/Plugins/
 **/Assets/Plugins.meta
 **/Temp/
