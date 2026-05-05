@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.ide.projectView.ProjectView
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.BaseState
@@ -10,8 +11,14 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.wm.ToolWindowId
+import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.openapi.wm.ex.ToolWindowManagerListener
+import com.intellij.util.concurrency.ThreadingAssertions
 import com.jetbrains.rd.framework.impl.RdProperty
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -23,10 +30,13 @@ import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solutionDescription
-import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerPane
 import com.jetbrains.rider.unity.UnityDetector
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.VisibleForTesting
+import kotlin.coroutines.resume
 
 class UnityDetectorImpl(private val project: Project) : UnityDetector {
 
@@ -65,17 +75,12 @@ class UnityProjectDiscoverer(val project: Project) {
             if (oldVal != isUnityProjectVal) {
                 val projectView = ProjectView.getInstance(project)
                 withContext(Dispatchers.EDT) {
-                    val fileSystemPane = projectView.getProjectViewPaneById(FileSystemExplorerPane.ID)
-                    // if fileSystemPane is null, means that ProjectView is not yet initialized, so we can do nothing
-                    if (fileSystemPane != null) {
+                    if (isUnityProjectVal) {
+                        switchToUnityExplorerWhenReady(project, projectView)
+                    }
+                    else {
                         val pane = projectView.getProjectViewPaneById(UnityExplorer.ID)
-                        if (isUnityProjectVal) {
-                            if (pane == null) projectView.addProjectPane(UnityExplorer(project))
-                            projectView.changeView(UnityExplorer.ID)
-                        }
-                        else if (pane != null) {
-                            projectView.removeProjectPane(pane)
-                        }
+                        if (pane != null) projectView.removeProjectPane(pane)
                     }
                 }
             }
@@ -94,7 +99,39 @@ class UnityProjectDiscoverer(val project: Project) {
     }
 
     companion object {
+        private val logger = logger<UnityProjectDiscoverer>()
+
         fun getInstance(project: Project): UnityProjectDiscoverer = project.service()
+
+        suspend fun switchToUnityExplorerWhenReady(project: Project, projectView: ProjectView) {
+            ThreadingAssertions.assertEventDispatchThread()
+            val twm = ToolWindowManager.getInstance(project)
+            if (twm.getToolWindow(ToolWindowId.PROJECT_VIEW)?.contentManagerIfCreated == null) {
+                // Without this guard the coroutine would suspend until project lifetime ends in headless environments.
+                if (ApplicationManager.getApplication().isHeadlessEnvironment && !isSupportedInHeadlessEnv) return
+                logger.info("Project tool window not ready, deferring Unity Explorer view switch")
+                coroutineScope {
+                    val connection = project.messageBus.connect(this@coroutineScope)
+                    suspendCancellableCoroutine { cont ->
+                        connection.subscribe(ToolWindowManagerListener.TOPIC, object : ToolWindowManagerListener {
+                            override fun toolWindowShown(toolWindow: ToolWindow) {
+                                if (toolWindow.id == ToolWindowId.PROJECT_VIEW) cont.resume(Unit)
+                            }
+                        })
+                        // Re-check after subscribing to close the race between the initial check and subscribe.
+                        if (twm.getToolWindow(ToolWindowId.PROJECT_VIEW)?.contentManagerIfCreated != null)
+                            cont.resume(Unit)
+                    }
+                }
+            }
+            withContext(Dispatchers.EDT) {
+                if (projectView.getProjectViewPaneById(UnityExplorer.ID) == null) projectView.addProjectPane(UnityExplorer(project))
+                projectView.changeView(UnityExplorer.ID)
+            }
+        }
+
+        @VisibleForTesting
+        var isSupportedInHeadlessEnv: Boolean = false
 
         private fun hasUnityFileStructure(project: Project): Boolean {
             // projectDir will fail with the default project
@@ -123,15 +160,11 @@ class UnityProjectDiscoverer(val project: Project) {
         fun searchUpForFolderWithUnityFileStructure(file: VirtualFile, maxSteps: Int = 10): Pair<Boolean, VirtualFile?> {
             var dir: VirtualFile? = file
             repeat(maxSteps) {
-                if (dir == null) return@repeat
-
-                dir?.let {
-                    if ((it.name == "Assets" || it.name == "Packages") && hasUnityFileStructure(
-                            it.parent)) {
-                        return Pair(true, it.parent)
-                    }
-                    dir = it.parent
+                val current = dir ?: return@repeat
+                if ((current.name == "Assets" || current.name == "Packages") && hasUnityFileStructure(current.parent)) {
+                    return Pair(true, current.parent)
                 }
+                dir = current.parent
             }
             return Pair(false, null)
         }
