@@ -1,18 +1,13 @@
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` start
-load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
-
-resourcegroup(
-  name = "backend_resources",
-  srcs = glob(["resources/**/*"]),
-  strip_prefix = "resources"
-)
+load("@rules_jvm//:jvm.bzl", "jvm_library")
 
 jvm_library(
   name = "backend",
   module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
   visibility = ["//visibility:public"],
   srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
-  resources = [":backend_resources"],
+  resources = glob(["resources/**/*"]),
+  resource_strip_prefix = "resources",
   deps = [
     "@community//platform/kernel/rpc.backend",
     "@community//platform/kernel/shared:kernel",
