@@ -64,12 +64,8 @@ class UnityIgnoredFileProvider : IgnoredFileProvider {
         return file.resolve("Plugins/Editor/Jetbrains")
     }
 
-    override fun getIgnoredGroupDescription(): String {
-        return UnityBundle.message("text.unity.ignored.files")
-    }
+    override fun getIgnoredGroupDescription(): String = UnityBundle.message("text.unity.ignored.files")
 
-    override fun getIgnoredFiles(project: Project): MutableSet<IgnoredFileDescriptor> {
-        return mutableSetOf()
-    }
+    override fun getIgnoredFiles(project: Project): Set<IgnoredFileDescriptor> = setOf()
 
 }
