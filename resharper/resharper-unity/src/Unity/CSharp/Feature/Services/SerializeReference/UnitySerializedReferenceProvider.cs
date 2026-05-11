@@ -116,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         private AssemblyCache SolutionCache =>  new AssemblyCache(mySolutionDataMap, mySolutionTimestampMap);
         private AssemblyCache GetAssemblyCache(IPsiAssembly assembly) => assembly.IsFrameworkAssembly ? ShellCache : SolutionCache;
 
-        public bool IsApplicable(IPsiAssembly assembly, bool hasSourceProject)
+        public bool IsApplicable(IPsiAssembly assembly)
         {
             if (!IsUnitySolution)
                 return false;
