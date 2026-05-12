@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                                                              ISettingsStore settingsStore)
         {
             BoundSettingsStore = settingsStore.BindToContextLive(lifetime,
-                ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
+                ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext2()));
         }
 
         public IContextBoundSettingsStoreLive BoundSettingsStore { get; }

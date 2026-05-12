@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         )
             : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
-            mySettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
+            mySettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext2()));
             myIsBurstEnabledProperty = mySettingsStore.Schema.GetScalarEntry(static (UnitySettings key) => key.EnableBurstCodeHighlighting);
         }
 

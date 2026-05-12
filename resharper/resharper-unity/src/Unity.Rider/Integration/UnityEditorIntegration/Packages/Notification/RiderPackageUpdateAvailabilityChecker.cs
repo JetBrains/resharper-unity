@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myFrontendBackendHost = frontendBackendHost;
             mySequentialLifetimes = new SequentialLifetimes(lifetime);
             myNotificationShown = new JetHashSet<JetSemanticVersion>();
-            myBoundSettingsStoreLive = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
+            myBoundSettingsStoreLive = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext2()));
             unitySolutionTracker.IsUnityProject.WhenTrue(lifetime, lt =>
             {
                 ShowNotificationIfNeeded(lt, leastRiderPackageVersion);
@@ -172,7 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                         {
                                             mySettingsStore.BindToContextTransient(
                                                     ContextRange.ManuallyRestrictWritesToOneContext(
-                                                        mySolution.ToDataContext()))
+                                                        mySolution.ToDataContext2()))
                                                 .SetValue((UnitySettings key) => key.AllowRiderUpdateNotifications, false);
                                             notificationLifetime.Terminate();
                                         })
