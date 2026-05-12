@@ -1,8 +1,8 @@
 <idea-plugin>
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
-    <plugin id="com.intellij.resharper.unity"/>
     <plugin id="com.jetbrains.rider.fsharp"/>
+    <plugin id="com.intellij.resharper.unity"/>
     <module name="intellij.rider.test.framework"/>
     <module name="intellij.rider.test.framework.integration.testng"/>
     <module name="intellij.rider.test.framework.integration.testng.tests"/>
@@ -32,6 +32,7 @@
     <module name="intellij.platform.util.ui"/>
     <module name="intellij.rd.client"/>
     <module name="intellij.rider.languages"/>
+    <module name="intellij.rider.plugins.unity.backend"/>
     <module name="intellij.rider.plugins.unity.model"/>
   </dependencies>
   <!-- endregion -->

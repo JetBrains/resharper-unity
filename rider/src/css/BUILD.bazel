@@ -26,7 +26,7 @@ jvm_library(
     "@community//xml/xml-psi-impl:psi-impl",
     "//rider",
     "@community//platform/platform-api:ide",
-    "//dotnet/Plugins:rider-plugins-unity",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
     "@community//platform/platform-impl:ide-impl",
   ]
 )
@@ -56,7 +56,7 @@ jvm_library(
     "@community//xml/xml-psi-impl:psi-impl_test_lib",
     "//rider:rider_test_lib",
     "@community//platform/platform-api:ide_test_lib",
-    "//dotnet/Plugins:rider-plugins-unity_test_lib",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
     "@community//platform/platform-impl:ide-impl_test_lib",
   ]
 )
