@@ -14,7 +14,7 @@ jvm_library(
     "@community//platform/core-api:core",
     "@community//platform/util",
     "//rider/plugins/plugins-appender/javascript",
-    "//dotnet/Plugins:rider-plugins-unity",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
     "//rider",
   ]
 )
@@ -31,7 +31,7 @@ jvm_library(
     "@community//platform/core-api:core_test_lib",
     "@community//platform/util:util_test_lib",
     "//rider/plugins/plugins-appender/javascript:javascript_test_lib",
-    "//dotnet/Plugins:rider-plugins-unity_test_lib",
+    "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
     "//rider:rider_test_lib",
   ]
 )

@@ -1,0 +1,67 @@
+<idea-plugin url="https://github.com/JetBrains/resharper-unity" require-restart="true">
+  <id>com.intellij.resharper.unity</id>
+  <!--suppress PluginXmlValidity -->
+  <name>Unity Support</name>
+  <!--suppress PluginXmlValidity -->
+  <version>2021.3.0.9999</version>
+  <!--suppress PluginXmlValidity -->
+  <vendor url="https://www.jetbrains.com">JetBrains</vendor>
+
+  <description><![CDATA[
+<p>Adds support for the Unity engine.</p>
+<p>
+<strong>Features</strong>
+<ul>
+  <li>Code completion of event function declarations in a class.</li>
+  <li>Use Generate Code to create event functions, with parameters, or start typing for automatic completion.</li>
+  <li>Highlights Unity event functions and serializable fields and marks as implicitly used by Unity.</li>
+  <li>Supports Unity API 5.0 - 2019.2, plus undocumented functions.</li>
+  <li>Inspections, Quick Fixes and Context Actions for Unity specific issues, with documented explanations.</li>
+  <li>Performance indicators to avoid known code patterns that affect performance.</li>
+  <li>Parse class and method usage from scene, prefab and assets.</li>
+  <li>Support for ShaderLab and Assembly Definition files.</li>
+  <li>Automatically connect debugger to Unity editor.</li>
+  <li>Lists and debugs external players.</li>
+  <li>Extra Unity data in debugger views.</li>
+  <li>Play/pause/step directly from Rider.</li>
+  <li>View Unity console in Rider, with parsed stack traces and text filter.</li>
+  <li>Run Unity editor tests directly from Rider.</li>
+  <li>Unity Explorer to view project as shown in Unity's Assets view, with Packages.</li>
+  <li>Navigate to external Unity documentation.</li>
+  <li>Correctly updates <tt>.meta</tt> files.</li>
+  <li>Code completion, rename and find usages for "magic strings" in method calls.</li>
+  <li>Automatically adds <tt>FormerlySerializedAs</tt> attribute when renaming fields.</li>
+  <li>Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!</li>
+  <li>Highlights <tt>UnityEngine.Color</tt> and <tt>Color32</tt>. Edit via colour palette quick fix.</li>
+  <li>Unity specific file and live templates.</li>
+  <li>And much more!</li>
+</ul>
+</p>
+<p>
+<strong>Links</strong>
+<ul>
+  <li><a href="https://github.com/JetBrains/resharper-unity">GitHub</a>
+  <li><a href="https://github.com/JetBrains/resharper-unity/issues">Issues</a>
+</ul>
+</p>
+]]>
+  </description>
+
+  <!--suppress PluginXmlValidity -->
+  <idea-version since-build="2023.2" />
+
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+  <dependencies>
+    <module name="intellij.rider.shared"/>
+  </dependencies>
+  <!-- endregion -->
+
+  <content namespace="jetbrains">
+    <module name="intellij.rider.plugins.unity.common" loading="required"/>
+    <module name="intellij.rider.plugins.unity.frontend"/>
+    <module name="intellij.rider.plugins.unity.backend"/>
+    <module name="intellij.rider.plugins.unity.model"/>
+    <module name="intellij.rider.plugins.unity.profiler.mcp" />
+  </content>
+
+</idea-plugin>
