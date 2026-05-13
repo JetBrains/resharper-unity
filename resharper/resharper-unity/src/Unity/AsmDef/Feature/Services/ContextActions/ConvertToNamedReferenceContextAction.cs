@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.BulbActions;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Plugins.Json.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
@@ -20,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActio
 {
     [ContextAction(
         GroupType = typeof(UnityContextActions), ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ConvertToNamedAssemblyDefinitionReference_Name), DescriptionResourceName = nameof(Strings.ConvertToNamedAssemblyDefinitionReference_Description))]
-    public class ConvertToNamedReferenceContextAction : ScopedContextActionBase<IJsonNewLiteralExpression>
+    public class ConvertToNamedReferenceContextAction : ModernScopedContextActionBase<IJsonNewLiteralExpression>
     {
         private readonly IJsonNewContextActionDataProvider myDataProvider;
 
@@ -52,9 +53,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActio
             return reference != null && reference.Resolve().ResolveErrorType == ResolveErrorType.OK;
         }
 
-        protected override Action<ITextControl>? ExecutePsiTransaction(IJsonNewLiteralExpression literalExpression,
-                                                                       ISolution solution,
-                                                                       IProgressIndicator progress)
+        protected override IBulbActionCommand? ExecutePsiTransaction(IJsonNewLiteralExpression literalExpression,
+                                                                     ISolution solution,
+                                                                     IProgressIndicator progress)
         {
             var reference = literalExpression.FindReference<AsmDefNameReference>();
             var declaredElement = reference?.Resolve().DeclaredElement;
