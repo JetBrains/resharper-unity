@@ -261,7 +261,7 @@ tasks {
     val validatePluginXml by registering {
         group = ciGroup
         dependsOn(patchPluginXml)
-        val pluginXml = File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
+        val pluginXml = File(repoRoot, "rider/src/resources/META-INF/plugin.xml")
         if (!pluginXml.isFile) throw GradleException("plugin.xml must be a valid file")
 
         inputs.file(pluginXml)
