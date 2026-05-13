@@ -1,5 +1,17 @@
 ### auto-generated section `build intellij.rider.plugins.unity.backend` start
+load("@community//build:compiler-options.bzl", "create_kotlinc_options")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
+
+create_kotlinc_options(
+  name = "custom_rider-plugins-unity-backend",
+  opt_in = [
+    "com.intellij.openapi.util.IntellijInternalApi",
+    "org.jetbrains.kotlin.utils.addToStdlib.UnsafeCastFunction",
+    "org.jetbrains.kotlin.analysis.api.KaIdeApi",
+    "org.jetbrains.kotlin.analysis.api.KaNonPublicApi",
+  ],
+  x_context_parameters = True
+)
 
 jvm_library(
   name = "rider-plugins-unity-backend",
@@ -8,6 +20,7 @@ jvm_library(
   srcs = glob(["gen/**/*.kt", "gen/**/*.java", "kotlin/**/*.kt", "kotlin/**/*.java", "kotlin/**/*.form"], allow_empty = True),
   resources = glob(["resources/**/*"]),
   resource_strip_prefix = "resources",
+  kotlinc_opts = ":custom_rider-plugins-unity-backend",
   deps = [
     "@community//platform/analysis-api:analysis",
     "@community//platform/code-style-api:codeStyle",
@@ -84,6 +97,7 @@ jvm_library(
   module_name = "intellij.rider.plugins.unity.backend",
   visibility = ["//visibility:public"],
   srcs = glob([], allow_empty = True),
+  kotlinc_opts = ":custom_rider-plugins-unity-backend",
   runtime_deps = [
     ":rider-plugins-unity-backend",
     "@community//platform/analysis-api:analysis_test_lib",

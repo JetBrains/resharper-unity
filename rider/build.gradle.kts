@@ -131,6 +131,7 @@ sourceSets {
         }
         resources {
             srcDir("src/main/rdgen/resources")
+            srcDir("src/resources")
         }
     }
 }
