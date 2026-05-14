@@ -92,6 +92,7 @@
     <!-- ShaderLab support -->
     <fileType name="ShaderLab" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType" language="ShaderLab" extensions="shader"/>
     <rd.languageAssociation backendLanguage="SHADERLAB" frontendLanguage="ShaderLab" />
+    <lightweight.backend.language.support language="ShaderLab" implementationClass="com.jetbrains.rider.rdclient.languages.LightweightBackendLanguage"/>
     <lang.altEnter language="ShaderLab" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
     <lang.parserDefinition language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabParserDefinition" />
     <lang.syntaxHighlighterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabSyntaxHighlighterProvider" />
@@ -137,6 +138,7 @@
 
     <!-- YAML asset support -->
     <rd.languageAssociation backendLanguage="UnityYaml" frontendLanguage="UnityYaml" />
+    <lightweight.backend.language.support language="UnityYaml" implementationClass="com.jetbrains.rider.rdclient.languages.LightweightBackendLanguage"/>
     <lang.altEnter language="UnityYaml" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
     <backend.actions.support language="UnityYaml" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.markup.adapterFactory language="UnityYaml" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
