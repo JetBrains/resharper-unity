@@ -2,6 +2,7 @@ using System;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.BulbActions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.QuickFixes;
@@ -29,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             myStayInWorldCoords = warning.StayInWorldCoords;
         }
 
-        protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+        protected override IBulbActionCommand ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             var statement = myNewArgument.GetContainingStatement().NotNull("myNewArgument.GetContainingStatement() != null");
 

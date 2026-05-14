@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.BulbActions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -37,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         public override string ScopedText => Strings.PreferGenericMethodOverloadQuickFix_ScopedText_Use_strongly_typed_overloads;
         protected override ITreeNode TryGetContextTreeNode() => myInvocationExpression;
 
-        protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+        protected override IBulbActionCommand ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             var factory = CSharpElementFactory.GetInstance(myInvocationExpression);
             if (myInvocationExpression.InvokedExpression is IReferenceExpression referenceExpression)

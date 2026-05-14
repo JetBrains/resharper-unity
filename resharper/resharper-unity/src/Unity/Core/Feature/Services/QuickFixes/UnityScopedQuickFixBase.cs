@@ -7,7 +7,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.QuickFixes
 {
-    public abstract class UnityScopedQuickFixBase : ScopedQuickFixBase
+    public abstract class UnityScopedQuickFixBase : ModernScopedQuickFixBase
     {
         public override bool IsAvailable(IUserDataHolder cache)
         {

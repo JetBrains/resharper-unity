@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.BulbActions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
@@ -32,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
        protected override ITreeNode TryGetContextTreeNode() => myLiteralExpression;
         public override string Text => Strings.ConvertToGuidReferenceQuickFix_Text_To_GUID_reference;
 
-        protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+        protected override IBulbActionCommand? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             // We should never get null, we check the reference resolves before adding the highlight
             var reference = myLiteralExpression.FindReference<AsmDefNameReference>();
