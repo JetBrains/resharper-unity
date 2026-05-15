@@ -13,17 +13,13 @@ import com.intellij.openapi.project.Project
  */
 object UnityProfilerUsagesCollector : CounterUsagesCollector() {
 
-    private val GROUP = EventLogGroup("dotnet.unity.profiler", 5)
+    private val GROUP = EventLogGroup("dotnet.unity.profiler", 6)
 
     // Existing events (previously in C# UnityProfilerInfoCollector)
     private val NAVIGATED_FROM_UNITY_PROFILER = GROUP.registerEvent("navigated_from_unity_profiler")
     private val SELECTED_FRAME_IN_UNITY_PROFILER = GROUP.registerEvent("selected_frame_in_unity_profiler", EventFields.RoundedInt("samples_count"))
     private val SNAPSHOT_FETCHED = GROUP.registerEvent("snapshot_fetched", EventFields.RoundedInt("samples_count"), EventFields.DurationMs)
     private val NAVIGATE_GUTTER_TO_PARENT_CALL = GROUP.registerEvent("navigate_gutter_to_parent_call")
-
-    // New frontend events
-    // Adoption: Unity Profiler tool window opened
-    private val TOOL_WINDOW_OPENED = GROUP.registerEvent("tool_window_opened")
 
     // Engagement: User navigates from profiler tree/frame to source code
     private val NAVIGATE_TREE_TO_CODE = GROUP.registerEvent("navigate_tree_to_code")
@@ -53,11 +49,6 @@ object UnityProfilerUsagesCollector : CounterUsagesCollector() {
 
     fun logNavigateGutterToParentCall(project: Project) {
         NAVIGATE_GUTTER_TO_PARENT_CALL.log(project)
-    }
-
-    // Methods for new frontend events
-    fun logToolWindowOpened(project: Project) {
-        TOOL_WINDOW_OPENED.log(project)
     }
 
     fun logNavigateTreeToCode(project: Project) {

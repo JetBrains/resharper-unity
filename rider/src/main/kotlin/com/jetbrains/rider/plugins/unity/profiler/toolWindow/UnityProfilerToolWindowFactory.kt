@@ -41,13 +41,10 @@ class UnityProfilerToolWindowFactory : RiderToolWindowFactory() {
             val toolWindow = getToolWindow(project) ?: return
             toolWindow.isAvailable = true
             toolWindow.show()
-            UnityProfilerUsagesCollector.logToolWindowOpened(project)
         }
 
         fun showAndNavigate(project: Project, navigationText: String) {
             val toolWindow = getToolWindow(project) ?: return
-            if(!toolWindow.isVisible)
-                UnityProfilerUsagesCollector.logToolWindowOpened(project)
             toolWindow.isAvailable = true
             toolWindow.show {
                 val daemon = project.service<UnityProfilerUsagesDaemon>()
