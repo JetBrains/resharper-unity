@@ -240,16 +240,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 || containingType.DerivesFrom(OdinKnownAttributes.OdinSerializedStateMachineBehaviour)
                 || containingType.DerivesFrom(OdinKnownAttributes.OdinSerializedUnityObject))
             {
+                if (field.HasAttributeInstance(OdinKnownAttributes.OdinSerializeAttribute, AttributesSource.Self))
+                    return SerializedFieldStatus.SerializedField | SerializedFieldStatus.OdinSerializedField;
+                
                 if (field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false))
-                {
-                    if (field.HasAttributeInstance(OdinKnownAttributes.OdinSerializeAttribute, AttributesSource.Self))
-                    {
-                        return SerializedFieldStatus.SerializedField | SerializedFieldStatus.OdinSerializedField;
-                    }
                     return SerializedFieldStatus.NonSerializedField;
-                }
-
-                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.OdinSerializedField;
+                
+                if(field.GetAccessRights() == AccessRights.PUBLIC)
+                    return SerializedFieldStatus.SerializedField | SerializedFieldStatus.OdinSerializedField;
             }
             
             return SerializedFieldStatus.Unknown;

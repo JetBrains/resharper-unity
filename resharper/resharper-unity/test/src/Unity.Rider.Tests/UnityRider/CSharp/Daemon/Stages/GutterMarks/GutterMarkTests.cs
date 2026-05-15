@@ -27,5 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRider.CSharp.Daemon
 
         [Test, TestUnity(UnityVersion.Unity2019_4)] public void TestGenericSerialisedFields_2019_4() { DoNamedTest2(); }
         [Test, TestUnity(UnityVersion.Unity2020_1)] public void TestGenericSerialisedFields_2020_1() { DoNamedTest2(); }
+        [Test] public void OdinSerialisedFields() { DoNamedTest(); }
     }
 }

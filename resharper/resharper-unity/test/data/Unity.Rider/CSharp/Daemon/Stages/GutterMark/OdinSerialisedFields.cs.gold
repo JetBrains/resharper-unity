@@ -1,0 +1,90 @@
+using System;
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
+using UnityEngine;
+
+// Stubs for Sirenix.Odin types. Tests run without a real Odin reference.
+namespace Sirenix.OdinInspector
+{
+    public abstract class ||SerializedMonoBehaviour|(0)|(1) : MonoBehaviour { }
+    public abstract class ||SerializedScriptableObject|(2)|(3) : ScriptableObject { }
+}
+
+namespace Sirenix.Serialization
+{
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public sealed class OdinSerializeAttribute : Attribute { }
+}
+
+// SerializedScriptableObject - matches the user's confirmed repro case.
+public class ||TestSerializedScriptableObject|(4)|(5) : SerializedScriptableObject
+{
+    // Unity-serializable type + public => Unity inspector gutter
+    public int ||PublicField|(6)|(7);
+    // [SerializeField] forces Unity serialization on private field
+    [SerializeField] private int ||PrivateSerializeField|(8)|(9);
+    // Bug fix: private field with no attribute must NOT be marked serialized
+    private int PrivateField;
+    // [OdinSerialize] opts a private field into Odin serialization
+    [OdinSerialize] private int ||OdinSerializedPrivate|(10)|(11);
+    // [NonSerialized] wins over public when no [OdinSerialize]
+    [NonSerialized] public int NonSerializedPublic;
+    // [OdinSerialize] overrules [NonSerialized] (Odin behavior)
+    [NonSerialized, OdinSerialize] public int ||NonSerializedOdinSerialize|(12)|(13);
+    // Public field of a type Unity can't serialize => Odin handles it
+    public Dictionary<string, string> PublicDictionary;
+    // [OdinSerialize] on a private field of a Unity-non-serializable type
+    [OdinSerialize] private Dictionary<string, int> ||OdinSerializedDictionary|(14)|(15);
+    // Private field of a non-Unity-serializable type without attributes => not serialized
+    private Dictionary<string, string> PrivateDictionary;
+}
+
+// SerializedMonoBehaviour - secondary repro case.
+public class ||TestSerializedMonoBehaviour|(16)|(17) : SerializedMonoBehaviour
+{
+    public int ||PublicField|(18)|(19);
+    [SerializeField] private int ||PrivateSerializeField|(20)|(21);
+    private int PrivateField;
+    [OdinSerialize] private int ||OdinSerializedPrivate|(22)|(23);
+    [NonSerialized] public int NonSerializedPublic;
+    public Dictionary<string, string> PublicDictionary;
+}
+
+// Plain MonoBehaviour - control case: [OdinSerialize] does nothing outside Odin-derived types.
+public class ||TestPlainMonoBehaviour|(24)|(25) : MonoBehaviour
+{
+    public int ||PublicField|(26)|(27);
+    private int PrivateField;
+    [OdinSerialize] private int OdinSerializedPrivate;
+}
+
+---------------------------------------------------------
+(0): ReSharper Unity Implicitly Used Identifier: 
+(1): Unity Gutter Icon: Unity script
+(2): ReSharper Unity Implicitly Used Identifier: 
+(3): Unity Gutter Icon: Unity scriptable object
+(4): ReSharper Unity Implicitly Used Identifier: 
+(5): Unity Gutter Icon: Unity scriptable object
+(6): ReSharper Unity Implicitly Used Identifier: 
+(7): Unity Gutter Icon: This field is initialized from Inspector
+(8): ReSharper Unity Implicitly Used Identifier: 
+(9): Unity Gutter Icon: This field is initialized from Inspector
+(10): ReSharper Unity Implicitly Used Identifier: 
+(11): Unity Odin Gutter Icon: This field is serialized by Odin
+(12): ReSharper Unity Implicitly Used Identifier: 
+(13): Unity Odin Gutter Icon: This field is serialized by Odin
+(14): ReSharper Unity Implicitly Used Identifier: 
+(15): Unity Odin Gutter Icon: This field is serialized by Odin
+(16): ReSharper Unity Implicitly Used Identifier: 
+(17): Unity Gutter Icon: Unity script
+(18): ReSharper Unity Implicitly Used Identifier: 
+(19): Unity Gutter Icon: This field is initialized from Inspector
+(20): ReSharper Unity Implicitly Used Identifier: 
+(21): Unity Gutter Icon: This field is initialized from Inspector
+(22): ReSharper Unity Implicitly Used Identifier: 
+(23): Unity Odin Gutter Icon: This field is serialized by Odin
+(24): ReSharper Unity Implicitly Used Identifier: 
+(25): Unity Gutter Icon: Unity script
+(26): ReSharper Unity Implicitly Used Identifier: 
+(27): Unity Gutter Icon: This field is initialized from Inspector
