@@ -1,8 +1,8 @@
 package com.jetbrains.rider.unity.test.cases.unityExplorer
 
+import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rider.projectView.solutionDirectoryPath
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestSettings
@@ -19,6 +19,7 @@ import com.jetbrains.rider.test.framework.advancedSettings.AdvancedSettingsList
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.callUndo
+import com.jetbrains.rider.test.scriptingApi.openFileInEditor
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import com.jetbrains.rider.unity.test.framework.api.addNewItem2
 import com.jetbrains.rider.unity.test.framework.api.cutItem2
@@ -130,12 +131,14 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
-    @Mute("RIDER-135141")
     @Test(description="Delete a script in the project")
     @ChecklistItems(["Unity explorer/Delete script"])
     fun testDeleteFile() {
         val metaFile = project.solutionDirectoryPath.resolve("Assets/AsmdefResponse/NewBehaviourScript.cs.meta")
         Assert.assertTrue(metaFile.exists(), "We expect meta file exists.")
+        // helps Local History to capture the file content
+        val vf = VfsUtil.findFile(project.solutionDirectoryPath.resolve("Assets/AsmdefResponse/NewBehaviourScript.cs"), true)!!
+        openFileInEditor(vf)
         testProjectModel(testGoldFile, project, false) {
             dump("Delete element", project, activeSolutionDirectory) {
                 deleteElement(project, arrayOf("Assets", "AsmdefResponse", "NewBehaviourScript.cs"))
