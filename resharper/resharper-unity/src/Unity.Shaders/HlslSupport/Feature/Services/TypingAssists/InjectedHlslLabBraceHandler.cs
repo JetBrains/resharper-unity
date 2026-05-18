@@ -1,3 +1,4 @@
+using JetBrains.DocumentManagers;
 using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
@@ -9,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
   {
     private readonly CppDummyFormatterBase myCppDummyFormatter;
 
-    public InjectedHlslBraceHandler(TypingAssistLanguageBase<ShaderLabLanguage> owner, CppDummyFormatterBase cppDummyFormatter) : base(owner, cppDummyFormatter)
+    public InjectedHlslBraceHandler(TypingAssistLanguageBase<ShaderLabLanguage> owner, CppDummyFormatterBase cppDummyFormatter, DocumentManager documentManager) : base(owner, cppDummyFormatter, documentManager)
     {
       myCppDummyFormatter = cppDummyFormatter;
     }

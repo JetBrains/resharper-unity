@@ -6,6 +6,7 @@ using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.Parts;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.ActionSystem.Text;
+using JetBrains.DocumentManagers;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
@@ -32,11 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
     public InjectedHlslTypingAssist(
       Lifetime lifetime,
       [NotNull] TypingAssistDependencies dependencies,
-      [NotNull] InjectedHlslDummyFormatter dummyFormatter)
+      [NotNull] InjectedHlslDummyFormatter dummyFormatter,
+      DocumentManager documentManager)
       : base(dependencies)
     { 
       myDummyFormatter = dummyFormatter;
-      var braceHandler = new InjectedHlslBraceHandler(this, dummyFormatter);
+      var braceHandler = new InjectedHlslBraceHandler(this, dummyFormatter, documentManager);
       var quoteHandler = new CppQuoteHandler<ShaderLabLanguage>(this);
       var deleteHandler = new CppDeleteHandler<ShaderLabLanguage>(this, dummyFormatter, braceHandler);
 
