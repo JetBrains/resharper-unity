@@ -371,6 +371,12 @@
     </action>
   </actions>
 
+  <!-- Hide Start/Stop Index in the Unity Explorer; its virtual roots (Packages, etc.) aren't managed by WorkspaceUserModelUpdater. -->
+  <actions resource-bundle="messages.RiderActionsBundle">
+    <action id="RiderStartIndexAction" class="com.jetbrains.rider.plugins.unity.actions.UnityAwareStartIndexAction" overrides="true"/>
+    <action id="RiderStopIndexAction" class="com.jetbrains.rider.plugins.unity.actions.UnityAwareStopIndexAction" overrides="true"/>
+  </actions>
+
   <extensions defaultExtensionNs="com.intellij">
     <!-- IDEA default schemes -->
     <additionalTextAttributes file="colorSchemes/UnityDefault.xml" scheme="Default" />

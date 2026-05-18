@@ -3,6 +3,7 @@ package com.jetbrains.rider.unity.test.cases.unityExplorer
 import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
@@ -21,6 +22,8 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.TemplateType
+import com.jetbrains.rider.test.scriptingApi.canExecuteAction
+import com.jetbrains.rider.test.scriptingApi.createDataContextForTree
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import com.jetbrains.rider.test.scriptingApi.withSolution
@@ -29,6 +32,7 @@ import com.jetbrains.rider.unity.test.framework.api.addNewItem2
 import com.jetbrains.rider.unity.test.framework.api.dump
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rider.unity.test.framework.api.withUnityExplorerPane
+import org.testng.Assert
 import org.testng.annotations.Test
 import java.time.Duration
 
@@ -114,6 +118,23 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
             prepareProjectView(project)
             waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false) },
                         Duration.ofSeconds(10), { "Deferred caches are not completed" })
+        }
+    }
+
+    @Test(description = "Start/Stop Index actions are hidden in the Unity Explorer context")
+    @Issue("RIDER-75848")
+    fun testStartStopIndexHiddenInUnityExplorer() {
+        withSolution("SimpleUnityProject", OpenSolutionParams()) {
+            prepareProjectView(project)
+            withUnityExplorerPane(project) {
+                val dataContext = createDataContextForTree(
+                    project, UnityExplorer.getInstance(project), arrayOf(arrayOf("Assets"))
+                )
+                Assert.assertFalse(canExecuteAction("RiderStartIndexAction", dataContext),
+                                   "RiderStartIndexAction must be hidden in the Unity Explorer")
+                Assert.assertFalse(canExecuteAction("RiderStopIndexAction", dataContext),
+                                   "RiderStopIndexAction must be hidden in the Unity Explorer")
+            }
         }
     }
 
