@@ -1,0 +1,10 @@
+﻿# Please commit this file, it's crucial for tests stability. Even if you believe it's not yours, it still needs to be committed.
+# Input (NuGetFramework=net40):
+# JetBrains.Annotations [2025.2.0]
+# JetBrains.Resharper.Unity.TestDataLibs [2019.4.0, 2019.4.0.2147483647]
+# System.Threading.Tasks.Extensions [4.5.4]
+# System.ValueTuple [4.5.0]
+JetBrains.Annotations 2025.2.0
+JetBrains.Resharper.Unity.TestDataLibs 2019.4.0
+System.Threading.Tasks.Extensions 4.5.4
+System.ValueTuple 4.5.0

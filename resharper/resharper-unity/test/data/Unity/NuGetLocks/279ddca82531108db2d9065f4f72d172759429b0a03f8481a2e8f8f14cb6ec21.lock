@@ -1,0 +1,9 @@
+﻿# Please commit this file, it's crucial for tests stability. Even if you believe it's not yours, it still needs to be committed.
+# Input (NuGetFramework=any):
+# Microsoft.NETCore.App [2.0.0]
+Microsoft.NETCore.App 2.0.0
+Microsoft.NETCore.DotNetAppHost 2.0.0
+Microsoft.NETCore.DotNetHostPolicy 2.0.0
+Microsoft.NETCore.DotNetHostResolver 2.0.0
+Microsoft.NETCore.Platforms 2.0.0
+NETStandard.Library 2.0.0
