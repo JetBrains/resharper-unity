@@ -1,5 +1,5 @@
 ﻿Completion: Basic
-Count: 1073
+Count: 1074
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
 Range: "♦   "
@@ -37,6 +37,7 @@ bool
 byte
 char
 class
+closed
 const
 decimal
 delegate
@@ -2102,6 +2103,7 @@ bool
 byte
 char
 class
+closed
 const
 decimal
 delegate
