@@ -1,5 +1,5 @@
 ﻿Completion: Basic
-Count: 699
+Count: 700
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
 Range: "[SerializeField] ♦"
@@ -49,6 +49,7 @@ string
 struct
 uint
 ulong
+union
 unsafe
 ushort
 virtual
@@ -1405,6 +1406,7 @@ string
 struct
 uint
 ulong
+union
 unsafe
 ushort
 virtual

@@ -1,5 +1,5 @@
 ﻿Completion: Basic
-Count: 761
+Count: 762
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
 Range: "♦   "
@@ -113,6 +113,7 @@ string
 struct
 uint
 ulong
+union
 unsafe
 ushort
 virtual
@@ -1531,6 +1532,7 @@ string
 struct
 uint
 ulong
+union
 unsafe
 ushort
 virtual

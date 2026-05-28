@@ -1,5 +1,5 @@
 ﻿Completion: Basic
-Count: 1111
+Count: 1112
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
 Range: "♦   "
@@ -113,6 +113,7 @@ string
 struct
 uint
 ulong
+union
 unsafe
 ushort
 virtual
@@ -2231,6 +2232,7 @@ tvOSSdkVersion
 tvOSTargetOSVersion
 uint
 ulong
+union
 unsafe
 ushort
 virtual
