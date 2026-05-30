@@ -11,6 +11,7 @@
     <module name="intellij.libraries.kotlin.reflect"/>
     <module name="intellij.libraries.kotlinx.coroutines.core"/>
     <module name="intellij.libraries.teamcity.service.messages"/>
+    <module name="intellij.libraries.xz"/>
     <module name="intellij.platform.analysis"/>
     <module name="intellij.platform.analysis.impl"/>
     <module name="intellij.platform.codeStyle"/>
@@ -34,6 +35,7 @@
     <module name="intellij.rider.languages"/>
     <module name="intellij.rider.plugins.unity.backend"/>
     <module name="intellij.rider.plugins.unity.model"/>
+    <module name="intellij.xml.impl"/>
   </dependencies>
   <!-- endregion -->
 </idea-plugin>
