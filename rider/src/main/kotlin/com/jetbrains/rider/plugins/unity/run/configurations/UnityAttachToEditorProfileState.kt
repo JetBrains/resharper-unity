@@ -19,10 +19,12 @@ import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityScriptingBackend
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
 import com.jetbrains.rider.plugins.unity.util.UnityPlayerRuntimeDetector
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.WorkerRunInfo
+import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreDebugProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,7 +41,7 @@ class UnityAttachToEditorProfileState(
     private val remoteConfiguration: UnityAttachToEditorRunConfiguration,
     executionEnvironment: ExecutionEnvironment
 )
-    : UnityAttachProfileState(remoteConfiguration, executionEnvironment, "Unity Editor", true) {
+    : UnityAttachProfileState(getDebugEngine(remoteConfiguration), executionEnvironment, "Unity Editor", true) {
 
     private val project = executionEnvironment.project
 
@@ -136,6 +138,12 @@ class UnityAttachToEditorProfileState(
             return corAttachDebugProfileState.execute(workerConsole, workerProcessHandler, lifetime)
 
         return super.execute(workerConsole, workerProcessHandler, lifetime)
+    }
+
+    companion object {
+        private fun getDebugEngine(remoteConfiguration: RemoteConfiguration): UnityDebugEngine {
+            return UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port)
+        }
     }
 }
 

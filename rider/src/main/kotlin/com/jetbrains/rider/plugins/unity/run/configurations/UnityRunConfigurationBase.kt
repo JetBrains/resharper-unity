@@ -14,20 +14,19 @@ import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.AndroidDeviceListener
-import com.jetbrains.rider.plugins.unity.run.UnityAndroidAdbProcess
-import com.jetbrains.rider.plugins.unity.run.UnityCustomPlayer
+import com.jetbrains.rider.plugins.unity.run.UnityAndroidAdbPlayer
+import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
+import com.jetbrains.rider.plugins.unity.run.UnityDebugTarget
+import com.jetbrains.rider.plugins.unity.run.UnityDebugTargetKind
 import com.jetbrains.rider.plugins.unity.run.UnityEditor
 import com.jetbrains.rider.plugins.unity.run.UnityEditorHelper
 import com.jetbrains.rider.plugins.unity.run.UnityEditorListener
-import com.jetbrains.rider.plugins.unity.run.UnityIosUsbProcess
+import com.jetbrains.rider.plugins.unity.run.UnityLocalPlayer
 import com.jetbrains.rider.plugins.unity.run.UnityLocalProcess
-import com.jetbrains.rider.plugins.unity.run.UnityLocalUwpPlayer
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
-import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.plugins.unity.run.UnityVirtualPlayer
 import com.jetbrains.rider.run.RiderRunBundle
 import com.jetbrains.rider.run.configurations.AsyncRunConfiguration
-import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.concurrency.Promise
@@ -51,18 +50,19 @@ abstract class UnityRunConfigurationBase(project: Project,
         if (executor.id != DefaultDebugExecutor.EXECUTOR_ID) {
             @Suppress("HardCodedStringLiteral")
             throw CantRunException("Unexpected executor ID: ${executor.id}")
-            // TODO: We should be able to return resolvedPromise(null), but the function's type doesn't allow this
         }
 
-        return when (UnityProcess.typeFromId(state.playerId!!)) {
-            UnityIosUsbProcess.TYPE -> getIosUsbState(environment)
-            UnityAndroidAdbProcess.TYPE -> getAndroidAdbStateAsync(environment)
-            UnityLocalUwpPlayer.TYPE -> getLocalUwpStateAsync(environment)
-            UnityCustomPlayer.TYPE -> getCustomPlayerState(environment)
-            UnityEditor.TYPE -> getEditorStateAsync(environment)
-            UnityEditorHelper.TYPE -> getEditorHelperStateAsync(environment)
-            UnityVirtualPlayer.TYPE -> getVirtualPlayerStateAsync(environment)
-            else -> getRemotePlayerStateAsync(environment)
+        // Get the run profile from the current run configuration state. This will refresh any transient information in the run config such
+        // as port numbers or process IDs before creating the appropriate run profile.
+        return when (UnityDebugTargetKind.fromPlayerId(state.playerId)) {
+            UnityDebugTargetKind.IPhoneUsbPlayer -> getIosUsbState(environment)
+            UnityDebugTargetKind.AndroidAdbPlayer -> getAndroidAdbStateAsync(environment)
+            UnityDebugTargetKind.UwpPlayer -> getLocalUwpStateAsync(environment)
+            UnityDebugTargetKind.Editor -> getEditorStateAsync(environment)
+            UnityDebugTargetKind.EditorHelper -> getEditorHelperStateAsync(environment)
+            UnityDebugTargetKind.VirtualPlayer -> getVirtualPlayerStateAsync(environment)
+            UnityDebugTargetKind.CustomMonoPlayer -> getCustomPlayerState(environment)
+            UnityDebugTargetKind.GenericPlayer -> getGenericPlayerStateAsync(environment)
         }
     }
 
@@ -74,11 +74,11 @@ abstract class UnityRunConfigurationBase(project: Project,
             RiderRunBundle.message("obsolete.synchronous.api.is.used.message", UnityPlayerDebugConfiguration::getStateAsync.name))
     }
 
-    override fun getState(executor: Executor, environment: ExecutionEnvironment) =
+    override fun getState(executor: Executor, environment: ExecutionEnvironment): Nothing =
         throw UnsupportedOperationException("Synchronous call to getState is not supported")
 
 
-    override fun hideDisabledExecutorButtons() = true
+    override fun hideDisabledExecutorButtons(): Boolean = true
 
     private fun getIosUsbState(environment: ExecutionEnvironment): RunProfileState {
         // There is nothing to refresh as we use hardcoded forwarded port details. We can't even tell if the player is
@@ -86,7 +86,7 @@ abstract class UnityRunConfigurationBase(project: Project,
         // the debugger to the player and let it fail at that point.
         return UnityAttachIosUsbProfileState(
             project,
-            getRemoteConfiguration(),
+            UnityDebugEngine.Mono(state.host!!, state.port),
             environment,
             name,
             state.deviceId!!
@@ -99,22 +99,22 @@ abstract class UnityRunConfigurationBase(project: Project,
             val players = AndroidDeviceListener().getPlayersForDevice(environment.project, state.deviceId!!)
 
             // Try to find the expected package on the current device. We use the UID which is a unique user ID that is assigned when the
-            // package is installed. If the package has been reinstalled (uninstalled + reinstalled, not just redeployed) it will have a new
-            // UID. Try again using the package name, if available. If it is not available now, it wouldn't be available when the run
+            // package is installed. If the package has been reinstalled (uninstalled + reinstalled, not just redeployed), it will have a
+            // new UID. Try again using the package name, if available. If it is not available now, it wouldn't be available when the run
             // config was created, so we'll match on null.
-            val player = players.filterIsInstance<UnityAndroidAdbProcess>().firstOrNull {
+            val player = players.filterIsInstance<UnityAndroidAdbPlayer>().firstOrNull {
                 it.deviceId == state.deviceId && it.packageUid == state.androidPackageUid
-            } ?: players.filterIsInstance<UnityAndroidAdbProcess>().firstOrNull {
+            } ?: players.filterIsInstance<UnityAndroidAdbPlayer>().firstOrNull {
                 it.deviceId == state.deviceId && it.packageName == state.packageName
             }
 
-            if (player != null) {
-                state.host = player.host
-                state.port = player.port
+            if (player != null && player.debugEngine is UnityDebugEngine.Mono) {
+                state.host = player.debugEngine.host
+                state.port = player.debugEngine.port
 
                 return@withBackgroundProgress UnityAttachAndroidAdbProfileState(
                     project,
-                    getRemoteConfiguration(),
+                    player.debugEngine,
                     environment,
                     name,
                     state.deviceId!!
@@ -129,20 +129,13 @@ abstract class UnityRunConfigurationBase(project: Project,
     }
 
     private suspend fun getLocalUwpStateAsync(environment: ExecutionEnvironment): RunProfileState {
-        // Refresh the details from the UDP broadcast, and use the UWP specific RunProfileState
-        return refreshFromUdpPlayer(environment) {
-            UnityAttachLocalUwpProfileState(
-                getRemoteConfiguration(),
-                environment,
-                name,
-                state.packageName!!
-            )
-        }
+        refreshStateFromUdpBroadcast(environment)
+        return UnityAttachLocalUwpProfileState(getDebugEngine(), environment, name, state.packageName!!)
     }
 
     private fun getCustomPlayerState(environment: ExecutionEnvironment): RunProfileState {
         // The user entered these details. There's nothing to refresh, so just try to connect
-        return UnityAttachProfileState(getRemoteConfiguration(), environment, name)
+        return UnityAttachProfileState(UnityDebugEngine.Mono(state.host!!, state.port), environment, name)
     }
 
     private suspend fun getEditorStateAsync(environment: ExecutionEnvironment): RunProfileState {
@@ -150,7 +143,7 @@ abstract class UnityRunConfigurationBase(project: Project,
         return getLocalProcessStateAsync(environment, "debugging.cannot.find.editor") { processes ->
             processes.filterIsInstance<UnityEditor>().firstOrNull {
                 // Exact match. Previously running instance
-                it.pid == state.pid && it.projectName == state.projectName
+                it.processId == state.pid && it.projectName == state.projectName
             }
             ?: processes.filterIsInstance<UnityEditor>().firstOrNull {
                 // A matching editor for the correct project
@@ -169,7 +162,7 @@ abstract class UnityRunConfigurationBase(project: Project,
         return getLocalProcessStateAsync(environment, "debugging.cannot.find.editor.helper") { processes ->
             processes.filterIsInstance<UnityEditorHelper>().firstOrNull {
                 // Exact match. Previously running instance
-                it.pid == state.pid && it.projectName == state.projectName && it.roleName == state.roleName
+                it.processId == state.pid && it.projectName == state.projectName && it.roleName == state.roleName
             }
             ?: processes.filterIsInstance<UnityEditorHelper>().firstOrNull {
                 // A matching helper for the correct project
@@ -185,7 +178,7 @@ abstract class UnityRunConfigurationBase(project: Project,
         return getLocalProcessStateAsync(environment, "debugging.cannot.find.virtual.player") { processes ->
             processes.filterIsInstance<UnityVirtualPlayer>().firstOrNull {
                 // Exact match. Previously running instance
-                it.pid == state.pid && it.projectName == state.projectName && it.playerName == state.virtualPlayerName
+                it.processId == state.pid && it.projectName == state.projectName && it.playerName == state.virtualPlayerName
             }
             ?: processes.filterIsInstance<UnityVirtualPlayer>().firstOrNull {
                 // Try to find an editor instance that is hosting the target virtual player
@@ -196,18 +189,19 @@ abstract class UnityRunConfigurationBase(project: Project,
 
     private suspend fun getLocalProcessStateAsync(environment: ExecutionEnvironment,
                                                   errorMessage: String,
-                                                  processFinder: (List<UnityProcess>) -> UnityLocalProcess?): RunProfileState {
+                                                  processFinder: (List<UnityDebugTarget>) -> UnityDebugTarget?): RunProfileState {
         // Refresh the port from the process list
         return withBackgroundProgress(environment.project, UnityBundle.message("debugging.refreshing.player.list"), false) {
             val processes = withContext(Dispatchers.Default) { UnityEditorListener().getEditorProcesses(environment.project) }
             val process = processFinder(processes)
-            if (process != null) {
-                state.host = process.host
-                state.port = process.port
-                state.pid = process.pid
+            if (process != null && process.debugEngine is UnityDebugEngine.Mono && process is UnityLocalProcess) {
+                // Process ID isn't actually used while debugging, but it can help to locate the process when reattaching
+                state.pid = process.processId
+                state.host = process.debugEngine.host
+                state.port = process.debugEngine.port
 
                 return@withBackgroundProgress UnityAttachProfileState(
-                    getRemoteConfiguration(),
+                    process.debugEngine,
                     environment,
                     name,
                     isEditor = true
@@ -221,19 +215,13 @@ abstract class UnityRunConfigurationBase(project: Project,
         }
     }
 
-    private suspend fun getRemotePlayerStateAsync(environment: ExecutionEnvironment): RunProfileState {
-        return refreshFromUdpPlayer(environment) {
-            UnityAttachProfileState(
-                getRemoteConfiguration(),
-                environment,
-                name
-            )
-        }
+    private suspend fun getGenericPlayerStateAsync(environment: ExecutionEnvironment): RunProfileState {
+        refreshStateFromUdpBroadcast(environment)
+        return UnityAttachProfileState(getDebugEngine(), environment, name)
     }
 
-    private suspend fun refreshFromUdpPlayer(environment: ExecutionEnvironment, factory: () -> UnityAttachProfileState): RunProfileState {
-        // Refresh state from the UDP broadcast
-        return withBackgroundProgress(environment.project, UnityBundle.message("debugging.refreshing.player.list"), false) {
+    private suspend fun refreshStateFromUdpBroadcast(environment: ExecutionEnvironment) {
+        withBackgroundProgress(environment.project, UnityBundle.message("debugging.refreshing.player.list"), false) {
             val candidates = mutableSetOf<String>()
 
             // Get the player. We're only interested in a player that matches the ID (e.g. 'OSXPlayer(1,Matts-macbook)')
@@ -243,23 +231,31 @@ abstract class UnityRunConfigurationBase(project: Project,
                 it.id == state.playerId && it.projectName == state.projectName
             }
 
-            if (player != null) {
-                state.host = player.host
-                state.port = player.port
-
-                return@withBackgroundProgress factory()
-            }
-            else {
+            if (player == null) {
                 logger.warn("Cannot find UDP player ${state.playerId} in ${candidates.size} candidates")
                 candidates.forEach { logger.info(it) }
                 throw CantRunException(UnityBundle.message("debugging.cannot.find.udp.player"))
             }
+            if (player !is UnityLocalPlayer && player.debugEngine is UnityDebugEngine.CoreClr) {
+                throw CantRunException(UnityBundle.message("debugging.cannot.debug.coreclr.player"))
+            }
+
+            when (player.debugEngine) {
+                is UnityDebugEngine.CoreClr -> {
+                    state.isCoreClr = true
+                    state.pid = player.debugEngine.processId
+                }
+
+                is UnityDebugEngine.Mono -> {
+                    state.isCoreClr = false
+                    state.host = player.debugEngine.host
+                    state.port = player.debugEngine.port
+                }
+            }
         }
     }
 
-    fun getRemoteConfiguration(): RemoteConfiguration = object : RemoteConfiguration {
-        override var address = state.host!!
-        override var port = state.port
-        override var listenPortForConnections = false
+    internal fun getDebugEngine(): UnityDebugEngine {
+        return if (state.isCoreClr) UnityDebugEngine.CoreClr(state.pid) else UnityDebugEngine.Mono(state.host!!, state.port)
     }
 }

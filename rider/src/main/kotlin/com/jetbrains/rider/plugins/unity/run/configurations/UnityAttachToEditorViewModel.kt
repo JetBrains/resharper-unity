@@ -9,9 +9,10 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.ViewableList
-import com.jetbrains.rider.plugins.unity.run.UnityLocalProcess
+import com.jetbrains.rider.plugins.unity.run.UnityDebugTarget
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
-import com.jetbrains.rider.plugins.unity.run.toUnityProcess
+import com.jetbrains.rider.plugins.unity.run.processIdOrZero
+import com.jetbrains.rider.plugins.unity.run.toUnityDebugTarget
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.projectView.solutionDirectory
@@ -19,7 +20,7 @@ import com.jetbrains.rider.projectView.solutionDirectory
 class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: Project) {
 
     val editorInstanceJsonStatus: IProperty<EditorInstanceJsonStatus?> = Property(null)
-    val editorProcesses: ViewableList<UnityLocalProcess> = ViewableList()
+    val editorProcesses: ViewableList<UnityDebugTarget> = ViewableList()
     val pid: IProperty<Int?> = Property(null)
     private val editorInstanceJson = EditorInstanceJson.getInstance(project)
     var useMixedMode: Property<Boolean> = Property(false)
@@ -36,27 +37,23 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
             val editors = getEditorProcessInfos(processList)
 
             application.invokeLater({
-                                        editorProcesses.addAll(editors)
-                                        editorInstanceJsonStatus.set(editorInstanceJson.validateStatus(processList))
-                                        pid.value = if (editorInstanceJsonStatus.value != EditorInstanceJsonStatus.Valid && editors.count() == 1) {
-                                            editors[0].pid
-                                        }
-                                        else if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
-                                            editorInstanceJson.contents?.process_id
-                                        }
-                                        else {
-                                            // If we're a class library project in the same folder as a Unity project, we can still guess the name
-                                            editors.firstOrNull { project.solutionDirectory.name.equals(it.projectName, true) }?.pid
-                                        }
-                                    }, ModalityState.any())
+                editorProcesses.addAll(editors)
+                editorInstanceJsonStatus.set(editorInstanceJson.validateStatus(processList))
+                pid.value = if (editorInstanceJsonStatus.value != EditorInstanceJsonStatus.Valid && editors.count() == 1) {
+                    editors[0].processIdOrZero
+                } else if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
+                    editorInstanceJson.contents?.process_id
+                } else {
+                    // If we're a class library project in the same folder as a Unity project, we can still guess the name
+                    editors.firstOrNull { project.solutionDirectory.name.equals(it.projectName, true) }?.processIdOrZero
+                }
+            }, ModalityState.any())
         }
     }
 
-    private fun getEditorProcessInfos(processList: Array<ProcessInfo>): List<UnityLocalProcess> {
+    private fun getEditorProcessInfos(processList: Array<ProcessInfo>): List<UnityDebugTarget> {
         val unityProcesses = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
         val unityProcessInfoMap = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
-        return unityProcesses.map {
-            it.toUnityProcess(unityProcessInfoMap[it.pid])
-        }
+        return unityProcesses.map { it.toUnityDebugTarget(unityProcessInfoMap[it.pid]) }
     }
 }

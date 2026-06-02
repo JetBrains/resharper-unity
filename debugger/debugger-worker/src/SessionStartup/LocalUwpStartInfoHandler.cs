@@ -8,7 +8,6 @@ using JetBrains.Util.Utils;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
-using Mono.Debugging.Soft;
 using Mono.Debugging.Soft.Connections.StartArgs;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
@@ -21,13 +20,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
     // * https://docs.microsoft.com/en-us/windows/iot-core/develop-your-app/loopback
     // * https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-firewall/troubleshooting-uwp-firewall#debugging-uwp-app-loopback-scenarios
     [DebuggerGlobalComponent]
-    public class LocalUwpStartInfoHandler : UnityStartInfoHandlerBase<UnityLocalUwpStartInfo>
+    public class LocalUwpStartInfoHandler : UnityMonoStartInfoHandlerBase<UnityLocalUwpStartInfo>
     {
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
 
         public LocalUwpStartInfoHandler(Lifetime lifetime, ILogger logger)
-            : base(SoftDebuggerType.Instance)
         {
             myLifetime = lifetime;
             myLogger = logger;

@@ -18,9 +18,6 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
 import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunProfile
 import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
-import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPointAndPlay
-import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorSettingsEditor
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityConfigurationFactoryBase
@@ -28,7 +25,10 @@ import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConf
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationOptions
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityRunConfigurationBase
 import com.jetbrains.rider.plugins.unity.run.configurations.populateStateFromProcess
+import com.jetbrains.rider.plugins.unity.run.devices.UnityCurrentProjectEditorDevice
 import com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider
+import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
+import com.jetbrains.rider.plugins.unity.run.devices.UnityProcessDevice
 import com.jetbrains.rider.run.devices.ActiveDeviceManager
 import com.jetbrains.rider.run.devices.DevicesConfiguration
 import com.jetbrains.rider.run.devices.DevicesProvider
@@ -40,31 +40,33 @@ internal class UnityDevicePlayerConfiguration(project: Project, factory: UnityDe
     DevicesConfiguration,
     IMixedModeDebugAwareRunProfile {
 
-
     private val editorConfigurationType = ConfigurationTypeUtil.findConfigurationType(UnityEditorDebugConfigurationType::class.java)
     private val editorConfiguration = UnityAttachToEditorRunConfiguration(project, editorConfigurationType.attachToEditorAndPlayFactory, false)
     private val editorAndPlayConfiguration = UnityAttachToEditorRunConfiguration(project, editorConfigurationType.attachToEditorAndPlayFactory, true)
 
-    private val activeRunConfiguration: UnityAttachToEditorRunConfiguration?
-        get() =
-            when (ActiveDeviceManager.getInstance(this.project).getDevice<UnityProcess>()) {
-                is UnityEditorEntryPoint -> editorConfiguration
-                is UnityEditorEntryPointAndPlay -> editorAndPlayConfiguration
-                else -> null
-            }
+    private fun getRunConfigurationForCurrentlySelectedEditorDevice(): UnityAttachToEditorRunConfiguration? {
+        val device = ActiveDeviceManager.getInstance(this.project).getDevice<UnityCurrentProjectEditorDevice>() ?: return null
+        if (device.kind == UnityEditorDeviceKind) {
+            return if (device.playOnConnect) editorAndPlayConfiguration else editorConfiguration
+        }
+        return null
+    }
 
     override suspend fun getRunProfileStateAsync(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
         val manager = ActiveDeviceManager.getInstance(project)
-        val process = manager.getDevice<UnityProcess>()
 
-        activeRunConfiguration?.let { activeConfiguration ->
-            return activeConfiguration.getState(executor, environment) ?: throw CantRunException(
-                UnityBundle.message("dialog.message.failed.to.use.attach.to.unity.editor.run.configuration"))
+        // If the currently selected device is an editor, get the well-known configuration that will attach to the current editor
+        getRunConfigurationForCurrentlySelectedEditorDevice()?.let { activeConfiguration ->
+            return activeConfiguration.getState(executor, environment)
+                ?: throw CantRunException(UnityBundle.message("dialog.message.failed.to.use.attach.to.unity.editor.run.configuration"))
         }
 
-        if (process == null) { throw CantRunException(UnityBundle.message("failed.to.identify.device")) }
-        populateStateFromProcess(state, process)
-
+        // The current device isn't an editor, update the current run configuration state, and use it to create a run profile
+        // TODO: Do we need to update state here? I think this gets saved to workspace.xml, but should it be?
+        // Could we just create a run profile directly from the UnityProcess?
+        val device = manager.getDevice<UnityProcessDevice>()
+            ?: throw CantRunException(UnityBundle.message("failed.to.identify.device"))
+        populateStateFromProcess(state, device.process)
         return getRunProfileStateAsyncInternal(executor, environment)
     }
 
@@ -73,12 +75,12 @@ internal class UnityDevicePlayerConfiguration(project: Project, factory: UnityDe
 
         // This method is called when user opens a dialog to edit the run configuration, put the current active run configuration in a variable
         // as the changes the user makes should be applied exactly to it
-        val activeRunConfiguration = activeRunConfiguration
+        val activeRunConfiguration = getRunConfigurationForCurrentlySelectedEditorDevice()
         val editor = activeRunConfiguration?.configurationEditor as? UnityAttachToEditorSettingsEditor?
 
         // We need the generic T of SettingsEditor<T> to be UnityDevicePlayerConfiguration, so return our own instance but delegate inside
         return object : SettingsEditor<UnityDevicePlayerConfiguration>(), CheckableRunConfigurationEditor<UnityDevicePlayerConfiguration> {
-            private val panel = lazy {
+            private val panel by lazy {
                 panel {
                     row {
                         label(manager.activeDeviceView.value?.name ?: "").align(AlignX.FILL)
@@ -94,7 +96,7 @@ internal class UnityDevicePlayerConfiguration(project: Project, factory: UnityDe
                 editor?.applyEditorTo(activeRunConfiguration)
             }
 
-            override fun createEditor(): JComponent = editor?.createEditor() ?: panel.value
+            override fun createEditor(): JComponent = editor?.createEditor() ?: panel
 
             override fun disposeEditor() {
                 editor?.disposeEditor()
@@ -106,13 +108,13 @@ internal class UnityDevicePlayerConfiguration(project: Project, factory: UnityDe
         }
     }
 
-    override val provider: DevicesProvider? = UnityDevicesProvider.getService(project)
+    override val provider: DevicesProvider = UnityDevicesProvider.getService(project)
 
     override fun getAdditionalUsageData(): List<EventPair<*>> {
         return ActiveDeviceManager.getInstance(project).getStatisticsDeviceData()
     }
 
-    override fun useMixedDebugMode(): Boolean = activeRunConfiguration?.useMixedDebugMode() ?: false
+    override fun useMixedDebugMode(): Boolean = getRunConfigurationForCurrentlySelectedEditorDevice()?.useMixedDebugMode() ?: false
 }
 
 internal class UnityDevicePlayerFactory(type: ConfigurationType) : UnityConfigurationFactoryBase(type) {

@@ -6,14 +6,16 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.flowInto
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
-import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityStartInfo
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityLocalCoreClrStartInfo
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityMonoStartInfo
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.unityDebuggerWorkerModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.run.AttachDebugProfileStateBase
+import com.jetbrains.rider.run.ConsoleKind
 import com.jetbrains.rider.run.IDebuggerOutputListener
-import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
-import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 
 /**
  * Simple [RunProfileState] to connect to an already running Unity process via the Mono debugger protocol
@@ -23,19 +25,20 @@ import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
  *
  * @param targetName    Used in user facing "Unable to connect to {targetName}" error message
  */
-open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfiguration,
+open class UnityAttachProfileState(private val debugEngine: UnityDebugEngine,
                                    executionEnvironment: ExecutionEnvironment,
                                    private val targetName: String,
                                    val isEditor: Boolean = false)
-    : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
+    : AttachDebugProfileStateBase(executionEnvironment) {
+
+    override val attached: Boolean = true
+    override val consoleKind: ConsoleKind = ConsoleKind.AttachedProcess
+
+    protected open var monoListenForConnections: Boolean = false
 
     override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
-        return UnityDebuggerOutputListener(
-            executionEnvironment.project,
-            remoteConfiguration.address,
-            targetName,
-            isEditor
-        )
+        val host = if (debugEngine is UnityDebugEngine.Mono) debugEngine.host else null
+        return UnityDebuggerOutputListener(executionEnvironment.project, host, targetName, isEditor)
     }
 
     override fun bindSettings(lifetime: Lifetime, workerModel: DebuggerWorkerModel) {
@@ -52,10 +55,27 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
     }
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
-        return UnityStartInfo(remoteConfiguration.address,
-            remoteConfiguration.port,
-            remoteConfiguration.listenPortForConnections,
+        return when (debugEngine) {
+            is UnityDebugEngine.CoreClr -> createCoreClrModelStartInfo(lifetime, debugEngine)
+            is UnityDebugEngine.Mono -> createMonoModelStartInfo(lifetime, debugEngine)
+        }
+    }
+
+    protected open suspend fun createMonoModelStartInfo(lifetime: Lifetime, monoDebugEngine: UnityDebugEngine.Mono): DebuggerStartInfoBase {
+        return UnityMonoStartInfo(
+            monoDebugEngine.host,
+            monoDebugEngine.port,
+            monoListenForConnections,
             getUnityBundlesList(),
-            getUnityPackagesList(executionEnvironment.project))
+            getUnityPackagesList(executionEnvironment.project)
+        )
+    }
+
+    protected open suspend fun createCoreClrModelStartInfo(lifetime: Lifetime, coreClrDebugEngine: UnityDebugEngine.CoreClr): DebuggerStartInfoBase {
+        return UnityLocalCoreClrStartInfo(
+            coreClrDebugEngine.processId,
+            getUnityBundlesList(),
+            getUnityPackagesList(executionEnvironment.project)
+        )
     }
 }

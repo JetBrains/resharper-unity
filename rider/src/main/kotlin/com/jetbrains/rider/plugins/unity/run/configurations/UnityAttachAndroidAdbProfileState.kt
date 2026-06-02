@@ -9,9 +9,9 @@ import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityAndroidAdbStartInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import java.nio.file.Path
 import kotlin.io.path.isDirectory
 
@@ -19,13 +19,13 @@ import kotlin.io.path.isDirectory
  * [RunProfileState] to attach to an Android device via ADB
  */
 class UnityAttachAndroidAdbProfileState(private val project: Project,
-                                        private val remoteConfiguration: RemoteConfiguration,
+                                        debugEngine: UnityDebugEngine,
                                         executionEnvironment: ExecutionEnvironment,
                                         targetName: String,
                                         private val deviceId: String)
-    : UnityAttachProfileState(remoteConfiguration, executionEnvironment, targetName, false) {
+    : UnityAttachProfileState(debugEngine, executionEnvironment, targetName, false) {
 
-    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
+    override suspend fun createMonoModelStartInfo(lifetime: Lifetime, monoDebugEngine: UnityDebugEngine.Mono): DebuggerStartInfoBase {
 
         val model = project.solution.frontendBackendModel
         var sdkRoot = model.getAndroidSdkRoot.startSuspending(lifetime, Unit)?.let { Path.of(it) }
@@ -40,8 +40,8 @@ class UnityAttachAndroidAdbProfileState(private val project: Project,
         return UnityAndroidAdbStartInfo(
             sdkRoot.toString(),
             deviceId,
-            remoteConfiguration.address,
-            remoteConfiguration.port,
+            monoDebugEngine.host,
+            monoDebugEngine.port,
             false,
             getUnityBundlesList(),
             getUnityPackagesList(project)

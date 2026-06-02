@@ -21,8 +21,8 @@ import kotlin.io.path.isDirectory
 
 class AppleDeviceListener(project: Project,
                           lifetime: Lifetime,
-                          private val onDeviceAdded: (UnityProcess) -> Unit,
-                          private val onDeviceRemoved: (UnityProcess) -> Unit) {
+                          private val onDeviceAdded: (UnityDebugTarget) -> Unit,
+                          private val onDeviceRemoved: (UnityDebugTarget) -> Unit) {
 
     companion object {
         private val logger = Logger.getInstance(AppleDeviceListener::class.java)
@@ -31,7 +31,7 @@ class AppleDeviceListener(project: Project,
     }
 
     private val refreshPeriod: Long = 1000
-    private val devices = mutableMapOf<String, UnityIosUsbProcess>()
+    private val devices = mutableMapOf<String, UnityIosUsbPlayer>()
     private val usage = mutableMapOf<String, Boolean>()
     private val thread: Thread?
     private val processHandler: CapturingProcessHandler?
@@ -221,7 +221,7 @@ class AppleDeviceListener(project: Project,
     private fun processDevices(rawDevices: List<String>) {
         usage.keys.forEach { usage[it] = false }
 
-        val newProcesses = rawDevices.mapNotNull {
+        val newPlayers = rawDevices.mapNotNull {
             val matcher = deviceRegex.matcher(it)
             if (matcher.find()) {
                 val productId = matcher.group("productId").toInt(16)
@@ -230,10 +230,10 @@ class AppleDeviceListener(project: Project,
                 val displayName = descriptions[productId] ?: "Apple Device"
 
                 if (!devices.containsKey(deviceId)) {
-                    val process = UnityIosUsbProcess(displayName, deviceId, displayName)
-                    devices[deviceId] = process
+                    val player = UnityIosUsbPlayer(displayName, deviceId, displayName)
+                    devices[deviceId] = player
                     usage[deviceId] = true
-                    process
+                    player
                 }
                 else {
                     usage[deviceId] = true
@@ -246,7 +246,7 @@ class AppleDeviceListener(project: Project,
             }
         }
 
-        newProcesses.forEach { onDeviceAdded(it) }
+        newPlayers.forEach { onDeviceAdded(it) }
         usage.filterValues { !it }.keys.forEach { deviceId ->
             usage.remove(deviceId)
             devices.remove(deviceId)?.let { onDeviceRemoved(it) }

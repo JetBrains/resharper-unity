@@ -11,10 +11,6 @@ import com.jetbrains.rd.util.threading.coroutines.nextFalseValueAsync
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggableDeviceListener
-import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
-import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPointAndPlay
-import com.jetbrains.rider.plugins.unity.run.UnityProcess
-import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.run.devices.ActiveDeviceAction
 import com.jetbrains.rider.run.devices.ActiveDeviceManager
 import com.jetbrains.rider.run.devices.CompatibilityProblem
@@ -23,12 +19,13 @@ import com.jetbrains.rider.run.devices.DeviceKind
 import com.jetbrains.rider.run.devices.DevicesProvider
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Service(Service.Level.PROJECT)
 class UnityDevicesProvider(private val project: Project): DevicesProvider {
     private val workingTime = 3_000L
     private val locker = Object()
-    private val cachedDevices = mutableListOf<UnityProcess>()
+    private val cachedDevices = mutableListOf<UnityProcessDevice>()
     private val deviceKindsForSearch = listOf(UnityUsbDeviceKind, UnityRemotePlayerDeviceKind) // search those
 
     // Copy of all availableDevices - thread-safe
@@ -64,9 +61,9 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
             }
         }
         val mutableList = mutableListOf<Device>()
-        mutableList.add(UnityEditorEntryPoint(UnityBundle.message("unity.editor.devices.kind.name"), -1, project.solutionDirectory.name))
-        mutableList.add(UnityEditorEntryPointAndPlay(UnityBundle.message("unity.editor.and.play"), -1, project.solutionDirectory.name))
-        mutableList.addAll(allDevices.toHashSet())
+        mutableList.add(UnityCurrentProjectEditorDevice(UnityBundle.message("unity.editor.devices.kind.name"), playOnConnect = false))
+        mutableList.add(UnityCurrentProjectEditorDevice(UnityBundle.message("unity.editor.and.play"), playOnConnect = true))
+        mutableList.addAll(allDevices)
         return mutableList
     }
 
@@ -78,9 +75,10 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
         // Listen for workingTime, updating availableDevices as discoveries happen
         UnityDebuggableDeviceListener(
             project, lifetime,
-            onProcessAdded = { device ->
-                if (deviceKindsForSearch.any { device.kind == it } ) {
+            onProcessAdded = { process ->
+                if (deviceKindsForSearch.any { process.deviceKind == it } ) {
                     synchronized(locker) {
+                        val device = process.toDevice()
                         previouslySeenDevices.remove(device)
                         cachedDevices.remove(device)
                         cachedDevices.add(device)
@@ -88,8 +86,9 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
                     ActiveDeviceManager.getInstance(project).startRefreshingDevices()
                 }
             },
-            onProcessRemoved = { device ->
-                if (deviceKindsForSearch.any { device.kind == it } ) {
+            onProcessRemoved = { process ->
+                if (deviceKindsForSearch.any { process.deviceKind == it } ) {
+                    val device = process.toDevice()
                     synchronized(locker) {
                         cachedDevices.remove(device)
                     }
@@ -101,7 +100,7 @@ class UnityDevicesProvider(private val project: Project): DevicesProvider {
 
         coroutineScope {
             action.isExpanded.nextFalseValueAsync(lifetime).await()
-            delay(workingTime)
+            delay(workingTime.milliseconds)
         }
 
         // Drop devices, which were not seen during this scan

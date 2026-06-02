@@ -4,19 +4,19 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityLocalUwpStartInfo
-import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
+import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
 
-class UnityAttachLocalUwpProfileState(private val remoteConfiguration: RemoteConfiguration,
+class UnityAttachLocalUwpProfileState(debugEngine: UnityDebugEngine,
                                       executionEnvironment: ExecutionEnvironment,
                                       targetName: String,
                                       private val packageName: String)
-    : UnityAttachProfileState(remoteConfiguration, executionEnvironment, targetName, false) {
+    : UnityAttachProfileState(debugEngine, executionEnvironment, targetName, false) {
 
-    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
+    override suspend fun createMonoModelStartInfo(lifetime: Lifetime, monoDebugEngine: UnityDebugEngine.Mono): DebuggerStartInfoBase {
         return UnityLocalUwpStartInfo(
             packageName,
-            remoteConfiguration.address,
-            remoteConfiguration.port,
+            monoDebugEngine.host,
+            monoDebugEngine.port,
             false,
             getUnityBundlesList(),
             getUnityPackagesList(executionEnvironment.project)

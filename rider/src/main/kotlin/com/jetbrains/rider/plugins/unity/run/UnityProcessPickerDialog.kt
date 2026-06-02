@@ -45,12 +45,12 @@ import javax.swing.tree.TreeSelectionModel
 class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
 
     companion object {
-        val UNKNOWN_PROJECT = UnityBundle.message("project.name.unknown.project")
-        val USB_DEVICES = UnityBundle.message("project.name.usb.devices")
-        val CUSTOM_PLAYER_PROJECT = UnityBundle.message("project.name.custom")
+        val UNKNOWN_PROJECT: String = UnityBundle.message("project.name.unknown.project")
+        val USB_DEVICES: String = UnityBundle.message("project.name.usb.devices")
+        val CUSTOM_PLAYER_PROJECT: String = UnityBundle.message("project.name.custom")
     }
 
-    private class UnityProcessTreeNode(val process: UnityProcess, val debuggerAttached: Boolean) : DefaultMutableTreeNode()
+    private class UnityDebugTargetTreeNode(val target: UnityDebugTarget, val debuggerAttached: Boolean) : DefaultMutableTreeNode()
 
     private val treeModel = DefaultTreeModel(DefaultMutableTreeNode())
     private val treeModelLock = Object()
@@ -80,7 +80,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             selectionModel.addTreeSelectionListener {
                 isOKActionEnabled = !isSelectionEmpty
                 getSelectedUnityProcessTreeNode()?.let {
-                    isOKActionEnabled = !it.debuggerAttached && it.process.debuggingEnabled
+                    isOKActionEnabled = !it.debuggerAttached && it.target.debuggingEnabled && it.target.isDebuggerSupported
                 }
             }
 
@@ -130,7 +130,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         myPreferredFocusedComponent = tree
     }
 
-    override fun createCenterPanel() = panel
+    override fun createCenterPanel(): JPanel = panel
 
     override fun createHelpButton(insets: Insets): JButton {
         val button = super.createHelpButton(insets)
@@ -141,9 +141,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     override fun doOKAction() {
         if (okAction.isEnabled) {
             val model = getSelectedUnityProcessTreeNode() ?: return
-            val process = model.process
-            if (!model.debuggerAttached && process.debuggingEnabled) {
-                attachToUnityProcess(project, process)
+            val debugTarget = model.target
+            if (!model.debuggerAttached && debugTarget.debuggingEnabled) {
+                attachToUnityProcess(project, debugTarget)
             }
             close(OK_EXIT_CODE)
         }
@@ -160,7 +160,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     }
 
     private fun getSelectedUnityProcessTreeNode() =
-        tree.lastSelectedPathComponent as? UnityProcessTreeNode
+        tree.lastSelectedPathComponent as? UnityDebugTargetTreeNode
 
     internal data class CustomPlayerModel(var name: String,
                                           var host: String = "",
@@ -207,25 +207,25 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private fun findCustomPlayerByName(name: String): UnityCustomPlayer? {
         val root = treeModel.root as DefaultMutableTreeNode
         val node = TreeUtil.findNode(root) {
-            ((it as? UnityProcessTreeNode)?.process as? UnityCustomPlayer)?.displayName == name
-        } as? UnityProcessTreeNode
-        return node?.process as? UnityCustomPlayer
+            ((it as? UnityDebugTargetTreeNode)?.target as? UnityCustomPlayer)?.name == name
+        } as? UnityDebugTargetTreeNode
+        return node?.target as? UnityCustomPlayer
     }
 
-    private fun addProcess(process: UnityProcess): UnityProcessTreeNode {
-        val isDebuggerAttached = UnityRunUtil.isDebuggerAttached(process.host, process.port, project)
+    private fun addProcess(process: UnityDebugTarget): UnityDebugTargetTreeNode {
+        val isDebuggerAttached = UnityRunUtil.isDebuggerAttached(process.debugEngine, project)
 
         synchronized(treeModelLock) {
             val root = treeModel.root as DefaultMutableTreeNode
 
-            val newNode = UnityProcessTreeNode(process, isDebuggerAttached)
+            val newNode = UnityDebugTargetTreeNode(process, isDebuggerAttached)
 
             if (process is UnityEditorHelper) {
                 // Try to add the helper as a child node of the parent editor
                 (TreeUtil.findNode(root) {
-                    val parentProcess = (it as? UnityProcessTreeNode)?.process ?: return@findNode false
+                    val parentProcess = (it as? UnityDebugTargetTreeNode)?.target ?: return@findNode false
                     parentProcess is UnityEditor && parentProcess.projectName == process.projectName
-                } as? UnityProcessTreeNode)?.let {
+                } as? UnityDebugTargetTreeNode)?.let {
                     insertChildNode(it, newNode)
                     // Expand the parent
                     tree.expandPath(TreePath(it.path))
@@ -240,8 +240,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             // Reparent any editor helpers that were either "orphaned" or simply listed first
             if (process is UnityEditor) {
-                root.children().asSequence().filterIsInstance<UnityProcessTreeNode>().filter {
-                    it.process is UnityEditorHelper && it.process.projectName == newNode.process.projectName
+                root.children().asSequence().filterIsInstance<UnityDebugTargetTreeNode>().filter {
+                    it.target is UnityEditorHelper && it.target.projectName == newNode.target.projectName
                 }.forEach {
                     treeModel.removeNodeFromParent(it)
                     treeModel.insertNodeInto(it, newNode, 0)
@@ -265,7 +265,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
     }
 
-    private fun insertChildNode(root: DefaultMutableTreeNode, newNode: UnityProcessTreeNode) {
+    private fun insertChildNode(root: DefaultMutableTreeNode, newNode: UnityDebugTargetTreeNode) {
         val comparator = TreeNodeComparator(project.name)
         val index = root.children().asSequence().indexOfFirst {
             comparator.compare(newNode, it) < 0 // newNode is less than it, so should be higher up in the list
@@ -273,15 +273,15 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         treeModel.insertNodeInto(newNode, root, if (index == -1) root.childCount else index)
     }
 
-    private fun removeProcess(process: UnityProcess) {
+    private fun removeProcess(process: UnityDebugTarget) {
         synchronized(treeModelLock) {
             TreeUtil.findNode(treeModel.root as DefaultMutableTreeNode) {
-                (it as? UnityProcessTreeNode)?.process == process
+                (it as? UnityDebugTargetTreeNode)?.target == process
             }?.let {
                 treeModel.removeNodeFromParent(it)
 
                 // Now reparent any children until they're removed
-                it.children().asSequence().filterIsInstance<UnityProcessTreeNode>().forEach { child ->
+                it.children().asSequence().filterIsInstance<UnityDebugTargetTreeNode>().forEach { child ->
                     treeModel.removeNodeFromParent(child)
                     insertChildNode(treeModel.root as DefaultMutableTreeNode, child)
                 }
@@ -291,11 +291,11 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
     private class TreeNodeComparator(private val currentProjectName: String) : Comparator<TreeNode> {
         override fun compare(o1: TreeNode, o2: TreeNode): Int {
-            val node1 = o1 as? UnityProcessTreeNode ?: return -1
-            val node2 = o2 as? UnityProcessTreeNode ?: return 1
+            val node1 = o1 as? UnityDebugTargetTreeNode ?: return -1
+            val node2 = o2 as? UnityDebugTargetTreeNode ?: return 1
 
-            val projectName1 = node1.process.projectName ?: UNKNOWN_PROJECT
-            val projectName2 = node2.process.projectName ?: UNKNOWN_PROJECT
+            val projectName1 = node1.target.projectName ?: UNKNOWN_PROJECT
+            val projectName2 = node2.target.projectName ?: UNKNOWN_PROJECT
 
             // Sort by project name
             var x = when {
@@ -313,27 +313,25 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             if (x != 0) return x
 
             // Then by process kind
-            x = getProcessKindWeight(o1.process).compareTo(getProcessKindWeight(o2.process))
+            x = getProcessKindWeight(o1.target).compareTo(getProcessKindWeight(o2.target))
             if (x != 0) return x
 
             // Then by display name
-            return o1.process.displayName.compareTo(o2.process.displayName, true)
+            return o1.target.name.compareTo(o2.target.name, true)
         }
 
-        private fun getProcessKindWeight(process: UnityProcess): Int {
+        private fun getProcessKindWeight(target: UnityDebugTarget): Int {
             // Players will be grouped by project, then sorted by their relative weights. The editor is considered the
             // most important, so goes first. Editor helpers are grouped with their project's editors when possible, and
             // if not, appear below any other editors. Locally connected devices are deemed the next most important,
             // followed by players running locally on the desktop. Custom players have been entered by a user, so should
             // be considered more important than remote players, which could simply be other team members running the
             // game on the same network.
-            return when (process) {
-                is UnityEditorEntryPoint -> 5
-                is UnityEditorEntryPointAndPlay -> 7
+            return when (target) {
                 is UnityEditor -> 10
                 is UnityEditorHelper -> 20          // A child node of UnityEditor
                 is UnityVirtualPlayer -> 25
-                is UnityIosUsbProcess, is UnityAndroidAdbProcess -> 30  // These are put into their own group
+                is UnityIosUsbPlayer, is UnityAndroidAdbPlayer -> 30  // These are put into their own group
                 is UnityLocalPlayer -> 40
                 is UnityCustomPlayer -> 45
                 is UnityRemotePlayer -> 50
@@ -359,12 +357,12 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val itemComponent = itemComponent as SimpleColoredComponent
             itemComponent.clear()
 
-            val node = value as? UnityProcessTreeNode ?: return myRendererComponent
+            val node = value as? UnityDebugTargetTreeNode ?: return myRendererComponent
 
-            val unityProcess = node.process
+            val unityProcess = node.target
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
             val projectName = unityProcess.projectName
-                              ?: if (unityProcess is UnityIosUsbProcess || unityProcess is UnityAndroidAdbProcess) USB_DEVICES else UNKNOWN_PROJECT
+                              ?: if (unityProcess is UnityIosUsbPlayer || unityProcess is UnityAndroidAdbPlayer) USB_DEVICES else UNKNOWN_PROJECT
             val hasSeparator = !isChildProcess(node) && (isFirstItem(node) || getPreviousSiblingProjectName(node) != projectName)
 
             // Set up visibility and selected status. This does not (re)set the selected status of the returned
@@ -376,7 +374,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val displayName = when {
                 unityProcess is UnityEditorHelper && unityProcess.roleName.isNotEmpty() -> unityProcess.roleName
                 unityProcess is UnityVirtualPlayer && unityProcess.playerName.isNotEmpty() -> unityProcess.playerName
-                else -> unityProcess.displayName
+                else -> unityProcess.name
             }
             append(itemComponent, displayName, attributes, selected, focused, true)
             if (node.debuggerAttached) {
@@ -387,17 +385,28 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 append(itemComponent, UnityBundle.message("appended.script.debugging.disabled"),
                        SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES, selected, focused)
             }
-            if (unityProcess !is UnityIosUsbProcess) {
+            else if (unityProcess.debugEngine is UnityDebugEngine.CoreClr && !unityProcess.isDebuggerSupported) {
+                append(itemComponent, UnityBundle.message("appended.script.debugging.coreclr.unsupported"),
+                    SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES, selected, focused
+                )
+            }
+            if (unityProcess !is UnityIosUsbPlayer) {
                 // Don't show the hardcoded host and port for iOS devices.
                 // Arguably, we could do the same for Android, as they're not correct until the port has been forwarded.
-                append(itemComponent, " ${unityProcess.host}:${unityProcess.port}", SimpleTextAttributes.GRAYED_ATTRIBUTES, selected,
-                       focused)
+                @Suppress("HardCodedStringLiteral")
+                append(
+                    itemComponent,
+                    " " + unityProcess.debugEngine.toPresentableString(),
+                    SimpleTextAttributes.GRAYED_ATTRIBUTES,
+                    selected,
+                    focused
+                )
             }
             if (unityProcess is UnityLocalProcess) {
-                append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid.toString()),
+                append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.processId.toString()),
                        SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
-            if (unityProcess is UnityAndroidAdbProcess && unityProcess.packageName != null) {
+            if (unityProcess is UnityAndroidAdbPlayer && unityProcess.packageName != null) {
                 append(itemComponent, UnityBundle.message("appended.android.package", unityProcess.packageName),
                        SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
@@ -427,16 +436,16 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             return SimpleColoredComponent().apply { isOpaque = false }
         }
 
-        private fun isFirstItem(node: UnityProcessTreeNode) = node.previousSibling == null
-        private fun isChildProcess(node: UnityProcessTreeNode) = node.parent is UnityProcessTreeNode
+        private fun isFirstItem(node: UnityDebugTargetTreeNode) = node.previousSibling == null
+        private fun isChildProcess(node: UnityDebugTargetTreeNode) = node.parent is UnityDebugTargetTreeNode
 
-        private fun getPreviousSiblingProjectName(node: UnityProcessTreeNode): String {
-            return (node.previousSibling as? UnityProcessTreeNode)?.let {
-                if (it.process is UnityIosUsbProcess || it.process is UnityAndroidAdbProcess) {
+        private fun getPreviousSiblingProjectName(node: UnityDebugTargetTreeNode): String {
+            return (node.previousSibling as? UnityDebugTargetTreeNode)?.let {
+                if (it.target is UnityIosUsbPlayer || it.target is UnityAndroidAdbPlayer) {
                     USB_DEVICES
                 }
                 else {
-                    it.process.projectName
+                    it.target.projectName
                 }
             } ?: UNKNOWN_PROJECT
         }

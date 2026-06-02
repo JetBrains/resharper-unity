@@ -7,8 +7,8 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
+import com.jetbrains.rider.plugins.unity.run.UnityDebugTarget
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
-import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.enums.EngineVersion
@@ -184,8 +184,8 @@ abstract class UnityPlayerTestBase : BaseTestWithUnitySetup() {
         }
     }
 
-    suspend fun discoverDebuggableUnityProcess(lifetime: Lifetime, filter: (UnityProcess) -> Boolean): UnityProcess {
-        val result = CompletableDeferred<UnityProcess>()
+    suspend fun discoverDebuggableUnityProcess(lifetime: Lifetime, filter: (UnityDebugTarget) -> Boolean): UnityDebugTarget {
+        val result = CompletableDeferred<UnityDebugTarget>()
         lifetime.onTermination { result.cancel() }
 
         logger.info("Starting UnityPlayerListener")

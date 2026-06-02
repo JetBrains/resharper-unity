@@ -4,8 +4,8 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 
 class UnityDebuggableProcessListener(project: Project, lifetime: Lifetime,
-                                     onProcessAdded: (UnityProcess) -> Unit,
-                                     onProcessRemoved: (UnityProcess) -> Unit) {
+                                     onProcessAdded: (UnityDebugTarget) -> Unit,
+                                     onProcessRemoved: (UnityDebugTarget) -> Unit) {
 
     init {
         UnityEditorListener().startListening(project, lifetime, onProcessAdded, onProcessRemoved)
@@ -17,8 +17,8 @@ class UnityDebuggableProcessListener(project: Project, lifetime: Lifetime,
 }
 
 class UnityDebuggableDeviceListener(project: Project, lifetime: Lifetime,
-                                     onProcessAdded: (UnityProcess) -> Unit,
-                                     onProcessRemoved: (UnityProcess) -> Unit) {
+                                     onProcessAdded: (UnityDebugTarget) -> Unit,
+                                     onProcessRemoved: (UnityDebugTarget) -> Unit) {
 
     init {
         UnityPlayerListener().startListening(lifetime, onProcessAdded, onProcessRemoved)

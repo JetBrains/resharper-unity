@@ -36,7 +36,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             IValueFactory<Value> factory)
         {
             myUnityOptions = unityOptions;
-            myIsUnityDebugSession = unityOptions.ExtensionsEnabled && creationInfo.StartInfo is UnityStartInfo;
+            myIsUnityDebugSession = unityOptions.ExtensionsEnabled && creationInfo.StartInfo is UnityStartInfoBase;
 
             myDebuggerSession = debuggerSession;
             myLogger = logger;

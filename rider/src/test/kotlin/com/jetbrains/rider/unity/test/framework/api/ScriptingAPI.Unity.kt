@@ -35,7 +35,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
-import com.jetbrains.rider.plugins.unity.run.UnityProcess
+import com.jetbrains.rider.plugins.unity.run.UnityDebugTarget
 import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
 import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -395,11 +395,11 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
 
     try {
         val pair = startUnityStandaloneProject(playerFile, testMethod.logDirectory.resolve("UnityPlayer.log"))
-        val unityProcess: UnityProcess? = pair.first
+        val unityDebugTarget: UnityDebugTarget? = pair.first
         startGameExecutable = pair.second
 
-        assertNotNull(unityProcess, "Failed to discover debuggable Unity process")
-        attachToUnityProcess(project, unityProcess)
+        assertNotNull(unityDebugTarget, "Failed to discover debuggable Unity process")
+        attachToUnityProcess(project, unityDebugTarget)
 
         session = waitForNotNull(UnityPlayerDebuggerTestBase.collectTimeout, "Debugger session wasn't started") {
             XDebuggerManager.getInstance(project).debugSessions.firstOrNull()
@@ -432,14 +432,14 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
 }
 
 private fun UnityPlayerDebuggerTestBase.startUnityStandaloneProject(playerFile: Path, logPath: Path)
-    : Pair<UnityProcess?, Process?> {
+    : Pair<UnityDebugTarget?, Process?> {
 
     val startGameExecutable = startGameExecutable(playerFile, logPath)
     assertNotNull(startGameExecutable,"Failed to start game executable")
 
-    var unityProcess: UnityProcess? = null
+    var unityDebugTarget: UnityDebugTarget? = null
     val job = (project as ComponentManagerEx).getCoroutineScope().launch {
-        unityProcess = discoverDebuggableUnityProcess(project.lifetime) {
+        unityDebugTarget = discoverDebuggableUnityProcess(project.lifetime) {
             it.projectName == project.solutionName
         }
     }
@@ -448,7 +448,7 @@ private fun UnityPlayerDebuggerTestBase.startUnityStandaloneProject(playerFile: 
         job.isCompleted
     }
 
-    return Pair(unityProcess, startGameExecutable)
+    return Pair(unityDebugTarget, startGameExecutable)
 }
 
 fun waitForUnityRunConfigurations(project: Project) {

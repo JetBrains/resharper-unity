@@ -8,7 +8,9 @@ import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.UnityEditorHelper
+import com.jetbrains.rider.plugins.unity.run.UnityLocalProcess
 import com.jetbrains.rider.plugins.unity.run.UnityVirtualPlayer
+import com.jetbrains.rider.plugins.unity.run.processIdOrZero
 import java.awt.Dimension
 import javax.swing.JButton
 import javax.swing.JComponent
@@ -57,12 +59,12 @@ class ProcessesPanel : PanelWithButtons() {
 
             override fun getValueAt(rowIndex: Int, columnIndex: Int): Any? {
                 return when (columnIndex) {
-                    0 -> vm.editorProcesses[rowIndex].pid
+                    0 -> vm.editorProcesses[rowIndex].processIdOrZero
                     1 -> with(vm.editorProcesses[rowIndex]) {
                         when (this) {
-                            is UnityVirtualPlayer -> "${this.displayName} (${this.playerName})"
-                            is UnityEditorHelper -> "${this.displayName} (${this.roleName})"
-                            else -> this.displayName
+                            is UnityVirtualPlayer -> "${this.name} (${this.playerName})"
+                            is UnityEditorHelper -> "${this.name} (${this.roleName})"
+                            else -> this.name
                         }
                     }
                     2 -> vm.editorProcesses[rowIndex].projectName ?: ""
@@ -89,7 +91,7 @@ class ProcessesPanel : PanelWithButtons() {
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
             selectionModel.addListSelectionListener {
                 if (selectedRow > -1) {
-                    vm.pid.value = vm.editorProcesses[selectedRow].pid
+                    vm.pid.value = vm.editorProcesses[selectedRow].processIdOrZero
                 }
             }
 
@@ -117,7 +119,7 @@ class ProcessesPanel : PanelWithButtons() {
     }
 
     private fun updateSelection(table: JBTable) {
-        val row = viewModel!!.editorProcesses.indexOfFirst { it.pid == viewModel!!.pid.value }
+        val row = viewModel!!.editorProcesses.indexOfFirst { it.processIdOrZero == viewModel!!.pid.value }
         if (row > -1) table.setRowSelectionInterval(row, row)
     }
 }

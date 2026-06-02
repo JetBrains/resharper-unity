@@ -14,7 +14,6 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.ComponentPredicate
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.UnityCustomPlayer
-import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteForm
 import icons.UnityIcons
 import javax.swing.JComponent
@@ -39,11 +38,11 @@ internal class UnityPlayerDebugConfigurationType : ConfigurationTypeBase(
 }
 
 class UnityAttachToPlayerFactory(type: ConfigurationType) : UnityConfigurationFactoryBase(type) {
-    override fun createTemplateConfiguration(project: Project) =
+    override fun createTemplateConfiguration(project: Project): UnityPlayerDebugConfiguration =
         UnityPlayerDebugConfiguration(project, this)
 
-    override fun getId() = "UnityAttachToPlayer"
-    override fun getOptionsClass() = UnityPlayerDebugConfigurationOptions::class.java
+    override fun getId(): String = "UnityAttachToPlayer"
+    override fun getOptionsClass(): Class<UnityPlayerDebugConfigurationOptions> = UnityPlayerDebugConfigurationOptions::class.java
 }
 
 class UnityPlayerDebugConfigurationOptions : RunConfigurationOptions() {
@@ -65,10 +64,8 @@ class UnityPlayerDebugConfigurationOptions : RunConfigurationOptions() {
      * Note that the player ID is not a unique value. It mainly identifies a player type running on a specific host, but does not identify
      * which project the player type is running. It is possible to have multiple players of the same type, on the same host running
      * different projects. Use [playerInstanceId] to distinguish between multiple instances/projects on the same host/player.
-     *
-     * See also [UnityProcess.type].
      */
-    var playerId by string("")
+    var playerId: String? by string("")
 
     /**
      * A string used to disambiguate player projects running on the same project
@@ -78,43 +75,45 @@ class UnityPlayerDebugConfigurationOptions : RunConfigurationOptions() {
      *
      * Note that this value was only introduced in Rider 2023.2.2, so will not be serialised with run configurations created before then.
      */
-    var playerInstanceId by string()
+    var playerInstanceId: String? by string()
 
-    var host by string("localhost")
-    var port by property(56000)
+    var isCoreClr: Boolean by property(false)
+
+    var host: String? by string("localhost")
+    var port: Int by property(56000)
 
     /** The local process (Editor/editor helper) process ID */
-    var pid by property(0)
+    var pid: Int by property(0)
 
-    var roleName by string("")
+    var roleName: String? by string("")
 
     /** The iOS or Android ADB device ID */
-    var deviceId by string("")
+    var deviceId: String? by string("")
 
     /* Friendly device name for Android and iOS */
-    var deviceName by string("")
+    var deviceName: String? by string("")
 
     /**
      * The name of the Android or UWP package
      *
      * Can be null for an Android package.
      */
-    var packageName by string("")
+    var packageName: String? by string("")
 
     /** The UID of the Android package */
-    var androidPackageUid by string("")
+    var androidPackageUid: String? by string("")
 
     /** The project name, if available */
-    var projectName by string()
+    var projectName: String? by string()
 
     /**
      * The virtual player ID, e.g. `mppmca3577a6`
      *
      * This allows matching a virtual player even if the descriptive player name has changed
      */
-    var virtualPlayerId by string()
+    var virtualPlayerId: String? by string()
 
-    var virtualPlayerName by string()
+    var virtualPlayerName: String? by string()
 }
 
 // TODO: Implement getIcon to provide a different icon per player type (default is the factory icon)?
@@ -125,8 +124,7 @@ open class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachT
     }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
-        val type = UnityProcess.typeFromId(state.playerId!!)
-        if (type == UnityCustomPlayer.TYPE) {
+        if (UnityCustomPlayer.isCustomPlayer(state.playerId)) {
             return CustomPlayerSettingsEditor()
         }
 

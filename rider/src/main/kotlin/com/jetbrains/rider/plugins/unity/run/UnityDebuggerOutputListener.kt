@@ -20,7 +20,7 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.run.IDebuggerOutputListener
 
 class UnityDebuggerOutputListener(val project: Project,
-                                  private val host: String,
+                                  private val host: String?,
                                   private val targetName: String,
                                   private val isEditor: Boolean)
     : IDebuggerOutputListener {
@@ -46,9 +46,12 @@ class UnityDebuggerOutputListener(val project: Project,
                     UnityBundle.message(
                         "notification.content.please.ensure.editor.attaching.enabled.in.unity.s.external.tools.settings.page")
                 }
-                else {
+                else if (host != null) {
                     UnityBundle.message("notification.content.please.ensure.that.player.has.script.debugging.enabled.that.host.reachable",
                                         host)
+                }
+                else {
+                    UnityBundle.message("notification.content.please.ensure.that.player.has.script.debugging.enabled")
                 }
             }
 

@@ -42,7 +42,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
             mySession = session;
             myUnityOptions = unityOptions;
 
-            if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
+            if (creationInfo.StartInfo is UnityStartInfoBase unityStartInfo)
             {
                 var unityBundleInfo =
                     unityStartInfo.Bundles.FirstOrDefault(b => b.Id.Equals(UnityPausePointHelper.AssemblyName));
@@ -96,7 +96,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
             {
                 myLogger.LogException(e);
                 breakEventInfo.UpdateLastTraceValue(activeFrame,
-                    Strings.UnityPausePointExceptionOccured.FormatEx(e.Message));
+                    string.Format(Strings.UnityPausePointExceptionOccured, e.Message));
             }
 
             return true;

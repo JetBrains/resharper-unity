@@ -6,13 +6,13 @@ import com.intellij.xdebugger.attach.XLocalAttachDebugger
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.UnityLocalProcessExtraDetails
 import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
-import com.jetbrains.rider.plugins.unity.run.toUnityProcess
+import com.jetbrains.rider.plugins.unity.run.toUnityDebugTarget
 
 class UnityLocalAttachDebugger(private val unityProcessInfo: UnityLocalProcessExtraDetails?) : XLocalAttachDebugger {
-    override fun getDebuggerDisplayName() = UnityBundle.message("unity.debugger")
+    override fun getDebuggerDisplayName(): String = UnityBundle.message("unity.debugger")
 
     override fun attachDebugSession(project: Project, processInfo: ProcessInfo) {
-        val process = processInfo.toUnityProcess(unityProcessInfo)
+        val process = processInfo.toUnityDebugTarget(unityProcessInfo)
         attachToUnityProcess(project, process)
     }
 }

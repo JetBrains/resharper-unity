@@ -13,14 +13,13 @@ import com.jetbrains.rider.debugger.breakpoint.IDotNetSupportedBreakpointHandler
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityPausepointAdditionalDataModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
-import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPointAndPlay
-import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDevicePlayerConfiguration
-import com.jetbrains.rider.run.devices.ActiveDeviceManager
+import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.run.devices.ActiveDeviceManager
+import com.jetbrains.rider.run.devices.Device
 
 class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBreakpointHandler<XLineBreakpoint<DotNetLineBreakpointProperties>>(
     UnityPausepointBreakpointType::class.java) {
@@ -89,8 +88,8 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
 
     private fun isEditorDevice(runProfile: RunProfile?): Boolean {
         if (runProfile !is UnityDevicePlayerConfiguration) return false
-        val device = ActiveDeviceManager.getInstance(debugProcess.project).getDevice<UnityProcess>()
-        return device is UnityEditorEntryPoint || device is UnityEditorEntryPointAndPlay
+        val device = ActiveDeviceManager.getInstance(debugProcess.project).getDevice<Device>()
+        return device?.kind == UnityEditorDeviceKind
     }
 
     private fun isInPlayMode(): Boolean {

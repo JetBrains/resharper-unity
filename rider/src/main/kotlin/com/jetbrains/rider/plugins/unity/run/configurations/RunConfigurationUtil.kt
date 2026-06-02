@@ -15,20 +15,20 @@ import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityBundleInfo
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator.Companion.RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME
-import com.jetbrains.rider.plugins.unity.run.UnityAndroidAdbProcess
+import com.jetbrains.rider.plugins.unity.run.UnityAndroidAdbPlayer
+import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
+import com.jetbrains.rider.plugins.unity.run.UnityDebugTarget
 import com.jetbrains.rider.plugins.unity.run.UnityEditor
-import com.jetbrains.rider.plugins.unity.run.UnityEditorEntryPoint
 import com.jetbrains.rider.plugins.unity.run.UnityEditorHelper
-import com.jetbrains.rider.plugins.unity.run.UnityIosUsbProcess
+import com.jetbrains.rider.plugins.unity.run.UnityIosUsbPlayer
 import com.jetbrains.rider.plugins.unity.run.UnityLocalUwpPlayer
-import com.jetbrains.rider.plugins.unity.run.UnityProcess
 import com.jetbrains.rider.plugins.unity.run.UnityVirtualPlayer
 import com.jetbrains.rider.plugins.unity.run.configurations.devices.UnityDevicePlayerDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.run.devices.UnityCurrentProjectEditorDevice
 import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
 import com.jetbrains.rider.run.devices.ActiveDeviceManager
-import com.jetbrains.rider.run.devices.Device
 import kotlinx.coroutines.Dispatchers
 
 /**
@@ -51,17 +51,18 @@ fun isAttachedToUnityEditor(project: Project): Boolean {
  * configuration doesn't exist, it will be recreated
  */
 fun attachToUnityEditor(project: Project) {
-    val configurationSettings = getUnityEditorRunConfiguration(project) ?: createAttachToConfiguration(project)
+    val configurationSettings = getAttachToConfiguration(project) ?: createAttachToConfiguration(project)
     val manager = ActiveDeviceManager.getInstance(project)
-    val process = manager.getDevice<Device>()
-    if (process !is UnityEditorEntryPoint){
+    val selectedDevice = manager.getDevice<UnityCurrentProjectEditorDevice>()
+    if (selectedDevice == null) {
         val lifetime = UnityProjectLifetimeService.getLifetime(project).createNested()
         lifetime.launch {
-            val device = manager.getDevices().entries
-                .filter { it.key is UnityEditorDeviceKind }
-                .flatMap { it.value }
-                .single { it.first is UnityEditorEntryPoint }
-                .first
+            // Get all the devices, then find the single Editor (not EditorAndPlay) device
+            val devices = manager.getDevices()
+            val editorDevices = devices[UnityEditorDeviceKind] ?: return@launch
+            val device = editorDevices.first {
+                it.first is UnityCurrentProjectEditorDevice && !(it.first as UnityCurrentProjectEditorDevice).playOnConnect
+            }.first
             manager.setActiveDevice(device)
         }.invokeOnCompletion {
             lifetime.launch(Dispatchers.EDT) {
@@ -76,8 +77,8 @@ fun attachToUnityEditor(project: Project) {
 /**
  * Attach the debugger to the given Unity process, reusing or creating an appropriate run configuration
  */
-fun attachToUnityProcess(project: Project, process: UnityProcess) {
-    if (process is UnityEditor && EditorInstanceJson.getInstance(project).contents?.process_id == process.pid) {
+fun attachToUnityProcess(project: Project, debugTarget: UnityDebugTarget) {
+    if (debugTarget is UnityEditor && EditorInstanceJson.getInstance(project).contents?.process_id == debugTarget.processId) {
         attachToUnityEditor(project)
         return
     }
@@ -88,26 +89,29 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
     // can't find a match, we'll just create a new run configuration. Since the run configurations are named after the player and not the
     // player instance, we'll actually overwrite any existing configuration. (So in fact, we could just look for a run config with the name
     // of the player, but this check means we also work with run configs that the user has renamed)
+    // Once we've found the matching run configuration, we'll refresh the state for any transient connection details (port or process ID)
+    // before trying to attach the debugger
     val runManager = RunManager.getInstance(project)
     var configurationSettings = runManager.allSettings.firstOrNull {
-        (it.configuration as? UnityPlayerDebugConfiguration)?.state?.playerId == process.id
-        && (it.configuration as? UnityPlayerDebugConfiguration)?.state?.playerInstanceId == process.playerInstanceId
+        (it.configuration as? UnityPlayerDebugConfiguration)?.let { config ->
+            config.state.playerId == debugTarget.id && config.state.playerInstanceId == debugTarget.playerInstanceId
+        } ?: false
     }
 
     if (configurationSettings == null) {
         // Make sure "Unity" and "AssetImportWorker0" have a bit more context in the run config
-        val displayName = when (process) {
-            is UnityEditor -> process.displayName + " (${process.projectName ?: "Unknown Project"})"
-            is UnityEditorHelper -> process.displayName + " (${process.roleName})"
-            is UnityVirtualPlayer -> process.playerName
-            else -> process.displayName
+        val displayName = when (debugTarget) {
+            is UnityEditor -> debugTarget.name + " (${debugTarget.projectName ?: "Unknown Project"})"
+            is UnityEditorHelper -> debugTarget.name + " (${debugTarget.roleName})"
+            is UnityVirtualPlayer -> debugTarget.playerName
+            else -> debugTarget.name
         }
 
         val configurationType =
             ConfigurationTypeUtil.findConfigurationType(UnityPlayerDebugConfigurationType::class.java)
         configurationSettings = runManager.createConfiguration(displayName, configurationType.attachToPlayerFactory)
         (configurationSettings.configuration as UnityPlayerDebugConfiguration).apply {
-            populateStateFromProcess(state, process)
+            populateStateFromProcess(state, debugTarget)
         }
         runManager.setTemporaryConfiguration(configurationSettings)
     }
@@ -115,28 +119,38 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
     startDebugRunConfiguration(project, configurationSettings)
 }
 
-fun populateStateFromProcess(state:UnityPlayerDebugConfigurationOptions, process: UnityProcess) {
+fun populateStateFromProcess(state:UnityPlayerDebugConfigurationOptions, process: UnityDebugTarget) {
     state.playerId = process.id
     state.playerInstanceId = process.playerInstanceId
-    state.host = process.host
-    state.port = process.port
+    when (process.debugEngine) {
+        is UnityDebugEngine.CoreClr -> {
+            state.isCoreClr = true
+            state.pid = process.debugEngine.processId
+        }
+
+        is UnityDebugEngine.Mono -> {
+            state.isCoreClr = false
+            state.host = process.debugEngine.host
+            state.port = process.debugEngine.port
+        }
+    }
     state.projectName = process.projectName
 
     when (process) {
-        is UnityIosUsbProcess -> {
+        is UnityIosUsbPlayer -> {
             state.deviceId = process.deviceId
             state.deviceName = process.deviceDisplayName
         }
-        is UnityAndroidAdbProcess -> {
+        is UnityAndroidAdbPlayer -> {
             state.deviceId = process.deviceId
             state.deviceName = process.deviceDisplayName
             state.androidPackageUid = process.packageUid
             state.packageName = process.packageName
         }
         is UnityLocalUwpPlayer -> state.packageName = process.packageName
-        is UnityEditor -> state.pid = process.pid
+        is UnityEditor -> state.pid = process.processId
         is UnityEditorHelper -> {
-            state.pid = process.pid
+            state.pid = process.processId
             state.roleName = process.roleName
         }
         is UnityVirtualPlayer -> {
@@ -173,7 +187,7 @@ fun removeRunConfigurations(project: Project, predicate: (RunnerAndConfiguration
     runManager.allSettings.filter { predicate(it) }.forEach { runManager.removeConfiguration(it) }
 }
 
-private fun getUnityEditorRunConfiguration(project: Project): RunnerAndConfigurationSettings? {
+private fun getAttachToConfiguration(project: Project): RunnerAndConfigurationSettings? {
     val runManager = RunManager.getInstance(project)
 
     return runManager.findConfigurationByTypeAndName(

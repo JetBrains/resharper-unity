@@ -13,36 +13,45 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         field("id", string)
         field("absolutePath", string)
     }
+
     // Not used in this model, but referenced via debuggerStartInfoBase. Serialisers will be registered along with this
     // model (directly via UnityDebuggerWorkerModel.RegisterDeclaredTypesSerializers() or indirectly via creating a new
     // UnityDebuggerWorkerModel)
     private val unityStartInfoBase = basestruct extends DebuggerWorkerModel.debuggerStartInfoBase {
-        field("monoAddress", string.nullable)
-        field("monoPort", int)
-        field("listenForConnections", bool)
         field("bundles", immutableList(unityBundleInfo))
         field("packages", immutableList(string))
     }
 
+    // Base type for Mono based players (including IL2CPP)
+    private val unityMonoStartInfoBase = basestruct extends unityStartInfoBase {
+        field("monoAddress", string.nullable)
+        field("monoPort", int)
+        field("listenForConnections", bool)
+    }
+
     // Default start info. Performs the same as MonoAttachStartInfo but allows overriding some options for IL2CPP
-    private val unityStartInfo = structdef extends unityStartInfoBase {
+    private val unityMonoStartInfo = structdef extends unityMonoStartInfoBase {
+    }
+
+    private val unityLocalCoreClrStartInfo = structdef extends unityStartInfoBase {
+        field("processId", int)
     }
 
     // Forward Android debugging ports over ADB
-    private val unityAndroidAdbStartInfo = structdef extends unityStartInfoBase {
+    private val unityAndroidAdbStartInfo = structdef extends unityMonoStartInfoBase {
         field("androidSdkRoot", string)
         field("androidDeviceId", string)
     }
 
     // Start the iOS USB debugging proxy before attaching
-    private val unityIosUsbStartInfo = structdef extends unityStartInfoBase {
+    private val unityIosUsbStartInfo = structdef extends unityMonoStartInfoBase {
         field("iosSupportPath", string)
         field("iosDeviceId", string)
     }
 
     // Local UWP processes need to be allowed to accept incoming socket connections by calling
     // CheckNetIsolation LoopbackExempt -is -n={PackageName}
-    private val unityLocalUwpStartInfo = structdef extends unityStartInfoBase {
+    private val unityLocalUwpStartInfo = structdef extends unityMonoStartInfoBase {
         field("packageName", string)
     }
 

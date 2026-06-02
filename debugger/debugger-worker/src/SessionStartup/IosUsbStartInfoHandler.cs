@@ -7,19 +7,17 @@ using JetBrains.Util;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
-using Mono.Debugging.Soft;
 using Mono.Debugging.Soft.Connections.StartArgs;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
     [DebuggerGlobalComponent]
-    public class IosUsbStartInfoHandler : UnityStartInfoHandlerBase<UnityIosUsbStartInfo>
+    public class IosUsbStartInfoHandler : UnityMonoStartInfoHandlerBase<UnityIosUsbStartInfo>
     {
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
 
         public IosUsbStartInfoHandler(Lifetime lifetime, ILogger logger)
-            : base(SoftDebuggerType.Instance)
         {
             myLifetime = lifetime;
             myLogger = logger;

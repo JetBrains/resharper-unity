@@ -21,11 +21,9 @@ import com.jetbrains.rider.run.configurations.remote.MonoRemoteConfigType
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreDebugProfile
 import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.RiderDotNetActiveRuntimeHost
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jetbrains.concurrency.Promise
 import java.nio.file.Path
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class UnityExeConfiguration(name: String,
                             project: Project,
                             factory: ConfigurationFactory,
@@ -51,8 +49,9 @@ class UnityExeConfiguration(name: String,
             return if (backend == UnityScriptingBackend.CoreCLR)
                 getDotNetCoreDebugProfile(environment)
             else{
-                UnityExeDebugProfileState(this, DotNetRemoteConfiguration(project, ConfigurationTypeUtil.findConfigurationType(
-                    MonoRemoteConfigType::class.java).factory, name), environment)
+                val monoRemoteConfigFactory = ConfigurationTypeUtil.findConfigurationType(MonoRemoteConfigType::class.java).factory
+                val remoteConfiguration = DotNetRemoteConfiguration(project, monoRemoteConfigFactory, name)
+                UnityExeDebugProfileState(this, remoteConfiguration, environment)
             }
         }
 

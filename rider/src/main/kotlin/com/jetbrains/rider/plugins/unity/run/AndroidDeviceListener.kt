@@ -10,7 +10,6 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.diagnostics.doActivity
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
-import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -68,7 +67,7 @@ class AndroidDeviceListener {
     private val deviceDetails = mutableMapOf<String, DeviceDetails>()
     // Both of these are keyed by player ID, a pair of device serial ID and port
     private val playerPackageNames = mutableMapOf<String, String?>()
-    private val players = mutableMapOf<String, UnityAndroidAdbProcess>()
+    private val players = mutableMapOf<String, UnityAndroidAdbPlayer>()
 
     private suspend fun getAdbPath(project: Project, lifetime: Lifetime): Path? {
         try {
@@ -77,7 +76,7 @@ class AndroidDeviceListener {
             // Postpone the call to getAndroidSdkRoot a bit until backend has initialized endpoint for it.
             withTimeoutOrNull(1000L.milliseconds) {
                 suspendCancellableCoroutine { continuation ->
-                    model.unityApplicationData.adviseOnce(lifetime) { data ->
+                    model.unityApplicationData.adviseOnce(lifetime) {
                         continuation.resume(Unit)
                     }
                 }
@@ -120,8 +119,8 @@ class AndroidDeviceListener {
     // Invoked on UI thread
     fun startListening(project: Project,
                        lifetime: Lifetime,
-                       onPlayerAdded: (UnityProcess) -> Unit,
-                       onPlayerRemoved: (UnityProcess) -> Unit) {
+                       onPlayerAdded: (UnityDebugTarget) -> Unit,
+                       onPlayerRemoved: (UnityDebugTarget) -> Unit) {
         // Since we're running in a modal dialog, we block the normal UI thread scheduler for getAdbPath. However, that
         // uses startSuspending, which will work with the appropriate scheduler. It's also really quick, as we're just
         // fetching a single string value, so we can use runBlocking and wait for the call to complete
@@ -131,17 +130,17 @@ class AndroidDeviceListener {
             thisLogger().info("Poll for Android devices via adb")
             while (isActive) {
                 refreshAndroidProcesses(adbExe, onPlayerAdded, onPlayerRemoved)
-                delay(refreshPeriod)
+                delay(refreshPeriod.milliseconds)
             }
         }
     }
 
     // Invoked on background thread
-    suspend fun getPlayersForDevice(project: Project, deviceId: String): List<UnityProcess> {
+    suspend fun getPlayersForDevice(project: Project, deviceId: String): List<UnityDebugTarget> {
         val lifetime = UnityProjectLifetimeService.getLifetime(project).createNested()
         try {
             val adbExe = getAdbPath(project, lifetime) ?: return emptyList()
-            val players = mutableListOf<UnityProcess>()
+            val players = mutableListOf<UnityDebugTarget>()
             refreshAndroidProcesses(adbExe, listOf(deviceId), { players.add(it) }, { players.remove(it) })
             return players
         }
@@ -152,8 +151,8 @@ class AndroidDeviceListener {
 
     private suspend fun refreshAndroidProcesses(
         adbExe: Path,
-        onPlayerAdded: (UnityProcess) -> Unit,
-        onPlayerRemoved: (UnityProcess) -> Unit
+        onPlayerAdded: (UnityDebugTarget) -> Unit,
+        onPlayerRemoved: (UnityDebugTarget) -> Unit
     ) {
         val discoveredDevices = getDevices(adbExe)
         updateCachedDeviceDetails(adbExe, discoveredDevices)
@@ -163,8 +162,8 @@ class AndroidDeviceListener {
     private suspend fun refreshAndroidProcesses(
         adbExe: Path,
         devices: List<String>,
-        onPlayerAdded: (UnityProcess) -> Unit,
-        onPlayerRemoved: (UnityProcess) -> Unit
+        onPlayerAdded: (UnityDebugTarget) -> Unit,
+        onPlayerRemoved: (UnityDebugTarget) -> Unit
     ) {
         val discoveredPlayers = getPlayers(adbExe, devices)
         updateCachedPackageNames(adbExe, discoveredPlayers)
@@ -186,7 +185,7 @@ class AndroidDeviceListener {
 
             logger.trace("Adding new Android player ${player.key} - ${deviceName ?: player.deviceSerial}")
             val icon = if (device?.isPico == true) UnityIcons.Devices.Pico else UnityIcons.RunConfigurations.AttachToPlayer
-            UnityAndroidAdbProcess(displayName, player.deviceSerial, deviceName, player.port, player.uid, packageName, icon).let {
+            UnityAndroidAdbPlayer(displayName, player.deviceSerial, deviceName, player.port, player.uid, packageName, icon).let {
                 players[player.key] = it
                 onPlayerAdded(it)
             }
@@ -196,7 +195,6 @@ class AndroidDeviceListener {
     private suspend fun getDevices(adbExe: Path): List<String> {
         val devices = mutableListOf<String>()
         invokeAdb("Calling adb to list Android devices", adbExe, "devices") { output ->
-            @Suppress("SpellCheckingInspection")
             // Output will be one line for each device, in a similar format to this:
             // OOQTU1STFTV58I6DIRUSB4URTNQ6FGC2 device
             // or for 'adb devices -l': (I'm not certain of the order of these extra values, or what the

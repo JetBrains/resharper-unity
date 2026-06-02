@@ -12,12 +12,12 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationType
 
-class UnityRunManagerListener() {
+class UnityRunManagerListener {
 
     fun startListening(project: Project,
                        lifetime: Lifetime,
-                       onProcessAdded: (UnityProcess) -> Unit,
-                       onProcessRemoved: (UnityProcess) -> Unit) {
+                       onProcessAdded: (UnityDebugTarget) -> Unit,
+                       onProcessRemoved: (UnityDebugTarget) -> Unit) {
         enumerateCustomPlayers(project, onProcessAdded)
 
         project.messageBus.connect(lifetime.createNestedDisposable())
@@ -38,7 +38,7 @@ class UnityRunManagerListener() {
         })
     }
 
-    private fun enumerateCustomPlayers(project: Project, onProcessAdded: (UnityProcess) -> Unit) {
+    private fun enumerateCustomPlayers(project: Project, onProcessAdded: (UnityDebugTarget) -> Unit) {
         thisLogger().trace("Looking for custom players in run configurations")
 
         try {
@@ -54,10 +54,10 @@ class UnityRunManagerListener() {
         }
     }
 
-    private fun processPlayer(it: RunnerAndConfigurationSettings, onProcessAdded: (UnityProcess) -> Unit) {
+    private fun processPlayer(it: RunnerAndConfigurationSettings, onProcessAdded: (UnityDebugTarget) -> Unit) {
         val configuration = it.configuration as UnityPlayerDebugConfiguration
 
-        if (UnityProcess.typeFromId(configuration.state.playerId!!) == UnityCustomPlayer.TYPE) {
+        if (UnityCustomPlayer.isCustomPlayer(configuration.state.playerId)) {
             // The configuration's values *should* be valid, but let's have fallback, just in case
             val player = UnityCustomPlayer(
                 configuration.name,

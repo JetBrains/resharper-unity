@@ -51,7 +51,6 @@ import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
 import com.jetbrains.rider.run.configurations.unity.UnityAttachRunConfiguration
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jdom.Element
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: ConfigurationFactory, val play: Boolean = false)
@@ -89,13 +88,12 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         return configuration
     }
 
-    override fun hideDisabledExecutorButtons() = true
+    override fun hideDisabledExecutorButtons(): Boolean = true
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = UnityAttachToEditorSettingsEditor(project)
 
     override fun getUnityEditorPid(): Int? = pid
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
         val executorId = executor.id
         for (ext in EP_NAME.getExtensions(project)) {
@@ -130,18 +128,20 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID) {
             val params = ExeConfigurationParameters(
                 exePath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString(),
-                programParameters = mutableListOf<String>().withProjectPath(
-                    project).withDebugCodeOptimization().withRiderPath().toProgramParameters(),
+                programParameters = mutableListOf<String>()
+                    .withProjectPath(project)
+                    .withDebugCodeOptimization()
+                    .withRiderPath()
+                    .toProgramParameters(),
                 workingDirectory = project.solutionDirectory.canonicalPath,
                 envs = hashMapOf(),
                 isPassParentEnvs = true,
                 mixedModeDebugging = false // false by default
             )
-            val exeConfiguration = UnityExeConfiguration(name, project,
-                                                         ConfigurationTypeUtil.findConfigurationType(
-                                                             UnityExeConfigurationType::class.java).factory, params)
-            return UnityAttachToEditorProfileState(
-                UnityExeDebugProfileState(exeConfiguration, this, environment, true), this, environment)
+            val exeConfigurationFactory = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java).factory
+            val exeConfiguration = UnityExeConfiguration(name, project, exeConfigurationFactory, params)
+            val exeDebugProfileState = UnityExeDebugProfileState(exeConfiguration, this, environment, true)
+            return UnityAttachToEditorProfileState(exeDebugProfileState, this, environment)
         }
         return null
     }

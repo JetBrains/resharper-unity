@@ -30,7 +30,7 @@ import java.nio.file.Paths
  */
 data class UnityLocalProcessExtraDetails(@NlsSafe val projectName: String?, @NlsSafe val instanceName: String?, @NlsSafe val instanceId: String?)
 
-fun ProcessInfo.toUnityProcess(extraDetails: UnityLocalProcessExtraDetails?): UnityLocalProcess {
+fun ProcessInfo.toUnityDebugTarget(extraDetails: UnityLocalProcessExtraDetails?): UnityDebugTarget {
     return when {
         extraDetails?.instanceId != null -> {
             UnityVirtualPlayer(executableName, extraDetails.instanceName ?: extraDetails.instanceId,
@@ -314,13 +314,17 @@ object UnityRunUtil {
         }
     }
 
-    fun isDebuggerAttached(host: String, port: Int, project: Project): Boolean {
+    fun isDebuggerAttached(debugEngine: UnityDebugEngine, project: Project): Boolean {
+        if (debugEngine !is UnityDebugEngine.Mono) {
+            return false
+        }
+
         val debuggerManager = XDebuggerManager.getInstance(project)
         return debuggerManager.debugSessions.any {
             val profile = it.runProfile
             return if (profile is RemoteConfiguration) {
                 // Note that this is best effort - host values must match exactly. "localhost" and "127.0.0.1" are not the same
-                profile.address == host && profile.port == port
+                profile.address == debugEngine.host && profile.port == debugEngine.port
             }
             else false
         }

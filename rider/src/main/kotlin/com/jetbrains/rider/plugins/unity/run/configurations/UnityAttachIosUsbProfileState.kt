@@ -8,19 +8,20 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityIosUsbStartInfo
+import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import kotlin.io.path.isDirectory
 
 /**
  * [RunProfileState] to attach to an iOS device via USB
  */
-class UnityAttachIosUsbProfileState(private val project: Project, private val remoteConfiguration: RemoteConfiguration,
+class UnityAttachIosUsbProfileState(private val project: Project,
+                                    debugEngine: UnityDebugEngine,
                                     executionEnvironment: ExecutionEnvironment, targetName: String,
                                     private val deviceId: String)
-    : UnityAttachProfileState(remoteConfiguration, executionEnvironment, targetName, false) {
+    : UnityAttachProfileState(debugEngine, executionEnvironment, targetName, false) {
 
-    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
+    override suspend fun createMonoModelStartInfo(lifetime: Lifetime, monoDebugEngine: UnityDebugEngine.Mono): DebuggerStartInfoBase {
         val iosSupportPath =
             UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("iOSSupport")
 
@@ -32,8 +33,8 @@ class UnityAttachIosUsbProfileState(private val project: Project, private val re
 
         return UnityIosUsbStartInfo(iosSupportPath.toString(),
             deviceId,
-            remoteConfiguration.address,
-            remoteConfiguration.port,
+            monoDebugEngine.host,
+            monoDebugEngine.port,
             false,
             getUnityBundlesList(),
             getUnityPackagesList(project))

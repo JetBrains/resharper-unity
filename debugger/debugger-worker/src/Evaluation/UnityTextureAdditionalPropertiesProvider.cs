@@ -4,7 +4,6 @@ using System.Linq;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Plugins.Unity.Resources;
 using JetBrains.Lifetimes;
-using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.DebuggerWorker;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
@@ -38,7 +37,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             myKnownTypes = knownTypes;
             myUnityOptions = unityOptions;
 
-            if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
+            if (creationInfo.StartInfo is UnityStartInfoBase unityStartInfo)
             {
                 var unityBundleInfo =
                     unityStartInfo.Bundles.FirstOrDefault(b => b.Id.Equals(UnityTextureDebuggerHelper.AssemblyName));

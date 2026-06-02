@@ -18,6 +18,7 @@ import java.nio.channels.DatagramChannel
 import java.nio.channels.SelectionKey
 import java.nio.channels.Selector
 import java.util.regex.Pattern
+import kotlin.time.Duration.Companion.milliseconds
 
 class UnityPlayerListener {
 
@@ -26,11 +27,14 @@ class UnityPlayerListener {
 
         // E.g.:
         // [IP] 10.211.55.4 [Port] 55376 [Flags] 3 [Guid] 1410689715 [EditorId] 1006284310 [Version] 1048832 [Id] WindowsPlayer(PARALLELS) [Debug] 1 [PackageName] WindowsPlayer [ProjectName] GemShader is awesome
+        // CoreCLR (local) players include an extra [ProcessId] field after [Port]:
+        // [IP] 127.0.2.2 [Port] 55000 [ProcessId] 91204 [Flags] 130 [Guid] 268803901 [EditorId] 1603983298 [Version] 1048832 [Id] OSXPlayer(1,CZ03877.local) [Debug] 1 [PackageName] OSXPlayer [ProjectName] TestRiderPackage
         // As far as I can tell:
         // * [IP] %s - where the process is running. On iPhone (and perhaps other devices) this can be the mobile data
         //             IP, which might be unreachable from this subnet, so be prepared to use the IP address from the
         //             UDP packet instead
         // * [Port] %u - NOT the debugging port. I think this port connects to the player (to e.g. get logs)
+        // * [ProcessId] %u - The player's process ID. This is only present when debugging CoreCLR on a local machine
         // * [Flags] %u - settings for the editor. Don't know what the values are
         // * [Guid] %u - random number. Consistent only for the lifetime of the player. If no debugging port is found as
         //               part of `id`, then the debugging port is `guid % 1000 + 56000` (which belies the part that it's
@@ -47,8 +51,9 @@ class UnityPlayerListener {
         //                      version of Unity, but don't know which
         // * [ProjectName] %s - same as PlayerSettings.productName. Added in Unity 2019.3a6
         @Suppress("RegExpRepeatedSpace")
-        private val unityPlayerDescriptorRegex = Pattern.compile("""\[IP]\s(?<ip>.*)
+        private val unityPlayerDescriptorRegex = Pattern.compile("""\[IP]\s(?<ip>.*?)
 \s\[Port]\s(?<port>\d+)
+(\s\[ProcessId]\s(?<pid>\d+))?
 \s\[Flags]\s(?<flags>\d+)
 \s\[Guid]\s(?<guid>\d+)
 \s\[EditorId]\s(?<editorId>\d+)
@@ -65,7 +70,11 @@ class UnityPlayerListener {
             RequestImmediateConnect(1 shl 0),
             SupportsProfile(1 shl 1),
             CustomMessage(1 shl 2),
-            UseAlternateIP(1 shl 3);
+            UseAlternateIP(1 shl 3),
+            // Unknown(1 shl 4)
+            // Unknown(1 shl 5)
+            // Unknown(1 shl 6)
+            CoreClr(1 shl 7);
 
             fun isSet(value: Int): Boolean = this.value and value != 0
         }
@@ -80,14 +89,14 @@ class UnityPlayerListener {
     private val selector = Selector.open()
 
     private val unityPlayerDescriptorsHeartbeats = mutableMapOf<String, Int>()
-    private val unityProcesses = mutableMapOf<String, UnityProcess>()
+    private val unityProcesses = mutableMapOf<String, UnityDebugTarget>()
 
     private val syncLock = Object()
 
     // Invoked on the UI thread
     fun startListening(lifetime: Lifetime,
-                       onPlayerAdded: (UnityProcess) -> Unit,
-                       onPlayerRemoved: (UnityProcess) -> Unit) {
+                       onPlayerAdded: (UnityDebugTarget) -> Unit,
+                       onPlayerRemoved: (UnityDebugTarget) -> Unit) {
 
         startListeningUdp(lifetime)
 
@@ -98,23 +107,23 @@ class UnityPlayerListener {
     }
 
     // Invoked on a background thread
-    suspend fun getPlayer(project: Project, predicate: (UnityProcess) -> Boolean): UnityProcess? {
+    suspend fun getPlayer(project: Project, predicate: (UnityDebugTarget) -> Boolean): UnityDebugTarget? {
         val lifetime = UnityProjectLifetimeService.getLifetime(project).createNested()
         try {
             startListeningUdp(lifetime)
 
-            val players = mutableListOf<UnityProcess>()
+            val players = mutableListOf<UnityDebugTarget>()
 
             // Give all players the chance to broadcast, and keep going until we find our player, or we time out.
             // We repeat 30 times, with a 100ms delay, so we'll wait 3 second for the player
-            for (i in 1..30) {
+            repeat(30) {
                 refreshUnityPlayersList({ players.add(it) }, { players.remove(it) })
                 val player = players.firstOrNull(predicate)
                 if (player != null) {
                     return player
                 }
 
-                delay(100)
+                delay(100.milliseconds)
             }
 
             return null
@@ -170,11 +179,12 @@ class UnityPlayerListener {
         }
     }
 
-    private fun parseUnityPlayer(unityPlayerDescriptor: String, packetSourceAddress: InetAddress): UnityProcess? {
+    private fun parseUnityPlayer(unityPlayerDescriptor: String, packetSourceAddress: InetAddress): UnityDebugTarget? {
         try {
             val matcher = unityPlayerDescriptorRegex.matcher(unityPlayerDescriptor)
             if (matcher.find()) {
                 val ipInMessage = matcher.group("ip")
+                val pidInMessage = matcher.group("pid")?.toIntOrNull() ?: 0
                 val id = matcher.group("id")
                 val flags = matcher.group("flags").toInt()
                 val allowDebugging = matcher.group("debug").startsWith("1")
@@ -190,17 +200,23 @@ class UnityPlayerListener {
                     else -> packetSourceAddress
                 }
 
-                return if (isLocalAddress(hostAddress)) {
-                    if (id.startsWith(UnityLocalUwpPlayer.TYPE) && packageName != null) {
-                        UnityLocalUwpPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName, packageName)
+                val debugEngine = when {
+                    UnityPlayerConnectionFlags.CoreClr.isSet(flags) -> UnityDebugEngine.CoreClr(pidInMessage)
+                    else -> UnityDebugEngine.Mono(hostAddress.hostAddress, debuggerPort)
+                }
+
+                val result = if (isLocalAddress(hostAddress)) {
+                    if (UnityDebugTargetKind.fromPlayerId(id) == UnityDebugTargetKind.UwpPlayer && packageName != null) {
+                        UnityLocalUwpPlayer(id, allowDebugging, debugEngine, projectName, packageName)
                     }
                     else {
-                        UnityLocalPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName = projectName)
+                        UnityLocalPlayer(id, allowDebugging, debugEngine, projectName)
                     }
                 }
                 else {
-                    UnityRemotePlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName)
+                    UnityRemotePlayer(id, allowDebugging, debugEngine, projectName)
                 }
+                return result
             }
         }
         catch (e: Exception) {
@@ -217,14 +233,14 @@ class UnityPlayerListener {
             // Check if the address is defined on any interface
             NetworkInterface.getByInetAddress(addr) != null
         }
-        catch (e: SocketException) {
+        catch (_: SocketException) {
             false
         }
     }
 
     private fun refreshUnityPlayersList(
-        onPlayerAdded: (UnityProcess) -> Unit,
-        onPlayerRemoved: (UnityProcess) -> Unit
+        onPlayerAdded: (UnityDebugTarget) -> Unit,
+        onPlayerRemoved: (UnityDebugTarget) -> Unit
     ) {
         synchronized(syncLock) {
 
