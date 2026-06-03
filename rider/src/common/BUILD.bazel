@@ -1,27 +1,46 @@
-### auto-generated section `build intellij.rider.plugins.unity.common` start
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
+### auto-generated section `build intellij.rider.plugins.unity.common` start
+
 jvm_library(
-  name = "common",
-  module_name = "intellij.rider.plugins.unity.common",
-  visibility = ["//visibility:public"],
-  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
-  resources = glob(["resources/**/*"]),
-  resource_strip_prefix = "resources"
+    name = "common",
+    srcs = glob(
+        [
+            "src/**/*.kt",
+            "src/**/*.java",
+            "src/**/*.form",
+        ],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.common",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
 )
 
 jvm_library(
-  name = "common_test_lib",
-  testonly = True,
-  module_name = "intellij.rider.plugins.unity.common",
-  visibility = ["//visibility:public"],
-  srcs = glob([], allow_empty = True),
-  runtime_deps = [":common"]
+    name = "common_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.common",
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        # do not sort,
+        ":common",
+    ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.common` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.common` start
-exports_files([
-  "intellij.rider.plugins.unity.common.iml",
-], visibility = ["//visibility:public"])
+exports_files(
+    [
+        "intellij.rider.plugins.unity.common.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
 ### auto-generated section `iml intellij.rider.plugins.unity.common` end

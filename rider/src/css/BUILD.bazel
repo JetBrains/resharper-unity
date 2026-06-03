@@ -1,69 +1,87 @@
-### auto-generated section `build intellij.rider.plugins.unity.css` start
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
+### auto-generated section `build intellij.rider.plugins.unity.css` start
+
 jvm_library(
-  name = "css",
-  module_name = "intellij.rider.plugins.unity.css",
-  visibility = ["//visibility:public"],
-  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
-  resources = glob(["resources/**/*"]),
-  resource_strip_prefix = "resources",
-  deps = [
-    "@community//platform/core-api:core",
-    "@community//libraries/rd/core",
-    "@community//xml/xml-parser:parser",
-    "@community//platform/backend/workspace",
-    "@community//platform/core-impl",
-    "//plugins/css/backend",
-    "//plugins/css/codeinsight/actions",
-    "@community//platform/workspace/storage",
-    "@community//platform/util",
-    "@community//platform/editor-ui-api:editor-ui",
-    "@community//platform/analysis-impl",
-    "//plugins/css/common",
-    "//plugins/css/psi",
-    "@community//platform/analysis-api:analysis",
-    "@community//xml/xml-psi-impl:psi-impl",
-    "//rider",
-    "@community//platform/platform-api:ide",
-    "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
-    "@community//platform/platform-impl:ide-impl",
-  ]
+    name = "css",
+    srcs = glob(
+        [
+            "src/**/*.kt",
+            "src/**/*.java",
+            "src/**/*.form",
+        ],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.css",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort,
+        "@community//platform/core-api:core",
+        "@community//libraries/rd/core",
+        "@community//xml/xml-parser:parser",
+        "@community//platform/backend/workspace",
+        "@community//platform/core-impl",
+        "//plugins/css/backend",
+        "//plugins/css/codeinsight/actions",
+        "@community//platform/workspace/storage",
+        "@community//platform/util",
+        "@community//platform/editor-ui-api:editor-ui",
+        "@community//platform/analysis-impl",
+        "//plugins/css/common",
+        "//plugins/css/psi",
+        "@community//platform/analysis-api:analysis",
+        "@community//xml/xml-psi-impl:psi-impl",
+        "//rider",
+        "@community//platform/platform-api:ide",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
+        "@community//platform/platform-impl:ide-impl",
+    ],
 )
 
 jvm_library(
-  name = "css_test_lib",
-  testonly = True,
-  module_name = "intellij.rider.plugins.unity.css",
-  visibility = ["//visibility:public"],
-  srcs = glob([], allow_empty = True),
-  runtime_deps = [
-    ":css",
-    "@community//platform/core-api:core_test_lib",
-    "@community//libraries/rd/core:core_test_lib",
-    "@community//xml/xml-parser:parser_test_lib",
-    "@community//platform/backend/workspace:workspace_test_lib",
-    "@community//platform/core-impl:core-impl_test_lib",
-    "//plugins/css/backend:backend_test_lib",
-    "//plugins/css/codeinsight/actions:actions_test_lib",
-    "@community//platform/workspace/storage:storage_test_lib",
-    "@community//platform/util:util_test_lib",
-    "@community//platform/editor-ui-api:editor-ui_test_lib",
-    "@community//platform/analysis-impl:analysis-impl_test_lib",
-    "//plugins/css/common:common_test_lib",
-    "//plugins/css/psi:psi_test_lib",
-    "@community//platform/analysis-api:analysis_test_lib",
-    "@community//xml/xml-psi-impl:psi-impl_test_lib",
-    "//rider:rider_test_lib",
-    "@community//platform/platform-api:ide_test_lib",
-    "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
-    "@community//platform/platform-impl:ide-impl_test_lib",
-  ]
+    name = "css_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.css",
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        # do not sort,
+        ":css",
+        "@community//platform/core-api:core_test_lib",
+        "@community//libraries/rd/core:core_test_lib",
+        "@community//xml/xml-parser:parser_test_lib",
+        "@community//platform/backend/workspace:workspace_test_lib",
+        "@community//platform/core-impl:core-impl_test_lib",
+        "//plugins/css/backend:backend_test_lib",
+        "//plugins/css/codeinsight/actions:actions_test_lib",
+        "@community//platform/workspace/storage:storage_test_lib",
+        "@community//platform/util:util_test_lib",
+        "@community//platform/editor-ui-api:editor-ui_test_lib",
+        "@community//platform/analysis-impl:analysis-impl_test_lib",
+        "//plugins/css/common:common_test_lib",
+        "//plugins/css/psi:psi_test_lib",
+        "@community//platform/analysis-api:analysis_test_lib",
+        "@community//xml/xml-psi-impl:psi-impl_test_lib",
+        "//rider:rider_test_lib",
+        "@community//platform/platform-api:ide_test_lib",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
+        "@community//platform/platform-impl:ide-impl_test_lib",
+    ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.css` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.css` start
-exports_files([
-  "intellij.rider.plugins.unity.css.iml",
-], visibility = ["//visibility:public"])
+exports_files(
+    [
+        "intellij.rider.plugins.unity.css.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
 ### auto-generated section `iml intellij.rider.plugins.unity.css` end

@@ -1,44 +1,62 @@
-### auto-generated section `build intellij.rider.plugins.unity.javascript` start
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
+### auto-generated section `build intellij.rider.plugins.unity.javascript` start
+
 jvm_library(
-  name = "javascript",
-  module_name = "intellij.rider.plugins.unity.javascript",
-  visibility = ["//visibility:public"],
-  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
-  resources = glob(["resources/**/*"]),
-  resource_strip_prefix = "resources",
-  deps = [
-    "@lib//:kotlin-stdlib",
-    "@community//libraries/rd/core",
-    "@community//platform/core-api:core",
-    "@community//platform/util",
-    "//rider/plugins/plugins-appender/javascript",
-    "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
-    "//rider",
-  ]
+    name = "javascript",
+    srcs = glob(
+        [
+            "src/**/*.kt",
+            "src/**/*.java",
+            "src/**/*.form",
+        ],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.javascript",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort,
+        "@lib//:kotlin-stdlib",
+        "@community//libraries/rd/core",
+        "@community//platform/core-api:core",
+        "@community//platform/util",
+        "//rider/plugins/plugins-appender/javascript",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
+        "//rider",
+    ],
 )
 
 jvm_library(
-  name = "javascript_test_lib",
-  testonly = True,
-  module_name = "intellij.rider.plugins.unity.javascript",
-  visibility = ["//visibility:public"],
-  srcs = glob([], allow_empty = True),
-  runtime_deps = [
-    ":javascript",
-    "@community//libraries/rd/core:core_test_lib",
-    "@community//platform/core-api:core_test_lib",
-    "@community//platform/util:util_test_lib",
-    "//rider/plugins/plugins-appender/javascript:javascript_test_lib",
-    "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
-    "//rider:rider_test_lib",
-  ]
+    name = "javascript_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.javascript",
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        # do not sort,
+        ":javascript",
+        "@community//libraries/rd/core:core_test_lib",
+        "@community//platform/core-api:core_test_lib",
+        "@community//platform/util:util_test_lib",
+        "//rider/plugins/plugins-appender/javascript:javascript_test_lib",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
+        "//rider:rider_test_lib",
+    ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.javascript` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.javascript` start
-exports_files([
-  "intellij.rider.plugins.unity.javascript.iml",
-], visibility = ["//visibility:public"])
+exports_files(
+    [
+        "intellij.rider.plugins.unity.javascript.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
 ### auto-generated section `iml intellij.rider.plugins.unity.javascript` end

@@ -1,69 +1,87 @@
-### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` start
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
+### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` start
+
 jvm_library(
-  name = "backend",
-  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
-  visibility = ["//visibility:public"],
-  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
-  resources = glob(["resources/**/*"]),
-  resource_strip_prefix = "resources",
-  deps = [
-    "@community//platform/kernel/rpc.backend",
-    "@community//platform/kernel/shared:kernel",
-    "@community//platform/platform-impl:ide-impl",
-    "@community//platform/core-api:core",
-    "@community//platform/xdebugger-api:debugger",
-    "@community//platform/xdebugger-impl:debugger-impl",
-    "@community//platform/xdebugger-impl/shared",
-    "@community//platform/xdebugger-impl/rpc",
-    "@community//platform/util/coroutines",
-    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common",
-    "//rider/model/generated",
-    "//rider",
-    "//remote-dev/rd-client",
-    "//rider/rdclient-dotnet",
-    "//remote-dev/rd-ide-model-generated",
-    "@community//libraries/rd/framework",
-    "@community//libraries/rd/core",
-    "//dotnet/Plugins:rider-plugins-unity-model",
-    "@community//fleet/rhizomedb",
-  ]
+    name = "backend",
+    srcs = glob(
+        [
+            "src/**/*.kt",
+            "src/**/*.java",
+            "src/**/*.form",
+        ],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort,
+        "@community//platform/kernel/rpc.backend",
+        "@community//platform/kernel/shared:kernel",
+        "@community//platform/platform-impl:ide-impl",
+        "@community//platform/core-api:core",
+        "@community//platform/xdebugger-api:debugger",
+        "@community//platform/xdebugger-impl:debugger-impl",
+        "@community//platform/xdebugger-impl/shared",
+        "@community//platform/xdebugger-impl/rpc",
+        "@community//platform/util/coroutines",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common",
+        "//rider/model/generated",
+        "//rider",
+        "//remote-dev/rd-client",
+        "//rider/rdclient-dotnet",
+        "//remote-dev/rd-ide-model-generated",
+        "@community//libraries/rd/framework",
+        "@community//libraries/rd/core",
+        "//dotnet/Plugins:rider-plugins-unity-model",
+        "@community//fleet/rhizomedb",
+    ],
 )
 
 jvm_library(
-  name = "backend_test_lib",
-  testonly = True,
-  module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
-  visibility = ["//visibility:public"],
-  srcs = glob([], allow_empty = True),
-  runtime_deps = [
-    ":backend",
-    "@community//platform/kernel/rpc.backend:rpc.backend_test_lib",
-    "@community//platform/kernel/shared:kernel_test_lib",
-    "@community//platform/platform-impl:ide-impl_test_lib",
-    "@community//platform/core-api:core_test_lib",
-    "@community//platform/xdebugger-api:debugger_test_lib",
-    "@community//platform/xdebugger-impl:debugger-impl_test_lib",
-    "@community//platform/xdebugger-impl/shared:shared_test_lib",
-    "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
-    "@community//platform/util/coroutines:coroutines_test_lib",
-    "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common:common_test_lib",
-    "//rider/model/generated:generated_test_lib",
-    "//rider:rider_test_lib",
-    "//remote-dev/rd-client:rd-client_test_lib",
-    "//rider/rdclient-dotnet:rdclient-dotnet_test_lib",
-    "//remote-dev/rd-ide-model-generated:rd-ide-model-generated_test_lib",
-    "@community//libraries/rd/framework:framework_test_lib",
-    "@community//libraries/rd/core:core_test_lib",
-    "//dotnet/Plugins:rider-plugins-unity-model_test_lib",
-    "@community//fleet/rhizomedb:rhizomedb_test_lib",
-  ]
+    name = "backend_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        # do not sort,
+        ":backend",
+        "@community//platform/kernel/rpc.backend:rpc.backend_test_lib",
+        "@community//platform/kernel/shared:kernel_test_lib",
+        "@community//platform/platform-impl:ide-impl_test_lib",
+        "@community//platform/core-api:core_test_lib",
+        "@community//platform/xdebugger-api:debugger_test_lib",
+        "@community//platform/xdebugger-impl:debugger-impl_test_lib",
+        "@community//platform/xdebugger-impl/shared:shared_test_lib",
+        "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
+        "@community//platform/util/coroutines:coroutines_test_lib",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common:common_test_lib",
+        "//rider/model/generated:generated_test_lib",
+        "//rider:rider_test_lib",
+        "//remote-dev/rd-client:rd-client_test_lib",
+        "//rider/rdclient-dotnet:rdclient-dotnet_test_lib",
+        "//remote-dev/rd-ide-model-generated:rd-ide-model-generated_test_lib",
+        "@community//libraries/rd/framework:framework_test_lib",
+        "@community//libraries/rd/core:core_test_lib",
+        "//dotnet/Plugins:rider-plugins-unity-model_test_lib",
+        "@community//fleet/rhizomedb:rhizomedb_test_lib",
+    ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.debugger.textureVisualizer.backend` start
-exports_files([
-  "intellij.rider.plugins.unity.debugger.textureVisualizer.backend.iml",
-], visibility = ["//visibility:public"])
+exports_files(
+    [
+        "intellij.rider.plugins.unity.debugger.textureVisualizer.backend.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
 ### auto-generated section `iml intellij.rider.plugins.unity.debugger.textureVisualizer.backend` end

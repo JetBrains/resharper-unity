@@ -1,27 +1,46 @@
-### auto-generated section `build intellij.rider.plugins.unity.frontend` start
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
+### auto-generated section `build intellij.rider.plugins.unity.frontend` start
+
 jvm_library(
-  name = "frontend",
-  module_name = "intellij.rider.plugins.unity.frontend",
-  visibility = ["//visibility:public"],
-  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
-  resources = glob(["resources/**/*"]),
-  resource_strip_prefix = "resources"
+    name = "frontend",
+    srcs = glob(
+        [
+            "src/**/*.kt",
+            "src/**/*.java",
+            "src/**/*.form",
+        ],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.frontend",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
 )
 
 jvm_library(
-  name = "frontend_test_lib",
-  testonly = True,
-  module_name = "intellij.rider.plugins.unity.frontend",
-  visibility = ["//visibility:public"],
-  srcs = glob([], allow_empty = True),
-  runtime_deps = [":frontend"]
+    name = "frontend_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.frontend",
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        # do not sort,
+        ":frontend",
+    ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.frontend` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.frontend` start
-exports_files([
-  "intellij.rider.plugins.unity.frontend.iml",
-], visibility = ["//visibility:public"])
+exports_files(
+    [
+        "intellij.rider.plugins.unity.frontend.iml",
+    ],
+    visibility = ["//visibility:public"],
+)
 ### auto-generated section `iml intellij.rider.plugins.unity.frontend` end
