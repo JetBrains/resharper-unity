@@ -65,6 +65,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
     }
 
     override fun isInitiallyVisible() = project.isUnityProject.value
+    override fun supportsStartStopIndexToggle() = false
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
