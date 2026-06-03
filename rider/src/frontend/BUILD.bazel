@@ -29,10 +29,7 @@ jvm_library(
     ),
     module_name = "intellij.rider.plugins.unity.frontend",
     visibility = ["//visibility:public"],
-    runtime_deps = [
-        # do not sort,
-        ":frontend",
-    ],
+    runtime_deps = [":frontend"],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.frontend` end
 

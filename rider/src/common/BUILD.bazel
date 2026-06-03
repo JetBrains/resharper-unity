@@ -29,10 +29,7 @@ jvm_library(
     ),
     module_name = "intellij.rider.plugins.unity.common",
     visibility = ["//visibility:public"],
-    runtime_deps = [
-        # do not sort,
-        ":common",
-    ],
+    runtime_deps = [":common"],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.common` end
 
