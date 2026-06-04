@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Collections;
@@ -161,6 +162,7 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
 
       var threadIndex = ResolveThreadIndex(firstFrame, request.ThreadName);
 
+      var sw = Stopwatch.StartNew();
       var frameDurations = new List<(int frameId, double durationMs)>();
       var endFrame = Math.Min(lastFrame, firstFrame + request.Limit - 1);
 
@@ -182,11 +184,23 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         .Take(request.SnapshotLimit)
         .ToList();
 
+      var scanMs = sw.ElapsedMilliseconds;
+      ourLogger.Verbose(
+        $"GetBatchAnalyze: scanned {endFrame - firstFrame + 1} frame(s) in {scanMs}ms, " +
+        $"{framesAnalyzed} passed threshold, selected {targetFrames.Count} for snapshot");
+
       var aggregation = new Dictionary<string, Aggregator>();
       var nameCache = new Dictionary<int, string>();
       var snapshotsFetched = 0;
       double totalDurationMs = 0;
       long totalAllocBytes = 0;
+
+      // Reused across frames: grown to the largest frame seen, so per-frame analysis does not
+      // re-allocate these buffers (they reach the LOH on deep-profiling captures).
+      var markerIds = Array.Empty<int>();
+      var durations = Array.Empty<double>();
+      var childrenCounts = Array.Empty<int>();
+      var allocs = Array.Empty<long>();
 
       foreach (var (frameId, frameDuration) in targetFrames)
       {
@@ -203,15 +217,21 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         var count = sampleCount - 1;
         if (count <= 0) continue;
 
-        // First pass: read all sample data
-        var markerIds = new int[count];
-        var durations = new double[count];
-        var childrenCounts = new int[count];
-        var allocs = new long[count];
+        // First pass: read all sample data (reuse buffers; only grow when a frame is larger)
+        if (markerIds.Length < count)
+        {
+          markerIds = new int[count];
+          durations = new double[count];
+          childrenCounts = new int[count];
+          allocs = new long[count];
+        }
 
         long frameSelfAlloc = 0;
         for (var s = 0; s < count; s++)
         {
+          // Keep a deep-profiling frame (hundreds of thousands of samples) interruptible.
+          if ((s & 0x1FFF) == 0)
+            lifetime.ThrowIfNotAlive();
           var raw = s + 1;
           markerIds[s] = rawData.GetSampleMarkerId(raw);
           durations[s] = rawData.GetSampleTimeMs(raw);
@@ -248,6 +268,11 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         }
       }
 
+      var aggregateMs = sw.ElapsedMilliseconds - scanMs;
+      ourLogger.Verbose(
+        $"GetBatchAnalyze: aggregated {snapshotsFetched} snapshot(s) into {aggregation.Count} hotspot(s), " +
+        $"{nameCache.Count} unique marker(s), in {aggregateMs}ms");
+
       var sorted = request.SortBy == ProfilerSortingType.memory
         ? aggregation.OrderByDescending(kv => kv.Value.TotalMemoryBytes)
         : aggregation.OrderByDescending(kv => kv.Value.TotalDurationMs);
@@ -277,6 +302,10 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
       }
 
       var top5 = hotspots.Take(5).ToList();
+
+      ourLogger.Verbose(
+        $"GetBatchAnalyze: done in {sw.ElapsedMilliseconds}ms (scan {scanMs}ms + aggregate {aggregateMs}ms), " +
+        $"wrote {hotspots.Count} hotspot(s) to {filePath}");
 
       return new McpBatchAnalyzeResponse(
         filePath, framesAnalyzed, snapshotsFetched,
