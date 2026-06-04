@@ -1,5 +1,6 @@
 package com.jetbrains.rider.unity.test.cases.unityExplorer
 
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
@@ -23,6 +24,7 @@ import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.canExecuteAction
+import com.jetbrains.rider.test.scriptingApi.createDataContextFor
 import com.jetbrains.rider.test.scriptingApi.createDataContextForTree
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
@@ -31,6 +33,7 @@ import com.jetbrains.rider.unity.test.framework.api.addNewFolder2
 import com.jetbrains.rider.unity.test.framework.api.addNewItem2
 import com.jetbrains.rider.unity.test.framework.api.dump
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
+import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
 import com.jetbrains.rider.unity.test.framework.api.withUnityExplorerPane
 import org.testng.Assert
 import org.testng.annotations.Test
@@ -121,21 +124,55 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
         }
     }
 
-    @Test(description = "Start/Stop Index actions are hidden in the Unity Explorer context")
+    @Test(description = "Start/Stop Index actions are hidden in the Unity Explorer but stay available in the Solution Explorer")
     @Issue("RIDER-75848")
     fun testStartStopIndexHiddenInUnityExplorer() {
-        withSolution("SimpleUnityProject", OpenSolutionParams()) {
+        // AssetDatabasePathCompletionProject has a real Packages/ root, so we exercise the reported scenario
+        // (right-click on Packages or its content) alongside the Assets tree.
+        withSolution("AssetDatabasePathCompletionProject", OpenSolutionParams()) {
             prepareProjectView(project)
+            waitForUnityPackagesCache() // so the embedded package resolves to its display name in the tree
+
+            // Start/Stop Index toggle indexing via WorkspaceUserModelUpdater, which doesn't manage the Unity
+            // Explorer's virtual roots. The actions must be hidden for every selection in this pane (RIDER-75848).
             withUnityExplorerPane(project) {
-                val dataContext = createDataContextForTree(
-                    project, UnityExplorer.getInstance(project), arrayOf(arrayOf("Assets"))
+                val unityPane = UnityExplorer.getInstance(project)
+                // Embedded package from Packages/from_pack_folder, shown by its display name from package.json
+                val packageNode = "jetbrains - package with resources from package folder"
+                val selections = listOf(
+                    arrayOf("Assets"),
+                    arrayOf("Assets", "Scenes"),                       // folder under Assets
+                    arrayOf("Assets", "EscapeFromRider.cs"),           // file under Assets
+                    arrayOf("Packages"),                               // Packages root
+                    arrayOf("Packages", packageNode, "package.json"),  // file inside a package
+                    arrayOf("Packages", packageNode, "Runtime"),       // folder inside a package
                 )
-                Assert.assertFalse(canExecuteAction("RiderStartIndexAction", dataContext),
-                                   "RiderStartIndexAction must be hidden in the Unity Explorer")
-                Assert.assertFalse(canExecuteAction("RiderStopIndexAction", dataContext),
-                                   "RiderStopIndexAction must be hidden in the Unity Explorer")
+                for (selection in selections) {
+                    assertIndexActionsHidden(createDataContextForTree(project, unityPane, arrayOf(selection)),
+                                             selection.joinToString("/"))
+                }
+                // Multi-selection spanning both roots would catch a regression that gated only single-file selections.
+                assertIndexActionsHidden(
+                    createDataContextForTree(project, unityPane, arrayOf(arrayOf("Assets"), arrayOf("Packages"))),
+                    "Assets + Packages")
             }
+
+            // Control: the gate is scoped to the Unity Explorer. In the Solution Explorer exactly one of
+            // Start/Stop Index stays available, proving the flag didn't broaden to other panes.
+            val solutionContext =
+                createDataContextFor(project, arrayOf(arrayOf("AssetDatabasePathCompletionProject", "Assembly-CSharp")))
+            Assert.assertTrue(
+                canExecuteAction("RiderStartIndexAction", solutionContext) ||
+                canExecuteAction("RiderStopIndexAction", solutionContext),
+                "Start/Stop Index must remain available in the Solution Explorer")
         }
+    }
+
+    private fun assertIndexActionsHidden(dataContext: DataContext, where: String) {
+        Assert.assertFalse(canExecuteAction("RiderStartIndexAction", dataContext),
+                           "RiderStartIndexAction must be hidden in the Unity Explorer for $where")
+        Assert.assertFalse(canExecuteAction("RiderStopIndexAction", dataContext),
+                           "RiderStopIndexAction must be hidden in the Unity Explorer for $where")
     }
 
     // todo: RIDER-74817 Dump UnityExplorer tooltips in tests
