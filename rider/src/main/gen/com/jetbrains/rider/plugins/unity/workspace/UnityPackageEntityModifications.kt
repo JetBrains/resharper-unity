@@ -8,6 +8,7 @@ import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.platform.workspace.storage.WorkspaceEntityBuilder
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
+import com.jetbrains.rider.plugins.unity.workspace.impl.UnityPackageEntityImpl
 
 @GeneratedCodeApiVersion(3)
 interface UnityPackageEntityBuilder : WorkspaceEntityBuilder<UnityPackageEntity> {
@@ -17,6 +18,7 @@ interface UnityPackageEntityBuilder : WorkspaceEntityBuilder<UnityPackageEntity>
 
 internal object UnityPackageEntityType : EntityType<UnityPackageEntity, UnityPackageEntityBuilder>() {
     override val entityClass: Class<UnityPackageEntity> get() = UnityPackageEntity::class.java
+    override val entityImplBuilderClass: Class<*> get() = UnityPackageEntityImpl.Builder::class.java
     operator fun invoke(
         descriptor: UnityPackage,
         entitySource: EntitySource,
