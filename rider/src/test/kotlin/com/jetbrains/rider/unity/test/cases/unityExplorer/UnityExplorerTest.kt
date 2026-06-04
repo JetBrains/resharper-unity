@@ -28,6 +28,7 @@ import com.jetbrains.rider.test.scriptingApi.createDataContextFor
 import com.jetbrains.rider.test.scriptingApi.createDataContextForTree
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
+import com.jetbrains.rider.test.scriptingApi.updateAction
 import com.jetbrains.rider.test.scriptingApi.withSolution
 import com.jetbrains.rider.unity.test.framework.api.addNewFolder2
 import com.jetbrains.rider.unity.test.framework.api.addNewItem2
@@ -157,10 +158,11 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
                     "Assets + Packages")
             }
 
-            // Control: the gate is scoped to the Unity Explorer. In the Solution Explorer exactly one of
-            // Start/Stop Index stays available, proving the flag didn't broaden to other panes.
-            val solutionContext =
-                createDataContextFor(project, arrayOf(arrayOf("AssetDatabasePathCompletionProject", "Assembly-CSharp")))
+            // Control: the same file is hidden in the Unity Explorer (above) but stays available here.
+            // canExecuteAction (sync) is required: updateAction's BGT session drops the tree selection.
+            val solutionContext = createDataContextFor(
+                project,
+                arrayOf("AssetDatabasePathCompletionProject", "Assembly-CSharp", "Assets", "EscapeFromRider.cs"))
             Assert.assertTrue(
                 canExecuteAction("RiderStartIndexAction", solutionContext) ||
                 canExecuteAction("RiderStopIndexAction", solutionContext),
@@ -169,9 +171,10 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
     }
 
     private fun assertIndexActionsHidden(dataContext: DataContext, where: String) {
-        Assert.assertFalse(canExecuteAction("RiderStartIndexAction", dataContext),
+        // updateAction = BGT-correct update session; assert isVisible, the property the fix drives.
+        Assert.assertFalse(updateAction("RiderStartIndexAction", dataContext).isVisible,
                            "RiderStartIndexAction must be hidden in the Unity Explorer for $where")
-        Assert.assertFalse(canExecuteAction("RiderStopIndexAction", dataContext),
+        Assert.assertFalse(updateAction("RiderStopIndexAction", dataContext).isVisible,
                            "RiderStopIndexAction must be hidden in the Unity Explorer for $where")
     }
 
