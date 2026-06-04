@@ -19,5 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
             : base(Name, Strings.UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml, UnityFileExtensions.YamlDataFileExtensionsWithDot)
         {
         }
+
+        // Unity YAML is parsed into PSI (UnityYamlLanguage), so PSI caches must NOT skip it.
+        public override bool IsParsedIntoPsi => true;
     }
 }
