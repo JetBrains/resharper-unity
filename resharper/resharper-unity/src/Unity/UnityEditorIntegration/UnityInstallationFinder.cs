@@ -74,10 +74,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         }
 
         [NotNull]
-        public static VirtualFileSystemPath GetApplicationContentsPath(VirtualFileSystemPath applicationPath)
+        public static VirtualFileSystemPath GetApplicationContentsPath([CanBeNull] VirtualFileSystemPath applicationPath)
         {
             if (applicationPath.IsNullOrEmpty())
-                return applicationPath;
+                return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
 
             AssertApplicationPath(applicationPath);
 

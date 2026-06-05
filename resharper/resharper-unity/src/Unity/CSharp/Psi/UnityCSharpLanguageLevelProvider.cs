@@ -11,6 +11,7 @@ using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ProjectModel.Propoerties;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Runtime;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -164,7 +165,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                     if (!roslynDir.ExistsDirectory)
                     {
                         var version = unityProjectFileCacheProvider.GetUnityVersion(project);
-                        if (version?.Major >= 6000)
+                        if (version?.Major >= 6000 && !UnityBundledSdkLocator.HasBundledSdkWithMsBuild(contentPath))
                             ourLogger.Error($"DotNetSdkRoslyn not found at known locations for Unity 6+. Contents path: {contentPath}");    
                     }
 
@@ -190,7 +191,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                     }
                 }
                 
-                if (project.IsDotNetCoreProject()) // avoid affecting Unity 7+, see RIDER-124621 
+                // Unity with bundled sdk does not need extra rules, because UnityBundledDotnetSelector would select proper SDK
+                // todo: We may want to check if bundled skd is actually used, but I am not sure how to act, if it is not.
+                if (UnityBundledSdkLocator.HasBundledSdkWithMsBuild(contentPath)) 
                     return (null, null, null);
                 
                 return DetermineCSharpLanguageLevelOldUnity(project, unityProjectFileCacheProvider);
