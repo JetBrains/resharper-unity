@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using JetBrains.Rider.PathLocator;
 using Xunit;
 
 namespace JetBrains.Rider.Unity.Editor.Tests
@@ -6,7 +7,7 @@ namespace JetBrains.Rider.Unity.Editor.Tests
   public class RiderPluginTest
   {
     private static readonly FileInfo ourRiderPathForTests = new FileInfo(Path.Combine(Path.GetTempPath(), "Rider.exe"));
-    private static readonly RiderPathProvider ourRiderPathProvider = new RiderPathProvider();
+    private static readonly RiderPathProvider ourRiderPathProvider = new RiderPathProvider(new RiderPathLocator(new RiderLocatorEnvironmentInTest()));
 
     public RiderPluginTest()
     {

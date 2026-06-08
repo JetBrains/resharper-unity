@@ -10,37 +10,33 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
   [SuppressMessage("ReSharper", "InconsistentNaming")]
   internal class FindUsagesWindow : EditorWindow
   {
-    [SerializeField]
-    public FindUsagesWindowTreeState myTreeViewState;
+    // [SerializeField] preserves state across layout/dock changes; SessionState is the domain-reload fallback.
+    [SerializeField] private FindUsagesWindowTreeState myTreeViewState;
+    [SerializeField] private bool IsDirty;
+    [SerializeField] private string Target;
+    [NonSerialized] private FindUsagesTreeView myTreeView;
+    [NonSerialized] private FindUsagesSessionResult mySavedResult;
 
-    [SerializeField]
-    public bool IsDirty;
-
-    [SerializeField]
-    public string Target;
-
-    [NonSerialized]
-    private FindUsagesTreeView myTreeView;
-
-    public static FindUsagesWindow GetWindow(string target)
+    public static void ShowResults(FindUsagesSessionResult result)
     {
       var window = GetWindow();
-      window.Target = target;
-      return window;
+      window.SetDataToEditor(result);
     }
 
     [MenuItem("Window/Rider/Usages")]
     public static FindUsagesWindow GetWindow()
     {
       var window = GetWindow<FindUsagesWindow>();
-      window.titleContent = new GUIContent ("Usages Window");
+      window.titleContent = new GUIContent("Usages Window");
       return window;
     }
 
-    public void SetDataToEditor(AssetFindUsagesResultBase[] data)
+    private void SetDataToEditor(FindUsagesSessionResult result)
     {
+      mySavedResult = result;
       IsDirty = false;
-      myTreeViewState = new FindUsagesWindowTreeState(data);
+      Target = result.Target;
+      myTreeViewState = new FindUsagesWindowTreeState(result.Elements);
       myTreeView = new FindUsagesTreeView(myTreeViewState);
       myTreeView.Reload();
       myTreeView.ExpandAll();
@@ -49,12 +45,43 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
 
     void OnEnable()
     {
-      if (myTreeViewState == null)
+      if (myTreeViewState != null)
       {
-        myTreeViewState = new FindUsagesWindowTreeState();
+        myTreeView = new FindUsagesTreeView(myTreeViewState);
+        return;
       }
 
+      if (FindUsagesSessionState.TryLoad(out var result))
+      {
+        SetDataToEditor(result);
+        IsDirty = true; // restored snapshot may be stale after domain reload
+        return;
+      }
+
+      myTreeViewState = new FindUsagesWindowTreeState();
       myTreeView = new FindUsagesTreeView(myTreeViewState);
+    }
+
+    // Called once per domain from PluginEntryPoint, not from OnEnable/OnDisable (unreliable here).
+    internal static void SaveOpenWindowStateBeforeReload()
+    {
+      foreach (var window in Resources.FindObjectsOfTypeAll<FindUsagesWindow>())
+        window.SaveStateBeforeReload();
+    }
+
+    private void SaveStateBeforeReload()
+    {
+      if (mySavedResult == null)
+        return;
+
+      FindUsagesSessionState.Save(mySavedResult);
+      Close();
+    }
+
+    internal static void RestoreAfterDomainReload()
+    {
+      if (FindUsagesSessionState.HasSavedState())
+        GetWindow();
     }
 
     public void OnInspectorUpdate()
@@ -65,6 +92,7 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
         if (SceneManager.GetSceneAt(i).isDirty)
           IsDirty = true;
       }
+
       Repaint();
     }
 
@@ -82,8 +110,8 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
       if (Target != null)
       {
         var text = $"Usages of '{Target}'";
-        var textHeight= GUILayoutUtility.GetRect(new GUIContent(text), EditorStyles.label).height * 1.2f;
-        GUI.Box(new Rect(0, currentY, position.width, textHeight),  text);
+        var textHeight = GUILayoutUtility.GetRect(new GUIContent(text), EditorStyles.label).height * 1.2f;
+        GUI.Box(new Rect(0, currentY, position.width, textHeight), text);
         currentY += textHeight;
       }
 

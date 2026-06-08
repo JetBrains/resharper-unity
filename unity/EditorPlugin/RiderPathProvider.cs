@@ -13,6 +13,19 @@ namespace JetBrains.Rider.Unity.Editor
       RiderPathLocator = new RiderPathLocator(new RiderLocatorEnvironment());
     }
 
+    private readonly RiderPathLocator myRiderPathLocator;
+
+    public RiderPathProvider() : this(RiderPathLocator)
+    {
+    }
+
+    // Allows tests to inject a locator backed by a non-Unity environment, since the production
+    // RiderLocatorEnvironment.CurrentOS calls UnityEngine.SystemInfo, unavailable outside the editor.
+    internal RiderPathProvider(RiderPathLocator riderPathLocator)
+    {
+      myRiderPathLocator = riderPathLocator;
+    }
+
     /// <summary>
     /// If external editor is Rider and exists, it would be returned
     /// Otherwise, first of allFoundPaths would be returned
@@ -24,13 +37,13 @@ namespace JetBrains.Rider.Unity.Editor
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
-        if (RiderPathExist(alreadySetPath, RiderPathLocator.RiderLocatorEnvironment.CurrentOS))
+        if (RiderPathExist(alreadySetPath, myRiderPathLocator.RiderLocatorEnvironment.CurrentOS))
         {
           return alreadySetPath;
         }
       }
 
-      var paths = RiderPathLocator.GetAllRiderPaths();
+      var paths = myRiderPathLocator.GetAllRiderPaths();
       return paths.Select(a=>a.Path).FirstOrDefault();
     }
 
@@ -49,7 +62,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
-        if (RiderPathExist(alreadySetPath, RiderPathLocator.RiderLocatorEnvironment.CurrentOS))
+        if (RiderPathExist(alreadySetPath, myRiderPathLocator.RiderLocatorEnvironment.CurrentOS))
         {
           if (!allFoundPaths.Any() || allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
           {

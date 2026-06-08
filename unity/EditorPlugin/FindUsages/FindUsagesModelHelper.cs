@@ -69,8 +69,7 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages
           GUI.BringWindowToFront(EditorWindow
             .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).GetInstanceID());
 #endif
-          var window = FindUsagesWindow.GetWindow(result.Target);
-          window.SetDataToEditor(result.Elements);
+          FindUsagesWindow.ShowResults(result);
         }
       });
 

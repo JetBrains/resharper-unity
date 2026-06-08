@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Tests</AssemblyName>
     <RootNamespace>JetBrains.Rider.Unity.Editor.Tests</RootNamespace>
     <DebugType>full</DebugType>
@@ -9,6 +9,7 @@
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,10 +23,10 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="xunit" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildProjectDirectory)\..\EditorPlugin\ILRepack.targets" />
 </Project>

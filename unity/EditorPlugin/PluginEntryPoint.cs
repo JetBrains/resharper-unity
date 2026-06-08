@@ -9,9 +9,11 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
+using JetBrains.Rider.Unity.Editor.FindUsages.Window;
 using JetBrains.Rider.Unity.Editor.Profiler;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
+using UnityEditor;
 using UnityEditor.Build.Reporting;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -86,6 +88,11 @@ namespace JetBrains.Rider.Unity.Editor
 
       ProfilerWindowEventsHandler.Initialize(AppDomainLifetime);
       ReportInitialisationDone();
+
+      // Window OnEnable/OnDisable are unreliable for this plugin, so handle domain-reload save/restore here.
+      AssemblyReloadEvents.beforeAssemblyReload += FindUsagesWindow.SaveOpenWindowStateBeforeReload;
+      AppDomainLifetime.OnTermination(() => AssemblyReloadEvents.beforeAssemblyReload -= FindUsagesWindow.SaveOpenWindowStateBeforeReload);
+      MainThreadDispatcher.Instance.Queue(FindUsagesWindow.RestoreAfterDomainReload);
 
       ourInitialised = true;
     }
