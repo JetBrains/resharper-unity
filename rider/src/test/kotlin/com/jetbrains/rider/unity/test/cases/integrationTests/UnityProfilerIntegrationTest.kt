@@ -1,7 +1,6 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.ProfilerSnapshotRequest
@@ -21,6 +20,7 @@ import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.unity.test.framework.api.frontendBackendModel
 import com.jetbrains.rider.unity.test.framework.api.getProfilerToolWindow
+import com.jetbrains.rider.unity.test.framework.api.navigateAndAwaitCaret
 import com.jetbrains.rider.unity.test.framework.api.navigateFromGutterMarkToToolWindow
 import com.jetbrains.rider.unity.test.framework.api.runProfilerAutomation
 import com.jetbrains.rider.unity.test.framework.api.setUpProfilerDefaults
@@ -79,22 +79,13 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         assertTrue(fem.openFiles.none { it.name == "UnoptimizedMonoBehaviour.cs" },
             "UnoptimizedMonoBehaviour.cs should NOT be open before profiler automation")
 
-        // runProfilerAutomation() fires navigateByQualifiedName("UnoptimizedMonoBehaviour.Update")
-        // which should open the file and navigate to the Update method.
+        // runProfilerAutomation() reliably opens the file by firing navigateByQualifiedName for
+        // "UnoptimizedMonoBehaviour.Update" (retried until open).
         runProfilerAutomation()
-
-        // Wait for snapshot
         waitForProfilerSnapshotTimings()
-        waitAndPump(Duration.ofSeconds(10), {
-            fem.openFiles.any { it.name == "UnoptimizedMonoBehaviour.cs" }
-        }) { "UnoptimizedMonoBehaviour.cs should be opened after profiler navigation" }
 
-        // Verify navigation positioned the caret at the correct line (Update() is on line 12)
-        waitAndPump(Duration.ofSeconds(10), {
-            val textEditor = fem.selectedEditor as? TextEditor
-            textEditor?.file?.name == "UnoptimizedMonoBehaviour.cs"
-                && textEditor.editor.caretModel.logicalPosition.line + 1 == 12
-        }) { "Caret should be at line 12 (Update method) in UnoptimizedMonoBehaviour.cs after profiler navigation" }
+        // Verify navigation positioned the caret at the Update() method declaration (line 12).
+        navigateAndAwaitCaret("UnoptimizedMonoBehaviour.Update", null, "UnoptimizedMonoBehaviour.cs", 12)
     }
 
     @Test(description = "Check navigation from Unity profiler to exact Profiler.BeginSample call")
@@ -104,23 +95,9 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         runProfilerAutomation()
         waitForProfilerSnapshotTimings()
 
-        val fem = FileEditorManager.getInstance(project)
-        waitAndPump(Duration.ofSeconds(10), {
-            fem.openFiles.any { it.name == "UnoptimizedMonoBehaviour.cs" }
-        }) { "UnoptimizedMonoBehaviour.cs should be opened after profiler automation" }
-
-        // Navigate to a specific BeginSample marker within Update()
-        val profilerModel = frontendBackendModel.frontendBackendProfilerModel
-        profilerModel.navigateByQualifiedName.fire(
-            ProfilerNavigationRequest("UnoptimizedMonoBehaviour.Update", "MemoryAndSearch")
-        )
-
-        // Profiler.BeginSample("MemoryAndSearch") is on line 21, far from Update() on line 12
-        waitAndPump(Duration.ofSeconds(10), {
-            val textEditor = fem.selectedEditor as? TextEditor
-            textEditor?.file?.name == "UnoptimizedMonoBehaviour.cs"
-                && textEditor.editor.caretModel.logicalPosition.line + 1 == 21
-        }) { "Caret should be at line 21 (Profiler.BeginSample(\"MemoryAndSearch\")) in UnoptimizedMonoBehaviour.cs" }
+        // Navigate to a specific BeginSample marker within Update(); Profiler.BeginSample("MemoryAndSearch")
+        // is on line 21, far from Update() on line 12.
+        navigateAndAwaitCaret("UnoptimizedMonoBehaviour.Update", "MemoryAndSearch", "UnoptimizedMonoBehaviour.cs", 21)
     }
 
     @Test(description = "Check navigation falls back to method when BeginSample marker not found")
@@ -129,23 +106,9 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         runProfilerAutomation()
         waitForProfilerSnapshotTimings()
 
-        val fem = FileEditorManager.getInstance(project)
-        waitAndPump(Duration.ofSeconds(10), {
-            fem.openFiles.any { it.name == "UnoptimizedMonoBehaviour.cs" }
-        }) { "UnoptimizedMonoBehaviour.cs should be opened after profiler automation" }
-
-        // Navigate with a marker name that does not exist in Update()
-        val profilerModel = frontendBackendModel.frontendBackendProfilerModel
-        profilerModel.navigateByQualifiedName.fire(
-            ProfilerNavigationRequest("UnoptimizedMonoBehaviour.Update", "NonExistentMarker")
-        )
-
-        // Should fall back to the Update() method declaration at line 12
-        waitAndPump(Duration.ofSeconds(10), {
-            val textEditor = fem.selectedEditor as? TextEditor
-            textEditor?.file?.name == "UnoptimizedMonoBehaviour.cs"
-                && textEditor.editor.caretModel.logicalPosition.line + 1 == 12
-        }) { "Caret should fall back to line 12 (Update method) when BeginSample marker not found" }
+        // Navigate with a marker name that does not exist in Update(); navigation should fall back to the
+        // Update() method declaration at line 12.
+        navigateAndAwaitCaret("UnoptimizedMonoBehaviour.Update", "NonExistentMarker", "UnoptimizedMonoBehaviour.cs", 12)
     }
 
     @Test(description = "Check navigation to first BeginSample when label is duplicated")
@@ -154,23 +117,9 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         runProfilerAutomation()
         waitForProfilerSnapshotTimings()
 
-        val fem = FileEditorManager.getInstance(project)
-        waitAndPump(Duration.ofSeconds(10), {
-            fem.openFiles.any { it.name == "UnoptimizedMonoBehaviour.cs" }
-        }) { "UnoptimizedMonoBehaviour.cs should be opened after profiler automation" }
-
         // "StringOps" appears twice in Update(): first on line 14, duplicate on line 37.
         // Navigation must land on the first occurrence.
-        val profilerModel = frontendBackendModel.frontendBackendProfilerModel
-        profilerModel.navigateByQualifiedName.fire(
-            ProfilerNavigationRequest("UnoptimizedMonoBehaviour.Update", "StringOps")
-        )
-
-        waitAndPump(Duration.ofSeconds(10), {
-            val textEditor = fem.selectedEditor as? TextEditor
-            textEditor?.file?.name == "UnoptimizedMonoBehaviour.cs"
-                && textEditor.editor.caretModel.logicalPosition.line + 1 == 14
-        }) { "Caret should be at line 14 (first Profiler.BeginSample(\"StringOps\")) not the duplicate at line 37" }
+        navigateAndAwaitCaret("UnoptimizedMonoBehaviour.Update", "StringOps", "UnoptimizedMonoBehaviour.cs", 14)
     }
 
     @Test(description = "Check navigationWarning fires when target is unresolvable")

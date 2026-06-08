@@ -8,7 +8,10 @@ import com.intellij.openapi.wm.ToolWindowEP
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.toolWindow.ToolWindowHeadlessManagerImpl
 import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rdclient.client.frontendProjectSession
 import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.inTests.TestHost
+import com.jetbrains.rider.plugins.unity.model.ProfilerSnapshotRequest
 import com.jetbrains.rider.plugins.unity.model.RunMethodData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FetchingMode
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ProfilerNavigationRequest
@@ -19,6 +22,10 @@ import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.scriptingApi.markupAdapter
 import com.jetbrains.rider.test.framework.frameworkLogger
 import java.time.Duration
+import kotlin.math.max
+
+private const val PROFILED_FILE_NAME = "UnoptimizedMonoBehaviour.cs"
+private const val PROFILED_METHOD_QUALIFIED_NAME = "UnoptimizedMonoBehaviour.Update"
 
 fun SolutionApiFacade.runProfilerAutomation() {
     frameworkLogger.info("Executing ProfilerAutomation.RunProfilerTestFromCommandLine in Unity")
@@ -27,13 +34,121 @@ fun SolutionApiFacade.runProfilerAutomation() {
         "ProfilerAutomation",
         "RunProfilerTestFromCommandLine"
     ))
-    // Simulate the user double-clicking "UnoptimizedMonoBehaviour.Update" in the Unity Profiler
-    // window, which fires navigateByQualifiedName and opens the file in Rider.
-    // This triggers UnityProfilerLineMarkerModelSupport.createHandler(), initializing
-    // UnityProfilerUsagesDaemon with null state (data not yet arrived). When profiler data arrives
-    // ~10 seconds later, mainThreadTimingsAndThreads.advise fires ONE clean snapshot request.
-    frameworkLogger.info("Simulating navigation from Unity Profiler to source (opens UnoptimizedMonoBehaviour.cs)")
-    frontendBackendModel.frontendBackendProfilerModel.navigateByQualifiedName.fire(ProfilerNavigationRequest("UnoptimizedMonoBehaviour.Update", null))
+
+    // executeMethod is synchronous: the profiler run in Unity is finished, but the C# symbol cache the
+    // backend navigation relies on (ProfilerNavigationUtils → StackTraceParser) may still be warming up
+    // after the ReSharper build. Wait for backend analysis to settle so navigateByQualifiedName can
+    // resolve "UnoptimizedMonoBehaviour.Update" on the first fire instead of silently emitting a
+    // navigation warning.
+    waitForBackendAnalysisFinished()
+
+    // Simulate the user double-clicking "UnoptimizedMonoBehaviour.Update" in the Unity Profiler window
+    // (fires navigateByQualifiedName, opening the file in Rider). Opening the file BEFORE the profiler
+    // snapshot data arrives is what lets UnityProfilerDaemon attach gutter marks: when the snapshot is
+    // processed the backend calls InvalidateDaemon(), which only re-runs analysis on already-open files.
+    // A single fire can be dropped if it races the symbol cache, so retry until the file is open.
+    openProfiledFileViaNavigation()
+}
+
+/**
+ * Blocks until backend code analysis is idle, ensuring the C# symbol cache used by profiler navigation
+ * is warm. Mirrors the readiness pattern used elsewhere in the Unity tests (e.g. ProjectSettingsCompletionTest).
+ */
+fun SolutionApiFacade.waitForBackendAnalysisFinished() {
+    frameworkLogger.info("Waiting for backend analysis to finish (warming symbol cache for profiler navigation)")
+    TestHost.getInstance(project.frontendProjectSession.appSession).backendWaitForCaches("UnityProfilerIntegrationTest")
+}
+
+/**
+ * Re-fires [ProfilerNavigationRequest] until [condition] holds, retrying on per-attempt timeout.
+ *
+ * The backend resolves the qualified name through the C# symbol cache; a single fire issued before the
+ * cache is warm (or before the navigated file's daemon is ready) is silently dropped — it returns a
+ * navigation warning instead of navigating. Re-firing makes the navigation-dependent tests robust to
+ * symbol-cache / daemon readiness timing on CI.
+ */
+private fun SolutionApiFacade.fireNavigationUntil(
+    qualifiedName: String,
+    markerName: String?,
+    description: String,
+    totalTimeout: Duration,
+    attemptTimeout: Duration,
+    condition: () -> Boolean,
+) {
+    val profilerModel = frontendBackendModel.frontendBackendProfilerModel
+    val attempts = max(1, (totalTimeout.toMillis() / attemptTimeout.toMillis()).toInt())
+    for (attempt in 1..attempts) {
+        frameworkLogger.info("Profiler navigation attempt $attempt/$attempts: $description")
+        profilerModel.navigateByQualifiedName.fire(ProfilerNavigationRequest(qualifiedName, markerName))
+        try {
+            waitAndPump(attemptTimeout, condition) { "profiler navigation condition not satisfied yet" }
+            frameworkLogger.info("Profiler navigation satisfied on attempt $attempt: $description")
+            return
+        } catch (e: Exception) {
+            frameworkLogger.warn("Profiler navigation attempt $attempt/$attempts did not satisfy [$description], re-firing")
+        }
+    }
+    error("Profiler navigation did not satisfy [$description] after $attempts attempts")
+}
+
+/**
+ * Reliably opens [fileName] by simulating navigation from the Unity Profiler to
+ * "UnoptimizedMonoBehaviour.Update", retrying until the file is open.
+ */
+fun SolutionApiFacade.openProfiledFileViaNavigation(
+    fileName: String = PROFILED_FILE_NAME,
+    totalTimeout: Duration = Duration.ofSeconds(60),
+    attemptTimeout: Duration = Duration.ofSeconds(10),
+) {
+    val fem = FileEditorManager.getInstance(project)
+    fireNavigationUntil(PROFILED_METHOD_QUALIFIED_NAME, null, "open $fileName", totalTimeout, attemptTimeout) {
+        fem.openFiles.any { it.name == fileName }
+    }
+}
+
+/**
+ * Fires a profiler navigation request and waits until [fileName] is the selected editor with the caret on
+ * [expectedLine] (1-based), retrying the fire on each attempt. Use this in navigation tests instead of a
+ * one-shot fire + wait, which is dropped when it races the backend symbol cache.
+ */
+fun SolutionApiFacade.navigateAndAwaitCaret(
+    qualifiedName: String,
+    markerName: String?,
+    fileName: String,
+    expectedLine: Int,
+    totalTimeout: Duration = Duration.ofSeconds(60),
+    attemptTimeout: Duration = Duration.ofSeconds(10),
+) {
+    val fem = FileEditorManager.getInstance(project)
+    fireNavigationUntil(
+        qualifiedName, markerName,
+        "$qualifiedName (marker=$markerName) → $fileName:$expectedLine",
+        totalTimeout, attemptTimeout
+    ) {
+        val textEditor = fem.selectedEditor as? TextEditor
+        textEditor?.file?.name == fileName
+            && textEditor.editor.caretModel.logicalPosition.line + 1 == expectedLine
+    }
+}
+
+/**
+ * Re-fires the profiler snapshot request for the current selection. This drives the backend
+ * ProcessSnapshotAsync → InvalidateDaemon() path, which re-runs [UnityProfilerDaemon] on the open editor
+ * and (re)emits the gutter highlighters. Used to deterministically trigger gutter marks once the file is
+ * open and a snapshot is available, instead of relying on the file happening to be open at the exact
+ * moment the auto-selected snapshot was first processed.
+ */
+fun SolutionApiFacade.refreshProfilerSnapshotForCurrentSelection() {
+    val profilerModel = frontendBackendModel.frontendBackendProfilerModel
+    val selection = profilerModel.selectionState.value
+    if (selection == null) {
+        frameworkLogger.warn("No profiler selection state available; cannot refresh snapshot to re-trigger gutter daemon")
+        return
+    }
+    frameworkLogger.info("Re-firing profiler snapshot request for frame ${selection.selectedFrameIndex} to re-trigger gutter daemon")
+    profilerModel.updateUnityProfilerSnapshotData.fire(
+        ProfilerSnapshotRequest(selection.selectedFrameIndex, selection.selectedThread)
+    )
 }
 
 /**
@@ -89,6 +204,12 @@ fun SolutionApiFacade.setUpProfilerDefaults(timeout: Duration = Duration.ofSecon
  */
 fun SolutionApiFacade.waitForProfilerGutterMarks(fileName: String, timeout: Duration = Duration.ofSeconds(10)): Boolean {
     frameworkLogger.info("Waiting for profiler gutter marks in file: $fileName")
+    // Deterministically re-trigger a daemon pass while the file is open: re-firing the snapshot request
+    // drives ProcessSnapshotAsync → InvalidateDaemon() on the backend, which re-runs UnityProfilerDaemon
+    // on the open editor and emits the gutter highlighters. Without this, marks only appear if the file
+    // happened to be open at the moment the auto-selected snapshot was first processed — the race behind
+    // the flaky "gutter marks should appear" failures.
+    refreshProfilerSnapshotForCurrentSelection()
     try {
         waitAndPump(timeout, {
             FileEditorManager.getInstance(project).allEditors
