@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 version => NotifyFrontend(frontendBackendHost, unityVersion, version).NoAwait());
             // update front again once, when we know the path better
             unityVersion.ActualAppPathForSolution.AdviseOnce(lifetime,
-                version => NotifyFrontend(frontendBackendHost, unityVersion,
+                _ => NotifyFrontend(frontendBackendHost, unityVersion,
                     unityVersion.ActualVersionForSolution.Value).NoAwait());
         }
 
@@ -61,7 +61,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                     UnityVersion.VersionToString(info.Version),
                     null, null, null));
                 rd.RequiresRiderPackage.Set(UnityVersion.RequiresRiderPackage(info.Version));
-                rd.IsCoreCLR.Set(UnityVersion.IsCoreCLR(info.Version));
             });
         }
     }

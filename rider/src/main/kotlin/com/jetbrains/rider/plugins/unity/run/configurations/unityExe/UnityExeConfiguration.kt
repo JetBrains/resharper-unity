@@ -11,8 +11,8 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.debugger.IMixedModeDebugAwareRunProfile
 import com.jetbrains.rider.multiPlatform.RiderMultiPlatformBundle
-import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityScriptingBackend
+import com.jetbrains.rider.plugins.unity.util.UnityPlayerRuntimeDetector
 import com.jetbrains.rider.run.RiderRunBundle
 import com.jetbrains.rider.run.configurations.exe.ExeConfiguration
 import com.jetbrains.rider.run.configurations.exe.ExeConfigurationParameters
@@ -23,6 +23,7 @@ import com.jetbrains.rider.runtime.DotNetExecutable
 import com.jetbrains.rider.runtime.RiderDotNetActiveRuntimeHost
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jetbrains.concurrency.Promise
+import java.nio.file.Path
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UnityExeConfiguration(name: String,
@@ -46,7 +47,8 @@ class UnityExeConfiguration(name: String,
         val executorId = executor.id
 
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID){
-            return if (UnityInstallationFinder.getInstance(project).isCoreCLR.hasTrueValue())
+            val backend = UnityPlayerRuntimeDetector.getInstance(project).detect(Path.of(parameters.exePath))
+            return if (backend == UnityScriptingBackend.CoreCLR)
                 getDotNetCoreDebugProfile(environment)
             else{
                 UnityExeDebugProfileState(this, DotNetRemoteConfiguration(project, ConfigurationTypeUtil.findConfigurationType(

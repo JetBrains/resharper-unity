@@ -14,30 +14,22 @@ using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Technologies;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 {
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
     public class FrontendBackendHost : IFrontendBackendHost
     {
-        private readonly ISolution mySolution;
-        private readonly ILogger myLogger;
-
         // This will only ever be null when running tests. The value does not change for the lifetime of the solution.
         // Prefer using this field over calling GetFrontendBackendModel(), as that method will throw in tests
         [CanBeNull] public readonly FrontendBackendModel Model;
 
-        public FrontendBackendHost(Lifetime lifetime, ISolution solution, IShellLocks shellLocks, ILogger logger,
+        public FrontendBackendHost(Lifetime lifetime, ISolution solution, IShellLocks shellLocks,
                                    PackageManager packageManager,
                                    DeferredCacheController deferredCacheController,
                                    UnityTechnologyDescriptionCollector technologyDescriptionCollector)
         {
-            mySolution = solution;
-            myLogger = logger;
-
             // This will throw in tests, as GetProtocolSolution will return null
             var model = solution.GetProtocolSolution().GetFrontendBackendModel();
             shellLocks.ExecuteOrQueueEx(lifetime, GetType().Name, () =>
@@ -67,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             AdviseTechnologies(lifetime, frontendBackendModel, technologyDescriptionCollector);
             AdvisePackages(lifetime, frontendBackendModel, packageManager);
             AdviseIntegrationTestHelpers(lifetime, frontendBackendModel, deferredCacheController, shellLocks);
-            frontendBackendModel.GetScriptingBackend.SetAsync((_, _) => ProjectSettingsAsset.GetScriptingBackend(mySolution, myLogger));
+            frontendBackendModel.GetScriptingBackend.SetAsync((_, rdPath) => UnityAssemblyScanner.TryScan(rdPath.Value));
         }
 
         private void AdviseTechnologies(Lifetime lifetime, FrontendBackendModel frontendBackendModel,

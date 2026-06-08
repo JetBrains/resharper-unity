@@ -10,6 +10,7 @@ import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlId
 import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlExtension
 import model.lib.Library
 import kotlin.reflect.KProperty
+import com.jetbrains.rider.model.nova.ide.IdeRoot.RdPath
 
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to
@@ -36,6 +37,13 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"Local"
         +"LocalTarball"
         +"Git"
+    }
+
+    private val UnityScriptingBackend = enum {
+        +"Unknown"
+        +"Mono"
+        +"IL2CPP"
+        +"CoreCLR"
     }
 
     private val RdShaderApi = enum {
@@ -141,7 +149,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("unityEditorState", Library.UnityEditorState)
 
         property("unityApplicationData", Library.UnityApplicationData).async
-        property("isCoreCLR", bool).documentation = "Is Unity 7 and newer"
         property("requiresRiderPackage", bool)
         field("unityApplicationSettings", Library.UnityApplicationSettings)
         field("unityProjectSettings", Library.UnityProjectSettings)
@@ -220,9 +227,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         // profiler
         call("startProfiling", bool, void).documentation = "Start profiling and enter PlayMode, depending on the param"
-
+        
         // debug
-        call("getScriptingBackend", void, int).documentation = "Mono, IL2CPP, WinRTDotNET"
+        call("getScriptingBackend", RdPath, UnityScriptingBackend).async.documentation = "Mono, IL2CPP, CoreCLR"
         
     }
 }

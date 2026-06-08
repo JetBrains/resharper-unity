@@ -18,11 +18,9 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.Key
 import com.intellij.util.NetworkUtils
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
-import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rider.debugger.DebuggerHelperHost
@@ -33,10 +31,10 @@ import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
 import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityScriptingBackend
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
-import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.plugins.unity.util.UnityPlayerRuntimeDetector
 import com.jetbrains.rider.run.ConsoleKind
 import com.jetbrains.rider.run.ExternalConsoleMediator
 import com.jetbrains.rider.run.WorkerRunInfo
@@ -73,10 +71,9 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         workerProcessHandler: DebuggerWorkerProcessHandler,
         lifetime: Lifetime
     ): ExecutionResult {
+        val backend = UnityPlayerRuntimeDetector.getInstance(exeConfiguration.project).detect(Path.of(exeConfiguration.parameters.exePath))
         val runCommandLine = createEmptyConsoleCommandLine(exeConfiguration.parameters.terminalMode)
             .withEnvironment(exeConfiguration.parameters.envs)
-            .withEnvironment("MONO_ARGUMENTS",
-                             "--debugger-agent=transport=dt_socket,address=127.0.0.1:${remoteConfiguration.port},server=n,suspend=y")
             .withParentEnvironmentType(if (exeConfiguration.parameters.isPassParentEnvs) {
                 GeneralCommandLine.ParentEnvironmentType.CONSOLE
             } else {
@@ -86,32 +83,31 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
             .withWorkingDirectory(Path.of(exeConfiguration.parameters.workingDirectory))
             .withRawParameters(exeConfiguration.parameters.programParameters)
 
+        if (backend == UnityScriptingBackend.Mono) {
+            runCommandLine.withEnvironment("MONO_ARGUMENTS",
+                                           "--debugger-agent=transport=dt_socket,address=127.0.0.1:${remoteConfiguration.port},server=n,suspend=y")
+        }
+
         val commandLineString = runCommandLine.commandLineString
 
         val monoConnectResult = super.execute(workerConsole, workerProcessHandler, lifetime)
 
-        if (exeConfiguration.name == DefaultRunConfigurationGenerator.RUN_DEBUG_STANDALONE_CONFIGURATION_NAME) {
-            // check if scripting backend is IL2CPP, only start the game and show red balloon
-            val frontendBackendModel = executionEnvironment.project.solution.frontendBackendModel
-            val res = frontendBackendModel.getScriptingBackend.start(lifetime, Unit)
-            res.result.adviseNotNullOnce(lifetime) {
-                if (it is RdTaskResult.Fault) {
-                    LOG.warn("getScriptingBackend failed with ${it.error}")
-                    return@adviseNotNullOnce
+        if (backend == UnityScriptingBackend.IL2CPP) {
+            val message = UnityBundle.message("debugging.il2cpp.backend.only.possible.with.attach")
+            val notification = XDebuggerManagerImpl.getNotificationGroup().createNotification(message, NotificationType.ERROR)
+            notification.addAction(object : NotificationAction(
+                UnityBundle.message("read.more")) {
+                override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                    val url = "https://github.com/JetBrains/resharper-unity/wiki/Troubleshooting-debugging-Unity-players#didnt-find-the-associated-module-for-the-breakpoint"
+                    BrowserUtil.browse(url)
                 }
-                if (it.unwrap() == 1) {
-                    val message = UnityBundle.message("debugging.il2cpp.backend.only.possible.with.attach")
-
-                    val notification = XDebuggerManagerImpl.getNotificationGroup().createNotification(message, NotificationType.ERROR)
-                    notification.addAction(object : NotificationAction(
-                        UnityBundle.message("read.more")) {
-                        override fun actionPerformed(e: AnActionEvent, notification: Notification) {
-                            val url = "https://github.com/JetBrains/resharper-unity/wiki/Troubleshooting-debugging-Unity-players#didnt-find-the-associated-module-for-the-breakpoint"
-                            BrowserUtil.browse(url)
-                        }
-                    }).notify(executionEnvironment.project)
-                }
-            }
+            }).notify(executionEnvironment.project)
+        }
+        else if (backend == UnityScriptingBackend.Unknown) {
+            val message = UnityBundle.message("debugging.scripting.backend.detection.failed")
+            XDebuggerManagerImpl.getNotificationGroup()
+                .createNotification(message, NotificationType.ERROR)
+                .notify(executionEnvironment.project)
         }
 
         fun runUnityEditor() {
@@ -176,5 +172,3 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         return monoConnectResult
     }
 }
-
-private val LOG = logger<UnityExeDebugProfileState>()

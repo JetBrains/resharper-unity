@@ -17,16 +17,17 @@ import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityScriptingBackend
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
-import com.jetbrains.rider.plugins.unity.ui.hasTrueValue
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.util.UnityPlayerRuntimeDetector
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreDebugProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.withContext
+import java.nio.file.Path
 
 /**
  * [RunProfileState] to attach to the current Unity editor, optionally entering play mode.
@@ -60,7 +61,8 @@ class UnityAttachToEditorProfileState(
             if (!remoteConfiguration.updatePidAndPort()) {
                 LOG.info("Have not found Unity, would start a new Unity Editor instead.")
 
-                if (UnityInstallationFinder.getInstance(project).isCoreCLR.hasTrueValue()){
+                val backend = UnityPlayerRuntimeDetector.getInstance(project).detect(Path.of(exeDebugProfileState.exeConfiguration.parameters.exePath))
+                if (backend == UnityScriptingBackend.CoreCLR){
                     corRunDebugProfileState = exeDebugProfileState.exeConfiguration.getDotNetCoreDebugProfile(executionEnvironment)
                     corRunDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
                 }
