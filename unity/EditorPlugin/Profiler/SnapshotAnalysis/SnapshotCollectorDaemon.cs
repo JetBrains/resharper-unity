@@ -181,8 +181,21 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
           return;
         }
 
+        var requestedThread = state.SelectedThread.Index;
+
+        // The backend mirrors its SelectionState into Unity on connect/reload. Re-applying a selection the
+        // profiler window already holds re-enters Unity's timeline framing (focusedThreadIndex -> FrameThread)
+        // before the timeline has been repainted, which throws inside Unity (RIDER-139572). Skip the no-op.
+        if (myWindowAdapter.GetSelectedFrameIndex() == requestedFrame &&
+            myWindowAdapter.GetSelectedThreadId() == requestedThread)
+        {
+          mySelection.Set(state);
+          ourLogger.Verbose($"Backend requested selection already active: frame {requestedFrame}, thread {requestedThread}");
+          return;
+        }
+
         myWindowAdapter.SetSelectedFrameIndex(requestedFrame);
-        myWindowAdapter.SetSelectedThread(state.SelectedThread.Index);
+        myWindowAdapter.SetSelectedThread(requestedThread);
         mySelection.Set(state);
         ourLogger.Verbose($"Backend requested frame selection: {requestedFrame}");
       });
@@ -258,9 +271,15 @@ namespace JetBrains.Rider.Unity.Editor.Profiler.SnapshotAnalysis
         return;
 
       var threads = mySnapshotCrawler.GetProfilerThreads(selectedFrame);
-      var profilerThread = threads?.First(t => t.Index == selectedThreadId);
+      var profilerThread = threads?.FirstOrDefault(t => t.Index == selectedThreadId);
+      if (profilerThread == null)
+      {
+        mySelection.Set(null);
+        ourLogger.Verbose($"Selected thread {selectedThreadId} not found among threads for frame {selectedFrame}");
+        return;
+      }
 
-      mySelection.Set(new SelectionState(selectedFrame, profilerThread!));
+      mySelection.Set(new SelectionState(selectedFrame, profilerThread));
       ourLogger.Verbose($"Profiler window selection updated: frame {selectedFrame}");
     }
 
