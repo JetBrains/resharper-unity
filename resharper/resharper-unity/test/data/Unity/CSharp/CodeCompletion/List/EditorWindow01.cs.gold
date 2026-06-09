@@ -1,5 +1,5 @@
 ﻿Completion: Basic
-Count: 1074
+Count: 1075
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
 Range: "♦   "
@@ -66,6 +66,7 @@ readonly
 record
 ref
 required
+safe
 sbyte
 sealed
 short
@@ -2145,6 +2146,7 @@ readonly
 record
 ref
 required
+safe
 sbyte
 sealed
 short

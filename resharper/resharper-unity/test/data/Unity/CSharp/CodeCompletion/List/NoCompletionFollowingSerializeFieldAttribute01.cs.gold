@@ -1,5 +1,5 @@
 ﻿Completion: Basic
-Count: 701
+Count: 702
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
 Range: "[SerializeField] ♦"
@@ -42,6 +42,7 @@ readonly
 record
 ref
 required
+safe
 sbyte
 sealed
 short
@@ -1400,6 +1401,7 @@ readonly
 record
 ref
 required
+safe
 sbyte
 sealed
 short
