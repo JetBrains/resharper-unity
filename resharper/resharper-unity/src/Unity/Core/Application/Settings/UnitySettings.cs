@@ -48,6 +48,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Use_asm_def_folder_as_namespace_root_))]
         public bool UseAsmDefFolderAsNamespaceRoot;
 
+        [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Skip_Editor_folders_when_calculating_namespaces))]
+        public bool SkipEditorFoldersForNamespaceCalculation;
+
         // backward compability
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Should_yaml_heuristic_be_applied_))]
         public bool EnableAssetIndexingPerformanceHeuristic;

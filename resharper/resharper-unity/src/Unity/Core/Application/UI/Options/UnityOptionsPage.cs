@@ -93,6 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             }
             
             AddBoolOption((UnitySettings s) => s.UseAsmDefFolderAsNamespaceRoot, Strings.UnityOptionsPage_AddCSharpSection_Use_asm_def_folder_as_namespace_root_);
+            AddBoolOption((UnitySettings s) => s.SkipEditorFoldersForNamespaceCalculation, Strings.UnitySettings_t_Skip_Editor_folders_when_calculating_namespaces);
 
             AddPerformanceAnalysisSubSection();
             AddBurstAnalysisSubSection();

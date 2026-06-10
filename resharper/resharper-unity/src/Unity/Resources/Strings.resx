@@ -1500,6 +1500,9 @@ float values with full precision.</value>
     <data name="UnitySettings_t_Use_asm_def_folder_as_namespace_root_" xml:space="preserve">
         <value>Use assembly definition (.asmdef) folder as namespace root</value>
     </data>
+    <data name="UnitySettings_t_Skip_Editor_folders_when_calculating_namespaces" xml:space="preserve">
+        <value>Skip "Editor" folders when calculating namespaces</value>
+    </data>
     <data name="UnitySettings_t_Unity_plugin_settings" xml:space="preserve">
         <value>Unity plugin settings</value>
     </data>
