@@ -129,7 +129,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
                     parts.ClosedBrace();
 
                     // Hide the default type presentation if we've been asked to
-                    var flags = !showTypeName ? ValueFlags.IsDefaultTypePresentation : 0;
+                    var flags = !showTypeName ? ValueFlags.IsTypeCanBeDerivedFromContext : 0;
                     return SimplePresentation.Create(parts.Result(), PresentationFlags.Success, ValueFlags.None | flags,
                         instanceType);
                 },

@@ -79,7 +79,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                     // Don't show type presentation. This is informational, rather than an actual property
                     var simpleReference = new SimpleValueReference<TValue>(fullPathValue, null, "Scene path",
                         ValueOriginKind.Property,
-                        ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsDefaultTypePresentation, frame,
+                        ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsTypeCanBeDerivedFromContext, frame,
                         valueServices.RoleFactory);
 
                     // Wrap the simple reference - the default StringValuePresenter will display the simple reference as a

@@ -149,7 +149,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         {
             return new SimpleValueReference<TValue>(activeScene, metadataTypeLite,
                 defaultName, ValueOriginKind.Property,
-                ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsDefaultTypePresentation, frame,
+                ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsTypeCanBeDerivedFromContext, frame,
                 myValueServices.RoleFactory).ToValue(myValueServices);
         }
 
@@ -330,7 +330,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                     // objects from the synthetic group.
                     return new SimpleValueReference<TValue>(gameObject, gameObjectType, "this.gameObject",
                         ValueOriginKind.Property,
-                        ValueFlags.None | ValueFlags.IsDefaultTypePresentation | ValueFlags.IsReadOnly, frame,
+                        ValueFlags.None | ValueFlags.IsTypeCanBeDerivedFromContext | ValueFlags.IsReadOnly, frame,
                         myValueServices.RoleFactory);
                 },
                 exception => myLogger.LogThrownUnityException(exception, frame, myValueServices, mySession.EvaluationOptions));

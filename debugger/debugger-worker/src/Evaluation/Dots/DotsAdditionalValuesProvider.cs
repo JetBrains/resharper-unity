@@ -156,7 +156,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
 
             return new SimpleValueReference<TValue>(element, arrayValueRole.ElementType, "Current Entity",
                 ValueOriginKind.Property,
-                ValueFlags.None | ValueFlags.IsDefaultTypePresentation | ValueFlags.IsReadOnly, frame,
+                ValueFlags.None | ValueFlags.IsTypeCanBeDerivedFromContext | ValueFlags.IsReadOnly, frame,
                 myValueServices.RoleFactory);
         }
     }

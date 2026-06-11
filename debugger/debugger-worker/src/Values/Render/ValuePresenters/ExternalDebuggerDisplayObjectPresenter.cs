@@ -117,7 +117,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 
                 var flags = valueReference.DefaultFlags;
                 if (valueReference is CalculatedValueReferenceDecorator<TValue> { AllowDefaultTypePresentation: false })
-                    flags |= ValueFlags.IsDefaultTypePresentation;
+                    flags |= ValueFlags.IsTypeCanBeDerivedFromContext;
 
                 // AggregatedPresentation will handle creating presentation parts from the list of value presentations,
                 // but doesn't allow us to set Flags to hide the type name. Create the instance of the aggregated
