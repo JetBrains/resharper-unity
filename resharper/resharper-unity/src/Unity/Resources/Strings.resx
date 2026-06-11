@@ -1259,6 +1259,9 @@
     <data name="UnityOptionsPage_AddCSharpSection_Always" xml:space="preserve">
         <value>Always</value>
     </data>
+    <data name="UnityOptionsPage_AddCSharpSection_Use_asm_def_folder_as_namespace_root_" xml:space="preserve">
+        <value>Use assembly definition folder as namespace root</value>
+    </data>
     <data name="UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages" xml:space="preserve">
         <value>Show gutter mark or Code Vision for implicit script usages</value>
     </data>
@@ -1493,6 +1496,9 @@ float values with full precision.</value>
     </data>
     <data name="UnitySettings_t_Unity_highlighter_scheme_for_editor_" xml:space="preserve">
         <value>Unity highlighter scheme for editor</value>
+    </data>
+    <data name="UnitySettings_t_Use_asm_def_folder_as_namespace_root_" xml:space="preserve">
+        <value>Use assembly definition (.asmdef) folder as namespace root</value>
     </data>
     <data name="UnitySettings_t_Unity_plugin_settings" xml:space="preserve">
         <value>Unity plugin settings</value>

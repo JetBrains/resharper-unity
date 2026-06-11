@@ -468,6 +468,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string UnityOptionsPage_AddBurstAnalysisSubSection_Enable_analysis_for_Burst_compiler_issues => ResourceManager.GetString("UnityOptionsPage_AddBurstAnalysisSubSection_Enable_analysis_for_Burst_compiler_issues");
     public static string UnityOptionsPage_AddBurstAnalysisSubSection_Show_gutter_icons_for_Burst_compiled_called_methods => ResourceManager.GetString("UnityOptionsPage_AddBurstAnalysisSubSection_Show_gutter_icons_for_Burst_compiled_called_methods");
     public static string UnityOptionsPage_AddCSharpSection_Always => ResourceManager.GetString("UnityOptionsPage_AddCSharpSection_Always");
+    public static string UnityOptionsPage_AddCSharpSection_Use_asm_def_folder_as_namespace_root_ => ResourceManager.GetString("UnityOptionsPage_AddCSharpSection_Use_asm_def_folder_as_namespace_root_");
     public static string UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages => ResourceManager.GetString("UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages");
     public static string UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages_ => ResourceManager.GetString("UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages_");
     public static string UnityOptionsPage_AddCSharpSection_When_Code_Vision_is_disabled => ResourceManager.GetString("UnityOptionsPage_AddCSharpSection_When_Code_Vision_is_disabled");
@@ -545,6 +546,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources
     public static string UnitySettings_t_Suppress_resolve_errors_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_HLSL_");
     public static string UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_");
     public static string UnitySettings_t_Unity_highlighter_scheme_for_editor_ => ResourceManager.GetString("UnitySettings_t_Unity_highlighter_scheme_for_editor_");
+    public static string UnitySettings_t_Use_asm_def_folder_as_namespace_root_ => ResourceManager.GetString("UnitySettings_t_Use_asm_def_folder_as_namespace_root_");
     public static string UnitySettings_t_Unity_plugin_settings => ResourceManager.GetString("UnitySettings_t_Unity_plugin_settings");
     public static string UnitySettings_Dots_Header => ResourceManager.GetString("UnitySettings_Dots_Header");
     public static string UnitySettings_Profiler_Integration_Snapshot_Fetching => ResourceManager.GetString("UnitySettings_Profiler_Integration_Snapshot_Fetching");

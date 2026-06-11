@@ -91,6 +91,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
                     GutterIconMode.CodeInsightDisabled, GutterIconMode.None,
                     Strings.UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages);
             }
+            
+            AddBoolOption((UnitySettings s) => s.UseAsmDefFolderAsNamespaceRoot, Strings.UnityOptionsPage_AddCSharpSection_Use_asm_def_folder_as_namespace_root_);
 
             AddPerformanceAnalysisSubSection();
             AddBurstAnalysisSubSection();

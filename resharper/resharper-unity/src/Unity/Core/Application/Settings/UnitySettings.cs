@@ -45,6 +45,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         [SettingsEntry(GutterIconMode.CodeInsightDisabled, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Unity_highlighter_scheme_for_editor_))]
         public GutterIconMode GutterIconMode;
 
+        [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Use_asm_def_folder_as_namespace_root_))]
+        public bool UseAsmDefFolderAsNamespaceRoot;
+
         // backward compability
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Should_yaml_heuristic_be_applied_))]
         public bool EnableAssetIndexingPerformanceHeuristic;

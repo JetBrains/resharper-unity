@@ -1,3 +1,4 @@
+#nullable enable
 using JetBrains.Application.Parts;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
@@ -9,10 +10,9 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
-#nullable enable
-
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
 {
+    // TODO: see if this could be reworked into a INamespaceFolderSkipStrategy
     [SolutionComponent(Instantiation.DemandAnyThreadUnsafe)]
     public class ExternalPackageCustomNamespaceProvider : ICustomDefaultNamespaceProvider
     {
