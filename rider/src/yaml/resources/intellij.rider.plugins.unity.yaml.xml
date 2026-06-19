@@ -1,19 +1,19 @@
 <idea-plugin>
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
-    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
     <plugin id="com.intellij.platform.images"/>
-    <plugin id="com.intellij.resharper.unity"/>
     <module name="intellij.json.backend"/>
     <module name="intellij.platform.vcs.impl"/>
     <module name="intellij.rd.client"/>
     <module name="intellij.rider"/>
     <module name="intellij.rider.languages"/>
+    <module name="intellij.rider.plugins.unity.backend"/>
     <module name="intellij.rider.plugins.unity.model"/>
     <module name="intellij.rider.rdclient.dotnet"/>
     <module name="intellij.rider.shared"/>
     <module name="intellij.spellchecker"/>
-    <!-- endregion -->
   </dependencies>
+  <!-- endregion -->
   <extensions defaultExtensionNs="com.intellij">
     <fileType name="UnityYaml" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.yaml.fileTypes.UnityYamlFileType" language="UnityYaml" extensions="meta;unity;scene;prefab;asset;controller;anim"/>
     <lang.syntaxHighlighterFactory language="UnityYaml" implementationClass="org.jetbrains.yaml.YAMLSyntaxHighlighterFactory"/>
