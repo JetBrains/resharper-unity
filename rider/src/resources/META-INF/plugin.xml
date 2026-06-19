@@ -62,6 +62,9 @@
     <module name="intellij.rider.plugins.unity.backend"/>
     <module name="intellij.rider.plugins.unity.model"/>
     <module name="intellij.rider.plugins.unity.profiler.mcp" />
+    <module name="intellij.rider.plugins.unity.yaml"/>
+    <module name="intellij.rider.plugins.unity.css"/>
+    <module name="intellij.rider.plugins.unity.javascript"/>
   </content>
 
 </idea-plugin>
