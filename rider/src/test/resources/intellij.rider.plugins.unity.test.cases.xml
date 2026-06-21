@@ -12,6 +12,7 @@
     <module name="intellij.libraries.gson"/>
     <module name="intellij.libraries.kotlin.reflect"/>
     <module name="intellij.libraries.kotlinx.coroutines.core"/>
+    <module name="intellij.libraries.kotlinx.coroutines.test"/>
     <module name="intellij.libraries.teamcity.service.messages"/>
     <module name="intellij.libraries.xz"/>
     <module name="intellij.platform.analysis"/>
@@ -26,6 +27,7 @@
     <module name="intellij.platform.editor.ex"/>
     <module name="intellij.platform.editor.ui"/>
     <module name="intellij.platform.execution"/>
+    <module name="intellij.platform.ide.concurrency"/>
     <module name="intellij.platform.ide.core"/>
     <module name="intellij.platform.ide.impl"/>
     <module name="intellij.platform.lang"/>
