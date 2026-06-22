@@ -515,9 +515,14 @@ public class UnityProfilerSnapshotProvider : IUnityProfilerSnapshotDataProvider
     {
         myLogger.Verbose($"Updating sample cache, samples count {snapshotResult?.Samples.Count ?? -1}");
         // ReSharper disable once NotDisposedResource
-        var oldCache = Interlocked.Exchange(ref myPooledSamplesCache,
-            SamplesCacheUtils.ConstructCache(snapshotResult, cacheUpdatingProgress));
+        var newCache = SamplesCacheUtils.ConstructCache(snapshotResult, cacheUpdatingProgress);
+
+        // Capture the (copied) value before publishing newCache, while no concurrent update can dispose it.
+        var frontendSnapshot = newCache.GetFrontendModelSnapshot();
+
+        var oldCache = Interlocked.Exchange(ref myPooledSamplesCache, newCache);
         oldCache?.Dispose();
-        FrontendBackendProfilerModel.CurrentSnapshot.Set(myPooledSamplesCache?.GetFrontendModelSnapshot());
+
+        FrontendBackendProfilerModel.CurrentSnapshot.Set(frontendSnapshot);
     }
 }

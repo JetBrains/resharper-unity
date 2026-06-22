@@ -10,7 +10,7 @@ using JetBrains.Util.DataStructures.Specialized;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
 
 [MustDisposeResource]
-internal class PooledSamplesCache : IDisposable
+public class PooledSamplesCache : IDisposable
 {
     private static readonly ObjectPool<PooledSamplesCache> ourGlobalPool = CreatePool();
     private readonly ObjectPool<PooledSamplesCache> myPool;
@@ -25,7 +25,9 @@ internal class PooledSamplesCache : IDisposable
 
     public FrontendModelSnapshot GetFrontendModelSnapshot()
     {
-        return new FrontendModelSnapshot(myProfilerModelSamples, new SelectionState(myFrameIndex, mySnapshotThread));
+        // Copy: the pooled list is recycled on Dispose; RD must not serialize it. RIDER-139836.
+        return new FrontendModelSnapshot(new List<ProfilerModelSample>(myProfilerModelSamples),
+            new SelectionState(myFrameIndex, mySnapshotThread));
     }
     
     private PooledSamplesCache(ObjectPool<PooledSamplesCache> pool)

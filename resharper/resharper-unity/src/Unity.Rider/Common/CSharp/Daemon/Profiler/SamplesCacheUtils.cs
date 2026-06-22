@@ -12,7 +12,7 @@ using JetBrains.Util.DataStructures.Specialized;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
 
-internal static class SamplesCacheUtils
+public static class SamplesCacheUtils
 {
     private static readonly ObjectPool<PooledStack<PooledSample>> ourSamplesStackPool = PooledStack<PooledSample>.CreatePool();
 
