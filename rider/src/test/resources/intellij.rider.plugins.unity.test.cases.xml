@@ -10,6 +10,7 @@
     <module name="intellij.libraries.commons.compress"/>
     <module name="intellij.libraries.commons.logging"/>
     <module name="intellij.libraries.gson"/>
+    <module name="intellij.libraries.jline"/>
     <module name="intellij.libraries.kotlin.reflect"/>
     <module name="intellij.libraries.kotlinx.coroutines.core"/>
     <module name="intellij.libraries.kotlinx.coroutines.test"/>
