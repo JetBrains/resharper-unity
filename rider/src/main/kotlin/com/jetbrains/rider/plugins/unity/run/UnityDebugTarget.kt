@@ -100,8 +100,10 @@ sealed class UnityDebugTarget(
      *
      * Note that we don't have enough stable information to distinguish between two players running the same project on the same host. Also
      * note that if there's no project name, this value will be null (and we can't guarantee the Android package name either).
+     *
+     * debugEngine was added to distinguish Player with different debug engines.
      */
-    open val playerInstanceId: String? = projectName
+    open val playerInstanceId: String? = projectName + debugEngine.toPresentableString()
 
     open fun dump(): String =
         "$id ($name, ${debugEngine.toPresentableString()}, debugging ${if (debuggingEnabled) "enabled" else "disabled"}, ${projectName ?: "no project name"})"

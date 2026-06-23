@@ -157,7 +157,8 @@ private class UnityPlayerSettingsEditor : SettingsEditor<UnityPlayerDebugConfigu
     private val panel = panel {
         // There is nothing user editable, but show the details of the player that we'll use to find the host/port
         row(UnityBundle.message("run.configuration.player.label.id")) { id = this.label("").component }
-        row(UnityBundle.message("run.configuration.player.label.address")) { address = label("").component }
+        row(UnityBundle.message("run.configuration.player.label.address")) { address = label("").component }.visibleIf(
+            HasNonEmptyText(address))
         // Only available in 2019.3 and above. Not applicable to iOS or Android ADB
         row(UnityBundle.message("run.configuration.player.label.project")) { projectName = label("").component }.visibleIf(
             HasNonEmptyText(projectName))
@@ -193,7 +194,7 @@ private class UnityPlayerSettingsEditor : SettingsEditor<UnityPlayerDebugConfigu
     override fun resetEditorFrom(config: UnityPlayerDebugConfiguration) {
         val state = config.state
         id.text = state.playerId
-        address.text = "${state.host}:${state.port}"
+        address.text = if (!state.isCoreClr) "${state.host}:${state.port}" else ""
         projectName.text = state.projectName
         roleName.text = state.roleName
         virtualPlayerId.text = state.virtualPlayerId

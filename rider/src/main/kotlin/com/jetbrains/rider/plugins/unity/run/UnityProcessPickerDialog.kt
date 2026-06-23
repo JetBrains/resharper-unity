@@ -266,6 +266,17 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     }
 
     private fun insertChildNode(root: DefaultMutableTreeNode, newNode: UnityDebugTargetTreeNode) {
+        if (newNode.target.debugEngine is UnityDebugEngine.CoreClr) {
+            // CoreCLR players on multi-homed machines broadcast the same logical player with
+            // different [IP] field values across network interfaces. Deduplicate by player id + pid.
+            // Deduplicating in the UnityPlayerListener is way too complicated.
+            // Example:
+            // [IP] 127.0.2.2 ... [Id] OSXPlayer(1,CZ03877.local) [PID] 1302
+            // [IP] 127.0.2.3 ... [Id] OSXPlayer(1,CZ03877.local) [PID] 1302
+            if (root.children().asSequence().any { it is UnityDebugTargetTreeNode && it.target.id == newNode.target.id && it.target.debugEngine == newNode.target.debugEngine }) {
+                return
+            }
+        }
         val comparator = TreeNodeComparator(project.name)
         val index = root.children().asSequence().indexOfFirst {
             comparator.compare(newNode, it) < 0 // newNode is less than it, so should be higher up in the list
