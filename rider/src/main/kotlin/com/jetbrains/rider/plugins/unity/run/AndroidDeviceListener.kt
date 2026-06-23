@@ -15,6 +15,7 @@ import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
+import icons.UnityIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -48,6 +49,13 @@ class AndroidDeviceListener {
                         append(properties["ro.serialno"])
                     }
                 }
+            }
+
+        // Detects a ByteDance PICO VR device (real headset or emulator). Signal:
+        // ro.product.manufacturer is PICO-exclusive
+        val isPico: Boolean
+            get() {
+                return properties["ro.product.manufacturer"].equals("Pico", ignoreCase = true)
             }
     }
 
@@ -177,7 +185,8 @@ class AndroidDeviceListener {
             val packageName = playerPackageNames[player.key]
 
             logger.trace("Adding new Android player ${player.key} - ${deviceName ?: player.deviceSerial}")
-            UnityAndroidAdbProcess(displayName, player.deviceSerial, deviceName, player.port, player.uid, packageName).let {
+            val icon = if (device?.isPico == true) UnityIcons.Devices.Pico else UnityIcons.RunConfigurations.AttachToPlayer
+            UnityAndroidAdbProcess(displayName, player.deviceSerial, deviceName, player.port, player.uid, packageName, icon).let {
                 players[player.key] = it
                 onPlayerAdded(it)
             }

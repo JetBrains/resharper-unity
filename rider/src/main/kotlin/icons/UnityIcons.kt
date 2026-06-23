@@ -147,6 +147,12 @@ class UnityIcons {
         }
     }
 
+    class Devices {
+        companion object {
+            val Pico = IconLoader.getIcon("/unityIcons/devices/pico.svg", UnityIcons::class.java)
+        }
+    }
+
     class Ide {
         companion object {
             val Warning = IconLoader.getIcon("/unityIcons/ide/warning.svg", UnityIcons::class.java)

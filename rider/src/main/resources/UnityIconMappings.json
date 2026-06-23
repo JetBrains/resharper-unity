@@ -48,6 +48,9 @@
                 "unityPlayMode.svg": "unityIcons/common/unityPlayMode.svg",
                 "unityToolWindow.svg": "unityIcons/common/unityToolWindow.svg"
             },
+            "devices": {
+                "pico.svg": "unityIcons/devices/pico.svg"
+            },
             "Explorer": {
                 "FolderAssets.svg": "unityIcons/Explorer/FolderAssets.svg",
                 "FolderAssetsAlt.svg": "unityIcons/Explorer/FolderAssetsAlt.svg",

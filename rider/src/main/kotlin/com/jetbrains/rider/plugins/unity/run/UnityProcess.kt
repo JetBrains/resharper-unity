@@ -14,6 +14,7 @@ import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.run.devices.Device
 import com.jetbrains.rider.run.devices.DeviceKind
 import icons.UnityIcons
+import javax.swing.Icon
 
 /**
  * The base class that represents a Unity process that can potentially be debugged
@@ -32,10 +33,11 @@ sealed class UnityProcess(
     val port: Int,
     val debuggingEnabled: Boolean,
     deviceKind: DeviceKind,
-    @NlsSafe open val projectName: String? = null
+    @NlsSafe open val projectName: String? = null,
+    icon: Icon = UnityIcons.RunConfigurations.AttachToPlayer
 ): Device(
     formatDeviceName(projectName, displayName, host, port),
-    UnityIcons.RunConfigurations.AttachToPlayer,
+    icon,
     deviceKind
 ) {
     val type = typeFromId(id)
@@ -245,8 +247,9 @@ class UnityAndroidAdbProcess(
     val deviceDisplayName: String?,
     port: Int,
     val packageUid: String,
-    val packageName: String?
-) : UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", port, true, UnityUsbDeviceKind) {
+    val packageName: String?,
+    icon: Icon = UnityIcons.RunConfigurations.AttachToPlayer
+) : UnityProcess("$TYPE($deviceId)", displayName, "127.0.0.1", port, true, UnityUsbDeviceKind, icon = icon) {
     companion object {
         const val TYPE = "AndroidADBPlayer"
     }
