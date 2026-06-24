@@ -11,7 +11,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Runtime
             if (unityContentPath.IsNullOrEmpty()) return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
 
             var context = unityContentPath.InteractionContext;
-            var folder = unityContentPath.Combine("Resources/Scripting/DotNetSdk");
+            var folder = unityContentPath.Combine("Resources/Scripting/DotNetSdk"); // Mac
+            if (!folder.ExistsDirectory)
+                folder = unityContentPath.Combine("DotNetSdk"); // Windows, Linux
             return folder.ExistsDirectory ? folder : VirtualFileSystemPath.GetEmptyPathFor(context);
         }
 
