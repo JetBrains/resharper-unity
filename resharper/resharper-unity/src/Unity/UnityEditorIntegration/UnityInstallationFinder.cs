@@ -32,10 +32,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                 return bestChoice;
 
             // best choice not found by version - try version by path then
-            var pathForSolution = unityVersion.GetActualAppPathForSolution();
-            var versionByAppPath = UnityVersion.GetVersionByAppPath(pathForSolution);
+            var appPath = unityVersion.GetActualAppPathForSolution();
+            var versionByAppPath = UnityVersion.GetVersionByAppPath(appPath);
             if (versionByAppPath!=null)
-                possibleWithVersion.Add(new UnityInstallationInfo(versionByAppPath, pathForSolution, pathForSolution.FullPath.Contains(Tuanjie)));
+                possibleWithVersion.Add(new UnityInstallationInfo(versionByAppPath, appPath, IsTuanjie(appPath)));
 
             // check best choice again, since newly added version may be best one
             bestChoice = TryGetBestChoice(version, possibleWithVersion);
@@ -62,6 +62,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
             var worstChoice = possible.LastOrDefault();
             return worstChoice;
+        }
+
+        public static bool IsTuanjie(VirtualFileSystemPath appPath)
+        {
+            return appPath.FullPath.Contains(Tuanjie);
         }
 
         private static UnityInstallationInfo TryGetBestChoice(Version version, List<UnityInstallationInfo> possibleWithVersion)
