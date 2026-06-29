@@ -16,7 +16,7 @@
   <content namespace="jetbrains">
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.common" loading="required"/>
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend"/>
-    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.backend"/>
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.backend" required-if-available="intellij.platform.backend"/>
   </content>
 
 </idea-plugin>
