@@ -55,6 +55,7 @@ enum class UnityDebugTargetKind(val kind: String) {
  */
 sealed class UnityDebugEngine {
     abstract fun toPresentableString(): String
+    val kind: String = this::class.simpleName!!
 
     data class Mono(val host: String, val port: Int) : UnityDebugEngine() {
         /**
@@ -103,7 +104,7 @@ sealed class UnityDebugTarget(
      *
      * debugEngine was added to distinguish Player with different debug engines.
      */
-    open val playerInstanceId: String? = projectName + debugEngine.toPresentableString()
+    open val playerInstanceId: String? = projectName?.let { "$it#${debugEngine.kind}" }
 
     open fun dump(): String =
         "$id ($name, ${debugEngine.toPresentableString()}, debugging ${if (debuggingEnabled) "enabled" else "disabled"}, ${projectName ?: "no project name"})"
@@ -284,7 +285,7 @@ class UnityAndroidAdbPlayer(
     projectName = null,
     icon = icon
 ) {
-    override val playerInstanceId: String? = packageName
+    override val playerInstanceId: String? = packageName?.let { "$it#${debugEngine.kind}" }
 
     override fun dump(): String =
         "$id ($name, $deviceId, $deviceDisplayName, ${debugEngine.toPresentableString()}, UID: $packageUid, ${packageName ?: "no package name"}"

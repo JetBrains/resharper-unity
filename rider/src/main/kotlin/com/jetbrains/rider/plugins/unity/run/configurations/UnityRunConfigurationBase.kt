@@ -224,11 +224,13 @@ abstract class UnityRunConfigurationBase(project: Project,
         withBackgroundProgress(environment.project, UnityBundle.message("debugging.refreshing.player.list"), false) {
             val candidates = mutableSetOf<String>()
 
-            // Get the player. We're only interested in a player that matches the ID (e.g. 'OSXPlayer(1,Matts-macbook)')
-            // and that matches the project name
+            // Get the player. We're only interested in a player that matches
+            // the ID (e.g. 'OSXPlayer(1,Matts-macbook)'), projectName, and playerInstanceId
             val player = UnityPlayerListener().getPlayer(environment.project) {
                 candidates.add(it.dump())
-                it.id == state.playerId && it.projectName == state.projectName
+                it.id == state.playerId &&
+                it.projectName == state.projectName &&
+                it.playerInstanceId == state.playerInstanceId
             }
 
             if (player == null) {
