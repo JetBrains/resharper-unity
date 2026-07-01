@@ -5,9 +5,9 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.BaseInfrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Behaviors;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Info;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Matchers;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Presentations;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Matching;
 using JetBrains.ReSharper.Feature.Services.Cpp.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.Cpp.CodeCompletion.BlockShaders;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Semantic;
@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
             var item = LookupItemFactory.CreateLookupItem(info)
                 .WithPresentation(static item => new TextPresentation<TextualInfo>(item.Info, item.Info.Icon, emphasize: false))
                 .WithBehavior(static item => new TextualBehavior<TextualInfo>(item.Info))
-                .WithMatcher(static item => new TextualMatcher<TextualInfo>(item.Info));
+                .WithMatcher(LookupItemMatcher.Literal);
             collector.Add(item);
         }
 

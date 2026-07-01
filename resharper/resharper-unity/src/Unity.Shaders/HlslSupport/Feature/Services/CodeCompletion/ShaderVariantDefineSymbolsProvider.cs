@@ -6,10 +6,9 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.BaseInfrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Behaviors;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Info;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Matchers;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Presentations;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Matching;
 using JetBrains.ReSharper.Feature.Services.Cpp.CodeCompletion;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
@@ -63,28 +62,13 @@ public class ShaderVariantDefineSymbolsProvider : ItemsProviderOfSpecificContext
 
         var info = new MyTextualInfo(icon, defineSymbol) { Ranges = context.CompletionRanges };
         var item = LookupItemFactory.CreateLookupItem(info)
-            .WithPresentation(static item => new TextPresentation<TextualInfo>(item.Info, item.Info.Icon, emphasize: false))
+            .WithPresentation(static item => new TextPresentation<TextualInfo>(
+                item.Info, item.Info.Icon, emphasize: false))
             .WithBehavior(static item => new TextualBehavior<TextualInfo>(item.Info))
-            .WithMatcher(static item => new MyTextualMatcher(item.Info));
+            .WithMatcher(info.Text is ['_', ..] // item text starts with underscore
+                ? LookupItemMatcher.Literal.RequirePrefixNotToBe("")
+                : LookupItemMatcher.Literal);
         collector.Add(item);
-    }
-    
-    private class MyTextualMatcher : TextualMatcher<TextualInfo>
-    {
-        private readonly bool myStartsWithUnderscore;
-        
-        public MyTextualMatcher(TextualInfo info) : base(info)
-        {
-            myStartsWithUnderscore = info.Text is { Length: > 0 } text && text[0] is '_';
-        }
-
-        public override MatchingResult? Match(PrefixMatcher prefixMatcher)
-        {
-            if (myStartsWithUnderscore && prefixMatcher.Prefix.Length == 0)
-                return null;
-            
-            return base.Match(prefixMatcher);
-        }
     }
 
     private class MyTextualInfo : TextualInfo

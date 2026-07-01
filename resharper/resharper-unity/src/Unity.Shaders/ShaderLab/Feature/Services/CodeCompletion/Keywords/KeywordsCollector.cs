@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectL
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Matchers;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Presentations;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Matching;
 using JetBrains.ReSharper.Psi.ExpectedTypes;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.UI.Icons;
@@ -41,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
             var item = LookupItemFactory.CreateLookupItem(info)
                 .WithPresentation(item => new TextPresentation<TextualInfo>(item.Info, icon, emphasize: true))
                 .WithBehavior(static item => new TextualBehavior<TextualInfo>(item.Info))
-                .WithMatcher(static item => new TextualMatcher<TextualInfo>(item.Info));
+                .WithMatcher(LookupItemMatcher.Literal);
 
             item.PutKey(CompletionKeys.IsKeywordKey);
             myCollector.Add(item);
