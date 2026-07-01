@@ -7,11 +7,8 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
-import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector
 import com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesDaemon
-import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.ui.RiderToolWindowFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,13 +55,10 @@ class UnityProfilerToolWindowFactory : RiderToolWindowFactory() {
         }
     }
 
-    override fun shouldBeAvailable(project: Project): Boolean {
-        return UnityProjectDiscoverer.getInstance(project).isUnityProject.value
-    }
+    // Start unavailable so [makeAvailable] does a real false -> true transition (creates the stripe button in the New UI).
+    override fun shouldBeAvailable(project: Project): Boolean = false
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow, lifetime: Lifetime) {
-        toolWindow.isAvailable = true
-
         val ui = UnityProfilerToolContent(project, lifetime, toolWindow)
         val content = ContentFactory.getInstance().createContent(ui, "", false).apply {
             isCloseable = false
