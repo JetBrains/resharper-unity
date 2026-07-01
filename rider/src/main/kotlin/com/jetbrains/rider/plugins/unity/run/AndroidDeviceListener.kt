@@ -7,6 +7,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.diagnostic.trace
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.registry.Registry
 import com.jetbrains.rd.platform.diagnostics.doActivity
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
@@ -14,6 +15,7 @@ import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.run.devices.PICO_DEVICE_ICONS_REGISTRY_KEY
 import icons.UnityIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -174,6 +176,8 @@ class AndroidDeviceListener {
             players.remove(key)?.let { onPlayerRemoved(it) }
         }
 
+        val showPicoDeviceIcons = Registry.`is`(PICO_DEVICE_ICONS_REGISTRY_KEY, false)
+
         // Add any players that we haven't seen before
         discoveredPlayers.values.filter { !players.containsKey(it.key) }.forEach { player ->
             val device = deviceDetails[player.deviceSerial]
@@ -184,7 +188,7 @@ class AndroidDeviceListener {
             val packageName = playerPackageNames[player.key]
 
             logger.trace("Adding new Android player ${player.key} - ${deviceName ?: player.deviceSerial}")
-            val icon = if (device?.isPico == true) UnityIcons.Devices.Pico else UnityIcons.RunConfigurations.AttachToPlayer
+            val icon = if (showPicoDeviceIcons && device?.isPico == true) UnityIcons.Devices.Pico else UnityIcons.RunConfigurations.AttachToPlayer
             UnityAndroidAdbPlayer(displayName, player.deviceSerial, deviceName, player.port, player.uid, packageName, icon).let {
                 players[player.key] = it
                 onPlayerAdded(it)
