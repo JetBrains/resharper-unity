@@ -5,6 +5,7 @@ import com.intellij.execution.Executor
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionUtil
+import com.intellij.idea.AppMode
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
@@ -38,13 +39,23 @@ open class StartUnityAction : DumbAwareAction() {
         if (version != null)
             e.presentation.text = UnityPluginActionsBundle.message("action.start.unity.text", version)
 
-        e.presentation.isEnabled = version != null && !e.project.isConnectedToEditor()
+        if (AppMode.isRemoteDevHost()) {
+            e.presentation.isEnabled = false
+            e.presentation.description = UnityPluginActionsBundle.message("action.StartUnityAction.remoteDev.disabled.tooltip")
+        }
+        else {
+            e.presentation.isEnabled = version != null && !e.project.isConnectedToEditor()
+        }
         super.update(e)
     }
 
     companion object {
         private val logger = Logger.getInstance(StartUnityAction::class.java)
         fun startUnity(project: Project) {
+            if (AppMode.isRemoteDevHost()) {
+                logger.warn("Cannot start Unity Editor: launching local GUI processes is not supported in Remote Development mode.")
+                return
+            }
             val runManager = RunManager.getInstance(project)
             val settings =
                 runManager.findConfigurationByTypeAndName(UnityExeConfigurationType.id,
