@@ -24,7 +24,6 @@ import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDeb
 import com.jetbrains.rider.plugins.unity.util.UnityPlayerRuntimeDetector
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.WorkerRunInfo
-import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreDebugProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,7 +40,8 @@ class UnityAttachToEditorProfileState(
     private val remoteConfiguration: UnityAttachToEditorRunConfiguration,
     executionEnvironment: ExecutionEnvironment
 )
-    : UnityAttachProfileState(getDebugEngine(remoteConfiguration), executionEnvironment, "Unity Editor", true) {
+    // debugEngine is a snapshot of the remoteConfiguration at the time of construction
+    : UnityAttachProfileState(UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port), executionEnvironment, "Unity Editor", true) {
 
     private val project = executionEnvironment.project
 
@@ -53,7 +53,11 @@ class UnityAttachToEditorProfileState(
             return corAttachDebugProfileState.createModelStartInfo(lifetime)
         else if (::corRunDebugProfileState.isInitialized)
             return corRunDebugProfileState.createModelStartInfo(lifetime)
-        return super.createModelStartInfo(lifetime)
+
+        return createMonoModelStartInfo(
+            lifetime,
+            UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port)
+        )
     }
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
@@ -138,12 +142,6 @@ class UnityAttachToEditorProfileState(
             return corAttachDebugProfileState.execute(workerConsole, workerProcessHandler, lifetime)
 
         return super.execute(workerConsole, workerProcessHandler, lifetime)
-    }
-
-    companion object {
-        private fun getDebugEngine(remoteConfiguration: RemoteConfiguration): UnityDebugEngine {
-            return UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port)
-        }
     }
 }
 

@@ -32,7 +32,6 @@ import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityScriptingBackend
-import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.plugins.unity.util.UnityPlayerRuntimeDetector
@@ -53,7 +52,8 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
                                 private val remoteConfiguration: RemoteConfiguration,
                                 executionEnvironment: ExecutionEnvironment,
                                 isEditor: Boolean = false)
-    : UnityAttachProfileState(getDebugEngine(remoteConfiguration), executionEnvironment, "Unity Executable", isEditor) {
+    // debugEngine is a snapshot of the remoteConfiguration at the time of construction
+    : UnityAttachProfileState(UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port), executionEnvironment, "Unity Executable", isEditor) {
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
     override val consoleKind: ConsoleKind = ConsoleKind.Normal
 
@@ -171,11 +171,5 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         })
 
         return monoConnectResult
-    }
-
-    companion object {
-        fun getDebugEngine(remoteConfiguration: RemoteConfiguration): UnityDebugEngine {
-            return UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port)
-        }
     }
 }
