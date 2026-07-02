@@ -17,11 +17,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             {
                 yield return "Unity";
                 yield return "GameDev";
+                
+                var appPath = unityVersion.GetActualAppPathForSolution();
+                if (UnityInstallationFinder.IsTuanjie(appPath))
+                    yield return "Tuanjie";
             }
-            
-            var appPath = unityVersion.GetActualAppPathForSolution();
-            if (UnityInstallationFinder.IsTuanjie(appPath))
-                yield return "Tuanjie";
         }
     }
 }
