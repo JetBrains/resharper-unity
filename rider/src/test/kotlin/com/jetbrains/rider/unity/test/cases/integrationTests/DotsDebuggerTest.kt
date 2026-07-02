@@ -1,5 +1,6 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
+import com.intellij.openapi.util.registry.RegistryManager
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.unity.test.framework.api.removeAllUnityPausepoints
@@ -47,6 +48,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
     fun checkBreakpointInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
+                RegistryManager.getInstance().get("rider.debugger.softdebugger.enable.burst.compatibility").setValue(true)
                 toggleBreakpoint("ResetTransformSystem.cs", 24) //set new breakpoint
             },
             {
@@ -70,6 +72,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
     fun checkRefPresentationInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
             {
+                RegistryManager.getInstance().get("rider.debugger.softdebugger.enable.burst.compatibility").setValue(true)
                 toggleBreakpoint("ResetTransformSystem.cs", 24) //set new breakpoint
             },
             {
