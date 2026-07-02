@@ -66,7 +66,7 @@ public class ShaderVariantDefineSymbolsProvider : ItemsProviderOfSpecificContext
                 item.Info, item.Info.Icon, emphasize: false))
             .WithBehavior(static item => new TextualBehavior<TextualInfo>(item.Info))
             .WithMatcher(info.Text is ['_', ..] // item text starts with underscore
-                ? LookupItemMatcher.Literal.RequirePrefixNotToBe("")
+                ? LookupItemMatcher.Literal.RequirePrefixNotToBeEmpty()
                 : LookupItemMatcher.Literal);
         collector.Add(item);
     }
