@@ -100,8 +100,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
             if (callerFrame == null)
                 return null;
 
-            var localVariables2 = callerFrame.GetLocalVariables2(mySession.EvaluationOptions)
-                .Concat(callerFrame.GetArguments2(mySession.EvaluationOptions));
+            var localVariables2 = callerFrame.GetLocalVariables2(lifetime, mySession.EvaluationOptions)
+                .Concat(callerFrame.GetArguments2(lifetime, mySession.EvaluationOptions));
 
             IValue<TValue>? chunkValue = null;
             IValue<TValue>? entityIndexInChunkValue = null;
