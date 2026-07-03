@@ -11,9 +11,9 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.BaseInfrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Info;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Matchers;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Matching;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.LookupItems.Presentation;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.Descriptions;
@@ -331,8 +331,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     return new SimplePresentation(displayName, image, marker);
                 })
                 .WithBehavior(_ => new UnityEventFunctionBehavior(textualInfo, eventFunction, accessRights))
-                .WithMatcher(_ =>
-                    new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, textualInfo));
+                .WithMatcher(LookupItemMatcher.CustomText(
+                    modifier + eventFunction.Name, LookupItemMatcher.Qualified(' ', LookupItemMatcher.Literal)));
 
             var description = GetDescription(context, methodDeclaration);
             return new WrappedLookupItem<UnityEventFunctionTextualInfo>(lookupItem, description);
@@ -531,28 +531,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
         }
 
-        // DeclaredElementMatcher can take a custom text to match against, but ReSharper applies the matching result to
-        // the display text, so it looks wrong. Interestingly, Rider gets it right. Don't know why they're different.
-        // This class will shift the match result by a given value. It assumes that the custom text is the tail of the
-        // display text and makes no other modifications to the matched offsets
-        private class ShiftedDeclaredElementMatcher : TextualMatcher<TextualInfo>
-        {
-            private readonly int myShiftOffset;
-
-            public ShiftedDeclaredElementMatcher(string customText, int shiftOffset, TextualInfo textualInfo)
-                : base(customText, textualInfo)
-            {
-                myShiftOffset = shiftOffset;
-            }
-
-            public override MatchingResult Match(PrefixMatcher prefixMatcher)
-            {
-                var result = base.Match(prefixMatcher);
-                return result?.Shift(myShiftOffset);
-            }
-        }
-
-        private static readonly DeclaredElementPresenterStyle ourPresenter = new DeclaredElementPresenterStyle
+        private static readonly DeclaredElementPresenterStyle ourPresenter = new()
         {
             ShowName = NameStyle.QUALIFIED,
             ShowEntityKind = EntityKindForm.NORMAL,
