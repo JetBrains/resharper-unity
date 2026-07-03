@@ -196,8 +196,6 @@
     <standardResourceProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutStandardResourceProvider"/>
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutSchemaProvider"/>
 
-    <solutionManagerExtensions implementation="com.jetbrains.rider.plugins.unity.workspace.UnitySolutionManagerExtensions"/>
-
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinHandlerFactory"/>
 
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinHandlerFactory"/>
