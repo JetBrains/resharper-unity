@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Resolve
 {
     [RequireHlslSupport, TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
-    public class ShaderLabResolveTests : ReferenceTestBase
+    public class ShaderLabResolveTests : CSharpBaseResolveTest
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Psi\Resolve";
         protected override bool AcceptReference(IReference reference) => true;
