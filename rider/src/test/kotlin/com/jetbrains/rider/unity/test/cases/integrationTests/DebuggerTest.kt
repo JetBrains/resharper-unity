@@ -5,6 +5,7 @@ import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.intellij.xdebugger.frame.XValueGroup
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.addUnityPausepoint
@@ -68,6 +69,34 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
                 resumeSession()
                 waitForPause()
                 dumpFullCurrentData()
+                resumeSession()
+            }, testGoldFile)
+    }
+
+    @Test(description = "Check scene handle extraction with multiple loaded scenes")
+    @ChecklistItems(["Verify scene handle extraction works correctly"])
+    // Dedicated project that additively loads a second scene, so the shared project stays single-scene for the other tests.
+    @Solution("UnitySceneHandleExtraction/Project")
+    fun checkSceneHandleExtractionMultipleScenes() {
+        attachDebuggerToUnityEditorAndPlay(
+            {
+                toggleBreakpoint("NewBehaviourScript.cs", 15) // Debug.Log(binaryNotation);
+            },
+            {
+                // The first Update pause happens before the additively loaded scene finished loading,
+                // so resume once and let the second pause observe both scenes.
+                waitForPause()
+                resumeSession()
+                waitForPause()
+
+                // This test validates only the synthetic "Loaded Scenes" group (scene handle extraction);
+                // dump just that group and ignore every other local instead of excluding them one by one.
+                dumpExecutionPoint()
+                dumpFrame()
+                withIndent {
+                    val loadedScenes = getLocals().filterIsInstance<XValueGroup>().single { it.name == "Loaded Scenes" }
+                    dumpValueItem(loadedScenes, childrenLevel = 1)
+                }
                 resumeSession()
             }, testGoldFile)
     }

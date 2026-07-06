@@ -189,14 +189,30 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
             int TryGetActiveSceneHandle(TValue sceneValue)
             {
-                // Unity Scene struct has a handle field, which is a primitive int.
-                // We can use it to check if the scene is active.
-                var sceneHandle = ((sceneValue as StructMirror)?.Fields[0] as PrimitiveValue)?.Value;
-
-                if (sceneHandle is int intHandle)
-                    return intHandle;
+                // A Unity Scene is a thin wrapper around an integer handle (assigned by native code) that we use to
+                // tell scenes apart and find the active one. Which struct actually stores that int has gained an extra
+                // layer of wrapping across Unity versions, each nested inside the previous struct's first field:
+                //   - pre-6.0: Scene holds the int handle directly
+                //   - 6.0:     Scene -> SceneHandle -> int
+                //   - 6.3+:    Scene -> SceneHandle -> EntityId -> int
+                // The payload always sits in the first field, so descend Fields[0] (up to 3 levels) until we hit the int.
+                object currentValue = sceneValue;
+                for (var depth = 0; depth < 3; depth++)
+                {
+                    if (currentValue is StructMirror structMirror && structMirror.Fields.Length > 0)
+                    {
+                        var field = structMirror.Fields[0];
+                        if (field is PrimitiveValue { Value: int handle })
+                            return handle;
+                        currentValue = field;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
                 
-                //handle comes from native code, 0 - means null
+                // no int found (unexpected layout) - return 0, the same value native uses for "no scene"
                 return 0;
             }
         }

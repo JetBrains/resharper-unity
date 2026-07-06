@@ -1,0 +1,5 @@
+--> NewBehaviourScript.cs:15(310,336) // Debug.Log(binaryNotation);
+NewBehaviourScript.Update() in Assembly-CSharp.dll
+    +[Loaded Scenes]
+        +0 (Active) = SampleScene (Assets/Scenes/SampleScene.unity)
+        +1 = AdditiveScene (Assets/Scenes/AdditiveScene.unity)
