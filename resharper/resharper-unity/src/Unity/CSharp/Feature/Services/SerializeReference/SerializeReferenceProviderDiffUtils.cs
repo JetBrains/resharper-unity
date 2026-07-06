@@ -10,9 +10,19 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference
 {
-    internal static class SerializeReferenceProviderDiffUtils
+    public static class SerializeReferenceProviderDiffUtils
     {
-        public static List<TDIff> CalculateDiff<TDIff, TSetElement>(CountingSet<TSetElement>? oldSet,
+        //Merges one file's/assembly's type-to-interface contribution into the global index (the exact
+        //seam UnitySerializedReferenceInfoIndex.Merge uses). Public so the incremental add/remove
+        //(partial-class) lifecycle can be unit-tested without a full solution.
+        public static void MergeTypeToInterfaces(IndexClassInfoDictionary classInfo,
+            ClassMetaInfoDictionary? oldData, ClassMetaInfoDictionary? newData)
+        {
+            var diff = CalculateDiff(oldData, newData);
+            ApplyDiff(classInfo, diff);
+        }
+
+        internal static List<TDIff> CalculateDiff<TDIff, TSetElement>(CountingSet<TSetElement>? oldSet,
             CountingSet<TSetElement>? newSet, Func<TSetElement, DiffType, int, TDIff> createDiff)
         {
             if (oldSet == null && newSet == null)
@@ -88,7 +98,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             if (oldInfo == null && newInfo == null)
                 return ClassMetaInfoDiff.EmptyDiff;
 
-            if (oldInfo != null && newInfo != null && oldInfo.ClassName != newInfo.ClassName)
+            //empty name means unresolved; empty <-> real is a name resolution, not a different class
+            if (oldInfo != null && newInfo != null
+                && !string.IsNullOrEmpty(oldInfo.ClassName)
+                && !string.IsNullOrEmpty(newInfo.ClassName)
+                && oldInfo.ClassName != newInfo.ClassName)
             {
                 throw new ArgumentException(
                     $"Building diff for different classes old:'{oldInfo.ClassName}', new:'{newInfo.ClassName}'");
@@ -100,7 +114,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 CalculateDiff(oldInfo?.SerializeReferenceHolders, newInfo?.SerializeReferenceHolders, CreateDiff);
             var typeParametersDiff = CalculateDiff(oldInfo?.TypeParameters, newInfo?.TypeParameters);
 
-            return new ClassMetaInfoDiff(oldInfo?.ClassName ?? newInfo?.ClassName ?? string.Empty, superClassesDiff,
+            var className = !string.IsNullOrEmpty(oldInfo?.ClassName) ? oldInfo!.ClassName
+                : !string.IsNullOrEmpty(newInfo?.ClassName) ? newInfo!.ClassName
+                : string.Empty;
+
+            return new ClassMetaInfoDiff(className, superClassesDiff,
                 serializeReferenceHoldersDiff, typeParametersDiff);
         }
 
@@ -118,7 +136,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             if (oldDict == null && newDict != null) //all data was added
                 return newDict.Select(pair => new TypeParametersSetDiff(pair.Value.ElementId, DiffType.Added,
                         pair.Value.Index, pair.Value.Name,
-                        CalculateDiff(null, pair.Value.SerializeReferenceHolders, CreateDiff)))
+                        CalculateDiff(null, pair.Value.SerializeReferenceHolders, CreateDiff),
+                        isNewDeclaration: true))
                     .ToList();
 
             if (oldDict != null && newDict == null) //all data was removed
@@ -145,7 +164,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                         DiffType.Added,
                         newParameter.Index,
                         newParameter.Name,
-                        serializeReferenceHoldersDiff));
+                        serializeReferenceHoldersDiff,
+                        isNewDeclaration: !contains));
             }
 
 
@@ -228,7 +248,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             if (oldData == null && newData != null) //all data was added
                 return newData.Select(pair =>
-                    new TypeToInterfaceDiff(pair.Key, CalculateDiff(null, pair.Value), DiffType.Added)).ToList();
+                    new TypeToInterfaceDiff(pair.Key, CalculateDiff(null, pair.Value), DiffType.Added,
+                        isNewDeclaration: true)).ToList();
 
             if (oldData != null && newData == null) //all data was removed
                 return oldData.Select(pair =>
@@ -242,7 +263,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             {
                 oldData.TryGetValue(newElementId, out var oldMetaInfo);
                 var typeToInterfaceDiffs = CalculateDiff(oldMetaInfo, newMetaInfo);
-                result.Add(new TypeToInterfaceDiff(newElementId, typeToInterfaceDiffs, DiffType.Added));
+                result.Add(new TypeToInterfaceDiff(newElementId, typeToInterfaceDiffs, DiffType.Added,
+                    isNewDeclaration: oldMetaInfo == null));
             }
 
 
@@ -273,12 +295,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 if (classInfo.TryGetValue(diffElementId, out var metaInfo))
                 {
                     metaInfo.ApplyDiff(classMetaInfoDiff, classInfo, diffElementId);
-
-                    //TODO - not the optimal solution
-                    //even in case or 2 files with partial class - class will be removed from index
-                    //and this deletion will trigger update for another file with partial class - and this class will be added back
-
-                    if (diff.DiffType == DiffType.Removed)
+                    if (metaInfo.ApplyDeclarationDelta(diff.DiffType, diff.IsNewDeclaration))
                         classInfo.Remove(diffElementId);
                 }
                 else
@@ -288,6 +305,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
                     metaInfo = new IndexClassInfo(classMetaInfoDiff.ClassName);
                     metaInfo.ApplyDiff(classMetaInfoDiff, classInfo, diffElementId);
+                    metaInfo.ApplyDeclarationDelta(diff.DiffType, diff.IsNewDeclaration);
                     classInfo.Add(diffElementId, metaInfo);
                 }
 
@@ -304,10 +322,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
                 if (classInfo.TryGetValue(diffElementId, out var metaInfo))
                 {
-                    //class - removed or updated
-                    if (diff.DiffType == DiffType.Removed)
+                    //type parameter - removed or updated; drop only when the last declaring file removes it
+                    if (metaInfo.ApplyDeclarationDelta(diff.DiffType, diff.IsNewDeclaration))
                         classInfo.Remove(diffElementId);
-                    else
+                    else if (diff.DiffType != DiffType.Removed)
                         metaInfo.SerializeReferenceHolders.ApplyDiff(diff.SerializeReferenceHoldersDiff);
                 }
                 else
@@ -316,6 +334,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     Assertion.Require(diff.DiffType == DiffType.Added, $"diff.DiffType == DiffType.Added [diffType:{diff.DiffType}]");
 
                     metaInfo = new IndexClassInfo(diff.ClassName, true);
+                    metaInfo.ApplyDeclarationDelta(diff.DiffType, diff.IsNewDeclaration);
                     metaInfo.SerializeReferenceHolders.ApplyDiff(diff.SerializeReferenceHoldersDiff);
                     classInfo.Add(diffElementId, metaInfo);
                 }
@@ -350,7 +369,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             }
         }
 
-        public static void ApplyDiff(IndexClassInfoDictionary classInfo, List<TypeParameterResolvesDiff> resolvesDiff)
+        internal static void ApplyDiff(IndexClassInfoDictionary classInfo, List<TypeParameterResolvesDiff> resolvesDiff)
         {
             foreach (var diff in resolvesDiff)
             {
