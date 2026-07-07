@@ -6,7 +6,7 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference
 {
-    public class ClassMetaInfoDictionary : Dictionary<ElementId, ClassMetaInfo>
+    internal class ClassMetaInfoDictionary : Dictionary<ElementId, ClassMetaInfo>
     {
         public ClassMetaInfoDictionary()
         {
@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         }
     }
 
-    public class IndexClassInfoDictionary : Dictionary<ElementId, IndexClassInfo>
+    internal class IndexClassInfoDictionary : Dictionary<ElementId, IndexClassInfo>
     {
         public IndexClassInfoDictionary()
         {
@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         }
     }
 
-    public class IndexClassInfo
+    internal class IndexClassInfo
     {
         public IndexClassInfo(string className, bool isTypeParameter = false)
             : this(className, isTypeParameter, new CountingSet<ElementId>(), new CountingSet<ElementId>(),
@@ -62,25 +62,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         public CountingSet<ElementId> Inheritors { get; } //or resolves
 
         public CountingSet<ElementId> SerializeReferenceHolders { get; }
-
-        //partial classes: several files can declare the same type. Count declaring files so the entry
-        //survives until the last one is removed. Placeholders (referenced-only super classes / type
-        //parameters) stay at 0 and live while their relationship sets are non-empty.
-        private int myDeclarationCount;
-
-        //applies a declaration add/remove; returns true when the entry is no longer referenced and can be dropped
-        internal bool ApplyDeclarationDelta(DiffType diffType, bool isNewDeclaration)
-        {
-            if (diffType == DiffType.Removed)
-            {
-                myDeclarationCount--;
-                return myDeclarationCount <= 0 && IsEmpty();
-            }
-
-            if (isNewDeclaration)
-                myDeclarationCount++;
-            return false;
-        }
 
         public bool IsEmpty()
         {

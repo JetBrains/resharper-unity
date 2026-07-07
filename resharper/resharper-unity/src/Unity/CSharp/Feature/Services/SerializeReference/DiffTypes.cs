@@ -18,18 +18,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         public readonly int Index;
         public readonly string ClassName;
         public readonly List<CountingSetDiff> SerializeReferenceHoldersDiff;
-        //true when this file starts declaring the type parameter (was absent in the old data)
-        public readonly bool IsNewDeclaration;
 
         public TypeParametersSetDiff(ElementId id, DiffType diffType, int index, string className,
-            List<CountingSetDiff> serializeReferenceHoldersDiff, bool isNewDeclaration = false)
+            List<CountingSetDiff> serializeReferenceHoldersDiff)
         {
             Id = id;
             DiffType = diffType;
             Index = index;
             ClassName = className;
             SerializeReferenceHoldersDiff = new List<CountingSetDiff>(serializeReferenceHoldersDiff);
-            IsNewDeclaration = isNewDeclaration;
         }
     }
 
@@ -97,17 +94,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         public readonly ElementId ElementId;
         public readonly ClassMetaInfoDiff MetaInfoDiff;
         public readonly DiffType DiffType;
-        //true when this file starts declaring the type (was absent in the old data)
-        public readonly bool IsNewDeclaration;
 
 
-        public TypeToInterfaceDiff(ElementId elementId, ClassMetaInfoDiff metaInfoDiff, DiffType diffType,
-            bool isNewDeclaration = false)
+        public TypeToInterfaceDiff(ElementId elementId, ClassMetaInfoDiff metaInfoDiff, DiffType diffType)
         {
             ElementId = elementId;
             MetaInfoDiff = metaInfoDiff;
             DiffType = diffType;
-            IsNewDeclaration = isNewDeclaration;
         }
     }
 }
