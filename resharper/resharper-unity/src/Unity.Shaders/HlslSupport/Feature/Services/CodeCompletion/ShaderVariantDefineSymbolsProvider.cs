@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectL
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Info;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Presentations;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Matching;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
 using JetBrains.ReSharper.Feature.Services.Cpp.CodeCompletion;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;

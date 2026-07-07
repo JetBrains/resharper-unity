@@ -13,7 +13,6 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectL
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Info;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Matching;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.LookupItems.Presentation;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.Descriptions;
@@ -331,8 +330,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     return new SimplePresentation(displayName, image, marker);
                 })
                 .WithBehavior(_ => new UnityEventFunctionBehavior(textualInfo, eventFunction, accessRights))
-                .WithMatcher(LookupItemMatcher.CustomText(
-                    modifier + eventFunction.Name, LookupItemMatcher.Qualified(' ', LookupItemMatcher.Literal)));
+                .WithMatcher(modifier + eventFunction.Name, LookupItemMatcher.Qualified(' ', LookupItemMatcher.Literal));
 
             var description = GetDescription(context, methodDeclaration);
             return new WrappedLookupItem<UnityEventFunctionTextualInfo>(lookupItem, description);
@@ -607,7 +605,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             public ILookupItemPresentation Presentation => myLookupItem.Presentation;
 
-            public ILookupItemMatcher Matcher => myLookupItem.Matcher;
+            public string TextToMatch => myLookupItem.TextToMatch;
+            public LookupItemMatcher MatchingRule => myLookupItem.MatchingRule;
 
             public void UpdateBehavior<TBehavior>(Func<TBehavior, TBehavior> fUpdateBehavior) where TBehavior : class, ILookupItemBehavior
                 => myLookupItem.UpdateBehavior(fUpdateBehavior);
