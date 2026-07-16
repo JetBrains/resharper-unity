@@ -24,7 +24,7 @@ PhysicsỤp̣dateBehaviour2D
 ỤISystemP̣rofilerApi
 WaitForFixedỤp̣date
                             [PrefixMatch, ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, FromFullEvaluation]
-protected override |Ụp̣date|() |{ … }    void    OrderStr=Update
+protected override |Ụp̣date|() { … }    void    OrderStr=Update
                             [PrefixMatch, TypesAndNamespaces, NotImportedType, FromFullEvaluation]
 Ụp̣date |(in UnityEngine.PlayerLoop)
 Ụp̣dateAllRenderers |(in UnityEngine.PlayerLoop.PostLateUpdate)
@@ -257,7 +257,7 @@ UnityWebRequestỤp̣date |(in UnityEngine.PlayerLoop.EarlyUpdate)
 ỤnmanagedFunctionP̣ointerAttribute |(in System.Runtime.InteropServices)
 ỤnserializeAndP̣asteDelegate |(in UnityEditor.Experimental.GraphView.GraphView)
 ỤnwrapP̣aram |(in UnityEditor)
-protected override |Ụp̣date|() |{ … }    void    OrderStr=Update
+protected override |Ụp̣date|() { … }    void    OrderStr=Update
 Ụp̣date |(in UnityEngine.PlayerLoop)
 Ụp̣dateAllRenderers |(in UnityEngine.PlayerLoop.PostLateUpdate)
 Ụp̣dateAllSkinnedMeshes |(in UnityEngine.PlayerLoop.PostLateUpdate)
