@@ -4,6 +4,7 @@ import com.intellij.openapi.util.registry.RegistryManager
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.unity.test.framework.api.removeAllUnityPausepoints
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.RiderTestTimeout
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -129,6 +130,9 @@ class DotsDebuggerTestUnity2022 : DotsDebuggerTest() {
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6)
 class DotsDebuggerTestUnity6 : DotsDebuggerTest() {
+    init {
+        addMute(Mute("RIDER-133998"), ::checkUnityPausePoint)
+    }
 }
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
