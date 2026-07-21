@@ -66,7 +66,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 var valueType = valueRole.ValueReference.GetValueType(options, ValueServices.ValueMetadataProvider);
                 if (valueType.Equals(instanceType))
                 {
-                    var scenePathValue = GetGameObjectScenePath(valueRole, options);
+                    var scenePathValue = GetGameObjectScenePath(valueRole, options, token);
                     if (scenePathValue != null) yield return scenePathValue;
                 }
             }
@@ -76,14 +76,14 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
         }
 
         private IValueEntity? GetGameObjectScenePath(IObjectValueRole<TValue> componentRole,
-                                                     IPresentationOptions options)
+            IPresentationOptions options, CancellationToken token)
         {
             var gameObjectRole = Logger.CatchEvaluatorException<TValue, IObjectValueRole<TValue>?>(
                 () => componentRole.GetInstancePropertyReference("gameObject", true)
                     ?.AsObjectSafe(options),
                 exception => Logger.LogThrownUnityException(exception, componentRole.ValueReference.OriginatingFrame,
                     ValueServices, options));
-            return ScenePathValueHelper.GetScenePathValue(gameObjectRole, options, ValueServices, Logger);
+            return ScenePathValueHelper.GetScenePathValue(gameObjectRole, options, token, ValueServices, Logger);
         }
     }
 }

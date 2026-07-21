@@ -46,7 +46,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private UnityTextureDebuggerHelper<TValue>? myHelper;
         private readonly string myAssemblyAbsolutePath = string.Empty;
 
-        public UnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<TValue> factory,
+        protected UnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<TValue> factory,
             IKnownTypes<TValue> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions)
         {
             myLogger = logger;
@@ -185,19 +185,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                         break;
                     case nameof(UnityTextureInfo.Pixels):
                         var arrayValueRole = valueReference.AsArray(valueFetchOptions);
-                        var length = arrayValueRole.Dimensions[0];
-                        
-                        // TODO: this works, but it's pretty horrible performance-wise,
-                        // let's see if we can get something like arrayValueRole.GetRawElementValues<int>() that would
-                        // read directly from memory when possible without creating all the wrappers
-                        pixels = new List<int>(length);
-                        for (var i = 0; i < length; i++)
-                        {
-                            var colorValueRef = arrayValueRole.GetElementReference(i);
-                            var colorValue = colorValueRef.AsPrimitive(valueFetchOptions).GetPrimitive();
-                            pixels.Add((int)colorValue);
-                        }
-
+                        pixels = new(arrayValueRole.ReadAllElements<TValue, int>());
                         break;
                     case nameof(UnityTextureInfo.TextureName):
                         textureName = valueReference.AsStringSafe(valueFetchOptions)?.GetString();

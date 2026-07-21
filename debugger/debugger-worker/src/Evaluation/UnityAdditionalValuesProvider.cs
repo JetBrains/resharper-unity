@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values;
 using JetBrains.Lifetimes;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
@@ -207,7 +208,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 return null;
             }
 
-            var opEqualityMethod = sceneType.GetMethods().FirstOrDefault(m => m.IsStatic && m.Parameters.Length == 2 && m.Name == "op_Equality");
+            var opEqualityMethod = sceneType.GetMethods().FirstOrDefault(m => m.IsStatic && m.Parameters.Length == 2 && m.Name == StandardOperatorNames.Equality);
             if (opEqualityMethod == null)
             {
                 myLogger.Warn("Unable to find Scene.op_Equality method");

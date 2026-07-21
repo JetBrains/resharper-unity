@@ -68,7 +68,7 @@ class UnityExeConfiguration(name: String,
     private fun toDotNetExecutable(): DotNetExecutable {
         // copy the env vars map in case someone might mutate it per run and we don't want to persist those changes between the runs
         // e.g., currently DpaExtension does this by adding entries to DOTNET_DiagnosticPorts, so giving it a copy prevents them from accumulating
-        val envVars = parameters.envs.toMutableMap();
+        val envVars = parameters.envs.toMutableMap()
         return DotNetExecutable(parameters.exePath,
                                 null,
                                 parameters.workingDirectory,

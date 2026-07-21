@@ -1,5 +1,4 @@
 using System;
-using Mono.Debugger.Soft;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Soft.CallStacks;

@@ -86,7 +86,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             // TODO: Make "Scene Path" lazy in 212
             if (mySession.EvaluationOptions.AllowTargetInvoke)
             {
-                var scenePathValue = ScenePathValueHelper.GetScenePathValue(valueRole, options, ValueServices, Logger);
+                var scenePathValue = ScenePathValueHelper.GetScenePathValue(valueRole, options, token, ValueServices, Logger);
                 if (scenePathValue != null) yield return scenePathValue;
             }
 

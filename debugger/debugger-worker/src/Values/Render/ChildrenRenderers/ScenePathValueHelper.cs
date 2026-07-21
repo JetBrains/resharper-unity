@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
 using Mono.Debugging.Backend.Values;
@@ -20,9 +21,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             && m.Parameters[1].Type.Is("UnityEngine.Transform"));
 
         public static IValueEntity? GetScenePathValue<TValue>(IObjectValueRole<TValue>? gameObjectRole,
-                                                              IPresentationOptions options,
-                                                              IValueServicesFacade<TValue> valueServices,
-                                                              ILogger logger)
+            IPresentationOptions options,
+            CancellationToken token,
+            IValueServicesFacade<TValue> valueServices,
+            ILogger logger)
             where TValue : class
         {
             if (gameObjectRole == null) return null;
@@ -61,6 +63,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                         var currentTransformRole = targetTransformRole;
                         while (currentTransformRole != null)
                         {
+                            token.ThrowIfCancellationRequested(); // just in case we ever get into infinite loop here (we shouldn't)
                             var transformName = currentTransformRole.GetInstancePropertyReference("name", searchInBases: true)
                                 ?.AsStringSafe(options)?.GetString() ?? "<unnamed>";
                             list.Add(transformName);
