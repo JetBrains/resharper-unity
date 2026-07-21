@@ -620,6 +620,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             public TInfo Info => myLookupItem.Info;
 
             #endregion
+
+            public string FastDisplayText => myLookupItem.Info.FastDisplayText;
+            public IconId FastImage => myLookupItem.Info.FastImage;
         }
 
         // TODO [vkrasnotsvetov, 193] : patch this logic in JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.Rules.Generate.OverrideRule
