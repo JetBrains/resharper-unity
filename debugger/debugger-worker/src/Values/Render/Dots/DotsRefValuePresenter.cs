@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers;
 using JetBrains.Util;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values.Render.ChildrenRenderers;
 using Mono.Debugging.Backend.Values.ValueReferences;
@@ -10,6 +11,7 @@ using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.Dots
 {
@@ -36,8 +38,23 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.Dots
             "Unity.Entities.Internal.InternalCompilerInterface+UncheckedRefRW`1",
         });
     }
-    
+
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
+    public class MonoDotsRefValuePresenter : DotsRefValuePresenter<Value>
+    {
+        public MonoDotsRefValuePresenter(IUnityOptions unityOptions) : base(unityOptions)
+        {
+        }
+    }
+
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorDotsRefValuePresenter : DotsRefValuePresenter<ICorValue>
+    {
+        public CorDotsRefValuePresenter(IUnityOptions unityOptions) : base(unityOptions)
+        {
+        }
+    }
+    
     public class DotsRefValuePresenter<TValue> : FilteredObjectChildrenRendererBase<TValue>
         where TValue : class
     {
@@ -45,8 +62,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.Dots
 
         private readonly IUnityOptions myUnityOptions;
 
- 
-        public DotsRefValuePresenter(IUnityOptions unityOptions)
+
+        protected DotsRefValuePresenter(IUnityOptions unityOptions)
         {
             myUnityOptions = unityOptions;
         }
@@ -57,29 +74,43 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.Dots
             var genericTypeName = instanceType.GetGenericTypeDefinition().FullName;
             if(!DotsUnityConstants.SupportedInternalRefTypes.Contains(genericTypeName))
             {
-                //Get all children from ValueRO property
                 var isValidProperty = valueRole.GetInstancePropertyReference(DotsUnityConstants.IsValidPropertyName);
                 if (isValidProperty == null)
                     Logger.Warn("Unable to retrieve IsValid property");
                 else
                     yield return isValidProperty.ToValue(ValueServices);
             }
-
             
-            var valueRoRefRole = valueRole.GetInstancePropertyReference(DotsUnityConstants.ValueRoPropertyName)?.AsObjectSafe(options);
-
-            if (valueRoRefRole == null)
+            IValueReference<TValue>? valueRoRef = valueRole.GetInstancePropertyReference(DotsUnityConstants.ValueRoPropertyName);
+            if (valueRoRef == null)
             {
                 Logger.Warn("Unable to retrieve ValueRO property");
             }
             else
             {
-                var children = options.FlattenHierarchy
-                    ? ChildrenRenderingUtil.EnumerateMembersFlat(valueRoRefRole, options, token, ValueServices)
-                    : ChildrenRenderingUtil.EnumerateMembersWithBaseNode(valueRoRefRole, options, token, ValueServices);
-            
-                foreach (var child in children)
-                    yield return child;
+                var valueRoRefRole = valueRoRef.GetPrimaryRole(options);
+
+                // in CoreCLR the refs are not automatically dereferenced, so we do it here to get the underlying value
+                if (valueRoRefRole is IPointerLikeValueRole<TValue> pointerLike)
+                {
+                    valueRoRef = pointerLike.UnderlyingValueReference;
+                    valueRoRefRole = valueRoRef.GetPrimaryRole(options);
+                }
+
+                if (valueRoRefRole is IObjectValueRole<TValue> objectValueRole)
+                {
+                    var children = options.FlattenHierarchy
+                        ? ChildrenRenderingUtil.EnumerateMembersFlat(objectValueRole, options, token, ValueServices)
+                        : ChildrenRenderingUtil.EnumerateMembersWithBaseNode(objectValueRole, options, token,
+                            ValueServices);
+
+                    foreach (var child in children)
+                        yield return child;
+                }
+                else
+                {
+                    yield return valueRoRef.ToValue(ValueServices);
+                }
             }
 
             // Disable debugger type proxy options to avoid recursion. See IsApplicable.

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Backend.Values.Render.ValuePresenters;
@@ -13,10 +14,26 @@ using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
+    public class MonoExternalDebuggerDisplayObjectPresenter : ExternalDebuggerDisplayObjectPresenter<Value>
+    {
+        public MonoExternalDebuggerDisplayObjectPresenter(IUnityOptions unityOptions, ILogger logger) : base(unityOptions, logger)
+        {
+        }
+    }
+    
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorExternalDebuggerDisplayObjectPresenter : ExternalDebuggerDisplayObjectPresenter<ICorValue>
+    {
+        public CorExternalDebuggerDisplayObjectPresenter(IUnityOptions unityOptions, ILogger logger) : base(unityOptions, logger)
+        {
+        }
+    }
+    
     public class ExternalDebuggerDisplayObjectPresenter<TValue> : ValuePresenterBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
     {
@@ -71,7 +88,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
         // dictionary for this. Special case it until we have more instances.
         private const string GameObjectDebuggerDisplayStringWithoutName = "active: {activeInHierarchy}, layer: {layer}";
 
-        public ExternalDebuggerDisplayObjectPresenter(IUnityOptions unityOptions, ILogger logger)
+        protected ExternalDebuggerDisplayObjectPresenter(IUnityOptions unityOptions, ILogger logger)
         {
             myUnityOptions = unityOptions;
             myLogger = logger;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
@@ -27,21 +28,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             if (gameObjectRole == null) return null;
             return logger.CatchEvaluatorException<TValue, IValueEntity?>(() =>
                 {
-                    // Only available in the editor. Not available for players, where we'll display nothing.
-                    // TODO: Hand roll this for players. Simply follow transform.parent
-                    // However, this will obviously be more expensive to calculate
                     var frame = gameObjectRole.ValueReference.OriginatingFrame;
-                    var animationUtilityType =
-                        valueServices.GetReifiedType(frame, "UnityEditor.AnimationUtility, UnityEditor")
-                        ?? valueServices.GetReifiedType(frame, "UnityEditor.AnimationUtility, UnityEditor.CoreModule");
-                    var method = animationUtilityType?.MetadataType.GetMethods()
-                        .FirstOrDefault(ourCalculateTransformPathSelector);
-                    if (animationUtilityType == null || method == null)
-                    {
-                        logger.Trace(
-                            "Unable to get metadata for AnimationUtility.CalculateTransformPath method. Is this a player?");
-                        return null;
-                    }
 
                     var targetTransformReference = gameObjectRole.GetInstancePropertyReference("transform");
                     var targetTransformRole = targetTransformReference?.AsObjectSafe(options);
@@ -59,21 +46,49 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                         return null;
                     }
 
-                    var rootTransformName = rootTransformRole.GetInstancePropertyReference("name", true)
-                        ?.AsStringSafe(options)?.GetString() ?? "";
-
-                    var pathValue = animationUtilityType.CallStaticMethod(frame, options, method,
-                        targetTransformReference.GetValue(options), rootTransformReference.GetValue(options));
-                    var path = new SimpleValueReference<TValue>(pathValue, frame, valueServices.RoleFactory)
-                        .AsStringSafe(options)?.GetString();
-                    if (path == null)
+                    string fullPath;
+                    var animationUtilityType =
+                        valueServices.GetReifiedType(frame, "UnityEditor.AnimationUtility, UnityEditor")
+                        ?? valueServices.GetReifiedType(frame, "UnityEditor.AnimationUtility, UnityEditor.CoreModule");
+                    var method = animationUtilityType?.MetadataType.GetMethods()
+                        .FirstOrDefault(ourCalculateTransformPathSelector);
+                    if (animationUtilityType == null || method == null)
                     {
-                        // We expect empty string at least
-                        logger.Warn("Unexpected null returned from AnimationUtility.CalculateTransformPath");
-                        return null;
+                        logger.Trace(
+                            "Unable to get metadata for AnimationUtility.CalculateTransformPath method. This is probably a player, falling back to following parents");
+
+                        var list = new List<string>();
+                        var currentTransformRole = targetTransformRole;
+                        while (currentTransformRole != null)
+                        {
+                            var transformName = currentTransformRole.GetInstancePropertyReference("name", searchInBases: true)
+                                ?.AsStringSafe(options)?.GetString() ?? "<unnamed>";
+                            list.Add(transformName);
+                            currentTransformRole = currentTransformRole.GetInstancePropertyReference("parent", searchInBases: true)?.AsObjectSafe(options);
+                        }
+
+                        list.Reverse();
+                        fullPath = string.Join("/", list);
+                    }
+                    else
+                    {
+                        var pathValue = animationUtilityType.CallStaticMethod(frame, options, method,
+                            targetTransformReference.GetValue(options), rootTransformReference.GetValue(options));
+                        var path = new SimpleValueReference<TValue>(pathValue, frame, valueServices.RoleFactory)
+                            .AsStringSafe(options)?.GetString();
+                        if (path == null)
+                        {
+                            // We expect empty string at least
+                            logger.Warn("Unexpected null returned from AnimationUtility.CalculateTransformPath");
+                            return null;
+                        }
+
+                        var rootTransformName = rootTransformRole.GetInstancePropertyReference("name", true)
+                            ?.AsStringSafe(options)?.GetString() ?? "";
+
+                        fullPath = path == "" ? rootTransformName : rootTransformName + "/" + path;
                     }
 
-                    var fullPath = path.IsNullOrEmpty() ? rootTransformName : rootTransformName + "/" + path;
                     var fullPathValue = valueServices.ValueFactory.CreateString(frame, options, fullPath);
 
                     // Don't show type presentation. This is informational, rather than an actual property

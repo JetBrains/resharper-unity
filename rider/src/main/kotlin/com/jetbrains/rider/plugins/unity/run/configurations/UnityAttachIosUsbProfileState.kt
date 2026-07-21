@@ -8,6 +8,7 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityIosUsbStartInfo
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityProjectData
 import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import kotlin.io.path.isDirectory
@@ -33,10 +34,9 @@ class UnityAttachIosUsbProfileState(private val project: Project,
 
         return UnityIosUsbStartInfo(iosSupportPath.toString(),
             deviceId,
+            getUnityProjectData(project),
             monoDebugEngine.host,
             monoDebugEngine.port,
-            false,
-            getUnityBundlesList(),
-            getUnityPackagesList(project))
+            false)
     }
 }

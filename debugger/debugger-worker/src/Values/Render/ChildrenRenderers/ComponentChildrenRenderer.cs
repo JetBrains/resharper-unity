@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Util;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
@@ -9,19 +10,35 @@ using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     // Replaces the default children renderer for UnityEngine.Component. Filters out deprecated properties and adds a
     // Scene Path value, showing the path to the component's gameObject in the scene.
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
+    public class MonoComponentChildrenRenderer : ComponentChildrenRenderer<Value>
+    {
+        public MonoComponentChildrenRenderer(IDebuggerSession session, IUnityOptions unityOptions) : base(session, unityOptions)
+        {
+        }
+    }
+
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorComponentChildrenRenderer : ComponentChildrenRenderer<ICorValue>
+    {
+        public CorComponentChildrenRenderer(IDebuggerSession session, IUnityOptions unityOptions) : base(session, unityOptions)
+        {
+        }
+    }
+
     public class ComponentChildrenRenderer<TValue> : DeprecatedPropertyFilteringChildrenRendererBase<TValue>
         where TValue : class
     {
         private readonly IDebuggerSession mySession;
         private readonly IUnityOptions myUnityOptions;
 
-        public ComponentChildrenRenderer(IDebuggerSession session, IUnityOptions unityOptions)
+        protected ComponentChildrenRenderer(IDebuggerSession session, IUnityOptions unityOptions)
         {
             mySession = session;
             myUnityOptions = unityOptions;

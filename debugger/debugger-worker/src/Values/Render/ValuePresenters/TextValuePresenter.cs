@@ -1,6 +1,7 @@
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Backend.Values.Render.ValuePresenters;
@@ -8,17 +9,33 @@ using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
     // Overrides StringValuePresenter for our "informational" values, without normal string highlighting/quote handling
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
+    public class MonoTextValuePresenter : TextValuePresenter<Value>
+    {
+        public MonoTextValuePresenter(IUnityOptions unityOptions) : base(unityOptions)
+        {
+        }
+    }
+    
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorTextValuePresenter : TextValuePresenter<ICorValue>
+    {
+        public CorTextValuePresenter(IUnityOptions unityOptions) : base(unityOptions)
+        {
+        }
+    }
+
     public class TextValuePresenter<TValue> : ValuePresenterBase<TValue, IStringValueRole<TValue>>
         where TValue : class
     {
         private readonly IUnityOptions myUnityOptions;
 
-        public TextValuePresenter(IUnityOptions unityOptions)
+        protected TextValuePresenter(IUnityOptions unityOptions)
         {
             myUnityOptions = unityOptions;
         }

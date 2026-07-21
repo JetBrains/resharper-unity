@@ -17,14 +17,25 @@ using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.MetadataLite.Services;
 using Mono.Debugging.Soft;
 using Mono.Debugging.TypeSystem;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class UnityAdditionalValuesProvider : UnityAdditionalValuesProvider<Value>
+    public class MonoUnityAdditionalValuesProvider : UnityAdditionalValuesProvider<Value>
     {
-        public UnityAdditionalValuesProvider(IDebuggerSession session, IValueServicesFacade<Value> valueServices,
+        public MonoUnityAdditionalValuesProvider(IDebuggerSession session, IValueServicesFacade<Value> valueServices,
                                              IUnityOptions unityOptions, ILogger logger, IValueFactory<Value> factory)
+            : base(session, valueServices, unityOptions, logger, factory)
+        {
+        }
+    }
+
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorUnityAdditionalValuesProvider : UnityAdditionalValuesProvider<ICorValue>
+    {
+        public CorUnityAdditionalValuesProvider(IDebuggerSession session, IValueServicesFacade<ICorValue> valueServices,
+            IUnityOptions unityOptions, ILogger logger, IValueFactory<ICorValue> factory)
             : base(session, valueServices, unityOptions, logger, factory)
         {
         }
@@ -156,8 +167,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private List<IValueEntity> GetLoadedScenes(IStackFrame frame, IReifiedType<TValue> sceneManagerType,
             IMetadataMethodLite getSceneAtMethod, int scenesCount, TValue activeScene, Lifetime lifetime)
         {
-            var activeSceneHandle = TryGetActiveSceneHandle(activeScene);
-
+            var sceneEqualityMethod = GetSceneEqualityMethod(frame);
+            
             var loadedScenes = new List<IValueEntity>();
             for (int i = 0; i < scenesCount; i++)
             {
@@ -177,46 +188,43 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
                 var defaultName = i.ToString();
 
-                var sceneAtIndexHandle = TryGetActiveSceneHandle(sceneAtIndex);
-
-                if (sceneAtIndexHandle != 0 && sceneAtIndexHandle == activeSceneHandle)
+                if (sceneEqualityMethod != null && CallSceneEqualityMethod(sceneEqualityMethod, frame, sceneAtIndex, activeScene))
                     defaultName += " (Active)";
 
                 loadedScenes.Add(CreateValueEntity(sceneAtIndex, defaultName, sceneManagerType.MetadataType, frame));
             }
 
             return loadedScenes;
-
-            int TryGetActiveSceneHandle(TValue sceneValue)
-            {
-                // A Unity Scene is a thin wrapper around an integer handle (assigned by native code) that we use to
-                // tell scenes apart and find the active one. Which struct actually stores that int has gained an extra
-                // layer of wrapping across Unity versions, each nested inside the previous struct's first field:
-                //   - pre-6.0: Scene holds the int handle directly
-                //   - 6.0:     Scene -> SceneHandle -> int
-                //   - 6.3+:    Scene -> SceneHandle -> EntityId -> int
-                // The payload always sits in the first field, so descend Fields[0] (up to 3 levels) until we hit the int.
-                object currentValue = sceneValue;
-                for (var depth = 0; depth < 3; depth++)
-                {
-                    if (currentValue is StructMirror structMirror && structMirror.Fields.Length > 0)
-                    {
-                        var field = structMirror.Fields[0];
-                        if (field is PrimitiveValue { Value: int handle })
-                            return handle;
-                        currentValue = field;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                
-                // no int found (unexpected layout) - return 0, the same value native uses for "no scene"
-                return 0;
-            }
         }
 
+        private IMetadataMethodLite? GetSceneEqualityMethod(IStackFrame frame)
+        {
+            var sceneType = myValueServices.TypeUniverse.GetTypeByAssemblyQualifiedName(frame, "UnityEngine.SceneManagement.Scene, UnityEngine.CoreModule")
+                            ?? myValueServices.TypeUniverse.GetTypeByAssemblyQualifiedName(frame, "UnityEngine.SceneManagement.Scene, UnityEngine");
+            if (sceneType == null)
+            {
+                myLogger.Warn("Unable to get typeof(Scene). Not a Unity project?");
+                return null;
+            }
+
+            var opEqualityMethod = sceneType.GetMethods().FirstOrDefault(m => m.IsStatic && m.Parameters.Length == 2 && m.Name == "op_Equality");
+            if (opEqualityMethod == null)
+            {
+                myLogger.Warn("Unable to find Scene.op_Equality method");
+                return null;
+            }
+            
+            return opEqualityMethod;
+        }
+
+        private bool CallSceneEqualityMethod(IMetadataMethodLite sceneOpEquality, IStackFrame frame, TValue sceneA, TValue sceneB)
+        {
+            var resultValue = myValueServices.KnownTypes.Invocator.CallMethod(frame, mySession.EvaluationOptions,
+                sceneOpEquality.OwnerType, sceneOpEquality, null, sceneA, sceneB);
+            var resultValueRef = new SimpleValueReference<TValue>(resultValue, frame, myValueServices.RoleFactory);
+            return resultValueRef.AsPrimitive(mySession.EvaluationOptions).GetPrimitive<bool>();
+        }
+        
         private IMetadataMethodLite? GetDontDestroyOnLoadSceneMethod(IReifiedType<TValue>? editorSceneManagerType)
         {
             var getDontDestroyOnLoadSceneMethod = editorSceneManagerType?.MetadataType.GetMethods()
@@ -295,6 +303,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
             return sceneManagerType;
         }
+        
         private IReifiedType<TValue>? GetEditorSceneManagerType(IStackFrame frame)
         {
             var sceneManagerType = myValueServices.GetReifiedType(frame,

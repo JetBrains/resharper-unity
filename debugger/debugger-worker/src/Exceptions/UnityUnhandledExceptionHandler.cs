@@ -5,6 +5,7 @@ using Mono.Debugging.Soft.Exceptions;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Exceptions
 {
+    // TODO: check whether this still makes sense with CoreCLR
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class UnityUnhandledExceptionHandler : ISoftDebuggerUnhandledExceptionHandler, ISoftDebuggerNonUserHandledExceptionHandler
     {

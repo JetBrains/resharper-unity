@@ -10,10 +10,16 @@ import com.intellij.execution.ui.RunConfigurationStartHistory
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.platform.backend.workspace.WorkspaceModel
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.flowInto
 import com.jetbrains.rd.util.threading.coroutines.launch
+import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
 import com.jetbrains.rider.plugins.unity.UnityPluginEnvironment
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityBundleInfo
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityProjectData
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.unityDebuggerWorkerModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator.Companion.RUN_DEBUG_ATTACH_UNITY_CONFIGURATION_NAME
 import com.jetbrains.rider.plugins.unity.run.UnityAndroidAdbPlayer
 import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
@@ -227,4 +233,20 @@ fun getUnityBundlesList(): List<UnityBundleInfo> {
 fun getUnityPackagesList(project: Project): List<String>{
     val allPackages = WorkspaceModel.getInstance(project).getPackages()
     return allPackages.map { it.packageId }
+}
+
+fun getUnityProjectData(project: Project): UnityProjectData {
+    return UnityProjectData(getUnityBundlesList(), getUnityPackagesList(project))
+}
+
+fun FrontendBackendModel.bindDebuggerWorkerSettings(debuggerWorkerModel: DebuggerWorkerModel, lifetime: Lifetime) {
+    val unityDebuggerWorkerModel = debuggerWorkerModel.unityDebuggerWorkerModel
+    backendSettings.enableDebuggerExtensions.flowInto(lifetime,
+        unityDebuggerWorkerModel.showCustomRenderers)
+    backendSettings.ignoreBreakOnUnhandledExceptionsForIl2Cpp.flowInto(lifetime,
+        unityDebuggerWorkerModel.ignoreBreakOnUnhandledExceptionsForIl2Cpp)
+    backendSettings.forcedTimeoutForAdvanceUnityEvaluation.flowInto(lifetime,
+        unityDebuggerWorkerModel.forcedTimeoutForAdvanceUnityEvaluation)
+    backendSettings.breakpointTraceOutput.flowInto(lifetime,
+        unityDebuggerWorkerModel.breakpointTraceOutput)
 }

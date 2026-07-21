@@ -1,11 +1,12 @@
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.SessionStartup;
+using JetBrains.Rider.Model.DebuggerWorker;
 using Mono.Debugging.Autofac;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
     public abstract class UnityStartInfoHandlerBase<T> : ModelStartInfoHandlerBase<T>
-        where T : UnityStartInfoBase
+        where T : DebuggerStartInfoBase, UnityStartInfo
     {
         protected UnityStartInfoHandlerBase(DebuggerType debuggerType) : base(debuggerType)
         {

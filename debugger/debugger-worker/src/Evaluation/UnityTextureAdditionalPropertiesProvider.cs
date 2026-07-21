@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Plugins.Unity.Resources;
+using JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.DebuggerWorker;
 using JetBrains.Util;
@@ -15,38 +16,52 @@ using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.Services;
 using Mono.Debugging.Soft;
-using Mono.Debugging.Soft.Values.ValueRoles;
 using Mono.Debugging.TypeSystem.KnownTypes;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    internal class UnityTextureAdditionalPropertiesProvider : IAdditionalObjectPropertiesProvider
+    internal class MonoUnityTextureAdditionalPropertiesProvider : UnityTextureAdditionalPropertiesProvider<Value>
+    {
+        public MonoUnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<Value> factory, IKnownTypes<Value> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions) : base(logger, factory, knownTypes, creationInfo, unityOptions)
+        {
+        }
+    }
+
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    internal class CorUnityTextureAdditionalPropertiesProvider : UnityTextureAdditionalPropertiesProvider<ICorValue>
+    {
+        public CorUnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<ICorValue> factory, IKnownTypes<ICorValue> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions) : base(logger, factory, knownTypes, creationInfo, unityOptions)
+        {
+        }
+    }
+
+    internal class UnityTextureAdditionalPropertiesProvider<TValue> : IAdditionalObjectPropertiesProvider where TValue : class
     {
         private readonly ILogger myLogger;
-        private readonly IKnownTypes<Value> myKnownTypes;
+        private readonly IKnownTypes<TValue> myKnownTypes;
 
         private readonly IUnityOptions myUnityOptions;
-        private UnityTextureDebuggerHelper? myHelper;
+        private UnityTextureDebuggerHelper<TValue>? myHelper;
         private readonly string myAssemblyAbsolutePath = string.Empty;
 
-        public UnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<Value> factory,
-            IKnownTypes<Value> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions)
+        public UnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<TValue> factory,
+            IKnownTypes<TValue> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions)
         {
             myLogger = logger;
             myKnownTypes = knownTypes;
             myUnityOptions = unityOptions;
 
-            if (creationInfo.StartInfo is UnityStartInfoBase unityStartInfo)
+            if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {
-                var unityBundleInfo =
-                    unityStartInfo.Bundles.FirstOrDefault(b => b.Id.Equals(UnityTextureDebuggerHelper.AssemblyName));
+                var unityBundleInfo = unityStartInfo.GetProjectData().Bundles.FirstOrDefault(b => b.Id.Equals(UnityTextureDebuggerHelper<TValue>.AssemblyName));
                 if (unityBundleInfo != null)
                     myAssemblyAbsolutePath = unityBundleInfo.AbsolutePath;
                 else
                 {
                     myAssemblyAbsolutePath = string.Empty;
-                    myLogger.Error($"UnityBundles don't contain required one '{UnityTextureDebuggerHelper.AssemblyName}'");
+                    myLogger.Error($"UnityBundles don't contain required one '{UnityTextureDebuggerHelper<TValue>.AssemblyName}'");
                 }
             }
         }
@@ -62,7 +77,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 return null;
 
             var primaryRole = value.GetPrimaryRole(options);
-            if (primaryRole is not IValueRole<Value> objectValueRole)
+            if (primaryRole is not IValueRole<TValue> objectValueRole)
                 return null;
 
             var objectAction = new UnityTexturePropertiesData();
@@ -83,7 +98,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             return new UnityTextureAdditionalActionResult(errorMessage, null, false);
         }
 
-        private UnityTextureAdditionalActionResult DoTextureCalculations(Value softValue, IValueFetchOptions options,
+        private UnityTextureAdditionalActionResult DoTextureCalculations(TValue softValue, IValueFetchOptions options,
             IStackFrame frame,
             UnityTextureAdditionalActionParams evaluationParameters, Lifetime lifetime)
         {
@@ -97,7 +112,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             {
                 //Loading helpers dll
                 if (myHelper == null || frame.GetAppDomainId() != myHelper.DomainTypes.AppDomainId)
-                    myHelper = UnityTextureDebuggerHelper.CreateHelper(frame, valueFetchOptions, myKnownTypes,
+                    myHelper = UnityTextureDebuggerHelper<TValue>.CreateHelper(frame, valueFetchOptions, myKnownTypes,
                         myAssemblyAbsolutePath);
             }
             catch (Exception e)
@@ -113,13 +128,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 //Loading the texture
                 var value = myHelper.GetPixels(softValue).Call(frame, valueFetchOptions);
 
-                if (value is not ObjectMirror objectMirror)
-                    return Error(Strings.UnityTextureDubuggingCannotParseTextureInfo);
-
                 var simpleValueReference =
-                    new SimpleValueReference<Value>(objectMirror, frame, myKnownTypes.RoleFactory);
+                    new SimpleValueReference<TValue>(value, frame, myKnownTypes.RoleFactory);
 
-                if (simpleValueReference.GetPrimaryRole(valueFetchOptions) is not SoftObjectValueRole primaryRole)
+                if (simpleValueReference.GetPrimaryRole(valueFetchOptions) is not IObjectValueRole<TValue> primaryRole)
                     return Error(Strings.UnityTextureDubuggingCannotParseTextureInfo);
 
                 var fieldReferences = primaryRole.GetInstanceFieldReferences();
@@ -133,7 +145,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         }
 
         private UnityTextureAdditionalActionResult GetTextureInfo(
-            IEnumerable<IFieldValueReference<Value>> heightReferences,
+            IEnumerable<IFieldValueReference<TValue>> heightReferences,
             IValueFetchOptions valueFetchOptions, Lifetime lifetime)
         {
             var width = -1;
@@ -174,18 +186,16 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                     case nameof(UnityTextureInfo.Pixels):
                         var arrayValueRole = valueReference.AsArray(valueFetchOptions);
                         var length = arrayValueRole.Dimensions[0];
-
-                        var values = (valueReference.GetValue(valueFetchOptions) as ArrayMirror)?.GetValues(0, length);
-                        if (values == null)
-                        {
-                            hasError = true;
-                            break;
-                        }
-
+                        
+                        // TODO: this works, but it's pretty horrible performance-wise,
+                        // let's see if we can get something like arrayValueRole.GetRawElementValues<int>() that would
+                        // read directly from memory when possible without creating all the wrappers
                         pixels = new List<int>(length);
-                        for (int i = 0; i < length; i++)
+                        for (var i = 0; i < length; i++)
                         {
-                            pixels.Add((int)((PrimitiveValue)values[i]).Value);
+                            var colorValueRef = arrayValueRole.GetElementReference(i);
+                            var colorValue = colorValueRef.AsPrimitive(valueFetchOptions).GetPrimitive();
+                            pixels.Add((int)colorValue);
                         }
 
                         break;

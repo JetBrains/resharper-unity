@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Plugins.Unity.Resources;
+using JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup;
 using JetBrains.Lifetimes;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
@@ -11,30 +12,45 @@ using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Soft;
 using Mono.Debugging.TypeSystem.KnownTypes;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class UnityPausePointHandler : IBreakpointAdditionalActionHandler
+    public class MonoUnityPausePointHandler : UnityPausePointHandler<Value>
+    {
+        public MonoUnityPausePointHandler(SoftDebuggerSession session, IUnityOptions unityOptions, ISessionCreationInfo creationInfo, Lifetime lifetime, IKnownTypes<Value> knownTypes, ILogger logger) : base(session, unityOptions, creationInfo, lifetime, knownTypes, logger)
+        {
+        }
+    }
+
+    // TODO: actually test this when we get CoreCLR editor
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorUnityPausePointHandler : UnityPausePointHandler<ICorValue>
+    {
+        public CorUnityPausePointHandler(CorDebuggerSession session, IUnityOptions unityOptions, ISessionCreationInfo creationInfo, Lifetime lifetime, IKnownTypes<ICorValue> knownTypes, ILogger logger) : base(session, unityOptions, creationInfo, lifetime, knownTypes, logger)
+        {
+        }
+    }
+
+    public class UnityPausePointHandler<TValue> : IBreakpointAdditionalActionHandler where TValue : class
     {
         private readonly ILogger myLogger;
-        private readonly SoftDebuggerSession mySession;
+        private readonly DebuggerSession<TValue> mySession;
         
-        private UnityPausePointHelper? myHelper;
-        private readonly IKnownTypes<Value> myKnownTypes;
+        private UnityPausePointHelper<TValue>? myHelper;
+        private readonly IKnownTypes<TValue> myKnownTypes;
         private readonly string myAssemblyAbsolutePath = string.Empty;
         private readonly IUnityOptions myUnityOptions;
-        
 
         private int EvaluationTimeout => myUnityOptions.ForcedTimeoutForAdvanceUnityEvaluation;
         private bool IsEnabled => !string.IsNullOrEmpty(myAssemblyAbsolutePath) && myUnityOptions.ExtensionsEnabled;
         
-        
-        public UnityPausePointHandler(SoftDebuggerSession session,
+        public UnityPausePointHandler(DebuggerSession<TValue> session,
             IUnityOptions unityOptions,
             ISessionCreationInfo creationInfo,
             Lifetime lifetime,
-            IKnownTypes<Value> knownTypes,
+            IKnownTypes<TValue> knownTypes,
             ILogger logger
         )
         {
@@ -42,10 +58,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
             mySession = session;
             myUnityOptions = unityOptions;
 
-            if (creationInfo.StartInfo is UnityStartInfoBase unityStartInfo)
+            if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {
                 var unityBundleInfo =
-                    unityStartInfo.Bundles.FirstOrDefault(b => b.Id.Equals(UnityPausePointHelper.AssemblyName));
+                    unityStartInfo.GetProjectData().Bundles.FirstOrDefault(b => b.Id.Equals(UnityPausePointHelper<TValue>.AssemblyName));
                 if (unityBundleInfo != null)
                 {
                     myAssemblyAbsolutePath = unityBundleInfo.AbsolutePath;
@@ -53,7 +69,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
                 else
                 {
                     myAssemblyAbsolutePath = string.Empty;
-                    myLogger.Error($"UnityBundles don't contain required one '{UnityPausePointHelper.AssemblyName}'");
+                    myLogger.Error($"UnityBundles don't contain required one '{UnityPausePointHelper<TValue>.AssemblyName}'");
                 }
             }
             
@@ -78,7 +94,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
             try
             {
                 if (myHelper == null || activeFrame.GetAppDomainId() != myHelper.DomainTypes.AppDomainId)
-                    myHelper = UnityPausePointHelper.CreateHelper(activeFrame, evaluationParameters,
+                    myHelper = UnityPausePointHelper<TValue>.CreateHelper(activeFrame, evaluationParameters,
                         myKnownTypes, myAssemblyAbsolutePath);
             }
             catch (Exception e)

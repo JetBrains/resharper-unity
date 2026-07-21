@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using Mono.Debugger.Soft;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Marshallable;
@@ -9,7 +8,7 @@ using Mono.Debugging.TypeSystem.KnownTypes;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 {
-    public class UnityTextureDebuggerHelper : UnityDebuggerHelper
+    public class UnityTextureDebuggerHelper<TValue> : UnityDebuggerHelper<TValue> where TValue : class
     {
         private const string RequiredType = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter";
         public const string AssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture";
@@ -17,21 +16,21 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private const string GetPixelsMethodName = "GetTexturePixelsInfo";
         private static readonly MethodSelector ourGetPixelsMethodFilter = new(m => m.Name == GetPixelsMethodName && m.Parameters.Length == 1);
 
-        private UnityTextureDebuggerHelper(IReifiedType<Value> reifiedType, IDomainKnownTypes<Value> domainTypes) : base(reifiedType, domainTypes)
+        private UnityTextureDebuggerHelper(IReifiedType<TValue> reifiedType, IDomainKnownTypes<TValue> domainTypes) : base(reifiedType, domainTypes)
         {
         }
         
         [MustUseReturnValue]
-        public ICallable<Value> GetPixels(Value value)
+        public ICallable<TValue> GetPixels(TValue value)
         {
             return Get(ourGetPixelsMethodFilter, ValueMarshallers.Value(value));
         }
 
-        public static UnityTextureDebuggerHelper CreateHelper(IStackFrame frame, IValueFetchOptions options,
-            IKnownTypes<Value> knownTypes, string assemblyLocation)
+        public static UnityTextureDebuggerHelper<TValue> CreateHelper(IStackFrame frame, IValueFetchOptions options,
+            IKnownTypes<TValue> knownTypes, string assemblyLocation)
         {
-            return CreateUnityDebuggerHelper<UnityTextureDebuggerHelper>(frame, options, knownTypes, assemblyLocation, AssemblyName,
-                RequiredType, (reifiedType, domainTypes) => new UnityTextureDebuggerHelper(reifiedType, domainTypes));
+            return CreateUnityDebuggerHelper<UnityTextureDebuggerHelper<TValue>>(frame, options, knownTypes, assemblyLocation, AssemblyName,
+                RequiredType, (reifiedType, domainTypes) => new UnityTextureDebuggerHelper<TValue>(reifiedType, domainTypes));
         }
     }
 }

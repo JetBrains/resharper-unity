@@ -14,16 +14,16 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         field("absolutePath", string)
     }
 
-    // Not used in this model, but referenced via debuggerStartInfoBase. Serialisers will be registered along with this
-    // model (directly via UnityDebuggerWorkerModel.RegisterDeclaredTypesSerializers() or indirectly via creating a new
-    // UnityDebuggerWorkerModel)
-    private val unityStartInfoBase = basestruct extends DebuggerWorkerModel.debuggerStartInfoBase {
+    private val unityProjectData = structdef {
         field("bundles", immutableList(unityBundleInfo))
         field("packages", immutableList(string))
     }
 
+    private val unityStartInfo = interfacedef
+
     // Base type for Mono based players (including IL2CPP)
-    private val unityMonoStartInfoBase = basestruct extends unityStartInfoBase {
+    private val unityMonoStartInfoBase = basestruct extends DebuggerWorkerModel.debuggerStartInfoBase implements unityStartInfo with {
+        field("projectData", unityProjectData)
         field("monoAddress", string.nullable)
         field("monoPort", int)
         field("listenForConnections", bool)
@@ -33,8 +33,13 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
     private val unityMonoStartInfo = structdef extends unityMonoStartInfoBase {
     }
 
-    private val unityLocalCoreClrStartInfo = structdef extends unityStartInfoBase {
+    private val unityLocalCoreClrStartInfo = structdef extends DebuggerWorkerModel.debuggerStartInfoBase implements unityStartInfo with {
+        field("projectData", unityProjectData)
         field("processId", int)
+    }
+
+    private val unityDotNetCoreExeStartInfo = structdef extends DebuggerWorkerModel.dotNetCoreExeStartInfoBase implements unityStartInfo with {
+        field("projectData", unityProjectData)
     }
 
     // Forward Android debugging ports over ADB

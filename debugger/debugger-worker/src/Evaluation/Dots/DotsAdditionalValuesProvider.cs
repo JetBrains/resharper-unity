@@ -1,26 +1,43 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Debugger.Model.Plugins.Unity;
+using JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup;
 using JetBrains.Lifetimes;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.ValueReferences;
+using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
+using Mono.Debugging.TypeSystem;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class UnityDotsAdditionalValuesProvider : UnityDotsAdditionalValuesProvider<Value>
+    public class MonoUnityDotsAdditionalValuesProvider : UnityDotsAdditionalValuesProvider<Value>
     {
-        public UnityDotsAdditionalValuesProvider(IDebuggerSession session,
+        public MonoUnityDotsAdditionalValuesProvider(IDebuggerSession session,
             IValueServicesFacade<Value> valueServices,
+            ISessionCreationInfo creationInfo,
+            IUnityOptions unityOptions,
+            ILogger logger)
+            : base(session, valueServices, creationInfo, unityOptions, logger)
+        {
+        }
+    }
+
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorUnityDotsAdditionalValuesProvider : UnityDotsAdditionalValuesProvider<ICorValue>
+    {
+        public CorUnityDotsAdditionalValuesProvider(IDebuggerSession session,
+            IValueServicesFacade<ICorValue> valueServices,
             ISessionCreationInfo creationInfo,
             IUnityOptions unityOptions,
             ILogger logger)
@@ -41,12 +58,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
 
         private readonly bool myHasEntityPackage;
 
-        private static readonly HashSet<string> ourSupportedEntityProcessingTypes = new(new[]
-        {
-            "Unity.Entities.IJobEntity",
-            "Unity.Entities.IJobChunk",
-        });
-
         protected UnityDotsAdditionalValuesProvider(IDebuggerSession session,
             IValueServicesFacade<TValue> valueServices,
             ISessionCreationInfo creationInfo,
@@ -58,8 +69,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
             myUnityOptions = unityOptions;
             myLogger = logger;
 
-            if (creationInfo.StartInfo is UnityStartInfoBase unityStartInfo)
-                myHasEntityPackage = unityStartInfo.Packages.Contains(UnityEntitiesPackageName);
+            if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
+                myHasEntityPackage = unityStartInfo.GetProjectData().Packages.Contains(UnityEntitiesPackageName);
             else
                 myHasEntityPackage = false;
         }
@@ -82,17 +93,15 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
         private IValueReference<TValue>? GetCurrentEntity(IStackFrame frame, Lifetime lifetime)
         {
             return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>?>(
-                () => TryGetValueFromParentFrame(frame, lifetime),
+                () => TryGetCurrentEntityFromParentFrame(frame, lifetime),
                 exception =>
                     myLogger.LogThrownUnityException(exception, frame, myValueServices, mySession.EvaluationOptions));
         }
 
-        private IValueReference<TValue>? TryGetValueFromParentFrame(IStackFrame frame, Lifetime lifetime)
+        private IValueReference<TValue>? TryGetCurrentEntityFromParentFrame(IStackFrame frame, Lifetime lifetime)
         {
             var containingReifiedType = frame.GetContainingReifiedType();
-            if (containingReifiedType == null || !containingReifiedType.MetadataType
-                    .ImplementedInterfaces
-                    .Any(t => ourSupportedEntityProcessingTypes.Contains(t.FullName)))
+            if (containingReifiedType == null || !IsIJobEntityType(containingReifiedType))
                 return null;
 
             var callerFrame = frame.CallerFrame;
@@ -128,6 +137,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
             if (entityIndexInChunk == null)
                 return null;
 
+            // in CoreCLR the refs are not automatically dereferenced, so we need to do it to get the access to actual children
+            if (chunkValue.GetPrimaryRole(mySession.EvaluationOptions) is IPointerLikeValueRole<TValue> chunkPointerLikeValueRole)
+            {
+                chunkValue = chunkPointerLikeValueRole.UnderlyingValueReference.ToValue(myValueServices);
+            }
+            
             var valueEntities = chunkValue.GetChildren(mySession.EvaluationOptions);
 
             if (valueEntities == null)
@@ -158,6 +173,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
                 ValueOriginKind.Property,
                 ValueFlags.None | ValueFlags.IsTypeCanBeDerivedFromContext | ValueFlags.IsReadOnly, frame,
                 myValueServices.RoleFactory);
+
+            bool IsIJobEntityType(IReifiedType reifiedType)
+            {
+                const string iJobEntityTypeName = "Unity.Entities.IJobEntity";
+                return reifiedType.MetadataType.ImplementedInterfaces
+                    .Any(t => t.FullName == iJobEntityTypeName);
+            }
         }
     }
 }

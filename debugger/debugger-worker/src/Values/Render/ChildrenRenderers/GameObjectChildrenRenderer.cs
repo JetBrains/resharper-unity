@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.ValueReferences;
@@ -17,6 +18,7 @@ using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.MetadataLite.API.Selectors;
 using Mono.Debugging.Soft;
 using Mono.Debugging.TypeSystem;
+using Mono.Debugging.Win32;
 
 // ReSharper disable StaticMemberInGenericType
 
@@ -26,6 +28,21 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
     // Scene Path value, showing the path to the component's gameObject in the scene. Also adds "Components" and
     // "Children" groups to show added components and child game objects.
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
+    public class MonoGameObjectChildrenRenderer : GameObjectChildrenRenderer<Value>
+    {
+        public MonoGameObjectChildrenRenderer(IDebuggerSession session, IUnityOptions unityOptions) : base(session, unityOptions)
+        {
+        }
+    }
+    
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorGameObjectChildrenRenderer : GameObjectChildrenRenderer<ICorValue>
+    {
+        public CorGameObjectChildrenRenderer(IDebuggerSession session, IUnityOptions unityOptions) : base(session, unityOptions)
+        {
+        }
+    }
+    
     public class GameObjectChildrenRenderer<TValue> : DeprecatedPropertyFilteringChildrenRendererBase<TValue>
         where TValue : class
     {
@@ -44,7 +61,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
         private readonly IDebuggerSession mySession;
         private readonly IUnityOptions myUnityOptions;
 
-        public GameObjectChildrenRenderer(IDebuggerSession session, IUnityOptions unityOptions)
+        protected GameObjectChildrenRenderer(IDebuggerSession session, IUnityOptions unityOptions)
         {
             mySession = session;
             myUnityOptions = unityOptions;

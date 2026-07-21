@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.Render.ChildrenRenderers;
@@ -14,11 +15,27 @@ using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.MetadataLite.API.Selectors;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     // Adds an additional "Game Objects" child to the Scene type. Does not override the default children renderer.
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
+    public class MonoSceneRootChildrenRenderer : SceneRootChildrenRenderer<Value>
+    {
+        public MonoSceneRootChildrenRenderer(IUnityOptions unityOptions) : base(unityOptions)
+        {
+        }
+    }
+    
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorSceneRootChildrenRenderer : SceneRootChildrenRenderer<ICorValue>
+    {
+        public CorSceneRootChildrenRenderer(IUnityOptions unityOptions) : base(unityOptions)
+        {
+        }
+    }
+
     public class SceneRootChildrenRenderer<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
     {
@@ -28,7 +45,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
 
         private readonly IUnityOptions myUnityOptions;
 
-        public SceneRootChildrenRenderer(IUnityOptions unityOptions)
+        protected SceneRootChildrenRenderer(IUnityOptions unityOptions)
         {
             myUnityOptions = unityOptions;
         }

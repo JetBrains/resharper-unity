@@ -3,12 +3,10 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.flowInto
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityLocalCoreClrStartInfo
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityMonoStartInfo
-import com.jetbrains.rider.plugins.unity.model.debuggerWorker.unityDebuggerWorkerModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
@@ -42,15 +40,7 @@ open class UnityAttachProfileState(private val debugEngine: UnityDebugEngine,
     }
 
     override fun bindSettings(lifetime: Lifetime, workerModel: DebuggerWorkerModel) {
-        val frontendBackendModel = executionEnvironment.project.solution.frontendBackendModel
-        frontendBackendModel.backendSettings.enableDebuggerExtensions.flowInto(lifetime,
-            workerModel.unityDebuggerWorkerModel.showCustomRenderers)
-        frontendBackendModel.backendSettings.ignoreBreakOnUnhandledExceptionsForIl2Cpp.flowInto(lifetime,
-            workerModel.unityDebuggerWorkerModel.ignoreBreakOnUnhandledExceptionsForIl2Cpp)
-        frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.flowInto(lifetime,
-            workerModel.unityDebuggerWorkerModel.forcedTimeoutForAdvanceUnityEvaluation)
-        frontendBackendModel.backendSettings.breakpointTraceOutput.flowInto(lifetime,
-            workerModel.unityDebuggerWorkerModel.breakpointTraceOutput)
+        executionEnvironment.project.solution.frontendBackendModel.bindDebuggerWorkerSettings(workerModel, lifetime)
         super.bindSettings(lifetime, workerModel)
     }
 
@@ -63,19 +53,17 @@ open class UnityAttachProfileState(private val debugEngine: UnityDebugEngine,
 
     protected open suspend fun createMonoModelStartInfo(lifetime: Lifetime, monoDebugEngine: UnityDebugEngine.Mono): DebuggerStartInfoBase {
         return UnityMonoStartInfo(
+            getUnityProjectData(executionEnvironment.project),
             monoDebugEngine.host,
             monoDebugEngine.port,
             monoListenForConnections,
-            getUnityBundlesList(),
-            getUnityPackagesList(executionEnvironment.project)
         )
     }
 
     protected open suspend fun createCoreClrModelStartInfo(lifetime: Lifetime, coreClrDebugEngine: UnityDebugEngine.CoreClr): DebuggerStartInfoBase {
         return UnityLocalCoreClrStartInfo(
+            getUnityProjectData(executionEnvironment.project),
             coreClrDebugEngine.processId,
-            getUnityBundlesList(),
-            getUnityPackagesList(executionEnvironment.project)
         )
     }
 }

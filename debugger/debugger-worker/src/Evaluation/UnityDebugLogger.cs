@@ -11,6 +11,7 @@ using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.MetadataLite.Services;
 using Mono.Debugging.Soft;
 using Mono.Debugging.TypeSystem;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 {
@@ -23,50 +24,61 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
     }
 
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class UnityDebugLogger : IBreakpointTraceHandler
+    public class MonoUnityDebugLogger : UnityDebugLogger<Value>
     {
-        private const string UnityEngineDebugTypeName = "UnityEngine.Debug";
-        private const string UnityEngineDebugLogMethodName = "Log";
-
-
-        public UnityDebugLogger(IUnityOptions unityOptions,
+        public MonoUnityDebugLogger(IUnityOptions unityOptions, ISessionCreationInfo creationInfo, IDebuggerSessionInternal debuggerSession, ILogger logger, IValueFactory<Value> factory) : base(unityOptions, creationInfo, debuggerSession, logger, factory)
+        {
+        }
+    }
+    
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorUnityDebugLogger : UnityDebugLogger<ICorValue>
+    {
+        public CorUnityDebugLogger(IUnityOptions unityOptions, ISessionCreationInfo creationInfo, IDebuggerSessionInternal debuggerSession, ILogger logger, IValueFactory<ICorValue> factory) : base(unityOptions, creationInfo, debuggerSession, logger, factory)
+        {
+        }
+    }
+    
+    public class UnityDebugLogger<TValue> : IBreakpointTraceHandler where TValue : class
+    {
+        protected UnityDebugLogger(IUnityOptions unityOptions,
             ISessionCreationInfo creationInfo,
             IDebuggerSessionInternal debuggerSession,
             ILogger logger,
-            IValueFactory<Value> factory)
+            IValueFactory<TValue> factory)
         {
             myUnityOptions = unityOptions;
-            myIsUnityDebugSession = unityOptions.ExtensionsEnabled && creationInfo.StartInfo is UnityStartInfoBase;
+            myIsUnityDebugSession = creationInfo.StartInfo is UnityStartInfo;
 
             myDebuggerSession = debuggerSession;
             myLogger = logger;
             myFactory = factory;
         }
 
-        private readonly IValueFactory<Value> myFactory;
+        private readonly IValueFactory<TValue> myFactory;
         private readonly bool myIsUnityDebugSession;
         private readonly IUnityOptions myUnityOptions;
         private readonly IDebuggerSessionInternal myDebuggerSession;
         private readonly ILogger myLogger;
-        private readonly Dictionary<ulong, IReifiedType<Value>> myReifiedTypesLocalCache = new();
+        private readonly Dictionary<ulong, IReifiedType<TValue>> myReifiedTypesLocalCache = new();
 
         private BreakpointTraceOutput BreakpointTraceOutputSettings =>
             (BreakpointTraceOutput)myUnityOptions.BreakpointTraceOutput;
 
         private static readonly Func<IMetadataMethodLite, bool> ourDebugLogMethodFilter
-            = ml => ml.Name == UnityEngineDebugLogMethodName && ml.Parameters.Length == 1 &&
+            = ml => ml.Name == "Log" && ml.Parameters.Length == 1 &&
                     ml.Parameters[0].Type.IsObject();
 
         public bool DoHandle(BreakEvent be, IStackFrame activeFrame, IDebuggerSession session, string message)
         {
-            if (!myIsUnityDebugSession || session.IsIl2Cpp) //Disabled for il2cpp builds
+            if (!myIsUnityDebugSession || session.IsIl2Cpp || !myUnityOptions.ExtensionsEnabled) //Disabled for il2cpp builds
                 return false;
 
-            var debugType = session.TypeUniverse.GetTypeByAssemblyQualifiedName(activeFrame, UnityEngineDebugTypeName);
-
+            var debugType = session.TypeUniverse.GetTypeByAssemblyQualifiedName(activeFrame, "UnityEngine.Debug, UnityEngine.CoreModule")
+                ?? session.TypeUniverse.GetTypeByAssemblyQualifiedName(activeFrame, "UnityEngine.Debug, UnityEngine");
             if (debugType == null)
             {
-                myLogger.Error($"Could not find {UnityEngineDebugTypeName} type in runtime.");
+                myLogger.Error($"Could not find UnityEngine.Debug type in runtime.");
                 return false;
             }
 
@@ -86,7 +98,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                     if (!myReifiedTypesLocalCache.TryGetValue(appDomainId, out var unityEngineDebugReifiedType))
                     {
                         unityEngineDebugReifiedType =
-                            (IReifiedType<Value>)session.TypeUniverse.GetReifiedType(appDomainId, debugType);
+                            (IReifiedType<TValue>)session.TypeUniverse.GetReifiedType(appDomainId, debugType);
                         myReifiedTypesLocalCache.Add(appDomainId, unityEngineDebugReifiedType);
                     }
 
@@ -98,14 +110,14 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                         valueDebugMessage);
                     if (result == null)
                     {
-                        myLogger.Error($"Failed to initialize {UnityEngineDebugTypeName}");
+                        myLogger.Error("Failed to initialize UnityEngine.Debug");
                         return false;
                     }
                 }
             }
             catch (Exception e)
             {
-                myLogger.Error(e, $"Failed to create {UnityEngineDebugTypeName}");
+                myLogger.Error(e, "Failed to create UnityEngine.Debug");
             }
 
             return true;

@@ -8,18 +8,18 @@ using Mono.Debugging.TypeSystem.KnownTypes;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
-    public abstract class UnityDebuggerHelper : KnownTypeBase<Value>
+    public abstract class UnityDebuggerHelper<TValue> : KnownTypeBase<TValue> where TValue : class
     {
-        protected UnityDebuggerHelper(IReifiedType<Value> reifiedType, IDomainKnownTypes<Value> domainTypes) : base(
+        protected UnityDebuggerHelper(IReifiedType<TValue> reifiedType, IDomainKnownTypes<TValue> domainTypes) : base(
             reifiedType, domainTypes)
         {
         }
 
-        protected delegate T FactoryDelegate<out T>(IReifiedType<Value> reifiedType, IDomainKnownTypes<Value> domainTypes) where T : UnityDebuggerHelper;
+        protected delegate T FactoryDelegate<out T>(IReifiedType<TValue> reifiedType, IDomainKnownTypes<TValue> domainTypes) where T : UnityDebuggerHelper<TValue>;
 
         protected static T CreateUnityDebuggerHelper<T>(IStackFrame frame, IValueFetchOptions options,
-            IKnownTypes<Value> knownTypes, string assemblyLocation, string assemblyName, string requiredType, FactoryDelegate<T> factory)
-            where T : UnityDebuggerHelper
+            IKnownTypes<TValue> knownTypes, string assemblyLocation, string assemblyName, string requiredType, FactoryDelegate<T> factory)
+            where T : UnityDebuggerHelper<TValue>
         {
             var domainId = frame.GetAppDomainId();
             var domainKnownTypes = knownTypes.ForDomain(domainId);
@@ -48,7 +48,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
                         "Unable to call a unity helper methods as we don't have metadata of this assembly");
             }
 
-            return factory((IReifiedType<Value>)unityAssemblyReifiedType, domainKnownTypes);
+            return factory((IReifiedType<TValue>)unityAssemblyReifiedType, domainKnownTypes);
         }
     }
 }

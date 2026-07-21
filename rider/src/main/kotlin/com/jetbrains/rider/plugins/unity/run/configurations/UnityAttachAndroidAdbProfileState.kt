@@ -8,6 +8,7 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityAndroidAdbStartInfo
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityProjectData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebugEngine
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -40,11 +41,10 @@ class UnityAttachAndroidAdbProfileState(private val project: Project,
         return UnityAndroidAdbStartInfo(
             sdkRoot.toString(),
             deviceId,
+            getUnityProjectData(project),
             monoDebugEngine.host,
             monoDebugEngine.port,
             false,
-            getUnityBundlesList(),
-            getUnityPackagesList(project)
         )
     }
 }
