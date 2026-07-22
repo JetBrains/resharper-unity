@@ -23,6 +23,7 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.dumpFullCurrentData
 import com.jetbrains.rider.test.scriptingApi.evaluateExpression
 import com.jetbrains.rider.test.scriptingApi.getVirtualFileFromPath
@@ -45,8 +46,9 @@ import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityPro
 //import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
 //import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureHyperLink
 //import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -54,8 +56,9 @@ import kotlin.test.fail
 @Feature("Debug Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
 @Solution("UnityDebugAndUnitTesting/Project")
+@Tag(TeamCityTags.Plugins.UnityIntegration)
 abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
-    @Test(description = "Check 2 breakpoints in simple Unity App")
+    @Test // Check 2 breakpoints in simple Unity App
     @ChecklistItems(["Breakpoints/Simple breakpoint"])
     fun checkBreakpoint() {
         attachDebuggerToUnityEditorAndPlay(
@@ -73,7 +76,7 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
             }, testGoldFile)
     }
 
-    @Test(description = "Check scene handle extraction with multiple loaded scenes")
+    @Test // Check scene handle extraction with multiple loaded scenes
     @ChecklistItems(["Verify scene handle extraction works correctly"])
     // Dedicated project that additively loads a second scene, so the shared project stays single-scene for the other tests.
     @Solution("UnitySceneHandleExtraction/Project")
@@ -101,7 +104,7 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
             }, testGoldFile)
     }
 
-    @Test(description = "Check texture debugging in simple Unity App")
+    @Test // Check texture debugging in simple Unity App
     @ChecklistItems(["Breakpoints/Texture breakpoint"])
     @Mute("RIDER-135697 Unity test for texture visualizer isn't compatible with the new split mode debugger yet")
     fun checkTextureDebugging() {
@@ -144,7 +147,7 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
 //            }, goldFile = testGoldFile)
     }
 
-    @Test(description = "Check Unity pause point in debugging for simple Unity App")
+    @Test // Check Unity pause point in debugging for simple Unity App
     @ChecklistItems(["Breakpoints/Unity Pause Points"])
     fun checkUnityPausePoint() {
         attachDebuggerToUnityEditorAndPlay(
@@ -157,7 +160,7 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
             })
     }
 
-    @Test(description = "Check exception breakpoint with 'Just My Code' for simple Unity App. RIDER-24651")
+    @Test // Check exception breakpoint with 'Just My Code' for simple Unity App. RIDER-24651
     @ChecklistItems(["Breakpoints/Exception Breakpoint"])
     fun checkExceptionBreakpointWithJustMyCode() {
         attachDebuggerToUnityEditorAndPlay(
@@ -174,7 +177,7 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
             }, testGoldFile)
     }
 
-    @Test(description = "Check evaluation after restarting the game. RIDER-23087")
+    @Test // Check evaluation after restarting the game. RIDER-23087
     @ChecklistItems(["Evaluation/Evaluation After Restart Game"])
     fun checkEvaluationAfterRestartGame() {
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
@@ -202,7 +205,7 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
             }, testGoldFile)
     }
 
-    @Test(description = "Simple Stepping test")
+    @Test // Simple Stepping test
     @ChecklistItems(["Stepping/Simple Stepping"])
     fun checkSimpleStepping() {
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
@@ -223,7 +226,7 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
             }, testGoldFile)
     }
 
-    @Test(description = "Check simple evaluation")
+    @Test // Check simple evaluation
     @ChecklistItems(["Evaluation/Simple evaluation"])
     fun checkSimpleEvaluation() {
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
@@ -241,7 +244,7 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
             }, testGoldFile)
     }
     
-    @Test(description = "Regression: addUnityPausepoint creates a pausepoint and never a line breakpoint")
+    @Test // Regression: addUnityPausepoint creates a pausepoint and never a line breakpoint
     @ChecklistItems(["Breakpoints/Unity Pause Points"])
     fun checkAddUnityPausepointNeverCreatesLineBreakpoint() {
         val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
@@ -264,7 +267,7 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
         assertEquals(0, breakpointManager.getBreakpoints(pausepointType).size)
     }
 
-    @AfterMethod
+    @AfterEach
     fun clearAllBreakpoints() {
         removeAllBreakpoints()
     }

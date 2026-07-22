@@ -11,21 +11,24 @@ import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.assertLookupContains
 import com.jetbrains.rider.test.scriptingApi.typeWithLatency
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.nio.file.Path
 import kotlin.io.path.pathString
 
+@Tag(TeamCityTags.Plugins.Unity)
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Tags Autocompletion")
 @Severity(SeverityLevel.NORMAL)
@@ -61,7 +64,7 @@ class TagsCompletionTest : PerTestSolutionTestBase() {
         "\"ABC\"",
         "\"Würzburg\"")
 
-    @Test(description="Check completion for basic tags (Finish, PLayer, Respawn, EditorOnly and etc.)")
+    @Test // Check completion for basic tags (Finish, PLayer, Respawn, EditorOnly and etc.)
     @ChecklistItems(["Tags Completion/Basic tags (Finish, Player, Respawn, EditorOnly)"])
     fun testTag_PrimitiveCompletion() {
         withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "TagCompletionTest1.cs") {
@@ -96,7 +99,7 @@ class TagsCompletionTest : PerTestSolutionTestBase() {
     }
 
 
-    @BeforeMethod
+    @BeforeEach
     fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
@@ -110,7 +113,7 @@ class TagsCompletionTest : PerTestSolutionTestBase() {
     }
 
     // debug only
-    @AfterMethod
+    @AfterEach
     fun saveDocuments() {
         persistAllFilesOnDisk()
     }

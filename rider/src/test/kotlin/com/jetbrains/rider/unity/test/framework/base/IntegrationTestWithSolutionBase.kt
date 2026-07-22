@@ -6,8 +6,8 @@ import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
 import com.jetbrains.rider.test.scriptingApi.createLibraryFolderIfNotExist
 import com.jetbrains.rider.unity.test.framework.api.activateRiderFrontendTest
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 
 abstract class IntegrationTestWithSolutionBase : BaseTestWithUnitySetup() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
@@ -22,15 +22,24 @@ abstract class IntegrationTestWithSolutionBase : BaseTestWithUnitySetup() {
 
     private lateinit var lifetimeDefinition: LifetimeDefinition
 
-    @AfterMethod(alwaysRun = true)
+    // JUnit5 has no @BeforeMethod(dependsOnMethods=...); the per-test setup chain is orchestrated by
+    // overriding the single @BeforeEach `setUpTestCaseSolution` and calling super first, then the extra
+    // steps in order. This guarantees ordering across the hierarchy without relying on JUnit5's
+    // unspecified intra-class @BeforeEach order.
+    @BeforeEach
+    override fun setUpTestCaseSolution() {
+        super.setUpTestCaseSolution()
+        setUpModelSettings()
+    }
+
+    open fun setUpModelSettings() {
+        activateRiderFrontendTest()
+    }
+
+    @AfterEach
     fun terminateLifetimeDefinition() {
         if(::lifetimeDefinition.isInitialized && lifetimeDefinition.isAlive) {
             lifetimeDefinition.terminate()
         }
-    }
-
-    @BeforeMethod
-    open fun setUpModelSettings() {
-        activateRiderFrontendTest()
     }
 }

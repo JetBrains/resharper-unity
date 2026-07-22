@@ -11,13 +11,15 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Issue
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.PerTestSettingsTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSettingsTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.withSolution
-import org.testng.Assert.assertTrue
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity solution scope")
@@ -25,9 +27,10 @@ import org.testng.annotations.Test
 @Issue("RIDER-139698, RIDER-117479")
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("RiderSample")
+@Tag(TeamCityTags.Plugins.Unity)
 class UnityAssetSolutionScopeTest : PerTestSettingsTestBase() {
 
-    @Test(description = "Unity Scenes must be inside RiderSolutionScope so CodeVision popup doesn't filter them out")
+    @Test // Unity Scenes must be inside RiderSolutionScope so CodeVision popup doesn't filter them out
     fun assetSceneIsInSolutionScope() {
         withSolution("RiderSample", OpenSolutionParams().apply { waitForCaches = true }) {
             val solutionRoot = VfsUtil.findFile(project.solutionDirectoryPath, true)!!

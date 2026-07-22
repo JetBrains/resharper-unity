@@ -13,6 +13,7 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.rebuildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.replaceFileContent
 import com.jetbrains.rider.unity.test.framework.api.attachDebuggerToUnityEditor
@@ -26,15 +27,17 @@ import com.jetbrains.rider.unity.test.framework.api.unpause
 import com.jetbrains.rider.unity.test.framework.api.waitForEditorLogsAfterAction
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPlayMode
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("PlayMode Action for Unity")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDebugAndUnitTesting/Project")
+@Tag(TeamCityTags.Plugins.UnityIntegration)
 abstract class PlayModeTest() : IntegrationTestWithUnityProjectBase() {
-    @Test(description="Check play, pause, step, unpause, stop actions for Unity")
+    @Test // Check play, pause, step, unpause, stop actions for Unity
     @ChecklistItems(["Play Mode/PlayMode actions (play, stop. etc.)"])
     fun checkPlayingPauseModesAndSteps() {
         play()
@@ -44,7 +47,7 @@ abstract class PlayModeTest() : IntegrationTestWithUnityProjectBase() {
         stopPlaying()
     }
 
-    @Test(description="Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process")
+    @Test // Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process
     @ChecklistItems(["Play Mode/PlayMode actions (play, stop. etc.) while debugger attached"])
     fun checkAttachDebuggerToUnityEditor() {
         attachDebuggerToUnityEditor({},
@@ -57,7 +60,7 @@ abstract class PlayModeTest() : IntegrationTestWithUnityProjectBase() {
                                     })
     }
 
-    @Test(description="Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process and Play")
+    @Test // Check play, pause, step, unpause, stop actions for Unity with Attach to Unity Process and Play
     @ChecklistItems(["Play Mode/PlayMode actions (play, stop. etc.) while debugger attached and play"])
     fun checkAttachDebuggerToUnityEditorAndPlay() {
         attachDebuggerToUnityEditorAndPlay({},
@@ -70,7 +73,7 @@ abstract class PlayModeTest() : IntegrationTestWithUnityProjectBase() {
                                            })
     }
 
-    @Test(description="Check start, update, quit logs")
+    @Test // Check start, update, quit logs
     @ChecklistItems(["Play Mode/PlayMode logs"])
     fun checkPlayModeLogs() {
         replaceFileContent(project, "NewBehaviourScript.cs",)

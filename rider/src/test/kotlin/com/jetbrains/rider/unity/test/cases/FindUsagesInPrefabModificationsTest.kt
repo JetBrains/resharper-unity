@@ -9,9 +9,13 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.unity.test.framework.base.FindUsagesAssetTestBase
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
+@Tag(TeamCityTags.Plugins.Unity)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @TestEnvironment(platform = [PlatformType.ALL])
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
@@ -20,7 +24,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     override val traceCategories: List<String>
         get() = super.traceCategories + "JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents"
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification01(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -29,7 +34,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(7, 29, "MethodsContainer.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification02(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -38,7 +44,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(7, 29, "MethodsContainer3.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification03(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -47,7 +54,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(24, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification04(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -56,7 +64,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(29, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification05(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -65,7 +74,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(34, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification06(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -74,7 +84,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(39, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification07(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -83,7 +94,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(45, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification08(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -92,7 +104,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(50, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification09(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -101,7 +114,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(56, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification10(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -110,7 +124,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(61, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification11(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -119,7 +134,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(66, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification12(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -128,7 +144,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(71, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification13(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -137,7 +154,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(76, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification14(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -146,7 +164,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(81, 25, "MethodsContainer4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification15(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -155,7 +174,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(8, 29, "Script1.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification16(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -164,7 +184,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(10, 29, "Script2.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification17(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -173,7 +194,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(8, 29, "Script3.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification18(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -182,7 +204,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(8, 29, "Script4.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification19(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -191,7 +214,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(7, 29, "Script5.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification20(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()
@@ -200,7 +224,8 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         doTest(8, 29, "Script5.cs")
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findUsagesGrouping")
     @ChecklistItems(["Find Usages In Prefab Modifications"])
     fun findUsagesInPrefabModification21(@Suppress("unused") caseName: String, groups: List<String>?) {
         disableAllGroups()

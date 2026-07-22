@@ -17,6 +17,7 @@ import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.DebugTestExecutionContext
 import com.jetbrains.rider.test.scriptingApi.dumpFullCurrentData
 import com.jetbrains.rider.test.scriptingApi.removeAllBreakpoints
@@ -29,9 +30,9 @@ import com.jetbrains.rider.unity.test.framework.api.unpause
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPauseMode
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPlayMode
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.util.concurrent.TimeUnit
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
@@ -40,11 +41,12 @@ import java.util.concurrent.TimeUnit
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDotsDebug/Project")
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
+@Tag(TeamCityTags.Plugins.UnityIntegration)
 abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger + LogTraceScenarios.MonoDebuggerConnection
     
-    @Test(description = "Check breakpoint for Unity DOTS code")
+    @Test // Check breakpoint for Unity DOTS code
     @ChecklistItems(["Breakpoints/Breakpoint in DOTS"])
     fun checkBreakpointInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
@@ -68,7 +70,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
             }, testGoldFile)
     }
 
-    @Test(description = "Check Ref Presentation in DOTS code for simple app")
+    @Test // Check Ref Presentation in DOTS code for simple app
     @ChecklistItems(["Breakpoints/Ref Presentation in DOTS"])
     fun checkRefPresentationInDOTSCode() {
         attachDebuggerToUnityEditorAndPlay(
@@ -91,7 +93,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
         dumpProfile.customRegexToMask["<ResetTransformSystemBase_LambdaJob_Job>"] = Regex("ResetTransformSystemBase_.*_Job")
     }
 
-    @Test(description = "Check Unity pause point in debugging for Unity DOTS")
+    @Test // Check Unity pause point in debugging for Unity DOTS
     @ChecklistItems(["Breakpoints/Unity Pause Points in DOTS"])
     fun checkUnityPausePoint() {
         attachDebuggerToUnityEditorAndPlay(
@@ -104,18 +106,16 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
             })
     }
 
-    @AfterMethod
+    @AfterEach
     fun clearAllBreakpoints() {
         removeAllBreakpoints()
     }
 
     //TODO solution build throws error on code generation phase
-    @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
     override fun buildSolutionAfterUnityStarts() {
     }
 
     //TODO checkSwea hangs for unknown reason
-    @AfterMethod
     override fun checkSwea() {
     }
 }

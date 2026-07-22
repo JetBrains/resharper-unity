@@ -17,8 +17,7 @@ import com.jetbrains.rider.test.scriptingApi.setRiderPackageVersion
 import com.jetbrains.rider.test.scriptingApi.waitForSlnGeneratedByUnity
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.startUnity
-import org.testng.ITestResult
-import org.testng.annotations.BeforeMethod
+import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path
 import java.time.Duration
 import kotlin.io.path.exists
@@ -52,8 +51,10 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
 
     override val solutionApiFacade: SolutionApiFacade by lazy { RiderExistingSolutionApiFacade() }
 
-    @BeforeMethod
-    override fun setUpTestCaseSolution(testResult: ITestResult) {
+    // Generates the sln/csproj with Unity before the solution is opened, then delegates to the
+    // generated-solution orchestration (open → model settings → start Unity → run configs → build).
+    @BeforeEach
+    override fun setUpTestCaseSolution() {
         unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, testWorkDirectory, solutionSourceRootDirectory, testDataDirectory)
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
 
@@ -79,26 +80,6 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
             else
                 frameworkLogger.info("Sln/csproj structure hasn't been created")
         }
-        super.setUpTestCaseSolution(testResult)
-    }
-
-    @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
-    override fun startUnityProcessAndWait() {
-        super.startUnityProcessAndWait()
-    }
-
-    @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
-    override fun setUpModelSettings() {
-        super.setUpModelSettings()
-    }
-
-    @BeforeMethod(dependsOnMethods = ["startUnityProcessAndWait"])
-    override fun waitForUnityRunConfigurations() {
-        super.waitForUnityRunConfigurations()
-    }
-
-    @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
-    override fun buildSolutionAfterUnityStarts() {
-        super.buildSolutionAfterUnityStarts()
+        super.setUpTestCaseSolution()
     }
 }

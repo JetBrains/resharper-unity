@@ -3,6 +3,7 @@ package com.jetbrains.rider.unity.test.cases.integrationTests
 import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
@@ -12,6 +13,7 @@ import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.waitFirstScriptCompilation
 import com.jetbrains.rider.unity.test.framework.api.attachDebuggerToUnityEditor
 import com.jetbrains.rider.unity.test.framework.api.checkSweaInSolution
@@ -24,16 +26,18 @@ import com.jetbrains.rider.unity.test.framework.api.waitConnectionToUnityEditor
 import com.jetbrains.rider.unity.test.framework.api.waitForEditorLogsAfterAction
 import com.jetbrains.rider.unity.test.framework.api.withUnityProcess
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithSolutionBase
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Connection with Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL]) // todo: allow Linux
 @Solution("SimpleUnityProjectWithoutPlugin")
+@Tag(TeamCityTags.Plugins.UnityIntegration)
 class ConnectionTest : IntegrationTestWithSolutionBase() {
-    @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-        description = "Check connection with Unity after Unity start with Simple Unity Project without plugin")
+    @Test // Check connection with Unity after Unity start with Simple Unity Project without plugin
+    @Mute("RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2")
     fun installAndCheckConnectionAfterUnityStart() {
         withUnityProcess {
             waitFirstScriptCompilation(project)
@@ -42,8 +46,8 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-          description = "Check connection with Unity before Unity start with Simple Unity Project without plugin")
+    @Test // Check connection with Unity before Unity start with Simple Unity Project without plugin
+    @Mute("RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2")
     fun installAndCheckConnectionBeforeUnityStart() {
         withUnityProcess {
             waitFirstScriptCompilation(project)
@@ -52,13 +56,14 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-          description = "Check external Editor in Unity settings")
+    @Test // Check external Editor in Unity settings
+    @Mute("RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2")
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
         executeIntegrationTestMethod("DumpExternalEditor")
     }
 
-    @Test(description = "Check external Editor in Unity with Unity model refresh", enabled = false)
+    @Test // Check external Editor in Unity with Unity model refresh
+    @Mute
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
 
     private fun checkExternalEditor(resetEditorPrefs: Boolean, execute: () -> Unit) {
@@ -82,12 +87,12 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-          description = "Check Unity Log")
+    @Test // Check Unity Log
+    @Mute("RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2")
     fun checkLogWithExecutingMethod() = checkLog { executeIntegrationTestMethod("WriteToLog") }
 
-    @Test(enabled = false, // RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2
-          description = "Check Unity Log with Unity model refresh")
+    @Test // Check Unity Log with Unity model refresh
+    @Mute("RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2")
     fun checkLogWithUnityModelRefresh() = checkLog { executeScript("WriteToLog.cs") }
 
     private fun checkLog(execute: () -> Unit) {
@@ -106,7 +111,8 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
 
     // TODO: test reproduce bug only with dialog with info about wrong unity version,
     //  but we can't terminate Unity Editor with UI before connection
-    @Test(description = "Check debugger start after attach debugger. RIDER-52498", enabled = false)
+    @Test // Check debugger start after attach debugger. RIDER-52498
+    @Mute
     fun checkDebuggerStartsAfterAttachDebugger() {
         try {
             //            startUnity(false, false, false ,true)

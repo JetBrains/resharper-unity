@@ -11,20 +11,22 @@ import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.assertLookupContains
 import com.jetbrains.rider.test.scriptingApi.assertLookupNotContains
 import com.jetbrains.rider.test.scriptingApi.typeWithLatency
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.nio.file.Path
 import kotlin.io.path.pathString
 
@@ -33,6 +35,7 @@ import kotlin.io.path.pathString
 @Severity(SeverityLevel.NORMAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("ResourcesAutocompletionTestData")
+@Tag(TeamCityTags.Plugins.Unity)
 class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
     override val traceCategories: List<String>
         get() = listOf(
@@ -52,7 +55,7 @@ class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
             "JetBrains.ReSharper.Psi.Files",
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
-    @Test(description="Unity Resources Completion for Load")
+    @Test // Unity Resources Completion for Load
     @ChecklistItems(["Unity Resources Completion/Load"])
     fun test_UnityResourcesLoadCompletion() {
         waitForUnityPackagesCache()
@@ -74,7 +77,7 @@ class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
         }
     }
 
-    @Test(description="Unity Resources Completion for LoadAll")
+    @Test // Unity Resources Completion for LoadAll
     @ChecklistItems(["Unity Resources Completion/LoadAll"])
     fun test_UnityResourcesLoadAllCompletion() {
         waitForUnityPackagesCache()
@@ -96,7 +99,7 @@ class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
         }
     }
 
-    @Test(description="Unity Resources Completion for LoadAsync")
+    @Test // Unity Resources Completion for LoadAsync
     @ChecklistItems(["Unity Resources Completion/LoadAsync"])
     fun test_UnityResourcesLoadAsyncCompletion() {
         waitForUnityPackagesCache()
@@ -118,7 +121,7 @@ class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
         }
     }
 
-    @BeforeMethod
+    @BeforeEach
     fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
@@ -132,7 +135,7 @@ class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
     }
 
     // debug only
-    @AfterMethod
+    @AfterEach
     fun saveDocuments() {
         persistAllFilesOnDisk()
     }

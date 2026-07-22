@@ -6,7 +6,7 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
-import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.disableAllFindUsagesGroups
@@ -15,13 +15,13 @@ import com.jetbrains.rider.test.scriptingApi.setCaretToPosition
 import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
-import org.testng.annotations.DataProvider
+import org.junit.jupiter.params.provider.Arguments
 import java.time.Duration
+import java.util.stream.Stream
 
 abstract class FindUsagesAssetTestBase : PerTestSolutionTestBase() {
-    @DataProvider(name = "findUsagesGrouping")
-    fun test1() = arrayOf(
-        arrayOf("allGroupsEnabled", listOf("SolutionFolder", "Project", "Directory", "File", "Namespace", "Type", "Member", "UnityComponent", "UnityGameObject"))
+    fun findUsagesGrouping(): Stream<Arguments> = Stream.of(
+        Arguments.of("allGroupsEnabled", listOf("SolutionFolder", "Project", "Directory", "File", "Namespace", "Type", "Member", "UnityComponent", "UnityGameObject"))
     )
 
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {

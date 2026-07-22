@@ -16,6 +16,7 @@ import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.enums.UnityBackend
 import com.jetbrains.rider.test.facades.solution.RiderExistingSolutionApiFacade
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
+import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.scriptingApi.absoluteCanonicalPath
 import com.jetbrains.rider.test.scriptingApi.allowUnityPathVfsRootAccess
 import com.jetbrains.rider.test.scriptingApi.combine
@@ -32,9 +33,8 @@ import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rider.unity.test.framework.base.BaseTestWithUnitySetup
 import kotlinx.coroutines.CompletableDeferred
-import org.testng.ITestResult
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.absolutePathString
@@ -156,28 +156,28 @@ abstract class UnityPlayerTestBase : BaseTestWithUnitySetup() {
         return workDirectory
     }
 
-    @BeforeMethod(alwaysRun = true)
-    override fun setUpTestCaseSolution(testResult: ITestResult) {
+    @BeforeEach
+    override fun setUpTestCaseSolution() {
         unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name)
         setRiderPackageVersion(unityProjectPath, riderPackageVersion)
-        super.setUpTestCaseSolution(testResult)
+        super.setUpTestCaseSolution()
         prepareAssemblies(project, activeSolutionDirectory)
         buildUnityPlayer(unityBackend)
+        setUpModelSettings()
     }
 
-    @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
     open fun setUpModelSettings() {
         activateRiderFrontendTest()
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterEach
     fun terminateLifetimeDefinition() {
         if (::lifetimeDefinition.isInitialized && lifetimeDefinition.isAlive) {
             lifetimeDefinition.terminate()
         }
     }
 
-    @AfterMethod
+    @AfterEach
     fun cleanupFirewallRules() {
         if (OS.CURRENT == OS.macOS && ::unityPlayerFile.isInitialized) {
             removeRuleFromFirewall(unityPlayerFile.absoluteCanonicalPath)
@@ -188,22 +188,22 @@ abstract class UnityPlayerTestBase : BaseTestWithUnitySetup() {
         val result = CompletableDeferred<UnityDebugTarget>()
         lifetime.onTermination { result.cancel() }
 
-        logger.info("Starting UnityPlayerListener")
+        frameworkLogger.info("Starting UnityPlayerListener")
         try {
 
             UnityPlayerListener()
                 .startListening(lifetime,
                                 {
-                                    logger.info("#### Found non-matching Unity Player process:$it")
+                                    frameworkLogger.info("#### Found non-matching Unity Player process:$it")
                                     if (filter(it) && !result.isCompleted) {
-                                        logger.info("Found Unity Player process:$it")
+                                        frameworkLogger.info("Found Unity Player process:$it")
                                         result.complete(it)
                                     }
                                 },
                                 {})
         }
         catch (exception: Throwable) {
-            logger.error("Failed to find Unity Player process", exception)
+            frameworkLogger.error("Failed to find Unity Player process", exception)
             result.completeExceptionally(exception)
         }
 
@@ -214,13 +214,13 @@ abstract class UnityPlayerTestBase : BaseTestWithUnitySetup() {
         assertNotNull(playerFile, "Game executable not found after build!")
 
         return try {
-            logger.info("Starting game process: $playerFile")
+            frameworkLogger.info("Starting game process: $playerFile")
             playerFile.setExecutablePermissions()
             val process = ProcessBuilder(mutableListOf(playerFile.pathString, "-logfile", logPath.toString(), "-batchMode")).start()
-            logger.info("Game process started: ${process.info()}")
+            frameworkLogger.info("Game process started: ${process.info()}")
             process
         } catch (exception: Throwable) {
-            logger.error("Failed to start game process $playerFile", exception)
+            frameworkLogger.error("Failed to start game process $playerFile", exception)
             null
         }
     }

@@ -15,11 +15,12 @@ import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.assertLookupContains
 import com.jetbrains.rider.test.scriptingApi.assertLookupNotContains
 import com.jetbrains.rider.test.scriptingApi.replaceFileContent
@@ -27,9 +28,10 @@ import com.jetbrains.rider.test.scriptingApi.typeWithLatency
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.SettingsHelper
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.nio.file.Path
 import kotlin.io.path.pathString
 import kotlin.io.path.name
@@ -39,6 +41,7 @@ import kotlin.io.path.name
 @Severity(SeverityLevel.NORMAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("ProjectSettingsTestData")
+@Tag(TeamCityTags.Plugins.Unity)
 class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         params.preprocessTempDirectory = {
@@ -65,7 +68,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
             "JetBrains.ReSharper.Psi.Caches",
             "JetBrains.ReSharper.Psi.Files")
 
-    @Test(description = "Test scene primitive completion")
+    @Test // Test scene primitive completion
     @ChecklistItems(["Project Settings Completion/Scene primitive"])
     fun testScene_PrimitiveCompletion() {
         withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "SceneCompletionTest.cs") {
@@ -82,7 +85,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
         }
     }
 
-    @Test(description = "Test Animator state primitive completion")
+    @Test // Test Animator state primitive completion
     @ChecklistItems(["Project Settings Completion/Animator state primitive"])
     fun testAnimatorState_PrimitiveCompletion() {
         withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "AnimatorStateCompletionTest.cs") {
@@ -92,7 +95,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
         }
     }
 
-    @Test(description = "Test Input primitive completion")
+    @Test // Test Input primitive completion
     @ChecklistItems(["Project Settings Completion/Input primitive"])
     fun testInput_PrimitiveCompletion() {
         withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "InputCompletionTest.cs") {
@@ -121,7 +124,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
         "\"PostProcessing\"",
         "\"TransparentFX\"")
 
-    @Test(description = "Test Layer primitive completion")
+    @Test // Test Layer primitive completion
     @ChecklistItems(["Project Settings Completion/Layer primitive"])
     fun testLayer_PrimitiveCompletion() {
         withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "LayerCompletionTest1.cs") {
@@ -135,7 +138,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
         }
     }
 
-    @Test(description = "Test Layer primitive completion with turned off Yaml")
+    @Test // Test Layer primitive completion with turned off Yaml
     @ChecklistItems(["Project Settings Completion/Layer primitive with turned off Yaml"])
     fun testLayer_PrimitiveCompletion_YamlOff() {
         withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "LayerCompletionTest1.cs") {
@@ -144,7 +147,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
         }
     }
 
-    @Test(description = "Test Layer completion after modification")
+    @Test // Test Layer completion after modification
     @Mute("RIDER-84785")
     @ChecklistItems(["Project Settings Completion/Layer completion after modification"])
     fun testLayer_CompletionAfterModification() {
@@ -172,7 +175,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
         }
     }
 
-    @BeforeMethod
+    @BeforeEach
     fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
@@ -186,7 +189,7 @@ class ProjectSettingsCompletionTest : PerTestSolutionTestBase() {
     }
 
     // debug only
-    @AfterMethod
+    @AfterEach
     fun saveDocuments() {
         persistAllFilesOnDisk()
     }

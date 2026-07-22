@@ -13,13 +13,15 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
 import com.jetbrains.rider.test.scriptingApi.changeFileContent
 import com.jetbrains.rider.test.scriptingApi.waitForDaemon
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import kotlin.io.path.absolutePathString
 
 @Subsystem(SubsystemConstants.UNITY_UNIT_TESTING)
@@ -27,8 +29,9 @@ import kotlin.io.path.absolutePathString
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDebugAndUnitTesting/Project")
+@Tag(TeamCityTags.Plugins.UnityIntegration)
 abstract class UnitTestingTest() : IntegrationTestWithUnityProjectBase() {
-    @Test(description="Check run all tests from project")
+    @Test // Check run all tests from project
     @ChecklistItems(["Run all tests from the Project"])
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
@@ -45,7 +48,7 @@ abstract class UnitTestingTest() : IntegrationTestWithUnityProjectBase() {
     }
 
     //@Mute("RIDER-95762")
-    @Test(description = "RIDER-54359. Check refresh assets before Test")
+    @Test // RIDER-54359. Check refresh assets before Test
     @ChecklistItems(["Refresh assets before test"])
     fun checkRefreshBeforeTest() {
         val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")

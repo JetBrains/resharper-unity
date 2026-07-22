@@ -13,21 +13,24 @@ import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestSettings
 import com.jetbrains.rider.test.annotations.report.ChecklistItems
-import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.markupContributor
 import com.jetbrains.rider.test.scriptingApi.runSweaAndGetResults
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.time.Duration
 
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Solution("MarkupTestData")
+@Tag(TeamCityTags.Plugins.Unity)
 class InputSystemUnityEventModeTest : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         params.preprocessTempDirectory = { prepareAssemblies(it) }

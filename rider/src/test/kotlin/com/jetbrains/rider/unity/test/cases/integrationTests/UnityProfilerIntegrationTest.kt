@@ -18,6 +18,7 @@ import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.unity.test.framework.api.frontendBackendModel
 import com.jetbrains.rider.unity.test.framework.api.getProfilerToolWindow
 import com.jetbrains.rider.unity.test.framework.api.navigateAndAwaitCaret
@@ -27,8 +28,9 @@ import com.jetbrains.rider.unity.test.framework.api.setUpProfilerDefaults
 import com.jetbrains.rider.unity.test.framework.api.waitForProfilerGutterMarks
 import com.jetbrains.rider.unity.test.framework.api.waitForProfilerSnapshotTimings
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.assertEquals
@@ -39,14 +41,15 @@ import kotlin.test.assertTrue
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityProfilerTestsProject/SimpleUnityGame")
+@Tag(TeamCityTags.Plugins.UnityIntegration)
 abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBase() {
 
-    @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
+    @BeforeEach
     open fun setUpProfilerIntegration() {
         setUpProfilerDefaults()
     }
 
-    @Test(description = "Check profiler timings data streaming from Unity")
+    @Test // Check profiler timings data streaming from Unity
     @ChecklistItems(["Profiler/Timings Loading"])
     fun checkProfilerTimingsLoading() {
         // Run profiler automation in Unity (starts play mode, profiles, stops)
@@ -70,7 +73,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
             "Profiler timing samples should contain frames with positive duration (actual Unity profiler data)")
     }
 
-    @Test(description = "Check navigation from Unity profiler to source code")
+    @Test // Check navigation from Unity profiler to source code
     @ChecklistItems(["Profiler/Navigation from Unity Profiler"])
     fun checkNavigationFromUnityProfiler() {
         // Verify no file is open before profiler automation — proves that navigateByQualifiedName
@@ -88,7 +91,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         navigateAndAwaitCaret("UnoptimizedMonoBehaviour.Update", null, "UnoptimizedMonoBehaviour.cs", 12)
     }
 
-    @Test(description = "Check navigation from Unity profiler to exact Profiler.BeginSample call")
+    @Test // Check navigation from Unity profiler to exact Profiler.BeginSample call
     @ChecklistItems(["Profiler/Navigation to BeginSample"])
     fun checkNavigationToBeginSample() {
         // runProfilerAutomation() opens UnoptimizedMonoBehaviour.cs via navigateByQualifiedName
@@ -100,7 +103,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         navigateAndAwaitCaret("UnoptimizedMonoBehaviour.Update", "MemoryAndSearch", "UnoptimizedMonoBehaviour.cs", 21)
     }
 
-    @Test(description = "Check navigation falls back to method when BeginSample marker not found")
+    @Test // Check navigation falls back to method when BeginSample marker not found
     @ChecklistItems(["Profiler/Navigation BeginSample Fallback"])
     fun checkNavigationToBeginSampleFallback() {
         runProfilerAutomation()
@@ -111,7 +114,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         navigateAndAwaitCaret("UnoptimizedMonoBehaviour.Update", "NonExistentMarker", "UnoptimizedMonoBehaviour.cs", 12)
     }
 
-    @Test(description = "Check navigation to first BeginSample when label is duplicated")
+    @Test // Check navigation to first BeginSample when label is duplicated
     @ChecklistItems(["Profiler/Navigation to First Duplicate BeginSample"])
     fun checkNavigationToDuplicateBeginSample() {
         runProfilerAutomation()
@@ -122,7 +125,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         navigateAndAwaitCaret("UnoptimizedMonoBehaviour.Update", "StringOps", "UnoptimizedMonoBehaviour.cs", 14)
     }
 
-    @Test(description = "Check navigationWarning fires when target is unresolvable")
+    @Test // Check navigationWarning fires when target is unresolvable
     @ChecklistItems(["Profiler/Navigation Warning"])
     fun checkNavigationWarningOnUnresolvableTarget() {
         runProfilerAutomation()
@@ -146,7 +149,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
             "Warning message should contain the unresolvable qualified name")
     }
 
-    @Test(description = "Check profiler gutter marks appear in editor")
+    @Test // Check profiler gutter marks appear in editor
     @ChecklistItems(["Profiler/Gutter Marks"])
     fun checkProfilerGutterMarks() {
         
@@ -174,7 +177,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
             "Profiler gutter marks should appear in UnoptimizedMonoBehaviour.cs")
     }
 
-    @Test(description = "Check frame selection updates profiler data")
+    @Test // Check frame selection updates profiler data
     @ChecklistItems(["Profiler/Frame Selection"])
     fun checkFrameSelection() {
         // Run profiler automation
@@ -219,7 +222,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         }) { "Profiler snapshot should be updated for frame $targetFrame" }
     }
 
-    @Test(description = "Check profiler tool window availability")
+    @Test // Check profiler tool window availability
     @ChecklistItems(["Profiler/Tool Window"])
     fun checkProfilerToolWindow() {
         runProfilerAutomation()
@@ -232,7 +235,7 @@ abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBas
         assertTrue(toolWindow != null, "Unity Profiler tool window should be registered")
     }
 
-    @Test(description = "Check navigation from gutter to profiler tool window (filter)")
+    @Test // Check navigation from gutter to profiler tool window (filter)
     @ChecklistItems(["Profiler/Navigation from Gutter to Tool Window"])
     fun checkNavigationFromGutterToToolWindow() {
 

@@ -14,12 +14,15 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.UnityBackend
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.dumpFullCurrentData
 import com.jetbrains.rider.test.scriptingApi.resumeSession
 import com.jetbrains.rider.test.scriptingApi.toggleBreakpoint
 import com.jetbrains.rider.test.scriptingApi.waitForPause
 import com.jetbrains.rider.unity.test.framework.api.runUnityPlayerAndAttachDebugger
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertNotNull
@@ -31,7 +34,7 @@ import kotlin.test.assertNotNull
 @RiderTestTimeout(5, TimeUnit.MINUTES)
 abstract class UnityPlayerDebuggerTestBase() : UnityPlayerTestBase(){
 
-    @Test(description = "Check breakpoint for prebuilt Player)")
+    @Test // Check breakpoint for prebuilt Player)
     @ChecklistItems(["Debug prebuilt Unity Player"])
     fun checkBreakpoint() {
         val playerFile = getPlayerFile()
@@ -70,58 +73,68 @@ abstract class UnityPlayerDebuggerTestBase() : UnityPlayerTestBase(){
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@Tag(TeamCityTags.Plugins.UnityIntegration)
+@Suppress("JUnitTestCaseWithNoTests")
 class UnityPlayerDebuggerTest {
+    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V2022, unityBackend = UnityBackend.Mono)
-    class TestMonoUnityBuild2022 : UnityPlayerDebuggerTestBase(){
+    inner class TestMonoUnityBuild2022 : UnityPlayerDebuggerTestBase(){
         init {
             addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
+    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V6, unityBackend = UnityBackend.Mono)
-    class TestMonoUnityBuild6 : UnityPlayerDebuggerTestBase(){
+    inner class TestMonoUnityBuild6 : UnityPlayerDebuggerTestBase(){
         init {
             addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
+    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V6_2, unityBackend = UnityBackend.Mono)
-    class TestMonoUnityBuild6_2 : UnityPlayerDebuggerTestBase() {
+    inner class TestMonoUnityBuild6_2 : UnityPlayerDebuggerTestBase() {
         init {
             addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
+    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V6_3, unityBackend = UnityBackend.Mono)
-    class TestMonoUnityBuild6_3 : UnityPlayerDebuggerTestBase() {
+    inner class TestMonoUnityBuild6_3 : UnityPlayerDebuggerTestBase() {
         init {
             addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
+    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V2022, unityBackend = UnityBackend.Il2CPP)
-    class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase() {
+    inner class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase() {
         init {
             addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
+    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V6, unityBackend = UnityBackend.Il2CPP)
-    class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase() {
+    inner class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase() {
         init {
             addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
+    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V6_2, unityBackend = UnityBackend.Il2CPP)
-    class TestIL2CPPUnityBuild6_2 : UnityPlayerDebuggerTestBase() {
+    inner class TestIL2CPPUnityBuild6_2 : UnityPlayerDebuggerTestBase() {
         init {
             addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
 
+    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V6_3, unityBackend = UnityBackend.Il2CPP)
-    class TestIL2CPPUnityBuild6_3 : UnityPlayerDebuggerTestBase() {
+    inner class TestIL2CPPUnityBuild6_3 : UnityPlayerDebuggerTestBase() {
         init {
             addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }

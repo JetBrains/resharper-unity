@@ -15,8 +15,8 @@ import com.jetbrains.rider.unity.test.framework.api.refreshUnityModel
 import com.jetbrains.rider.unity.test.framework.api.startUnity
 import com.jetbrains.rider.unity.test.framework.api.waitConnectionToUnityEditor
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityRunConfigurations
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import kotlin.io.path.copyTo
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
@@ -54,33 +54,40 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
         }
     }
 
-    @BeforeMethod
-    open fun startUnityProcessAndWait() {
+    // Orchestrates the post-open setup steps in order (was a TestNG @BeforeMethod dependsOnMethods chain).
+    // The individual steps stay overridable `open fun`s so subclasses can tweak or disable a single step.
+    @BeforeEach
+    override fun setUpTestCaseSolution() {
+        super.setUpTestCaseSolution()
+        startUnityProcessAndWait()
+        waitForUnityRunConfigurations()
+        buildSolutionAfterUnityStarts()
+    }
+
+    protected open fun startUnityProcessAndWait() {
         unityProcessHandle = startUnity(withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 
         waitFirstScriptCompilation(project)
         waitConnectionToUnityEditor(project)
     }
 
-    @BeforeMethod(dependsOnMethods = ["startUnityProcessAndWait"])
-    open fun waitForUnityRunConfigurations() {
+    protected open fun waitForUnityRunConfigurations() {
         refreshUnityModel()
         waitForUnityRunConfigurations(project)
     }
 
-    @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
-    open fun buildSolutionAfterUnityStarts() {
+    protected open fun buildSolutionAfterUnityStarts() {
         buildSolutionWithReSharperBuild(BuildSettings(ignoreReferencesResolve = true))
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterEach
     fun killUnity() {
         if (::unityProcessHandle.isInitialized) {
             killUnity(unityProcessHandle)
         }
     }
 
-    @AfterMethod
+    @AfterEach
     open fun checkSwea() {
         checkSweaInSolution()
     }

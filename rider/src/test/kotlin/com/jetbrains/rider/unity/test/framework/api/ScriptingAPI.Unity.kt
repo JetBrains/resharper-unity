@@ -420,7 +420,7 @@ fun UnityPlayerDebuggerTestBase.runUnityPlayerAndAttachDebugger(
         }
     }
     catch (e: Throwable) {
-        logger.error(e)
+        frameworkLogger.error(e)
     }
     finally {
         assertNotNull(session)

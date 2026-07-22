@@ -12,11 +12,12 @@ import com.jetbrains.rider.test.annotations.report.Issue
 import com.jetbrains.rider.test.annotations.report.Issues
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.ProjectModelBaseTest
+import com.jetbrains.rider.test.junit5.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.advancedSettings.AdvancedSettingsList
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.callUndo
 import com.jetbrains.rider.test.scriptingApi.openFileInEditor
@@ -28,8 +29,9 @@ import com.jetbrains.rider.unity.test.framework.api.doActionAndWait
 import com.jetbrains.rider.unity.test.framework.api.dump
 import com.jetbrains.rider.unity.test.framework.api.pasteItem2
 import com.jetbrains.rider.unity.test.framework.api.renameItem
-import org.testng.Assert
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import kotlin.io.path.exists
 import kotlin.io.path.name
 import kotlin.io.path.readText
@@ -39,6 +41,7 @@ import kotlin.io.path.readText
 @Severity(SeverityLevel.CRITICAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("UnityProjectModelViewExtensionsTest")
+@Tag(TeamCityTags.Plugins.Unity)
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     override val advancedSettings: AdvancedSettingsList
@@ -51,7 +54,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     // todo: add test with solution, where one of the asmdef-s doesn't target Editor, this would cause only .Player project without normal one
 
-    @Test(description="Add a new script to the project")
+    @Test // Add a new script to the project
     @ChecklistItems(["Unity explorer/Add new script"])
     fun testAddNewItem() {
         testProjectModel(testGoldFile, project, false) {
@@ -68,7 +71,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
-    @Test(description="Rename an script in the project")
+    @Test // Rename an script in the project
     @ChecklistItems(["Unity explorer/Rename script"])
     fun testRenameFile() {
         testProjectModel(testGoldFile, project, false) {
@@ -81,13 +84,13 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
                 val metaFile = project.solutionDirectoryPath.resolve("Assets").resolve("AsmdefResponse")
                     .resolve("NewBehaviourScript_renamed.cs.meta")
-                Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
-                Assert.assertEquals(metaFileContent, metaFile.readText())
+                Assertions.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
+                Assertions.assertEquals(metaFileContent, metaFile.readText())
             }
         }
     }
 
-    @Test(description = "Rename a folder in the project")
+    @Test // Rename a folder in the project
     @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder() {
         testProjectModel(testGoldFile, project, false) {
@@ -99,13 +102,13 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
                 }, true)
 
                 val metaFile = project.solutionDirectoryPath.resolve("Assets").resolve("Dir1_renamed.meta")
-                Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
-                Assert.assertEquals(metaFileContent, metaFile.readText())
+                Assertions.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
+                Assertions.assertEquals(metaFileContent, metaFile.readText())
             }
         }
     }
 
-    @Test(description = "Rename a folder in the project")
+    @Test // Rename a folder in the project
     @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder2() {
         testProjectModel(testGoldFile, project, false) {
@@ -118,7 +121,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
-    @Test(description = "Rename a folder in the project")
+    @Test // Rename a folder in the project
     @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder3() {
         testProjectModel(testGoldFile, project, false) {
@@ -131,11 +134,11 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
-    @Test(description="Delete a script in the project")
+    @Test // Delete a script in the project
     @ChecklistItems(["Unity explorer/Delete script"])
     fun testDeleteFile() {
         val metaFile = project.solutionDirectoryPath.resolve("Assets/AsmdefResponse/NewBehaviourScript.cs.meta")
-        Assert.assertTrue(metaFile.exists(), "We expect meta file exists.")
+        Assertions.assertTrue(metaFile.exists(), "We expect meta file exists.")
         // helps Local History to capture the file content
         val vf = VfsUtil.findFile(project.solutionDirectoryPath.resolve("Assets/AsmdefResponse/NewBehaviourScript.cs"), true)!!
         openFileInEditor(vf)
@@ -145,13 +148,13 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
             }
         }
 
-        Assert.assertFalse(metaFile.exists(), "We expect meta file removed.")
+        Assertions.assertFalse(metaFile.exists(), "We expect meta file removed.")
         callUndo(project)
-        Assert.assertTrue(metaFile.exists(), "We expect meta file restored.")
+        Assertions.assertTrue(metaFile.exists(), "We expect meta file restored.")
 
     }
 
-    @Test(description = "Move a script in the project")
+    @Test // Move a script in the project
     @Issues([Issue("RIDER-41182"), Issue("RIDER-91321")])
     @ChecklistItems(["Unity explorer/Move script"])
     fun testMoveFile() {
@@ -159,8 +162,8 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         val originMetaFile = originFile.resolveSibling(originFile.name + ".meta")
         val metaFileContent = originMetaFile.readText()
         val movedFile = project.solutionDirectoryPath.resolve("Assets").resolve("AsmdefResponse").resolve("NewDirectory1").resolve("Class1.cs")
-        Assert.assertTrue(originFile.exists(), "We expect file exists.")
-        Assert.assertTrue(originMetaFile.exists(), "We expect meta file exists.")
+        Assertions.assertTrue(originFile.exists(), "We expect file exists.")
+        Assertions.assertTrue(originMetaFile.exists(), "We expect meta file exists.")
 
         testProjectModel(testGoldFile, project, false) {
             dump("Move file", project, activeSolutionDirectory) {
@@ -169,22 +172,22 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
             }
         }
 
-        Assert.assertFalse(originFile.exists(), "We expect $originFile removed.")
-        Assert.assertFalse(originMetaFile.exists(), "We expect $originMetaFile file removed.")
-        Assert.assertTrue(movedFile.exists(), "$movedFile should have been moved.")
+        Assertions.assertFalse(originFile.exists(), "We expect $originFile removed.")
+        Assertions.assertFalse(originMetaFile.exists(), "We expect $originMetaFile file removed.")
+        Assertions.assertTrue(movedFile.exists(), "$movedFile should have been moved.")
         val movedMetaFile = movedFile.resolveSibling(movedFile.name + ".meta")
-        Assert.assertTrue(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
-        Assert.assertEquals(metaFileContent, movedMetaFile.readText())
+        Assertions.assertTrue(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
+        Assertions.assertEquals(metaFileContent, movedMetaFile.readText())
 
         callUndo(project)
-        Assert.assertTrue(originFile.exists(), "We expect $originFile removed.")
-        Assert.assertTrue(originMetaFile.exists(), "We expect $originMetaFile file removed.")
-        Assert.assertFalse(movedFile.exists(), "$movedFile should have been moved.")
-        Assert.assertFalse(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
-        Assert.assertEquals(metaFileContent, originMetaFile.readText())
+        Assertions.assertTrue(originFile.exists(), "We expect $originFile removed.")
+        Assertions.assertTrue(originMetaFile.exists(), "We expect $originMetaFile file removed.")
+        Assertions.assertFalse(movedFile.exists(), "$movedFile should have been moved.")
+        Assertions.assertFalse(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
+        Assertions.assertEquals(metaFileContent, originMetaFile.readText())
     }
 
-    @Test(description = "Move a script in the project")
+    @Test // Move a script in the project
     @Issue("RIDER-63575")
     @ChecklistItems(["Unity explorer/Move script"])
     fun testMoveFile2() {
@@ -192,8 +195,8 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         val originMetaFile = originFile.resolveSibling(originFile.name + ".meta")
         val metaFileContent = originMetaFile.readText()
         val movedFile = project.solutionDirectoryPath.resolve("Assets/rrr.cs")
-        Assert.assertTrue(originFile.exists(), "We expect file exists.")
-        Assert.assertTrue(originMetaFile.exists(), "We expect meta file exists.")
+        Assertions.assertTrue(originFile.exists(), "We expect file exists.")
+        Assertions.assertTrue(originMetaFile.exists(), "We expect meta file exists.")
 
         testProjectModel(testGoldFile, project, false) {
             dump("Move file", project, activeSolutionDirectory) {
@@ -202,11 +205,11 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
             }
         }
 
-        Assert.assertFalse(originFile.exists(), "We expect $originFile removed.")
-        Assert.assertFalse(originMetaFile.exists(), "We expect $originMetaFile file removed.")
-        Assert.assertTrue(movedFile.exists(), "$movedFile should have been moved.")
+        Assertions.assertFalse(originFile.exists(), "We expect $originFile removed.")
+        Assertions.assertFalse(originMetaFile.exists(), "We expect $originMetaFile file removed.")
+        Assertions.assertTrue(movedFile.exists(), "$movedFile should have been moved.")
         val movedMetaFile = movedFile.resolveSibling(movedFile.name + ".meta")
-        Assert.assertTrue(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
-        Assert.assertEquals(metaFileContent, movedMetaFile.readText())
+        Assertions.assertTrue(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
+        Assertions.assertEquals(metaFileContent, movedMetaFile.readText())
     }
 }

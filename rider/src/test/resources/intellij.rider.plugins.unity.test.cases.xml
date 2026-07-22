@@ -1,16 +1,15 @@
 <idea-plugin>
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
-    <module name="intellij.rider.test.framework"/>
-    <module name="intellij.rider.test.framework.integration.testng"/>
-    <module name="intellij.rider.test.framework.integration.testng.tests"/>
-    <module name="intellij.rider.test.framework.core"/>
-    <module name="intellij.rider.test.framework.testng"/>
     <plugin id="com.jetbrains.rider.fsharp"/>
     <module name="intellij.libraries.commons.compress"/>
     <module name="intellij.libraries.commons.logging"/>
     <module name="intellij.libraries.gson"/>
     <module name="intellij.libraries.jline"/>
+    <module name="intellij.libraries.junit4"/>
+    <module name="intellij.libraries.junit5"/>
+    <module name="intellij.libraries.junit5.params"/>
+    <module name="intellij.libraries.junit5.vintage"/>
     <module name="intellij.libraries.kotlin.reflect"/>
     <module name="intellij.libraries.kotlinx.coroutines.core"/>
     <module name="intellij.libraries.kotlinx.coroutines.test"/>
@@ -41,6 +40,8 @@
     <module name="intellij.rider.languages"/>
     <module name="intellij.rider.plugins.unity.backend"/>
     <module name="intellij.rider.plugins.unity.model"/>
+    <module name="intellij.rider.test.framework.integration.junit"/>
+    <module name="intellij.rider.test.framework.junit"/>
     <module name="intellij.xml.impl"/>
   </dependencies>
   <!-- endregion -->

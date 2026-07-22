@@ -11,7 +11,7 @@ import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.facades.TestApiScopes
@@ -19,15 +19,17 @@ import com.jetbrains.rider.test.facades.editor.EditorApiFacade
 import com.jetbrains.rider.test.facades.editor.RiderEditorApiFacade
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.assertLookupContains
 import com.jetbrains.rider.test.scriptingApi.callBasicCompletion
 import com.jetbrains.rider.test.scriptingApi.typeWithLatency
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.nio.file.Path
 import kotlin.io.path.pathString
 
@@ -36,6 +38,7 @@ import kotlin.io.path.pathString
 @Severity(SeverityLevel.NORMAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("AssetDatabasePathCompletionProject")
+@Tag(TeamCityTags.Plugins.Unity)
 class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Editor {
     override val editorApiFacade: EditorApiFacade by lazy { RiderEditorApiFacade(solutionApiFacade, testDataStorage) }
 
@@ -57,7 +60,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
             "JetBrains.ReSharper.Psi.Files",
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
-    @Test(description = "Test empty path for asset database")
+    @Test // Test empty path for asset database
     @ChecklistItems(["Asset Database Completion/Empty path"])
     fun test_EmptyPath() {
         waitForUnityPackagesCache()
@@ -70,7 +73,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
         }
     }
 
-    @Test(description = "Test not full path for asset database")
+    @Test // Test not full path for asset database
     @ChecklistItems(["Asset Database Completion/Not full path"])
     fun test_NotFullAssetsPathTest() {
         waitForUnityPackagesCache()
@@ -82,7 +85,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
         }
     }
 
-    @Test(description = "Test Assets folder path for asset database")
+    @Test // Test Assets folder path for asset database
     @ChecklistItems(["Asset Database Completion/Assets folder path"])
     fun test_AssetsFolderTest() {
         waitForUnityPackagesCache()
@@ -97,7 +100,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
         }
     }
 
-    @Test(description = "Test Assets folder path for asset database with caret inside")
+    @Test // Test Assets folder path for asset database with caret inside
     @ChecklistItems(["Asset Database Completion/Assets folder path with caret inside"])
     fun test_AssetsFolderCaretInside() {
         waitForUnityPackagesCache()
@@ -109,7 +112,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
         }
     }
 
-    @Test(description = "Test Assets internal folder path for asset database")
+    @Test // Test Assets internal folder path for asset database
     @ChecklistItems(["Asset Database Completion/Assets internal folder path"])
     fun test_AssetsInternalFolderTest() {
         waitForUnityPackagesCache()
@@ -121,7 +124,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
         }
     }
 
-    @Test(description = "Test Package folder path for asset database")
+    @Test // Test Package folder path for asset database
     @ChecklistItems(["Asset Database Completion/Package folder path"])
     fun test_PackagesFolderTest() {
         waitForUnityPackagesCache()
@@ -137,7 +140,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
         }
     }
 
-    @Test(description = "Test Package internal folder path for asset database")
+    @Test // Test Package internal folder path for asset database
     @ChecklistItems(["Asset Database Completion/Package internal folder path"])
     fun test_PackagesInternalFolderTest() {
         waitForUnityPackagesCache()
@@ -151,7 +154,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
     }
 
 
-    @BeforeMethod
+    @BeforeEach
     fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
@@ -165,7 +168,7 @@ class AssetDatabaseCompletionTest : PerTestSolutionTestBase(), TestApiScopes.Edi
     }
 
     // debug only
-    @AfterMethod
+    @AfterEach
     fun saveDocuments() {
         persistAllFilesOnDisk()
     }

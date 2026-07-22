@@ -17,11 +17,12 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Issue
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.PerTestSettingsTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSettingsTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.canExecuteAction
 import com.jetbrains.rider.test.scriptingApi.createDataContextFor
@@ -36,17 +37,19 @@ import com.jetbrains.rider.unity.test.framework.api.dump
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
 import com.jetbrains.rider.unity.test.framework.api.withUnityExplorerPane
-import org.testng.Assert
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.time.Duration
 
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity Explorer")
 @Severity(SeverityLevel.CRITICAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
+@Tag(TeamCityTags.Plugins.Unity)
 class UnityExplorerTest : PerTestSettingsTestBase() {
 
-    @Test(description = "Add a new item with multiple backends")
+    @Test // Add a new item with multiple backends
     @Mute("RIDER-101228")
     @Issue("RIDER-70098 Rider adds Unity meta files in a non-Unity project")
     @TestSettings(allowMultipleBackends = true)
@@ -71,7 +74,7 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
         }
     }
 
-    @Test(description="Add a new folder and script to the project")
+    @Test // Add a new folder and script to the project
     @ChecklistItems(["Unity explorer/Add folder and script"])
     fun testUnityExplorer01() {
         val params = OpenSolutionParams()
@@ -104,7 +107,7 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
         }
     }
 
-    @Test(description = "Test project loading with a special folder")
+    @Test // Test project loading with a special folder
     @Issue("RIDER-92886")
     @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
     @TestEnvironment(platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
@@ -125,7 +128,7 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
         }
     }
 
-    @Test(description = "Start/Stop Index actions are hidden in the Unity Explorer but stay available in the Solution Explorer")
+    @Test // Start/Stop Index actions are hidden in the Unity Explorer but stay available in the Solution Explorer
     @Issue("RIDER-75848")
     fun testStartStopIndexHiddenInUnityExplorer() {
         // AssetDatabasePathCompletionProject has a real Packages/ root, so we exercise the reported scenario
@@ -163,7 +166,7 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
             val solutionContext = createDataContextFor(
                 project,
                 arrayOf("AssetDatabasePathCompletionProject", "Assembly-CSharp", "Assets", "EscapeFromRider.cs"))
-            Assert.assertTrue(
+            Assertions.assertTrue(
                 canExecuteAction("RiderStartIndexAction", solutionContext) ||
                 canExecuteAction("RiderStopIndexAction", solutionContext),
                 "Start/Stop Index must remain available in the Solution Explorer")
@@ -172,9 +175,9 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
 
     private fun assertIndexActionsHidden(dataContext: DataContext, where: String) {
         // updateAction = BGT-correct update session; assert isVisible, the property the fix drives.
-        Assert.assertFalse(updateAction("RiderStartIndexAction", dataContext).isVisible,
+        Assertions.assertFalse(updateAction("RiderStartIndexAction", dataContext).isVisible,
                            "RiderStartIndexAction must be hidden in the Unity Explorer for $where")
-        Assert.assertFalse(updateAction("RiderStopIndexAction", dataContext).isVisible,
+        Assertions.assertFalse(updateAction("RiderStopIndexAction", dataContext).isVisible,
                            "RiderStopIndexAction must be hidden in the Unity Explorer for $where")
     }
 

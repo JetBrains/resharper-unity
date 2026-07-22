@@ -13,11 +13,12 @@ import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSolutionTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.assertLookupContains
 import com.jetbrains.rider.test.scriptingApi.assertLookupNotContains
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
@@ -30,15 +31,17 @@ import com.jetbrains.rider.test.scriptingApi.waitForRoslynReady
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity DOTS Autocompletion")
 @Severity(SeverityLevel.NORMAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("UnityDotsAutocompletionTestData")
+@Tag(TeamCityTags.Plugins.Unity)
 class UnityDotsAutocompletionTest : PerTestSolutionTestBase() {
     override val traceCategories: List<String>
         get() = listOf(
@@ -59,7 +62,7 @@ class UnityDotsAutocompletionTest : PerTestSolutionTestBase() {
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages",
             *LogTraceScenarios.Roslyn.categories.toTypedArray())
 
-    @Test(description="DOTS Source GenCompletion")
+    @Test // DOTS Source GenCompletion
     @ChecklistItems(["DOTS Source GenCompletion"])
     fun test_DotsSourceGenCompletion() {
         waitForRoslynReady()
@@ -85,7 +88,7 @@ class UnityDotsAutocompletionTest : PerTestSolutionTestBase() {
         }
     }
 
-    @BeforeMethod
+    @BeforeEach
     fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
@@ -99,7 +102,7 @@ class UnityDotsAutocompletionTest : PerTestSolutionTestBase() {
     }
 
     // debug only
-    @AfterMethod
+    @AfterEach
     fun saveDocuments() {
         persistAllFilesOnDisk()
     }

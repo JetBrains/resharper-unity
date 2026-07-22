@@ -24,16 +24,18 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Issue
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.PerTestSettingsTestBase
+import com.jetbrains.rider.test.junit5.base.PerTestSettingsTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.facades.solution.RiderSolutionApiFacade
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.withSolution
-import org.testng.Assert.assertNull
-import org.testng.Assert.assertTrue
-import org.testng.annotations.Test
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.time.Duration
 import kotlin.test.assertNotNull
 
@@ -44,6 +46,7 @@ private const val SOLUTION = "UnityProjectDiscovererTestData"
 @Severity(SeverityLevel.CRITICAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Issue("RIDER-134819")
+@Tag(TeamCityTags.Plugins.Unity)
 class UnityProjectDiscovererTest : PerTestSettingsTestBase() {
 
     // Panes loaded but PROJECT_VIEW tool window not initialised — reproduces the RIDER-134819 race.
@@ -73,7 +76,7 @@ class UnityProjectDiscovererTest : PerTestSettingsTestBase() {
         }
     }
 
-    @Test(description = "changeView should not NPE when ProjectView setupImpl hasn't been called")
+    @Test // changeView should not NPE when ProjectView setupImpl hasn't been called
     @ChecklistItems(["Unity project detection / first open with missing tool window"])
     fun testChangeViewDoesNotNpeWhenToolWindowMissing() {
         withSolution(SOLUTION, facadeWithPaneButNoToolWindow(), OpenSolutionParams(),
@@ -83,7 +86,7 @@ class UnityProjectDiscovererTest : PerTestSettingsTestBase() {
         }
     }
 
-    @Test(description = "changeView switches to UnityExplorer on first open")
+    @Test // changeView switches to UnityExplorer on first open
     @ChecklistItems(["Unity project detection / first open switches to UnityExplorer"])
     fun testChangeViewSwitchesToUnityExplorerOnFirstOpen() {
         withSolution(SOLUTION, facadeWithFullProjectView(), OpenSolutionParams(),
@@ -94,7 +97,7 @@ class UnityProjectDiscovererTest : PerTestSettingsTestBase() {
         }
     }
 
-    @Test(description = "deferred path adds UnityExplorer pane when no panes are loaded on startup")
+    @Test // deferred path adds UnityExplorer pane when no panes are loaded on startup
     @ChecklistItems(["Unity project detection / deferred pane addition when ProjectView not initialized"])
     fun testDeferredPathAddsPaneWhenProjectViewNotInitialized() {
         UnityProjectDiscoverer.isSupportedInHeadlessEnv = true
@@ -124,7 +127,7 @@ class UnityProjectDiscovererTest : PerTestSettingsTestBase() {
         }
     }
 
-    @Test(description = "deferred view switch resumes when tool window becomes available")
+    @Test // deferred view switch resumes when tool window becomes available
     @ChecklistItems(["Unity project detection / deferred view switch on toolWindowShown"])
     fun testDeferredViewSwitchWaitsForToolWindow() {
         UnityProjectDiscoverer.isSupportedInHeadlessEnv = true

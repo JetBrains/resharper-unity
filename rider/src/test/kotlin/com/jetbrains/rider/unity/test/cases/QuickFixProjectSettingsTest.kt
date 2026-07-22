@@ -8,19 +8,21 @@ import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.base.RefactoringsTestBase
+import com.jetbrains.rider.test.junit5.base.RefactoringsTestBase
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.callAltEnterMenu
 import com.jetbrains.rider.test.scriptingApi.executeItemByPrefix
 import com.jetbrains.rider.test.scriptingApi.waitBackendDocumentChange
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 import java.nio.file.Path
 import kotlin.io.path.readText
 import kotlin.io.path.pathString
@@ -30,8 +32,9 @@ import kotlin.io.path.pathString
 @Severity(SeverityLevel.NORMAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("ProjectSettingsTestData")
+@Tag(TeamCityTags.Plugins.Unity)
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
-    @Test(description="Quick fix for adding to build settings")
+    @Test // Quick fix for adding to build settings
     @ChecklistItems(["Quick Fix Project Settings/Adding to build settings"])
     fun testAddToBuildSettings() {
         withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "SceneCompletionTest.cs") {
@@ -45,7 +48,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
         writeProjectSettingsToGold()
     }
 
-    @Test(description="Quick fix for enabling scene at build settings")
+    @Test // Quick fix for enabling scene at build settings
     @ChecklistItems(["Quick Fix Project Settings/Enabling scene at build settings"])
     fun testEnableSceneAtBuildSettings() {
         withOpenedEditor(Path.of("Assets", "NewBehaviourScript.cs").pathString, "SceneCompletionTest.cs") {
@@ -59,7 +62,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
         writeProjectSettingsToGold()
     }
 
-    @Test(description="Quick fix for specifying full scene name")
+    @Test // Quick fix for specifying full scene name
     @ChecklistItems(["Quick Fix Project Settings/Specifying full scene name"])
     fun testSpecifyFullSceneName() {
         doTestWithDumpDocument {
@@ -84,7 +87,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
         }
     }
 
-    @BeforeMethod
+    @BeforeEach
     fun initializeEnvironment() {
         prepareAssemblies(project, activeSolutionDirectory)
     }
