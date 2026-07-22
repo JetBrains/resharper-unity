@@ -1,45 +1,46 @@
-using Mono.Debugger.Soft;
+using Autofac;
+using JetBrains.Debugger.Model.Plugins.Unity;
+using JetBrains.Lifetimes;
 using Mono.Debugging.Autofac;
-using Mono.Debugging.Soft;
-using Mono.Debugging.Soft.Exceptions;
+using Mono.Debugging.Client;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Exceptions
 {
-    // TODO: check whether this still makes sense with CoreCLR
-    [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class UnityUnhandledExceptionHandler : ISoftDebuggerUnhandledExceptionHandler, ISoftDebuggerNonUserHandledExceptionHandler
+    [DebuggerSessionComponent]
+    public class UnityUnhandledExceptionHandler : IStartable
     {
-        private readonly IUnityOptions myUnityOptions;
+        private readonly IDebuggerSession mySession;
+        private readonly Lifetime myLifetime;
+        private readonly bool myIsUnitySession;
 
-        public UnityUnhandledExceptionHandler(IUnityOptions unityOptions)
+        public UnityUnhandledExceptionHandler(IDebuggerSession session, Lifetime lifetime, ISessionCreationInfo creationInfo)
         {
-            myUnityOptions = unityOptions;
+            mySession = session;
+            myLifetime = lifetime;
+            myIsUnitySession = creationInfo.StartInfo is UnityStartInfo;
         }
 
-        bool ISoftDebuggerUnhandledExceptionHandler.ShouldContinueOnException(ObjectMirror exception)
+        public void Start()
         {
-            return ShouldContinueOnExitGuiException_Internal(exception);
-        }
+            if (!myIsUnitySession) return;
 
-        bool ISoftDebuggerNonUserHandledExceptionHandler.ShouldContinueOnException(ObjectMirror exception)
-        {
-            return ShouldContinueOnExitGuiException_Internal(exception);
-        }
-
-        private bool ShouldContinueOnExitGuiException_Internal(ObjectMirror exception)
-        {
-            if (!myUnityOptions.ExtensionsEnabled)
-                return false;
-
-            // Unity 2021.2 has an upgraded Mono (from 5.12ish to 6.something) and the behaviour around unhandled
-            // exceptions has changed. Previously, Unity's Mono would not break on unhandled exceptions - it would not
-            // notify the debugger. This appears to have been unintentional, and it's not currently clear if this
-            // behaviour will be rolled back. (See also Il2CppAwareSessionOptions)
-            // In the meantime, Unity uses ExitGUIException for control flow - thrown in managed code and caught in
-            // native code. Mono reports this as an unhandled exception, because it is unhandled in managed code. But it
-            // is used to break out of the immediate mode GUI loop, and is thrown frequently while using the Inspector
-            // and other UI (see uses of ExitGUI in the reference source)
-            return exception.Type.FullName == "UnityEngine.ExitGUIException";
+            mySession.TargetReady += (_, _) =>
+            {
+                // Unity uses ExitGUIException for control flow in its IMGUI system - thrown in managed code and caught in native code.
+                // It is thrown rather often while using the Inspector and some other (see uses of ExitGUI in the reference source).
+                // Since it's not _really_ an exception and it would be annoying to break every time user presses "Add Component",
+                // the best we can do is to simply ignore it. Hence we create the catchpoint with no action.
+                mySession.BreakpointsManager.AddCatchpoint(myLifetime, "UnityEngine.ExitGUIException",
+                    includeSubclasses: false,
+                    breakIfThrownInUserCode: true,
+                    breakIfThrownInExternalCode: true,
+                    breakIfHandledByUserCode: true,
+                    breakIfHandledByOtherCode: true,
+                    breakIfUnhandled: true,
+                    beforeInsert: static catchpoint => catchpoint.HitAction = HitAction.None,
+                    statusChangedHandler: null
+                );
+            };
         }
     }
 }
