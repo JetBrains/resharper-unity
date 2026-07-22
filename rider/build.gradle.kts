@@ -581,7 +581,9 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     withType<Test>().configureEach {
-        useTestNG()
+        // Ignore IJ Platform JUnit5 framework set up and tear down
+        systemProperty("intellij.build.test.ignoreFirstAndLastTests", "true")
+        useJUnitPlatform()
 
         if (project.hasProperty("ignoreFailures")) {
             ignoreFailures = true
