@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.time.Duration
 
-@Mute("RIDER-114854")
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Solution("InputSystemTestData")
