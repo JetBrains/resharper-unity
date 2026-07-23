@@ -134,11 +134,7 @@ public class OdinTabGroupAttributeCodeCompletionProvider  : CSharpItemsProviderB
 
         public override MatchingResult Match(PrefixMatcher prefixMatcher)
         {
-            var matchingResult = prefixMatcher.Match(Text);
-            if (matchingResult == null)
-                return null;
-            return new MatchingResult(matchingResult.MatchedIndices, matchingResult.AdjustedScore - 100,
-                matchingResult.OriginalScore);
+            return prefixMatcher.Match(Text);
         }
 
         public override void Accept(ITextControl textControl, DocumentRange nameRange, LookupItemInsertType insertType,
