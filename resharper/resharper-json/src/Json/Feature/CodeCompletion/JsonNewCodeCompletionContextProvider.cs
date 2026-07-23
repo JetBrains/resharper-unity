@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion
 
         private bool IsIntellisenseEnabled(CodeCompletionContext context)
         {
-            return myIntellisenseManager.GetIntellisenseEnabled(context.ContextBoundSettingsStore);
+            return myIntellisenseManager.GetIntellisenseEnabled(context.SettingsStore);
         }
 
         private TreeTextRange GetElementRange(ITreeNode element)

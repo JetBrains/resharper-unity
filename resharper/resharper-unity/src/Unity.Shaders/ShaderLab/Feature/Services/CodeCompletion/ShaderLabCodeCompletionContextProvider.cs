@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
 
         private bool IsIntellisenseEnabled(CodeCompletionContext context)
         {
-            return myShaderLabIntellisenseManager.GetIntellisenseEnabled(context.ContextBoundSettingsStore);
+            return myShaderLabIntellisenseManager.GetIntellisenseEnabled(context.SettingsStore);
         }
 
         private TreeTextRange GetElementRange(ITreeNode element)
