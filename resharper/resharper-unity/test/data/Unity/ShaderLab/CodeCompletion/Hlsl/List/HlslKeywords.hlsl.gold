@@ -1,5 +1,5 @@
 ﻿Completion: Basic
-Count: 315
+Count: 316
 Focus: Hard
 Range: "♦"
 
@@ -18,6 +18,7 @@ double
 enum
 extern
 float
+globallycoherent
 groupshared
 half
 inline
@@ -409,6 +410,7 @@ float4x1
 float4x2
 float4x3
 float4x4
+globallycoherent
 groupshared
 half
 half1
