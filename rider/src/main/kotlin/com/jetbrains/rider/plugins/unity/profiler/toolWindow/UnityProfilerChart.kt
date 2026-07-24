@@ -487,8 +487,8 @@ class UnityProfilerChart(
         val labelAttr = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, JBColor.foreground())
         val valueAttr = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, UnityProfilerStyle.gridLabelForeground)
 
-        updateLabel(frameLabel, "Frame: ", frameValue, labelAttr, valueAttr)
-        updateLabel(cpuLabel, "CPU: ", msText, labelAttr, valueAttr)
+        updateLabel(frameLabel, UnityUIBundle.message("unity.profiler.toolwindow.chart.frame.label"), frameValue, labelAttr, valueAttr)
+        updateLabel(cpuLabel, UnityUIBundle.message("unity.profiler.toolwindow.chart.cpu.label"), msText, labelAttr, valueAttr)
 
         toolbar.updateActionsImmediately()
     }
@@ -501,7 +501,7 @@ class UnityProfilerChart(
         valueAttr: SimpleTextAttributes
     ) {
         label.clear()
-        label.append(text, labelAttr)
+        label.append("$text\u0020", labelAttr)
         label.append(value, valueAttr)
     }
 
