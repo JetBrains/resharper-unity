@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDotsDebug/Project")
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
-@Tag(TeamCityTags.Plugins.UnityIntegration)
+@Tag(TeamCityTags.Plugins.Unity.Integration)
 abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger + LogTraceScenarios.MonoDebuggerConnection

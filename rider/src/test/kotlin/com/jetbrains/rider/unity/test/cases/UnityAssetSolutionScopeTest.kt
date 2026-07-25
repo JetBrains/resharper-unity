@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test
 @Issue("RIDER-139698, RIDER-117479")
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("RiderSample")
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class UnityAssetSolutionScopeTest : PerTestSettingsTestBase() {
 
     @Test // Unity Scenes must be inside RiderSolutionScope so CodeVision popup doesn't filter them out

@@ -41,7 +41,7 @@ import kotlin.test.assertTrue
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityProfilerTestsProject/SimpleUnityGame")
-@Tag(TeamCityTags.Plugins.UnityIntegration)
+@Tag(TeamCityTags.Plugins.Unity.Integration)
 abstract class UnityProfilerIntegrationTest : IntegrationTestWithUnityProjectBase() {
 
     @BeforeEach

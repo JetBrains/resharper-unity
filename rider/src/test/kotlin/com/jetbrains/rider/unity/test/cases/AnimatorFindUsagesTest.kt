@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Feature("Unity Animator Find Usages")
 @Severity(SeverityLevel.NORMAL)

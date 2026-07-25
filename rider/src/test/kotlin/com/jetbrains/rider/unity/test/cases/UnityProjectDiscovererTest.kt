@@ -46,7 +46,7 @@ private const val SOLUTION = "UnityProjectDiscovererTestData"
 @Severity(SeverityLevel.CRITICAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Issue("RIDER-134819")
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class UnityProjectDiscovererTest : PerTestSettingsTestBase() {
 
     // Panes loaded but PROJECT_VIEW tool window not initialised — reproduces the RIDER-134819 race.

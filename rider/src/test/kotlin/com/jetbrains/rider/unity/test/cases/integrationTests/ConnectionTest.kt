@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL]) // todo: allow Linux
 @Solution("SimpleUnityProjectWithoutPlugin")
-@Tag(TeamCityTags.Plugins.UnityIntegration)
+@Tag(TeamCityTags.Plugins.Unity.Integration)
 class ConnectionTest : IntegrationTestWithSolutionBase() {
     @Test // Check connection with Unity after Unity start with Simple Unity Project without plugin
     @Mute("RIDER-105806 Drop the EditorPlugin functionality for Unity versions prior to 2019.2")

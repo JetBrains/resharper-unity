@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @TestEnvironment(platform = [PlatformType.ALL])
 @Solution("UI_PrefabModifications" )
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class FindUguiUsagesPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     override val traceCategories: List<String>

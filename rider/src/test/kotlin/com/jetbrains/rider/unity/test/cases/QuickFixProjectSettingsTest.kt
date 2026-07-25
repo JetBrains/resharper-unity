@@ -32,7 +32,7 @@ import kotlin.io.path.pathString
 @Severity(SeverityLevel.NORMAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("ProjectSettingsTestData")
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     @Test // Quick fix for adding to build settings
     @ChecklistItems(["Quick Fix Project Settings/Adding to build settings"])

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test
 @Severity(SeverityLevel.NORMAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("AnimImplicitUsageTest")
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class AnimImplicitUsageFindUsagesTest : PerClassSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         params.preprocessTempDirectory = { prepareAssemblies(it) }

@@ -46,7 +46,7 @@ import java.time.Duration
 @Feature("Unity Explorer")
 @Severity(SeverityLevel.CRITICAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class UnityExplorerTest : PerTestSettingsTestBase() {
 
     @Test // Add a new item with multiple backends

@@ -56,7 +56,7 @@ import kotlin.test.fail
 @Feature("Debug Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
 @Solution("UnityDebugAndUnitTesting/Project")
-@Tag(TeamCityTags.Plugins.UnityIntegration)
+@Tag(TeamCityTags.Plugins.Unity.Integration)
 abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
     @Test // Check 2 breakpoints in simple Unity App
     @ChecklistItems(["Breakpoints/Simple breakpoint"])

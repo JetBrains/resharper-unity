@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 @ChecklistItems(["Breadcrumbs in .shader"])
 @Severity(SeverityLevel.NORMAL)
 @Solution("SimpleUnityProjectWithShaders")
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class BreadcrumbsTest : PerTestSolutionTestBase() {
     @Test // Test Breadcrumbs in .shader files
     fun simpleBreadcrumbsCheck() {

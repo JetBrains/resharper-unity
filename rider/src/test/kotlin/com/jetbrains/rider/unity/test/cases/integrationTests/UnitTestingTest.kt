@@ -29,7 +29,7 @@ import kotlin.io.path.absolutePathString
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Solution("UnityDebugAndUnitTesting/Project")
-@Tag(TeamCityTags.Plugins.UnityIntegration)
+@Tag(TeamCityTags.Plugins.Unity.Integration)
 abstract class UnitTestingTest() : IntegrationTestWithUnityProjectBase() {
     @Test // Check run all tests from project
     @ChecklistItems(["Run all tests from the Project"])

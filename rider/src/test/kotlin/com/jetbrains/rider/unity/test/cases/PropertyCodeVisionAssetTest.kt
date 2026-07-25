@@ -46,7 +46,7 @@ import kotlin.io.path.name
 @Severity(SeverityLevel.CRITICAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("CodeLensTestSolution")
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     override val advancedSettings: AdvancedSettingsList

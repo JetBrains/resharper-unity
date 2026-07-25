@@ -35,7 +35,7 @@ import kotlin.io.path.pathString
 @Severity(SeverityLevel.NORMAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("ResourcesAutocompletionTestData")
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class UnityResourcesAutocompletionTest : PerTestSolutionTestBase() {
     override val traceCategories: List<String>
         get() = listOf(

@@ -73,7 +73,7 @@ abstract class UnityPlayerDebuggerTestBase() : UnityPlayerTestBase(){
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@Tag(TeamCityTags.Plugins.UnityIntegration)
+@Tag(TeamCityTags.Plugins.Unity.Integration)
 @Suppress("JUnitTestCaseWithNoTests")
 class UnityPlayerDebuggerTest {
     @Nested

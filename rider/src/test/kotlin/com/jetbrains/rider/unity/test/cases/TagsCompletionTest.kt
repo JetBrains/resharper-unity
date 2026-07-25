@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test
 import java.nio.file.Path
 import kotlin.io.path.pathString
 
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 @Subsystem(SubsystemConstants.UNITY_COMPLETION)
 @Feature("Unity Tags Autocompletion")
 @Severity(SeverityLevel.NORMAL)

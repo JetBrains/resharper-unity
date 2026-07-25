@@ -41,7 +41,7 @@ import kotlin.io.path.readText
 @Severity(SeverityLevel.CRITICAL)
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("UnityProjectModelViewExtensionsTest")
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     override val advancedSettings: AdvancedSettingsList

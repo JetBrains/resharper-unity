@@ -30,7 +30,7 @@ import java.time.Duration
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Subsystem(SubsystemConstants.UNITY_FIND_USAGES)
 @Solution("MarkupTestData")
-@Tag(TeamCityTags.Plugins.Unity)
+@Tag(TeamCityTags.Plugins.Unity.General)
 class InputSystemUnityEventModeTest : PerTestSolutionTestBase() {
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         params.preprocessTempDirectory = { prepareAssemblies(it) }
