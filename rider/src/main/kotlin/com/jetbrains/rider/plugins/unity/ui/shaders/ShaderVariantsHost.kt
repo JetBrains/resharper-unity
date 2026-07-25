@@ -22,7 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.awt.MouseInfo
 
-private class ShaderVariantsHost : ProjectActivity, FrontendTextControlHostListener {
+internal class ShaderVariantsHost : ProjectActivity, FrontendTextControlHostListener {
     object TextControlListener : FrontendTextControlHostListener {
         override fun beforeEditorBound(lifetime: Lifetime,
                                        appSession: ClientAppSession,
