@@ -6,7 +6,6 @@
     <module name="intellij.libraries.commons.logging"/>
     <module name="intellij.libraries.gson"/>
     <module name="intellij.libraries.jline"/>
-    <module name="intellij.libraries.junit4"/>
     <module name="intellij.libraries.junit5"/>
     <module name="intellij.libraries.junit5.params"/>
     <module name="intellij.libraries.junit5.vintage"/>
