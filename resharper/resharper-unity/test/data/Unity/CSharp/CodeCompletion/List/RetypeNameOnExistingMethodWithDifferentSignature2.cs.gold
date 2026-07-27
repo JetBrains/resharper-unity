@@ -3,6 +3,7 @@ Prefix: "OnA"
 Count: 3
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "private void OnA♦(bool hasFocus)"
                      ▲▲▲▲
 
@@ -11,7 +12,7 @@ Range: "private void OnA♦(bool hasFocus)"
                             [PrefixMatch, Methods, GenerateItems, MemberOfCurrentType, HighSelectionPriority]
 ỌṇẠpplicationFocus|(bool) { ... }    OrderStr=OnApplicationFocus(bool)    <==
 ỌṇẠpplicationPause|(bool) { ... }    OrderStr=OnApplicationPause(bool)
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, Other^]
+                            [FromLightEvaluation^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, Other^]
 myỌṇẠ
 
 ##### ALPHABETIC SORT #####

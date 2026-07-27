@@ -3,6 +3,7 @@ Prefix: "GO"
 Count: 9
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "GO♦   "
         ▲▲▲
 
@@ -10,10 +11,10 @@ Range: "GO♦   "
 
                             [CamelHumpsCaseMatch]
 G̣ameỌbject                  <==
-                            [FromLightAndDynamicEvaluation^, ImportedType^]
+                            [FromLightEvaluation^, ImportedType^]
 G̣UILayoutỌption
 ParticleSystemG̣ameỌbjectFilter
-                            [FromSingleCompletion^, TypesAndNamespaces^, NotImportedType, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation, Other^]
+                            [TypesAndNamespaces^, NotImportedType, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation, Other^]
 AddedG̣ameỌbject |(in UnityEditor.SceneManagement)
 ComponentG̣uaranteesỌptions |(in System.Runtime.Versioning)
 G̣ameỌbjectRecorder |(in UnityEditor.Animations)

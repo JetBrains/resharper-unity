@@ -3,12 +3,13 @@ Prefix: "On"
 Count: 67
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "[SerializeField] On♦"
                          ▲▲▲
 
 ##### RELEVANCE SORT #####
 
-                            [FromLightAndDynamicEvaluation, ImportedType]
+                            [FromLightEvaluation, ImportedType]
 RuntimeInitializeỌṇLoadMethodAttribute    <==
                             [PrefixMatch, NotImportedType, FromFullEvaluation]
 ỌṇCaptureResourceCreatedCallback |(in UnityEngine.Windows.WebCam.PhotoCapture)
@@ -49,7 +50,7 @@ ỌṇeWayAttribute |(in System.Runtime.Remoting.Messaging)
 ỌṇlineState |(in UnityEditor.VersionControl)
                             [CamelHumpsCaseMatch, NotImportedType, FromFullEvaluation]
 ỌbjectṆames |(in UnityEditor)
-                            [FromSingleCompletion^, TypesAndNamespaces^, NotImportedType, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation, Other^]
+                            [TypesAndNamespaces^, NotImportedType, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation, Other^]
 ActionỌṇDotNetUnhandledException |(in UnityEditor)
 AndroidShowActivityIndicatorỌṇLoading |(in UnityEditor)
 CriticalHandleMinusỌṇeIsInvalid |(in Microsoft.Win32.SafeHandles)

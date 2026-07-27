@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 4 (filtered)
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "Combine Previous Lerp (♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 Constant                    <==
 Previous
 Primary

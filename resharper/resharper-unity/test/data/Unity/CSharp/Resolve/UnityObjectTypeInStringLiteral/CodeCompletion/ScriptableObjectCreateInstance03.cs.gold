@@ -3,12 +3,13 @@ Prefix: "Edit"
 Count: 3
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "var so = ScriptableObject.CreateInstance("Edit♦");"
                                                   ▲▲▲▲▲
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, TypesAndNamespaces, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, TypesAndNamespaces, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
 TreeẸḍịṭor                  <==
 UnityẸḍịṭor
 UnityẸḍịṭorInternal

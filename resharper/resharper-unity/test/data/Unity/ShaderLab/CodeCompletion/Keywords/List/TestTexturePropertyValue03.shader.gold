@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 5
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "_MyTex("MyTex", 2D) = "White" { 2D TexGen ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 CubeNormal                  <==
 CubeReflect
 EyeLinear

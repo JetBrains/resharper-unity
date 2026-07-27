@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 26
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 AlphaTest                   <==
 AlphaToMask
 BindChannels

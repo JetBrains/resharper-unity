@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 20
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "[System(Semantic::♦)] out float4 Depth;"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+                            [FromLightEvaluation, MemberOfObject]
 Color                       <==
 Position
 VertexAttributeColor, 0

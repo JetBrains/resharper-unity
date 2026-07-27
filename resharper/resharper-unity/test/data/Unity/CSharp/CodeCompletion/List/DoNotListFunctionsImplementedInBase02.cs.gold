@@ -3,12 +3,13 @@ Prefix: "OnAudioFilter"
 Count: 1
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "OnAudioFilter♦"
         ▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixMatch, Methods, GenerateItems, MemberOfCurrentType, NotObsolete, ObsoleteRuleApplied, HighSelectionPriority, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, PrefixMatch, Methods, GenerateItems, MemberOfCurrentType, NotObsolete, ObsoleteRuleApplied, HighSelectionPriority, NormalSelectionPriority, Other]
 private |ỌṇẠụḍịọF̣ịḷṭẹṛRead|(float[], int) { ... }    OrderStr='OnAudioFilterRead(float[], int)'    <==
 
 ##### ALPHABETIC SORT #####

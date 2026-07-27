@@ -3,12 +3,13 @@ Prefix: "Unit"
 Count: 5
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "go.GetComponent("Unit♦");"
                          ▲▲▲▲▲
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixMatch, TypesAndNamespaces, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, PrefixMatch, TypesAndNamespaces, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
 Ụṇịṭy                       <==
 ỤṇịṭyEditor
 ỤṇịṭyEditorInternal

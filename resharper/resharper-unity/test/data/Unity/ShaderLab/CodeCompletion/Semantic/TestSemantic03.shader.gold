@@ -1,11 +1,13 @@
 ﻿Completion: Basic
 Count: 8 (filtered)
 Focus: Hard
+Rules: [!"'~] => hide_lookup
+       [\w] => add_to_prefix
 Range: "void frag(in float2 tex: ♦) "
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+                            [FromLightEvaluation, MemberOfObject]
 TEXCOORD0                   <==
 TEXCOORD1
 TEXCOORD2

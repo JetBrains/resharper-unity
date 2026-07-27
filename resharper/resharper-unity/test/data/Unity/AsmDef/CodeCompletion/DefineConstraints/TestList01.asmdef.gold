@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 6
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: ""♦""
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, NormalSelectionPriority, Other]
 RESHARPER_UNITY_TEST_DEFINED_SYMBOL    <==
 RESHARPER_UNITY_TEST_DEFINED_SYMBOL_2
 UNDEFINED_SYMBOL_FROM_VERSION_DEFINES

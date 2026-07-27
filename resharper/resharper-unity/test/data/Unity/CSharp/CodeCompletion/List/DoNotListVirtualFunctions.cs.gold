@@ -3,6 +3,7 @@ Prefix: "Up"
 Count: 140
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "Up♦"
         ▲▲▲
 
@@ -14,7 +15,7 @@ private |LateỤp̣date|() { ... }    OrderStr=LateUpdate()
 private |OnMouseỤp̣|() { ... }    OrderStr=OnMouseUp()
 private |OnMouseỤp̣AsButton|() { ... }    OrderStr=OnMouseUpAsButton()
 private |OnParticleỤp̣dateJobScheduled|() { ... }    OrderStr=OnParticleUpdateJobScheduled()
-                            [FromLightAndDynamicEvaluation^, TypesAndNamespaces, ImportedType]
+                            [FromLightEvaluation^, TypesAndNamespaces, ImportedType]
 AnimatorỤp̣dateMode
 AudioVelocityỤp̣dateMode
 CustomRenderTextureỤp̣dateMode
@@ -149,7 +150,7 @@ XREarlyỤp̣date |(in UnityEngine.PlayerLoop.Initialization)
 XRFixedỤp̣date |(in UnityEngine.PlayerLoop.FixedUpdate)
 XRỤp̣date |(in UnityEngine.PlayerLoop.EarlyUpdate)
 XboxOnePackageỤp̣dateGranularity |(in UnityEditor)
-                            [FromSingleCompletion^, TypesAndNamespaces, NotImportedType, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation, Other^]
+                            [TypesAndNamespaces, NotImportedType, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation, Other^]
 ỤCOMIConnectionP̣oint| |(in System.Runtime.InteropServices)
 ỤCOMIConnectionP̣ointContainer| |(in System.Runtime.InteropServices)
 ỤCOMIEnumConnectionP̣oints| |(in System.Runtime.InteropServices)

@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 1
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: ""reference": "♦""
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, NormalSelectionPriority, Other]
 Ref01                       <==
 
 ##### ALPHABETIC SORT #####

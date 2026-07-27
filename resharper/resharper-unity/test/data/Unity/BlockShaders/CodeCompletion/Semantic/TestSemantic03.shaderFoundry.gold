@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 7
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "[System(Semantic::♦)] out float Depth;"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+                            [FromLightEvaluation, MemberOfObject]
 ClipDistance                <==
 CullDistance
 Depth

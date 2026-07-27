@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 5
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "Combine ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 Constant                    <==
 One
 Previous

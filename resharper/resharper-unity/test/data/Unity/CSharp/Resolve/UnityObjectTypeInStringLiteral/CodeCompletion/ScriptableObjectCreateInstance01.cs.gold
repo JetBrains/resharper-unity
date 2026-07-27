@@ -2,13 +2,14 @@
 Count: 11
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "var so = ScriptableObject.CreateInstance("♦");"
 
 ##### RELEVANCE SORT #####
 
                             [ImportedType]
 Test                        <==
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, TypesAndNamespaces^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, Other^]
+                            [FromLightEvaluation^, TypesAndNamespaces^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, Other^]
 AOT
 JetBrains
 Microsoft

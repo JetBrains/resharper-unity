@@ -2,12 +2,14 @@
 Prefix: "fix"
 Count: 20
 Focus: Hard
+Rules: [!"'~] => hide_lookup
+       [\w] => add_to_prefix
 Range: "fix♦ed4 v;"
         ▲▲▲▲△△△
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixMatch, 16, Other]
+                            [FromLightEvaluation, PrefixMatch, 16, Other]
 f̣ịx̣ed                       <==
 f̣ịx̣ed1x1
 f̣ịx̣ed1x2

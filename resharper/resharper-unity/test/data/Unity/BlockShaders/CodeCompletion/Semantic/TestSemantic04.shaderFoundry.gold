@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 23
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "[System(Semantic::♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+                            [FromLightEvaluation, MemberOfObject]
 ClipDistance                <==
 Color
 Coverage

@@ -2,6 +2,8 @@
 Prefix: "_SHAPE"
 Count: 3 (filtered)
 Focus: Hard
+Rules: [!"'~] => hide_lookup
+       [\w] => add_to_prefix
 Range: "#if _SHAPE♦ "
             ▲▲▲▲▲▲▲
 
@@ -10,7 +12,7 @@ Range: "#if _SHAPE♦ "
                             [16]
 _̣ṢḤẠP̣Ẹ_B                    <==
 _̣ṢḤẠP̣Ẹ_C
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, PrefixMatch^, 15, NormalSelectionPriority, Other]
+                            [FromLightEvaluation^, PrefixMatch^, 15, NormalSelectionPriority, Other]
 _̣ṢḤẠP̣Ẹ_A
 
 ##### ALPHABETIC SORT #####

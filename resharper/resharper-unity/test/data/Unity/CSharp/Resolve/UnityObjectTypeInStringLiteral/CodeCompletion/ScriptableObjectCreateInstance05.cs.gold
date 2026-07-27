@@ -2,6 +2,7 @@
 Count: 362
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "var so = ScriptableObject.CreateInstance("UnityEngine.♦");"
 
 ##### RELEVANCE SORT #####
@@ -324,7 +325,7 @@ AnimationClipPair
 ProceduralTexture
 SerializePrivateVariables
 WWW
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, TypesAndNamespaces^, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority^, Other^]
+                            [FromLightEvaluation^, TypesAndNamespaces^, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority^, Other^]
 AI
 Accessibility
 Advertisements

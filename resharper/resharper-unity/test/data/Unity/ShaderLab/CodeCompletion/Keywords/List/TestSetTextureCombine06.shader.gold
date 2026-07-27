@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 4
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "Combine One - Previous Alpha ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 Dot3                        <==
 Dot3Rgba
 Double

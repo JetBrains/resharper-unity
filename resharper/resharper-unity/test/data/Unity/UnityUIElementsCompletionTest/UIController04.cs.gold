@@ -3,12 +3,13 @@ Prefix: """
 Count: 8
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "var t3 = root.Query("♦", "");"
                             ▲▲△
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixNoCaseMatch, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, PrefixNoCaseMatch, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
 "̣Background"                <==
 "̣MyElement"
 "̣MyElement2"

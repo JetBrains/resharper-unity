@@ -1,11 +1,13 @@
 ﻿Completion: Basic
 Count: 10 (filtered)
 Focus: Hard
+Rules: [!"'~] => hide_lookup
+       [\w] => add_to_prefix
 Range: "float3 normal: ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+                            [FromLightEvaluation, MemberOfObject]
 NORMAL                      <==
 POSITION
 TEXCOORD0

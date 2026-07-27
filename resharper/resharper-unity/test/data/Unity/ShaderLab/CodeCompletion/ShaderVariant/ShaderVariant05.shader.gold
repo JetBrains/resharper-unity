@@ -1,6 +1,7 @@
 ﻿Completion: Basic
 Count: 41 (filtered)
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "#if ♦ "
 
 ##### RELEVANCE SORT #####
@@ -37,7 +38,7 @@ fixed4x1
 fixed4x2
 fixed4x3
 fixed4x4
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 16^]
+                            [FromLightEvaluation^, 16^]
 BAR
 C
 D

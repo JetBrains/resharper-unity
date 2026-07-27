@@ -2,6 +2,7 @@
 Count: 1075
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "♦   "
 
 ##### RELEVANCE SORT #####
@@ -1072,7 +1073,7 @@ WWW
 iOSSystemGestureDeferMode
 iOSTargetOSVersion
 tvOSTargetOSVersion
-                            [FromLightAndDynamicEvaluation^, TypesAndNamespaces, NotObsolete, NormalSelectionPriority]
+                            [FromLightEvaluation^, TypesAndNamespaces, NotObsolete, NormalSelectionPriority]
 AOT
 JetBrains
 Microsoft
@@ -1083,7 +1084,7 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
-                            [FromSingleCompletion^, ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority, FromFullEvaluation, Other^]
+                            [ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority, FromFullEvaluation, Other^]
 public override |Equals|(object) { … }    bool    OrderStr=Equals
 public override |GetExtraPaneTypes|() { … }    IEnumerable<Type>    OrderStr=GetExtraPaneTypes
 public override |GetHashCode|() { … }    int    OrderStr=GetHashCode

@@ -1,11 +1,13 @@
 ﻿Completion: Basic
 Count: 20 (filtered)
 Focus: Hard
+Rules: [!"'~] => hide_lookup
+       [\w] => add_to_prefix
 Range: "void frag(in float4 pos: ♦) "
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject]
+                            [FromLightEvaluation, MemberOfObject]
 COLOR                       <==
 COLOR0
 COLOR1

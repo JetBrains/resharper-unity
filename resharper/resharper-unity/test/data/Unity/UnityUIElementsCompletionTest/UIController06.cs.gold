@@ -3,12 +3,13 @@ Prefix: """
 Count: 1
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "var custom2 = root.Q<MyElement2>("♦");"
                                          ▲▲△
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixNoCaseMatch, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, PrefixNoCaseMatch, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
 "̣MyElement2"                <==
 
 ##### ALPHABETIC SORT #####

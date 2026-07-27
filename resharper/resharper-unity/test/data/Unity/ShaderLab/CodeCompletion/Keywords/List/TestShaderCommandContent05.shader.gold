@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 2
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "Fallback ♦"""
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 False                       <==
 Off
 

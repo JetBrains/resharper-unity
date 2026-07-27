@@ -2,11 +2,12 @@
 Count: 2
 Focus: Hard
 Auto-accept: DoNotAutoAccept
+Rules: [\w] => add_to_prefix
 Range: "StartCoroutine("♦");"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Methods, NonStatic, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Methods, NonStatic, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
 Start                       void    <==
 WaitAndPrint                IEnumerator
 

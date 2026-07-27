@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 6
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "Combine Texture ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 Alpha                       <==
 Dot3
 Dot3Rgba

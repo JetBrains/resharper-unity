@@ -1,6 +1,8 @@
 ﻿Completion: Basic
 Count: 337
 Focus: Hard
+Rules: [!"'~] => hide_lookup
+       [\w] => add_to_prefix
 Range: "♦"
 
 ##### RELEVANCE SORT #####
@@ -345,7 +347,7 @@ fixed4x1
 fixed4x2
 fixed4x3
 fixed4x4
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 15, HighSelectionPriority, NormalSelectionPriority, Other^]
+                            [FromLightEvaluation^, 15, HighSelectionPriority, NormalSelectionPriority, Other^]
 tile_static
 
 ##### ALPHABETIC SORT #####

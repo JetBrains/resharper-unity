@@ -1,6 +1,8 @@
 ﻿Completion: Basic
 Count: 316
 Focus: Hard
+Rules: [!"'~] => hide_lookup
+       [\w] => add_to_prefix
 Range: "♦"
 
 ##### RELEVANCE SORT #####
@@ -324,7 +326,7 @@ TriangleStream
 SHADER_API_D3D11
 SHADER_API_DESKTOP
 UNITY_VERSION
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 15, HighSelectionPriority, NormalSelectionPriority, Other^]
+                            [FromLightEvaluation^, 15, HighSelectionPriority, NormalSelectionPriority, Other^]
 tile_static
 
 ##### ALPHABETIC SORT #####

@@ -3,6 +3,7 @@ Prefix: "OnAnima"
 Count: 2
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "OnAnima♦"
         ▲▲▲▲▲▲▲▲
 
@@ -10,7 +11,7 @@ Range: "OnAnima♦"
 
                             [PrefixMatch, HighSelectionPriority, NormalSelectionPriority]
 private |ỌṇẠṇịṃạtorMove|() { ... }    OrderStr=OnAnimatorMove()    <==
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, Methods^, GenerateItems^, MemberOfCurrentType^, NotObsolete^, ObsoleteRuleApplied^, Other^]
+                            [FromLightEvaluation^, Methods^, GenerateItems^, MemberOfCurrentType^, NotObsolete^, ObsoleteRuleApplied^, Other^]
 private |ỌṇDidApplyẠṇịṃạtionProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
 
 ##### ALPHABETIC SORT #####

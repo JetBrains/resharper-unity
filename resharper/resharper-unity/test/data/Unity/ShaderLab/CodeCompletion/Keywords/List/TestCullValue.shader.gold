@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 4
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "Cull ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 Back                        <==
 False
 Front

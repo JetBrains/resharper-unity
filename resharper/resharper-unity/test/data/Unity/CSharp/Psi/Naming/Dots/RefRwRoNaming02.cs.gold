@@ -2,11 +2,12 @@
 Count: 4
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "private readonly RefRW<AnimationComponent> ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
 AnimationComponent          <==
 Component
 myAnimationComponent

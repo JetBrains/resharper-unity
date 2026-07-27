@@ -2,6 +2,7 @@
 Count: 42
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "public void ♦Update()"
                      △△△△△△
 
@@ -49,7 +50,7 @@ OnCanvasGroupChanged|() { ... }    OrderStr=OnCanvasGroupChanged()
 OnCanvasHierarchyChanged|() { ... }    OrderStr=OnCanvasHierarchyChanged()
 OnDidApplyAnimationProperties|() { ... }    OrderStr=OnDidApplyAnimationProperties()
 OnRectTransformDimensionsChange|() { ... }    OrderStr=OnRectTransformDimensionsChange()
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, Keywords, LiveTemplates, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority, Other^]
+                            [FromLightEvaluation^, Keywords, LiveTemplates, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority, Other^]
 operator
 this
 

@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 36
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "BlendOp Add, ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 Add                         <==
 ColorBurn
 ColorDodge

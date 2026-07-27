@@ -3,12 +3,13 @@ Prefix: "My"
 Count: 1
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "go.GetComponent("My♦");"
                          ▲▲▲
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, PrefixMatch, TypesAndNamespaces, ImportedType, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, PrefixMatch, TypesAndNamespaces, ImportedType, NotObsolete, ObsoleteRuleApplied, NormalSelectionPriority, Other]
 ṂỵMonoBehaviour             <==
 
 ##### ALPHABETIC SORT #####

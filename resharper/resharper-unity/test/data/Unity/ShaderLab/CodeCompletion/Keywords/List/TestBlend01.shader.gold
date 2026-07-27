@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 13
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "Blend ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 DstAlpha                    <==
 DstColor
 False

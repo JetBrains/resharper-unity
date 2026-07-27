@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 11
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "Blend 1 One OneMinusSrcAlpha, ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, Attributes, TypesAndNamespaces, NormalSelectionPriority, Other]
 DstAlpha                    <==
 DstColor
 One

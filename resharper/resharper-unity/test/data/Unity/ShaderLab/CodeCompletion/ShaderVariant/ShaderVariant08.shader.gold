@@ -2,6 +2,7 @@
 Prefix: "_SHAPE"
 Count: 6
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "#if _SHAPE♦"
             ▲▲▲▲▲▲▲
 
@@ -12,7 +13,7 @@ _̣ṢḤẠP̣Ẹ_B                    <==
 _̣ṢḤẠP̣Ẹ_C
 _̣ṢḤẠP̣Ẹ_E
 _̣ṢḤẠP̣Ẹ_F
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, PrefixMatch^, 15, NormalSelectionPriority, Other]
+                            [FromLightEvaluation^, PrefixMatch^, 15, NormalSelectionPriority, Other]
 _̣ṢḤẠP̣Ẹ_A
 _̣ṢḤẠP̣Ẹ_D
 

@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 1
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: ""name": "♦""
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, HighSelectionPriority, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, HighSelectionPriority, NormalSelectionPriority, Other]
 Unity                       <==
 
 ##### ALPHABETIC SORT #####

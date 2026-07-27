@@ -3,6 +3,7 @@ Prefix: "Non"
 Count: 8
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
+Rules: [\w] => add_to_prefix
 Range: "[Non♦[SerializeField] public int Value;"
          ▲▲▲▲
 
@@ -12,7 +13,7 @@ Range: "[Non♦[SerializeField] public int Value;"
 ṆọṇSerialized |(in System)    <==
                             [CamelHumpsCaseMatch]
 ṆọtṆull |(in JetBrains.Annotations)
-                            [FromSingleCompletion^, Attributes^, TypesAndNamespaces^, NotImportedType^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation^, Other^]
+                            [Attributes^, TypesAndNamespaces^, NotImportedType^, NotObsolete^, ObsoleteRuleApplied^, NormalSelectionPriority^, FromFullEvaluation^, Other^]
 DebuggerṆọṇUserCode |(in System.Diagnostics)
 ItemṆọtṆull |(in JetBrains.Annotations)
 ṆativeContainerIsAtomicWriteỌṇly |(in Unity.Collections.LowLevel.Unsafe)

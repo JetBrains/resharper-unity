@@ -1,6 +1,7 @@
 ﻿Completion: Basic
 Count: 15
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "#if ♦"
 
 ##### RELEVANCE SORT #####
@@ -14,7 +15,7 @@ SHADER_API_DESKTOP
 SHADER_TARGET
 UNIFIED_RT_BACKEND_COMPUTE
 UNITY_VERSION
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 16]
+                            [FromLightEvaluation^, 16]
 SHADER_API_D3D11_9X
 SHADER_API_GLCORE
 SHADER_API_GLES

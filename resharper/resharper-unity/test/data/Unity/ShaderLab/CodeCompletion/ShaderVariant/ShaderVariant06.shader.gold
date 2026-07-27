@@ -2,6 +2,7 @@
 Prefix: "_"
 Count: 10 (filtered)
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "#if _♦ "
             ▲▲
 
@@ -12,7 +13,7 @@ _̣B
 _̣C
                             [PrefixNoCaseMatch^, 15, NormalSelectionPriority, Other]
 _̣A
-                            [FromSingleCompletion^, FromLightAndDynamicEvaluation^, 16]
+                            [FromLightEvaluation^, 16]
 SHADER_̣API_D3D11_9X
 SHADER_̣API_GLCORE
 SHADER_̣API_GLES

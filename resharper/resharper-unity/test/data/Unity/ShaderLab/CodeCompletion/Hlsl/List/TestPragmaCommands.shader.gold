@@ -1,11 +1,12 @@
 ﻿Completion: Basic
 Count: 62
 Focus: Hard
+Rules: [\w] => add_to_prefix
 Range: "#pragma ♦"
 
 ##### RELEVANCE SORT #####
 
-                            [FromSingleCompletion, FromLightAndDynamicEvaluation, MemberOfObject, HighSelectionPriority, NormalSelectionPriority, Other]
+                            [FromLightEvaluation, MemberOfObject, HighSelectionPriority, NormalSelectionPriority, Other]
 disable_fastmath            <==
 domain
 dynamic_branch
