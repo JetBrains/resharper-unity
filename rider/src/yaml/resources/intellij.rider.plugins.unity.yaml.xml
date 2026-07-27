@@ -3,15 +3,30 @@
   <dependencies>
     <plugin id="com.intellij.platform.images"/>
     <module name="intellij.json.backend"/>
+    <module name="intellij.libraries.rd.core"/>
+    <module name="intellij.libraries.rd.framework"/>
+    <module name="intellij.platform.analysis"/>
+    <module name="intellij.platform.core"/>
+    <module name="intellij.platform.core.ui"/>
+    <module name="intellij.platform.diff"/>
+    <module name="intellij.platform.diff.impl"/>
+    <module name="intellij.platform.ide.core"/>
+    <module name="intellij.platform.ide.impl"/>
+    <module name="intellij.platform.lang.impl"/>
+    <module name="intellij.platform.util.ex"/>
     <module name="intellij.platform.vcs.impl"/>
     <module name="intellij.rd.client"/>
+    <module name="intellij.rd.ide.model.generated"/>
+    <module name="intellij.rd.platform"/>
     <module name="intellij.rider"/>
     <module name="intellij.rider.languages"/>
+    <module name="intellij.rider.model.generated"/>
     <module name="intellij.rider.plugins.unity.backend"/>
     <module name="intellij.rider.plugins.unity.model"/>
     <module name="intellij.rider.rdclient.dotnet"/>
     <module name="intellij.rider.shared"/>
     <module name="intellij.spellchecker"/>
+    <module name="intellij.xml.psi"/>
   </dependencies>
   <!-- endregion -->
   <extensions defaultExtensionNs="com.intellij">

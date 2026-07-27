@@ -1,12 +1,26 @@
 <idea-plugin>
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
-    <plugin id="com.intellij.platform.images"/>
     <module name="intellij.rd.ide.model.generated"/>
     <module name="intellij.rd.platform"/>
+    <plugin id="com.intellij.platform.images"/>
+    <module name="fleet.rpc"/>
     <module name="intellij.grid.core.impl"/>
     <module name="intellij.grid.impl"/>
+    <module name="intellij.libraries.rd.core"/>
+    <module name="intellij.platform.analysis"/>
+    <module name="intellij.platform.core"/>
+    <module name="intellij.platform.core.ui"/>
+    <module name="intellij.platform.debugger"/>
     <module name="intellij.platform.debugger.impl.frontend"/>
+    <module name="intellij.platform.debugger.impl.rpc"/>
+    <module name="intellij.platform.debugger.impl.shared"/>
+    <module name="intellij.platform.debugger.impl.ui"/>
+    <module name="intellij.platform.ide"/>
+    <module name="intellij.platform.ide.impl"/>
+    <module name="intellij.platform.rd.community"/>
+    <module name="intellij.platform.statistics"/>
+    <module name="intellij.platform.util.ui"/>
     <module name="intellij.rider.debugger.shared"/>
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.common"/>
   </dependencies>

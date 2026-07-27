@@ -1,11 +1,23 @@
 <idea-plugin>
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
-    <module name="intellij.rd.client"/>
     <module name="intellij.rd.ide.model.generated"/>
-    <module name="intellij.platform.rpc.backend"/>
-    <module name="intellij.rider"/>
     <module name="intellij.rider.plugins.unity.model"/>
+    <module name="fleet.rhizomedb"/>
+    <module name="intellij.libraries.rd.core"/>
+    <module name="intellij.libraries.rd.framework"/>
+    <module name="intellij.platform.core"/>
+    <module name="intellij.platform.debugger"/>
+    <module name="intellij.platform.debugger.impl"/>
+    <module name="intellij.platform.debugger.impl.rpc"/>
+    <module name="intellij.platform.debugger.impl.shared"/>
+    <module name="intellij.platform.ide.impl"/>
+    <module name="intellij.platform.kernel"/>
+    <module name="intellij.platform.rpc.backend"/>
+    <module name="intellij.platform.util.coroutines"/>
+    <module name="intellij.rd.client"/>
+    <module name="intellij.rider"/>
+    <module name="intellij.rider.model.generated"/>
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.common"/>
     <module name="intellij.rider.rdclient.dotnet"/>
   </dependencies>

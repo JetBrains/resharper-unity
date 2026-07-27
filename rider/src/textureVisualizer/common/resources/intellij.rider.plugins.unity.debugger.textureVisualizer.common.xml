@@ -1,2 +1,12 @@
 <idea-plugin visibility="internal">
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+  <dependencies>
+    <module name="fleet.rhizomedb"/>
+    <module name="intellij.libraries.kotlinx.serialization.core"/>
+    <module name="intellij.platform.core"/>
+    <module name="intellij.platform.debugger.impl.rpc"/>
+    <module name="intellij.platform.kernel"/>
+    <module name="intellij.platform.rpc"/>
+  </dependencies>
+  <!-- endregion -->
 </idea-plugin>
