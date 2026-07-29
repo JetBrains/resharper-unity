@@ -1,11 +1,10 @@
-using Autofac;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using Mono.Debugging.Autofac;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
     [DebuggerGlobalComponent]
-    public class UnityDebuggerWorkerHost : IStartable
+    public class UnityDebuggerWorkerHost : IDebuggerStartable
     {
         public UnityDebuggerWorkerHost(RiderDebuggerWorker debuggerWorker)
         {
@@ -16,7 +15,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
 
         public UnityDebuggerWorkerModel Model { get; }
 
-        void IStartable.Start()
+        void IDebuggerStartable.Start()
         {
             // Do nothing. IStartable means Autofac will eagerly create the component but we do all our work in the ctor
         }
