@@ -1,0 +1,23 @@
+=== Immediate window ===
+Result of '1 + 1' evaluation: 2
+
+Result of 'SystemAPI.Query<RefRW<LocalTransform>, RefRO<RotationSpeed>>()' evaluation: {Length = 1}
+  [0]: {'' Entity<id> Default World}
+
+Result of 'SystemAPI.Query<RefRW<LocalTransform>>()' evaluation: {Length = 1}
+  [0]: {'' Entity<id> Default World}
+
+Result of 'SystemAPI.Query<RefRW<LocalTransform>, RefRO<RotationSpeed>>().WithEntityAccess()' evaluation: {Length = 1}
+  [0]: {'' Entity<id> Default World}
+
+Result of 'SystemAPI.Query<RefRW<LocalTransform>>().WithNone<RotationSpeed>()' evaluation: {Length = 0}
+
+Result of 'SystemAPI.Query<RefRW<LocalTransform>>().WithAny<RotationSpeed>()' evaluation: {Length = 1}
+  [0]: {'' Entity<id> Default World}
+
+=== Evaluate expression ===
+'state.GetEntityQuery(new Unity.Entities.EntityQueryDesc { All = new Unity.Entities.ComponentType[] { Unity.Entities.ComponentType.ReadOnly<Unity.Transforms.LocalTransform>(), Unity.Entities.ComponentType.ReadOnly<RotationSpeed>() } }).ToEntityArray(Unity.Collections.Allocator.Temp)'{NativeArray<Entity>} Length = 1
+'state.GetEntityQuery(new Unity.Entities.EntityQueryDesc { All = new Unity.Entities.ComponentType[] { Unity.Entities.ComponentType.ReadOnly<Unity.Transforms.LocalTransform>() } }).ToEntityArray(Unity.Collections.Allocator.Temp)'{NativeArray<Entity>} Length = 1
+'state.GetEntityQuery(new Unity.Entities.EntityQueryDesc { All = new Unity.Entities.ComponentType[] { Unity.Entities.ComponentType.ReadOnly<Unity.Transforms.LocalTransform>(), Unity.Entities.ComponentType.ReadOnly<RotationSpeed>() } }).ToEntityArray(Unity.Collections.Allocator.Temp)'{NativeArray<Entity>} Length = 1
+'state.GetEntityQuery(new Unity.Entities.EntityQueryDesc { All = new Unity.Entities.ComponentType[] { Unity.Entities.ComponentType.ReadOnly<Unity.Transforms.LocalTransform>() }, None = new Unity.Entities.ComponentType[] { Unity.Entities.ComponentType.ReadOnly<RotationSpeed>() } }).ToEntityArray(Unity.Collections.Allocator.Temp)'{NativeArray<Entity>} Length = 0
+'state.GetEntityQuery(new Unity.Entities.EntityQueryDesc { All = new Unity.Entities.ComponentType[] { Unity.Entities.ComponentType.ReadOnly<Unity.Transforms.LocalTransform>() }, Any = new Unity.Entities.ComponentType[] { Unity.Entities.ComponentType.ReadOnly<RotationSpeed>() } }).ToEntityArray(Unity.Collections.Allocator.Temp)'{NativeArray<Entity>} Length = 1
