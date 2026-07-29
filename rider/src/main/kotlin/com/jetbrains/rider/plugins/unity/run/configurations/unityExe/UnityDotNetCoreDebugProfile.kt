@@ -30,9 +30,9 @@ internal class UnityDotNetCoreDebugProfile(
         super.bindSettings(lifetime, workerModel)
     }
 
-    override fun createDotNetCoreExeStartInfo(dotNetCoreInfo: DotNetCoreInfo, encInfo: EncInfo?, exePath: RdDebuggerPath, workingDirectory: RdDebuggerPath, arguments: String, environmentVariables: List<StringPair>, runtimeArguments: String, executeAsIs: Boolean, useExternalConsole: Boolean): DotNetCoreExeStartInfoBase {
+    override fun createDotNetCoreExeStartInfo(dotNetCoreInfo: DotNetCoreInfo, encInfo: EncInfo?, exePath: RdDebuggerPath, workingDirectory: RdDebuggerPath, arguments: String, environmentVariables: List<StringPair>, runtimeArguments: String, executeAsIs: Boolean): DotNetCoreExeStartInfoBase {
         val projectData = getUnityProjectData(executionEnvironment.project)
-        return UnityDotNetCoreExeStartInfo(projectData, dotNetCoreInfo, encInfo, exePath, workingDirectory, arguments, environmentVariables, runtimeArguments, executeAsIs, useExternalConsole)
+        return UnityDotNetCoreExeStartInfo(projectData, dotNetCoreInfo, encInfo, exePath, workingDirectory, arguments, environmentVariables, runtimeArguments, executeAsIs)
     }
 
 }
