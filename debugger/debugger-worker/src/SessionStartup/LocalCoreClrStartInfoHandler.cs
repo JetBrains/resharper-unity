@@ -1,5 +1,6 @@
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.SessionStartup;
+using JetBrains.Lifetimes;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
@@ -18,7 +19,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         // CorDebugAttachHandlerBase handles this
         // See also DotNetCoreAttachSuspendedHandler
 
-        protected override IDebuggerSessionStarter GetSessionStarter(UnityLocalCoreClrStartInfo startInfo,
+        protected override IDebuggerSessionStarter GetSessionStarter(Lifetime sessionLifetime, UnityLocalCoreClrStartInfo startInfo,
             IDebuggerSessionOptions debuggerSessionOptions)
         {
             return new AttachSessionStarter(new ProcessInfo(startInfo.ProcessId, ""), debuggerSessionOptions);

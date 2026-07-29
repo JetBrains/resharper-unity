@@ -23,8 +23,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
             myLogger = logger;
         }
 
-        protected override IDebuggerSessionStarter GetSessionStarter(UnityIosUsbStartInfo iosUsbStartInfo,
-                                                                     IDebuggerSessionOptions debuggerSessionOptions)
+        protected override IDebuggerSessionStarter GetSessionStarter(Lifetime sessionLifetime, UnityIosUsbStartInfo iosUsbStartInfo,
+            IDebuggerSessionOptions debuggerSessionOptions)
         {
             var softDebuggerStartInfo = CreateSoftDebuggerStartInfo(iosUsbStartInfo);
             return new IosUsbSessionStarter(myLifetime, iosUsbStartInfo, softDebuggerStartInfo, debuggerSessionOptions,

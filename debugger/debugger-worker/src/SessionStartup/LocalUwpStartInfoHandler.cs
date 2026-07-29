@@ -31,8 +31,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
             myLogger = logger;
         }
 
-        protected override IDebuggerSessionStarter GetSessionStarter(UnityLocalUwpStartInfo localUwpStartInfo,
-                                                                     IDebuggerSessionOptions debuggerSessionOptions)
+        protected override IDebuggerSessionStarter GetSessionStarter(Lifetime sessionLifetime, UnityLocalUwpStartInfo localUwpStartInfo,
+            IDebuggerSessionOptions debuggerSessionOptions)
         {
             var softDebuggerStartInfo = CreateSoftDebuggerStartInfo(localUwpStartInfo);
             return new LocalUwpSessionStarter(myLifetime, localUwpStartInfo, softDebuggerStartInfo,

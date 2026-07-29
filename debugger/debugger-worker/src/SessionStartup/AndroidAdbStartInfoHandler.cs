@@ -24,8 +24,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
             myLogger = logger;
         }
 
-        protected override IDebuggerSessionStarter GetSessionStarter(UnityAndroidAdbStartInfo androidAdbStartInfo,
-                                                                     IDebuggerSessionOptions debuggerSessionOptions)
+        protected override IDebuggerSessionStarter GetSessionStarter(Lifetime sessionLifetime, UnityAndroidAdbStartInfo androidAdbStartInfo,
+            IDebuggerSessionOptions debuggerSessionOptions)
         {
             var softDebuggerStartInfo = CreateSoftDebuggerStartInfo(androidAdbStartInfo);
             return new AndroidAdbSessionStarter(myLifetime, androidAdbStartInfo, softDebuggerStartInfo,

@@ -26,8 +26,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
             return new Il2CppAwareSessionOptions(base.CreateSessionOptions(lifetime, startInfo, properties), UnityOptions);
         }
 
-        protected override IDebuggerSessionStarter GetSessionStarter(T unityStartInfo,
-                                                                     IDebuggerSessionOptions debuggerSessionOptions)
+        protected override IDebuggerSessionStarter GetSessionStarter(Lifetime sessionLifetime, T unityStartInfo,
+            IDebuggerSessionOptions debuggerSessionOptions)
         {
             // ModelStartInfoHandlerBase will call CreateSessionOptions and immediately pass that into GetSessionStarter
             // so this is a safe cast
