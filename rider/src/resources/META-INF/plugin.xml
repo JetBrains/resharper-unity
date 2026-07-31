@@ -2,6 +2,7 @@
   <id>com.intellij.resharper.unity</id>
   <!--suppress PluginXmlValidity -->
   <name>Unity Support</name>
+  <category>Game Development</category>
   <!--suppress PluginXmlValidity -->
   <version>2021.3.0.9999</version>
   <!--suppress PluginXmlValidity -->
