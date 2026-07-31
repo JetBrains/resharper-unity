@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Soft.CallStacks;
@@ -17,22 +18,21 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         protected delegate T FactoryDelegate<out T>(IReifiedType<TValue> reifiedType, IDomainKnownTypes<TValue> domainTypes) where T : UnityDebuggerHelper<TValue>;
 
         protected static T CreateUnityDebuggerHelper<T>(IStackFrame frame, IValueFetchOptions options,
-            IKnownTypes<TValue> knownTypes, string assemblyLocation, string assemblyName, string requiredType, FactoryDelegate<T> factory)
+            IKnownTypes<TValue> knownTypes, UnityBundleInfo assemblyBundleInfo, string requiredType, FactoryDelegate<T> factory)
             where T : UnityDebuggerHelper<TValue>
         {
             var domainId = frame.GetAppDomainId();
             var domainKnownTypes = knownTypes.ForDomain(domainId);
-
+            
             var debuggingHelper = domainKnownTypes.DebuggingHelper(frame, options);
-            var assembly = debuggingHelper.LoadAssemblyFromLocation(assemblyLocation).Call(frame, options);
+            var assembly = debuggingHelper.LoadAssemblyFromLocation(assemblyBundleInfo.AbsolutePath).Call(frame, options);
 
             // force loading of the unity helper assembly
             debuggingHelper
-                .GetTypeByAssemblyAndTypeName(assemblyName, requiredType)
+                .GetTypeByAssemblyAndTypeName(assemblyBundleInfo.Id, requiredType)
                 .Call(frame, options);
 
-
-            var requiredTypeWithAssembly = $"{requiredType}, {assemblyName}";
+            var requiredTypeWithAssembly = $"{requiredType}, {assemblyBundleInfo.Id}";
             var unityAssemblyReifiedType =
                 domainKnownTypes.KnownTypes.TypeUniverse.GetReifiedType(frame, requiredTypeWithAssembly);
             if (unityAssemblyReifiedType == null)
@@ -48,6 +48,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
             }
 
             return factory((IReifiedType<TValue>)unityAssemblyReifiedType, domainKnownTypes);
+        }
+        
+        public static string GetAssemblyName(string assemblyBaseName, bool isDotNetCore)
+        {
+            var assemblyName = assemblyBaseName;
+            if (isDotNetCore) assemblyName += ".DotNetCore";
+            return assemblyName;
         }
     }
 }

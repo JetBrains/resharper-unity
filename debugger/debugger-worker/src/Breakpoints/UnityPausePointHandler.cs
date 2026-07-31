@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Plugins.Unity.Resources;
 using JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup;
@@ -40,11 +39,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
         
         private UnityPausePointHelper<TValue>? myHelper;
         private readonly IKnownTypes<TValue> myKnownTypes;
-        private readonly string myAssemblyAbsolutePath = string.Empty;
+        private readonly UnityBundleInfo? myAssemblyBundleInfo;
         private readonly IUnityOptions myUnityOptions;
 
         private int EvaluationTimeout => myUnityOptions.ForcedTimeoutForAdvanceUnityEvaluation;
-        private bool IsEnabled => !string.IsNullOrEmpty(myAssemblyAbsolutePath) && myUnityOptions.ExtensionsEnabled;
+        private bool IsEnabled => myAssemblyBundleInfo != null && myUnityOptions.ExtensionsEnabled;
         
         public UnityPausePointHandler(DebuggerSession<TValue> session,
             IUnityOptions unityOptions,
@@ -57,23 +56,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
             myLogger = logger;
             mySession = session;
             myUnityOptions = unityOptions;
+            myKnownTypes = knownTypes;
 
             if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {
-                var unityBundleInfo =
-                    unityStartInfo.GetProjectData().Bundles.FirstOrDefault(b => b.Id.Equals(UnityPausePointHelper<TValue>.AssemblyName));
-                if (unityBundleInfo != null)
-                {
-                    myAssemblyAbsolutePath = unityBundleInfo.AbsolutePath;
-                }
-                else
-                {
-                    myAssemblyAbsolutePath = string.Empty;
-                    myLogger.Error($"UnityBundles don't contain required one '{UnityPausePointHelper<TValue>.AssemblyName}'");
-                }
+                var assemblyName = UnityPausePointHelper<TValue>.GetAssemblyName(session.DebugeeRuntime.IsDotNetCore());
+                myAssemblyBundleInfo = unityStartInfo.GetBundleInfo(assemblyName, logger);
             }
-            
-            myKnownTypes = knownTypes;
         }
 
         public bool Handle<TModule>(BreakEvent breakEvent, BreakEventInfo<TModule> breakEventInfo,
@@ -95,7 +84,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
             {
                 if (myHelper == null || activeFrame.GetAppDomainId() != myHelper.DomainTypes.AppDomainId)
                     myHelper = UnityPausePointHelper<TValue>.CreateHelper(activeFrame, evaluationParameters,
-                        myKnownTypes, myAssemblyAbsolutePath);
+                        myKnownTypes, myAssemblyBundleInfo!);
             }
             catch (Exception e)
             {

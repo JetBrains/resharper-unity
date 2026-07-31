@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Marshallable;
@@ -16,7 +17,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
         }
 
         private const string RequiredType = "JetBrains.Debugger.Worker.Plugins.Unity.PausePoint.EndFrameSystem";
-        public const string AssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper";
+        private const string AssemblyBaseName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper";
 
         private const string MakePauseMethodName = "MakePause";
         private static readonly MethodSelector ourMakePauseMethodFilter =
@@ -29,10 +30,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
         }
 
         public static UnityPausePointHelper<TValue> CreateHelper(IStackFrame frame, IValueFetchOptions options,
-            IKnownTypes<TValue> knownTypes, string assemblyLocation)
+            IKnownTypes<TValue> knownTypes, UnityBundleInfo assemblyBundleInfo)
         {
-           return CreateUnityDebuggerHelper<UnityPausePointHelper<TValue>>(frame, options, knownTypes, assemblyLocation, AssemblyName,
+           return CreateUnityDebuggerHelper<UnityPausePointHelper<TValue>>(frame, options, knownTypes, assemblyBundleInfo,
                 RequiredType, (reifiedType, domainTypes) => new UnityPausePointHelper<TValue>(reifiedType, domainTypes));
         }
+
+        public static string GetAssemblyName(bool isDotNetCore) => GetAssemblyName(AssemblyBaseName, isDotNetCore);
     }
 }

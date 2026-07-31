@@ -84,7 +84,9 @@ val debuggerDllFiles = files(
 
 val textureDebuggerDllFiles = files(
     "../resharper/build/texture-debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.dll",
-    "../resharper/build/texture-debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.pdb"
+    "../resharper/build/texture-debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.pdb",
+    "../resharper/build/texture-debugger.DotNetCore/bin/$buildConfiguration/net5.0/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.DotNetCore.dll",
+    "../resharper/build/texture-debugger.DotNetCore/bin/$buildConfiguration/net5.0/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.DotNetCore.pdb"
 )
 
 val pausePointDllFiles = files(

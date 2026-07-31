@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Debugger.Model.Plugins.Unity;
+using JetBrains.Util;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
@@ -19,6 +20,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                 UnityDotNetCoreExeStartInfo i => i.ProjectData,
                 _ => throw new ArgumentException("Unsupported unity start info type"),
             };
+        }
+
+        public static UnityBundleInfo? GetBundleInfo(this UnityStartInfo startInfo, string id, ILogger logger)
+        {
+            var bundleInfo = startInfo.GetProjectData().Bundles.Find(bundle => bundle.Id == id);
+            if (bundleInfo == null) logger.Error($"Bundle '{id}' was not found in the Unity plugin.");
+            return bundleInfo;
         }
     }
 }

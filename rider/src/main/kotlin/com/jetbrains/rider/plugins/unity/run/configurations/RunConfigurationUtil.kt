@@ -226,8 +226,14 @@ fun getUnityBundlesList(): List<UnityBundleInfo> {
     val textureHelperAssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture"
     val textureHelperBundle = UnityPluginEnvironment.getBundledFile("$textureHelperAssemblyName.dll", "DotFiles")
 
-    return listOf(UnityBundleInfo(pausePointAssemblyName, pauseBreakpointBundle.absolutePath),
-                  UnityBundleInfo(textureHelperAssemblyName, textureHelperBundle.absolutePath))
+    val textureHelperAssemblyNameCore = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.DotNetCore"
+    val textureHelperBundleCore = UnityPluginEnvironment.getBundledFile("$textureHelperAssemblyNameCore.dll", "DotFiles")
+
+    return listOf(
+        UnityBundleInfo(pausePointAssemblyName, pauseBreakpointBundle.absolutePath),
+        UnityBundleInfo(textureHelperAssemblyName, textureHelperBundle.absolutePath),
+        UnityBundleInfo(textureHelperAssemblyNameCore, textureHelperBundleCore.absolutePath),
+    )
 }
 
 fun getUnityPackagesList(project: Project): List<String>{

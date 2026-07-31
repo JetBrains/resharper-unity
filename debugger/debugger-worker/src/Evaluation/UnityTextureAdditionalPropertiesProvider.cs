@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Plugins.Unity.Resources;
 using JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup;
@@ -11,10 +10,10 @@ using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
+using Mono.Debugging.Client;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
-using Mono.Debugging.MetadataLite.Services;
 using Mono.Debugging.Soft;
 using Mono.Debugging.TypeSystem.KnownTypes;
 using Mono.Debugging.Win32;
@@ -24,7 +23,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     internal class MonoUnityTextureAdditionalPropertiesProvider : UnityTextureAdditionalPropertiesProvider<Value>
     {
-        public MonoUnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<Value> factory, IKnownTypes<Value> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions) : base(logger, factory, knownTypes, creationInfo, unityOptions)
+        public MonoUnityTextureAdditionalPropertiesProvider(ILogger logger, SoftDebuggerSession debuggerSession, IKnownTypes<Value> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions) : base(logger, debuggerSession, knownTypes, creationInfo, unityOptions)
         {
         }
     }
@@ -32,7 +31,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
     [DebuggerSessionComponent(typeof(CorDebuggerType))]
     internal class CorUnityTextureAdditionalPropertiesProvider : UnityTextureAdditionalPropertiesProvider<ICorValue>
     {
-        public CorUnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<ICorValue> factory, IKnownTypes<ICorValue> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions) : base(logger, factory, knownTypes, creationInfo, unityOptions)
+        public CorUnityTextureAdditionalPropertiesProvider(ILogger logger, CorDebuggerSession debuggerSession, IKnownTypes<ICorValue> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions) : base(logger, debuggerSession, knownTypes, creationInfo, unityOptions)
         {
         }
     }
@@ -44,9 +43,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
         private readonly IUnityOptions myUnityOptions;
         private UnityTextureDebuggerHelper<TValue>? myHelper;
-        private readonly string myAssemblyAbsolutePath = string.Empty;
+        private readonly UnityBundleInfo? myAssemblyBundleInfo;
 
-        protected UnityTextureAdditionalPropertiesProvider(ILogger logger, IValueFactory<TValue> factory,
+        protected UnityTextureAdditionalPropertiesProvider(ILogger logger, DebuggerSession<TValue> debuggerSession,
             IKnownTypes<TValue> knownTypes, ISessionCreationInfo creationInfo, IUnityOptions unityOptions)
         {
             myLogger = logger;
@@ -55,21 +54,15 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
             if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {
-                var unityBundleInfo = unityStartInfo.GetProjectData().Bundles.FirstOrDefault(b => b.Id.Equals(UnityTextureDebuggerHelper<TValue>.AssemblyName));
-                if (unityBundleInfo != null)
-                    myAssemblyAbsolutePath = unityBundleInfo.AbsolutePath;
-                else
-                {
-                    myAssemblyAbsolutePath = string.Empty;
-                    myLogger.Error($"UnityBundles don't contain required one '{UnityTextureDebuggerHelper<TValue>.AssemblyName}'");
-                }
+                var assemblyName = UnityTextureDebuggerHelper<TValue>.GetAssemblyName(debuggerSession.DebugeeRuntime.IsDotNetCore());
+                myAssemblyBundleInfo = unityStartInfo.GetBundleInfo(assemblyName, logger);
             }
         }
 
         public AdditionalObjectPropertiesData? Create(PausedContext pausedContext, IValueEntity valueEntity,
             IValueFetchOptions options)
         {
-            if(!myUnityOptions.ExtensionsEnabled)
+            if(!myUnityOptions.ExtensionsEnabled || myAssemblyBundleInfo == null)
                 return null;
             
             options = options.AllowFullInvokes();
@@ -113,7 +106,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 //Loading helpers dll
                 if (myHelper == null || frame.GetAppDomainId() != myHelper.DomainTypes.AppDomainId)
                     myHelper = UnityTextureDebuggerHelper<TValue>.CreateHelper(frame, valueFetchOptions, myKnownTypes,
-                        myAssemblyAbsolutePath);
+                        myAssemblyBundleInfo);
             }
             catch (Exception e)
             {

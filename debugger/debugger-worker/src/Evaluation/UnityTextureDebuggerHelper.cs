@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Marshallable;
@@ -11,7 +12,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
     public class UnityTextureDebuggerHelper<TValue> : UnityDebuggerHelper<TValue> where TValue : class
     {
         private const string RequiredType = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter";
-        public const string AssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture";
+        private const string AssemblyBaseName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture";
 
         private const string GetPixelsMethodName = "GetTexturePixelsInfo";
         private static readonly MethodSelector ourGetPixelsMethodFilter = new(m => m.Name == GetPixelsMethodName && m.Parameters.Length == 1);
@@ -27,10 +28,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         }
 
         public static UnityTextureDebuggerHelper<TValue> CreateHelper(IStackFrame frame, IValueFetchOptions options,
-            IKnownTypes<TValue> knownTypes, string assemblyLocation)
+            IKnownTypes<TValue> knownTypes, UnityBundleInfo assemblyBundleInfo)
         {
-            return CreateUnityDebuggerHelper<UnityTextureDebuggerHelper<TValue>>(frame, options, knownTypes, assemblyLocation, AssemblyName,
+            return CreateUnityDebuggerHelper<UnityTextureDebuggerHelper<TValue>>(frame, options, knownTypes, assemblyBundleInfo,
                 RequiredType, (reifiedType, domainTypes) => new UnityTextureDebuggerHelper<TValue>(reifiedType, domainTypes));
         }
+
+        public static string GetAssemblyName(bool isDotNetCore) => GetAssemblyName(AssemblyBaseName, isDotNetCore);
     }
 }
