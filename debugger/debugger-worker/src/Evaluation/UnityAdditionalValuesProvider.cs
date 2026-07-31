@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values;
 using JetBrains.Lifetimes;
@@ -168,10 +169,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private List<IValueEntity> GetLoadedScenes(IStackFrame frame, IReifiedType<TValue> sceneManagerType,
             IMetadataMethodLite getSceneAtMethod, int scenesCount, TValue activeScene, Lifetime lifetime)
         {
-            var sceneEqualityMethod = GetSceneEqualityMethod(frame);
+            var hasSceneHandleEquality = GetSceneHandleEqualityMethods(frame, out var getHandleMethod, out var handleEqualityMethod);
             
             var loadedScenes = new List<IValueEntity>();
-            for (int i = 0; i < scenesCount; i++)
+            for (var i = 0; i < scenesCount; i++)
             {
                 lifetime.ThrowIfNotAlive();
 
@@ -189,7 +190,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
                 var defaultName = i.ToString();
 
-                if (sceneEqualityMethod != null && CallSceneEqualityMethod(sceneEqualityMethod, frame, sceneAtIndex, activeScene))
+                if (hasSceneHandleEquality && CallSceneEqualityMethod(getHandleMethod!, handleEqualityMethod!, frame, sceneAtIndex, activeScene))
                     defaultName += " (Active)";
 
                 loadedScenes.Add(CreateValueEntity(sceneAtIndex, defaultName, sceneManagerType.MetadataType, frame));
@@ -197,31 +198,50 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
             return loadedScenes;
         }
-
-        private IMetadataMethodLite? GetSceneEqualityMethod(IStackFrame frame)
+        
+        private bool GetSceneHandleEqualityMethods(IStackFrame frame, [NotNullWhen(true)] out IMetadataMethodLite? handleGetter, [NotNullWhen(true)] out IMetadataMethodLite? handleEquality)
         {
+            handleGetter = null;
+            handleEquality = null;
+            
             var sceneType = myValueServices.TypeUniverse.GetTypeByAssemblyQualifiedName(frame, "UnityEngine.SceneManagement.Scene, UnityEngine.CoreModule")
                             ?? myValueServices.TypeUniverse.GetTypeByAssemblyQualifiedName(frame, "UnityEngine.SceneManagement.Scene, UnityEngine");
             if (sceneType == null)
             {
                 myLogger.Warn("Unable to get typeof(Scene). Not a Unity project?");
-                return null;
-            }
-
-            var opEqualityMethod = sceneType.GetMethods().FirstOrDefault(m => m.IsStatic && m.Parameters.Length == 2 && m.Name == StandardOperatorNames.Equality);
-            if (opEqualityMethod == null)
-            {
-                myLogger.Warn("Unable to find Scene.op_Equality method");
-                return null;
+                return false;
             }
             
-            return opEqualityMethod;
+            var handleProperty = sceneType.GetProperties().FirstOrDefault(m => m.Name == "handle" && m.Getter != null);
+            if (handleProperty == null)
+            {
+                myLogger.Warn("Unable to find Scene.handle property");
+                return false;
+            }
+
+            handleGetter = handleProperty.Getter;
+            
+            // NOTE: the handle property type depends on the Unity version: before 6.3 it's an int, after it's a SceneHandle struct (wrapper over ulong)
+            // both implement IEquatable<T>, so we search for the Equals method with the parameter of the same type
+            handleEquality = handleProperty.Type.GetMethods().FirstOrDefault(m => m.Parameters.Length == 1 && m.Parameters[0].Type.Equals(handleProperty.Type) && m.Name == StandardMemberNames.ObjectEquals);
+            if (handleEquality == null)
+            {
+                myLogger.Warn("Unable to find Scene.handle.Equals method");
+                return false;
+            }
+            
+            return true;
         }
 
-        private bool CallSceneEqualityMethod(IMetadataMethodLite sceneOpEquality, IStackFrame frame, TValue sceneA, TValue sceneB)
+        private bool CallSceneEqualityMethod(IMetadataMethodLite handleGetter, IMetadataMethodLite handleEquality,
+            IStackFrame frame, TValue sceneA, TValue sceneB)
         {
+            var handleA = myValueServices.KnownTypes.Invocator.CallMethod(frame, mySession.EvaluationOptions,
+                handleGetter.OwnerType, handleGetter, sceneA);
+            var handleB = myValueServices.KnownTypes.Invocator.CallMethod(frame, mySession.EvaluationOptions,
+                handleGetter.OwnerType, handleGetter, sceneB);
             var resultValue = myValueServices.KnownTypes.Invocator.CallMethod(frame, mySession.EvaluationOptions,
-                sceneOpEquality.OwnerType, sceneOpEquality, null, sceneA, sceneB);
+                handleEquality.OwnerType, handleEquality, handleA, handleB);
             var resultValueRef = new SimpleValueReference<TValue>(resultValue, frame, myValueServices.RoleFactory);
             return resultValueRef.AsPrimitive(mySession.EvaluationOptions).GetPrimitive<bool>();
         }
