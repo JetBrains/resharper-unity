@@ -8,7 +8,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
-import com.intellij.xdebugger.impl.breakpoints.XBreakpointUtil
+import com.intellij.xdebugger.impl.breakpoints.XBreakpointUIUtil
+import com.intellij.xdebugger.impl.breakpoints.XLineBreakpointImpl
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 import com.jetbrains.rider.plugins.unity.UnityBundle
@@ -57,12 +58,12 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
             val dataContext = it.dataContext
             val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return@create
             val project = editor.project ?: return@create
+            if (breakpoint.properties !is DotNetLineBreakpointProperties) return@create
 
             // This finds the breakpoint at the current line. We're an alt+enter action, so that's fine
-            val pair = XBreakpointUtil.findSelectedBreakpoint(project, editor)
-            if (breakpoint.properties is DotNetLineBreakpointProperties && pair.second == breakpoint) {
-                @Suppress("UNCHECKED_CAST")
-                convertToLineBreakpoint(project, breakpoint, editor, pair.first)
+            val selectedBreakpoint = XBreakpointUIUtil.findSelectedBreakpoint(project, editor)?.id
+            if ((breakpoint as? XLineBreakpointImpl<*>)?.breakpointId == selectedBreakpoint) {
+                convertToLineBreakpoint(project, breakpoint, editor)
             }
         }
         return mutableListOf(action)

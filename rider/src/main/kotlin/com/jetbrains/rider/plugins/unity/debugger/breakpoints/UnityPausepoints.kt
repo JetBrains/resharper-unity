@@ -6,7 +6,6 @@ package com.jetbrains.rider.plugins.unity.debugger.breakpoints
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
-import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
@@ -20,6 +19,7 @@ import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XBreakpoint
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.intellij.xdebugger.impl.actions.EditBreakpointActionHandler
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointManagerImpl
 import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
@@ -58,13 +58,14 @@ fun addUnityPausepoint(
 }
 
 
-fun convertToPausepoint(project: Project,
-                        breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>,
-                        providedEditor: Editor? = null,
-                        providedIconRenderer: GutterIconRenderer? = null) {
+fun convertToPausepoint(
+    project: Project,
+    breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>,
+    providedEditor: Editor? = null
+) {
     UIUtil.invokeLaterIfNeeded {
         application.runWriteAction {
-            val balloonLocation = tryGetIconRendererLocation(project, providedEditor, breakpoint, providedIconRenderer)
+            val balloonLocation = tryGetPopupLocationLocation(project, providedEditor)
 
             val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
             val dependentBreakpointManager = (breakpointManager as? XBreakpointManagerImpl)?.dependentBreakpointManager
@@ -85,13 +86,14 @@ fun convertToPausepoint(project: Project,
     }
 }
 
-fun convertToLineBreakpoint(project: Project,
-                            breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>,
-                            providedEditor: Editor? = null,
-                            providedIconRenderer: GutterIconRenderer? = null) {
+fun convertToLineBreakpoint(
+    project: Project,
+    breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>,
+    providedEditor: Editor? = null
+) {
     UIUtil.invokeLaterIfNeeded {
         application.runWriteAction {
-            val balloonLocation = tryGetIconRendererLocation(project, providedEditor, breakpoint, providedIconRenderer)
+            val balloonLocation = tryGetPopupLocationLocation(project, providedEditor)
 
             val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
             val dependentBreakpointManager = (breakpointManager as? XBreakpointManagerImpl)?.dependentBreakpointManager
@@ -115,26 +117,14 @@ fun convertToLineBreakpoint(project: Project,
     }
 }
 
-fun tryGetIconRendererLocation(project: Project,
-                               providedEditor: Editor?,
-                               breakpoint: XLineBreakpoint<*>,
-                               providedIconRenderer: GutterIconRenderer?): Point? {
+fun tryGetPopupLocationLocation(project: Project, providedEditor: Editor?): Point? {
     val editor = tryGetEditor(project, providedEditor) ?: return null
-    val renderer = tryGetGutterIconRenderer(breakpoint, providedIconRenderer) ?: return null
-
-    return (editor as? EditorEx)?.gutterComponentEx?.getCenterPoint(renderer)
+    return EditBreakpointActionHandler.getPopupPoint(editor, null)
 }
 
 private fun tryGetEditor(project: Project, providedEditor: Editor?): Editor? {
     if (providedEditor != null) return providedEditor
     return (FileEditorManager.getInstance(project).selectedEditor as? TextEditor)?.editor
-}
-
-private fun tryGetGutterIconRenderer(breakpoint: XBreakpoint<*>, providedIconRenderer: GutterIconRenderer?): GutterIconRenderer? {
-    if (providedIconRenderer != null) return providedIconRenderer
-
-    val breakpointProxy = XDebuggerEntityConverter.asProxy(breakpoint) ?: return null
-    return breakpointProxy.getGutterIconRenderer()
 }
 
 private fun tryEditBreakpoint(project: Project, breakpoint: XBreakpoint<*>, whereToShow: Point?, providedEditor: Editor?) {
@@ -144,7 +134,7 @@ private fun tryEditBreakpoint(project: Project, breakpoint: XBreakpoint<*>, wher
     val breakpointProxy = XDebuggerEntityConverter.asProxy(breakpoint)
     if (breakpointProxy != null && !BreakpointsDialogFactory.getInstance(project).popupRequested(breakpointProxy)) {
         val gutterComponent = (editor as? EditorEx)?.gutterComponentEx ?: return
-        DebuggerUIUtil.showXBreakpointEditorBalloon(project, whereToShow, gutterComponent, false, breakpoint)
+        DebuggerUIUtil.showXBreakpointEditorBalloon(project, whereToShow, gutterComponent, false, breakpointProxy)
     }
 }
 
