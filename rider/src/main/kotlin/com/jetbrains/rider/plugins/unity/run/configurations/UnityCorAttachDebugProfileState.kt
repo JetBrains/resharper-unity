@@ -3,7 +3,7 @@
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
-import com.jetbrains.rider.model.debuggerWorker.DotNetCoreAttachStartInfo
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityDotNetCoreAttachStartInfo
 import com.jetbrains.rider.run.AttachDebugProfileStateBase
 import com.jetbrains.rider.run.ConsoleKind
 
@@ -12,5 +12,8 @@ class UnityCorAttachDebugProfileState(val processId: Int, executionEnvironment: 
     override val consoleKind: ConsoleKind = ConsoleKind.AttachedProcess
     override val attached: Boolean = true
 
-    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase = DotNetCoreAttachStartInfo(processId)
+    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
+        val projectData = getUnityProjectData(executionEnvironment.project)
+        return UnityDotNetCoreAttachStartInfo(projectData, processId)
+    }
 }

@@ -18,6 +18,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                 UnityMonoStartInfoBase i => i.ProjectData,
                 UnityLocalCoreClrStartInfo i => i.ProjectData,
                 UnityDotNetCoreExeStartInfo i => i.ProjectData,
+                UnityDotNetCoreAttachStartInfo i => i.ProjectData,
                 _ => throw new ArgumentException("Unsupported unity start info type"),
             };
         }

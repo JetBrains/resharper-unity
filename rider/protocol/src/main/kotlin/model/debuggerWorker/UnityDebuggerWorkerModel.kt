@@ -42,6 +42,10 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         field("projectData", unityProjectData)
     }
 
+    private val unityDotNetCoreAttachStartInfo = structdef extends DebuggerWorkerModel.dotNetCoreAttachStartInfoBase implements unityStartInfo with {
+        field("projectData", unityProjectData)
+    }
+
     // Forward Android debugging ports over ADB
     private val unityAndroidAdbStartInfo = structdef extends unityMonoStartInfoBase {
         field("androidSdkRoot", string)
