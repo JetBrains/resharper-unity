@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.Util;
 using JetBrains.Util.Collections;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference
 {
@@ -32,6 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
     internal class IndexClassInfo
     {
+        private static readonly ILogger ourLogger = Logger.GetLogger<IndexClassInfo>();
+
         public IndexClassInfo(string className, bool isTypeParameter = false)
             : this(className, isTypeParameter, new CountingSet<ElementId>(), new CountingSet<ElementId>(),
                 new CountingSet<ElementId>())
@@ -62,6 +66,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         public CountingSet<ElementId> Inheritors { get; } //or resolves
 
         public CountingSet<ElementId> SerializeReferenceHolders { get; }
+
+        //partial classes: several files can declare the same type. Count declaring files so the entry
+        //survives until the last one is removed. Placeholders (referenced-only super classes / type
+        //parameters) stay at 0 and live while their relationship sets are non-empty.
+        private int myDeclarationCount;
+
+        //applies a declaration add/remove; returns true when the entry is no longer referenced and can be dropped
+        internal bool ApplyDeclarationDelta(DiffType diffType, bool isNewDeclaration)
+        {
+            if (diffType == DiffType.Removed)
+            {
+                //clamp at 0: an unbalanced removal must not under-count a later legitimate declaration
+                if (myDeclarationCount > 0)
+                    myDeclarationCount--;
+                else
+                    ourLogger.Warn($"Unbalanced declaration removal for '{ClassName}', count is already 0");
+                return CanBeDropped();
+            }
+
+            if (isNewDeclaration)
+                myDeclarationCount++;
+            return false;
+        }
+
+        internal bool CanBeDropped()
+        {
+            return myDeclarationCount <= 0 && IsEmpty();
+        }
 
         public bool IsEmpty()
         {

@@ -40,11 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             var oldInfo = oldData as UnitySerializationReferenceElementInfo;
             var newInfo = newData as UnitySerializationReferenceElementInfo;
 
-            var infoDiff =
-                SerializeReferenceProviderDiffUtils.CalculateDiff(oldInfo?.TypeToInterfaces, newInfo?.TypeToInterfaces);
-
-            SerializeReferenceProviderDiffUtils.ApplyDiff(ClassInfoDictionary, infoDiff);
-
+            SerializeReferenceProviderDiffUtils.MergeTypeToInterfaces(ClassInfoDictionary,
+                oldInfo?.TypeToInterfaces, newInfo?.TypeToInterfaces);
 
             var resolvesDiff =
                 SerializeReferenceProviderDiffUtils.CalculateDiff(oldInfo?.TypeParameterResolves,

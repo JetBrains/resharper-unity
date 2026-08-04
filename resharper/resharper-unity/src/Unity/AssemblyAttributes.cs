@@ -1,0 +1,10 @@
+using System.Runtime.CompilerServices;
+
+// This assembly and its test assembly are signed with a different key depending on the build:
+//   * the standalone bundled-plugin build signs with resharper/../sign.snk (token 0f46ab053645825e),
+//     see resharper/Directory.Build.props;
+//   * the monorepo build signs with Subplatform.Snk (token 2112583c98f0e324).
+// A strong-named assembly must name the friend's public key explicitly, so both are declared here -
+// friend access is granted when any one of them matches the test assembly actually being compiled.
+[assembly: InternalsVisibleTo("JetBrains.ReSharper.Plugins.Unity.Tests, PublicKey=00240000048000001401000006020000002400005253413100080000010001005712c5f7d8b0507fadf5ec13f68a6ca440d6704d79f5e8ee212207a162b53390592cf395178f9d9c64f86a1194b8787f430e05a130c0e0e746e429705deae42bd6ec096d676b57ec3f8334b7b914b39ed09bfc1a31244b2bac2c53a3947e3f3a150281d6ba4053a6cf26a37a6bd7dab0610d42c9562866df7cd016eefeaec15e16711c176a4278714bb6cc795f74e1e3994e006cd1f817d8d5b95da8439c9208581b7a1aca9a20f57f50b2512df01e75f699bdb3a9a865f0161f62e747d868b196b093e6e5a53859202635f1a9c46e60aa13090cfaf9f4c94927d5cb1e570c3066c289e3749ad188c27b5cdea58e817679e6566a29b37eca76b9f31229376b8c")]
+[assembly: InternalsVisibleTo("JetBrains.ReSharper.Plugins.Unity.Tests, PublicKey=002400000480000094000000060200000024000052534131000400000100010015b9b5167a598022cb40c2c92060c46b0127d945408fb59f71904e2934623745c99c2261a128fde8cc9904a73dac81818f68dd8a9889c46e436f4cd11ae0943a9ab3d89ff3f6c8ef64fdf3316ec0e4d0fb50e3c8d8b9f3ac9442af8093e6eabc4c8be5c646b0c3c74c132dfbbbe872ad6409289a043134e4829f3ec797be468d")]

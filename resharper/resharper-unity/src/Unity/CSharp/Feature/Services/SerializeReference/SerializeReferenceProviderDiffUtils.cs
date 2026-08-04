@@ -7,12 +7,23 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference
 {
     internal static class SerializeReferenceProviderDiffUtils
     {
-        public static List<TDIff> CalculateDiff<TDIff, TSetElement>(CountingSet<TSetElement>? oldSet,
+        private static readonly ILogger ourLogger = Logger.GetLogger(typeof(SerializeReferenceProviderDiffUtils));
+
+        //the exact merge seam UnitySerializedReferenceInfoIndex.Merge uses; unit-testable without a full solution
+        public static void MergeTypeToInterfaces(IndexClassInfoDictionary classInfo,
+            ClassMetaInfoDictionary? oldData, ClassMetaInfoDictionary? newData)
+        {
+            var diff = CalculateDiff(oldData, newData);
+            ApplyDiff(classInfo, diff);
+        }
+
+        internal static List<TDIff> CalculateDiff<TDIff, TSetElement>(CountingSet<TSetElement>? oldSet,
             CountingSet<TSetElement>? newSet, Func<TSetElement, DiffType, int, TDIff> createDiff)
         {
             if (oldSet == null && newSet == null)
@@ -88,25 +99,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             if (oldInfo == null && newInfo == null)
                 return ClassMetaInfoDiff.EmptyDiff;
 
-            if (oldInfo != null && newInfo != null && oldInfo.ClassName != newInfo.ClassName)
-            {
-                throw new ArgumentException(
-                    $"Building diff for different classes old:'{oldInfo.ClassName}', new:'{newInfo.ClassName}'");
-            }
-
-
             var superClassesDiff = CalculateDiff(oldInfo?.SuperClasses, newInfo?.SuperClasses, CreateDiff);
             var serializeReferenceHoldersDiff =
                 CalculateDiff(oldInfo?.SerializeReferenceHolders, newInfo?.SerializeReferenceHolders, CreateDiff);
             var typeParametersDiff = CalculateDiff(oldInfo?.TypeParameters, newInfo?.TypeParameters);
 
-            return new ClassMetaInfoDiff(oldInfo?.ClassName ?? newInfo?.ClassName ?? string.Empty, superClassesDiff,
+            var className = !string.IsNullOrEmpty(oldInfo?.ClassName) ? oldInfo!.ClassName
+                : !string.IsNullOrEmpty(newInfo?.ClassName) ? newInfo!.ClassName
+                : string.Empty;
+
+            return new ClassMetaInfoDiff(className, superClassesDiff,
                 serializeReferenceHoldersDiff, typeParametersDiff);
         }
 
         private static CountingSetDiff CreateDiff(ElementId id, DiffType diffType, int count)
         {
             return new(id, diffType, count);
+        }
+
+        //empty name means unresolved; only a real-vs-real mismatch under one id is a collision
+        private static bool IsClassNameCollision(ClassMetaInfo? oldInfo, ClassMetaInfo? newInfo, ElementId elementId)
+        {
+            if (oldInfo == null || newInfo == null
+                || string.IsNullOrEmpty(oldInfo.ClassName) || string.IsNullOrEmpty(newInfo.ClassName)
+                || oldInfo.ClassName == newInfo.ClassName)
+                return false;
+
+            ourLogger.Error(
+                $"Building diff for different classes, skipping {elementId}: old:'{oldInfo.ClassName}', new:'{newInfo.ClassName}'");
+            return true;
         }
 
         private static List<TypeParametersSetDiff> CalculateDiff(Dictionary<ElementId, TypeParameter>? oldDict,
@@ -118,7 +139,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             if (oldDict == null && newDict != null) //all data was added
                 return newDict.Select(pair => new TypeParametersSetDiff(pair.Value.ElementId, DiffType.Added,
                         pair.Value.Index, pair.Value.Name,
-                        CalculateDiff(null, pair.Value.SerializeReferenceHolders, CreateDiff)))
+                        CalculateDiff(null, pair.Value.SerializeReferenceHolders, CreateDiff),
+                        isNewDeclaration: true))
                     .ToList();
 
             if (oldDict != null && newDict == null) //all data was removed
@@ -145,7 +167,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                         DiffType.Added,
                         newParameter.Index,
                         newParameter.Name,
-                        serializeReferenceHoldersDiff));
+                        serializeReferenceHoldersDiff,
+                        isNewDeclaration: !contains));
             }
 
 
@@ -165,21 +188,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             return result;
         }
 
-        private static void ApplyDiff(this IndexClassInfo data,
+        //returns false when the diff belongs to a different class (id collision) and was skipped
+        private static bool ApplyDiff(this IndexClassInfo data,
             ClassMetaInfoDiff diff,
             IndexClassInfoDictionary classInfo,
             ElementId diffElementId)
         {
             var dataNameIsEmpty = string.IsNullOrEmpty(data.ClassName);
-            if (!dataNameIsEmpty && diff.ClassName != data.ClassName)
-                throw new ArgumentException(
-                    $"Applying diff to wrong class diff.ClassName:'{diff.ClassName}', metaInfo:'{data.ClassName}'");
+            if (!dataNameIsEmpty && !string.IsNullOrEmpty(diff.ClassName) && diff.ClassName != data.ClassName)
+            {
+                ourLogger.Error( $"Applying diff to wrong class, skipping {diffElementId}: diff.ClassName:'{diff.ClassName}', metaInfo:'{data.ClassName}'");
+                return false;
+            }
 
             if (dataNameIsEmpty && !string.IsNullOrEmpty(diff.ClassName))
                 data.ReplaceEmptyName(diff.ClassName);
 
             if (diff.IsEmpty())
-                return;
+                return true;
 
             data.SuperClasses.ApplyDiff(diff.SuperClassesDiff);
             data.SerializeReferenceHolders.ApplyDiff(diff.SerializeReferenceHoldersDiff);
@@ -196,6 +222,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                             break;
                         case DiffType.Removed:
                             superClassInfo.Inheritors.Remove(diffElementId);
+                            if (superClassInfo.CanBeDropped())
+                                classInfo.Remove(superClassId);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -218,6 +246,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     }
                 }
             }
+
+            return true;
         }
 
         internal static List<TypeToInterfaceDiff> CalculateDiff(ClassMetaInfoDictionary? oldData,
@@ -228,7 +258,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             if (oldData == null && newData != null) //all data was added
                 return newData.Select(pair =>
-                    new TypeToInterfaceDiff(pair.Key, CalculateDiff(null, pair.Value), DiffType.Added)).ToList();
+                    new TypeToInterfaceDiff(pair.Key, CalculateDiff(null, pair.Value), DiffType.Added,
+                        isNewDeclaration: true)).ToList();
 
             if (oldData != null && newData == null) //all data was removed
                 return oldData.Select(pair =>
@@ -241,8 +272,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             foreach (var (newElementId, newMetaInfo) in newData)
             {
                 oldData.TryGetValue(newElementId, out var oldMetaInfo);
+                if (IsClassNameCollision(oldMetaInfo, newMetaInfo, newElementId))
+                    continue;
+
                 var typeToInterfaceDiffs = CalculateDiff(oldMetaInfo, newMetaInfo);
-                result.Add(new TypeToInterfaceDiff(newElementId, typeToInterfaceDiffs, DiffType.Added));
+                result.Add(new TypeToInterfaceDiff(newElementId, typeToInterfaceDiffs, DiffType.Added,
+                    isNewDeclaration: oldMetaInfo == null));
             }
 
 
@@ -272,23 +307,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
                 if (classInfo.TryGetValue(diffElementId, out var metaInfo))
                 {
-                    metaInfo.ApplyDiff(classMetaInfoDiff, classInfo, diffElementId);
+                    if (!metaInfo.ApplyDiff(classMetaInfoDiff, classInfo, diffElementId))
+                        continue; //id collision - skip the whole element (logged inside)
 
-                    //TODO - not the optimal solution
-                    //even in case or 2 files with partial class - class will be removed from index
-                    //and this deletion will trigger update for another file with partial class - and this class will be added back
-
-                    if (diff.DiffType == DiffType.Removed)
+                    if (metaInfo.ApplyDeclarationDelta(diff.DiffType, diff.IsNewDeclaration))
                         classInfo.Remove(diffElementId);
                 }
                 else
                 {
-                    //Assertion.Require(!string.IsNullOrEmpty(classMetaInfoDiff.ClassName));
-                    Assertion.Require(!classMetaInfoDiff.IsEmpty() || diff.DiffType == DiffType.Added, $"!classMetaInfoDiff.IsEmpty() || diff.DiffType == DiffType.Added [isEmpty:{classMetaInfoDiff.IsEmpty()}, diff.Type:{diff.DiffType}]");
-
                     metaInfo = new IndexClassInfo(classMetaInfoDiff.ClassName);
                     metaInfo.ApplyDiff(classMetaInfoDiff, classInfo, diffElementId);
-                    classInfo.Add(diffElementId, metaInfo);
+                    if (!metaInfo.ApplyDeclarationDelta(diff.DiffType, diff.IsNewDeclaration))
+                        classInfo.Add(diffElementId, metaInfo);
                 }
 
                 ProcessTypeParametersDiff(classInfo, classMetaInfoDiff);
@@ -304,18 +334,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
                 if (classInfo.TryGetValue(diffElementId, out var metaInfo))
                 {
-                    //class - removed or updated
-                    if (diff.DiffType == DiffType.Removed)
+                    //type parameter - removed or updated; drop only when the last declaring file removes it
+                    if (metaInfo.ApplyDeclarationDelta(diff.DiffType, diff.IsNewDeclaration))
                         classInfo.Remove(diffElementId);
-                    else
+                    else if (diff.DiffType != DiffType.Removed)
                         metaInfo.SerializeReferenceHolders.ApplyDiff(diff.SerializeReferenceHoldersDiff);
                 }
                 else
                 {
-                    // Assertion.Require(!string.IsNullOrEmpty(diff.ClassName));
-                    Assertion.Require(diff.DiffType == DiffType.Added, $"diff.DiffType == DiffType.Added [diffType:{diff.DiffType}]");
+                    if (diff.DiffType != DiffType.Added)
+                    {
+                        ourLogger.Warn($"Type parameter diff {diff.DiffType} for an absent entry {diffElementId}, skipping");
+                        continue;
+                    }
 
                     metaInfo = new IndexClassInfo(diff.ClassName, true);
+                    metaInfo.ApplyDeclarationDelta(diff.DiffType, diff.IsNewDeclaration);
                     metaInfo.SerializeReferenceHolders.ApplyDiff(diff.SerializeReferenceHoldersDiff);
                     classInfo.Add(diffElementId, metaInfo);
                 }
@@ -350,62 +384,57 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             }
         }
 
-        public static void ApplyDiff(IndexClassInfoDictionary classInfo, List<TypeParameterResolvesDiff> resolvesDiff)
+        internal static void ApplyDiff(IndexClassInfoDictionary classInfo, List<TypeParameterResolvesDiff> resolvesDiff)
         {
             foreach (var diff in resolvesDiff)
             {
                 var resolution = diff.TypeParameterResolve;
-                
-                Assertion.Require(resolution != null, "resolution != null");
-
-                var openTypeExists = classInfo.TryGetValue(resolution.OpenTypeId, out var openTypeInfo);
-                var resolvedTypeExists = classInfo.TryGetValue(resolution.ResolvedTypeId, out var resolvedInfo);
+                if (resolution == null)
+                {
+                    ourLogger.Error($"{nameof(TypeParameterResolvesDiff)} without a resolution, skipping [diffType:{diff.DiffType}]");
+                    continue;
+                }
 
                 switch (diff.DiffType)
                 {
                     case DiffType.Removed:
-                        if (openTypeExists)
+                    {
+                        if (classInfo.TryGetValue(resolution.OpenTypeId, out var openTypeInfo))
                         {
-                            Assertion.Require(openTypeInfo != null, $"openTypeInfo != null | {diff.DiffType}");
                             openTypeInfo.Inheritors.Remove(resolution.ResolvedTypeId);
+                            if (openTypeInfo.CanBeDropped())
+                                classInfo.Remove(resolution.OpenTypeId);
                         }
 
-                        if (resolvedTypeExists)
+                        if (classInfo.TryGetValue(resolution.ResolvedTypeId, out var resolvedInfo))
                         {
-                            Assertion.Require(resolvedInfo != null, $"resolvedInfo != null | {diff.DiffType}");
                             resolvedInfo.SuperClasses.Remove(resolution.OpenTypeId);
+                            if (resolvedInfo.CanBeDropped())
+                                classInfo.Remove(resolution.ResolvedTypeId);
                         }
+
                         break;
+                    }
                     case DiffType.Added:
-                        if (!openTypeExists)
+                    {
+                        if (!classInfo.TryGetValue(resolution.OpenTypeId, out var openTypeInfo))
                         {
                             openTypeInfo = new IndexClassInfo(resolution.ResolutionString, true);
                             classInfo.Add(resolution.OpenTypeId, openTypeInfo);
                         }
-                        
-                        Assertion.Require(openTypeInfo != null, $"openTypeInfo != null | {diff.DiffType}");
+
                         openTypeInfo.Inheritors.Add(resolution.ResolvedTypeId);
 
-
-                        if (!resolvedTypeExists)
+                        //fresh lookup: when OpenTypeId == ResolvedTypeId the open-type add above has just inserted this key
+                        if (!classInfo.TryGetValue(resolution.ResolvedTypeId, out var resolvedInfo))
                         {
                             resolvedInfo = new IndexClassInfo(string.Empty, true);
-                            
-                            //TODO: remove this extra validations after fix
-                            var resolutionResolvedTypeId = resolution.ResolvedTypeId;
-                            var alreadyHasSameKey =
-                                classInfo.TryGetValue(resolutionResolvedTypeId, out var doubleCheckVal);
-                            Assertion.Require(!alreadyHasSameKey, $"Dictionary {nameof(classInfo)} already has this key:{resolutionResolvedTypeId}, value:{doubleCheckVal}, attemption to add {resolvedInfo}");
-
-                            if(!alreadyHasSameKey)
-                                classInfo.Add(resolutionResolvedTypeId, resolvedInfo);
+                            classInfo.Add(resolution.ResolvedTypeId, resolvedInfo);
                         }
 
-                        Assertion.Require(resolvedInfo != null, $"resolvedInfo != null | {diff.DiffType}");
                         resolvedInfo.SuperClasses.Add(resolution.OpenTypeId);
-                        
                         break;
-
+                    }
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
