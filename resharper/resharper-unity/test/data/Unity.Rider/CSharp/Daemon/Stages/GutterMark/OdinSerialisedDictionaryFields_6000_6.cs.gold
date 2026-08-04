@@ -1,0 +1,52 @@
+﻿using System;
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
+using UnityEngine;
+
+// Stubs for Sirenix.Odin types. Tests run without a real Odin reference.
+namespace Sirenix.OdinInspector
+{
+    public abstract class ||SerializedMonoBehaviour|(0)|(1) : MonoBehaviour { }
+    public abstract class ||SerializedScriptableObject|(2)|(3) : ScriptableObject { }
+}
+
+namespace Sirenix.Serialization
+{
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public sealed class OdinSerializeAttribute : Attribute { }
+}
+
+// Unity 6.6 serializes dictionaries natively and Odin always has, so the two must coexist.
+public class ||TestOdinDictionaries|(4)|(5) : SerializedMonoBehaviour
+{
+    // Unity serializes this natively, so it is a Unity field rather than an Odin one
+    [SerializeField] private Dictionary<string, int> ||UnitySerializedDictionary|(6)|(7);
+    // Odin serializes a public dictionary with no attribute. Marked from 6.6 on, because the dictionary rules
+    // return NonSerializedField and the Odin fallback in IsSerialisedField only runs for that status - before,
+    // a dictionary resolved to Unknown and the fallback was skipped. Older Unity versions still show that gap,
+    // see OdinSerialisedFields.cs.gold.
+    public Dictionary<string, string> ||PublicDictionary|(8)|(9);
+    // Odin still handles an explicit [OdinSerialize]
+    [OdinSerialize] private Dictionary<string, int> ||OdinSerializedDictionary|(10)|(11);
+    // A dictionary-valued dictionary is serialized by Unity too
+    [SerializeField] private Dictionary<string, Dictionary<string, int>> ||NestedDictionary|(12)|(13);
+    // Not serialized by Unity or Odin
+    private Dictionary<string, string> PrivateDictionary;
+}
+
+---------------------------------------------------------
+(0): ReSharper Unity Implicitly Used Identifier: 
+(1): Unity Gutter Icon: Unity script
+(2): ReSharper Unity Implicitly Used Identifier: 
+(3): Unity Gutter Icon: Unity scriptable object
+(4): ReSharper Unity Implicitly Used Identifier: 
+(5): Unity Gutter Icon: Unity script
+(6): ReSharper Unity Implicitly Used Identifier: 
+(7): Unity Gutter Icon: This field is initialized from Inspector
+(8): ReSharper Unity Implicitly Used Identifier: 
+(9): Unity Odin Gutter Icon: This field is serialized by Odin
+(10): ReSharper Unity Implicitly Used Identifier: 
+(11): Unity Odin Gutter Icon: This field is serialized by Odin
+(12): ReSharper Unity Implicitly Used Identifier: 
+(13): Unity Gutter Icon: This field is initialized from Inspector

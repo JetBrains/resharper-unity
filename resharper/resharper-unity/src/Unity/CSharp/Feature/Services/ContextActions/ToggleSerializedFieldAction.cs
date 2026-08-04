@@ -80,8 +80,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (fieldDeclaration.DeclaredElement == null)
                 return false;
 
+            // Asks whether the field could be serialized if it were attributed, so the action stays available on
+            // an un-attributed dictionary field.
             var unityType = unityApi.IsFieldTypeSerializable(fieldDeclaration.DeclaredElement,
-                hasSerializeReference: false, useSwea: true);
+                hasSerializeReference: false, hasSerializeField: true, useSwea: true);
             
             return unityType.HasFlag(SerializedFieldStatus.UnitySerializedField);
         }

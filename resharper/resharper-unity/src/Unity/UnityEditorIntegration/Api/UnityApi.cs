@@ -52,6 +52,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             KnownTypes.LazyLoadReference
         };
 
+        // Unity 6.6 added built-in Dictionary serialization. It shipped in 6000.6.0a7, but we can only gate on
+        // major.minor: a project resolved through csproj DefineConstants has no revision, so gating finer would
+        // exclude 6.6 final. https://docs.unity3d.com/6000.6/Documentation/Manual/script-serialization-dictionaries.html
+        //
+        // The UACxxxx codes cited in the serialization checks below are diagnostics of Unity's own serialization
+        // rules Roslyn analyzer, also new in 6.6. It ships with the editor and reports them against the user's code
+        // at compile time. We don't report the UAC diagnostics ourselves - they're quoted only to name the rule
+        // each check encodes:
+        //   UAC1011  warning  Enum type exceeds 32-bit size limit
+        //   UAC1012  error    Serializable dictionary with interface or abstract key or value type
+        //   UAC1013  error    Serializable dictionary with IEnumerable key type
+        //   UAC1014  error    [SerializeReference] used on dictionary
+        //   UAC1015  warning  Dictionary field missing [SerializeField]
+        //   UAC1016  error    Dictionary key or value type is not serializable
+        // https://docs.unity3d.com/6000.6/Documentation/Manual/script-serialization-analyzer.html
+        private static readonly Version ourDictionarySerializationVersion = new Version(6000, 6);
+
         private readonly UnityVersion myUnityVersion;
         private readonly UnityTypeCache myUnityTypeCache;
         private readonly UnityTypesProvider myUnityTypesProvider;
@@ -279,20 +296,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                     return isSerializableTypeDeclaration;
             }
 
-            return IsFieldTypeSerializable(field, hasSerializeReference, useSwea);
+            return IsFieldTypeSerializable(field, hasSerializeReference, hasSerializeField, useSwea);
         }
 
-        private SerializedFieldStatus IsFieldTypeSerializable(IProperty property, bool hasSerializeReference, bool useSwea)
+        private SerializedFieldStatus IsFieldTypeSerializable(IProperty property, bool hasSerializeReference, bool hasSerializeField, bool useSwea)
         {
             // We need the project to get the current Unity version. this is only called for type usage (e.g. field
             // type), so it's safe to assume that the field is in a source file belonging to a project
             var project = (property.Module as IProjectPsiModule)?.Project;
             return project == null
                 ? SerializedFieldStatus.NonSerializedField
-                : IsFieldTypeSerializable(property.Type, project, hasSerializeReference, useSwea);
+                : IsFieldTypeSerializable(property.Type, project, hasSerializeReference, hasSerializeField, useSwea);
         }
 
-        public SerializedFieldStatus IsFieldTypeSerializable(IField field, bool hasSerializeReference, bool useSwea)
+        public SerializedFieldStatus IsFieldTypeSerializable(IField field, bool hasSerializeReference, bool hasSerializeField, bool useSwea)
         {
             // Rules for what field types can be serialised.
             // See https://docs.unity3d.com/ScriptReference/SerializeField.html
@@ -310,10 +327,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             var project = (field.Module as IProjectPsiModule)?.Project;
             return project == null
                 ? SerializedFieldStatus.NonSerializedField
-                : IsFieldTypeSerializable(field.Type, project, hasSerializeReference, useSwea);
+                : IsFieldTypeSerializable(field.Type, project, hasSerializeReference, hasSerializeField, useSwea);
         }
 
         private SerializedFieldStatus IsFieldTypeSerializable([NotNullWhen(true)] IType? type, IProject project,
+            bool hasSerializeReference, bool hasSerializeField, bool useSwea)
+        {
+            if (type is IDeclaredType dictionaryType
+                && Equals(dictionaryType.GetClrName(), PredefinedType.GENERIC_DICTIONARY_FQN))
+            {
+                return IsDictionaryFieldTypeSerializable(dictionaryType, project, hasSerializeField, useSwea);
+            }
+
+            return IsCollectionOrSimpleFieldTypeSerializable(type, project, hasSerializeReference, useSwea);
+        }
+
+        private SerializedFieldStatus IsCollectionOrSimpleFieldTypeSerializable([NotNullWhen(true)] IType? type, IProject project,
             bool hasSerializeReference, bool useSwea)
         {
             if (type is IArrayType { Rank: 1 } arrayType)
@@ -338,6 +367,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             return IsSimpleFieldTypeSerializable(type, project, hasSerializeReference, useSwea);
         }
 
+        private SerializedFieldStatus IsDictionaryFieldTypeSerializable(IDeclaredType dictionaryType,
+            IProject project, bool hasSerializeField, bool useSwea)
+        {
+            // Built-in dictionary serialization arrived in Unity 6.6. Before that no dictionary field is serialized,
+            // whatever the key and value types. Answering NonSerializedField here rather than falling through to the
+            // generic path matters: the generic path ends in the SWEA-backed provider, which returns Unknown for a
+            // dictionary, and Unknown suppresses both the redundant-attribute warning and the Odin fallback in
+            // IsSerialisedField.
+            if (myUnityVersion.GetActualVersion(project) < ourDictionarySerializationVersion)
+                return SerializedFieldStatus.NonSerializedField;
+
+            // Serialization is opt-in (UAC1015), and [SerializeReference] does not substitute for [SerializeField]
+            // - Unity reports that combination as an error (UAC1014). Checking this here rather than at the call
+            // site keeps [SerializeReference] from reaching the escape hatch in IsSerializableType.
+            if (!hasSerializeField)
+                return SerializedFieldStatus.NonSerializedField;
+
+            var typeElement = dictionaryType.GetTypeElement();
+            if (typeElement == null || typeElement.TypeParameters.Count != 2)
+                return SerializedFieldStatus.NonSerializedField;
+
+            var substitution = dictionaryType.GetSubstitution();
+            var keyType = substitution.Apply(typeElement.TypeParameters[0]);
+            var valueType = substitution.Apply(typeElement.TypeParameters[1]);
+
+            // Unity tolerates a type parameter in T[] and List<T>, but not as a dictionary key or value
+            // (UAC1016), so opt out of the leniency in IsSimpleFieldTypeSerializable.
+            if (keyType.IsTypeParameterType() || valueType.IsTypeParameterType())
+                return SerializedFieldStatus.NonSerializedField;
+
+            // [SerializeReference] is not honoured for a dictionary (UAC1014). Passing false also rejects
+            // interface and abstract key or value types (UAC1012).
+            const bool hasSerializeReference = false;
+
+            // The key must be fully serializable. Collections are rejected (UAC1013), but only at the top level -
+            // we do not walk the fields of a struct key the way Unity's analyzer does.
+            var keyStatus = IsSimpleFieldTypeSerializable(keyType, project, hasSerializeReference, useSwea);
+            if (!keyStatus.HasFlag(SerializedFieldStatus.UnitySerializedField))
+                return keyStatus;
+
+            // An unsupported value does not stop the field being serialized: Dictionary<string, object> and
+            // Dictionary<string, List<Dictionary<string, int>>> are drawn in the Inspector and their keys survive
+            // a reload, only the values are dropped. Only what Unity rejects outright disqualifies the field.
+            if (IsAbstractOrInterfaceType(valueType) || IsUnsupportedWideEnum(valueType))
+                return SerializedFieldStatus.NonSerializedField;
+
+            return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
+        }
+
         private SerializedFieldStatus IsSimpleFieldTypeSerializable(IType? type, IProject project,
             bool hasSerializeReference, bool useSwea)
         {
@@ -352,7 +430,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
 
             if (type.IsEnumType())
-                return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
+            {
+                // Unity only supports enums of 32 bits or smaller (UAC1011). A long-backed enum compiles cleanly,
+                // so nothing catches it at build time - the editor rejects it at runtime and drops the value.
+                return IsUnsupportedWideEnum(type)
+                    ? SerializedFieldStatus.NonSerializedField
+                    : SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
+            }
 
             if (IsUnityBuiltinType(type))
                 return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
@@ -364,6 +448,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 return SerializedFieldStatus.SerializedField | SerializedFieldStatus.UnitySerializedField;
 
             return IsSerializableType(type.GetTypeElement(), project, true, useSwea, hasSerializeReference);
+        }
+
+        // An interface or abstract class, which Unity rejects as a dictionary key or value (UAC1012).
+        private static bool IsAbstractOrInterfaceType(IType? type)
+        {
+            var typeElement = type?.GetTypeElement();
+            return typeElement is IInterface || typeElement is IModifiersOwner { IsAbstract: true };
+        }
+
+        // An enum backed by a 64-bit integer, which Unity's serializer cannot handle (UAC1011).
+        private static bool IsUnsupportedWideEnum(IType? type)
+        {
+            if (type == null || !type.IsEnumType())
+                return false;
+
+            var underlyingType = (type.GetTypeElement() as IEnum)?.GetUnderlyingType();
+            if (underlyingType is not IDeclaredType declaredUnderlyingType)
+                return false;
+
+            var clrName = declaredUnderlyingType.GetClrName();
+            return Equals(clrName, PredefinedType.LONG_FQN) || Equals(clrName, PredefinedType.ULONG_FQN);
         }
 
         private static bool IsUnitySimplePredefined(IType type)
@@ -395,7 +500,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                     return isSerializableTypeDeclaration;
             }
 
-            return IsFieldTypeSerializable(property, hasSerializeReference, useSwea);
+            return IsFieldTypeSerializable(property, hasSerializeReference, hasSerializeField, useSwea);
         }
 
         // Best effort attempt at preventing false positives for type members that are actually being used inside a

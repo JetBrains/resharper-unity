@@ -36,6 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
         Unity2019_4,
         Unity2020_1,
         Unity2022_3,
+        Unity6000_6,
 
         // General rule: Keep the default version at the latest LTS Unity version
         // If you need a newer/specific version for a specific test, use [TestUnity(UnityVersion.Unity2020_1)], etc.
@@ -56,6 +57,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
         private static readonly Version ourDefaultVersion = ToVersion(UnityVersion.DefaultTestVersion);
         private static readonly Version ourMinNetworkingVersion = new(5, 5);
         private static readonly Version ourMaxNetworkingVersion = new(2018, 4, int.MaxValue);
+
+        // TestDataLibs packages are only published up to 2022.3. Newer Unity versions reuse the newest
+        // available package - we only need the API surface (MonoBehaviour, SerializeField) to resolve, not
+        // the exact revision. The Unity version the plugin sees comes from DefineConstants, not from here.
+        private static readonly Version ourMaxTestDataLibsVersion = new(2022, 3);
 
         private readonly Version myVersion;
 
@@ -151,6 +157,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
                 UnityVersion.Unity2019_4 => new Version(2019, 4, 0),
                 UnityVersion.Unity2020_1 => new Version(2020, 1, 0),
                 UnityVersion.Unity2022_3 => new Version(2022, 3, 0),
+                UnityVersion.Unity6000_6 => new Version(6000, 6, 0),
                 _ => throw new ArgumentOutOfRangeException(nameof(version), version, null)
             };
         }
@@ -159,6 +166,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
         {
             // Note that the .0 here doesn't mean e.g. Unity 2018.1.0f1, it's just the package number. The actual
             // revision used is irrelevant, as we're interested in resolving the API, not in minor fixes
+            if (version > ourMaxTestDataLibsVersion)
+                version = ourMaxTestDataLibsVersion;
             return $"{version.Major}.{version.Minor}.0";
         }
 

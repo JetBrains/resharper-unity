@@ -1,0 +1,137 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+public enum Mode { A, B }
+
+public enum BigMode : long { A, B }
+
+public interface IPayload { }
+
+public abstract class PayloadBase { }
+
+[Serializable]
+public class Payload : PayloadBase, IPayload
+{
+    public int ||Value|(0)|(1);
+}
+
+public class ||A|(2)|(3) : MonoBehaviour
+{
+    // Serialized
+    [SerializeField] private Dictionary<string, int> ||simple|(4)|(5);
+    [SerializeField] private Dictionary<string, List<int>> ||listValue|(6)|(7);
+    [SerializeField] private Dictionary<int, GameObject> ||objectValue|(8)|(9);
+    [SerializeField] private Dictionary<string, Payload> ||serializableValue|(10)|(11);
+
+    // Serialized: a dictionary-valued dictionary works at any depth
+    [SerializeField] private Dictionary<string, Dictionary<string, int>> ||nestedDictionary|(12)|(13);
+    [SerializeField] private Dictionary<string, Dictionary<string, Dictionary<string, int>>> ||doubleNestedDictionary|(14)|(15);
+
+    // Not serialized: collection-of-dictionary shapes (UAC1009)
+    [SerializeField] private List<Dictionary<string, int>> dictionaryInList;
+    [SerializeField] private Dictionary<string, int>[] dictionaryArray;
+
+    // Serialized: an unsupported value does not stop the field being serialized, only the values are dropped
+    [SerializeField] private Dictionary<string, List<Dictionary<string, int>>> ||listOfDictionaryAsValue|(16)|(17);
+    [SerializeField] private Dictionary<string, object> ||objectTypeValue|(18)|(19);
+
+    // Serialized key types. long is undocumented but round-trips a full 64-bit value
+    [SerializeField] private Dictionary<Mode, int> ||enumKey|(20)|(21);
+    [SerializeField] private Dictionary<Vector3, int> ||builtinStructKey|(22)|(23);
+    [SerializeField] private Dictionary<Payload, int> ||serializableClassKey|(24)|(25);
+    [SerializeField] private Dictionary<long, int> ||longKey|(26)|(27);
+
+    // Not serialized: collection key (UAC1013)
+    [SerializeField] private Dictionary<List<int>, int> collectionKey;
+
+    // Not serialized: enums must be 32 bits or smaller (UAC1011). The rule is general, not dictionary-specific
+    [SerializeField] private Dictionary<BigMode, int> bigEnumKey;
+    [SerializeField] private Dictionary<string, BigMode> bigEnumValue;
+    [SerializeField] private BigMode plainBigEnum;
+    [SerializeField] private List<BigMode> bigEnumList;
+    [SerializeField] private BigMode[] bigEnumArray;
+
+    // Serialized: controls proving the rule above is about enum width
+    [SerializeField] private Mode ||plainSmallEnum|(28)|(29);
+    [SerializeField] private List<Mode> ||smallEnumList|(30)|(31);
+
+    // Not serialized: interface or abstract key/value (UAC1012)
+    [SerializeField] private Dictionary<string, IPayload> interfaceValue;
+    [SerializeField] private Dictionary<string, PayloadBase> abstractValue;
+
+    // Not serialized: [SerializeReference] is not honoured for dictionaries (UAC1014), and does not substitute
+    // for [SerializeField] when used on its own
+    [SerializeField, SerializeReference] private Dictionary<string, IPayload> serializeReferenceDictionary;
+    [SerializeReference] private Dictionary<string, IPayload> serializeReferenceOnly;
+    [SerializeReference] private Dictionary<string, int> serializeReferenceOnlyValidTypes;
+
+    // Not serialized: serialization is opt-in, a public field is not enough (UAC1015)
+    public Dictionary<string, int> publicWithoutAttribute;
+    private Dictionary<string, int> privateWithoutAttribute;
+    [SerializeField] private readonly Dictionary<string, int> readonlyWithAttribute;
+
+    // Serialized: contrast case - a public List<T> IS serialized without [SerializeField]
+    public List<int> ||publicListControl|(32)|(33);
+
+    // [field: SerializeField] serializes the backing field of an auto property, so the same dictionary rules
+    // apply. Only a writable, non-static, attributed property qualifies.
+    [field: SerializeField] public Dictionary<string, int> ||SerializedDictionaryProperty|(34)|(35) { get; set; }
+    [field: SerializeField] public Dictionary<List<int>, int> SerializedBadKeyProperty { get; set; }
+    [field: SerializeField] public Dictionary<string, int> GetOnlyDictionaryProperty { get; }
+    public Dictionary<string, int> PlainDictionaryProperty { get; set; }
+}
+
+// Unity tolerates a type parameter in T[] and List<T>, but not as a dictionary key or value (UAC1016).
+public class ||G|(36)|(37)<T> : MonoBehaviour
+{
+    [SerializeField] private T[] ||arrayOfT|(38)|(39);
+    [SerializeField] private List<T> ||listOfT|(40)|(41);
+
+    [SerializeField] private Dictionary<string, T> dictionaryValueOfT;
+    [SerializeField] private Dictionary<T, int> dictionaryKeyOfT;
+}
+
+---------------------------------------------------------
+(0): ReSharper Unity Implicitly Used Identifier: 
+(1): Unity Gutter Icon: This field is serialized by Unity
+(2): ReSharper Unity Implicitly Used Identifier: 
+(3): Unity Gutter Icon: Unity script
+(4): ReSharper Unity Implicitly Used Identifier: 
+(5): Unity Gutter Icon: This field is initialized from Inspector
+(6): ReSharper Unity Implicitly Used Identifier: 
+(7): Unity Gutter Icon: This field is initialized from Inspector
+(8): ReSharper Unity Implicitly Used Identifier: 
+(9): Unity Gutter Icon: This field is initialized from Inspector
+(10): ReSharper Unity Implicitly Used Identifier: 
+(11): Unity Gutter Icon: This field is initialized from Inspector
+(12): ReSharper Unity Implicitly Used Identifier: 
+(13): Unity Gutter Icon: This field is initialized from Inspector
+(14): ReSharper Unity Implicitly Used Identifier: 
+(15): Unity Gutter Icon: This field is initialized from Inspector
+(16): ReSharper Unity Implicitly Used Identifier: 
+(17): Unity Gutter Icon: This field is initialized from Inspector
+(18): ReSharper Unity Implicitly Used Identifier: 
+(19): Unity Gutter Icon: This field is initialized from Inspector
+(20): ReSharper Unity Implicitly Used Identifier: 
+(21): Unity Gutter Icon: This field is initialized from Inspector
+(22): ReSharper Unity Implicitly Used Identifier: 
+(23): Unity Gutter Icon: This field is initialized from Inspector
+(24): ReSharper Unity Implicitly Used Identifier: 
+(25): Unity Gutter Icon: This field is initialized from Inspector
+(26): ReSharper Unity Implicitly Used Identifier: 
+(27): Unity Gutter Icon: This field is initialized from Inspector
+(28): ReSharper Unity Implicitly Used Identifier: 
+(29): Unity Gutter Icon: This field is initialized from Inspector
+(30): ReSharper Unity Implicitly Used Identifier: 
+(31): Unity Gutter Icon: This field is initialized from Inspector
+(32): ReSharper Unity Implicitly Used Identifier: 
+(33): Unity Gutter Icon: This field is initialized from Inspector
+(34): ReSharper Unity Implicitly Used Identifier: 
+(35): Unity Gutter Icon: This field is initialized from Inspector
+(36): ReSharper Unity Implicitly Used Identifier: 
+(37): Unity Gutter Icon: Unity script
+(38): ReSharper Unity Implicitly Used Identifier: 
+(39): Unity Gutter Icon: This field is initialized from Inspector
+(40): ReSharper Unity Implicitly Used Identifier: 
+(41): Unity Gutter Icon: This field is initialized from Inspector

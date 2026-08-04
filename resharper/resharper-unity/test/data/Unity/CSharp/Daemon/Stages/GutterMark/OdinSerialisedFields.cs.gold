@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
@@ -33,28 +33,28 @@ public class ||TestSerializedScriptableObject|(4)|(5) : SerializedScriptableObje
     // [OdinSerialize] overrules [NonSerialized] (Odin behavior)
     [NonSerialized, OdinSerialize] public int ||NonSerializedOdinSerialize|(12)|(13);
     // Public field of a type Unity can't serialize => Odin handles it
-    public Dictionary<string, string> PublicDictionary;
+    public Dictionary<string, string> ||PublicDictionary|(14)|(15);
     // [OdinSerialize] on a private field of a Unity-non-serializable type
-    [OdinSerialize] private Dictionary<string, int> ||OdinSerializedDictionary|(14)|(15);
+    [OdinSerialize] private Dictionary<string, int> ||OdinSerializedDictionary|(16)|(17);
     // Private field of a non-Unity-serializable type without attributes => not serialized
     private Dictionary<string, string> PrivateDictionary;
 }
 
 // SerializedMonoBehaviour - secondary repro case.
-public class ||TestSerializedMonoBehaviour|(16)|(17) : SerializedMonoBehaviour
+public class ||TestSerializedMonoBehaviour|(18)|(19) : SerializedMonoBehaviour
 {
-    public int ||PublicField|(18)|(19);
-    [SerializeField] private int ||PrivateSerializeField|(20)|(21);
+    public int ||PublicField|(20)|(21);
+    [SerializeField] private int ||PrivateSerializeField|(22)|(23);
     private int PrivateField;
-    [OdinSerialize] private int ||OdinSerializedPrivate|(22)|(23);
+    [OdinSerialize] private int ||OdinSerializedPrivate|(24)|(25);
     [NonSerialized] public int NonSerializedPublic;
-    public Dictionary<string, string> PublicDictionary;
+    public Dictionary<string, string> ||PublicDictionary|(26)|(27);
 }
 
 // Plain MonoBehaviour - control case: [OdinSerialize] does nothing outside Odin-derived types.
-public class ||TestPlainMonoBehaviour|(24)|(25) : MonoBehaviour
+public class ||TestPlainMonoBehaviour|(28)|(29) : MonoBehaviour
 {
-    public int ||PublicField|(26)|(27);
+    public int ||PublicField|(30)|(31);
     private int PrivateField;
     [OdinSerialize] private int OdinSerializedPrivate;
 }
@@ -77,14 +77,18 @@ public class ||TestPlainMonoBehaviour|(24)|(25) : MonoBehaviour
 (14): ReSharper Unity Implicitly Used Identifier: 
 (15): Unity Odin Gutter Icon: This field is serialized by Odin
 (16): ReSharper Unity Implicitly Used Identifier: 
-(17): Unity Gutter Icon: Unity script
+(17): Unity Odin Gutter Icon: This field is serialized by Odin
 (18): ReSharper Unity Implicitly Used Identifier: 
-(19): Unity Gutter Icon: This field is initialized from Inspector
+(19): Unity Gutter Icon: Unity script
 (20): ReSharper Unity Implicitly Used Identifier: 
 (21): Unity Gutter Icon: This field is initialized from Inspector
 (22): ReSharper Unity Implicitly Used Identifier: 
-(23): Unity Odin Gutter Icon: This field is serialized by Odin
+(23): Unity Gutter Icon: This field is initialized from Inspector
 (24): ReSharper Unity Implicitly Used Identifier: 
-(25): Unity Gutter Icon: Unity script
+(25): Unity Odin Gutter Icon: This field is serialized by Odin
 (26): ReSharper Unity Implicitly Used Identifier: 
-(27): Unity Gutter Icon: This field is initialized from Inspector
+(27): Unity Odin Gutter Icon: This field is serialized by Odin
+(28): ReSharper Unity Implicitly Used Identifier: 
+(29): Unity Gutter Icon: Unity script
+(30): ReSharper Unity Implicitly Used Identifier: 
+(31): Unity Gutter Icon: This field is initialized from Inspector

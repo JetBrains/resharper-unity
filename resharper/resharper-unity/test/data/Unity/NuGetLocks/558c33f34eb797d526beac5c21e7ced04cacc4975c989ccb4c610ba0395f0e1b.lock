@@ -1,0 +1,4 @@
+﻿# Please commit this file, it's crucial for tests stability. Even if you believe it's not yours, it still needs to be committed.
+# Input (NuGetFramework=net35):
+# JetBrains.Annotations [2026.2.0]
+JetBrains.Annotations 2026.2.0
