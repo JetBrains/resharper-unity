@@ -18,6 +18,7 @@
          * https://github.com/dotnet/sdk/issues/803
          * https://github.com/dotnet/sdk/issues/802 -->
     <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);obj\**</DefaultItemExcludes>
 
     <!-- Use a per-project bin folder, again outside of the project folder to avoid wildcard inclusion. We'll use this
          for all non-plugin projects, and also the tests, which need to be in their own separate folders so they can be
