@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Debugger.Host.Debu
                     EmptyList<DebuggerOutputAssemblyInfo>.Instance);
             }
 
-            return lifetime.StartBackgroundRead(() =>
+            return lifetime.StartReadActionAsync(() =>
                 (IReadOnlyList<DebuggerOutputAssemblyInfo>) GetOutputAssembliesInfoInternal()
                     .ToList());
         }
