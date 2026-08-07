@@ -26,18 +26,11 @@ import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntityBuilder
 internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData) : UnityPackageEntity,
     WorkspaceEntityBase(dataSource) {
 
-    private companion object {
-
-        private val connections = listOf<ConnectionId>()
-
-    }
-
     override val descriptor: UnityPackage
         get() {
             readField("descriptor")
             return dataSource.descriptor
         }
-
     override val entitySource: EntitySource
         get() {
             readField("entitySource")
@@ -45,9 +38,8 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
         }
 
     override fun connectionIdList(): List<ConnectionId> {
-        return connections
+        return emptyList()
     }
-
 
     internal class Builder(result: UnityPackageEntityData?) :
         ModifiableWorkspaceEntityBase<UnityPackageEntity, UnityPackageEntityData>(result), UnityPackageEntityBuilder {
@@ -70,7 +62,7 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
             this.currentEntityData = null
 // Process linked entities that are connected without a builder
             processLinkedEntities(builder)
-            checkInitialization() // TODO uncomment and check failed tests
+            checkInitialization()
         }
 
         private fun checkInitialization() {
@@ -84,7 +76,7 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
         }
 
         override fun connectionIdList(): List<ConnectionId> {
-            return connections
+            return emptyList()
         }
 
         // Relabeling code, move information from dataSource to this builder
@@ -95,14 +87,12 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
             updateChildToParentReferences(parents)
         }
 
-
         override var entitySource: EntitySource
             get() = getEntityData().entitySource
             set(value) {
                 checkModificationAllowed()
                 getEntityData(true).entitySource = value
                 changedProperty.add("entitySource")
-
             }
         override var descriptor: UnityPackage
             get() = getEntityData().descriptor
@@ -110,20 +100,16 @@ internal class UnityPackageEntityImpl(private val dataSource: UnityPackageEntity
                 checkModificationAllowed()
                 getEntityData(true).descriptor = value
                 changedProperty.add("descriptor")
-
             }
 
         override fun getEntityClass(): Class<UnityPackageEntity> = UnityPackageEntity::class.java
     }
-
 }
 
 @OptIn(WorkspaceEntityInternalApi::class)
 internal class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
     lateinit var descriptor: UnityPackage
-
     internal fun isDescriptorInitialized(): Boolean = ::descriptor.isInitialized
-
     override fun wrapAsModifiable(diff: MutableEntityStorage): WorkspaceEntityBuilder<UnityPackageEntity> {
         val modifiable = UnityPackageEntityImpl.Builder(null)
         modifiable.diff = diff

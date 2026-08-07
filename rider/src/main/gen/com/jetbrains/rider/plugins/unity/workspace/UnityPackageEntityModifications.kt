@@ -17,7 +17,7 @@ interface UnityPackageEntityBuilder : WorkspaceEntityBuilder<UnityPackageEntity>
 }
 
 internal object UnityPackageEntityType : EntityType<UnityPackageEntity, UnityPackageEntityBuilder>() {
-    override val entityClass: Class<UnityPackageEntity> get() = UnityPackageEntity::class.java
+    override val entityImplClass: Class<*> get() = UnityPackageEntityImpl::class.java
     override val entityImplBuilderClass: Class<*> get() = UnityPackageEntityImpl.Builder::class.java
     operator fun invoke(
         descriptor: UnityPackage,

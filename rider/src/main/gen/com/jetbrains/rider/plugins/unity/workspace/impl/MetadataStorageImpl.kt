@@ -14,9 +14,7 @@ internal object MetadataStorageImpl : MetadataStorageBase() {
         val primitiveTypeStringNotNullable = ValueTypeMetadata.SimpleType.PrimitiveType(isNullable = false, type = "String")
         val primitiveTypeListNotNullable = ValueTypeMetadata.SimpleType.PrimitiveType(isNullable = false, type = "List")
         val primitiveTypeStringNullable = ValueTypeMetadata.SimpleType.PrimitiveType(isNullable = true, type = "String")
-
         var typeMetadata: StorageTypeMetadata
-
         typeMetadata = FinalClassMetadata.ObjectMetadata(
             fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater\$RiderUnityPackageEntitySource",
             properties = listOf(
@@ -37,9 +35,7 @@ internal object MetadataStorageImpl : MetadataStorageBase() {
                 "com.jetbrains.rider.projectView.workspace.RiderEntitySource"
             )
         )
-
         addMetadata(typeMetadata)
-
         typeMetadata = EntityMetadata(
             fqName = "com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity",
             entityDataFqName = "com.jetbrains.rider.plugins.unity.workspace.impl.UnityPackageEntityData",
@@ -212,7 +208,6 @@ internal object MetadataStorageImpl : MetadataStorageBase() {
             extProperties = listOf(),
             isAbstract = false
         )
-
         addMetadata(typeMetadata)
     }
 
