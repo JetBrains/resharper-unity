@@ -24,7 +24,7 @@ jvm_library(
         "@community//platform/kernel/shared:kernel",
         "@community//libraries/kotlinx/serialization/core",
         "@community//platform/xdebugger-impl/rpc",
-        "@lib//:jetbrains-annotations",
+        "@community//libraries/jetbrains/annotations",
         "@community//fleet/rhizomedb",
     ],
 )
@@ -46,6 +46,7 @@ jvm_library(
         "@community//platform/kernel/shared:kernel_test_lib",
         "@community//libraries/kotlinx/serialization/core:core_test_lib",
         "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
+        "@community//libraries/jetbrains/annotations:annotations_test_lib",
         "@community//fleet/rhizomedb:rhizomedb_test_lib",
     ],
 )
