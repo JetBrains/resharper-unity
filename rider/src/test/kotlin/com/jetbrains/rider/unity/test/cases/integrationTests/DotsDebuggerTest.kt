@@ -124,6 +124,10 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V2022)
 class DotsDebuggerTestUnity2022 : DotsDebuggerTest() {
+    init {
+        addMute(Mute("RIDER-141685"), ::checkBreakpointInDOTSCode)
+        addMute(Mute("RIDER-141685"), ::checkRefPresentationInDOTSCode)
+    }
 }
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
@@ -132,6 +136,7 @@ class DotsDebuggerTestUnity2022 : DotsDebuggerTest() {
 class DotsDebuggerTestUnity6 : DotsDebuggerTest() {
     init {
         addMute(Mute("RIDER-133998"), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-141685"), ::checkRefPresentationInDOTSCode)
     }
 }
 
@@ -139,10 +144,18 @@ class DotsDebuggerTestUnity6 : DotsDebuggerTest() {
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_2)
 class DotsDebuggerTestUnity6_2 : DotsDebuggerTest() {
+    init {
+        addMute(Mute("RIDER-141685"), ::checkBreakpointInDOTSCode)
+        addMute(Mute("RIDER-141685"), ::checkRefPresentationInDOTSCode)
+    }
 }
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class DotsDebuggerTestUnity6_3 : DotsDebuggerTest() {
+    init {
+        addMute(Mute("RIDER-141685"), ::checkBreakpointInDOTSCode)
+        addMute(Mute("RIDER-141685"), ::checkRefPresentationInDOTSCode)
+    }
 }
