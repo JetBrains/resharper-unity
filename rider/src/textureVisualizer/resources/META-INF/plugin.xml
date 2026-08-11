@@ -2,7 +2,7 @@
   <id>com.jetbrains.rider.plugins.unity.debugger.textureVisualizer</id>
   <name>Texture visualizer for Unity debugger</name>
   <vendor>JetBrains</vendor>
-  <category>Other Tools</category>
+  <category>Game Development</category>
   <description><![CDATA[
     <p>Allows rendering textures during Unity project debugging.</p>
 ]]></description>
