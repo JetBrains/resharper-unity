@@ -139,4 +139,29 @@ class UnityPlayerDebuggerTest {
             addMute(Mute("RIDER-127915", platforms = arrayOf(PlatformType.MAC_OS_ALL)), ::checkBreakpoint)
         }
     }
+    
+    // Add mutes for macOS when 6.7 are installed
+    @Nested
+    @UnityTestSettings(unityVersion = UnityVersion.V6_7, unityBackend = UnityBackend.CoreCLR)
+    inner class TestCoreCLRUnityBuild6_7 : UnityPlayerDebuggerTestBase(){
+        init {
+            addMute(Mute("RIDER-141762"), ::checkBreakpoint)
+        }
+    }
+
+    @Nested
+    @UnityTestSettings(unityVersion = UnityVersion.V6_7, unityBackend = UnityBackend.Mono)
+    inner class TestMonoUnityBuild6_7 : UnityPlayerDebuggerTestBase(){
+        init {
+            addMute(Mute("RIDER-141762"), ::checkBreakpoint)
+        }
+    }
+    
+    @Nested
+    @UnityTestSettings(unityVersion = UnityVersion.V6_7, unityBackend = UnityBackend.Il2CPP)
+    inner class TestIL2CPPUnityBuild6_7 : UnityPlayerDebuggerTestBase(){
+        init {
+            addMute(Mute("RIDER-141762"), ::checkBreakpoint)
+        }
+    }
 }

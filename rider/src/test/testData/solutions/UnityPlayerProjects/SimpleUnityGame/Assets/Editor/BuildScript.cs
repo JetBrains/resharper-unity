@@ -37,12 +37,19 @@ public class BuildScript
                 PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, ScriptingImplementation.Mono2x);
                 Debug.Log("Using backend: Mono");
             }
+            else if (backendArg.Equals("CoreCLR", System.StringComparison.OrdinalIgnoreCase))
+            {
+                PlayerSettings.SetScriptingBackend(
+                    BuildTargetGroup.Standalone,
+                    ScriptingImplementation.CoreCLR);
+            
+                Debug.Log("Using backend: CoreCLR");
+            }
             else
             {
                 Debug.LogWarning($"Unknown backend '{backendArg}', fallback to project default");
             }
         }
-
 
          BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
          {
