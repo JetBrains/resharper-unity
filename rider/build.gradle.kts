@@ -91,7 +91,9 @@ val textureDebuggerDllFiles = files(
 
 val pausePointDllFiles = files(
     "../resharper/build/pausepoint-helper/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.dll",
-    "../resharper/build/pausepoint-helper/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.pdb"
+    "../resharper/build/pausepoint-helper/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.pdb",
+    "../resharper/build/pausepoint-helper.DotNetCore/bin/$buildConfiguration/net5.0/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.DotNetCore.dll",
+    "../resharper/build/pausepoint-helper.DotNetCore/bin/$buildConfiguration/net5.0/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.DotNetCore.pdb"
 )
 
 val listIosUsbDevicesFiles = files(

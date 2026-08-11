@@ -223,6 +223,9 @@ fun getUnityBundlesList(): List<UnityBundleInfo> {
     val pausePointAssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper"
     val pauseBreakpointBundle = UnityPluginEnvironment.getBundledFile("$pausePointAssemblyName.dll", "DotFiles")
 
+    val pausePointAssemblyNameCore = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.DotNetCore"
+    val pauseBreakpointBundleCore = UnityPluginEnvironment.getBundledFile("$pausePointAssemblyNameCore.dll", "DotFiles")
+
     val textureHelperAssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture"
     val textureHelperBundle = UnityPluginEnvironment.getBundledFile("$textureHelperAssemblyName.dll", "DotFiles")
 
@@ -231,6 +234,7 @@ fun getUnityBundlesList(): List<UnityBundleInfo> {
 
     return listOf(
         UnityBundleInfo(pausePointAssemblyName, pauseBreakpointBundle.absolutePath),
+        UnityBundleInfo(pausePointAssemblyNameCore, pauseBreakpointBundleCore.absolutePath),
         UnityBundleInfo(textureHelperAssemblyName, textureHelperBundle.absolutePath),
         UnityBundleInfo(textureHelperAssemblyNameCore, textureHelperBundleCore.absolutePath),
     )

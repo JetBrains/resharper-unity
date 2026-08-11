@@ -50,7 +50,8 @@ public class CompileDebuggerToolsBuildStep
             var textureUtilsOutputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "texture-debugger" / "bin" / "Release" / "net472";
             var textureUtilsDotNetCoreOutputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "texture-debugger.DotNetCore" / "bin" / "Release" / "net5.0";
             var pausePointUtilsOutputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "pausepoint-helper" / "bin" / "Release" / "net472";
-        
+            var pausePointUtilsDotNetCoreOutputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "pausepoint-helper.DotNetCore" / "bin" / "Release" / "net5.0";
+
             // TODO sign artifacts
             
             return new SubplatformFileForPackaging[]
@@ -67,6 +68,9 @@ public class CompileDebuggerToolsBuildStep
 
                 new(subplatform.Name, ImmutableFileItem.CreateFromDisk(pausePointUtilsOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.dll")),
                 new(subplatform.Name, ImmutableFileItem.CreateFromDisk(pausePointUtilsOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.pdb")),
+
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(pausePointUtilsDotNetCoreOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.DotNetCore.dll")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(pausePointUtilsDotNetCoreOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.DotNetCore.pdb")),
             };
         }
 

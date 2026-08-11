@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "texture-debugger.DotNetCore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pausepoint-helper", "..\debugger\pausepoint-helper\pausepoint-helper.csproj", "{C410B5D6-845A-4081-A083-0939875684DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pausepoint-helper.DotNetCore", "..\debugger\pausepoint-helper\pausepoint-helper.DotNetCore.csproj", "{33C69B3D-029D-4753-8FEE-382A37F1BFC9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\debugger\usbmuxd\usbmuxd.projitems*{4e49cd68-6ba2-4765-80ac-d82537a0996b}*SharedItemsImports = 5
@@ -130,6 +132,10 @@ Global
 		{570728AF-D2E2-48A0-8220-FF848405BCD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{570728AF-D2E2-48A0-8220-FF848405BCD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{570728AF-D2E2-48A0-8220-FF848405BCD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33C69B3D-029D-4753-8FEE-382A37F1BFC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33C69B3D-029D-4753-8FEE-382A37F1BFC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33C69B3D-029D-4753-8FEE-382A37F1BFC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33C69B3D-029D-4753-8FEE-382A37F1BFC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +160,7 @@ Global
 		{DF886D30-1FE9-4296-9202-BCE567BFF2E5} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
 		{C410B5D6-845A-4081-A083-0939875684DC} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
 		{570728AF-D2E2-48A0-8220-FF848405BCD4} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
+		{33C69B3D-029D-4753-8FEE-382A37F1BFC9} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F132919A-F861-4C4F-923A-C956B82D9EE6}
