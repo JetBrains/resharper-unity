@@ -1,4 +1,3 @@
-using Autofac;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Lifetimes;
 using Mono.Debugging.Autofac;
@@ -7,7 +6,7 @@ using Mono.Debugging.Client;
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Exceptions
 {
     [DebuggerSessionComponent]
-    public class UnityUnhandledExceptionHandler : IStartable
+    public class UnityUnhandledExceptionHandler : IDebuggerStartable
     {
         private readonly IDebuggerSession mySession;
         private readonly Lifetime myLifetime;
