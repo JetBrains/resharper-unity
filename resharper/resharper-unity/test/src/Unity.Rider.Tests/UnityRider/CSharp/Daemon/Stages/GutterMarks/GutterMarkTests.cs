@@ -23,7 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRider.CSharp.Daemon
         // IMPORTANT! Keep in sync with equivalent class in Unity.Tests
         // ********************************************************************
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test] 
+        [UnityPluginChecklist ("Unity Guttermarks")]
+        public void Test01() { DoNamedTest(); }
 
         [Test, TestUnity(UnityVersion.Unity2019_4)] public void TestGenericSerialisedFields_2019_4() { DoNamedTest2(); }
         [Test, TestUnity(UnityVersion.Unity2020_1)] public void TestGenericSerialisedFields_2020_1() { DoNamedTest2(); }
