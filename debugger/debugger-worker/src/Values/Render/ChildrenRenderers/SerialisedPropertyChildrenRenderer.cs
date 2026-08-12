@@ -6,6 +6,7 @@ using System.Threading;
 using JetBrains.Annotations;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.Render.ChildrenRenderers;
@@ -16,13 +17,29 @@ using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.MetadataLite.API.Selectors;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorSerializedPropertyChildrenRenderer : SerializedPropertyChildrenRenderer<ICorValue>
+    {
+        public CorSerializedPropertyChildrenRenderer(IUnityOptions unityOptions) : base(unityOptions)
+        {
+        }
+    }
+
+    [DebuggerSessionComponent(typeof(SoftDebuggerType))]
+    public class MonoSerializedPropertyChildrenRenderer : SerializedPropertyChildrenRenderer<Value>
+    {
+        public MonoSerializedPropertyChildrenRenderer(IUnityOptions unityOptions) : base(unityOptions)
+        {
+        }
+    }
+    
     // Replaces the default children renderer for UnityEditor.SerializedProperty. Filters out properties that are not
     // relevant to the property (e.g. longValue for a string property). Also adds a "Children" group for complex objects
     // and a group for array or fixed size buffer elements.
-    [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class SerializedPropertyChildrenRenderer<TValue> : FilteredObjectChildrenRendererBase<TValue>
         where TValue : class
     {
@@ -31,7 +48,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
         private readonly ISet<SerializedPropertyKind> myHandledPropertyTypes;
         private readonly ISet<string> myKnownFieldNames;
 
-        public SerializedPropertyChildrenRenderer(IUnityOptions unityOptions)
+        protected SerializedPropertyChildrenRenderer(IUnityOptions unityOptions)
         {
             myUnityOptions = unityOptions;
             myPerTypeFieldNames = GetPerTypeFieldNames();

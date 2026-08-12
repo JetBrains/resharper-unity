@@ -9,11 +9,10 @@ using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.MetadataLite.API;
-using Mono.Debugging.Soft;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
-    [DebuggerSessionComponent(typeof(SoftDebuggerType))]
+    [DebuggerSessionComponent]
     public class ExtraDetailPresenter<TValue> : ValuePresenterBase<TValue, IValueRole<TValue>>
         where TValue : class
     {
