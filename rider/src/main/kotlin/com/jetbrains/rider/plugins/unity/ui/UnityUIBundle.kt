@@ -5,18 +5,16 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
-class UnityUIBundle : DynamicBundle(BUNDLE) {
-    companion object {
-        @NonNls
-        private const val BUNDLE = "messages.UnityUIBundle"
-        private val INSTANCE: UnityUIBundle = UnityUIBundle()
+object UnityUIBundle {
+  @NonNls
+  private const val BUNDLE = "messages.UnityUIBundle"
+  private val instance = DynamicBundle(UnityUIBundle::class.java, BUNDLE)
 
-        @Nls
-        fun message(
-            @PropertyKey(resourceBundle = BUNDLE) key: String,
-            vararg params: Any
-        ): String {
-            return INSTANCE.getMessage(key, *params)
-        }
-    }
+  @Nls
+  fun message(
+    @PropertyKey(resourceBundle = BUNDLE) key: String,
+    vararg params: Any
+  ): String {
+    return instance.getMessage(key, *params)
+  }
 }

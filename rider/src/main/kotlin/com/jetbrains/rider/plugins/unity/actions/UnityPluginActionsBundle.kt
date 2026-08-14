@@ -5,18 +5,16 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
-class UnityPluginActionsBundle : DynamicBundle(BUNDLE) {
-    companion object {
-        @NonNls
-        private const val BUNDLE = "messages.UnityPluginActionsBundle"
-        private val INSTANCE: UnityPluginActionsBundle = UnityPluginActionsBundle()
+object UnityPluginActionsBundle {
+  @NonNls
+  private const val BUNDLE = "messages.UnityPluginActionsBundle"
+  private val instance = DynamicBundle(UnityPluginActionsBundle::class.java, BUNDLE)
 
-        @Nls
-        fun message(
-            @PropertyKey(resourceBundle = BUNDLE) key: String,
-            vararg params: Any
-        ): String {
-            return INSTANCE.getMessage(key, *params)
-        }
-    }
+  @Nls
+  fun message(
+    @PropertyKey(resourceBundle = BUNDLE) key: String,
+    vararg params: Any
+  ): String {
+    return instance.getMessage(key, *params)
+  }
 }
