@@ -1,4 +1,5 @@
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Settings;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
@@ -13,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
     public class HlslKeywordsCodeCompletionTest : ShaderLabCodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
+        protected override LookupListSorting Sorting => LookupListSorting.Alphabetically;
 
         protected override bool CheckAutomaticCompletionDefault() => true;
 

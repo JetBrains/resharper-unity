@@ -353,13 +353,13 @@ tile_static
 ##### ALPHABETIC SORT #####
 
                             [Light, Generic]
-CANDIDATE_TYPE              <==
+CANDIDATE_TYPE
 COMMITTED_STATUS
 DWORD
 FLOAT
 MATRIX
 RAY_FLAG
-SamplerComparisonState
+SamplerComparisonState      <==
 SamplerState
 VECTOR
 bool

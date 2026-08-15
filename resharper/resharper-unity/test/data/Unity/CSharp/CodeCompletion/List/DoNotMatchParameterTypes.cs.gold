@@ -25,8 +25,8 @@ TextureG̣enerationỌutput |(in UnityEditor.Experimental.AssetImporters)
 ##### ALPHABETIC SORT #####
 
                             [Light, Generic]
-G̣UILayoutỌption             <==
-G̣ameỌbject
+G̣UILayoutỌption
+G̣ameỌbject                  <==
 ParticleSystemG̣ameỌbjectFilter
                             [Full, Generic]
 AddedG̣ameỌbject |(in UnityEditor.SceneManagement)

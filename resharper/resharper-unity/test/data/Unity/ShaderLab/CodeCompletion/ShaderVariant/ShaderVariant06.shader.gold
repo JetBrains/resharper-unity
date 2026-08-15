@@ -25,7 +25,7 @@ SHADER_̣API_VULKAN
 ##### ALPHABETIC SORT #####
 
                             [Light, Generic]
-SHADER_̣API_D3D11_9X         <==
+SHADER_̣API_D3D11_9X
 SHADER_̣API_GLCORE
 SHADER_̣API_GLES
 SHADER_̣API_GLES3

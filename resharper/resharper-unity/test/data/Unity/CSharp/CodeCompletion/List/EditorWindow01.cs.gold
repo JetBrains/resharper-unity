@@ -1,5 +1,5 @@
 ﻿Completion: Basic
-Count: 1075
+Count: 4547
 Focus: Hard
 Auto-accept: AutoAcceptWithReplace
 Rules: [\w] => add_to_prefix
@@ -1084,16 +1084,24 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
-                            [ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, NotObsolete, ObsoleteRuleApplied^, NormalSelectionPriority, FromFullEvaluation, Other^]
+                            [ExpectedTypeMatchStaticMember, ExpectedTypeMatchInitializer, ExpectedTypeMatchKeyword, GenerateItems, NonStatic, NotObsolete, NormalSelectionPriority, FromFullEvaluation]
 public override |Equals|(object) { … }    bool    OrderStr=Equals
 public override |GetExtraPaneTypes|() { … }    IEnumerable<Type>    OrderStr=GetExtraPaneTypes
 public override |GetHashCode|() { … }    int    OrderStr=GetHashCode
 public override |ToString|() { … }    string    OrderStr=ToString
+                            [TypesAndNamespaces, NotImportedType, NotObsolete, NormalSelectionPriority, FromFullEvaluation]
+AIUpdate |(in UnityEngine.PlayerLoop.PreUpdate)
+AIUpdatePostScript |(in UnityEngine.PlayerLoop.PreLateUpdate)
+APIUpdaterRuntimeServices |(in UnityEngineInternal)
+ARBackgroundRenderer |(in UnityEngine.XR)
+ARRenderMode |(in UnityEngine.XR)
+ASCIIEncoding |(in System.Text)
+.. +4537 more items ..
 
 ##### ALPHABETIC SORT #####
 
                             [Light, Generic]
-A                           <==
+A
 AOT
 AccelerationEvent
 ActionOnDotNetUnhandledException
@@ -1215,7 +1223,7 @@ AvatarIKHint
 AvatarMask
 AvatarMaskBodyPart
 AvatarTarget
-private |Awake|() { ... }    OrderStr=Awake()
+private |Awake|() { ... }    OrderStr=Awake()    <==
 BatteryStatus
 BeforeRenderOrderAttribute
 Behaviour
@@ -2165,7 +2173,14 @@ virtual
 void
 volatile
                             [Full, Generic]
-public override |Equals|(object) { … }    bool    OrderStr=Equals
-public override |GetExtraPaneTypes|() { … }    IEnumerable<Type>    OrderStr=GetExtraPaneTypes
-public override |GetHashCode|() { … }    int    OrderStr=GetHashCode
-public override |ToString|() { … }    string    OrderStr=ToString
+AIUpdate |(in UnityEngine.PlayerLoop.PreUpdate)
+AIUpdatePostScript |(in UnityEngine.PlayerLoop.PreLateUpdate)
+APIUpdaterRuntimeServices |(in UnityEngineInternal)
+ARBackgroundRenderer |(in UnityEngine.XR)
+ARRenderMode |(in UnityEngine.XR)
+ASCIIEncoding |(in System.Text)
+AbandonedMutexException |(in System.Threading)
+AccessControlActions |(in System.Security.AccessControl)
+AccessControlModification |(in System.Security.AccessControl)
+AccessControlSections |(in System.Security.AccessControl)
+.. +4537 more items ..
