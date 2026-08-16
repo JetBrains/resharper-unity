@@ -81,6 +81,7 @@ exports_files(
     [
         "intellij.rider.plugins.unity.css.iml",
         "resources/intellij.rider.plugins.unity.css.xml",
+        "resources/uss/element-descriptors.xml",
     ],
     visibility = ["//visibility:public"],
 )

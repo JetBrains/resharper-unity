@@ -189,6 +189,8 @@ jvm_library(
 exports_files(
     [
         "intellij.rider.plugins.unity.backend.iml",
+        "resources/colorSchemes/UnityDarcula.xml",
+        "resources/colorSchemes/UnityDefault.xml",
         "resources/intellij.rider.plugins.unity.backend.xml",
     ],
     visibility = ["//visibility:public"],
