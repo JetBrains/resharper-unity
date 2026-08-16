@@ -80,6 +80,7 @@ jvm_library(
 exports_files(
     [
         "intellij.rider.plugins.unity.css.iml",
+        "resources/intellij.rider.plugins.unity.css.xml",
     ],
     visibility = ["//visibility:public"],
 )

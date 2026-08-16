@@ -55,6 +55,7 @@ jvm_library(
 exports_files(
     [
         "intellij.rider.plugins.unity.javascript.iml",
+        "resources/intellij.rider.plugins.unity.javascript.xml",
     ],
     visibility = ["//visibility:public"],
 )

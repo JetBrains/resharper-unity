@@ -80,6 +80,7 @@ jvm_library(
 exports_files(
     [
         "intellij.rider.plugins.unity.debugger.textureVisualizer.backend.iml",
+        "resources/intellij.rider.plugins.unity.debugger.textureVisualizer.backend.xml",
     ],
     visibility = ["//visibility:public"],
 )

@@ -99,6 +99,7 @@ jvm_library(
 exports_files(
     [
         "intellij.rider.plugins.unity.yaml.iml",
+        "resources/intellij.rider.plugins.unity.yaml.xml",
     ],
     visibility = ["//visibility:public"],
 )

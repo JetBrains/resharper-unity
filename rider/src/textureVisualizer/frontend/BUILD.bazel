@@ -89,6 +89,7 @@ jvm_library(
 exports_files(
     [
         "intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.iml",
+        "resources/intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.xml",
     ],
     visibility = ["//visibility:public"],
 )

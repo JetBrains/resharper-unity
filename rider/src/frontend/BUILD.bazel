@@ -36,6 +36,7 @@ jvm_library(
 exports_files(
     [
         "intellij.rider.plugins.unity.frontend.iml",
+        "resources/intellij.rider.plugins.unity.frontend.xml",
     ],
     visibility = ["//visibility:public"],
 )
