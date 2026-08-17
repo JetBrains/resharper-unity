@@ -50,7 +50,7 @@ import kotlin.io.path.name
 class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     override val advancedSettings: AdvancedSettingsList
-        get() = AdvancedSettingsList(boolSettings = mapOf(("repository.view.enabled" to false)))
+        get() = AdvancedSettingsList(boolSettings = mapOf(("repository.view.enabled.v2" to false)))
 
     override fun modifyOpenSolutionParams(params: OpenSolutionParams) {
         super.modifyOpenSolutionParams(params)
