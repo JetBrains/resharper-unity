@@ -91,7 +91,8 @@ class DefaultRunConfigurationGenerator {
                             exePath.toFile().canonicalPath,
                             session.project.solutionDirectory.canonicalPath,
                             mutableListOf<String>().withProjectPath(session.project).withDebugCodeOptimization().toProgramParameters(),
-                            runManager)
+                            runManager,
+                            isEditor = true)
 
                         createOrUpdateUnityExeRunConfiguration(
                             RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME,
@@ -101,7 +102,8 @@ class DefaultRunConfigurationGenerator {
                                 .withProjectPath(session.project).withTestResults()
                                 .withEditorLog()
                                 .withTestPlatform().withDebugCodeOptimization().toProgramParameters(),
-                            runManager)
+                            runManager,
+                            isEditor = true)
                     } else
                         thisLogger().trace("exePath: $exePath is not a file.")
 
@@ -114,7 +116,8 @@ class DefaultRunConfigurationGenerator {
                         it,
                         Path(it).parent!!.pathString,
                         mutableListOf<String>().toProgramParameters(),
-                        runManager
+                        runManager,
+                        isEditor = false
                     )
 
                     reorderRunConfigurations(session.project)
@@ -152,7 +155,8 @@ class DefaultRunConfigurationGenerator {
             exePath: String,
             workingDirectory: String,
             programParameters: String,
-            runManager: RunManager
+            runManager: RunManager,
+            isEditor: Boolean,
         ) {
             val configs = runManager.allSettings.filter { s ->
                 s.type is UnityExeConfigurationType
@@ -170,6 +174,7 @@ class DefaultRunConfigurationGenerator {
                 unityExeConfiguration.parameters.exePath = exePath
                 unityExeConfiguration.parameters.workingDirectory = workingDirectory
                 unityExeConfiguration.parameters.programParameters = programParameters
+                unityExeConfiguration.isEditor = isEditor
                 runConfiguration.storeInLocalWorkspace()
                 runManager.addConfiguration(runConfiguration)
             }

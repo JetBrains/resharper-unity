@@ -139,8 +139,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                 mixedModeDebugging = false // false by default
             )
             val exeConfigurationFactory = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java).factory
-            val exeConfiguration = UnityExeConfiguration(name, project, exeConfigurationFactory, params)
-            val exeDebugProfileState = UnityExeDebugProfileState(exeConfiguration, this, environment, true)
+            val exeConfiguration = UnityExeConfiguration(name, project, exeConfigurationFactory, params, isEditor = true)
+            val exeDebugProfileState = UnityExeDebugProfileState(exeConfiguration, this, environment)
             return UnityAttachToEditorProfileState(exeDebugProfileState, this, environment)
         }
         return null

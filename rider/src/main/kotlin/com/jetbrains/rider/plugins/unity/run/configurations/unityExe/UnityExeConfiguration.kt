@@ -27,7 +27,8 @@ import java.nio.file.Path
 class UnityExeConfiguration(name: String,
                             project: Project,
                             factory: ConfigurationFactory,
-                            params: ExeConfigurationParameters)
+                            params: ExeConfigurationParameters,
+                            var isEditor: Boolean)
     : ExeConfiguration(name, project, factory, params, true), IMixedModeDebugAwareRunProfile {
 
     override fun isNative(): Boolean {
@@ -35,7 +36,7 @@ class UnityExeConfiguration(name: String,
     }
 
     override fun clone(): RunConfiguration {
-        val newConfiguration = UnityExeConfiguration(name, project, factory!!, parameters.copy())
+        val newConfiguration = UnityExeConfiguration(name, project, factory!!, parameters.copy(), isEditor)
         newConfiguration.doCopyOptionsFrom(this)
         copyCopyableDataTo(newConfiguration)
         return newConfiguration
@@ -62,7 +63,7 @@ class UnityExeConfiguration(name: String,
         val activeRuntimeHost = RiderDotNetActiveRuntimeHost.getInstance(environment.project)
         val dotNetCoreRuntime = activeRuntimeHost.dotNetCoreRuntime.value ?: throw CantRunException(
             RiderMultiPlatformBundle.message("rider.mac.unable.to.get.runtime.information.message"))
-        return UnityDotNetCoreDebugProfile(dotNetCoreRuntime, toDotNetExecutable(), environment, dotNetCoreRuntime.cliExePath)
+        return UnityDotNetCoreDebugProfile(dotNetCoreRuntime, toDotNetExecutable(), environment, dotNetCoreRuntime.cliExePath, isEditor)
     }
 
     private fun toDotNetExecutable(): DotNetExecutable {

@@ -50,10 +50,9 @@ import java.nio.file.Path
  */
 class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
                                 private val remoteConfiguration: RemoteConfiguration,
-                                executionEnvironment: ExecutionEnvironment,
-                                isEditor: Boolean = false)
+                                executionEnvironment: ExecutionEnvironment)
     // debugEngine is a snapshot of the remoteConfiguration at the time of construction
-    : UnityAttachProfileState(UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port), executionEnvironment, "Unity Executable", isEditor) {
+    : UnityAttachProfileState(UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port), executionEnvironment, "Unity Executable", exeConfiguration.isEditor) {
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
     override val consoleKind: ConsoleKind = ConsoleKind.Normal
 

@@ -135,7 +135,7 @@ abstract class UnityRunConfigurationBase(project: Project,
 
     private fun getCustomPlayerState(environment: ExecutionEnvironment): RunProfileState {
         // The user entered these details. There's nothing to refresh, so just try to connect
-        return UnityAttachProfileState(UnityDebugEngine.Mono(state.host!!, state.port), environment, name)
+        return UnityAttachProfileState(UnityDebugEngine.Mono(state.host!!, state.port), environment, name, isEditor = false)
     }
 
     private suspend fun getEditorStateAsync(environment: ExecutionEnvironment): RunProfileState {
@@ -217,7 +217,7 @@ abstract class UnityRunConfigurationBase(project: Project,
 
     private suspend fun getGenericPlayerStateAsync(environment: ExecutionEnvironment): RunProfileState {
         refreshStateFromUdpBroadcast(environment)
-        return UnityAttachProfileState(getDebugEngine(), environment, name)
+        return UnityAttachProfileState(getDebugEngine(), environment, name, isEditor = false)
     }
 
     private suspend fun refreshStateFromUdpBroadcast(environment: ExecutionEnvironment) {

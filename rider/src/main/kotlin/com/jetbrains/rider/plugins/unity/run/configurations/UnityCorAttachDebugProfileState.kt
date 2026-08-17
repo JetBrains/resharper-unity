@@ -2,6 +2,7 @@
 
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.debugger.shared.statistics.TargetProcessKind
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityDotNetCoreAttachStartInfo
 import com.jetbrains.rider.run.AttachDebugProfileStateBase
@@ -11,6 +12,11 @@ class UnityCorAttachDebugProfileState(val processId: Int, executionEnvironment: 
     executionEnvironment) {
     override val consoleKind: ConsoleKind = ConsoleKind.AttachedProcess
     override val attached: Boolean = true
+
+    // TODO: this whole class is not a real IDotNetDebugProfileState and is only used
+    //  inside UnityAttachToEditorProfileState, we should move/probably refactor it accordingly
+    override val targetProcessKind : TargetProcessKind
+        get() = throw UnsupportedOperationException("UnityCorAttachDebugProfileState is only used internally")
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
         val projectData = getUnityProjectData(executionEnvironment.project)

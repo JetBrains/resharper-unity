@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.debugger.shared.statistics.TargetProcessKind
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityLocalCoreClrStartInfo
@@ -26,11 +27,12 @@ import com.jetbrains.rider.run.IDebuggerOutputListener
 open class UnityAttachProfileState(private val debugEngine: UnityDebugEngine,
                                    executionEnvironment: ExecutionEnvironment,
                                    private val targetName: String,
-                                   val isEditor: Boolean = false)
+                                   val isEditor: Boolean)
     : AttachDebugProfileStateBase(executionEnvironment) {
 
     override val attached: Boolean = true
     override val consoleKind: ConsoleKind = ConsoleKind.AttachedProcess
+    override val targetProcessKind : TargetProcessKind = if (isEditor) TargetProcessKind.UnityEditor else TargetProcessKind.UnityPlayer
 
     protected open var monoListenForConnections: Boolean = false
 

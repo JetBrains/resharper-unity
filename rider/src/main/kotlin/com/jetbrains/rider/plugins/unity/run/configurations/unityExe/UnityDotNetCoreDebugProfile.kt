@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations.unityExe
 
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.debugger.shared.statistics.TargetProcessKind
 import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
 import com.jetbrains.rider.model.debuggerWorker.DotNetCoreExeStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DotNetCoreInfo
@@ -22,8 +23,11 @@ internal class UnityDotNetCoreDebugProfile(
     dotNetRuntime: DotNetCoreRuntime,
     dotNetExecutable: DotNetExecutable,
     executionEnvironment: ExecutionEnvironment,
-    currentDotNetCliExePath: Path
+    currentDotNetCliExePath: Path,
+    isEditor: Boolean,
 ) : DotNetCoreDebugProfile(dotNetRuntime, dotNetExecutable, executionEnvironment, currentDotNetCliExePath) {
+
+    override val targetProcessKind = if (isEditor) TargetProcessKind.UnityEditor else TargetProcessKind.UnityPlayer
 
     override fun bindSettings(lifetime: Lifetime, workerModel: DebuggerWorkerModel) {
         executionEnvironment.project.solution.frontendBackendModel.bindDebuggerWorkerSettings(workerModel, lifetime)

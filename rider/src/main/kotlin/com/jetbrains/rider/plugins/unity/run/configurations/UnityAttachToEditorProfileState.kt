@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.ExecutionResult
@@ -26,7 +24,6 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.dotNetCore.DotNetCoreDebugProfile
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
 

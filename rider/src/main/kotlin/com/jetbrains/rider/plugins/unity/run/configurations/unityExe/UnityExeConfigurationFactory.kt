@@ -31,6 +31,6 @@ class UnityExeConfigurationFactory(type: ConfigurationType) : UnityConfiguration
             workingDirectory = "",
             envs = hashMapOf(),
             isPassParentEnvs = true,
-            mixedModeDebugging = false
-        ))
+            mixedModeDebugging = false,
+        ), isEditor = false)
 }

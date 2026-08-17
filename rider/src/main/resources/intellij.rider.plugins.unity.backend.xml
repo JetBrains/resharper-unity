@@ -43,6 +43,7 @@
     <module name="intellij.rider"/>
     <module name="intellij.rider.cpp.core"/>
     <module name="intellij.rider.cpp.core.languages"/>
+    <module name="intellij.rider.debugger.shared"/>
     <module name="intellij.rider.hlsl"/>
     <module name="intellij.rider.icons"/>
     <module name="intellij.rider.languages"/>
