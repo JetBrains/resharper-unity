@@ -36,7 +36,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             IValueFactory<Value> factory)
         {
             myUnityOptions = unityOptions;
-            myIsUnityDebugSession = unityOptions.ExtensionsEnabled && creationInfo.StartInfo is UnityStartInfo;
+            myIsUnityDebugSession = creationInfo.StartInfo is UnityStartInfo;
 
             myDebuggerSession = debuggerSession;
             myLogger = logger;
@@ -59,7 +59,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
         public bool DoHandle(BreakEvent be, IStackFrame activeFrame, IDebuggerSession session, string message)
         {
-            if (!myIsUnityDebugSession || session.IsIl2Cpp) //Disabled for il2cpp builds
+            if (!myIsUnityDebugSession || session.IsIl2Cpp || !myUnityOptions.ExtensionsEnabled) //Disabled for il2cpp builds
                 return false;
 
             var debugType = session.TypeUniverse.GetTypeByAssemblyQualifiedName(activeFrame, UnityEngineDebugTypeName);
