@@ -4,6 +4,7 @@
     <plugin id="com.jetbrains.rider.fsharp"/>
     <module name="intellij.libraries.commons.compress"/>
     <module name="intellij.libraries.commons.logging"/>
+    <module name="intellij.libraries.flexmark"/>
     <module name="intellij.libraries.gson"/>
     <module name="intellij.libraries.jline"/>
     <module name="intellij.libraries.junit5"/>
