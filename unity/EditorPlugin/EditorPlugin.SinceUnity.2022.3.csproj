@@ -34,10 +34,6 @@
     <WriteLinesToFile File="$(OutputPath)/rider-dev.app/rider-dev.bat" Overwrite="true" Lines="$(Cmd)" />
   </Target>
 
-  <ItemGroup>
-    <Compile Remove="SinceUnity.7000.0/**" />
-  </ItemGroup>
-
     <ItemGroup>
         <!-- This one should be the first - it provides version to resulting assembly-->
         <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll">

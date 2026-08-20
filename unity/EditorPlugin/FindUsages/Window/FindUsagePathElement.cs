@@ -3,12 +3,7 @@ using UnityEditor.IMGUI.Controls;
 
 namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
 {
-  internal class FindUsagePathElement :
-#if UNITY_CORCLR_OR_NEWER
-    TreeViewItem<int>
-#else
-    TreeViewItem
-#endif
+  internal class FindUsagePathElement : TreeViewItem
   {
     private readonly int myChildId;
 

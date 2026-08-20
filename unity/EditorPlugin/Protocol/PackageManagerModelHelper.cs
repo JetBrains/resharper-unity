@@ -1,5 +1,3 @@
-#if UNITY_2019_2_OR_NEWER
-
 using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -56,5 +54,3 @@ namespace JetBrains.Rider.Unity.Editor
     }
   }
 }
-
-#endif

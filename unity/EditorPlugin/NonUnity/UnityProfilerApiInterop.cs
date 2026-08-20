@@ -31,7 +31,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
 
         private static void ReloadScripts()
         {
-#if UNITY_CORCLR_OR_NEWER
+#if UNITY_2022_3_OR_NEWER
           UnityEditor.EditorUtility.RequestScriptReload();
 #else
           UnityEditorInternal.InternalEditorUtility.RequestScriptReload();

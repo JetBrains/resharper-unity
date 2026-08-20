@@ -33,20 +33,8 @@ namespace JetBrains.Rider.Unity.Editor
         UnityUtils.SyncSolution();
     }
 
-    private static bool IsUnityCompatibleWithRiderPackage()
-    {
-#if UNITY_2019_2_OR_NEWER
-      return true;
-#else
-      return false;
-#endif
-    }
-
     private static bool TrySyncIfNeeded(bool checkProjectFiles)
     {
-      if (!IsUnityCompatibleWithRiderPackage())
-        return false;
-      
       try
       {
         var method = GetOrCreateSyncIfNeededMethod();

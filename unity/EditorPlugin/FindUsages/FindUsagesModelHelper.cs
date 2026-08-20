@@ -56,19 +56,9 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages
 
         if (result != null)
         {
-#if UNITY_CORCLR_OR_NEWER
-          GUI.BringWindowToFront((long)(ulong)EditorWindow.GetWindow<SceneView>().GetInstanceID());
-          GUI.BringWindowToFront((long)(ulong)EditorWindow
-            .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());
-          GUI.BringWindowToFront((long)(ulong)EditorWindow
-            .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).GetInstanceID());     
-#else 
-          GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
-          GUI.BringWindowToFront(EditorWindow
-            .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());
-          GUI.BringWindowToFront(EditorWindow
-            .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).GetInstanceID());
-#endif
+          EditorWindow.GetWindow<SceneView>().Show();
+          EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).Show();
+          EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).Show();
           FindUsagesWindow.ShowResults(result);
         }
       });

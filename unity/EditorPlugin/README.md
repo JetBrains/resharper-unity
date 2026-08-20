@@ -25,7 +25,7 @@ The package also provides useful functionality that the editor plugin can take a
 There are 2 assemblies distributed with Rider:
 
 * `EditorPlugin.SinceUnity.2019.2.csproj`/`JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll`
-* `EditorPlugin.SinceUnity.CorCLR.csproj`/`JetBrains.Rider.Unity.Editor.Plugin.CorCLR.Repacked.dll`
+* `EditorPlugin.SinceUnity.2022.3.csproj`/`JetBrains.Rider.Unity.Editor.Plugin.2022.3.Net46.Repacked.dll`
 
 Each assembly is "repacked", meaning that several support assemblies (e.g. for the protocol) have been merged into the main assembly to produce a single distributable assembly.
 
@@ -35,14 +35,10 @@ The assemblies cannot easily be renamed. Editor Package would try to load one by
 
 This version is built using Unity 2019.2.0f1, and targets `netstandard2.0`.
 
-It is loaded by the editor package 3.x
-
 The `EditorPlugin.SinceUnity.2019.2.csproj` project defines the `UNITY_2019_2` and `UNITY_2019_2_OR_NEWER` compilation symbols.
 
-### `JetBrains.Rider.Unity.Editor.Plugin.CorCLR.Repacked.dll`
+### `JetBrains.Rider.Unity.Editor.Plugin.2022.3.Net46.Repacked.dll`
 
-This version is built using Unity 7, and targets `netstandard2.1`.
+This version is built using Unity 2022.3.58f1, and targets `netstandard2.1`.
 
-It is loaded by the editor package 4.x+
-
-The `EditorPlugin.SinceUnity.CorCLR.csproj` project defines the `UNITY_CORCLR_OR_NEWER` and `UNITY_2019_2_OR_NEWER` compilation symbols.
+The `EditorPlugin.SinceUnity.2022.3.csproj` project defines the `UNITY_2022_3`, `UNITY_2022_3_OR_NEWER` and `UNITY_2019_2_OR_NEWER` compilation symbols.
