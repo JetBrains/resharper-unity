@@ -200,6 +200,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
                 case SerializedPropertyKind.Vector3Int: return "vector3IntValue";
                 case SerializedPropertyKind.RectInt: return "rectIntValue";
                 case SerializedPropertyKind.BoundsInt: return "boundsIntValue";
+                case SerializedPropertyKind.Hash128: return "hash128Value";
+                case SerializedPropertyKind.RenderingLayerMask: return "intValue";
+                case SerializedPropertyKind.GUID: return "guidValue";
+                case SerializedPropertyKind.EntityId: return "entityIdValue";
+                case SerializedPropertyKind.LoadableObjectId: return "loadableObjectIdValue"; // NOTE: Internal property
+                case SerializedPropertyKind.LoadableSceneId: return "loadableSceneIdValue"; // NOTE: Internal property
             }
             // TODO: What to display for ManagedReference? managedReferenceValue is a setter only property
             return null;

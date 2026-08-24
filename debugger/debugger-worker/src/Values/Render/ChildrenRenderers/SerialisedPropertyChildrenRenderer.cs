@@ -294,6 +294,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 {SerializedPropertyKind.Vector3Int, "vector3IntValue"},
                 {SerializedPropertyKind.RectInt, "rectIntValue"},
                 {SerializedPropertyKind.BoundsInt, "boundsIntValue"},
+                {SerializedPropertyKind.Hash128, "hash128Value"},
+                {SerializedPropertyKind.RenderingLayerMask, "intValue"},
+                {SerializedPropertyKind.GUID, "guidValue"},
+                {SerializedPropertyKind.EntityId, "entityIdValue"},
+                {SerializedPropertyKind.LoadableObjectId, "loadableObjectIdValue"},  // Note this is an internal property
+                {SerializedPropertyKind.LoadableSceneId, "loadableSceneIdValue"},  // Note this is an internal property
 
                 // Complex values: Object references
                 {SerializedPropertyKind.ObjectReference, "objectReferenceValue"},

@@ -37,7 +37,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
         BoundsInt = 23,
         ManagedReference = 24,
         
-        // TODO: handle these (and their respective fields) in SerializedPropertyChildrenRenderer
         Hash128 = 25,
         RenderingLayerMask = 26,
         EntityId = 27,
