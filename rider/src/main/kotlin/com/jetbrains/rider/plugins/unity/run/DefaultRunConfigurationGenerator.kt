@@ -165,19 +165,22 @@ class DefaultRunConfigurationGenerator {
 
             if (configs.any()) {
                 configs.forEach { config ->
-                    (config.configuration as UnityExeConfiguration).parameters.exePath = exePath
+                    setUnityExeRunConfigurationSettings(config.configuration as UnityExeConfiguration, exePath, workingDirectory, programParameters, isEditor)
                 }
             } else {
                 val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
                 val runConfiguration = runManager.createConfiguration(name, configurationType.factory)
-                val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
-                unityExeConfiguration.parameters.exePath = exePath
-                unityExeConfiguration.parameters.workingDirectory = workingDirectory
-                unityExeConfiguration.parameters.programParameters = programParameters
-                unityExeConfiguration.isEditor = isEditor
+                setUnityExeRunConfigurationSettings(runConfiguration.configuration as UnityExeConfiguration, exePath, workingDirectory, programParameters, isEditor)
                 runConfiguration.storeInLocalWorkspace()
                 runManager.addConfiguration(runConfiguration)
             }
+        }
+
+        fun setUnityExeRunConfigurationSettings(unityExeConfiguration: UnityExeConfiguration, exePath: String, workingDirectory: String, programParameters: String, isEditor: Boolean) {
+            unityExeConfiguration.parameters.exePath = exePath
+            unityExeConfiguration.parameters.workingDirectory = workingDirectory
+            unityExeConfiguration.parameters.programParameters = programParameters
+            unityExeConfiguration.isEditor = isEditor
         }
     }
 }

@@ -71,7 +71,7 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
         workerProcessHandler: DebuggerWorkerProcessHandler,
         lifetime: Lifetime
     ): ExecutionResult {
-        val backend = UnityPlayerRuntimeDetector.getInstance(exeConfiguration.project).detect(Path.of(exeConfiguration.parameters.exePath))
+        val backend = UnityPlayerRuntimeDetector.getInstance(exeConfiguration.project).detect(Path.of(exeConfiguration.parameters.exePath), exeConfiguration.isEditor)
         val runCommandLine = createEmptyConsoleCommandLine(exeConfiguration.parameters.terminalMode)
             .withEnvironment(exeConfiguration.parameters.envs)
             .withParentEnvironmentType(if (exeConfiguration.parameters.isPassParentEnvs) {

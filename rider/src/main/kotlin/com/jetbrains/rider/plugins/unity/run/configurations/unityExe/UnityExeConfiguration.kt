@@ -46,7 +46,7 @@ class UnityExeConfiguration(name: String,
         val executorId = executor.id
 
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID){
-            val backend = UnityPlayerRuntimeDetector.getInstance(project).detect(Path.of(parameters.exePath))
+            val backend = UnityPlayerRuntimeDetector.getInstance(project).detect(Path.of(parameters.exePath), isEditor)
             return if (backend == UnityScriptingBackend.CoreCLR)
                 getDotNetCoreDebugProfile(environment)
             else{

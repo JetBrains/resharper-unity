@@ -64,7 +64,7 @@ class UnityAttachToEditorProfileState(
             if (!remoteConfiguration.updatePidAndPort()) {
                 LOG.info("Have not found Unity, would start a new Unity Editor instead.")
 
-                val backend = UnityPlayerRuntimeDetector.getInstance(project).detect(Path.of(exeDebugProfileState.exeConfiguration.parameters.exePath))
+                val backend = UnityPlayerRuntimeDetector.getInstance(project).detect(Path.of(exeDebugProfileState.exeConfiguration.parameters.exePath), isEditor = true)
                 if (backend == UnityScriptingBackend.CoreCLR){
                     corRunDebugProfileState = exeDebugProfileState.exeConfiguration.getDotNetCoreDebugProfile(executionEnvironment)
                     corRunDebugProfileState.createWorkerRunInfo(lifetime, helper, port)

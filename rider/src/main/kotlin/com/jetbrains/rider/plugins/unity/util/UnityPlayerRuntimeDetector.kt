@@ -36,8 +36,8 @@ class UnityPlayerRuntimeDetector(val project: Project) {
         data class ScanFailed(val cause: Throwable) : ScanOutcome()
     }
 
-    suspend fun detect(exePath: Path): UnityScriptingBackend {
-        return when (val outcome = detectInternal(exePath)) {
+    suspend fun detect(exePath: Path, isEditor: Boolean): UnityScriptingBackend {
+        return when (val outcome = detectInternal(exePath, isEditor)) {
             is ScanOutcome.Ok -> outcome.backend
             is ScanOutcome.UnknownFromScanner -> {
                 thisLogger().info("Probably Unity older than 6000.6. Could not detect scripting backend for $exePath")
@@ -50,18 +50,20 @@ class UnityPlayerRuntimeDetector(val project: Project) {
         }
     }
 
-    private suspend fun detectInternal(exePath: Path): ScanOutcome {
-        val libPath = resolveUnityPlayerLib(exePath) ?: return ScanOutcome.UnknownFromScanner
-        if (!libPath.isRegularFile()) return ScanOutcome.UnknownFromScanner
+    private suspend fun detectInternal(exePath: Path, isEditor: Boolean): ScanOutcome {
+        // in case of editor, the binary itself is supposed to contain the exported symbol,
+        // otherwise we look for the unity player library instead
+        val playerPath = if (isEditor) exePath else resolveUnityPlayerLib(exePath) ?: return ScanOutcome.UnknownFromScanner
+        if (!playerPath.isRegularFile()) return ScanOutcome.UnknownFromScanner
 
-        val time = libPath.getLastModifiedTime()
-        val key = libPath.toAbsolutePath().normalize()
+        val time = playerPath.getLastModifiedTime()
+        val key = playerPath.toAbsolutePath().normalize()
         cache[key]?.let { (cachedTime, cachedResult) ->
             if (cachedTime == time) return ScanOutcome.Ok(cachedResult)
         }
 
         val scanOutcome = try {
-            val scanned = project.solution.frontendBackendModel.getScriptingBackend.startSuspending(libPath.toRd())
+            val scanned = project.solution.frontendBackendModel.getScriptingBackend.startSuspending(playerPath.toRd())
             if (scanned == UnityScriptingBackend.Unknown) ScanOutcome.UnknownFromScanner
             else ScanOutcome.Ok(scanned)
         } catch (e: CancellationException) {
@@ -76,7 +78,7 @@ class UnityPlayerRuntimeDetector(val project: Project) {
         }
 
         // Scanner could not determine the backend (old Unity) or threw — preserve the IL2CPP guard.
-        if (detectWithOldHeuristics(libPath) == UnityScriptingBackend.IL2CPP) {
+        if (detectWithOldHeuristics(playerPath) == UnityScriptingBackend.IL2CPP) {
             cache[key] = time to UnityScriptingBackend.IL2CPP
             return ScanOutcome.Ok(UnityScriptingBackend.IL2CPP)
         }
