@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Collections.Viewable;
 using Mono.Debugging.Client.DebuggerOptions;
+using Mono.Debugging.ExternalProviders;
 using Mono.Debugging.HotReload;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
@@ -46,6 +47,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         public bool DisableSteppingHandlers => DebuggerSessionOptionsImplementation.DisableSteppingHandlers;
         public IViewableProperty<bool> ShowElapsedTimeBetweenDebuggerStops => DebuggerSessionOptionsImplementation.ShowElapsedTimeBetweenDebuggerStops;
 		public IViewableProperty<bool> ForceEventPipesForTimeBetweenDebuggerStops => DebuggerSessionOptionsImplementation.ForceEventPipesForTimeBetweenDebuggerStops;
+        public IOutputAssembliesInfo? OutputAssembliesInfo => DebuggerSessionOptionsImplementation.OutputAssembliesInfo;
         public bool TrackHandledExceptionsInAsyncCode => DebuggerSessionOptionsImplementation.TrackHandledExceptionsInAsyncCode;
     }
 }
