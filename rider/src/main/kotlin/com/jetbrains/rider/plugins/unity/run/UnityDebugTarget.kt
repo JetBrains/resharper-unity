@@ -57,11 +57,11 @@ sealed class UnityDebugEngine {
     abstract fun toPresentableString(): String
     val kind: String = this::class.simpleName!!
 
-    data class Mono(val host: String, val port: Int) : UnityDebugEngine() {
+    data class Mono(val host: String, val port: Int, val listenForConnections: Boolean = false) : UnityDebugEngine() {
         /**
          * Create new Mono debug parameters based on the process ID of a local process
          */
-        internal constructor(pid: Int) : this("127.0.0.1", convertPidToDebuggerPort(pid))
+        internal constructor(pid: Int) : this("127.0.0.1", convertPidToDebuggerPort(pid), false)
 
         override fun toPresentableString(): String = "$host:$port"
     }

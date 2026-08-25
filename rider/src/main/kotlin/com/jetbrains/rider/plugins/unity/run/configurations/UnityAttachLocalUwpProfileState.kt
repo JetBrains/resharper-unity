@@ -11,7 +11,7 @@ class UnityAttachLocalUwpProfileState(debugEngine: UnityDebugEngine,
                                       executionEnvironment: ExecutionEnvironment,
                                       targetName: String,
                                       private val packageName: String)
-    : UnityAttachProfileState(debugEngine, executionEnvironment, targetName, false) {
+    : UnityAttachProfileState.WithDebugEngine(debugEngine, executionEnvironment, targetName, false) {
 
     override suspend fun createMonoModelStartInfo(lifetime: Lifetime, monoDebugEngine: UnityDebugEngine.Mono): DebuggerStartInfoBase {
         return UnityLocalUwpStartInfo(

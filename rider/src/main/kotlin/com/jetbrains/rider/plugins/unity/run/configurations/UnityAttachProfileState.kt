@@ -24,8 +24,7 @@ import com.jetbrains.rider.run.IDebuggerOutputListener
  *
  * @param targetName    Used in user facing "Unable to connect to {targetName}" error message
  */
-open class UnityAttachProfileState(private val debugEngine: UnityDebugEngine,
-                                   executionEnvironment: ExecutionEnvironment,
+abstract class UnityAttachProfileState(executionEnvironment: ExecutionEnvironment,
                                    private val targetName: String,
                                    val isEditor: Boolean)
     : AttachDebugProfileStateBase(executionEnvironment) {
@@ -34,9 +33,10 @@ open class UnityAttachProfileState(private val debugEngine: UnityDebugEngine,
     override val consoleKind: ConsoleKind = ConsoleKind.AttachedProcess
     override val targetProcessKind : TargetProcessKind = if (isEditor) TargetProcessKind.UnityEditor else TargetProcessKind.UnityPlayer
 
-    protected open var monoListenForConnections: Boolean = false
+    protected abstract fun getDebugEngine(): UnityDebugEngine
 
     override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
+        val debugEngine = getDebugEngine()
         val host = if (debugEngine is UnityDebugEngine.Mono) debugEngine.host else null
         return UnityDebuggerOutputListener(executionEnvironment.project, host, targetName, isEditor)
     }
@@ -47,6 +47,7 @@ open class UnityAttachProfileState(private val debugEngine: UnityDebugEngine,
     }
 
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
+        val debugEngine = getDebugEngine()
         return when (debugEngine) {
             is UnityDebugEngine.CoreClr -> createCoreClrModelStartInfo(lifetime, debugEngine)
             is UnityDebugEngine.Mono -> createMonoModelStartInfo(lifetime, debugEngine)
@@ -58,7 +59,7 @@ open class UnityAttachProfileState(private val debugEngine: UnityDebugEngine,
             getUnityProjectData(executionEnvironment.project),
             monoDebugEngine.host,
             monoDebugEngine.port,
-            monoListenForConnections,
+            monoDebugEngine.listenForConnections,
         )
     }
 
@@ -67,5 +68,12 @@ open class UnityAttachProfileState(private val debugEngine: UnityDebugEngine,
             getUnityProjectData(executionEnvironment.project),
             coreClrDebugEngine.processId,
         )
+    }
+
+    open class WithDebugEngine(private val debugEngine: UnityDebugEngine,
+                                  executionEnvironment: ExecutionEnvironment,
+                                  targetName: String,
+                                  isEditor: Boolean) : UnityAttachProfileState(executionEnvironment, targetName, isEditor) {
+        override fun getDebugEngine(): UnityDebugEngine = debugEngine
     }
 }

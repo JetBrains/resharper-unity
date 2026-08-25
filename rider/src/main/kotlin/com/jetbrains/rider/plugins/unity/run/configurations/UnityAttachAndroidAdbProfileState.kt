@@ -24,7 +24,7 @@ class UnityAttachAndroidAdbProfileState(private val project: Project,
                                         executionEnvironment: ExecutionEnvironment,
                                         targetName: String,
                                         private val deviceId: String)
-    : UnityAttachProfileState(debugEngine, executionEnvironment, targetName, false) {
+    : UnityAttachProfileState.WithDebugEngine(debugEngine, executionEnvironment, targetName, false) {
 
     override suspend fun createMonoModelStartInfo(lifetime: Lifetime, monoDebugEngine: UnityDebugEngine.Mono): DebuggerStartInfoBase {
 

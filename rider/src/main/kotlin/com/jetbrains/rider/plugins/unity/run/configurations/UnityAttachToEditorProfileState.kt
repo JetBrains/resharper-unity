@@ -38,7 +38,7 @@ class UnityAttachToEditorProfileState(
     executionEnvironment: ExecutionEnvironment
 )
     // debugEngine is a snapshot of the remoteConfiguration at the time of construction
-    : UnityAttachProfileState(UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port), executionEnvironment, "Unity Editor", true) {
+    : UnityAttachProfileState(executionEnvironment, "Unity Editor", true) {
 
     private val project = executionEnvironment.project
 
@@ -51,10 +51,11 @@ class UnityAttachToEditorProfileState(
         else if (::corRunDebugProfileState.isInitialized)
             return corRunDebugProfileState.createModelStartInfo(lifetime)
 
-        return createMonoModelStartInfo(
-            lifetime,
-            UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port)
-        )
+        return createMonoModelStartInfo(lifetime, getDebugEngine())
+    }
+
+    override fun getDebugEngine(): UnityDebugEngine.Mono {
+        return UnityDebugEngine.Mono(remoteConfiguration.address, remoteConfiguration.port, remoteConfiguration.listenPortForConnections)
     }
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
