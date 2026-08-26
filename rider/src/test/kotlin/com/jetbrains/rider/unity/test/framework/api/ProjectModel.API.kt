@@ -45,12 +45,7 @@ import com.jetbrains.rider.test.scriptingApi.waitRefreshIsFinished
 import javax.swing.JTree
 
 class UnityProjectModelDumpApiFacade(solutionApiFacade: SolutionApiFacade, testDataStorage: TestDataStorage) : RiderProjectModelDumpApiFacade(solutionApiFacade, testDataStorage) {
-    override fun dumpAfterAction(caption: String, action: () -> Unit) {
-        super.dumpAfterAction(caption, action)
-        dumpUnityExplorerTree()
-    }
-
-    private fun dumpUnityExplorerTree() {
+    override fun dumpSolutionExplorerTree(caption: String, targetPath: List<String>, withSelection: Boolean, action: () -> Unit) {
         val project = solutionApiFacade.project
         val tempTestDirectory = solutionApiFacade.activeSolutionDirectory
         val tree = UnityExplorer.getInstance(project).tree
@@ -58,6 +53,8 @@ class UnityProjectModelDumpApiFacade(solutionApiFacade: SolutionApiFacade, testD
             .replace(tempTestDirectory.toUri().toString(), "")
             .replace(tempTestDirectory.toUri().toString().replace("file:///", "file://"), "")
 
+        dump.treeOutput.appendLine("===================")
+        dump.treeOutput.appendLine(caption)
         dump.treeOutput.appendLine()
         dump.treeOutput.appendLine(dumpResult)
     }

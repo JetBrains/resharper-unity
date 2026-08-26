@@ -16,6 +16,7 @@ Add folders
 
 
 
+
 Project [Name:&, GUID:GUID]
   Child items:
     ProjectFileImpl(Path : SimpleUnityProject.sln)[]
@@ -50,6 +51,7 @@ Show tilde folders
   -Uxml
    Menu.uss
   NewBehaviourScript.cs
+
 
 
 
@@ -102,6 +104,7 @@ Show All Files
 
 
 
+
 Project [Name:&, GUID:GUID]
   Child items:
     ProjectFileImpl(Path : SimpleUnityProject.sln)[]
@@ -140,6 +143,7 @@ Hide all
    Menu.uss
   Class1.cs
   NewBehaviourScript.cs
+
 
 
 
