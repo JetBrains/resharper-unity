@@ -7,10 +7,6 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.ide.model.RdDndOrderType
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
-import com.jetbrains.rider.model.RdProjectModelDumpFlags
-import com.jetbrains.rider.model.RdProjectModelDumpParams
-import com.jetbrains.rider.model.RdProjectModelSolutionDump
-import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode
 import com.jetbrains.rider.projectView.ProjectVirtualFileView
@@ -22,71 +18,69 @@ import com.jetbrains.rider.projectView.moveProviders.RiderDeleteProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderPasteProvider
 import com.jetbrains.rider.projectView.moveProviders.impl.DuplicateNameDialog
 import com.jetbrains.rider.projectView.nodes.getVirtualFile
-import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import com.jetbrains.rider.protocol.protocolHost
-import com.jetbrains.rider.test.framework.TestProjectModelContext
+import com.jetbrains.rider.test.facades.projectmodel.ProjectModelDumpApiFacade
+import com.jetbrains.rider.test.facades.projectmodel.RiderProjectModelApiFacade
+import com.jetbrains.rider.test.facades.projectmodel.RiderProjectModelDumpApiFacade
+import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
 import com.jetbrains.rider.test.framework.flushQueues
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
+import com.jetbrains.rider.test.framework.testData.TestDataStorage
 import com.jetbrains.rider.test.maskCacheFiles
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.changeFileSystem
 import com.jetbrains.rider.test.scriptingApi.createDataContextForTree
-import com.jetbrains.rider.test.scriptingApi.dumpFiles
 import com.jetbrains.rider.test.scriptingApi.dumpFilteredTree
 import com.jetbrains.rider.test.scriptingApi.executeNewItemAction
 import com.jetbrains.rider.test.scriptingApi.findChildInternal
-import com.jetbrains.rider.test.scriptingApi.hideMiscFilesProjectContent
 import com.jetbrains.rider.test.scriptingApi.renameItem
+import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import com.jetbrains.rider.test.scriptingApi.waitAllCommandsFinished
 import com.jetbrains.rider.test.scriptingApi.waitForProjectModelReady
 import com.jetbrains.rider.test.scriptingApi.waitForWorkspaceModelReady
 import com.jetbrains.rider.test.scriptingApi.waitRefreshIsFinished
-import com.jetbrains.rider.util.idea.syncFromBackend
-import java.nio.file.Path
 import javax.swing.JTree
 
-fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDirectory: Path, action: () -> Unit) {
+class UnityProjectModelDumpApiFacade(solutionApiFacade: SolutionApiFacade, testDataStorage: TestDataStorage) : RiderProjectModelDumpApiFacade(solutionApiFacade, testDataStorage) {
+    override fun dumpAfterAction(caption: String, action: () -> Unit) {
+        super.dumpAfterAction(caption, action)
+        dumpUnityExplorerTree()
+    }
 
-    doActionAndWait(project, action, true)
-    val treeDump = dumpUnityExplorerTree(project, tempTestDirectory)
+    private fun dumpUnityExplorerTree() {
+        val project = solutionApiFacade.project
+        val tempTestDirectory = solutionApiFacade.activeSolutionDirectory
+        val tree = UnityExplorer.getInstance(project).tree
+        val dumpResult = dumpExplorerTree(project, tree)
+            .replace(tempTestDirectory.toUri().toString(), "")
+            .replace(tempTestDirectory.toUri().toString().replace("file:///", "file://"), "")
 
-    treeOutput.appendLine("===================")
-    fileOutput.appendLine("===================")
-    treeOutput.appendLine(caption)
-    fileOutput.appendLine(caption)
-    treeOutput.appendLine()
-    fileOutput.appendLine()
-    treeOutput.appendLine(treeDump)
-    treeOutput.appendLine()
+        dump.treeOutput.appendLine()
+        dump.treeOutput.appendLine(dumpResult)
+    }
 
-    val dumpProjectModelTask = project.solution.projectModelTasks.dumpProjectModel
-    val dumpParams = RdProjectModelDumpParams(RdProjectModelDumpFlags.Structure, RdProjectModelSolutionDump(hideMiscFilesProjectContent))
-    val projectModelDump = dumpProjectModelTask.syncFromBackend(dumpParams, project)
-    treeOutput.appendLine(projectModelDump?.maskCacheFiles())
-    treeOutput.appendLine()
-
-    dumpFiles(fileOutput, tempTestDirectory, false, this.profile)
+    private fun dumpExplorerTree(project: Project, tree: JTree) : String {
+        val dump = dumpFilteredTree(project, tree)
+        return dump
+            .replace(" Scratches and Consoles", "")
+            .replace(SolutionViewPaneBase.TextSeparator, "*")
+            .replace(" * no index", "")
+            .maskCacheFiles()
+            .replace("""(\s+)-Plugins$(\1\s+\S+$)*""".toRegex(RegexOption.MULTILINE), "") + "\n"
+    }
 }
 
-private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: Path) : String {
-    val tree = UnityExplorer.getInstance(project).tree
-    return dumpExplorerTree(project, tree)
-        .replace(tempTestDirectory.toUri().toString(), "")
-        .replace(tempTestDirectory.toUri().toString().replace("file:///", "file://"), "")
+class UnityProjectModelApiFacade(solutionApiFacade: SolutionApiFacade, testDataStorage: TestDataStorage) : RiderProjectModelApiFacade(solutionApiFacade, testDataStorage) {
+    override val projectModelDumpApiFacade: RiderProjectModelDumpApiFacade = UnityProjectModelDumpApiFacade(solutionApiFacade, testDataStorage)
 }
 
-
-fun dumpExplorerTree(project: Project, tree: JTree) : String {
-    val dump = dumpFilteredTree(project, tree)
-    return dump
-        .replace(" Scratches and Consoles", "")
-        .replace(SolutionViewPaneBase.TextSeparator, "*")
-        .replace(" * no index", "")
-        .maskCacheFiles()
-        .replace("""(\s+)-Plugins$(\1\s+\S+$)*""".toRegex(RegexOption.MULTILINE), "") + "\n"
+context(solutionApiFacade: SolutionApiFacade, testDataStorage: TestDataStorage)
+fun testUnityProjectModel(profileModifier: ProjectModelDumpApiFacade.DumpProfile.() -> Unit = {}, action: ProjectModelDumpApiFacade.() -> Unit) {
+    val unityProjectModelApiFacade = UnityProjectModelApiFacade(solutionApiFacade, testDataStorage)
+    testProjectModel(unityProjectModelApiFacade, profileModifier, action)
 }
 
 fun addNewItem2(project: Project, path: Array<String>, template: TemplateType, itemName: String) {

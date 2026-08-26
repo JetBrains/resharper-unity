@@ -28,13 +28,12 @@ import com.jetbrains.rider.test.scriptingApi.canExecuteAction
 import com.jetbrains.rider.test.scriptingApi.createDataContextFor
 import com.jetbrains.rider.test.scriptingApi.createDataContextForTree
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
-import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import com.jetbrains.rider.test.scriptingApi.updateAction
 import com.jetbrains.rider.test.scriptingApi.withSolution
 import com.jetbrains.rider.unity.test.framework.api.addNewFolder2
 import com.jetbrains.rider.unity.test.framework.api.addNewItem2
-import com.jetbrains.rider.unity.test.framework.api.dump
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
+import com.jetbrains.rider.unity.test.framework.api.testUnityProjectModel
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityPackagesCache
 import com.jetbrains.rider.unity.test.framework.api.withUnityExplorerPane
 import org.junit.jupiter.api.Assertions
@@ -61,9 +60,9 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
         withSolution("EmptySolution", params) {
             withSolution("UnityProjectModelViewExtensionsTest", params) second@{
                 prepareProjectView(this@second.project)
-                testProjectModel(testGoldFile, this@second.project, false) {
+                testUnityProjectModel({ dumpFilesContent = false }) {
                     withUnityExplorerPane(this@second.project, showAllFiles = true) {
-                        dump("Add files and classes", this@second.project, activeSolutionDirectory) {
+                        dumpAfterAction("Add files and classes") {
                             addNewItem2(this@second.project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"),
                                         TemplateType.CLASS,"AsmdefClass_added.cs"
                             )
@@ -80,26 +79,26 @@ class UnityExplorerTest : PerTestSettingsTestBase() {
         val params = OpenSolutionParams()
         withSolution("SimpleUnityProject", params) {
             prepareProjectView(project)
-            testProjectModel(testGoldFile, project, false) {
+            testUnityProjectModel({ dumpFilesContent = false }) {
                 withUnityExplorerPane(project, showTildeFolders = false) {
-                    dump("Add folders", project, activeSolutionDirectory) {
+                    dumpAfterAction("Add folders") {
                         addNewFolder2(project, arrayOf("Assets"), "NewFolder1~")
                         addNewFolder2(project, arrayOf("Assets"), ".NewFolder1")
                     }
                 }
                 withUnityExplorerPane(project, true) {
-                    dump("Show tilde folders", project, activeSolutionDirectory) {
+                    dumpAfterAction("Show tilde folders") {
                         addNewItem2(project, arrayOf("Assets", "NewFolder1~"), TemplateType.CLASS, "Class1.cs")
                     }
                 }
                 withUnityExplorerPane(project, showAllFiles = true) {
-                    dump("Show All Files", project, activeSolutionDirectory) {
+                    dumpAfterAction("Show All Files") {
                         addNewItem2(project, arrayOf("Assets", "NewFolder1~"), TemplateType.CLASS, "Class2.cs")
                         addNewItem2(project, arrayOf("Assets", ".NewFolder1"), TemplateType.CLASS, "Class1.cs")
                     }
                 }
                 withUnityExplorerPane(project, showTildeFolders = false) {
-                    dump("Hide all", project, activeSolutionDirectory) {
+                    dumpAfterAction("Hide all") {
                         addNewItem2(project, arrayOf("Assets"), TemplateType.CLASS, "Class1.cs")
                     }
                 }

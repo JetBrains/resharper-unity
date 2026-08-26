@@ -13,23 +13,23 @@ import com.jetbrains.rider.test.annotations.report.Issue
 import com.jetbrains.rider.test.annotations.report.Issues
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
-import com.jetbrains.rider.test.junit5.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.advancedSettings.AdvancedSettingsList
+import com.jetbrains.rider.test.junit5.base.PerTestProjectModelTestBase
 import com.jetbrains.rider.test.reporting.SubsystemConstants
-import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.callUndo
+import com.jetbrains.rider.test.scriptingApi.dump
 import com.jetbrains.rider.test.scriptingApi.openFileInEditor
-import com.jetbrains.rider.test.scriptingApi.testProjectModel
+import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.unity.test.framework.api.addNewItem2
 import com.jetbrains.rider.unity.test.framework.api.cutItem2
 import com.jetbrains.rider.unity.test.framework.api.deleteElement
 import com.jetbrains.rider.unity.test.framework.api.doActionAndWait
-import com.jetbrains.rider.unity.test.framework.api.dump
 import com.jetbrains.rider.unity.test.framework.api.pasteItem2
 import com.jetbrains.rider.unity.test.framework.api.renameItem
+import com.jetbrains.rider.unity.test.framework.api.testUnityProjectModel
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -43,7 +43,7 @@ import kotlin.io.path.readText
 @TestSettings(sdkVersion = SdkVersion.LATEST_STABLE, buildTool = BuildTool.SDK)
 @Solution("UnityProjectModelViewExtensionsTest")
 @Tag(TeamCityTags.Plugins.Unity.General)
-class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
+class UnityProjectModelViewExtensionsWithRepoViewTest : PerTestProjectModelTestBase() {
 
     override val advancedSettings: AdvancedSettingsList
         get() = AdvancedSettingsList(boolSettings = mapOf(("repository.view.enabled.v2" to true)))
@@ -58,9 +58,9 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
     @Test // Add a new script to the project
     @ChecklistItems(["Unity explorer/Add new script"])
     fun testAddNewItem() {
-        testProjectModel(testGoldFile, project, false) {
-            //dump("Init", project, activeSolutionDirectory) {}
-            dump("Add files and classes", project, activeSolutionDirectory) {
+        testUnityProjectModel({ dumpFilesContent = false }) {
+            //dump("Init") {}
+            dump("Add files and classes") {
                 // add file to Assets\AsmdefResponse\NewDirectory1 is ambig between 2 asmdef projects
                 // add file to Assets\NewDirectory1 is ambig between predefined projects and asmdef
                 // goes to Editor project
@@ -75,8 +75,8 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
     @Test // Rename an script in the project
     @ChecklistItems(["Unity explorer/Rename script"])
     fun testRenameFile() {
-        testProjectModel(testGoldFile, project, false) {
-            dump("Rename file", project, activeSolutionDirectory) {
+        testUnityProjectModel({ dumpFilesContent = false }) {
+            dump("Rename file") {
                 val metaFileContent = project.solutionDirectoryPath.resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript.cs.meta").readText()
 
                 doActionAndWait(project, {
@@ -95,8 +95,8 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
     @Test // Rename a folder in the project
     @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder() {
-        testProjectModel(testGoldFile, project, false) {
-            dump("Rename folder", project, activeSolutionDirectory) {
+        testUnityProjectModel({ dumpFilesContent = false }) {
+            dump("Rename folder") {
                 val metaFileContent = project.solutionDirectoryPath.resolve("Assets").resolve("Dir1.meta").readText()
 
                 doActionAndWait(project, {
@@ -113,8 +113,8 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
     @Test // Rename a folder in the project
     @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder2() {
-        testProjectModel(testGoldFile, project, false) {
-            dump("Rename folder", project, activeSolutionDirectory) {
+        testUnityProjectModel({ dumpFilesContent = false }) {
+            dump("Rename folder") {
                 doActionAndWait(project, {
                     // folder exists in multiple projects at once
                     renameItem(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), "NewDirectory1_renamed")
@@ -127,8 +127,8 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
     @Test // Rename a folder in the project
     @ChecklistItems(["Unity explorer/Rename folder"])
     fun testRenameFolder3() {
-        testProjectModel(testGoldFile, project, false) {
-            dump("Rename folder", project, activeSolutionDirectory) {
+        testUnityProjectModel({ dumpFilesContent = false }) {
+            dump("Rename folder") {
                 doActionAndWait(project, {
                     // folder exists in multiple projects at once, it not empty
                     renameItem(project, arrayOf("Assets", "AsmdefResponse", "SS"), "SS_renamed")
@@ -145,8 +145,8 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
         // helps Local History to capture the file content
         val vf = VfsUtil.findFile(project.solutionDirectoryPath.resolve("Assets/AsmdefResponse/NewBehaviourScript.cs"), true)!!
         openFileInEditor(vf)
-        testProjectModel(testGoldFile, project, false) {
-            dump("Delete element", project, activeSolutionDirectory) {
+        testUnityProjectModel({ dumpFilesContent = false }) {
+            dump("Delete element") {
                 deleteElement(project, arrayOf("Assets", "AsmdefResponse", "NewBehaviourScript.cs"))
             }
         }
@@ -169,8 +169,8 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
         Assertions.assertTrue(originFile.exists(), "We expect file exists.")
         Assertions.assertTrue(originMetaFile.exists(), "We expect meta file exists.")
 
-        testProjectModel(testGoldFile, project, false) {
-            dump("Move file", project, activeSolutionDirectory) {
+        testUnityProjectModel({ dumpFilesContent = false }) {
+            dump("Move file") {
                 cutItem2(project, arrayOf("Assets", "Class1.cs"))
                 pasteItem2(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"))
             }
@@ -202,8 +202,8 @@ class UnityProjectModelViewExtensionsWithRepoViewTest : ProjectModelBaseTest() {
         Assertions.assertTrue(originFile.exists(), "We expect file exists.")
         Assertions.assertTrue(originMetaFile.exists(), "We expect meta file exists.")
 
-        testProjectModel(testGoldFile, project, false) {
-            dump("Move file", project, activeSolutionDirectory) {
+        testUnityProjectModel({ dumpFilesContent = false }) {
+            dump("Move file") {
                 cutItem2(project, arrayOf("Assets", "AsmdefResponse", "SS", "rrr.cs"))
                 pasteItem2(project, arrayOf("Assets"))
             }
