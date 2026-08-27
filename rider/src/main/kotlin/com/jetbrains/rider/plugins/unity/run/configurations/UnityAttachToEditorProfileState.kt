@@ -69,7 +69,7 @@ class UnityAttachToEditorProfileState(
                 else
                     exeDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
             }
-            else if (remoteConfiguration.runtimes.any {it is com.jetbrains.rider.model.GenericCoreClrRuntime }) {
+            else if (remoteConfiguration.isCoreClr) {
                 // at the moment runtimes show both GenericCoreClrRuntime and Mono for Unity 7
                 corAttachDebugProfileState = UnityCorAttachDebugProfileState(remoteConfiguration.pid!!,
                                                                              exeDebugProfileState.executionEnvironment)
