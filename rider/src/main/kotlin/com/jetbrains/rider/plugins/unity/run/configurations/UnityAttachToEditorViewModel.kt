@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.process.OSProcessUtil
-import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.project.Project
 import com.intellij.util.application
@@ -33,12 +32,11 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
         editorProcesses.clear()
 
         application.executeOnPooledThread {
-            val processList = OSProcessUtil.getProcessList()
-            val editors = getEditorProcessInfos(processList)
+            val editors = getEditorProcessInfos()
 
             application.invokeLater({
                 editorProcesses.addAll(editors)
-                editorInstanceJsonStatus.set(editorInstanceJson.validateStatus(processList))
+                editorInstanceJsonStatus.set(editorInstanceJson.validateStatus())
                 pid.value = if (editorInstanceJsonStatus.value != EditorInstanceJsonStatus.Valid && editors.count() == 1) {
                     editors[0].processIdOrZero
                 } else if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
@@ -51,7 +49,8 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
         }
     }
 
-    private fun getEditorProcessInfos(processList: Array<ProcessInfo>): List<UnityDebugTarget> {
+    private fun getEditorProcessInfos(): List<UnityDebugTarget> {
+        val processList = OSProcessUtil.getProcessList()
         val unityProcesses = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
         val unityProcessInfoMap = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
         return unityProcesses.map { it.toUnityDebugTarget(unityProcessInfoMap[it.pid]) }

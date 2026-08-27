@@ -10,27 +10,25 @@ import com.intellij.execution.configurations.RunnerSettings
 import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.execution.configurations.WithoutOwnBeforeRunSteps
 import com.intellij.execution.executors.DefaultDebugExecutor
-import com.intellij.execution.process.OSProcessUtil
-import com.intellij.execution.process.ProcessInfo
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.intellij.util.application
 import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.RiderDebugRunner
-import com.jetbrains.rider.debugger.attach.util.getAvailableRuntimes
-import com.jetbrains.rider.model.ProcessRuntimeInformation
+import com.jetbrains.rider.debugger.attach.processes.MsClrAttachableProcessesHost
+import com.jetbrains.rider.model.GenericCoreClrRuntime
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
-import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
@@ -76,7 +74,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     @Transient
     var pid: Int? = null
 
-    var runtimes:List<ProcessRuntimeInformation> = emptyList()
+    @Transient
+    var isCoreClr = false
 
     @Transient
     override var listenPortForConnections: Boolean = false
@@ -178,25 +177,17 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     }
 
     suspend fun updatePidAndPort(): Boolean {
-
-        val processList = OSProcessUtil.getProcessList()
-
         port = -1
 
         try {
-            // Try to reuse the previously attached process ID, if it's still valid. If we don't have a previous pid, or
-            // the process is no longer valid, try to find the best match, via EditorInstance.json or project name.
-            pid = checkValidEditorProcess(pid, processList)
-                  ?: findUnityEditorProcessFromEditorInstanceJson(processList)
-                  ?: findUnityEditorProcessFromProjectName(processList)
+            val pid = findUnityEditorProcessFromEditorInstanceJson()
+            this.pid = pid
             if (pid == null) {
                 return false
             }
-            val processInfo = processList.firstOrNull { it.pid == pid } ?: return false
-            LOG.info("Found Unity Editor process: $processInfo")
-            runtimes = getAvailableRuntimes(processInfo, project)
-
-            port = convertPidToDebuggerPort(pid!!)
+            LOG.info("Found Unity Editor process: $pid")
+            isCoreClr = getIsCoreClrProcess(pid, project)
+            port = convertPidToDebuggerPort(pid)
             return true
         }
         catch (t: Throwable) {
@@ -205,61 +196,19 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         }
     }
 
-    private fun checkValidEditorProcess(pid: Int?, processList: Array<ProcessInfo>): Int? {
-        if (pid != null && UnityRunUtil.isValidUnityEditorProcess(pid, processList)) {
-            LOG.info("Found valid editor process, PID: $pid")
-            return pid
-        }
-        return null
-    }
-
-    private fun findUnityEditorProcessFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
+    private fun findUnityEditorProcessFromEditorInstanceJson(): Int? {
         val editorInstanceJson = EditorInstanceJson.getInstance(project)
-        if (editorInstanceJson.validateStatus(processList) == EditorInstanceJsonStatus.Valid) {
-            val processId = editorInstanceJson.contents!!.process_id
-            LOG.info("Found Unity Editor from EditorInstance.json, PID: $processId")
-            return processId
+        if (editorInstanceJson.validateStatus() == EditorInstanceJsonStatus.Valid) {
+            return editorInstanceJson.contents!!.process_id
         }
 
         return null
     }
 
-    private fun findUnityEditorProcessFromProjectName(processList: Array<ProcessInfo>): Int? {
-        // This only works if we can figure out the project name for a running process. This might not succeed on
-        // Windows, if the process is started without appropriate command line args.
-        val unityProcesses = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
-        val map = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
-
-        // If we're a generated project, or a class library project that lives in the root of a Unity project alongside
-        // a generated project, we can use the project dir as the expected project name.
-        if (project.isUnityProject.value) {
-            val expectedProjectName = project.solutionDirectory.name
-            val entry = map.entries.firstOrNull { expectedProjectName.equals(it.value.projectName, true) }
-            if (entry != null) {
-                val processId = entry.key
-                LOG.info("Found Unity Editor using project name, PID: $processId")
-                return processId
-            }
-
-            // We don't have a cached pid from a previous debug session, we don't have EditorInstance.json, we can't
-            // find a process with a matching project name. Best guess fallback is to attach to an unnamed project
-            val noNameProjects = map.entries.filter { it.value.projectName == null }
-            if (noNameProjects.count() == 1) {
-                val processId = noNameProjects[0].key
-                LOG.info("Attaching to a single unnamed project, PID: $processId")
-                return processId
-            }
-
-            return null
-        }
-        else {
-            // We're a class library project in a standalone directory. We can't guess the project name, and it's best
-            // not to attach to a random editor
-            throw RuntimeConfigurationError(
-                UnityBundle.message("dialog.message.unable.to.automatically.discover.correct.unity.editor.to.debug"))
-        }
+    suspend fun getIsCoreClrProcess(pid: Int, project: Project): Boolean {
+        val runtimes = application.service<MsClrAttachableProcessesHost>().localHostHolder.calculateRuntimesForProcess(pid, project)
+        return runtimes.any { it is GenericCoreClrRuntime }
     }
-
     override fun readExternal(element: Element) {
         super.readExternal(element)
         // Reset pid, address + port to defaults. It makes no sense to persist the pid across sessions. Unfortunately,

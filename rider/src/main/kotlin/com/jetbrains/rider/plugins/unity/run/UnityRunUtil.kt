@@ -59,7 +59,7 @@ object UnityRunUtil {
         // .NET's Process.ProcessName
         // "Unity_s.debug" is a Linux only process that's packaged with Unity and contains some debug information. See RIDER-97262
         // https://github.com/Unity-Technologies/MonoDevelop.Debugger.Soft.Unity/blob/9f116ee5d344bce5888e838a75ded418bd7852c7/UnityProcessDiscovery.cs#L155
-        
+        // NOTE: this does not support custom editor executables, maybe we could make it configurable for those special cases?
         for (engineName in engineNames) {
             if (name.equals(engineName, true)
                     || name.equals("$engineName Editor", true)
@@ -75,11 +75,6 @@ object UnityRunUtil {
         }
         logger.debug("isUnityEditorProcess? FALSE!: '", name, "', '", canonicalName, "'")
         return false
-    }
-
-    fun isValidUnityEditorProcess(pid: Int, processList: Array<out ProcessInfo>): Boolean {
-        logger.trace("Checking Unity Process, current pid: $pid. Process count: ${processList.size}")
-        return processList.any { it.pid == pid && isUnityEditorProcess(it) }
     }
 
     fun getUnityProcessInfo(processInfo: ProcessInfo, project: Project): UnityLocalProcessExtraDetails? {
