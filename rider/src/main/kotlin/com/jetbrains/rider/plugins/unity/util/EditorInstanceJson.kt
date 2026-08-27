@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.util
 
 import com.google.gson.Gson
-import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
@@ -9,7 +8,6 @@ import com.intellij.openapi.vfs.AsyncFileListener
 import com.intellij.openapi.vfs.AsyncFileListener.ChangeApplier
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
-import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.projectView.solutionDirectory
 import java.io.File
 import java.io.FileReader
@@ -102,10 +100,16 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
         }
     }
 
-    fun validateStatus(processList: Array<out ProcessInfo>): EditorInstanceJsonStatus {
-        if (status == EditorInstanceJsonStatus.Valid && contents != null
-            && !UnityRunUtil.isValidUnityEditorProcess(contents.process_id, processList)) {
-            return EditorInstanceJsonStatus.Outdated
+    fun validateStatus(): EditorInstanceJsonStatus {
+        if (status == EditorInstanceJsonStatus.Valid && contents != null) {
+            val pid = contents.process_id
+            logger.trace("Checking Unity Process, current pid: $pid.")
+            // NOTE: we used to check whether the process actually a Unity Editor executable by matching the name,
+            // but that would break with custom editor builds with different executable names (or more recent Unity Hub/CLI renaming).
+            // so we can realistically only check whether the process exists at all, not whether it's an actual unity editor one.
+            // this should not be much of an issue, since EditorInstance.json is normally deleted on editor process exit anyway
+            if (ProcessHandle.of(pid.toLong()).isEmpty)
+                return EditorInstanceJsonStatus.Outdated
         }
         return status
     }
