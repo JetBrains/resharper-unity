@@ -14,9 +14,7 @@
           </stringArguments>
           <arrayArguments>
             <arrayArg name="pluginClasspaths">
-              <args>
-                <arg>$KOTLIN_BUNDLED$/lib/kotlinx-serialization-compiler-plugin.jar</arg>
-              </args>
+              <args>$KOTLIN_BUNDLED$/lib/kotlinx-serialization-compiler-plugin.jar</args>
             </arrayArg>
           </arrayArguments>
         </compilerArguments>
@@ -44,6 +42,7 @@
     <orderEntry type="module" module-name="intellij.rider.model.generated" />
     <orderEntry type="module" module-name="intellij.rider" />
     <orderEntry type="module" module-name="intellij.rd.client" />
+    <orderEntry type="module" module-name="intellij.rd.client.debugger" />
     <orderEntry type="module" module-name="intellij.rider.rdclient.dotnet" />
     <orderEntry type="module" module-name="intellij.rd.ide.model.generated" />
     <orderEntry type="module" module-name="intellij.libraries.rd.framework" />

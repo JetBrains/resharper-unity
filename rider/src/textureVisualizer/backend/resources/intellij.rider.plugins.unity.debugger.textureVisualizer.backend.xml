@@ -16,6 +16,7 @@
     <module name="intellij.platform.rpc.backend"/>
     <module name="intellij.platform.util.coroutines"/>
     <module name="intellij.rd.client"/>
+    <module name="intellij.rd.client.debugger"/>
     <module name="intellij.rider"/>
     <module name="intellij.rider.model.generated"/>
     <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.common"/>

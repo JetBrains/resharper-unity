@@ -63,6 +63,7 @@
     <orderEntry type="module" module-name="intellij.platform.workspace.jps" />
     <orderEntry type="module" module-name="intellij.platform.workspace.storage" />
     <orderEntry type="module" module-name="intellij.rd.client" />
+    <orderEntry type="module" module-name="intellij.rd.client.debugger" />
     <orderEntry type="module" module-name="intellij.rd.ide.model.generated" />
     <orderEntry type="module" module-name="intellij.rd.platform" />
     <orderEntry type="module" module-name="intellij.rider" />
