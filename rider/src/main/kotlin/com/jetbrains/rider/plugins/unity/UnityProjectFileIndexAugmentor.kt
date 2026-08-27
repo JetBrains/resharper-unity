@@ -13,8 +13,24 @@ import com.intellij.util.containers.TreeNodeProcessingResult
 import com.intellij.workspaceModel.core.fileIndex.impl.WorkspaceFileIndexEx
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.ideaInterop.ProjectFileIndexAugmentor
+import org.jetbrains.annotations.VisibleForTesting
 
 class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
+  /**
+   * Memoized [Project.projectDir]: resolving it stats the filesystem and walks the VFS, and this EP is called for
+   * every file the platform asks about, so the uncached resolve dominated Search Everywhere traversals (RIDER-141491).
+   * The EP is `area="IDEA_PROJECT"`, so one instance per project.
+   *
+   * [VirtualFile.isValid] is the only invalidation check needed — the solution directory is fixed for the session, and
+   * a rename keeps the instance valid. It is also the only *safe* probe: after a VFS reconnect the cached file is
+   * alien, and comparing its path or name would throw where `isValid` merely answers `false`.
+   *
+   * Not `private` only so the test can plant a stale value.
+   */
+  @VisibleForTesting
+  @Volatile
+  var cachedProjectDir: VirtualFile? = null
+
   override fun isInProject(project: Project, index: ProjectFileIndex, file: VirtualFile, current: Boolean): Boolean {
     if (current) return true
     if (!project.isUnityProject.value) return false
@@ -134,8 +150,25 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
            }
   }
 
+  /**
+   * Publication-only memoization: a volatile read plus [VirtualFile.isValid] on the hit path, and **no lock** on the
+   * miss path. Callers arrive under a shared read lock ([ProjectFileIndex] is `@RequiresReadLock`), so several threads
+   * can miss at once and each resolves independently.
+   *
+   * That redundancy is deliberate. Deduplicating the resolve costs a monitor, and a read-lock holder parked on a
+   * monitor can neither release the lock nor see `ProgressManager.checkCanceled()` — the very stall class this
+   * memoization exists to remove, reintroduced on a path `master` never had one on. The duplicate work it would save
+   * is one `File.isDirectory` plus one VFS lookup per VFS epoch, and [Project.projectDir] resolves through
+   * `findFileByIoFile`, which returns canonical instances — so racing threads publish the *same* reference and the
+   * relaxation cannot produce a torn or disagreeing cache.
+   */
+  private fun projectDir(project: Project): VirtualFile {
+    cachedProjectDir?.let { if (it.isValid) return it }
+    return project.projectDir.also { cachedProjectDir = it }
+  }
+
   private fun unityRoots(project: Project): List<VirtualFile> {
-    val baseDir = project.projectDir
+    val baseDir = projectDir(project)
     val roots = mutableListOf<VirtualFile>()
     baseDir.findChild("Assets")?.let { if (it.isValid && it.isDirectory) roots.add(it) }
     baseDir.findChild("Packages")?.let { if (it.isValid && it.isDirectory) roots.add(it) }
