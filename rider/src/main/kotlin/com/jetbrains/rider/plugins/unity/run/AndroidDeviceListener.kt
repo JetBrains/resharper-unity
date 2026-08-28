@@ -176,7 +176,7 @@ class AndroidDeviceListener {
             players.remove(key)?.let { onPlayerRemoved(it) }
         }
 
-        val showPicoDeviceIcons = Registry.`is`(PICO_DEVICE_ICONS_REGISTRY_KEY, true)
+        val showPicoDeviceIcons = Registry.`is`(PICO_DEVICE_ICONS_REGISTRY_KEY, false)
 
         // Add any players that we haven't seen before
         discoveredPlayers.values.filter { !players.containsKey(it.key) }.forEach { player ->
