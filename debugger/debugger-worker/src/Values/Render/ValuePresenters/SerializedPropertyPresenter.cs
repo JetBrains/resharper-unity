@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Backend.Values.Render.ValuePresenters;
@@ -11,17 +12,33 @@ using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Win32;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
+    public class MonoSerializedPropertyPresenter : SerializedPropertyPresenter<Value>
+    {
+        public MonoSerializedPropertyPresenter(IUnityOptions unityOptions, ILogger logger) : base(unityOptions, logger)
+        {
+        }
+    }
+    
+    [DebuggerSessionComponent(typeof(CorDebuggerType))]
+    public class CorSerializedPropertyPresenter : SerializedPropertyPresenter<ICorValue>
+    {
+        public CorSerializedPropertyPresenter(IUnityOptions unityOptions, ILogger logger) : base(unityOptions, logger)
+        {
+        }
+    }
+
     public class SerializedPropertyPresenter<TValue> : ValuePresenterBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
     {
         private readonly IUnityOptions myUnityOptions;
         private readonly ILogger myLogger;
 
-        public SerializedPropertyPresenter(IUnityOptions unityOptions, ILogger logger)
+        protected SerializedPropertyPresenter(IUnityOptions unityOptions, ILogger logger)
         {
             myUnityOptions = unityOptions;
             myLogger = logger;
