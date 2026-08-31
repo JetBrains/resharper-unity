@@ -1,16 +1,12 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
-using JetBrains.HabitatDetector;
+using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
@@ -23,12 +19,11 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
-using Vestris.ResourceLib;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-    public class UnityVersion : IUnityReferenceChangeHandler, IUnityVersion
+    public partial class UnityVersion : IUnityReferenceChangeHandler, IUnityVersion
     {
         public const string VersionRegex = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
 
@@ -36,12 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         private readonly ISolution mySolution;
         private readonly IFileSystemTracker myFileSystemTracker;
         private readonly VirtualFileSystemPath mySolutionDirectory;
-        private Version myVersionFromProjectVersionTxt;
-        private Version myVersionFromEditorInstanceJson;
+        private IReadonlyProperty<Version> mySolutionWideVersion;
+        private readonly ViewableProperty<VirtualFileSystemPath> myAppPathFromLastAddedProject = new();
+
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
         public ViewableProperty<Version> ActualVersionForSolution { get; } = new(new Version(0,0));
-
         public readonly ViewableProperty<VirtualFileSystemPath> ActualAppPathForSolution = new();
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
@@ -57,55 +52,92 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
-            unitySolutionTracker.IsUnityProjectFolder.WhenTrue(lifetime, SetActualVersionForSolution);
-            unitySolutionTracker.HasUnityReference.WhenTrue(lifetime, SetActualVersionForSolution);
+            var needsUnityHandling = unitySolutionTracker.IsUnityProjectFolder.Compose(lifetime, unitySolutionTracker.HasUnityReference, (a, b) => a || b);
+            needsUnityHandling.WhenTrueOnce(lifetime, InitializeUnityVersionProperties);
         }
 
-        private void SetActualVersionForSolution(Lifetime lt)
+        private void InitializeUnityVersionProperties(Lifetime lt)
         {
             var projectVersionTxtPath = UnityVersionUtils.GetProjectVersionPath(mySolutionDirectory);
-            myFileSystemTracker.AdviseFileChanges(lt,
-                projectVersionTxtPath,
-                _ =>
-                {
-                    myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(mySolutionDirectory);
-                    UpdateActualVersionForSolution();
-                });
-            myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(mySolutionDirectory);
-
+            var projectVersion = CreatePropertyFromPath(projectVersionTxtPath, lt, _ =>
+            {
+                var version = UnityVersionUtils.GetProjectSettingsUnityVersion(mySolutionDirectory);
+                return version == null ? null : Parse(version);
+            });
+            
             var editorInstanceJsonPath = mySolutionDirectory.Combine("Library/EditorInstance.json");
-            myFileSystemTracker.AdviseFileChanges(lt,
-                editorInstanceJsonPath,
-                _ =>
-                {
-                    myVersionFromEditorInstanceJson =
-                        TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
-                    UpdateActualVersionForSolution();
-                });
-            myVersionFromEditorInstanceJson =
-                TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
+            var editorInstanceJson = CreatePropertyFromPath(editorInstanceJsonPath, lt, EditorInstanceJson.TryRead);
 
-            UpdateActualVersionForSolution();
+            mySolutionWideVersion = editorInstanceJson.Compose(lt, projectVersion, (editorInstanceData, versionProjectVersionTxt) =>
+            {
+                if (editorInstanceData != null && editorInstanceData.TryGetValue("version", out var versionString))
+                    return Parse(versionString);
+                
+                return versionProjectVersionTxt;
+            });
+            
+            mySolutionWideVersion.Advise(lt, version =>
+            {
+                if (version == null) version = FindFallbackVersionForSolution();
+                ourLogger.Verbose($"Setting ActualVersionForSolution to {version}");
+                ActualVersionForSolution.SetValue(version);
+            });
+            
+            // When Unity MSBuild compilation is enabled, it creates the unitylocation.txt that we can use
+            var unityLocationTxtPath = mySolutionDirectory.Combine("Library/MSBuild/unitylocation.txt");
+            var appPathFromUnityLocationTxt = CreatePropertyFromPath(unityLocationTxtPath, lt, TryGetAppPathFromUnityLocationTxt);
+
+            editorInstanceJson
+                .Compose(lt, myAppPathFromLastAddedProject, (editorInstanceData, pathFromLastAddedProject) =>
+                {
+                    if (editorInstanceData != null && editorInstanceData.TryGetValue("app_path", out var pathString))
+                        return VirtualFileSystemPath.Parse(pathString, InteractionContext.SolutionContext);
+
+                    return pathFromLastAddedProject;
+                })
+                .Compose(lt, appPathFromUnityLocationTxt, (path, pathFromUnityLocationTxt) =>
+                {
+                    // NOTE: we compose the unitylocation.txt value last, because if user disables the msbuild compilation
+                    // pipeline, the file will be left over, never updated. at the same time the last-added-project path
+                    // will become valid (non-null), since our project generation code will go into effect and produce
+                    // project files from which we can extract the path to the editor
+                    ActualAppPathForSolution.SetValue(path ?? pathFromUnityLocationTxt);
+                });
+        }
+        
+        private IReadonlyProperty<T> CreatePropertyFromPath<T>(VirtualFileSystemPath path, Lifetime lt,
+            Func<VirtualFileSystemPath, T> createValue)
+        {
+            var property = new ViewableProperty<T>(createValue(path));
+            myFileSystemTracker.AdviseFileChanges(lt, path, _ => property.SetValue(createValue(path)));
+            return property;
+        }
+
+        private static VirtualFileSystemPath TryGetAppPathFromUnityLocationTxt(VirtualFileSystemPath unityLocationTxtPath)
+        {
+            if (!unityLocationTxtPath.ExistsFile)
+                return null;
+
+            var pathString = unityLocationTxtPath.ReadAllText2(Encoding.UTF8).Text;
+            var path = VirtualFileSystemPath.Parse(pathString, InteractionContext.SolutionContext);
+            return UnityInstallationFinder.FindUnityAppPath(path);
         }
 
         [NotNull]
         public Version GetActualVersion([CanBeNull] IProject project)
         {
+            var solutionWideVersion = mySolutionWideVersion?.Maybe.ValueOrDefault;
+            if (solutionWideVersion != null) return solutionWideVersion;
+
             // Project might be null for e.g. decompiled files
-            if (project == null)
-                return new Version(0, 0);
-            var version = myUnityProjectFileCache.GetUnityVersion(project);
-            return version ?? GetActualVersionForSolution();
+            if (project == null) return new Version(0, 0);
+
+            return myUnityProjectFileCache.GetUnityVersion(project) ?? FindFallbackVersionForSolution();
         }
 
         [NotNull]
-        private Version GetActualVersionForSolution()
+        private Version FindFallbackVersionForSolution()
         {
-            if (myVersionFromEditorInstanceJson != null)
-                return myVersionFromEditorInstanceJson;
-            if (myVersionFromProjectVersionTxt != null)
-                return myVersionFromProjectVersionTxt;
-
             if (mySolution.IsVirtualSolution())
                 return new Version(0, 0);
 
@@ -124,31 +156,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             if (mySolution.IsVirtualSolution())
                 return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
 
-            if (ActualAppPathForSolution.HasValue() && !ActualAppPathForSolution.Value.IsNullOrEmpty())
-                return ActualAppPathForSolution.Value;
+            var appPath = ActualAppPathForSolution.Maybe.ValueOrDefault;
+            if (!appPath.IsNullOrEmpty())
+                return appPath;
 
             ourLogger.Verbose(
                 "UnityVersion.GetActualAppPathForSolution is empty path. May happen for a regular project with a reference to UnityEditor.dll outside of Unity installation.");
             return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
-        }
-
-        [CanBeNull]
-        private Version TryGetApplicationPathFromEditorInstanceJson(VirtualFileSystemPath editorInstanceJsonPath)
-        {
-            var val = EditorInstanceJson.TryGetValue(editorInstanceJsonPath, "version");
-            return val != null ? Parse(val) : null;
-        }
-
-
-        
-        [CanBeNull]
-        private Version TryGetVersionFromProjectVersion(VirtualFileSystemPath solutionDirectory)
-        {
-            var version = UnityVersionUtils.GetProjectSettingsUnityVersion(solutionDirectory);
-            if (version == null)
-                return null;
-            
-            return Parse(version);
         }
 
         private static Version GetVersionForTests(ISolution solution)
@@ -250,84 +264,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return version >= new Version(2019,2);
         }
 
-        private static readonly ConcurrentDictionary<VirtualFileSystemPath, Version> myUnityPathToVersion = new();
-
-        public static Version GetVersionByAppPath(VirtualFileSystemPath appPath)
-        {
-            if (appPath == null || appPath.Exists == FileSystemPath.Existence.Missing)
-                return null;
-
-            return myUnityPathToVersion.GetOrAdd(appPath, GetVersionByAppPathInternal);
-        }
-
-        private static Version GetVersionByAppPathInternal(VirtualFileSystemPath appPath)
-        {
-            Version version = null;
-            ourLogger.CatchWarn(() => // RIDER-23674
-            {
-                switch (PlatformUtil.RuntimePlatform)
-                {
-                    case JetPlatform.Windows:
-
-                        ourLogger.CatchWarn(() =>
-                        {
-                            var fileVersion = FileVersionInfo.GetVersionInfo(appPath.FullPath).FileVersion;
-                            if (!string.IsNullOrEmpty(fileVersion))
-                                version = Version.Parse(Version.Parse(fileVersion).ToString(3));
-                        });
-
-                        var resource = new VersionResource();
-                        resource.LoadFrom(appPath.FullPath);
-                        var unityVersionList = resource.Resources.Values.OfType<StringFileInfo>()
-                            .Where(c => c.Default.Strings.Keys.Any(b => b == "Unity Version")).ToArray();
-                        if (unityVersionList.Any())
-                        {
-                            var unityVersion = unityVersionList.First().Default.Strings["Unity Version"].StringValue;
-                            version = Parse(unityVersion);
-                        }
-
-                        break;
-                    case JetPlatform.MacOsX:
-                        var infoPlistPath = appPath.Combine("Contents/Info.plist");
-                        if (infoPlistPath.ExistsFile)
-                        {
-                            var docs = XDocument.Load(infoPlistPath.FullPath);
-                            var keyValuePairs = docs.Descendants("dict")
-                                .SelectMany(d => d.Elements("key").Zip(d.Elements().Where(e => e.Name != "key"),
-                                    (k, v) => new {Key = k, Value = v}))
-                                .GroupBy(x => x.Key.Value)
-                                .Select(g =>
-                                    g.First()) // avoid exception An item with the same key has already been added.
-                                .ToDictionary(i => i.Key.Value, i => i.Value.Value);
-                            version = Parse(keyValuePairs["CFBundleVersion"]);
-                        }
-
-                        break;
-                    case JetPlatform.Linux:
-                        version = Parse(appPath.FullPath); // parse from path
-                        break;
-                }
-            });
-            return version;
-        }
-
-        private void UpdateActualVersionForSolution()
-        {
-            var version = GetActualVersionForSolution();
-            ourLogger.Verbose($"UpdateActualVersionForSolution to {version}");
-            ActualVersionForSolution.SetValue(version);
-        }
-
-        public void OnHasUnityReference()
+        void IUnityReferenceChangeHandler.OnHasUnityReference()
         {
             // do nothing
         }
 
-        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
+        void IUnityReferenceChangeHandler.OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
-            var path = myUnityProjectFileCache.GetAppPath(project);
-            if (path != null)
-                ActualAppPathForSolution.SetValue(path);
+            myAppPathFromLastAddedProject.SetValue(myUnityProjectFileCache.GetAppPath(project));
         }
     }
 }

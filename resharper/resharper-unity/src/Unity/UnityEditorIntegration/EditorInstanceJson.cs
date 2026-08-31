@@ -11,12 +11,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         [CanBeNull]
         public static string TryGetValue(VirtualFileSystemPath editorInstanceJsonPath, string key)
         {
-            if (!editorInstanceJsonPath.ExistsFile)
-                return null;
-            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(editorInstanceJsonPath.ReadAllText2(Encoding.UTF8).Text);
-            if (values.ContainsKey(key))
-                return values[key];
-            return null;
+            var values = TryRead(editorInstanceJsonPath);
+            if (values == null) return null;
+            values.TryGetValue(key, out var value);
+            return value;
+        }
+
+        [CanBeNull]
+        public static Dictionary<string, string> TryRead(VirtualFileSystemPath editorInstanceJsonPath)
+        {
+            if (!editorInstanceJsonPath.ExistsFile) return null;
+            var jsonString = editorInstanceJsonPath.ReadAllText2(Encoding.UTF8).Text;
+            return JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString);
         }
     }
 }

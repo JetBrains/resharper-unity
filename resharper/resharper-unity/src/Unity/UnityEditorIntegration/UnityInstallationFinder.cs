@@ -287,46 +287,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                 return null;
 
             if (filePath.ExistsFile)
-            {
-                switch (PlatformUtil.RuntimePlatform)
-                {
-                    case JetPlatform.Windows:
-                    {
-                        return GoUpForUnityExecutable(filePath,$"{Unity}.exe", path => path.ExistsFile) 
-                               ?? GoUpForUnityExecutable(filePath,$"{Tuanjie}.exe", path => path.ExistsFile);
-                    }
-                    case JetPlatform.Linux:
-                    {
-                        return GoUpForUnityExecutable(filePath, Unity, path => path.ExistsFile)
-                               ?? GoUpForUnityExecutable(filePath, Tuanjie, path => path.ExistsFile);
-                    }
-                    case JetPlatform.MacOsX:
-                    {
-                        var result = GoUpForUnityExecutable(filePath, $"{Unity}.app", path => path.ExistsDirectory) 
-                                     ?? GoUpForUnityExecutable(filePath, $"{Tuanjie}.app", path => path.ExistsDirectory);
-                        // not sure, how this worked before: either older Unity versions or assembly is inside the Unity.app/Contents
-                        if (result == null)
-                        {
-                            var appPath = filePath;
-                            while (!appPath.Name.Equals("Contents"))
-                            {
-                                appPath = appPath.Directory;
-                                if (!appPath.ExistsDirectory || appPath.IsEmpty)
-                                    return null;
-                            }
-
-                            appPath = appPath.Directory;
-                            return appPath;    
-                        }
-                        return result;
-                    }
-                    default:
-                        ourLogger.Error("Unknown runtime platform");
-                        break;
-                }
-            }
+                return FindUnityAppPath(filePath);
 
             return null;
+        }
+
+        public static VirtualFileSystemPath FindUnityAppPath(VirtualFileSystemPath filePath)
+        {
+            switch (PlatformUtil.RuntimePlatform)
+            {
+                case JetPlatform.Windows:
+                {
+                    return GoUpForUnityExecutable(filePath,$"{Unity}.exe", path => path.ExistsFile) 
+                           ?? GoUpForUnityExecutable(filePath,$"{Tuanjie}.exe", path => path.ExistsFile);
+                }
+                case JetPlatform.Linux:
+                {
+                    return GoUpForUnityExecutable(filePath, Unity, path => path.ExistsFile)
+                           ?? GoUpForUnityExecutable(filePath, Tuanjie, path => path.ExistsFile);
+                }
+                case JetPlatform.MacOsX:
+                {
+                    var result = GoUpForUnityExecutable(filePath, $"{Unity}.app", path => path.ExistsDirectory) 
+                                 ?? GoUpForUnityExecutable(filePath, $"{Tuanjie}.app", path => path.ExistsDirectory);
+                    // not sure, how this worked before: either older Unity versions or assembly is inside the Unity.app/Contents
+                    if (result == null)
+                    {
+                        var appPath = filePath;
+                        while (!appPath.Name.Equals("Contents"))
+                        {
+                            appPath = appPath.Directory;
+                            if (!appPath.ExistsDirectory || appPath.IsEmpty)
+                                return null;
+                        }
+
+                        appPath = appPath.Directory;
+                        return appPath;    
+                    }
+                    return result;
+                }
+                default:
+                    ourLogger.Error("Unknown runtime platform");
+                    return null;
+            }            
         }
 
         private static VirtualFileSystemPath GoUpForUnityExecutable(VirtualFileSystemPath filePath, string targetName, Func<VirtualFileSystemPath, bool> checkExists)

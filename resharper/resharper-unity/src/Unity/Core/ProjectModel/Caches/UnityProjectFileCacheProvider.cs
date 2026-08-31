@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -24,7 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
 
         private readonly ISolution mySolution;
         private readonly IProjectFileDataCache myCache;
-        private readonly Dictionary<VirtualFileSystemPath, Action> myCallbacks;
 
         public UnityProjectFileCacheProvider(Lifetime lifetime, ISolution solution, IProjectFileDataCache cache)
         {
@@ -32,7 +30,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
             myCache = cache;
 
             myCache.RegisterCache(lifetime, this);
-            myCallbacks = new Dictionary<VirtualFileSystemPath, Action>();
         }
         
         // be aware that LangVersion can also be in a custom NET SDK or Directory.Build.props
@@ -145,8 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
 
         public Action OnDataChanged(VirtualFileSystemPath projectFileLocation, UnityProjectDataCache oldData, UnityProjectDataCache newData)
         {
-            myCallbacks.TryGetValue(projectFileLocation, out var action);
-            return action;
+            return null;
         }
     }
 

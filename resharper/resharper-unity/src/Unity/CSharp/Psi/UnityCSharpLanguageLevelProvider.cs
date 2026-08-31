@@ -149,8 +149,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                 //   Order of post-processing is non-deterministic, so Rider's LangVersion might be removed
                 #endregion
 
-                var unityProjectFileCacheProvider = project.GetComponent<UnityProjectFileCacheProvider>();
-                var appPath = unityProjectFileCacheProvider.GetAppPath(project);
+                var unityVersion = project.GetSolution().GetComponent<UnityVersion>();
+                var appPath = unityVersion.GetActualAppPathForSolution();
                 var contentPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
                 if (!contentPath.IsNullOrEmpty())
                 {
@@ -164,8 +164,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
 
                     if (!roslynDir.ExistsDirectory)
                     {
-                        var version = unityProjectFileCacheProvider.GetUnityVersion(project);
-                        if (version?.Major >= 6000 && !UnityBundledSdkLocator.HasBundledSdkWithMsBuild(contentPath))
+                        var version = unityVersion.GetActualVersion(project);
+                        if (version.Major >= 6000 && !UnityBundledSdkLocator.HasBundledSdkWithMsBuild(contentPath))
                             ourLogger.Error($"DotNetSdkRoslyn not found at known locations for Unity 6+. Contents path: {contentPath}");    
                     }
 
@@ -196,13 +196,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
                 if (UnityBundledSdkLocator.HasBundledSdkWithMsBuild(contentPath)) 
                     return (null, null, null);
                 
-                return DetermineCSharpLanguageLevelOldUnity(project, unityProjectFileCacheProvider);
+                return DetermineCSharpLanguageLevelOldUnity(project);
             }
 
             private static readonly Version ourVersion46 = new(4, 6);
             private static (CSharpLanguageLevel? languageLevel, CSharpLanguageLevel? latestAvailableLanguageValue,CSharpLanguageLevel? previewAvailableLanguageValue)
-                DetermineCSharpLanguageLevelOldUnity(IProject project, UnityProjectFileCacheProvider unityProjectFileCacheProvider)
+                DetermineCSharpLanguageLevelOldUnity(IProject project)
             {
+                var unityProjectFileCacheProvider = project.GetComponent<UnityProjectFileCacheProvider>();
+
                 CSharpLanguageLevel? languageLevel = null;
                 if (!unityProjectFileCacheProvider.IsLangVersionExplicitlySpecified(project) || IsLangVersionDefault())
                 {
