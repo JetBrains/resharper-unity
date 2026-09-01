@@ -10,6 +10,7 @@ import com.jetbrains.rider.debugger.DotNetBreakpointsManager
 import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.IDotNetSupportedBreakpointHandlerFactory
+import com.jetbrains.rider.debugger.putInto
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityPausepointAdditionalDataModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -98,12 +99,11 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
 
     private fun doRegisterBreakpoint(breakpoint: XLineBreakpoint<*>) {
         if (!registeredBreakpoints.contains(breakpoint)) {
-            var userData = breakpoint.getUserData(DotNetBreakpointsManager.breakpointAdditionalDataKey)
-            if (userData == null)
-                userData = ArrayList()
-
-            userData.add(UnityPausepointAdditionalDataModel())
-            breakpoint.putUserData(DotNetBreakpointsManager.breakpointAdditionalDataKey, userData)
+            DotNetBreakpointsManager.breakpointAdditionalDataKey.putInto(
+                UnityPausepointAdditionalDataModel(),
+                breakpoint,
+                debugProcess.session
+            )
             // Not safe to call multiple times, make sure we only register each breakpoint once
             debugProcess.breakpointsManager.registerLineBreakpoint(breakpoint)
             registeredBreakpoints.add(breakpoint)
