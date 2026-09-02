@@ -30,6 +30,7 @@
     <PackageReference Include="JetBrains.Lifetimes" />
     <PackageReference Include="JetBrains.RdFramework" />
     <PackageReference Include="System.Collections.Immutable" />
+    <PackageReference Include="JetBrains.NetFxBridge" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">
