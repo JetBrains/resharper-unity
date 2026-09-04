@@ -52,12 +52,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
-            var needsUnityHandling = unitySolutionTracker.IsUnityProjectFolder.Compose(lifetime, unitySolutionTracker.HasUnityReference, (a, b) => a || b);
-            needsUnityHandling.WhenTrueOnce(lifetime, InitializeUnityVersionProperties);
+            unitySolutionTracker.IsUnityProjectFolder.WhenTrue(lifetime, InitializeUnityVersionProperties);
+            unitySolutionTracker.HasUnityReference.WhenTrue(lifetime, InitializeUnityVersionProperties);
         }
 
         private void InitializeUnityVersionProperties(Lifetime lt)
         {
+            var wasInitialized = mySolutionWideVersion != null;
+            if (wasInitialized)
+            {
+                // currently in tests we have a situation where UnitySolutionTracker properties are triggered earlier
+                // than the project is fully built, and since solution-wide version always stays null there, the advise
+                // handler is never invoked, so we never update ActualVersionForSolution property with FindFallbackVersionForSolution
+                // which breaks the tests... so let's do it here and fix the tests when we have time (then we could get
+                // rid of this if and change the `WhenTrue`s in the ctor into a Compose + single WhenTrueOnce)
+                UpdateActualVersionForSolution(mySolutionWideVersion.Value);
+                return;
+            }
+            
             var projectVersionTxtPath = UnityVersionUtils.GetProjectVersionPath(mySolutionDirectory);
             var projectVersion = CreatePropertyFromPath(projectVersionTxtPath, lt, _ =>
             {
@@ -76,12 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                 return versionProjectVersionTxt;
             });
             
-            mySolutionWideVersion.Advise(lt, version =>
-            {
-                if (version == null) version = FindFallbackVersionForSolution();
-                ourLogger.Verbose($"Setting ActualVersionForSolution to {version}");
-                ActualVersionForSolution.SetValue(version);
-            });
+            mySolutionWideVersion.Advise(lt, UpdateActualVersionForSolution);
             
             // When Unity MSBuild compilation is enabled, it creates the unitylocation.txt that we can use
             var unityLocationTxtPath = mySolutionDirectory.Combine("Library/MSBuild/unitylocation.txt");
@@ -104,7 +111,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                     ActualAppPathForSolution.SetValue(path ?? pathFromUnityLocationTxt);
                 });
         }
-        
+
+        private void UpdateActualVersionForSolution(Version solutionWideVersion)
+        {
+            if (solutionWideVersion == null) solutionWideVersion = FindFallbackVersionForSolution();
+            ourLogger.Verbose($"Setting ActualVersionForSolution to {solutionWideVersion}");
+            ActualVersionForSolution.SetValue(solutionWideVersion);
+        }
+
         private IReadonlyProperty<T> CreatePropertyFromPath<T>(VirtualFileSystemPath path, Lifetime lt,
             Func<VirtualFileSystemPath, T> createValue)
         {
