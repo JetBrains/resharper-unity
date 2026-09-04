@@ -1,4 +1,9 @@
+load("@community//platform/build-scripts/bazel-rules:content_module_jar.bzl", "content_module_jar")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
+
+### auto-generated section `dev intellij.rider.plugins.unity.debugger.textureVisualizer.backend` start
+content_module_jar(module = ":backend")
+### auto-generated section `dev intellij.rider.plugins.unity.debugger.textureVisualizer.backend` end
 
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` start
 jvm_library(
