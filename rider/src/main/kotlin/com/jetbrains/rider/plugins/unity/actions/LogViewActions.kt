@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.FileEditorOpenRequest
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -30,7 +31,9 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction() {
             val vf = VfsUtil.findFileByIoFile(File(path), true)
             if (vf != null) {
                 val descriptor = OpenFileDescriptor(project, vf)
-                FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
+                val fileEditorManager = FileEditorManager.getInstance(project)
+                fileEditorManager.requestOpenTextEditor(descriptor, FileEditorOpenRequest.fromDescriptor(descriptor)
+                  .withRequestFocus(true))
             }
             else {
                 val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity project open")
@@ -62,7 +65,9 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
             val vf = VfsUtil.findFileByIoFile(File(path), true)
             if (vf != null) {
                 val descriptor = OpenFileDescriptor(project, vf)
-                FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
+                val fileEditorManager = FileEditorManager.getInstance(project)
+                fileEditorManager.requestOpenTextEditor(descriptor, FileEditorOpenRequest.fromDescriptor(descriptor)
+                  .withRequestFocus(true))
             }
             else {
                 val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity log open")
