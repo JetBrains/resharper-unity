@@ -12,9 +12,9 @@ namespace System.Runtime.InteropServices
         Arm64
     }
 
-    internal readonly struct OSPlatform
+    internal struct OSPlatform
     {
-        internal JetBrains.HabitatDetector.JetPlatform Platform { init; get; }
+        internal JetBrains.HabitatDetector.JetPlatform Platform;
 
         internal static OSPlatform Linux => new() { Platform = JetBrains.HabitatDetector.JetPlatform.Linux };
         internal static OSPlatform OSX => new() { Platform = JetBrains.HabitatDetector.JetPlatform.MacOsX };
