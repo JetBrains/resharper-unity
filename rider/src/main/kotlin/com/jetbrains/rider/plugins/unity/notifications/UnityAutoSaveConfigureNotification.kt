@@ -42,7 +42,7 @@ class UnityAutoSaveConfigureNotification : ProjectActivity {
         private const val settingName = "do_not_show_unity_auto_save_notification"
     }
 
-    @RequiresEdt
+    @RequiresEdt(generateAssertion = false /* IJPL-115548 */)
     fun showNotification(lifetimeDefinition: LifetimeDefinition, editor: Editor) {
         val lifetime = lifetimeDefinition.lifetime
 

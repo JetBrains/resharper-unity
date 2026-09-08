@@ -11,7 +11,7 @@ import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 
 class UnityUIMinimizer : ProjectActivity {
     companion object {
-        @RequiresEdt
+        @RequiresEdt(generateAssertion = false /* IJPL-115548 */)
         fun ensureMinimizedUI(project: Project) {
             if (project.isDisposed)
                 return
@@ -28,7 +28,7 @@ class UnityUIMinimizer : ProjectActivity {
             }
         }
 
-        @RequiresEdt
+        @RequiresEdt(generateAssertion = false /* IJPL-115548 */)
         fun recoverFullUI(project: Project) {
             if (project.isDisposed)
                 return
