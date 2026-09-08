@@ -54,7 +54,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
                 var startIndex = chunkStartIndex + i;
                 var endIndex = Math.Min(chunkStartIndex + i + step, chunkStartIndex + length) - 1;
                 var chunkLength = endIndex - startIndex + 1;
-                var name = $"[{i}..{endIndex}]";
+                var name = $"[{startIndex}..{endIndex}]";
                 yield return new SimpleEntityGroup(name,
                     GetChunkedChildren(collection, startIndex, chunkLength, options, token));
             }
