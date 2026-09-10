@@ -45,6 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       }
     }
 
+    public override ChameleonState GetChameleonState() => IsOpened ? ChameleonState.Opened : ChameleonState.Closed;
+
     public override ITreeNode FirstChild
     {
       get

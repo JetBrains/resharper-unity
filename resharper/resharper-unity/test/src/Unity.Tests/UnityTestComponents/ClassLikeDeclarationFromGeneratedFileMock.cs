@@ -84,6 +84,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                 throw new NotImplementedException();
             }
 
+            public ChameleonState GetChameleonState()
+            {
+                throw new NotImplementedException();
+            }
+
             public DocumentRange GetNavigationRange()
             {
                 throw new NotImplementedException();
