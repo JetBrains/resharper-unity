@@ -1,5 +1,5 @@
 ﻿<!--This file is auto-generated-->
-<api minimumVersion="5.0" maximumVersion="6000.2">
+<api minimumVersion="5.0" maximumVersion="6000.7">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="CanOpenForEdit" static="True" minimumVersion="2020.2" path="Documentation/en/ScriptReference/AssetModificationProcessor.CanOpenForEdit.html">
       <descriptions>
@@ -182,9 +182,20 @@
   </type>
   <type kind="class" name="AssetPostprocessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetPostprocessor.html">
     <message name="OnAssignMaterialModel" static="False" path="Documentation/en/ScriptReference/AssetPostprocessor.OnAssignMaterialModel.html">
+      <descriptions>
+        <description text="Override to choose which Material asset is assigned to an imported model renderer." langCode="iv" />
+      </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Material" array="False" name="material" />
-        <parameter type="UnityEngine.Renderer" array="False" name="renderer" />
+        <parameter type="UnityEngine.Material" array="False" name="material">
+          <descriptions>
+            <description text="A temporary Material built from the assigned material in the renderer's Materials list. It is only valid during this callback and Unity destroys it afterward." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.Renderer" array="False" name="renderer">
+          <descriptions>
+            <description text="The MeshRenderer or SkinnedMeshRenderer that will receive the Material." langCode="iv" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="UnityEngine.Material" array="False" />
     </message>
@@ -633,6 +644,24 @@
         <description text="Add this function to a subclass to get a notification just before the texture importer is run." langCode="ja" />
         <description text="Add this function to a subclass to get a notification just before the texture importer is run." langCode="ko" />
       </descriptions>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnProcessScene" static="False" minimumVersion="6000.7" path="ScriptReference/AssetPostprocessor.OnProcessScene.html">
+      <descriptions>
+        <description text="Implement this method to receive a callback for each scene loaded during a Player build or when the Editor is in Play mode." langCode="iv" />
+      </descriptions>
+      <parameters>
+        <parameter type="UnityEngine.SceneManagement.Scene" array="False" name="scene">
+          <descriptions>
+            <description text="The scene that Unity is processing." langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEditor.Build.Content.SceneImportContext" array="False" name="sceneContext">
+          <descriptions>
+            <description text="Additional context about the scene being processed." langCode="iv" />
+          </descriptions>
+        </parameter>
+      </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnGeneratedCSProject" static="True" minimumVersion="2018.1" undocumented="True">

@@ -12,7 +12,7 @@ internal class Program
     // app downloads
     // https://cloudmedia-docs.unity3d.com/docscloudstorage/<languagecode>/<version>/UnityDocumentation.zip
     // Language code: en, ja, kr, and cn
-    // Versions: 2023.2, 6000.0, 6000.1, 6000.2, 6000.3
+    // Versions: 2023.1, 6000.0, 6000.1, 6000.2, 6000.3, 6000.7
     // like "https://cloudmedia-docs.unity3d.com/docscloudstorage/ja/2020.3/UnityDocumentation.zip"
     // after downloading all the zip-s, extract them to get the structure like below:
     // Documentation-(<version>)
@@ -23,7 +23,7 @@ internal class Program
     //     cn
 
     private static readonly string[] Languages = { "en", "ja", "kr", "cn" };
-    private static readonly string[] Versions = { "2023.2", "6000.0", "6000.1", "6000.2", "6000.3" };
+    private static readonly string[] Versions = { "2023.1", "6000.0", "6000.1", "6000.2", "6000.3", "6000.7" };
 
     private const string BaseUrl = "https://cloudmedia-docs.unity3d.com/docscloudstorage";
 
