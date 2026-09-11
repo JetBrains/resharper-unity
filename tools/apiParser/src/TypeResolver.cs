@@ -31,7 +31,7 @@ namespace ApiParser
             myFullNames.Add("List<string>", "System.Collections.Generic.List`1[[System.String]]");
         }
 
-        private string ResolveFullName([NotNull] string name, string namespaceHint)
+        private string ResolveFullName([NotNull] string name, [CanBeNull] Func<string, int> candidateScorer)
         {
             var suffix = "";
             if (name.EndsWith("&"))
@@ -66,16 +66,23 @@ namespace ApiParser
 
             if (candidates.Count > 1)
             {
-                // If we have more than one type with the same name, choose the one in the same namespace as the owning
-                // message. This works for experimental types that move namespaces such as PlayState and Playable
+                if (candidateScorer == null) return candidates.First();
+                
+                var bestScore = 0;
+                string bestCandidate = null;
                 foreach (var candidate in candidates)
                 {
-                    Console.WriteLine($"Namespace hint: {namespaceHint}");
-                    if (candidate.StartsWith(namespaceHint))
+                    var score = candidateScorer(candidate);
+                    if (bestCandidate == null || score > bestScore)
                     {
-                        Console.WriteLine("WARNING: Multiple candidates for `{0}`. Choosing `{1}` based on namespace", name, candidate);
-                        return candidate;
+                        bestCandidate = candidate;
+                        bestScore = score;
                     }
+                }
+                if (bestCandidate != null)
+                {
+                    Console.WriteLine("WARNING: Multiple candidates for `{0}`. Choosing `{1}` based on given score function", name, bestCandidate);
+                    return bestCandidate;
                 }
 
                 Console.WriteLine("Cannot resolve type: {0}", name);
@@ -95,7 +102,7 @@ namespace ApiParser
 
         public void MarkObsolete(string name, Version version)
         {
-            var fullName = ResolveFullName(name, "");
+            var fullName = ResolveFullName(name, null);
             if (myIsObsolete.TryGetValue(fullName, out var fromVersion) && fromVersion < version)
                 return;
 
@@ -108,9 +115,9 @@ namespace ApiParser
             myFullNames.Add(fullName, fullName);
         }
 
-        public ApiType CreateApiType(string name, string namespaceHint = "")
+        public ApiType CreateApiType(string name, [CanBeNull] Func<string,int> candidateScorer = null)
         {
-            var fullname = ResolveFullName(name, namespaceHint);
+            var fullname = ResolveFullName(name, candidateScorer);
             return new ApiType(fullname);
         }
     }

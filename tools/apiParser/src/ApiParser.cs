@@ -191,7 +191,7 @@ namespace ApiParser
             var isCoroutine = IsCoroutineRegex.IsMatch(details.Text);
 
             var messageName = link.Text;
-            var returnType = ApiType.Void;
+            var returnTypeName = "void";
             var argumentNames = EmptyArray<string>.Instance;
             var isStaticFromExample = false;
 
@@ -206,7 +206,7 @@ namespace ApiParser
             var examples = PickExample(details);
             if (examples.Length > 0)
             {
-                var tuple = ParseDetailsFromExample(messageName, examples, hintNamespace);
+                var tuple = ParseDetailsFromExample(messageName, examples);
 
                 // As of 2017.4, the docs for MonoBehaviour.OnCollisionEnter2D don't include a valid example. It demonstrates
                 // OnTriggerEnter2D instead. Similar problems for these other methods
@@ -246,11 +246,14 @@ namespace ApiParser
 
                 if (tuple != null)
                 {
-                    returnType = tuple.Item1;
+                    returnTypeName = tuple.Item1;
                     argumentNames = tuple.Item2;
                     isStaticFromExample = tuple.Item3;
                 }
             }
+
+            var returnType = myTypeResolver.CreateApiType(returnTypeName, candidate =>
+                GetTypeResolutionConflictCandidateScore(hintNamespace, apiVersion, candidate));
 
             if (Equals(returnType, ApiType.IEnumerator))
             {
@@ -316,7 +319,8 @@ namespace ApiParser
                     typeName = parts[0];
                 }
 
-                var apiType = myTypeResolver.CreateApiType(typeName, owningMessageNamespace);
+                var apiType = myTypeResolver.CreateApiType(typeName,
+                    candidate => GetTypeResolutionConflictCandidateScore(owningMessageNamespace, apiVersion, candidate));
                 return new Argument(apiType, argName);
             }).ToArray();
 
@@ -372,6 +376,30 @@ namespace ApiParser
             }
         }
 
+        private int GetTypeResolutionConflictCandidateScore(string hintNamespace, Version apiVersion, string candidate)
+        {
+            // Scenes are always meant to be the one in UnityEngine.SceneManagement so far
+            if (candidate == "UnityEngine.SceneManagement.Scene")
+            {
+                return int.MaxValue;
+            }
+
+            // Prefer the candidate in the same namespace as the owning message.
+            // This works for experimental types that move namespaces such as PlayState and Playable.
+            if (candidate.StartsWith(hintNamespace))
+            {
+                return int.MaxValue;
+            }
+
+            // Discourage usage of obsolete types.
+            if (myTypeResolver.IsObsolete(candidate, apiVersion))
+            {
+                return int.MinValue;
+            }
+
+            return 0;
+        }
+
         private static readonly Regex SingleLineCommentsRegex =
             new Regex(@"^\s*//.*$", RegexOptions.Compiled | RegexOptions.Multiline);
 
@@ -382,12 +410,11 @@ namespace ApiParser
 
         // Gets return type and argument names from example
         [CanBeNull]
-        private Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, SimpleHtmlNode[] examples,
-            string owningMessageNamespace)
+        private Tuple<string, string[], bool> ParseDetailsFromExample(string messageName, SimpleHtmlNode[] examples)
         {
             foreach (var example in examples)
             {
-                var result = ParseDetailsFromExample(messageName, example, owningMessageNamespace);
+                var result = ParseDetailsFromExample(messageName, example);
                 if (result != null)
                     return result;
             }
@@ -395,8 +422,7 @@ namespace ApiParser
             return null;
         }
 
-        private Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, SimpleHtmlNode example,
-            string owningMessageNamespace)
+        private Tuple<string, string[], bool> ParseDetailsFromExample(string messageName, SimpleHtmlNode example)
         {
             var exampleText = example.Text;
             exampleText = SingleLineCommentsRegex.Replace(exampleText, string.Empty);
@@ -414,7 +440,6 @@ namespace ApiParser
                 var returnTypeName = m.Groups["returnType"].Value;
                 if (returnTypeName == "function") // JS without an explicit return type
                     returnTypeName = "void";
-                var returnType = myTypeResolver.CreateApiType(returnTypeName, owningMessageNamespace);
                 var parameters = m.Groups["parameters"].Value
                     .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
                 var isStatic = m.Groups["static"].Success;
@@ -428,7 +453,7 @@ namespace ApiParser
                         arguments[i] = ParameterNameRegex.Replace(parameters[i], "$1");
                 }
 
-                return Tuple.Create(returnType, arguments, isStatic);
+                return Tuple.Create(returnTypeName, arguments, isStatic);
             }
 
             return null;
