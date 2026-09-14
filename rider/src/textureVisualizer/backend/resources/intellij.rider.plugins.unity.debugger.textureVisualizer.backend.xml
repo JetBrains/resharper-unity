@@ -26,6 +26,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <platform.rpc.backend.remoteApiProvider
-      implementation="intellij.rider.plugins.unity.debugger.textureVisualizer.backend.RiderTextureDataApiProvider"/>
+      implementation="intellij.rider.plugins.unity.debugger.textureVisualizer.backend.RiderTextureDataApiProvider"
+      apiInterfaces="intellij.rider.plugins.unity.debugger.textureVisualizer.common.RiderTextureDataApi"/>
   </extensions>
 </idea-plugin>
