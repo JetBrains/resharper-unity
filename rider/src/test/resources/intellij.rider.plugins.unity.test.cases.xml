@@ -41,7 +41,7 @@
     <module name="intellij.rider.languages"/>
     <module name="intellij.rider.plugins.unity.backend"/>
     <module name="intellij.rider.plugins.unity.model"/>
-    <module name="intellij.rider.test.framework.integration.junit"/>
+    <module name="intellij.rider.test.framework.integration"/>
     <module name="intellij.rider.test.framework.junit"/>
     <module name="intellij.xml.impl"/>
   </dependencies>
