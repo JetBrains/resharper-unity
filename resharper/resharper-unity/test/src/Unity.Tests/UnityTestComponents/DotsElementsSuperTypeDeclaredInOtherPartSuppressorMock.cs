@@ -98,6 +98,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
             public IDocument? AssociatedEditorDocument { get; } = null;
             public IDocument? AssociatedEmbeddedSourceDocument { get; } = null;
             public string RelativePath { get; } = string.Empty;
+            public string GeneratorAssemblyName { get; } = string.Empty;
+            public string GeneratorName { get; } = string.Empty;
+            public string HintName { get; } = string.Empty;
             public int CodePage { get; set; }
             public string? AnalyzerReferencePath { get; } = null;
             public VirtualFileSystemPath ProjectModelPath { get; } = null!;
