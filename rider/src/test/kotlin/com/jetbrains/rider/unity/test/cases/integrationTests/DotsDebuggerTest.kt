@@ -145,6 +145,7 @@ class DotsDebuggerTestUnity6 : DotsDebuggerTest() {
 @UnityTestSettings(unityVersion = UnityVersion.V6_2)
 class DotsDebuggerTestUnity6_2 : DotsDebuggerTest() {
     init {
+        addMute(Mute("RIDER-133998"), ::checkUnityPausePoint)
         addMute(Mute("RIDER-141685"), ::checkBreakpointInDOTSCode)
         addMute(Mute("RIDER-141685"), ::checkRefPresentationInDOTSCode)
     }
@@ -155,6 +156,7 @@ class DotsDebuggerTestUnity6_2 : DotsDebuggerTest() {
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class DotsDebuggerTestUnity6_3 : DotsDebuggerTest() {
     init {
+        addMute(Mute("RIDER-133998"), ::checkUnityPausePoint)
         addMute(Mute("RIDER-141685"), ::checkBreakpointInDOTSCode)
         addMute(Mute("RIDER-141685"), ::checkRefPresentationInDOTSCode)
     }
