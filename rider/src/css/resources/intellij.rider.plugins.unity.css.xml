@@ -8,11 +8,13 @@
     <module name="intellij.libraries.rd.core"/>
     <module name="intellij.platform.analysis"/>
     <module name="intellij.platform.analysis.impl"/>
+    <module name="intellij.platform.backend.workspace"/>
     <module name="intellij.platform.core"/>
     <module name="intellij.platform.core.impl"/>
     <module name="intellij.platform.editor.ui"/>
     <module name="intellij.platform.ide"/>
     <module name="intellij.platform.ide.impl"/>
+    <module name="intellij.platform.workspace.storage"/>
     <module name="intellij.rider"/>
     <module name="intellij.rider.plugins.unity.backend"/>
     <module name="intellij.xml.parser"/>
