@@ -75,7 +75,9 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
             for (name in predefinedProjectNames) {
                 for (node in items) {
-                    if (node.containingProjectEntity()?.name.equals(name))
+                    val project = node.containingProjectEntity() ?: continue
+                    val projectName = UnityExplorer.removeUnityMsBuildGenSuffix(project.name)
+                    if (projectName == name)
                         return node
                 }
             }

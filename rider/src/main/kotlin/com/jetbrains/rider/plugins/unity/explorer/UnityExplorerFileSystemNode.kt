@@ -163,7 +163,7 @@ open class UnityExplorerFileSystemNode(project: Project,
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = entities   // One node for each project that this directory is part of
             .mapNotNull { containingProjectNode(it) }
-            .map(::stripDefaultProjectPrefix)
+            .map(::prepareProjectNameForDisplay)
             .filter { it.isNotEmpty() }
             .sortedWith(String.CASE_INSENSITIVE_ORDER)
             .distinct()
@@ -183,11 +183,12 @@ open class UnityExplorerFileSystemNode(project: Project,
         }
     }
 
-    private fun stripDefaultProjectPrefix(it: ProjectModelEntity): String {
+    private fun prepareProjectNameForDisplay(it: ProjectModelEntity): String {
+        val projectName = UnityExplorer.removeUnityMsBuildGenSuffix(it.name)
         // Assembly-CSharp => ""
         // Assembly-CSharp-Editor => Editor
         // Assembly-CSharp.Player => Player
-        return it.name.replace(UnityExplorer.DefaultProjectPrefixRegex, "")
+        return projectName.replace(UnityExplorer.DefaultProjectPrefixRegex, "")
     }
 
     private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {
@@ -219,13 +220,14 @@ open class UnityExplorerFileSystemNode(project: Project,
             // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
             // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
             //   Plugins, Standard Assets, Pro Standard Assets
-            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
+            val projectName = UnityExplorer.removeUnityMsBuildGenSuffix(projectEntity.name)
+            if (projectName == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
                 return null
             }
-            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
+            if (projectName == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
                 return null
             }
-            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
+            if (projectName == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
                 val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
                 if (editor != null && isUnderFirstpassFolder(editor)) {
                     return null

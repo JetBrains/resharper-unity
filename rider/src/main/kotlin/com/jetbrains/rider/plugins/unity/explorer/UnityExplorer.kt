@@ -35,6 +35,9 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         val Icon = UnityIcons.ToolWindows.UnityExplorer
         val IgnoredExtensions = hashSetOf("meta", "tmp")
 
+        // Unity's MSBuild-based compilation adds the .gen suffix to its projects
+        fun removeUnityMsBuildGenSuffix(projectName: String): String = projectName.removeSuffix(".gen")
+
         fun getInstance(project: Project) = tryGetInstance(project)!!
 
         fun tryGetInstance(project: Project): UnityExplorer? {
