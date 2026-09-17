@@ -101,7 +101,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
         private IValueReference<TValue>? TryGetCurrentEntityFromParentFrame(IStackFrame frame, Lifetime lifetime)
         {
             var containingReifiedType = frame.GetContainingReifiedType();
-            if (containingReifiedType == null || !IsIJobEntityType(containingReifiedType))
+            if (containingReifiedType == null || !IsSupportedEntityProcessingType(containingReifiedType))
                 return null;
 
             var callerFrame = frame.CallerFrame;
@@ -174,11 +174,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation.Dots
                 ValueFlags.None | ValueFlags.IsTypeCanBeDerivedFromContext | ValueFlags.IsReadOnly, frame,
                 myValueServices.RoleFactory);
 
-            bool IsIJobEntityType(IReifiedType reifiedType)
+            // A lambda job (Entities.ForEach) is generated as an IJobChunk.
+            bool IsSupportedEntityProcessingType(IReifiedType reifiedType)
             {
-                const string iJobEntityTypeName = "Unity.Entities.IJobEntity";
                 return reifiedType.MetadataType.ImplementedInterfaces
-                    .Any(t => t.FullName == iJobEntityTypeName);
+                    .Any(t => t.FullName is "Unity.Entities.IJobEntity" or "Unity.Entities.IJobChunk");
             }
         }
     }

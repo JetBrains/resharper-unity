@@ -9,9 +9,11 @@ import com.intellij.openapi.vfs.AsyncFileListener.ChangeApplier
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rider.projectView.solutionDirectoryPath
 import java.io.File
 import java.io.FileReader
 import java.io.IOException
+import kotlin.io.path.exists
 
 enum class EditorInstanceJsonStatus {
     Missing,
@@ -30,16 +32,20 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
         fun getInstance(project: Project): EditorInstanceJson {
             initFileListener(project)
 
-            var editorInstanceJson = project.getUserData(INSTANCE_KEY)
-            if (editorInstanceJson != null)
-                return editorInstanceJson
+            // Unity writes the file outside the project content, so the listener below does not
+            // always fire. Re-check instead of trusting the cached miss.
+            val cached = project.getUserData(INSTANCE_KEY)
+            if (cached != null && !editorInstanceJsonExists(project))
+                return cached
 
-            editorInstanceJson = load(project)
-            if (editorInstanceJson.status != EditorInstanceJsonStatus.Valid) {
-                project.putUserData(INSTANCE_KEY, editorInstanceJson)
-            }
+            val editorInstanceJson = load(project)
+            project.putUserData(INSTANCE_KEY,
+                                editorInstanceJson.takeIf { it.status == EditorInstanceJsonStatus.Missing })
             return editorInstanceJson
         }
+
+        private fun editorInstanceJsonExists(project: Project) =
+            !project.isDefault && project.solutionDirectoryPath.resolve(editorInstanceJsonRelPath).exists()
 
         private fun load(project: Project): EditorInstanceJson {
             if (project.isDefault) // RIDER-51997 RunConfiguration templates from Welcome screen

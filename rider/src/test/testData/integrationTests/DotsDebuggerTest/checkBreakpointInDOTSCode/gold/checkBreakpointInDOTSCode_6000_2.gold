@@ -8,7 +8,6 @@ ResetTransformSystemBase.<ResetTransformSystemBase_LambdaJob_Job>.OriginalLambda
 --> ResetTransformSystem.cs:34(921,1010) // transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity};
 ResetTransformJobEntity.Execute() in Assembly-CSharp.dll
     +Current Entity = '' Entity<id>
-    +__TypeHandle = ResetTransformJobEntity.InternalCompilerQueryAndHandleData.TypeHandle
     +speed = RotationSpeed
     +transform = {LocalTransform} Position=float3(<float_value>, <float_value>, <float_value>) Rotation=quaternion(<float_value>, <float_value>, <float_value>, <float_value>) Scale=0
 
