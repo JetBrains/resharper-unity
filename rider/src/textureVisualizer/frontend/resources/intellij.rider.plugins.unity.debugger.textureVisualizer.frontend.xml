@@ -9,6 +9,7 @@
     <module name="intellij.grid.impl"/>
     <module name="intellij.libraries.rd.core"/>
     <module name="intellij.platform.analysis"/>
+    <module name="intellij.platform.concurrency"/>
     <module name="intellij.platform.core"/>
     <module name="intellij.platform.core.ui"/>
     <module name="intellij.platform.debugger"/>
