@@ -9,6 +9,15 @@ dev_dist_plugin(
         "intellij.rider.plugins.unity.debugger.textureVisualizer.frontend",
         "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
     ],
+    descriptor = "resources/META-INF/plugin.xml",
+    descriptor_modules = [
+        "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
+        "intellij.rider.plugins.unity.debugger.textureVisualizer.common",
+        "intellij.rider.plugins.unity.debugger.textureVisualizer.frontend",
+    ],
+    jars = {
+        "lib/rider-plugins-unity-debugger-textureVisualizer.jar": ["intellij.rider.plugins.unity.debugger.textureVisualizer"],
+    },
     main_module = "intellij.rider.plugins.unity.debugger.textureVisualizer",
 )
 ### auto-generated section `dev intellij.rider.plugins.unity.debugger.textureVisualizer` end
