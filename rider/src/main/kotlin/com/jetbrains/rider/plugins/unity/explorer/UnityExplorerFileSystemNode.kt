@@ -5,9 +5,9 @@ import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vcs.FileStatus
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.backend.workspace.WorkspaceModel
-import com.intellij.platform.backend.workspace.virtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
@@ -17,8 +17,11 @@ import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntityVisitor
 import com.jetbrains.rider.projectView.workspace.containingProjectEntity
 import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
+import com.jetbrains.rider.projectView.workspace.getSolutionEntity
+import com.jetbrains.rider.projectView.workspace.getVirtualFileAsContentRoot
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSupport
 import com.jetbrains.rider.projectView.workspace.isProject
 import icons.UnityIcons
@@ -82,7 +85,6 @@ open class UnityExplorerFileSystemNode(project: Project,
         get() = WorkspaceModel
             .getInstance(myProject)
             .getProjectModelEntities(file, myProject)
-            .toList()
 
     public override fun hasProblemFileBeneath(): Boolean {
         return Registry.`is`("projectView.showHierarchyErrors") && entities.any {
@@ -161,12 +163,7 @@ open class UnityExplorerFileSystemNode(project: Project,
     private fun isIgnoredFolder(file: VirtualFile) = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
 
     protected fun addProjects(presentation: PresentationData) {
-        val projectNames = entities   // One node for each project that this directory is part of
-            .mapNotNull { containingProjectNode(it) }
-            .map(::prepareProjectNameForDisplay)
-            .filter { it.isNotEmpty() }
-            .sortedWith(String.CASE_INSENSITIVE_ORDER)
-            .distinct()
+        val projectNames = getProjectNames()
         if (projectNames.any()) {
             val maxProjectsInDescription = 3
             val maxProjectsInTooltip = 10
@@ -183,59 +180,85 @@ open class UnityExplorerFileSystemNode(project: Project,
         }
     }
 
-    private fun prepareProjectNameForDisplay(it: ProjectModelEntity): String {
-        val projectName = UnityExplorer.removeUnityMsBuildGenSuffix(it.name)
+    private fun stripDefaultProjectPrefix(projectName: String): String {
         // Assembly-CSharp => ""
         // Assembly-CSharp-Editor => Editor
         // Assembly-CSharp.Player => Player
         return projectName.replace(UnityExplorer.DefaultProjectPrefixRegex, "")
     }
 
-    private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {
+    private fun getProjectNames(): List<String> {
         if (descendentOf == AncestorNodeType.FileSystem) {
-            return null
+            return emptyList()
         }
 
-        if (entity.isProject())
-            return null
+        // We want to show projects on directories with .asmdef files
+        val hasAssemblyDefinitionFile = hasAssemblyDefinitionFile(virtualFile)
 
-        val projectEntity = entity.containingProjectEntity() ?: return null
-
-        // Show the project on the owner of the assembly definition file
-        val dir = entity.url?.virtualFile
-        if (dir != null && hasAssemblyDefinitionFile(dir)) {
-            return projectEntity
+        // We don't want to show projects on intermediate folders between .asmdef ones, so we can early out
+        val isUnderAssemblyDefinition = !hasAssemblyDefinitionFile && isUnderAssemblyDefinition()
+        if (isUnderAssemblyDefinition) {
+            return emptyList()
         }
 
-        // Hide the project if we're under an assembly definition - the first .asmdef we meet is the root of this project
-        if (isUnderAssemblyDefinition()) {
-            return null
+        val workspaceModel = WorkspaceModel.getInstance(myProject)
+
+        val projectEntities = hashSetOf<ProjectModelEntity>()
+
+        // Collect the projects that this directory is explicitly a part of
+        val entities = workspaceModel.getProjectModelEntities(file, myProject)
+        for (entity in entities) {
+            if (entity.isProject()) continue
+            val projectEntity = entity.containingProjectEntity() ?: continue
+            projectEntities.add(projectEntity)
         }
+
+        // Collect any other projects that are underneath this directory.
+        // This is needed for Unity's own MSBuild-based project generation that generates projects
+        // that include files using patterns relative to the project directory, so its parent directories
+        // are simply not part of the project as far as our project model is concerned
+        val solutionEntity = workspaceModel.getSolutionEntity()
+        if (solutionEntity != null) {
+            val visitor = object : ProjectModelEntityVisitor() {
+                override fun visitProject(entity: ProjectModelEntity): Result {
+                    if (entity !in projectEntities) {
+                        val projectRoot = entity.getVirtualFileAsContentRoot()
+                        if (projectRoot != null && VfsUtil.isAncestor(virtualFile, projectRoot, false))
+                            projectEntities.add(entity)
+                    }
+                    return Result.Stop
+                }
+            }
+            visitor.visit(solutionEntity)
+        }
+
+        if (projectEntities.isEmpty()) {
+            return emptyList()
+        }
+
+        var projectNames = projectEntities.map { UnityExplorer.removeUnityMsBuildGenSuffix(it.name) }
 
         // These special folders aren't used in Packages
-        if (descendentOf == AncestorNodeType.Assets) {
-
-            // This won't work if the projects are renamed by some kind of Unity plugin
-            // If the project is -Editor, hide if this node is under the Editor folder
-            // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
-            // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
-            //   Plugins, Standard Assets, Pro Standard Assets
-            val projectName = UnityExplorer.removeUnityMsBuildGenSuffix(projectEntity.name)
-            if (projectName == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
-                return null
-            }
-            if (projectName == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
-                return null
-            }
-            if (projectName == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
-                val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
-                if (editor != null && isUnderFirstpassFolder(editor)) {
-                    return null
+        if (!hasAssemblyDefinitionFile && descendentOf == AncestorNodeType.Assets) {
+            projectNames = projectNames.filter {
+                // This won't work if the projects are renamed by some kind of Unity plugin
+                // If the project is -Editor, hide if this node is under the Editor folder
+                // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
+                // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
+                //   Plugins, Standard Assets, Pro Standard Assets
+                when (it) {
+                    UnityExplorer.DefaultProjectPrefix + "-Editor" -> !isUnderEditorFolder()
+                    UnityExplorer.DefaultProjectPrefix + "-firstpass" -> !isUnderFirstpassFolder()
+                    UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass" -> !isUnderEditorFirstpassFolder()
+                    else -> true
                 }
             }
         }
 
-        return projectEntity
+        return projectNames
+            .map(::stripDefaultProjectPrefix)
+            .filter(String::isNotEmpty)
+            .sortedWith(String.CASE_INSENSITIVE_ORDER)
     }
 
     private fun forEachAncestor(root: FileSystemNodeBase?, action: FileSystemNodeBase.() -> Boolean): FileSystemNodeBase? {
@@ -266,9 +289,14 @@ open class UnityExplorerFileSystemNode(project: Project,
         } != null
     }
 
+    private fun isUnderEditorFirstpassFolder(): Boolean {
+        val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
+        return editor == null || !isUnderFirstpassFolder(editor)
+    }
+
     private fun isUnderAssemblyDefinition(): Boolean {
         return forEachAncestor(this.parent as? FileSystemNodeBase) {
-            this.virtualFile.children.any { it.extension.equals("asmdef", true) }
+            hasAssemblyDefinitionFile(this.virtualFile)
         } != null
     }
 

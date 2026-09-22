@@ -34,6 +34,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun getBestParentProjectModelNode(targetLocation: VirtualFile): ProjectModelEntity? {
+        // TODO RIDER-141773: check whether this needs to be adapted for Unity MSBuild
         if (!project.isUnityProject.value)
             return null
         if (targetLocation.isDirectory) // RIDER-64427 "New in This Directory" doesn't work
