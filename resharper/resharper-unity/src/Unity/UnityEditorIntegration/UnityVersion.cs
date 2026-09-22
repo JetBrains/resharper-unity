@@ -6,7 +6,6 @@ using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Parts;
 using JetBrains.Collections.Viewable;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
@@ -286,6 +285,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         void IUnityReferenceChangeHandler.OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
             myAppPathFromLastAddedProject.SetValue(myUnityProjectFileCache.GetAppPath(project));
+        }
+
+        // still set myAppPathFromLastAddedProject, when projects not loaded
+        internal void SetAppPathFromProjectFilesOnDisk([NotNull] VirtualFileSystemPath appPath)
+        {
+            myAppPathFromLastAddedProject.SetValue(appPath);
         }
     }
 }
