@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Runtime
     {
         public IDotNetCoreCli? Select(IReadOnlyCollection<IDotNetCoreCli> toolsets, VirtualFileSystemPath? solutionRoot)
         {
-            var solution = solutionsManager.Solution;
+            var solution = solutionsManager.Solution; // can be null at first, but then UnityBundledSdkRefresher will help to Refresh again.
             if (solution == null)
                 return null;
 
