@@ -329,5 +329,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             if (path != null)
                 ActualAppPathForSolution.SetValue(path);
         }
+        
+        // still set myAppPathFromLastAddedProject, when projects not loaded
+        internal void SetAppPathFromProjectFilesOnDisk([NotNull] VirtualFileSystemPath appPath)
+        {
+            ActualAppPathForSolution.SetValue(appPath);
+        }
     }
 }
