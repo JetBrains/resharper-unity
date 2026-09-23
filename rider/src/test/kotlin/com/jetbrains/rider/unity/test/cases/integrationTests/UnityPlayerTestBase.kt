@@ -72,6 +72,10 @@ abstract class UnityPlayerTestBase : BaseTestWithUnitySetup() {
     private lateinit var lifetimeDefinition: LifetimeDefinition
     private lateinit var unityPlayerFile: Path
 
+    /** Ends after each test. */
+    protected val testLifetime: Lifetime
+        get() = lifetimeDefinition.lifetime
+
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger
     override val testClassDataDirectory: Path

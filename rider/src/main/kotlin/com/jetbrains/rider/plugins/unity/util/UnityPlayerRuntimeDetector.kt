@@ -40,7 +40,9 @@ class UnityPlayerRuntimeDetector(val project: Project) {
         return when (val outcome = detectInternal(exePath, isEditor)) {
             is ScanOutcome.Ok -> outcome.backend
             is ScanOutcome.UnknownFromScanner -> {
-                thisLogger().info("Probably Unity older than 6000.6. Could not detect scripting backend for $exePath")
+                thisLogger().info("Could not detect the scripting backend for $exePath. " +
+                                  "The player exports no backend symbol, and it has no GameAssembly library. " +
+                                  "The detector reports Mono. Unity 6000.7 and later export the symbol.")
                 UnityScriptingBackend.Mono
             }
             is ScanOutcome.ScanFailed -> {
@@ -53,8 +55,14 @@ class UnityPlayerRuntimeDetector(val project: Project) {
     private suspend fun detectInternal(exePath: Path, isEditor: Boolean): ScanOutcome {
         // in case of editor, the binary itself is supposed to contain the exported symbol,
         // otherwise we look for the unity player library instead
-        val playerPath = if (isEditor) exePath else resolveUnityPlayerLib(exePath) ?: return ScanOutcome.UnknownFromScanner
-        if (!playerPath.isRegularFile()) return ScanOutcome.UnknownFromScanner
+        val playerPath = if (isEditor) exePath else resolveUnityPlayerLib(exePath)
+        if (playerPath == null || !playerPath.isRegularFile()) {
+            // The IL2CPP guard reads the native library directory, not the player library, so it
+            // still answers when the player library is absent.
+            if (detectWithOldHeuristics(exePath) == UnityScriptingBackend.IL2CPP)
+                return ScanOutcome.Ok(UnityScriptingBackend.IL2CPP)
+            return ScanOutcome.UnknownFromScanner
+        }
 
         val time = playerPath.getLastModifiedTime()
         val key = playerPath.toAbsolutePath().normalize()
@@ -78,7 +86,7 @@ class UnityPlayerRuntimeDetector(val project: Project) {
         }
 
         // Scanner could not determine the backend (old Unity) or threw — preserve the IL2CPP guard.
-        if (detectWithOldHeuristics(playerPath) == UnityScriptingBackend.IL2CPP) {
+        if (detectWithOldHeuristics(exePath) == UnityScriptingBackend.IL2CPP) {
             cache[key] = time to UnityScriptingBackend.IL2CPP
             return ScanOutcome.Ok(UnityScriptingBackend.IL2CPP)
         }
@@ -86,35 +94,47 @@ class UnityPlayerRuntimeDetector(val project: Project) {
         return scanOutcome
     }
 
-    private fun detectWithOldHeuristics(libPath: Path): UnityScriptingBackend {
-        // old heuristics for IL2CPP, keep it for Unity versions older than 6000.6
-        val extension = when (OS.CURRENT) {
-            OS.Windows -> "dll"
-            OS.macOS -> "dylib"
-            OS.Linux -> "so"
-            else -> throw IllegalStateException("Unsupported OS")
-        }
+    private fun detectWithOldHeuristics(exePath: Path): UnityScriptingBackend {
+        // The fallback finds IL2CPP by the GameAssembly library. It answers for a Unity older than
+        // 6000.7, which is the first version that exports the backend symbol.
+        val extension = nativeLibraryExtension ?: return UnityScriptingBackend.Unknown
+        val libraryDir = resolveNativeLibraryDirectory(exePath) ?: return UnityScriptingBackend.Unknown
 
-        if (libPath.parent.resolve("GameAssembly.$extension").exists()) {
+        if (libraryDir.resolve("GameAssembly.$extension").exists()) {
             return UnityScriptingBackend.IL2CPP
         }
         return UnityScriptingBackend.Unknown
     }
 
     private fun resolveUnityPlayerLib(exePath: Path): Path? {
+        val extension = nativeLibraryExtension ?: return null
+        return resolveNativeLibraryDirectory(exePath)?.resolve("UnityPlayer.$extension")
+    }
+
+    /**
+     * The directory that holds `UnityPlayer` and `GameAssembly` for the player at [exePath].
+     *
+     * On macOS a player is an application bundle, so the caller may name either the inner executable
+     * or the bundle itself.
+     */
+    private fun resolveNativeLibraryDirectory(exePath: Path): Path? {
         return when (OS.CURRENT) {
-            OS.macOS -> {
-                val appDir = findEnclosingAppBundle(exePath) ?: return null
-                appDir.resolve("Contents/Frameworks/UnityPlayer.dylib")
-            }
-            OS.Windows -> exePath.parent?.resolve("UnityPlayer.dll")
-            OS.Linux -> exePath.parent?.resolve("UnityPlayer.so")
+            OS.macOS -> findAppBundle(exePath)?.resolve("Contents/Frameworks")
+            OS.Windows, OS.Linux -> exePath.parent
             else -> null
         }
     }
 
-    private fun findEnclosingAppBundle(exePath: Path): Path? {
-        var current: Path? = exePath.parent
+    private val nativeLibraryExtension: String?
+        get() = when (OS.CURRENT) {
+            OS.Windows -> "dll"
+            OS.macOS -> "dylib"
+            OS.Linux -> "so"
+            else -> null
+        }
+
+    private fun findAppBundle(exePath: Path): Path? {
+        var current: Path? = exePath
         while (current != null) {
             if (current.name.endsWith(".app")) return current
             current = current.parent
