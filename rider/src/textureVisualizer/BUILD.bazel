@@ -19,6 +19,9 @@ dev_dist_plugin(
         "lib/rider-plugins-unity-debugger-textureVisualizer.jar": ["intellij.rider.plugins.unity.debugger.textureVisualizer"],
     },
     main_module = "intellij.rider.plugins.unity.debugger.textureVisualizer",
+    mode_refused_content_modules = {
+        "frontend": ["intellij.rider.plugins.unity.debugger.textureVisualizer.backend"],
+    },
 )
 ### auto-generated section `dev intellij.rider.plugins.unity.debugger.textureVisualizer` end
 
