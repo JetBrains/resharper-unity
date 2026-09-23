@@ -1,16 +1,9 @@
 package com.jetbrains.rider.plugins.unity
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ContentIterator
-import com.intellij.openapi.roots.ContentIteratorEx
 import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileFilter
-import com.intellij.openapi.vfs.VirtualFileVisitor
-import com.intellij.util.containers.TreeNodeProcessingResult
-import com.intellij.workspaceModel.core.fileIndex.impl.WorkspaceFileIndexEx
+import com.intellij.openapi.vfs.newvfs.NewVirtualFile
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.ideaInterop.ProjectFileIndexAugmentor
 import org.jetbrains.annotations.VisibleForTesting
@@ -23,7 +16,10 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
    *
    * [VirtualFile.isValid] is the only invalidation check needed — the solution directory is fixed for the session, and
    * a rename keeps the instance valid. It is also the only *safe* probe: after a VFS reconnect the cached file is
-   * alien, and comparing its path or name would throw where `isValid` merely answers `false`.
+   * alien, and comparing it against a freshly resolved one would answer `false` where `isValid` says plainly that the
+   * cache is stale.
+   *
+   * Held cache-avoiding; see [projectDir].
    *
    * Not `private` only so the test can plant a stale value.
    */
@@ -34,8 +30,8 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
   override fun isInProject(project: Project, index: ProjectFileIndex, file: VirtualFile, current: Boolean): Boolean {
     if (current) return true
     if (!project.isUnityProject.value) return false
-    if (index.isExcluded(file)) return false
-    return unityRoots(project).any { root -> VfsUtilCore.isAncestor(root, file, false) }
+    if (unityContentRootOf(project, file) == null) return false
+    return !index.isExcluded(file)
   }
 
   override fun getContentRootForFile(
@@ -47,33 +43,40 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
   ): VirtualFile? {
     if (current != null) return current
     if (!project.isUnityProject.value) return null
+    val root = unityContentRootOf(project, file) ?: return null
     if (honorExclusion && index.isExcluded(file)) return null
-    return unityRoots(project).firstOrNull { root -> VfsUtilCore.isAncestor(root, file, false) }
+    return root
   }
 
-  override fun iterateExtraContent(
-    project: Project,
-    index: ProjectFileIndex,
-    processor: ContentIterator,
-    filter: VirtualFileFilter?
-  ): Boolean {
-    if (!project.isUnityProject.value) return true
-
-    val extraRoots = unityRoots(project).filter { it.isValid && it.isDirectory }
-    if (extraRoots.isEmpty()) return true
-
-    val processorEx = toContentIteratorEx(processor)
-    val workspaceIndex = WorkspaceFileIndexEx.getInstance(project)
-    for (root in extraRoots) {
-      // If Unity root is already covered by a parent recursive content root in Workspace Model, skip to avoid duplicate traversal
-      val parentContentRoot = ApplicationManager.getApplication().runReadAction<VirtualFile?> {
-        workspaceIndex.getContentFileSetRoot(root, true)
-      }
-      if (parentContentRoot != null && parentContentRoot != root) continue
-
-      if (!iterateUnityContentUnderDirectory(project, index, root, processorEx, filter)) return false
-    }
-    return true
+  /**
+   * Prunes Unity's generated directories — `Library/`, `Temp/`, `Logs/`, … — from `iterateContent`. Rider registers the
+   * solution folder as one recursive `CONTENT_NON_INDEXABLE` set (IJPL-186432), so without this the walk also yields
+   * Unity's caches: ~50,000 files under `Library/` alone on open-brush, which no consumer of `iterateContent` wants.
+   *
+   * **Names Unity's own output and nothing else.** The bound used to work the other way round — prune every directory
+   * beside `Assets/` and `Packages/`, then let anything registered as a content root in its own right back through —
+   * which made this code the arbiter of directories that are not Unity's. `.github/` and `docs/` survived only because
+   * the Files view happens to register them, so a feature that never mentions Unity decided what a Unity solution
+   * enumerates, and a recursive content root added later would have been quietly exempted by the same accident.
+   * Naming only what Unity generates leaves every other directory to whoever owns it.
+   *
+   * The cost of that is honest: a directory a future Unity release invents is enumerated until it is added here. That
+   * is the trade — an unlisted cache is noise in someone's file completion, while a wrongly pruned directory is
+   * content that has silently disappeared, and only the second is invisible to the person it happens to.
+   *
+   * Two properties this must keep: **directories only**, so the `.sln` and the generated `.csproj`s are still
+   * enumerated; and **content status does not move** — this bounds enumeration alone, whereas a workspace-model
+   * exclusion was tried and reverted for costing packages their content status.
+   */
+  override fun skipFromIteration(project: Project, index: ProjectFileIndex, fileOrDir: VirtualFile): Boolean {
+    // Ordered by cost: most visited nodes are files, and projectDir is resolved only for Unity solutions. The disposal
+    // check comes before the first project service, because the non-recursive half of the walk has no scope guard of
+    // its own and a solution can be closed while an iterateContent is in flight.
+    if (!fileOrDir.isDirectory) return false
+    if (project.isDisposed) return false
+    if (!project.isUnityProject.value) return false
+    val baseDir = projectDir(project)
+    return isChildOf(baseDir, fileOrDir) && isUnityGeneratedDirectory(baseDir, fileOrDir)
   }
 
   override fun isInContent(
@@ -85,69 +88,6 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
     if (current) return true
     // Fall back to isInProject augmentation: treat Unity roots as project/content
     return isInProject(project, index, fileSet.root, false)
-  }
-
-  private fun iterateUnityContentUnderDirectory(
-    project: Project,
-    index: ProjectFileIndex,
-    dir: VirtualFile,
-    processor: ContentIteratorEx,
-    customFilter: VirtualFileFilter?,
-  ): Boolean {
-    val workspaceIndex = WorkspaceFileIndexEx.getInstance(project)
-    val visitor = object : VirtualFileVisitor<Void?>() {
-      override fun visitFileEx(file: VirtualFile): Result {
-        if (project.isDisposed) return skipTo(dir)
-
-        // Apply user filter early: if a directory is filtered out, skip its children entirely
-        if (customFilter != null && !customFilter.accept(file)) {
-          return if (file.isDirectory) SKIP_CHILDREN else CONTINUE
-        }
-
-        // exclusions/ignored
-        val excludedOrIgnored = ApplicationManager.getApplication().runReadAction<Boolean> {
-          index.isExcluded(file) || index.isUnderIgnored(file)
-        }
-        if (excludedOrIgnored) {
-          return if (file.isDirectory) SKIP_CHILDREN else CONTINUE
-        }
-
-        // If a directory is already under a recursive content root provided by Workspace Model, skip its subtree
-        if (file.isDirectory) {
-          val parentContentRoot = ApplicationManager.getApplication().runReadAction<VirtualFile?> {
-            workspaceIndex.getContentFileSetRoot(file, true)
-          }
-          if (parentContentRoot != null && parentContentRoot != file) {
-            return SKIP_CHILDREN
-          }
-        }
-
-        // Avoid duplicates for files already in workspace content
-        val alreadyInWorkspace = ApplicationManager.getApplication().runReadAction<Boolean> {
-          workspaceIndex.getContentFileSetRoot(file, true) != null
-        }
-        if (!alreadyInWorkspace) {
-          val status = processor.processFileEx(file)
-          return when (status) {
-            TreeNodeProcessingResult.CONTINUE -> CONTINUE
-            TreeNodeProcessingResult.SKIP_CHILDREN -> SKIP_CHILDREN
-            TreeNodeProcessingResult.SKIP_TO_PARENT -> skipTo(file.parent)
-            TreeNodeProcessingResult.STOP -> skipTo(dir)
-          }
-        }
-
-        return CONTINUE
-      }
-    }
-    val result = VfsUtilCore.visitChildrenRecursively(dir, visitor)
-    return result.skipToParent != dir
-  }
-
-  private fun toContentIteratorEx(processor: ContentIterator): ContentIteratorEx {
-    return processor as? ContentIteratorEx
-           ?: ContentIteratorEx { fileOrDir ->
-             if (processor.processFile(fileOrDir)) TreeNodeProcessingResult.CONTINUE else TreeNodeProcessingResult.STOP
-           }
   }
 
   /**
@@ -164,14 +104,102 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
    */
   private fun projectDir(project: Project): VirtualFile {
     cachedProjectDir?.let { if (it.isValid) return it }
-    return project.projectDir.also { cachedProjectDir = it }
+    // Cache-avoiding because this file is held for the session and read on a traversal path: nothing here should be
+    // able to populate a VFS cache on its behalf. Nothing it is asked today would -- the wrapper only diverts children
+    // access and user data, and this file is only asked isValid, isCaseSensitive and its path -- but that is a fact
+    // about the current callers, not a property of the cached value, and it is the value that outlives them.
+    //
+    // Guarded rather than calling NewVirtualFile.asCacheAvoiding directly, which throws IllegalArgumentException for
+    // anything that is neither a NewVirtualFile nor already cache-avoiding. A solution directory is one in every shape
+    // shipped today, but this augmentor used to accept any VirtualFile and a cache hint is not worth narrowing that to.
+    val dir = project.projectDir
+    val cacheAvoiding = if (dir is NewVirtualFile) dir.asCacheAvoiding() else dir
+    return cacheAvoiding.also { cachedProjectDir = it }
   }
 
-  private fun unityRoots(project: Project): List<VirtualFile> {
+  /**
+   * The `Assets`/`Packages` directory [file] lives in, or `null` if it is not under one.
+   *
+   * Walks up once instead of building the root list and testing ancestry against each entry: both callers run for every
+   * file the platform asks about, which is the traffic RIDER-141491 was reported on.
+   */
+  private fun unityContentRootOf(project: Project, file: VirtualFile): VirtualFile? {
     val baseDir = projectDir(project)
-    val roots = mutableListOf<VirtualFile>()
-    baseDir.findChild("Assets")?.let { if (it.isValid && it.isDirectory) roots.add(it) }
-    baseDir.findChild("Packages")?.let { if (it.isValid && it.isDirectory) roots.add(it) }
-    return roots
+    var candidate: VirtualFile? = file
+    while (candidate != null) {
+      if (isChildOf(baseDir, candidate)) {
+        return if (candidate.isDirectory && isUnityContentRoot(baseDir, candidate)) candidate else null
+      }
+      candidate = candidate.parent
+    }
+    return null
   }
+
+  /**
+   * Whether [file] sits directly inside [baseDir], compared by path rather than by [VirtualFile] identity.
+   *
+   * `VirtualFile` equality cannot answer this under the cache-avoiding walk `iterateContent` runs. A
+   * `TransientVirtualFileImpl` -- what `CacheAvoidingVirtualFileWrapper.getChildren` hands out for every uncached
+   * child -- is not a `VirtualFileWithId`, and its `equals` opens with a `getClass()` check, so it is unequal to a
+   * plain file in *either* direction. It happens to work today only because a transient's parent is the wrapper, whose
+   * `equals` does compare VFS ids; the moment a transient's parent is itself transient, identity silently answers
+   * `false` and the bound stops pruning. Paths are the one identity every shape here agrees on.
+   *
+   * Compared under the same case rule as [isUnityContentRoot] and [isUnityGeneratedDirectory]. A case-sensitive
+   * compare here would have been a second, contradictory rule in one file: on a case-insensitive volume the same
+   * directory can be spelled either way, and the bound would then quietly stop pruning for a solution opened by a
+   * path whose case does not match the walk's.
+   */
+  private fun isChildOf(baseDir: VirtualFile, file: VirtualFile): Boolean {
+    val parentPath = file.parent?.path ?: return false
+    return parentPath.equals(baseDir.path, ignoreCase = !baseDir.isCaseSensitive)
+  }
+
+  /**
+   * A name comparison, and deliberately not `dir == baseDir.findChild(name)`.
+   *
+   * Both callers establish [isChildOf] before asking, so the name is all that is left to decide; the `findChild`
+   * round-trip re-derived a fact the caller already had, and paid a VFS lookup per visited node for it.
+   *
+   * It was also **wrong**. `iterateContent` walks the solution folder wrapped as cache-avoiding, and
+   * `CacheAvoidingVirtualFileWrapper.getChildren` hands out a `TransientVirtualFileImpl` for every child not already
+   * cached — whose `equals` starts `getClass() != o.getClass()`, so it is never equal to the plain `VirtualFile` that
+   * `findChild` returns. `Assets/` arriving cold therefore failed this test and was pruned as junk, silently
+   * reinstating RIDER-141737. Comparing names has no identity in it to break.
+   *
+   * [VirtualFile.isCaseSensitive] is per-directory, so the answer still follows the volume's own case rules: an
+   * `assets/` directory is the project's real content root on a case-insensitive volume and must not be pruned.
+   */
+  private fun isUnityContentRoot(baseDir: VirtualFile, dir: VirtualFile): Boolean =
+    unityContentRootNames.any { name -> dir.name.equals(name, ignoreCase = !baseDir.isCaseSensitive) }
+
+  /** Compared the same way as [isUnityContentRoot], so one case rule governs the whole file. */
+  private fun isUnityGeneratedDirectory(baseDir: VirtualFile, dir: VirtualFile): Boolean =
+    unityGeneratedDirNames.any { name -> dir.name.equals(name, ignoreCase = !baseDir.isCaseSensitive) }
 }
+
+/** The directories in a Unity solution folder that hold the project's own files. */
+private val unityContentRootNames = listOf("Assets", "Packages")
+
+/**
+ * The directories Unity generates in the solution folder, and the only ones this bound prunes.
+ *
+ * Taken from the root-anchored directory entries of the canonical `Unity.gitignore`, which is the closest thing to
+ * an authoritative statement of what a Unity project regenerates; [UnityIgnoredFileProvider] keeps VCS out of the
+ * same set, and the two agree except that it does not list the newer `Recordings/`, `ServerData/` and
+ * `UIElementsSchema/`. The case variants both of them spell out (`[Ll]ibrary`) are dropped here because case is
+ * decided per volume — see [UnityProjectFileIndexAugmentor.isUnityGeneratedDirectory].
+ *
+ * `Recordings/` earns its place on size: a project using Unity Recorder can fill it with captures, and enumerating
+ * those is the same performance cliff RIDER-141491 was filed about.
+ *
+ * Deliberately *not* `ProjectSettings/`: Unity writes it, but it is version-controlled project state alongside
+ * `Assets/` and `Packages/`, so pruning it would be hiding the project's own files. `UserSettings/` **is** listed —
+ * Unity writes it too, but it is per-user and disposable, which is why the gitignore has it and `ProjectSettings/`
+ * is absent from it. (`UnityWorkspaceFileIndexContributor` registers both as `EXTERNAL_SOURCE`, which does *not*
+ * keep either out of the walk — the solution-folder blanket still covers them.)
+ */
+private val unityGeneratedDirNames = listOf(
+  "Library", "Temp", "Obj", "Build", "Builds", "Logs", "UserSettings", "MemoryCaptures", "Recordings",
+  "ServerData", "UIElementsSchema", ".utmp",
+)

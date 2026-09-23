@@ -27,16 +27,28 @@ class UssFileReferenceSet(element: PsiElement,
     class UssFileTypeCompletionFilter(private val myElement: PsiElement,
                                       private val isFont: Boolean,
                                       private val fileTypes: Array<FileType>) : Condition<PsiFileSystemItem> {
+        // Loop-invariant: the filter is built once per completion, `value` runs once per candidate, and
+        // `projectDir` resolves through the VFS on every access. `project` is read eagerly because `myElement`
+        // is known valid here but not later.
+        //
+        // PUBLICATION rather than `lazy`'s synchronized default: the candidate loop is single-threaded, so the
+        // mode is not load-bearing either way, but the default parks on a non-interruptible monitor and completion
+        // runs under a read lock. `findFileByIoFile` returns canonical instances, so a duplicated initializer
+        // publishes the same reference.
+        private val project = myElement.project
+        private val projectDir by lazy(LazyThreadSafetyMode.PUBLICATION) { project.projectDir }
+        private val packagesDir by lazy(LazyThreadSafetyMode.PUBLICATION) { projectDir.findChild("Packages") }
+
         override fun value(item: PsiFileSystemItem?): Boolean {
             if (item == null) return false
 
-            if (item.parent?.virtualFile == item.project.projectDir.findChild("Packages")) {
+            if (item.parent?.virtualFile == packagesDir) {
                 val allPackages = WorkspaceModel.getInstance(item.project).getPackages()
                 return allPackages.map { it.packageId }.contains(item.name)
             }
 
             if (item.isDirectory()) {
-                if (item.parent?.virtualFile == item.project.projectDir)
+                if (item.parent?.virtualFile == projectDir)
                     return item.name == "Assets" || item.name == "Packages"
 
                 return true
