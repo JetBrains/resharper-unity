@@ -1,11 +1,15 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
+import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.ideaInterop.RiderScratchProjectViewPane
+import com.jetbrains.rider.projectView.utils.compareFiles
+import com.jetbrains.rider.projectView.utils.compareNodes
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
+import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 
 class UnityExplorerRootNode(project: Project)
     : SolutionViewRootNodeBase(project) {
@@ -30,7 +34,6 @@ class UnityExplorerRootNode(project: Project)
     }
 
     override fun createComparator(): Comparator<AbstractTreeNode<*>> {
-        val comparator = super.createComparator()
         return Comparator { node1, node2 ->
             val sortKey1 = getSortKey(node1)
             val sortKey2 = getSortKey(node2)
@@ -39,7 +42,20 @@ class UnityExplorerRootNode(project: Project)
                 return@Comparator sortKey1.compareTo(sortKey2)
             }
 
-            comparator.compare(node1, node2)
+            if (node1 is UnityExplorerFileSystemNode && node2 is UnityExplorerFileSystemNode) {
+                // Unity explorer mostly follows filesystem and Unity project structure is also mostly bound to filesystem (notable exception: Editor folders, but it doesn't matter here)
+                // So we want to apply normal file sorting rather than go with the standard compareNodes, which contains more complex logic designed to handle all kinds of .NET solution
+                // structures and doesn't always apply well here. For example: with Unity's new MSBuild-based compilation, the actual C# (sub-)projects might be placed next to normal files,
+                // both having a single ProjectModelEntity, making compareNodes go with entity comparison which does not assume projects to be folders, so "folder-on-top" doesn't work
+                // and we end up with mixed order. We sidestep all such issues with direct compareFiles and only using compareNodes as a fallback for any non-file situations that are not
+                // handled by sortKeys above (not sure if there are many left)
+                val projectView = ProjectView.getInstance(project)
+                val isFoldersOnTop = projectView.isFoldersAlwaysOnTop(SolutionExplorerViewPane.ID)
+                val sortKey = projectView.getSortKey(SolutionExplorerViewPane.ID)
+                return@Comparator compareFiles(node1.virtualFile, node2.virtualFile, isFoldersOnTop, sortKey)
+            }
+
+            compareNodes(myProject, node1, node2)
         }
     }
 
