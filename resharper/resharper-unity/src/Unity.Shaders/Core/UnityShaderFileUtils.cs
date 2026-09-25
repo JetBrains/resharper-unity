@@ -1,4 +1,6 @@
+using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.Util;
@@ -12,4 +14,14 @@ public static class UnityShaderFileUtils
     public static bool IsComputeShaderFile(VirtualFileSystemPath path) => path.Name.EndsWith(CppProjectFileType.COMPUTE_EXTENSION) || IsUrtShaderFile(path);
     public static bool IsUrtShaderFile(VirtualFileSystemPath path) => path.Name.EndsWith(CppProjectFileType.URT_SHADER_EXTENSION);
     public static bool IsUrtShaderFile(CppFileLocation loc) => loc.Name.EndsWith(CppProjectFileType.URT_SHADER_EXTENSION);
+
+    // Shared by UnityShaderModuleProvider and IUnityExternalProjectFileCreator, which must agree.
+    public static bool IsShaderPsiExtension(string extensionWithDot) =>
+        ShaderLabProjectFileType.SHADERLAB_EXTENSION.Equals(extensionWithDot)
+        || CppProjectFileType.ALL_HLSL_EXTENSIONS.Contains(extensionWithDot);
+
+    // A project that gets a UnityShaderModule.
+    public static bool IsShaderModuleProject(IProject project) =>
+        (project.IsUnityProject() || project.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue())
+        && !project.IsPlayerProject();
 }

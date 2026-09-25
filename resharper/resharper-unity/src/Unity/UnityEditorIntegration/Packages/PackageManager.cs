@@ -202,7 +202,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         }
 
         [Guard(Rgc.Guarded)]
-        private void DoRefresh()
+        // Protected for tests only: the refresh timer does not tick in the test shell. Use RefreshPackages.
+        protected void DoRefresh()
         {
             myLogger.Trace("DoRefresh");
 

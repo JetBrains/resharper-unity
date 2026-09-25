@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "com.test.generatedshaders": "1.0.0"
+  },
+  "enableLockFile": false
+}

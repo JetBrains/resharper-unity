@@ -1,0 +1,34 @@
+﻿struct |FogParams|(0)
+{
+    float |Density|(1);
+    |float3|(2) |Tint|(3);
+};
+
+|float3|(4) |ApplyFog|(5)(|FogParams|(6) |fogParams|(7), |float3|(8) |sourceColour|(9), float |depth|(10))
+{
+    float |amount|(11) = 1.0 - |exp|(12)(-|depth|(13) * |fogParams|(14).|Density|(15));
+    return |lerp|(16)(|sourceColour|(17), |fogParams|(18).|Tint|(19), |amount|(20));
+}
+
+---------------------------------------------------------
+(0): ReSharper C++ Struct Identifier: 
+(1): ReSharper C++ Struct Field Identifier: 
+(2): ReSharper C++ Typedef Identifier: 
+(3): ReSharper C++ Struct Field Identifier: 
+(4): ReSharper C++ Typedef Identifier: 
+(5): ReSharper C++ Global Function Identifier: 
+(6): ReSharper C++ Struct Identifier: 
+(7): ReSharper C++ Parameter Variable Identifier: 
+(8): ReSharper C++ Typedef Identifier: 
+(9): ReSharper C++ Parameter Variable Identifier: 
+(10): ReSharper C++ Parameter Variable Identifier: 
+(11): ReSharper C++ Local Variable Identifier: 
+(12): ReSharper C++ Global Function Usage Identifier: 
+(13): ReSharper C++ Parameter Variable Identifier: 
+(14): ReSharper C++ Parameter Variable Identifier: 
+(15): ReSharper C++ Struct Field Identifier: 
+(16): ReSharper C++ Global Function Usage Identifier: 
+(17): ReSharper C++ Parameter Variable Identifier: 
+(18): ReSharper C++ Parameter Variable Identifier: 
+(19): ReSharper C++ Struct Field Identifier: 
+(20): ReSharper C++ Local Variable Identifier: 

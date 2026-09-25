@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JetBrains.Application.changes;
 using JetBrains.Application.Components;
 using JetBrains.Application.FileSystemTracker;
@@ -28,9 +29,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                                                      UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
                                                      ILazy<UnityAssetInfoCollector> usageStatistics,
                                                      AssetIndexingSupport assetIndexingSupport,
-                                                     UnityExternalProjectFileTypes externalProjectFileTypes)
+                                                     UnityExternalProjectFileTypes externalProjectFileTypes,
+                                                     IEnumerable<IUnityExternalProjectFileCreator> projectFileCreators)
             : base(lifetime, logger, solution, changeManager, psiModules, packageManager, locks, fileSystemTracker,
-                projectFileExtensions, psiSourceFileFactory, moduleFactory, indexDisablingStrategy, usageStatistics, assetIndexingSupport, externalProjectFileTypes)
+                projectFileExtensions, psiSourceFileFactory, moduleFactory, indexDisablingStrategy, usageStatistics, assetIndexingSupport, externalProjectFileTypes, projectFileCreators)
         {
         }
 

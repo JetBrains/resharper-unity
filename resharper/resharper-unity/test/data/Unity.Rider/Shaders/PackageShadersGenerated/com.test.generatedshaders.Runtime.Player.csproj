@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4C3D7E55-AE8F-41C6-AD44-5F901B723D64}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace></RootNamespace>
+    <AssemblyName>com.test.generatedshaders.Runtime.Player</AssemblyName>
+    <!-- v4.0 for the same reason as the PackageShaders fixture: the committed NuGet lock only
+         carries JetBrains.Tests.Platform.NETFrameWork up to 4.0 and restores offline. Irrelevant
+         to this fixture, which is about project membership, not about what the C# half compiles. -->
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <BaseDirectory>.</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Temp\bin\Debug\</OutputPath>
+    <DefineConstants>UNITY_2022_3_0;UNITY_2022_3;UNITY_2022</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Library\PackageCache\com.test.generatedshaders@1.0.0\Runtime\Runtime.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Unity's com.unity.ide.rider generator emits <None Include/> for .hlsl, .shader and .compute
+         only, and only for files inside this asmdef's directory. Fog.urtshader and FogHelpers.cginc
+         sit right beside Fog.hlsl and are deliberately absent: that is the real generator's
+         behaviour, and the gap this fixture exists to reproduce. -->
+    <None Include="Library\PackageCache\com.test.generatedshaders@1.0.0\Runtime\com.test.generatedshaders.Runtime.asmdef" />
+    <None Include="Library\PackageCache\com.test.generatedshaders@1.0.0\Runtime\Shaders\Fog.hlsl" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

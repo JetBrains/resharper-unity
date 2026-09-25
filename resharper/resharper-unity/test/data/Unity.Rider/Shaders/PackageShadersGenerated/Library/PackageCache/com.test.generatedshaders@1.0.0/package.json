@@ -1,0 +1,7 @@
+{
+  "name": "com.test.generatedshaders",
+  "displayName": "Test Shaders",
+  "version": "1.0.0",
+  "unity": "2022.3",
+  "description": "Read-only registry package with generated .csproj files, for RIDER-118787 ticket 16."
+}

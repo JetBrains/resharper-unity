@@ -2,12 +2,10 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Application.Parts;
-using JetBrains.Collections.Viewable;
 using JetBrains.DocumentManagers;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Core;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
@@ -126,7 +124,7 @@ public class UnityShaderPsiModuleProviderFilter : IProjectPsiModuleProviderFilte
     public Tuple<IProjectPsiModuleHandler, IPsiModuleDecorator>? OverrideHandler(Lifetime lifetime, IProject project,
         IProjectPsiModuleHandler handler)
     {
-        if (handler.PrimaryModule != null && (project.IsUnityProject() || project.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue()) && !project.IsPlayerProject())
+        if (handler.PrimaryModule != null && UnityShaderFileUtils.IsShaderModuleProject(project))
         {
             var module = new UnityShaderModule(project.GetSolution(), project.Name, handler.PrimaryModule.TargetFrameworkId);
             var newHandlerAndDecorator = new UnityShaderModuleHandlerAndDecorator(module, handler);
@@ -176,9 +174,7 @@ public class UnityShaderModuleHandlerAndDecorator : DelegatingProjectPsiModuleHa
 
     public override IEnumerable<IPsiSourceFile> GetPsiSourceFilesFor(IProjectFile projectFile)
     {
-        var extension = projectFile.Location.ExtensionWithDot;
-        if (!CppProjectFileType.ALL_HLSL_EXTENSIONS.Contains(extension) &&
-            !ShaderLabProjectFileType.SHADERLAB_EXTENSION.Equals(extension))
+        if (!UnityShaderFileUtils.IsShaderPsiExtension(projectFile.Location.ExtensionWithDot))
             return base.GetPsiSourceFilesFor(projectFile);
 
         if (myModule.Files.TryGetValue(projectFile, out var psiFile))
@@ -192,8 +188,7 @@ public class UnityShaderModuleHandlerAndDecorator : DelegatingProjectPsiModuleHa
         PsiModuleChangeBuilder changeBuilder)
     {
         var extension = VirtualFileSystemPath.TryParse(projectFile.Name, InteractionContext.SolutionContext).ExtensionWithDot;
-        if (!CppProjectFileType.ALL_HLSL_EXTENSIONS.Contains(extension) &&
-            !ShaderLabProjectFileType.SHADERLAB_EXTENSION.Equals(extension))
+        if (!UnityShaderFileUtils.IsShaderPsiExtension(extension))
         {
             base.OnProjectFileChanged(projectFile, oldLocation, changeType, changeBuilder);
             return;

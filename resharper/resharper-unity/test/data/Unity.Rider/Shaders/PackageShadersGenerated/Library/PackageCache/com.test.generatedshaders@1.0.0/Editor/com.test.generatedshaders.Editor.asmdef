@@ -1,0 +1,11 @@
+{
+  "name": "com.test.generatedshaders.Editor",
+  "rootNamespace": "Test.Shaders.Editor",
+  "references": [
+    "com.test.generatedshaders.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": []
+}

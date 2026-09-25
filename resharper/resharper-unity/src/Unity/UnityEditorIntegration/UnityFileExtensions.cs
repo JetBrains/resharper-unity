@@ -46,6 +46,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public static bool IsFromResourceFolder(this IPath path) =>
             path.Components.Any(t => t.Equals(ResourcesFolderName));
 
+        // Unity does not import a folder whose name ends with `~` or starts with `.`.
+        public static bool IsHiddenAssetFolderName(string name) => name.EndsWith("~") || name.StartsWith(".");
+
+        // Checks the folders between root and the path.
+        public static bool IsUnderHiddenAssetFolder(this VirtualFileSystemPath path, VirtualFileSystemPath root)
+        {
+            for (var current = path.Parent; current != null && !current.IsEmpty && current != root; current = current.Parent)
+            {
+                if (IsHiddenAssetFolderName(current.Name))
+                    return true;
+            }
+
+            return false;
+        }
+
+        // Ignores Editor folders above packageRoot.
+        public static bool IsUnderEditorFolder(this VirtualFileSystemPath path, VirtualFileSystemPath packageRoot)
+        {
+            for (var current = path.Parent; current != null && !current.IsEmpty; current = current.Parent)
+            {
+                if (current.Name.Equals(EditorFolderName, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                if (current == packageRoot)
+                    return false;
+            }
+
+            return false;
+        }
+
         public static bool IsMeta(this IPath path) =>
             SimplePathEndsWith(path, MetaFileExtensionWithDot);
 

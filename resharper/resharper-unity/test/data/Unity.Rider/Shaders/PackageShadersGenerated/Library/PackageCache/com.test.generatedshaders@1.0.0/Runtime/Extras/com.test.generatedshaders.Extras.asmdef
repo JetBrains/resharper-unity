@@ -1,0 +1,7 @@
+{
+  "name": "com.test.generatedshaders.Extras",
+  "rootNamespace": "Test.Shaders.Extras",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": []
+}

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
@@ -19,6 +21,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             var tracker = solution.TryGetComponent<UnitySolutionTracker>();
             return tracker is { HasUnityReference.Value: true };
         }
+
+        // Skips Misc Files items: the C++ engine does not analyse them.
+        public static IEnumerable<IProjectItem> FindRealProjectItemsByLocation(this ISolution solution,
+                                                                              VirtualFileSystemPath path) =>
+            solution.FindProjectItemsByLocation(path).Where(item => !item.IsMiscProjectItem());
+
+        public static bool HasRealProjectItem(this ISolution solution, VirtualFileSystemPath path) =>
+            solution.FindRealProjectItemsByLocation(path).Any();
 
         /// <summary>
         ///  Checks that specific project unity reference or specific unity guid

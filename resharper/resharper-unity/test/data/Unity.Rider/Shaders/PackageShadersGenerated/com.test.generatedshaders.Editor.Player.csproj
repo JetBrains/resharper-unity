@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5B4E8F66-BF90-42D7-BE55-60A12C834E75}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace></RootNamespace>
+    <AssemblyName>com.test.generatedshaders.Editor.Player</AssemblyName>
+    <!-- v4.0 for the same reason as the PackageShaders fixture: the committed NuGet lock only
+         carries JetBrains.Tests.Platform.NETFrameWork up to 4.0 and restores offline. Irrelevant
+         to this fixture, which is about project membership, not about what the C# half compiles. -->
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <BaseDirectory>.</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Temp\bin\Debug\</OutputPath>
+    <DefineConstants>UNITY_2022_3_0;UNITY_2022_3;UNITY_2022</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Library\PackageCache\com.test.generatedshaders@1.0.0\Editor\EditorTool.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Library\PackageCache\com.test.generatedshaders@1.0.0\Editor\com.test.generatedshaders.Editor.asmdef" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="com.test.generatedshaders.Runtime.csproj">
+      <Project>{2E1B5C33-8C6D-4FA4-8B22-3D7E9F501B42}</Project>
+      <Name>com.test.generatedshaders.Runtime</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

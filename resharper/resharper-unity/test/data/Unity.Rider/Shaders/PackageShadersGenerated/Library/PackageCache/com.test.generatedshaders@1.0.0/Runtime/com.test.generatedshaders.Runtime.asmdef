@@ -1,0 +1,7 @@
+{
+  "name": "com.test.generatedshaders.Runtime",
+  "rootNamespace": "Test.Shaders",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": []
+}

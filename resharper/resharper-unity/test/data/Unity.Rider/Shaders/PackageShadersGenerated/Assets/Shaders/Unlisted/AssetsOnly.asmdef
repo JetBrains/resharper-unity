@@ -1,0 +1,7 @@
+{
+  "name": "AssetsOnly",
+  "rootNamespace": "Test.Shaders.AssetsOnly",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": []
+}
