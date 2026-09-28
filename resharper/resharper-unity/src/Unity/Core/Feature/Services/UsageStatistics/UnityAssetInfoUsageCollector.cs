@@ -38,13 +38,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             myUnitySolutionTracker = unitySolutionTracker;
             myGroup = new EventLogGroup("dotnet.unity.assets", "Unity Asset Information", 2, featureUsageLogger);
             
-            myMetaFileAverage = myGroup.RegisterEvent("metaAverage", "Meta Files Average", EventFields.Long("average", "Average (bytes)"), EventFields.Boolean("isReadonly", "IsReadonly"));
+            myMetaFileAverage = myGroup.RegisterEvent("metaAverage", "Meta Files Average", EventFields.Long("average", "Average (bytes)"), EventFields.Boolean("isReadonly", "Is read only"));
             myFilesAverage = myGroup.RegisterEvent("assetAverage", "All Asset Files Average", EventFields.Long("average", "Average (mb)"));
 
             myFileSizeMax = myGroup.RegisterEvent("fileSizeMax", "Max file size (bytes) for each file type", 
                 EventFields.Enum<FileType>("type", "File Type"), 
-                EventFields.Long("size", "Max size (bytes)"),
-                EventFields.Boolean("isReadonly", "IsReadonly")
+                EventFields.Long("size", "Max size (bytes), rounded to the power of 2"),
+                EventFields.Boolean("isReadonly", "Is Read only")
                 );
 
             myMetaCount = myGroup.RegisterEvent("metaCount", "Meta Files Count", EventFields.Int("count", "Count"));

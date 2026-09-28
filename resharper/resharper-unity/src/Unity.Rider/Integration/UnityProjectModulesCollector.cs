@@ -71,7 +71,7 @@ public class UnityProjectModulesCollector : SolutionUsagesCollector
         myGroup = new EventLogGroup("dotnet.unity.platforms", "Unity Available Platforms Information", 2,
             featureUsageLogger);
         myActiveBuildTargetEvent = myGroup.RegisterEvent("activeBuildTarget",
-            "Active Build Target: currently selected build target in Unity Editor"
+            "Active Build Target: currently selected build target in Unity Editor."
             , EventFields.String("id", "Name", ourAllowedBuildTargets));
 
         myInstalledModuleEvent = myGroup.RegisterEvent("installedBuildModule",
