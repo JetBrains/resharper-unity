@@ -8,12 +8,14 @@ using JetBrains.ReSharper.Plugins.Yaml;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
+using JetBrains.TestFramework.Build.Nunit;
 using JetBrains.TestFramework.Utils;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using NUnit.Framework;
 
 [assembly: RequiresThread(System.Threading.ApartmentState.STA)]
+[assembly : NUnitRunTestsOnNetFrameworkOrMonoRuntime]
 
 // This attribute is marked obsolete but is still supported. Use is discouraged in preference to convention, but the
 // convention doesn't work for us. That convention is to walk up the tree from the executing assembly and look for a
