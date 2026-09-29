@@ -149,7 +149,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("unityEditorState", Library.UnityEditorState)
 
         property("unityApplicationData", Library.UnityApplicationData).async
-        property("requiresRiderPackage", bool)
+        property("requiresRiderPackage", bool).async
         field("unityApplicationSettings", Library.UnityApplicationSettings)
         field("unityProjectSettings", Library.UnityProjectSettings)
 
