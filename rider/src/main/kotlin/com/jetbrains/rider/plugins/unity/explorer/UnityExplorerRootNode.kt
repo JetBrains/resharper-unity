@@ -9,7 +9,6 @@ import com.jetbrains.rider.projectView.utils.compareFiles
 import com.jetbrains.rider.projectView.utils.compareNodes
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
-import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 
 class UnityExplorerRootNode(project: Project)
     : SolutionViewRootNodeBase(project) {
@@ -34,12 +33,18 @@ class UnityExplorerRootNode(project: Project)
     }
 
     override fun createComparator(): Comparator<AbstractTreeNode<*>> {
-        return Comparator { node1, node2 ->
+        return UnityExplorerComparator(project)
+    }
+
+    private class UnityExplorerComparator(val project: Project) : Comparator<AbstractTreeNode<*>> {
+        val projectView = ProjectView.getInstance(project)!!
+
+        override fun compare(node1: AbstractTreeNode<*>, node2: AbstractTreeNode<*>): Int {
             val sortKey1 = getSortKey(node1)
             val sortKey2 = getSortKey(node2)
 
             if (sortKey1 != sortKey2) {
-                return@Comparator sortKey1.compareTo(sortKey2)
+                return sortKey1.compareTo(sortKey2)
             }
 
             if (node1 is UnityExplorerFileSystemNode && node2 is UnityExplorerFileSystemNode) {
@@ -49,32 +54,33 @@ class UnityExplorerRootNode(project: Project)
                 // both having a single ProjectModelEntity, making compareNodes go with entity comparison which does not assume projects to be folders, so "folder-on-top" doesn't work
                 // and we end up with mixed order. We sidestep all such issues with direct compareFiles and only using compareNodes as a fallback for any non-file situations that are not
                 // handled by sortKeys above (not sure if there are many left)
-                val projectView = ProjectView.getInstance(project)
-                val isFoldersOnTop = projectView.isFoldersAlwaysOnTop(SolutionExplorerViewPane.ID)
-                val sortKey = projectView.getSortKey(SolutionExplorerViewPane.ID)
-                return@Comparator compareFiles(node1.virtualFile, node2.virtualFile, isFoldersOnTop, sortKey)
+                val isFoldersOnTop = projectView.isFoldersAlwaysOnTop(UnityExplorer.ID)
+                val sortKey = projectView.getSortKey(UnityExplorer.ID)
+                return compareFiles(node1.virtualFile, node2.virtualFile, isFoldersOnTop, sortKey)
             }
 
-            compareNodes(myProject, node1, node2)
+            return compareNodes(project, node1, node2)
         }
-    }
 
-    private fun getSortKey(node: AbstractTreeNode<*>): Int {
-        // Nodes of the same type should be sorted as the same. Different types should be in this order (although some
-        // are in different levels of the hierarchy)
-        return when (node) {
-            is AssetsRootNode -> 1
-            is PackagesRootNode -> 2
-            is ReferenceRootNode -> 3
-            is ReadOnlyPackagesRootNode -> 4
-            is BuiltinPackagesRootNode -> 5
-            is PackageNode -> 6
-            is PackageDependenciesRoot -> 7
-            is PackageDependencyItemNode -> 8
-            is BuiltinPackageNode -> 9
-            is UnknownPackageNode -> 100
-            is UnityExplorerFileSystemNode -> 1000
-            else -> 10000
+        companion object {
+            private fun getSortKey(node: AbstractTreeNode<*>): Int {
+                // Nodes of the same type should be sorted as the same. Different types should be in this order (although some
+                // are in different levels of the hierarchy)
+                return when (node) {
+                    is AssetsRootNode -> 1
+                    is PackagesRootNode -> 2
+                    is ReferenceRootNode -> 3
+                    is ReadOnlyPackagesRootNode -> 4
+                    is BuiltinPackagesRootNode -> 5
+                    is PackageNode -> 6
+                    is PackageDependenciesRoot -> 7
+                    is PackageDependencyItemNode -> 8
+                    is BuiltinPackageNode -> 9
+                    is UnknownPackageNode -> 100
+                    is UnityExplorerFileSystemNode -> 1000
+                    else -> 10000
+                }
+            }
         }
     }
 }
