@@ -85,6 +85,9 @@
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.profiler.toolWindow.UnityProfilerToolWindowStartupActivity"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityLogToolWindowStartupActivity"/>
+    <!-- Background, and not a plain postStartupActivity. It waits for the backend, then launches a
+         process and reads the network. -->
+    <backgroundPostStartupActivity implementation="com.jetbrains.rider.plugins.unity.settings.agents.UnityCliSuggestionActivity"/>
 
     <workspaceModel.fileIndexContributor implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceFileIndexContributor"/>
     <workspaceModel.fileIndexContributor implementation="com.jetbrains.rider.plugins.unity.workspace.UnityPackagesWorkspaceFileIndexContributor"/>
@@ -126,6 +129,39 @@
                              bundle="messages.UnityBundle"
                              instance="com.jetbrains.rider.plugins.unity.settings.UnityProfilerOptionsPage"
                              key="configurable.name.unity.profiler"/>
+
+    <!-- The kill switch of the whole feature. The default is false, so the feature ships dark, and
+         the default is written twice: here and in UnityForAgentsFeature. -->
+    <registryKey key="rider.unity.agents.enabled"
+                 defaultValue="false"
+                 description="Enables the Unity for Agents settings page and the Unity CLI integration"
+                 restartRequired="false"/>
+
+    <!-- An empty value asks Rider to probe the CDN of Unity for a stable channel. The value
+         'stable' names no channel, and any other value goes to the installer script as it stands.
+         This pins a bad release back without a build of Rider. -->
+    <registryKey key="rider.unity.agents.cli.channel"
+                 defaultValue=""
+                 description="Forces the release channel of the Unity CLI installer instead of probing for one"
+                 restartRequired="false"/>
+
+    <!-- The narrow key. It silences the two project-open balloons and it leaves the page alone.
+         The kill switch above dominates it. The default is true, because the balloon must reach
+         the user with no opt-in required. -->
+    <registryKey key="rider.unity.suggest.cli.install"
+                 defaultValue="true"
+                 description="Suggests the Unity CLI with a balloon when a Unity project opens"
+                 restartRequired="false"/>
+
+    <!-- `provider=` rather than `instance=`: a Configurable has no hook that hides it, and the kill
+         switch has to take the page away too. The page is project-level, because the install shows
+         its progress in the status bar, and a background progress task needs a project. -->
+    <projectConfigurable parentId="preferences.build.unityPlugin"
+                         id="preferences.build.unityPlugin.agents"
+                         bundle="messages.UnityBundle"
+                         provider="com.jetbrains.rider.plugins.unity.settings.agents.UnityForAgentsConfigurableProvider"
+                         key="configurable.name.unity.for.agents"
+                         nonDefaultProject="true"/>
 
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
     <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
@@ -441,6 +477,15 @@
                        key="notification.group.unity.unity.commit.failure"/>
     <notificationGroup id="unity.profiler.navigation.notification.groupId" displayType="BALLOON" bundle="messages.UnityBundle"
                        key="notification.group.unity.profiler"/>
+
+    <!-- One group for each intent, so a user who silences one still hears the others. A prompt
+         that asks for an action waits for the user, and a confirmation does not. -->
+    <notificationGroup id="Unity for Agents" displayType="STICKY_BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.agents"/>
+    <notificationGroup id="Unity for Agents Errors" displayType="STICKY_BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.agents.errors"/>
+    <notificationGroup id="Unity for Agents Confirmations" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.agents.confirmations"/>
     <iconMapper mappingFile="UnityIconMappings.json"/>
 
     <!-- Unity Profiler line markers -->
