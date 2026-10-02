@@ -3,6 +3,7 @@
   <dependencies>
     <plugin id="com.intellij.platform.images"/>
     <module name="intellij.json.backend"/>
+    <module name="intellij.json.backend.spellchecker"/>
     <module name="intellij.libraries.gson"/>
     <module name="intellij.libraries.jna"/>
     <module name="intellij.libraries.kotlinx.coroutines.core"/>
