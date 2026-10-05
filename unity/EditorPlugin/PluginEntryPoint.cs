@@ -53,8 +53,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     // DO NOT RENAME OR REFACTOR!
     /// <summary>
-    /// For "Unity CoreCLR" EditorPlugin is initialized from the Rider package by reflection
-    /// The Initialize itself is always sync, fully executed within ProcessInitializeOnLoadAttributes
+    /// This method is called explicitly from the Rider package by reflection
+    /// The Initialize itself is always sync, fully executed within the RiderScriptEditor class initialization
     /// </summary>
     /// <param name="token">Is used as a root of Lifetimes, which are passed further to protocol, etc</param>
     [PublicAPI]
@@ -68,6 +68,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Verbose("Initialize. LifetimeDefinition.Terminate");
         lifetimeDefinition.Terminate();
+        FirstChanceExceptionInterceptor.DisposeForever();
       });
 
       AppDomainLifetime = lifetimeDefinition.Lifetime;
