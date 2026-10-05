@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.newvfs.NewVirtualFile
 import com.jetbrains.rider.projectDir
@@ -12,7 +13,7 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
   /**
    * Memoized [Project.projectDir]: resolving it stats the filesystem and walks the VFS, and this EP is called for
    * every file the platform asks about, so the uncached resolve dominated Search Everywhere traversals (RIDER-141491).
-   * The EP is `area="IDEA_PROJECT"`, so one instance per project.
+   * The application extension stores the cached directory on each project.
    *
    * [VirtualFile.isValid] is the only invalidation check needed — the solution directory is fixed for the session, and
    * a rename keeps the instance valid. It is also the only *safe* probe: after a VFS reconnect the cached file is
@@ -24,8 +25,7 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
    * Not `private` only so the test can plant a stale value.
    */
   @VisibleForTesting
-  @Volatile
-  var cachedProjectDir: VirtualFile? = null
+  val cachedProjectDirKey: Key<VirtualFile> = Key.create("UnityProjectFileIndexAugmentor.projectDir")
 
   override fun isInProject(project: Project, index: ProjectFileIndex, file: VirtualFile, current: Boolean): Boolean {
     if (current) return true
@@ -91,7 +91,7 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
   }
 
   /**
-   * Publication-only memoization: a volatile read plus [VirtualFile.isValid] on the hit path, and **no lock** on the
+   * Reads the project cache and checks [VirtualFile.isValid] on the hit path, with no monitor on the
    * miss path. Callers arrive under a shared read lock ([ProjectFileIndex] is `@RequiresReadLock`), so several threads
    * can miss at once and each resolves independently.
    *
@@ -103,7 +103,7 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
    * relaxation cannot produce a torn or disagreeing cache.
    */
   private fun projectDir(project: Project): VirtualFile {
-    cachedProjectDir?.let { if (it.isValid) return it }
+    project.getUserData(cachedProjectDirKey)?.let { if (it.isValid) return it }
     // Cache-avoiding because this file is held for the session and read on a traversal path: nothing here should be
     // able to populate a VFS cache on its behalf. Nothing it is asked today would -- the wrapper only diverts children
     // access and user data, and this file is only asked isValid, isCaseSensitive and its path -- but that is a fact
@@ -114,7 +114,7 @@ class UnityProjectFileIndexAugmentor : ProjectFileIndexAugmentor {
     // shipped today, but this augmentor used to accept any VirtualFile and a cache hint is not worth narrowing that to.
     val dir = project.projectDir
     val cacheAvoiding = if (dir is NewVirtualFile) dir.asCacheAvoiding() else dir
-    return cacheAvoiding.also { cachedProjectDir = it }
+    return cacheAvoiding.also { project.putUserData(cachedProjectDirKey, it) }
   }
 
   /**
