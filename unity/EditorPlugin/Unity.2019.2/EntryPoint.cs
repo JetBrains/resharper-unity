@@ -8,7 +8,10 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 {
   // DO NOT CHANGE NAME OR NAMESPACE!
   // Accessed from the package via reflection
-  // When the package explicitly loads the plugin from the product install folder, it will execute this class constructor.
+  // 
+  // NOTE: this is a legacy entry point, only used by Unity Rider package before version 3.1.1
+  //  Newer versions call PluginEntryPoint.Initialize directly and manage the lifetime on their side.
+  //  It will be removed at some point in the future.
   [PublicAPI]
   public static class EntryPoint
   {
