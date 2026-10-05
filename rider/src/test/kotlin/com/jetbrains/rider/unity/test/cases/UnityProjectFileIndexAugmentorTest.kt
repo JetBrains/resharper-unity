@@ -67,20 +67,20 @@ class UnityProjectFileIndexAugmentorTest : PerTestSolutionTestBase() {
         val script = assetScript()
         val assetsRoot = requireChild("Assets")
 
-        assertNull(augmentor.cachedProjectDir, "Nothing should be resolved before the first call")
+        assertNull(project.getUserData(augmentor.cachedProjectDirKey), "Nothing should be resolved before the first call")
 
         val firstAnswer = runReadActionBlocking { augmentor.getContentRootForFile(project, index, script, true, null) }
         assertEquals(assetsRoot, firstAnswer, "Assets/ is the Unity content root for a file under it")
-        assertEquals(project.projectDir, augmentor.cachedProjectDir, "The first call must memoize the project directory")
+        assertEquals(project.projectDir, project.getUserData(augmentor.cachedProjectDirKey), "The first call must memoize the project directory")
 
         // Plant a valid but wrong directory: if the hit path still resolved projectDir the answer would not move, but
         // because it reads the field the augmentor now looks for Assets/ under Library/ and finds none.
         val decoy = requireChild("Library")
-        augmentor.cachedProjectDir = decoy
+        project.putUserData(augmentor.cachedProjectDirKey, decoy)
 
         val secondAnswer = runReadActionBlocking { augmentor.getContentRootForFile(project, index, script, true, null) }
         assertNull(secondAnswer, "The hit path must read the memoized directory rather than resolve projectDir again")
-        assertEquals(decoy, augmentor.cachedProjectDir, "A valid cached directory must not be replaced")
+        assertEquals(decoy, project.getUserData(augmentor.cachedProjectDirKey), "A valid cached directory must not be replaced")
     }
 
     @Test // isValid is the whole invalidation story: a stale cached directory is dropped and re-resolved
@@ -94,11 +94,11 @@ class UnityProjectFileIndexAugmentorTest : PerTestSolutionTestBase() {
         // answers false for both, and is the one accessor that answers rather than throwing.
         val stale = createThenDeleteStaleDirectory()
         assertFalse(stale.isValid, "A deleted directory must report itself invalid")
-        augmentor.cachedProjectDir = stale
+        project.putUserData(augmentor.cachedProjectDirKey, stale)
 
         val answer = runReadActionBlocking { augmentor.getContentRootForFile(project, index, script, true, null) }
         assertEquals(assetsRoot, answer, "An invalid cached directory must be discarded and projectDir re-resolved")
-        assertEquals(project.projectDir, augmentor.cachedProjectDir, "The re-resolved directory must replace the stale one")
+        assertEquals(project.projectDir, project.getUserData(augmentor.cachedProjectDirKey), "The re-resolved directory must replace the stale one")
     }
 
     @Test // the Unity roots are deliberately NOT memoized alongside projectDir — the VFS already caches them
