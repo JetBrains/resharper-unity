@@ -11,7 +11,7 @@ import com.jetbrains.rider.projectView.solution
 
 class SaveAllActionListener : AnActionListener {
     override fun afterActionPerformed(action: AnAction, event: AnActionEvent, result: AnActionResult) {
-        if (action !is SaveAllAction && action !is SaveDocumentAction) return
+        if (!SaveAllAction.isSaveAllAction(action) && !SaveDocumentAction.isSaveDocumentAction(action)) return
         val project = event.project ?: return
         if (!project.isUnityProject.value) return
 
