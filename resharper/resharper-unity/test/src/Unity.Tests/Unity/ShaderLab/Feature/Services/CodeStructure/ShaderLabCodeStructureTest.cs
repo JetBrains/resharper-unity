@@ -14,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         protected override string RelativeTestDataPath => @"ShaderLab\CodeStructure";
         
         [TestCaseSource(typeof(ShaderLabCodeStructureTest))]
+        [UnityPluginBackendChecklist("ShaderLab", "Navigation and refactorings", "Code structure")]
         public void TestShaderFile(string shaderFileName) => DoOneTest(shaderFileName);
 
         public IEnumerator GetEnumerator() => TestDataPath.GetChildFiles("*.shader").Select(x => x.NameWithoutExtension).GetEnumerator();

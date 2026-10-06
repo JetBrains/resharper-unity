@@ -13,6 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeStyle
         protected override string RelativeTestDataPath => @"CSharp\Psi\CodeStyle";
 
         [Test]
+        [UnityPluginBackendChecklist("Code style", "Unity file layout")]
         public void TestFileLayout01()
         {
             // This test does not currently run on Mono, because the System.Xaml.dll that ships with system Mono (that

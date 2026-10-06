@@ -14,18 +14,18 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
          protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\CachePropertyValue";
          protected override bool AllowHighlightingOverlap => true;
 
-         [Test] public void SimpleTest() { DoNamedTest(); }
-         [Test] public void SimpleNewNameTest() { DoNamedTest(); }
-         [Test] public void MultiLineCacheTest() { DoNamedTest(); }
-         [Test] public void MultiLineCacheConflictTest() { DoNamedTest(); }
-         [Test] public void MultiLineCacheConflictTest2() { DoNamedTest(); }
-         [Test] public void LambdaTest() { DoNamedTest(); }
-         [Test] public void InlinedCacheTest() { DoNamedTest(); }
-         [Test] public void OnlyCacheTest() { DoNamedTest(); }
-         [Test] public void IfTest() { DoNamedTest(); }
-         [Test] public void SwitchTest() { DoNamedTest(); }
-         [Test] public void LoopTest() { DoNamedTest(); }
-         [Test] public void ReturnTest() { DoNamedTest(); }
-         [Test] public void InlinedRestoreTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void SimpleTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void SimpleNewNameTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void MultiLineCacheTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void MultiLineCacheConflictTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void MultiLineCacheConflictTest2() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void LambdaTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void InlinedCacheTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void OnlyCacheTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void IfTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void SwitchTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void LoopTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void ReturnTest() { DoNamedTest(); }
+         [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Cache property value")] public void InlinedRestoreTest() { DoNamedTest(); }
      }
  }

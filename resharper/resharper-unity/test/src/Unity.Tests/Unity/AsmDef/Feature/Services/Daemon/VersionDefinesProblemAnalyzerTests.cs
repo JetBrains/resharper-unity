@@ -26,6 +26,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
         }
 
         // TODO: Add packages for testing
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Inspections", "Version defines")] public void Test01() { DoNamedTest(); }
     }
 }

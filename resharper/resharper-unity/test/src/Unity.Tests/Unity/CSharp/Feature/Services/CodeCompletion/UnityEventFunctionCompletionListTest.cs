@@ -16,29 +16,30 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override LookupListSorting Sorting => mySorting;
 
-        [Test] public void MonoBehaviour01() { DoNamedTest(); }
-        [Test] public void MonoBehaviour02() { DoNamedTest(); }
-        [Test] public void MonoBehaviour03() { DoNamedTest(); }
-        [Test] public void MonoBehaviour04() { DoNamedTest(); }
-        [Test] public void MonoBehaviour05() { DoNamedTest(); }
-        [Test] public void MonoBehaviour06() { DoNamedTest(); }
-        [Test] public void MonoBehaviour07() { DoNamedTest(); }
-        [Test] public void MonoBehaviour08() { DoNamedTest(); }
-        [Test] public void NoCompletionInsideStruct() { DoNamedTest(); }
-        [Test] public void NoCompletionInsideInterface() { DoNamedTest(); }
-        [Test] public void NoCompletionInsideAttributeSectionList() { DoNamedTest(); }
-        [Test] public void NoCompletionFollowingSerializeFieldAttribute01() { DoNamedTest(); }
-        [Test] public void NoCompletionFollowingSerializeFieldAttribute02() { DoNamedTest(); }
-        [Test] public void NoCompletionFollowingSerializeFieldAttribute03() { DoNamedTest(); }
-        [Test] public void NoCompletionFollowingSerializeFieldAttribute04() { DoNamedTest(); }
-        [Test] public void DoNotMatchParameterTypes() { DoNamedTest(); }
-        [Test] public void DoNotListVirtualFunctions() { DoNamedTest(); }
-        [Test] public void DoNotListFunctionsImplementedInBase01() { DoNamedTest(); }
-        [Test] public void DoNotListFunctionsImplementedInBase02() { DoNamedTest(); }
-        [Test] public void UnityEditor01() { DoNamedTest(); }
-        [Test] public void EditorWindow01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void MonoBehaviour01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void MonoBehaviour02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void MonoBehaviour03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void MonoBehaviour04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void MonoBehaviour05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void MonoBehaviour06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void MonoBehaviour07() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void MonoBehaviour08() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void NoCompletionInsideStruct() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void NoCompletionInsideInterface() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void NoCompletionInsideAttributeSectionList() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void NoCompletionFollowingSerializeFieldAttribute01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void NoCompletionFollowingSerializeFieldAttribute02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void NoCompletionFollowingSerializeFieldAttribute03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void NoCompletionFollowingSerializeFieldAttribute04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void DoNotMatchParameterTypes() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void DoNotListVirtualFunctions() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void DoNotListFunctionsImplementedInBase01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list in unsupported contexts")] public void DoNotListFunctionsImplementedInBase02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void UnityEditor01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void EditorWindow01() { DoNamedTest(); }
 
         [Test]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")]
         public void AlphabeticalMonoBehaviour01()
         {
             mySorting = LookupListSorting.Alphabetically;
@@ -52,8 +53,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
             }
         }
 
-        [Test] public void RetypeNameOnExistingMethodWithDifferentSignature() { DoNamedTest(); }
-        [Test] public void RetypeNameOnExistingMethodWithDifferentSignature2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void RetypeNameOnExistingMethodWithDifferentSignature() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion list")] public void RetypeNameOnExistingMethodWithDifferentSignature2() { DoNamedTest(); }
 
         // Really useful for debugging ordering!
 //        protected override void PresentLookupItem(TextWriter writer, ILookupItem lookupItem, bool showTypes)

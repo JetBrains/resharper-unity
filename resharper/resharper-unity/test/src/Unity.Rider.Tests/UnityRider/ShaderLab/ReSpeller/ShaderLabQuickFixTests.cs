@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Features.ReSpeller.ReSharperSpecific.QuickFixes;
 using JetBrains.ReSharper.Features.ReSpeller.Settings;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
 using JetBrains.ReSharper.FeaturesTestFramework.SpellEngineStub;
+using JetBrains.ReSharper.Plugins.Tests.Unity;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
@@ -38,8 +39,8 @@ public class ShaderLabQuickFixTests : QuickFixTestBase<TypoQuickFix>
 
   protected override string RelativeTestDataPath => @"ShaderLab\ReSpeller\QuickFixes";
 
-  [Test] public void TestShaderComments() => DoNamedTest2();
-  [Test] public void TestShaderName() => DoNamedTest2();
-  [Test] public void TestShaderProperties() => DoNamedTest2();
-  [Test] public void TestSubshaderTags() => DoNamedTest2();
+  [Test, UnityPluginBackendChecklist("ReSpeller in ShaderLab", "Typo quick fix in shader comments")] public void TestShaderComments() => DoNamedTest2();
+  [Test, UnityPluginBackendChecklist("ReSpeller in ShaderLab", "Typo quick fix in shader name")] public void TestShaderName() => DoNamedTest2();
+  [Test, UnityPluginBackendChecklist("ReSpeller in ShaderLab", "Typo quick fix in shader properties")] public void TestShaderProperties() => DoNamedTest2();
+  [Test, UnityPluginBackendChecklist("ReSpeller in ShaderLab", "Typo quick fix in subshader tags")] public void TestSubshaderTags() => DoNamedTest2();
 }

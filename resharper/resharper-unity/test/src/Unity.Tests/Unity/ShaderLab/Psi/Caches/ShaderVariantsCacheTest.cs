@@ -24,9 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Caches
 
         [TestCase("AllDirectives")]
         [TestCase("DirectivesWithComments")]
+        [UnityPluginBackendChecklist("ShaderLab", "Caches", "Shader variants cache")]
         public void TestCacheItem(string testName) => DoOneTest(testName);
 
         [Test]
+        [UnityPluginBackendChecklist("ShaderLab", "Caches", "Shader variants cache")]
         public void TestComputeShader() => DoTestSolution("ComputeShader.compute");
         
         protected override void DoTest(Lifetime lifetime, IProject testProject)

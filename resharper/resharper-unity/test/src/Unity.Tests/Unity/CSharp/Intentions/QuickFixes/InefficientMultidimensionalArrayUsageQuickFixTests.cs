@@ -13,13 +13,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InefficientMultidimensionalArrayUsage\Availability";
 
-        [Test] public void ErrorElement() { DoNamedTest(); }
-        [Test] public void FieldWithoutInitializer() { DoNamedTest(); }
-        [Test] public void PublicFieldWithoutInitializer() { DoNamedTest(); }
-        [Test] public void AdditionalUsages() { DoNamedTest(); }
-        [Test] public void PrivateFieldWithUsage() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void ErrorElement() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void FieldWithoutInitializer() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void PublicFieldWithoutInitializer() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void AdditionalUsages() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void PrivateFieldWithUsage() { DoNamedTest(); }
 
-        [Test] public void MultipleDeclarators() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void MultipleDeclarators() { DoNamedTest(); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
@@ -34,9 +34,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InefficientMultidimensionalArrayUsage";
 
-        [Test] public void LocalDeclarationVar() { DoNamedTest(); }
-        [Test] public void LocalDeclarationType() { DoNamedTest(); }
-        [Test] public void LocalDeclarationType2() { DoNamedTest(); }
-        [Test] public void LocalDeclarationWithInitializer() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void LocalDeclarationVar() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void LocalDeclarationType() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void LocalDeclarationType2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Inefficient multidimensional array usage")] public void LocalDeclarationWithInitializer() { DoNamedTest(); }
     }
 }

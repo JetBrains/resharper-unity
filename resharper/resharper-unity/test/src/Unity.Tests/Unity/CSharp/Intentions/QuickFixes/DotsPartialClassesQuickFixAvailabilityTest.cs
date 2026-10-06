@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                 base.DoTest(lifetime, project);
         }
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Make DOTS type partial")] public void Test01() { DoNamedTest(); }
     }
     
     [TestUnity]
@@ -46,10 +46,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                 base.DoTest(lifetime, project);
         }
 
-        [Ignore("Unity's changing the api, waiting for pre3")][Test] public void Test01() { DoNamedTest(); }
-        [Ignore("Unity's changing the api, waiting for pre3")][Test] public void Test02() { DoNamedTest(); }
-        [Ignore("Unity's changing the api, waiting for pre3")][Test] public void Test03() { DoNamedTest(); }
-        [Ignore("Unity's changing the api, waiting for pre3")][Test, ExecuteScopedActionInFile] public void Test04() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void Test05() { DoNamedTest(); }
+        [Ignore("Unity's changing the api, waiting for pre3")][Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Make DOTS type partial")] public void Test01() { DoNamedTest(); }
+        [Ignore("Unity's changing the api, waiting for pre3")][Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Make DOTS type partial")] public void Test02() { DoNamedTest(); }
+        [Ignore("Unity's changing the api, waiting for pre3")][Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Make DOTS type partial")] public void Test03() { DoNamedTest(); }
+        [Ignore("Unity's changing the api, waiting for pre3")][Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Make DOTS type partial")] public void Test04() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Make DOTS type partial")] public void Test05() { DoNamedTest(); }
     }
 }

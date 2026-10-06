@@ -9,6 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeAnnotations.Nam
     {
         protected override string RelativeTestDataPath => @"CSharp\Psi\Naming\Elements";
 
-        [Test] public void TestSerializedFieldNameWarnings01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Serialization", "Serialized field naming")] public void TestSerializedFieldNameWarnings01() { DoNamedTest2(); }
     }
 }

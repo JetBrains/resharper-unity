@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\MismatchedFilename\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Inspections", "Mismatched filename")] public void Test01() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -20,6 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\MismatchedFilename";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Inspections", "Mismatched filename")] public void Test01() { DoNamedTest(); }
     }
 }

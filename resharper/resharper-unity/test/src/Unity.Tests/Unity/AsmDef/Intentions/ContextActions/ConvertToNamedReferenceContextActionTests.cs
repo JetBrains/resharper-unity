@@ -12,11 +12,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"AsmDef\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "ConvertToNamedReference";
 
-        [Test, TestFileExtension(".asmdef")] public void TestAvailability01() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
-        [Test, TestFileExtension(".asmref")] public void TestAsmRefAvailability01() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
-        [Test, TestFileExtension(".asmref")] public void TestAsmRefAvailability02() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
-        [Test, TestFileExtension(".asmref")] public void TestAsmRefAvailability03() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
-        [Test, TestFileExtension(".asmref")] public void TestAsmRefAvailability04() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, TestFileExtension(".asmdef"), UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Convert to named reference")] public void TestAvailability01() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, TestFileExtension(".asmref"), UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Convert to named reference")] public void TestAsmRefAvailability01() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, TestFileExtension(".asmref"), UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Convert to named reference")] public void TestAsmRefAvailability02() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, TestFileExtension(".asmref"), UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Convert to named reference")] public void TestAsmRefAvailability03() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, TestFileExtension(".asmref"), UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Convert to named reference")] public void TestAsmRefAvailability04() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
     }
 
     [TestUnity]
@@ -27,9 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"AsmDef\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "ConvertToNamedReference";
 
-        [Test] public void TestExecute01() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
-        [Test, ExecuteScopedActionInFile] public void TestExecuteInScope() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Convert to named reference")] public void TestExecute01() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Convert to named reference")] public void TestExecuteInScope() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
 
-        [Test, TestFileExtension(".asmref")] public void TestAsmRefExecute01() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, TestFileExtension(".asmref"), UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Convert to named reference")] public void TestAsmRefExecute01() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
     }
 }

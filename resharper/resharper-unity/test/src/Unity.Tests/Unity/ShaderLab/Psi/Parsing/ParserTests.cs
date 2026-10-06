@@ -93,6 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         [TestCase("CgInclude")]
         [TestCase("GlslInclude")]
         [TestCase("HlslInclude")]
+        [UnityPluginBackendChecklist("ShaderLab", "Language and parsing", "Parser")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

@@ -17,6 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
 
         protected override string ProjectName => "Assembly-CSharp";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Inspections", "Define constraints")] public void Test01() { DoNamedTest(); }
     }
 }

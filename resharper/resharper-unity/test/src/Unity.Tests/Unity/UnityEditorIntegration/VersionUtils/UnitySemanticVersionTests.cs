@@ -7,6 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
     public class UnitySemanticVersionTests
     {
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void TestParsingUnityVersion()
         {
             Assert.True(UnitySemanticVersion.TryParseProductVersion("2020.1.3a1", out var result));
@@ -19,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void TestParsingUnityVersion2()
         {
             Assert.True(UnitySemanticVersion.TryParseProductVersion("2020.1.3b1", out var result));
@@ -31,6 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void TestParsingUnityVersion3()
         {
             Assert.True(UnitySemanticVersion.TryParseProductVersion("2020.1.3f1", out var result));
@@ -43,6 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void TestParsingSemanticVersion()
         {
             Assert.True(UnitySemanticVersion.TryParse("1.3.4-pre1", out var result));
@@ -55,6 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void TestParsingNumericMetadata()
         {
             Assert.True(UnitySemanticVersion.TryParse("2021.3.0-9999", out var result));
@@ -70,6 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
     public class UnitySemanticVersionRangeTests
     {
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void TestParsingUnityProductVersionRangeAtLeast()
         {
             Assert.True(UnitySemanticVersionRange.TryParse("2020.1.3a2", out var result));
@@ -84,6 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void TestParsingUnityProductVersionRangeExact()
         {
             Assert.True(UnitySemanticVersionRange.TryParse("[2020.1.3a2]", out var result));
@@ -96,6 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void TestParsingUnityProductVersionRangeInclusive()
         {
             Assert.True(UnitySemanticVersionRange.TryParse("[2020.1.3a2,2020.1.3b2]", out var result));
@@ -109,6 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void TestParsingUnityProductVersionRangeExclusive()
         {
             Assert.True(UnitySemanticVersionRange.TryParse("(2020.1.3a2,2020.1.3b2)", out var result));

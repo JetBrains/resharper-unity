@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\FormerlySerializedAsSplitDeclarations\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Split declarations for FormerlySerializedAs")] public void Test01() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -18,6 +18,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\FormerlySerializedAsSplitDeclarations";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Split declarations for FormerlySerializedAs")] public void Test01() { DoNamedTest(); }
     }
 }

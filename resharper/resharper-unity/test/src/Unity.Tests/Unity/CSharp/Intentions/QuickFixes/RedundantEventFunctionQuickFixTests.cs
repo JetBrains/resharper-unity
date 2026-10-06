@@ -9,9 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\RedundantEventFunction\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Remove redundant event function")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Remove redundant event function")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Remove redundant event function")] public void Test03() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\RedundantEventFunction";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Remove redundant event function")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Remove redundant event function")] public void Test02() { DoNamedTest(); }
     }
 }

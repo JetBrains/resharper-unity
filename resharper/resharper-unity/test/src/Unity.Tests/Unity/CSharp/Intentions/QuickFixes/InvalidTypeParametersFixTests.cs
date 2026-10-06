@@ -9,9 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidTypeParameters\Availability";
 
-        [Test] public void MonoBehaviourMethod() { DoNamedTest(); }
-        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
-        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid type parameters")] public void MonoBehaviourMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid type parameters")] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid type parameters")] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -19,8 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidTypeParameters";
 
-        [Test] public void MonoBehaviourMethod() { DoNamedTest(); }
-        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
-        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid type parameters")] public void MonoBehaviourMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid type parameters")] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid type parameters")] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 }

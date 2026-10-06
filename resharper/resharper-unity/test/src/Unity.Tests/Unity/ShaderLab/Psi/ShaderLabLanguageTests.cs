@@ -10,6 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi
     public class ShaderLabLanguageTests : BaseTest
     {
         [Test]
+        [UnityPluginBackendChecklist("ShaderLab", "Language and parsing", "Language registration")]
         public void LanguageIsRegistered()
         {
             Assert.NotNull(ShaderLabLanguage.Instance);

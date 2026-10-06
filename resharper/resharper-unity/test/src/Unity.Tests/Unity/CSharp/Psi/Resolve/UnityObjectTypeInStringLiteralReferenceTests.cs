@@ -16,9 +16,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
             return reference is UnityObjectTypeOrNamespaceReference;
         }
 
-        [Test] public void AddComponent01() { DoNamedTest(); }
-        [Test] public void GetComponent01() { DoNamedTest(); }
-        [Test] public void ScriptableObjectCreateInstance01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "AddComponent")] public void AddComponent01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "GetComponent")] public void GetComponent01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "ScriptableObject.CreateInstance")] public void ScriptableObjectCreateInstance01() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -28,31 +28,31 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
 
-        [Test] public void AddComponent01() { DoNamedTest(); }
-        [Test] public void AddComponent02() { DoNamedTest(); }
-        [Test] public void AddComponent03() { DoNamedTest(); }
-        [Test] public void AddComponent04() { DoNamedTest(); }
-        [Test] public void AddComponent05() { DoNamedTest(); }
-        [Test] public void AddComponent06() { DoNamedTest(); }
-        [Test] public void AddComponent07() { DoNamedTest(); }
-        [Test] public void AddComponent08() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "AddComponent")] public void AddComponent01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "AddComponent")] public void AddComponent02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "AddComponent")] public void AddComponent03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "AddComponent")] public void AddComponent04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "AddComponent")] public void AddComponent05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "AddComponent")] public void AddComponent06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "AddComponent")] public void AddComponent07() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "AddComponent")] public void AddComponent08() { DoNamedTest(); }
 
-        [Test] public void GetComponent01() { DoNamedTest(); }
-        [Test] public void GetComponent02() { DoNamedTest(); }
-        [Test] public void GetComponent03() { DoNamedTest(); }
-        [Test] public void GetComponent04() { DoNamedTest(); }
-        [Test] public void GetComponent05() { DoNamedTest(); }
-        [Test] public void GetComponent06() { DoNamedTest(); }
-        [Test] public void GetComponent07() { DoNamedTest(); }
-        [Test] public void GetComponent08() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "GetComponent")] public void GetComponent01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "GetComponent")] public void GetComponent02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "GetComponent")] public void GetComponent03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "GetComponent")] public void GetComponent04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "GetComponent")] public void GetComponent05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "GetComponent")] public void GetComponent06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "GetComponent")] public void GetComponent07() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "GetComponent")] public void GetComponent08() { DoNamedTest(); }
 
-        [Test] public void ScriptableObjectCreateInstance01() { DoNamedTest(); }
-        [Test] public void ScriptableObjectCreateInstance02() { DoNamedTest(); }
-        [Test] public void ScriptableObjectCreateInstance03() { DoNamedTest(); }
-        [Test] public void ScriptableObjectCreateInstance04() { DoNamedTest(); }
-        [Test] public void ScriptableObjectCreateInstance05() { DoNamedTest(); }
-        [Test] public void ScriptableObjectCreateInstance06() { DoNamedTest(); }
-        [Test] public void ScriptableObjectCreateInstance07() { DoNamedTest(); }
-        [Test] public void ScriptableObjectCreateInstance08() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "ScriptableObject.CreateInstance")] public void ScriptableObjectCreateInstance01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "ScriptableObject.CreateInstance")] public void ScriptableObjectCreateInstance02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "ScriptableObject.CreateInstance")] public void ScriptableObjectCreateInstance03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "ScriptableObject.CreateInstance")] public void ScriptableObjectCreateInstance04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "ScriptableObject.CreateInstance")] public void ScriptableObjectCreateInstance05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "ScriptableObject.CreateInstance")] public void ScriptableObjectCreateInstance06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "ScriptableObject.CreateInstance")] public void ScriptableObjectCreateInstance07() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Unity type in string literal", "ScriptableObject.CreateInstance")] public void ScriptableObjectCreateInstance08() { DoNamedTest(); }
     }
 }

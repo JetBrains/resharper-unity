@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmDefReferences";
 
-        [Test] public void TestList01() { DoTestSolution( [TestName], ["Ref01_SecondProject.asmdef"]); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Completion", "References completion")] public void TestList01() { DoTestSolution( [TestName], ["Ref01_SecondProject.asmdef"]); }
     }
 
     [TestUnity]
@@ -24,6 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override LookupListSorting Sorting => LookupListSorting.ByRelevance;
 
-        [Test] public void TestAction01() { DoTestSolution([TestName], ["Ref01_SecondProject.asmdef"]); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Completion", "References completion")] public void TestAction01() { DoTestSolution([TestName], ["Ref01_SecondProject.asmdef"]); }
     }
 }

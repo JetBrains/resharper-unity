@@ -15,46 +15,57 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
         // Test what happens when the user types e.g. `void OnAnim{caret}` without an accessibility modifier. The result
         // depends on the code style setting for default private modifier. Default for the test class is explicit
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier01() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier02() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier03() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier04() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier05() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier06() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier07() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier08() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier09() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier10() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        [UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with implicit accessibility")]
         public void ImplicitAccessibilityModifier11() { DoNamedTest(); }
 
-        [Test] public void ExplicitAccessibilityModifier01() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier02() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier03() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier04() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier05() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier06() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier07() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier08() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier09() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier10() { DoNamedTest(); }
-        [Test] public void ExplicitAccessibilityModifier11() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier07() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier08() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier09() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier10() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Generated code with explicit accessibility")] public void ExplicitAccessibilityModifier11() { DoNamedTest(); }
 
-        [Test] public void GeneratedCodeResolvesNamespaceGlobally() { DoNamedTest(); }
-        [Test] public void RetypeNameOnExistingMethod() { DoNamedTest(); }
-        [Test] public void RetypeFullNameOnExistingMethod01() { DoNamedTest(); }
-        [Test] public void RetypeFullNameOnExistingMethod02() { DoNamedTest(); }
-        [Test] public void RetypeNameOnExistingBrokenMethod() { DoNamedTest(); }
-        [Test] public void DoNotRenameNextDeclaration() { DoNamedTest(); }
-        [Test] public void EmptyPrefix() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion over existing members")] public void GeneratedCodeResolvesNamespaceGlobally() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion over existing members")] public void RetypeNameOnExistingMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion over existing members")] public void RetypeFullNameOnExistingMethod01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion over existing members")] public void RetypeFullNameOnExistingMethod02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion over existing members")] public void RetypeNameOnExistingBrokenMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion over existing members")] public void DoNotRenameNextDeclaration() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Completion over existing members")] public void EmptyPrefix() { DoNamedTest(); }
     }
 }

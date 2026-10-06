@@ -24,6 +24,7 @@
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Console" />
     <PackageReference Include="System.Collections.Immutable" />
+    <PackageReference Include="JetBrains.NUnitExtensions" />
   </ItemGroup>
   <ItemGroup Label="ProjectReference">
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />

@@ -18,10 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
 
         protected override string RelativeTestDataPath => @"ShaderLab\CodeCompletion\Keywords";
         
-        [Test] public void TestKeywordReplacement() => DoNamedTest();
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Completion", "Keyword insertion")] public void TestKeywordReplacement() => DoNamedTest();
         
-        [Test] public void TestBlockCommandCompletion01() => DoNamedTest();
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Completion", "Keyword insertion")] public void TestBlockCommandCompletion01() => DoNamedTest();
         
-        [Test] public void TestBlockCommandCompletion02() => DoNamedTest();
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Completion", "Keyword insertion")] public void TestBlockCommandCompletion02() => DoNamedTest();
     }
 }

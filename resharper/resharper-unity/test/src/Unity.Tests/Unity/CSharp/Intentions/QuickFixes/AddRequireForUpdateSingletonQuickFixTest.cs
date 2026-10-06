@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
             base.DoNamedTest(files);
         }
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Add RequireForUpdate for singleton")] public void Test01() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -30,9 +30,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
             base.DoNamedTest(files);
         }
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void Test03() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Add RequireForUpdate for singleton")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Add RequireForUpdate for singleton")] public void Test02() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Add RequireForUpdate for singleton")] public void Test03() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Add RequireForUpdate for singleton")] public void Test04() { DoNamedTest(); }
     }
 }

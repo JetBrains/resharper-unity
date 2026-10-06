@@ -14,9 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.QuickD
         {
         }
 
-        [Test] public void EventFunctionQuickDoc() { DoNamedTest(); }
-        [Test] public void ParameterQuickDoc() { DoNamedTest(); }
-        [Test] public void SerialisedFieldTooltipQuickDoc() { DoNamedTest(); }
-        [Test] public void XmlDocOverrides() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Tooltips and documentation", "Quick doc for Unity elements")] public void EventFunctionQuickDoc() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Tooltips and documentation", "Quick doc for Unity elements")] public void ParameterQuickDoc() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Tooltips and documentation", "Quick doc for Unity elements")] public void SerialisedFieldTooltipQuickDoc() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Tooltips and documentation", "Quick doc for Unity elements")] public void XmlDocOverrides() { DoNamedTest(); }
     }
 }

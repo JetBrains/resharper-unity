@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
 
         protected override string RelativeTestDataPath => @"CSharp/Intentions/QuickFixes/BurstFixedString/Availability";
 
-        [Test] public void Everything() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst quick fixes", "Convert to FixedString")] public void Everything() { DoNamedTest(); }
     }
     
     [TestUnity]
@@ -29,6 +29,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override string RelativeTestDataPath => @"CSharp/Intentions/QuickFixes/BurstFixedString";
         protected override bool AllowHighlightingOverlap => true;
 
-        [Test] public void BurstFixedStringActionTest1() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst quick fixes", "Convert to FixedString")] public void BurstFixedStringActionTest1() { DoNamedTest(); }
     }
 }

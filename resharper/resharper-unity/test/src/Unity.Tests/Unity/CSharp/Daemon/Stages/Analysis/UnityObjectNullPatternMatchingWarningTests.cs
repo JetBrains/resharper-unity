@@ -11,5 +11,5 @@ public class UnityObjectNullPatternMatchingWarningTests : CSharpHighlightingTest
 {
     protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-    [Test] public void TestUnityObjectNullPatternMatchingWarning() { DoNamedTest2(); }
+    [Test, UnityPluginBackendChecklist("C# code analysis", "Unity object null checks", "Null pattern matching")] public void TestUnityObjectNullPatternMatchingWarning() { DoNamedTest2(); }
 }

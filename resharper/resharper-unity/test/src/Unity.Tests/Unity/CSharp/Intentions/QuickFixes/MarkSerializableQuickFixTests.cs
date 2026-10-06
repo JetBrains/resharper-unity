@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MarkSerializable\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Mark type serializable")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Mark type serializable")] public void Test02() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -24,8 +24,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MarkSerializable\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Mark type serializable")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Mark type serializable")] public void Test02() { DoNamedTest(); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
@@ -45,6 +45,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MarkSerializable";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Mark type serializable")] public void Test01() { DoNamedTest(); }
     }
 }

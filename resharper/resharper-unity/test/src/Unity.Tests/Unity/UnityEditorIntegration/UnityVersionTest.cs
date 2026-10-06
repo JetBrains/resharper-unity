@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration
     public class UnityVersionTest
     {
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void VersionConversionTest()
         {
             var marketingVersion = "2018.2.13p1";
@@ -17,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void CustomUnityVersionConversionTest()
         {
             var marketingVersion = "2017.2.1f1-CustomPostfix";
@@ -26,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void VersionToStringTest()
         {
             var marketingVersion = "2018.2.13";
@@ -35,6 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void SortTest()
         {
             var mVersions = new[] {"2018.2.13a20",  "2018.2.13b1", "2018.2.13b3", "2018.2.13b10", "2018.2.13b20", "2018.2.13f1","2018.2.13f20", "2018.2.13p1", "2018.2.13p20"};

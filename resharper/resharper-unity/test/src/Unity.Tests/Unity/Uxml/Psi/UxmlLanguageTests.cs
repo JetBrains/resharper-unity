@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.Psi
     public class UxmlLanguageTests
     {
         [Test]
+        [UnityPluginBackendChecklist("UXML", "Language registration")]
         public void LanguageIsRegistered()
         {
             Assert.NotNull(UxmlLanguage.Instance);

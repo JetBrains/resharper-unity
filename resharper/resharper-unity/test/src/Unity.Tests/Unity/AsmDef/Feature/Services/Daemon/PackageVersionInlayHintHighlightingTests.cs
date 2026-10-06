@@ -23,6 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
         }
 
         // TODO: Add some kind of dummy package for testing
-        [Test] public void TestPackageVersionInlayHints01() { DoTestSolution("PackageVersion.asmdef"); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Inlay hints", "Package version hints")] public void TestPackageVersionInlayHints01() { DoTestSolution("PackageVersion.asmdef"); }
     }
 }

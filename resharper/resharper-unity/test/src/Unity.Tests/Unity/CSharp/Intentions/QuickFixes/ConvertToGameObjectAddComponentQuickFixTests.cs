@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertToGameObjectAddComponent\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Object creation", "Convert to GameObject.AddComponent")] public void Test01() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -20,6 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertToGameObjectAddComponent";
         protected override bool AllowHighlightingOverlap => true;
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Object creation", "Convert to GameObject.AddComponent")] public void Test01() { DoNamedTest(); }
     }
 }

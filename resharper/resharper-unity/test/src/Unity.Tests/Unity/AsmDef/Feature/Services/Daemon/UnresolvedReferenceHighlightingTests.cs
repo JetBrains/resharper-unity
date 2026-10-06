@@ -13,6 +13,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
         protected override PsiLanguageType? CompilerIdsLanguage => JsonNewLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Resolve\UnresolvedProject";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Inspections", "Unresolved reference")] public void Test01() { DoNamedTest(); }
     }
 }

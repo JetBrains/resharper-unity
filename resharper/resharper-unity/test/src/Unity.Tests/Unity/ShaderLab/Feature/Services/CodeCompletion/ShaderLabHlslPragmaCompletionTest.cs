@@ -20,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("TestPragmaCommands", ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
         [TestCase("TestPragmaCommands", CppProjectFileType.HLSL_EXTENSION)]
         [TestCase("TestPragmaCommands", CppProjectFileType.COMPUTE_EXTENSION)]
+        [UnityPluginBackendChecklist("ShaderLab", "Completion", "HLSL pragma completion")]
         public void TestCompletion(string testName, string extension) => DoTestSolution(testName + extension);
     }
 }

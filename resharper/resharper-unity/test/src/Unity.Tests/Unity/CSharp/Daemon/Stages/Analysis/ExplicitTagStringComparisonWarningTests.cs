@@ -8,6 +8,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-        [Test] public void TestExplicitTagStringComparisonWarning() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "String literal arguments", "Explicit tag string comparison")] public void TestExplicitTagStringComparisonWarning() { DoNamedTest2(); }
     }
 }

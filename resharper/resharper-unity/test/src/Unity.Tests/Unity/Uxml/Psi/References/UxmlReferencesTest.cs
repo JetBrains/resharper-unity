@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.Psi.References
                    $" [{reference.GetType().Name}]";
         }
 
-        [Test] public void MainMenuTemplate()
+        [Test, UnityPluginBackendChecklist("UXML", "References")] public void MainMenuTemplate()
         {
             var mainFile = Files.Single(a => a.Name == "MainMenuTemplate.uxml");
             DoTestSolution(ArrayUtil.Add(mainFile.FullPath, Files.Except(mainFile).Select(a=>a.FullPath).ToArray())); 

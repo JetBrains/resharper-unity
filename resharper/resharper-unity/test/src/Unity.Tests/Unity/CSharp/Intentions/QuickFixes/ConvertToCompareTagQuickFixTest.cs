@@ -9,14 +9,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertToCompareTag\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
-        [Test] public void Test07() { DoNamedTest(); }
-        [Test] public void Test08() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test07() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test08() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -25,13 +25,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertToCompareTag";
         protected override bool AllowHighlightingOverlap => true;
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void Test07() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void Test08() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test06() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test07() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("Quick fixes", "Performance", "Convert to CompareTag")] public void Test08() { DoNamedTest(); }
     }
 }

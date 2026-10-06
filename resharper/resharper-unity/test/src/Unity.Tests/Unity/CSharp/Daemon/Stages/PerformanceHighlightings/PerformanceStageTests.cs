@@ -12,23 +12,23 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Performan
         // IMPORTANT! Keep in sync with equivalent class in Unity.Rider.Tests
         // ********************************************************************
 
-        [Test] public void SimpleTest() { DoNamedTest(); }
-        [Test] public void SimpleTest2() { DoNamedTest(); }
-        [Test] public void CommonTest() { DoNamedTest(); }
-        [Test] public void CoroutineTest() { DoNamedTest(); }
-        [Test] public void UnityObjectEqTest() { DoNamedTest(); }
-        [Test] public void IndirectCostlyTest() { DoNamedTest(); }
-        [Test] public void InefficientCameraMainUsageWarningTest() { DoNamedTest(); }
-        [Test] public void InvokeAndSendMessageTest() { DoNamedTest(); }
-        [Test] public void DisabledWarningTest() { DoNamedTest(); }
-        [Test] public void LambdasTest() { DoNamedTest(); }
-        [Test] public void LocalFunctionsTest() { DoNamedTest(); }
-        [Test] public void CommentRootsTest() { DoNamedTest(); }
-        [Test] public void EditorClassesTest() { DoNamedTest(); }
-        [Test] public void CommentRootsTest2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Performance critical context detection")] public void SimpleTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Performance critical context detection in nested scopes")] public void SimpleTest2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Common performance warnings")] public void CommonTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Coroutines")] public void CoroutineTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Unity object equality comparison")] public void UnityObjectEqTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Indirect costly method calls")] public void IndirectCostlyTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Inefficient Camera.main usage")] public void InefficientCameraMainUsageWarningTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Invoke and SendMessage string literals")] public void InvokeAndSendMessageTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Disabled performance warnings")] public void DisabledWarningTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Lambdas")] public void LambdasTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Local functions")] public void LocalFunctionsTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Comment-based performance roots")] public void CommentRootsTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Editor classes are excluded from analysis")] public void EditorClassesTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Comment-based performance roots with nested comments")] public void CommentRootsTest2() { DoNamedTest(); }
         // this test gold does not contain ".gen" part!
         // gold - "SimpleGenTest.cs.gold"
         // but test file - "SimpleGenTest.gen.cs"
-        [Test] public void SimpleGenTest() { DoOneTest(nameof(SimpleGenTest) + ".gen"); }
+        [Test, UnityPluginBackendChecklist("Performance critical code analysis", "Generated files analysis")] public void SimpleGenTest() { DoOneTest(nameof(SimpleGenTest) + ".gen"); }
     }
 }

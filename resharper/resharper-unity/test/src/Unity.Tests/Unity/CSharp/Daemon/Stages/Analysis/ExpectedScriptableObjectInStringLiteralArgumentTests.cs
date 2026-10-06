@@ -10,6 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "String literal arguments", "Expected ScriptableObject type")]
         public void TestExpectedScriptableObjectInStringLiteral() { DoNamedTest2(); }
     }
 }

@@ -15,6 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Sel
         [TestCase("Test03")]
         [TestCase("Test04")]
         [TestCase("Test05")]
+        [UnityPluginBackendChecklist("ShaderLab", "Editing", "Extend selection")]
         public void Test(string testName) => DoOneTest(testName);
     }
 }

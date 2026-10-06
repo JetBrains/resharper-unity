@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"AddRangeAttribute";
 
-        [Test] public void TestAvailability01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Add Range attribute")] public void TestAvailability01() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -21,8 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "AddRangeAttribute";
 
-        [Test] public void TestAddAttribute() { DoNamedTest2(); }
-        [Test] public void TestAddToExistingAttributes() { DoNamedTest2(); }
-        [Test] public void TestAddToOneOfMultipleFields() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Add Range attribute")] public void TestAddAttribute() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Add Range attribute")] public void TestAddToExistingAttributes() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Add Range attribute")] public void TestAddToOneOfMultipleFields() { DoNamedTest2(); }
     }
 }

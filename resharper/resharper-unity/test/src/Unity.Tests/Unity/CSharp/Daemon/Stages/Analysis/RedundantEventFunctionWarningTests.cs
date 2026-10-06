@@ -19,6 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-        [Test] public void TestRedundantEventFunctionWarning() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Event functions", "Redundant event function")] public void TestRedundantEventFunctionWarning() { DoNamedTest2(); }
     }
 }

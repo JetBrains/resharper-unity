@@ -28,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         protected override string ShaderFolderName => SHADER_FOLDER_NAME;
 
         [TestCaseSource(nameof(GetThirdPartyShadersSource), new object[] {SHADER_FOLDER_NAME})]
+        [UnityPluginBackendChecklist("ShaderLab", "Language and parsing", "Third-party shaders")]
         public void TestThirdPartyShaders(string name) => DoOneTest(name);
     }
 
@@ -42,6 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         protected override string ShaderFolderName => SHADER_FOLDER_NAME;
 
         [TestCaseSource(nameof(GetThirdPartyShadersSource), new object[] {SHADER_FOLDER_NAME})]
+        [UnityPluginBackendChecklist("ShaderLab", "Language and parsing", "Third-party shaders")]
         public void TestThirdPartyShaders(string name) => DoOneTest(name);
     }
 

@@ -20,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         // gracefully (via TryAdd) instead of crashing with ArgumentException on Dictionary.Add.
         // RIDER-135672
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void GenericClassesWithCollidingElementIds()
         {
             CollidingElementIdProviderMock.ForceCollisions = true;

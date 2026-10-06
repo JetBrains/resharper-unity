@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\PerformanceAnalysisDisable\Availability";
 
-        [Test] public void Everything() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Disable performance analysis")] public void Everything() { DoNamedTest(); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
@@ -27,8 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\PerformanceAnalysisDisable\";
 
-        [Test] public void TestSimple1() { DoNamedTest(); }
-        [Test] public void TestSimple2() { DoNamedTest(); }
-        [Test] public void TestSimple3() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Disable performance analysis")] public void TestSimple1() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Disable performance analysis")] public void TestSimple2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Disable performance analysis")] public void TestSimple3() { DoNamedTest(); }
     }
 }

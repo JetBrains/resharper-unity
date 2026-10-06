@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Analys
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Daemon\Stages\Analysis";
 
-        [Test] public void TestUnresolvedPropertyHighlights() { DoNamedTest2(); }
-        [Test] public void TestMultipleCandidatePropertyHighlights() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Highlighting", "Unresolved and ambiguous properties")] public void TestUnresolvedPropertyHighlights() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Highlighting", "Unresolved and ambiguous properties")] public void TestMultipleCandidatePropertyHighlights() { DoNamedTest2(); }
     }
 }

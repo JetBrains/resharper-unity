@@ -8,11 +8,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-        [Test] public void TestRedundantSerializeFieldAttribute() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant SerializeField attribute")] public void TestRedundantSerializeFieldAttribute() { DoNamedTest2(); }
 
         // Regression guard only. A dictionary resolves to Unknown here rather than NonSerializedField, and this
         // analyzer reports only the latter, so the version-gated behaviour is covered by GutterMarkTests instead.
-        [Test, TestUnity(UnityVersion.Unity6000_6)] public void TestRedundantSerializeFieldAttributeDictionary() { DoNamedTest2(); }
+        [Test, TestUnity(UnityVersion.Unity6000_6), UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant SerializeField attribute")] public void TestRedundantSerializeFieldAttributeDictionary() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -20,8 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-        [Test] public void TestRedundantSerializeFieldAttribute() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant SerializeField attribute")] public void TestRedundantSerializeFieldAttribute() { DoNamedTest2(); }
 
-        [Test, TestUnity(UnityVersion.Unity6000_6)] public void TestRedundantSerializeFieldAttributeDictionary() { DoNamedTest2(); }
+        [Test, TestUnity(UnityVersion.Unity6000_6), UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant SerializeField attribute")] public void TestRedundantSerializeFieldAttributeDictionary() { DoNamedTest2(); }
     }
 }

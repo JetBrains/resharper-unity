@@ -29,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Add field to existing baker")]
         public void AddFieldActionAvailability()
         {
             DoNamedTest($"../{DotsClassesFileName}");
@@ -67,24 +68,28 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Add field to existing baker")]
         public void AddFieldToBaker1()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Add field to existing baker")]
         public void AddFieldToBaker2()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Add field to existing baker")]
         public void AddFieldToBaker3()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Add field to existing baker")]
         public void AddFieldToBaker4()
         {
             DoNamedTest($"../{DotsClassesFileName}");

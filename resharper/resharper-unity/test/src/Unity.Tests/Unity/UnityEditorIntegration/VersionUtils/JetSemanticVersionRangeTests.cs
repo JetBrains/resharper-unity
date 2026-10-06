@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
     public class JetSemanticVersionRangeTests
     {
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void TestExactVersion()
         {
             Assert.True(JetSemanticVersionRange.TryParse("[1.2.3]", out var range));
@@ -19,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void TestThisVersionOrLater()
         {
             Assert.True(JetSemanticVersionRange.TryParse("1.2.3", out var range));
@@ -30,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void TestInclusiveRange()
         {
             Assert.True(JetSemanticVersionRange.TryParse("[1.2.3,1.4.5]", out var range));
@@ -43,6 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void TestExclusiveRange()
         {
             Assert.True(JetSemanticVersionRange.TryParse("(1.2.3,1.4.5)", out var range));
@@ -56,6 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void CanParseVersionRangeFromInclusive()
         {
             Assert.True(JetSemanticVersionRange.TryParse("[1.2.3,1.4.5)", out var range));
@@ -64,6 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void CanParseVersionRangeToInclusive()
         {
             Assert.True(JetSemanticVersionRange.TryParse("(1.2.3,1.4.5]", out var range));
@@ -72,6 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void SpacesNotAllowedInExpression()
         {
             Assert.False(JetSemanticVersionRange.TryParse("[1.2.3, 1.4.5]", out var range));
@@ -79,6 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void TestMustHaveBalancedBrackets1()
         {
             Assert.False(JetSemanticVersionRange.TryParse("[1.2.3,1.4.5", out var range));
@@ -86,6 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void TestMustHaveBalancedBrackets2()
         {
             Assert.False(JetSemanticVersionRange.TryParse("(1.2.3,1.4.5", out var range));
@@ -93,6 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void TestMustHaveBalancedBrackets3()
         {
             Assert.False(JetSemanticVersionRange.TryParse("1.2.3,1.4.5]", out var range));
@@ -100,6 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Semantic version ranges")]
         public void TestMustHaveBalancedBrackets4()
         {
             Assert.False(JetSemanticVersionRange.TryParse("1.2.3,1.4.5)", out var range));

@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Color
         protected override bool ColorIdentifiers => true;
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Colors";
 
-        [Test] public void TestColor() { DoNamedTest2(); }
-        [Test] public void TestColor32() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Unity color highlighting")] public void TestColor() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Unity color highlighting")] public void TestColor32() { DoNamedTest2(); }
     }
 }

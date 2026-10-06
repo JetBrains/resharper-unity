@@ -24,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Ref
         [TestCase("Test01.shader")]
         [TestCase("Test02.compute")]
         [TestCase("Test03.hlsl")]
+        [UnityPluginBackendChecklist("HLSL support", "References from ShaderLab to HLSL")]
         public void Test(string filename) => DoTestSolution(filename);
 
         IEnumerator IEnumerable.GetEnumerator() { return TestDataPath

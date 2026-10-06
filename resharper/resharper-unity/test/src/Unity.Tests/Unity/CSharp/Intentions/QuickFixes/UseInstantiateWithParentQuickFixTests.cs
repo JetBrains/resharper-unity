@@ -20,12 +20,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                    && base.HighlightingPredicate(highlighting, psiSourceFile, boundSettingsStore);
         }
 
-        [Test] public void SimpleTest() { DoNamedTest(); }
-        [Test] public void SetParentWithFalseTest() { DoNamedTest(); }
-        [Test] public void SetParentWithTrueTest() { DoNamedTest(); }
-        [Test] public void SetParentByPropertyTest() { DoNamedTest(); }
-        [Test] public void SomethingBetweenTest() { DoNamedTest(); }
-        [Test] public void ScopedTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SimpleTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SetParentWithFalseTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SetParentWithTrueTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SetParentByPropertyTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SomethingBetweenTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void ScopedTest() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -34,11 +34,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\UseInstantiateWithParent";
         protected override bool AllowHighlightingOverlap => true;
 
-        [Test] public void SimpleTest() { DoNamedTest(); }
-        [Test] public void SetParentWithFalseTest() { DoNamedTest(); }
-        [Test] public void SetParentWithTrueTest() { DoNamedTest(); }
-        [Test] public void SetParentByPropertyTest() { DoNamedTest(); }
-        [Test] public void SomethingBetweenTest() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void ScopedTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SimpleTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SetParentWithFalseTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SetParentWithTrueTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SetParentByPropertyTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void SomethingBetweenTest() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("Quick fixes", "Performance", "Use Instantiate with parent")] public void ScopedTest() { DoNamedTest(); }
     }
 }

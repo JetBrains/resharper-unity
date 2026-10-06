@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\ReferencingSelf\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Inspections", "Referencing self")] public void Test01() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\ReferencingSelf";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Inspections", "Referencing self")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Inspections", "Referencing self")] public void Test02() { DoNamedTest(); }
     }
 }

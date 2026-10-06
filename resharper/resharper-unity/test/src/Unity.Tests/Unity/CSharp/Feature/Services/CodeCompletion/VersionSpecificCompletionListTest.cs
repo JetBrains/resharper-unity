@@ -39,13 +39,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
     [TestUnity(UnityVersion.Unity54)]
     public class Unity54CompletionListTest : VersionSpecificCompletionListTest
     {
-        [Test] public void OnParticleTriggerWithOneArg54() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Version-specific event functions")] public void OnParticleTriggerWithOneArg54() { DoNamedTest(); }
     }
 
     [Ignore("TODO: krasnotsvetov")]
     [TestUnity(UnityVersion.Unity55)]
     public class Unity55CompletionListTest : VersionSpecificCompletionListTest
     {
-        [Test] public void OnParticleTriggerWithNoArgs55() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Code completion", "Event functions", "Version-specific event functions")] public void OnParticleTriggerWithNoArgs55() { DoNamedTest(); }
     }
 }

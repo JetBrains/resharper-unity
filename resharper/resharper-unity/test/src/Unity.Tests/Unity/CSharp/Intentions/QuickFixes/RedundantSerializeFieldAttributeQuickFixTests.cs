@@ -13,13 +13,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantSerializeFieldAttribute\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
-        [Test] public void Test07() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test07() { DoNamedTest(); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
@@ -33,11 +33,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantSerializeFieldAttribute";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant SerializeField attribute")] public void Test06() { DoNamedTest(); }
     }
 }

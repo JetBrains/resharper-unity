@@ -9,23 +9,23 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidSignature\Availability";
 
-        [Test] public void AddAllParameters() { DoNamedTest(); }
-        [Test] public void AddMissingParameter() { DoNamedTest(); }
-        [Test] public void RemoveAllParameters() { DoNamedTest(); }
-        [Test] public void RemoveAllParametersThreeParameters() { DoNamedTest(); }
-        [Test] public void RenameParameters() { DoNamedTest(); }
-        [Test] public void ReorderParameters() { DoNamedTest(); }
-        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
-        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void AddAllParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void AddMissingParameter() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void RemoveAllParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void RemoveAllParametersThreeParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void RenameParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void ReorderParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
 
         private static readonly string[] ourAddMissingParametersSource = {"000", "010", "011", "100", "101", "110" };
         private static readonly string[] ourReorderParametersSource = {"132", "213", "231", "312", "321"};
 
         [TestCaseSource(nameof(ourAddMissingParametersSource))]
-        [Test] public void AddMissingParameterThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void AddMissingParameterThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
 
         [TestCaseSource(nameof(ourReorderParametersSource))]
-        [Test] public void ReorderParametersThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void ReorderParametersThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
     }
 
     [TestUnity]
@@ -33,22 +33,22 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidSignature";
 
-        [Test] public void AddAllParameters() { DoNamedTest(); }
-        [Test] public void AddMissingParameter() { DoNamedTest(); }
-        [Test] public void RemoveAllParameters() { DoNamedTest(); }
-        [Test] public void RemoveAllParametersThreeParameters() { DoNamedTest(); }
-        [Test] public void RenameParameters() { DoNamedTest(); }
-        [Test] public void ReorderParameters() { DoNamedTest(); }
-        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
-        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void AddAllParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void AddMissingParameter() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void RemoveAllParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void RemoveAllParametersThreeParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void RenameParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void ReorderParameters() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
 
         private static readonly string[] ourAddMissingParametersSource = {"000", "010", "011", "100", "101", "110" };
         private static readonly string[] ourReorderParametersSource = {"132", "213", "231", "312", "321"};
 
         [TestCaseSource(nameof(ourAddMissingParametersSource))]
-        [Test] public void AddMissingParameterThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void AddMissingParameterThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
 
         [TestCaseSource(nameof(ourReorderParametersSource))]
-        [Test] public void ReorderParametersThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid signature")] public void ReorderParametersThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
     }
 }

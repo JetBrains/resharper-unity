@@ -9,6 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeAnnotations
     {
         protected override string RelativeTestDataPath => @"CSharp\Psi\CodeAnnotations";
 
-        [Test] public void TestCharacterControllerCollisionFlagsAnnotation() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Code annotations", "CharacterController collision flags annotation")] public void TestCharacterControllerCollisionFlagsAnnotation() { DoNamedTest2(); }
     }
 }

@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                    && base.HighlightingPredicate(highlighting, psiSourceFile, boundSettingsStore);
         }
 
-        [Test] public void TestAllAttributes() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Attributes", "Remove redundant attributes in scope")] public void TestAllAttributes() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                    && base.HighlightingPredicate(highlighting, psiSourceFile, boundSettingsStore);
         }
 
-        [Test] public void TestAllAttributes() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Attributes", "Remove redundant attributes in scope")] public void TestAllAttributes() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantAttributesScopedQuickFix";
 
-        [Test] public void TestAllAttributes() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Attributes", "Remove redundant attributes in scope")] public void TestAllAttributes() { DoNamedTest2(); }
     }
 
     // [TestUnity]

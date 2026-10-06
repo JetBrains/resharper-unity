@@ -8,6 +8,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-        [Test] public void TestUnityNullImplicitCastTest() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Unity object null checks", "Implicit cast to bool")] public void TestUnityNullImplicitCastTest() { DoNamedTest2(); }
     }
 }

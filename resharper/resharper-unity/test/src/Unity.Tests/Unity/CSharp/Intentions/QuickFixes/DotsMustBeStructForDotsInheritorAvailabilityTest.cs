@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                 base.DoTest(lifetime, project);
         }
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "DOTS inheritor must be a struct")] public void Test01() { DoNamedTest(); }
     }
     
     [TestUnity]
@@ -46,10 +46,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                 base.DoTest(lifetime, project);
         }
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void ScopeTest01() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void ScopeTest02() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void ScopeTest03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "DOTS inheritor must be a struct")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "DOTS inheritor must be a struct")] public void Test02() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "DOTS inheritor must be a struct")] public void ScopeTest01() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "DOTS inheritor must be a struct")] public void ScopeTest02() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "DOTS inheritor must be a struct")] public void ScopeTest03() { DoNamedTest(); }
     }
 }

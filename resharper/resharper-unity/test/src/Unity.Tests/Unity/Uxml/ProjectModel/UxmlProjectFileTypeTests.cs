@@ -9,6 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.ProjectModel
     public class UxmlProjectFileTypeTests
     {
         [Test]
+        [UnityPluginBackendChecklist("UXML", "Language registration")]
         public void ProjectFileTypeIsRegistered()
         {
             Assert.NotNull(UxmlProjectFileType.Instance);
@@ -18,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.ProjectModel
         }
 
         [TestCase(UxmlProjectFileType.UXML_EXTENSION)]
+        [UnityPluginBackendChecklist("UXML", "Language registration")]
         public void ProjectFileTypeFromExtension(string extension)
         {
             var projectFileExtensions = Shell.Instance.GetComponent<IProjectFileExtensions>();

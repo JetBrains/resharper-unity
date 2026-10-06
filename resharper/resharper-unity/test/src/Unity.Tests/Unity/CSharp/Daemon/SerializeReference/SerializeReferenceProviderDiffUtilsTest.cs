@@ -53,6 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void SingleFile_AddThenRemove_DropsEntry()
         {
             var index = new IndexClassInfoDictionary();
@@ -67,6 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void PartialClass_SurvivesUntilLastDeclaringFileRemoved()
         {
             var index = new IndexClassInfoDictionary();
@@ -91,6 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void Reanalysis_OfUnchangedFile_DoesNotInflateDeclarationCount()
         {
             var index = new IndexClassInfoDictionary();
@@ -109,6 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void RemovalOfAbsentType_DoesNotInsertGhostEntry()
         {
             var index = new IndexClassInfoDictionary();
@@ -124,6 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void PlaceholderSuperClass_DroppedWhenLastInheritorRemoved()
         {
             var index = new IndexClassInfoDictionary();
@@ -142,6 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void DeclaredSuperClass_SurvivesWhenLastInheritorRemoved()
         {
             var index = new IndexClassInfoDictionary();
@@ -160,6 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void StaleRemoval_DoesNotUnderflowDeclarationCount()
         {
             var index = new IndexClassInfoDictionary();
@@ -191,6 +198,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void RemovalOfAbsentBareType_DegradesToNoOp()
         {
             var index = new IndexClassInfoDictionary();
@@ -204,6 +212,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void TypeParameterRemovalForAbsentEntry_DegradesToNoOp()
         {
             var index = new IndexClassInfoDictionary();
@@ -218,6 +227,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void PartialGenericClass_TypeParameterSurvivesUntilLastDeclaringFileRemoved()
         {
             var index = new IndexClassInfoDictionary();
@@ -242,6 +252,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void ClassNameCollisionOnApply_SkipsElementInsteadOfThrowing()
         {
             var index = new IndexClassInfoDictionary();
@@ -268,6 +279,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void ClassNameCollisionOnCalculateDiff_SkipsElementInsteadOfThrowing()
         {
             var index = new IndexClassInfoDictionary();
@@ -290,6 +302,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void PartialClassWithSuperClass_TracksRelationshipsAcrossDeclarations()
         {
             var index = new IndexClassInfoDictionary();
@@ -323,6 +336,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void TypeParameterResolve_AddThenRemove_DropsPlaceholders()
         {
             var index = new IndexClassInfoDictionary();
@@ -339,6 +353,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference incremental cache updates")]
         public void SelfResolution_AddThenRemove_DoesNotThrow()
         {
             var index = new IndexClassInfoDictionary();

@@ -23,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Psi.Modules
         // protected override string SecondProjectName => "TestAddReferenceByName_Target";
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "References", "Add module reference")]
         public void TestAddReferenceByName()
         {
             ProjectName = "TestAddReferenceByName";
@@ -31,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Psi.Modules
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "References", "Add module reference")]
         public void TestAddReferenceByGuid()
         {
             ProjectName = "TestAddReferenceByGuid";

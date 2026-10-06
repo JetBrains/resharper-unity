@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Caches
         protected override string RelativeTestDataPath => @"ShaderLab\Psi\Caches\ShaderProgram";
         
         [Test]
+        [UnityPluginBackendChecklist("ShaderLab", "Caches", "Shader program cache")]
         public void TestMultipleSourceFilesWithSamePath()
         {
             DoTestSolution(_ => CreateSolutionConfiguration(new[] { "TestMultipleSourceFilesWithSamePath.shader", "TestMultipleSourceFilesWithSamePath.shader" }), (lt, solution) =>

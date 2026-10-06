@@ -16,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Refactorings.Rename
 
         [TestCase("Test01")]
         [TestCase("Test02")]
+        [UnityPluginBackendChecklist("HLSL support", "Rename in HLSL")]
         public void TestRenamingInCompute(string testName) => DoTestSolution(testName + CppProjectFileType.COMPUTE_EXTENSION);
 
         [TestCase("Test03")]
@@ -30,9 +31,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Refactorings.Rename
         [TestCase("Test12")]
         [TestCase("Test13")]
         [TestCase("Test14")]
+        [UnityPluginBackendChecklist("HLSL support", "Rename in HLSL")]
         public void TestRenaming(string testName) => DoOneTest(testName);
 
         [Test]
+        [UnityPluginBackendChecklist("HLSL support", "Rename in HLSL")]
         public void TestShadersWithSameDefinition()
         {
             const string dir = "ShadersWithSameDefinitions";
@@ -40,6 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Refactorings.Rename
         }
         
         [Test]
+        [UnityPluginBackendChecklist("HLSL support", "Rename in HLSL")]
         public void TestIndirectLinkBetweenDefinitionAndDeclarationViaCommonHeader()
         {
             const string dir = "IndirectLinkBetweenDefinitionAndDeclarationViaCommonHeader";

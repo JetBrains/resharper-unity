@@ -23,12 +23,16 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Shaders.HlslSupport.Integratio
 
         
         [Test, TestUnity(UnityVersion.Unity56)]
+        [UnityPluginBackendChecklist("HLSL support", "Define symbols for injected HLSL")]
         public void Test5_6() => TestUnityVersionInjected("560");
         [Test, TestUnity(2021, 3, 0)]
+        [UnityPluginBackendChecklist("HLSL support", "Define symbols for injected HLSL")]
         public void Test2021_3_0() => TestUnityVersionInjected("202130");
         [Test, TestUnity(2021, 3, 8)]
+        [UnityPluginBackendChecklist("HLSL support", "Define symbols for injected HLSL")]
         public void Test2021_3_8() => TestUnityVersionInjected("202138");
         [Test, TestUnity(2021, 3, 21)]
+        [UnityPluginBackendChecklist("HLSL support", "Define symbols for injected HLSL")]
         public void Test2021_3_21() => TestUnityVersionInjected("202139");
         
         private void TestInjectedHlslUnityVersion(string expectedHlslDefineSymbolValue) =>

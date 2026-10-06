@@ -19,6 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
                    highlighting is InheritanceMarkOnGutter;
         }
 
-        [Test] public void TestHiddenEventFunctions() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Event functions", "Hidden event functions")] public void TestHiddenEventFunctions() { DoNamedTest2(); }
     }
 }

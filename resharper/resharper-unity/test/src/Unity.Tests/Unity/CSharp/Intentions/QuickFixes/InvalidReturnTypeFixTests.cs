@@ -9,11 +9,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidReturnType\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
-        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -21,10 +21,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidReturnType";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
-        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid return type")] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 }

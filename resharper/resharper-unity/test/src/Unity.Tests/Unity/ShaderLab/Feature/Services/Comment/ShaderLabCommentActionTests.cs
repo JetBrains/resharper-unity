@@ -10,11 +10,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Com
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Comment";
 
-        [Test] public void TestLineComment() { DoNamedTest2(); }
-        [Test] public void TestLineUncomment() { DoNamedTest2(); }
-        [Test] public void TestMultiLineComment() { DoNamedTest2(); }
-        [Test] public void TestMultiLineUncomment() { DoNamedTest2(); }
-        [Test] public void TestBlockComment() { DoNamedTest2(); }
-        [Test] public void TestBlockUncomment() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Editing", "Comment and uncomment")] public void TestLineComment() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Editing", "Comment and uncomment")] public void TestLineUncomment() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Editing", "Comment and uncomment")] public void TestMultiLineComment() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Editing", "Comment and uncomment")] public void TestMultiLineUncomment() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Editing", "Comment and uncomment")] public void TestBlockComment() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Editing", "Comment and uncomment")] public void TestBlockUncomment() { DoNamedTest2(); }
     }
 }

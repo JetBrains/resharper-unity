@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("TestSemantic04.shader")]
         [TestCase("TestSemantic05.shader")]
         [TestCase("TestSemantic06.shader")]
+        [UnityPluginBackendChecklist("ShaderLab", "Completion", "Semantic completion")]
         public void Test(string name) => DoTestSolution(name);
 
         protected override bool LookupItemFilter(ILookupItem lookupItem)

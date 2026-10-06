@@ -10,6 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
     public class KeywordTokenTests
     {
         [Test]
+        [UnityPluginBackendChecklist("ShaderLab", "Language and parsing", "Keyword token set")]
         public void EnsureKeywordTokenSet()
         {
             var keywords = new JetHashSet<object>(typeof(ShaderLabTokenType).GetFields().Where(f => f.Name.EndsWith("_KEYWORD"))

@@ -9,18 +9,21 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\Dots";
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "DOTS inspection suppression")]
         public void TestISystemSinglePartialClass()
         {
             DoNamedTest2("DotsClasses.cs");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "DOTS inspection suppression")]
         public void TestSystemBaseSinglePartialClass()
         {
             DoNamedTest2("DotsClasses.cs");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "DOTS inspection suppression")]
         public void TestIAspectSinglePartialClass()
         {
             DoNamedTest2("DotsClasses.cs");

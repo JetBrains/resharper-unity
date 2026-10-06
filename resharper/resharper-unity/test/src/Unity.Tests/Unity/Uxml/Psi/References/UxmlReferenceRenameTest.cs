@@ -15,6 +15,7 @@ public class UxmlReferenceRenameTest : RenameTestBase
     protected override string SolutionFileName => SolutionItemsBasePath.Combine("Solutions/UIElementsDemo/UIElementsDemo.sln").FullPath;
 
     [Test]
+    [UnityPluginBackendChecklist("UXML", "Rename")]
     public void Rename01()
     {
         DoNamedTest("Rename01MainMenuTemplate.uxml");

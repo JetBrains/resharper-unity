@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
     {
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"AddExpensiveComment\Availability";
-        [Test] public void Everything() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Add expensive comment")] public void Everything() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -17,6 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
     {
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "AddExpensiveComment";
-        [Test] public void TestSimple() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Add expensive comment")] public void TestSimple() { DoNamedTest(); }
     }
 }

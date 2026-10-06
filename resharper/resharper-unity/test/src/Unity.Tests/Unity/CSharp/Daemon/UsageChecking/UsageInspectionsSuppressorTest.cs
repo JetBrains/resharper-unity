@@ -17,17 +17,17 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.UsageChecking
         private Action<IProject>? myOnProjectStarted;
         private Action<IProject>? myOnProjectFinished;
 
-        [Test] public void MonoBehaviourMethods01() { DoNamedTest(); }
-        [Test] public void MonoBehaviourFields01() { DoNamedTest(); }
-        [Test, Ignore("SerializableAttribute has MeansImplicitUseAttribute")] public void SerializableClassFields01() { DoNamedTest(); }
-        [Test] public void PreprocessBuildInterface01() { DoNamedTest(); }
-        [Test] public void PreprocessBuildInterface02() { DoNamedTest(); }
-        [Test] public void MethodWithAttributeWithRequiredSignature() { DoNamedTest(); }
-        [Test] public void UnityEcsSystemClass() { DoNamedTest(); }
-        [Test] public void UnityEcsSystemStruct() { DoNamedTest(); }
-        [Test] public void UnityDotsBacker() { DoNamedTest(); }
-        [Test] public void JobEntityRefParameter() { DoNamedTest(); }
-        [Test] public void DotsSequentialStruct() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void MonoBehaviourMethods01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void MonoBehaviourFields01() { DoNamedTest(); }
+        [Test, Ignore("SerializableAttribute has MeansImplicitUseAttribute"), UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void SerializableClassFields01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void PreprocessBuildInterface01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void PreprocessBuildInterface02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void MethodWithAttributeWithRequiredSignature() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void UnityEcsSystemClass() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void UnityEcsSystemStruct() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void UnityDotsBacker() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void JobEntityRefParameter() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")] public void DotsSequentialStruct() { DoNamedTest(); }
 
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
@@ -45,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.UsageChecking
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Implicit usages", "Suppressed inspections for Unity members")]
         public void PotentialEventHandlerMethodsSerializationNotText()
         {
             var oldMode = AssetSerializationMode.SerializationMode.Unknown;

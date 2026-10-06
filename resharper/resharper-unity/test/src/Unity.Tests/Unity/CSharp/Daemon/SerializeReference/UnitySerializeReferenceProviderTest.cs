@@ -16,24 +16,28 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         private const string AssembliesDirectory = "Assemblies";
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void GenericClassesTest001()
         {
             DoSolutionTestWithGold(@"Solutions\GenericClassesLib01\GenericClassesLib01.sln");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void GenericNestedClassesTest002()
         {
             DoSolutionTestWithGold(@"Solutions\GenericClassesLib02\GenericClassesLib02.sln");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void GenericNestedClassesTest003()
         {
             DoSolutionTestWithGold(@"Solutions\GenericClassesLib03\GenericClassesLib03.sln");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void GenericNestedClassesAssembliesTest004()
         {
             var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\GenericClassesAssembly01\GenericClassesAssembly01.sln");
@@ -42,24 +46,28 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void PartialClassesLib01()
         {
             DoSolutionTestWithGold(@"Solutions\PartialClassesLib01\PartialClassesLib01.sln");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void WrongSerializeReferenceAttributes()
         {
             DoSolutionTestWithGold(@"Solutions\WrongSerializeReferenceAttributes\WrongSerializeReferenceAttributes.sln");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void PropertyWithBackingField()
         {
             DoSolutionTestWithGold(@"Solutions\PropertyWithBackingField\PropertyWithBackingField.sln");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void PropertyWithBackingFieldAssembly()
         {
             var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\PropertyWithBackingFieldAssembly\PropertyWithBackingFieldAssembly.sln");
@@ -68,6 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void ListArrayFixedBufferTest()
         {
             var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\ListArrayFixedBufferTest\ListArrayFixedBufferTest.sln");
@@ -75,6 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "SerializeReference type hierarchy")]
         public void ListArrayFixedBufferAssemblyTest()
         {
             var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\ListArrayFixedBufferAssemblyTest\ListArrayFixedBufferAssemblyTest.sln");

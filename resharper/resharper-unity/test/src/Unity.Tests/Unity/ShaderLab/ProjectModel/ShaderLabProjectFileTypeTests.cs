@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.ProjectModel
     public class ShaderLabProjectFileTypeTests : BaseTest
     {
         [Test]
+        [UnityPluginBackendChecklist("ShaderLab", "Language and parsing", "Language registration")]
         public void ProjectFileTypeIsRegistered()
         {
             Assert.NotNull(ShaderLabProjectFileType.Instance);
@@ -20,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.ProjectModel
         }
 
         [Test]
+        [UnityPluginBackendChecklist("ShaderLab", "Language and parsing", "Language registration")]
         public void ProjectFileTypeFromExtension()
         {
             var projectFileExtensions = Shell.Instance.GetComponent<IProjectFileExtensions>();

@@ -13,13 +13,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Liv
         protected override string RelativeTestDataPath => @"ShaderLab\LiveTemplates\Scope";
         protected override IScopeProvider CreateScopeProvider() => new UnityShaderLabScopeProvider();
 
-        [Test] public void TestInShaderLabFile01() { DoNamedTest2(); }
-        [Test] public void TestInShaderLabFile02() { DoNamedTest2(); }
-        [Test] public void TestMustBeInShaderLabRoot01() { DoNamedTest2(); }
-        [Test] public void TestMustBeInShaderLabRoot02() { DoNamedTest2(); }
-        [Test] public void TestMustBeInShaderBlock01() { DoNamedTest2(); }
-        [Test] public void TestMustBeInShaderBlock02() { DoNamedTest2(); }
-        [Test] public void TestMustBeInPropertiesBlock01() { DoNamedTest2(); }
-        [Test] public void TestMustBeInTexturePassBlock01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Live templates", "Unity type scope in ShaderLab")] public void TestInShaderLabFile01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Live templates", "Unity type scope in ShaderLab")] public void TestInShaderLabFile02() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Live templates", "Unity type scope in ShaderLab")] public void TestMustBeInShaderLabRoot01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Live templates", "Unity type scope in ShaderLab")] public void TestMustBeInShaderLabRoot02() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Live templates", "Unity type scope in ShaderLab")] public void TestMustBeInShaderBlock01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Live templates", "Unity type scope in ShaderLab")] public void TestMustBeInShaderBlock02() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Live templates", "Unity type scope in ShaderLab")] public void TestMustBeInPropertiesBlock01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Live templates", "Unity type scope in ShaderLab")] public void TestMustBeInTexturePassBlock01() { DoNamedTest2(); }
     }
 }

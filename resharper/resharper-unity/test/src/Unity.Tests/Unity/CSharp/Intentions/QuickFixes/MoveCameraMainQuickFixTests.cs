@@ -9,9 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCameraMain";
 
-        [Test] public void MoveToStart() { DoNamedTest(); }
-        [Test] public void MoveToAwake() { DoNamedTest(); }
-        [Test] public void MoveOutsideTheLoop() { DoNamedTest(); }
-        [Test] public void CorrectNameGeneration() {DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move Camera.main out of update")] public void MoveToStart() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move Camera.main out of update")] public void MoveToAwake() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move Camera.main out of update")] public void MoveOutsideTheLoop() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move Camera.main out of update")] public void CorrectNameGeneration() {DoNamedTest(); }
     }
 }

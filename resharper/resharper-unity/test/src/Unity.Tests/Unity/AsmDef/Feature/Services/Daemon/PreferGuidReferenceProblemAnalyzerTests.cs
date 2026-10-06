@@ -13,9 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
         protected override PsiLanguageType? CompilerIdsLanguage => JsonNewLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\PreferGuidReference";
 
-        [Test] public void TestShowHint() { DoNamedTest2("Ref1.asmdef"); }
-        [Test] public void TestNoHintOnUnresolvedReference() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Prefer GUID reference")] public void TestShowHint() { DoNamedTest2("Ref1.asmdef"); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Prefer GUID reference")] public void TestNoHintOnUnresolvedReference() { DoNamedTest2(); }
 
-        [Test, TestFileExtension(".asmref")] public void TestAsmRef() { DoNamedTest2("Ref1.asmdef"); }
+        [Test, TestFileExtension(".asmref"), UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Prefer GUID reference")] public void TestAsmRef() { DoNamedTest2("Ref1.asmdef"); }
     }
 }

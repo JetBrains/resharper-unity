@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
         protected override string ProjectName => "Assembly-CSharp";
 
         // TODO: Add some dummy packages for testing
-        [Test] public void TestList01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Completion", "Version defines completion")] public void TestList01() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -29,6 +29,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
 
         protected override string ProjectName => "Assembly-CSharp";
 
-        [Test] public void TestAction01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Completion", "Version defines completion")] public void TestAction01() { DoNamedTest(); }
     }
 }

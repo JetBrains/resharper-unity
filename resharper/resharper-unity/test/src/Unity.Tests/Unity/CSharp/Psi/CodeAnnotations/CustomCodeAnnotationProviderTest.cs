@@ -22,9 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeAnnotations
                    highlighting is ConditionIsAlwaysTrueOrFalseWarning;
         }
 
-        [Test] public void TestUnusedCoroutineReturnValue() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Code annotations", "Custom Unity annotations")] public void TestUnusedCoroutineReturnValue() { DoNamedTest2(); }
 
-        [Test] public void TestRangeAttributeAsValueRangeAttribute() { DoNamedTest2(); }
-        [Test] public void TestMinAttributeAsValueRangeAttribute() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Code annotations", "Custom Unity annotations")] public void TestRangeAttributeAsValueRangeAttribute() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Code annotations", "Custom Unity annotations")] public void TestMinAttributeAsValueRangeAttribute() { DoNamedTest2(); }
     }
 }

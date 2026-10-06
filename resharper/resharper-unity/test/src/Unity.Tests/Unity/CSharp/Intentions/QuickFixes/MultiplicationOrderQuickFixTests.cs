@@ -13,12 +13,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MultiplicationOrder\Availability";
 
-        [Test] public void Available01() { DoNamedTest(); }
-        [Test] public void Available02() { DoNamedTest(); }
-        [Test] public void Unavailable01() { DoNamedTest(); } // https://youtrack.jetbrains.com/issue/RIDER-33981
-        [Test] public void UnavailableBrackets() { DoNamedTest(); }
-        [Test] public void UnavailableGoodOrder() { DoNamedTest(); }
-        [Test] public void UnavailableDiv() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Available01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Available02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Unavailable01() { DoNamedTest(); } // https://youtrack.jetbrains.com/issue/RIDER-33981
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void UnavailableBrackets() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void UnavailableGoodOrder() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void UnavailableDiv() { DoNamedTest(); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
@@ -33,13 +33,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MultiplicationOrder";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
-        [Test] public void Test07() { DoNamedTest(); }
-        [Test] public void Test08() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Test05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Test06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Test07() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Multiplication order")] public void Test08() { DoNamedTest(); }
     }
 }

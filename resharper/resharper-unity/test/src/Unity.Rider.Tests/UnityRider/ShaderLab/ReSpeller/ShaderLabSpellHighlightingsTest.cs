@@ -40,6 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRider.ShaderLab.ReS
     protected override string RelativeTestDataPath => @"ShaderLab\ReSpeller\Highlightings";
     
     [TestCase]
+    [UnityPluginBackendChecklist("ReSpeller in ShaderLab", "Spell check in string literals")]
     public void TestSpellCheckStringLiterals() => DoNamedTest2();
   }
 }

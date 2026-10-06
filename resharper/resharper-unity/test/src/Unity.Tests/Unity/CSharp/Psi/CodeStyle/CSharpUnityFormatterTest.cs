@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeStyle
     {
         protected override string RelativeTestDataPath => @"CSharp\Psi\CodeStyle\Formatting";
 
-        [Test] public void TestCustomHeaderFormatting() => DoNamedTest();
-        [Test] public void TestCustomHeaderBlankLines() => DoNamedTest();
+        [Test, UnityPluginBackendChecklist("Code style", "Custom header formatting")] public void TestCustomHeaderFormatting() => DoNamedTest();
+        [Test, UnityPluginBackendChecklist("Code style", "Custom header formatting")] public void TestCustomHeaderBlankLines() => DoNamedTest();
     }
 }

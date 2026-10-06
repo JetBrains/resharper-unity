@@ -24,11 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
             VirtualTestDataPath.Combine("Solutions/UIElementsDemo/")
                 .GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories).ToArray();
         
-        [Test] public void UIController01() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController02() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController03() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController04() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController05() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController06() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test, UnityPluginBackendChecklist("Code completion", "UI Elements bindings")] public void UIController01() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test, UnityPluginBackendChecklist("Code completion", "UI Elements bindings")] public void UIController02() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test, UnityPluginBackendChecklist("Code completion", "UI Elements bindings")] public void UIController03() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test, UnityPluginBackendChecklist("Code completion", "UI Elements bindings")] public void UIController04() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test, UnityPluginBackendChecklist("Code completion", "UI Elements bindings")] public void UIController05() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test, UnityPluginBackendChecklist("Code completion", "UI Elements bindings")] public void UIController06() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
     }
 }

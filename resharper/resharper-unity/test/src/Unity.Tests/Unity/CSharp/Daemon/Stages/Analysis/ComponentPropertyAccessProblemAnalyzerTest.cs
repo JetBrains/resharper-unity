@@ -9,6 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-        [Test] public void TestComponentPropertyTernary() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Component property access")] public void TestComponentPropertyTernary() { DoNamedTest2(); }
     }
 }

@@ -11,9 +11,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Naming.Dots
 
         protected override string RelativeTestDataPath => @"CSharp\Psi\Naming\Dots";
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "DOTS naming suggestions")]
         public void TestRefRwRoNaming01() { DoNamedTest2(); }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "DOTS naming suggestions")]
         public void TestRefRwRoNaming02() { DoNamedTest2(); }
     }
 }

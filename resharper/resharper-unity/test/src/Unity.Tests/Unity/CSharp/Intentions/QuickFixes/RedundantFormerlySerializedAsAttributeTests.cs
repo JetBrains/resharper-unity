@@ -14,12 +14,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantFormerlySerializedAsAttribute\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test06() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -38,12 +38,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                    && base.HighlightingPredicate(highlighting, psiSourceFile, boundSettingsStore);
         }
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test06() { DoNamedTest(); }
     }
 
 
@@ -52,11 +52,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantFormerlySerializedAsAttribute";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Remove redundant FormerlySerializedAs attribute")] public void Test06() { DoNamedTest(); }
     }
 }

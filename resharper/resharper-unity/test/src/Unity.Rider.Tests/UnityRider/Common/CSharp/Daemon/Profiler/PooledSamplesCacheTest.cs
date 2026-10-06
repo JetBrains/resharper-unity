@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Tests.Unity;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Profiler;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
@@ -14,6 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRider.Common.CSharp
         // over the live pooled list is silently emptied/overwritten once the cache is disposed and the pool
         // hands the storage to the next snapshot - which the protocol then serializes, crashing the backend.
         [Test]
+        [UnityPluginBackendChecklist("Unity Profiler", "Profiler samples snapshot for frontend")]
         public void GetFrontendModelSnapshot_SurvivesCacheDisposalAndRecycling()
         {
             var cache = SamplesCacheUtils.ConstructCache(CreateSnapshot(

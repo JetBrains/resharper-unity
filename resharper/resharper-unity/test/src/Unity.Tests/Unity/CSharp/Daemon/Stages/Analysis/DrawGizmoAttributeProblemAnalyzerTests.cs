@@ -8,6 +8,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\";
 
-        [Test] public void TestDrawGizmoAttributeProblemAnalyzer() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Attributes", "DrawGizmo attribute problems")] public void TestDrawGizmoAttributeProblemAnalyzer() { DoNamedTest2(); }
     }
 }

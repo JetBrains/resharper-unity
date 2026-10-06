@@ -14,10 +14,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Refact
     {
         protected override string RelativeTestDataPath => @"AsmDef\Refactorings\Rename";
 
-        [Test] public void TestSingleFile() { DoNamedTest2(); }
-        [Test] public void TestCrossFileRename() { DoTestSolution([TestName2], ["CrossFileRename_SecondProject.asmdef"]); }
-        [Test] public void TestRenameFile() { DoNamedTest2(); }
-        [Test] public void TestGuidReference() { DoTestSolution([TestName2, "GuidReference.asmdef.meta"], ["GuidReference_SecondProject.asmdef"]); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "References", "Rename")] public void TestSingleFile() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "References", "Rename")] public void TestCrossFileRename() { DoTestSolution([TestName2], ["CrossFileRename_SecondProject.asmdef"]); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "References", "Rename")] public void TestRenameFile() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "References", "Rename")] public void TestGuidReference() { DoTestSolution([TestName2, "GuidReference.asmdef.meta"], ["GuidReference_SecondProject.asmdef"]); }
 
         protected override void AdditionalTestChecks(ITextControl textControl, IProject project)
         {

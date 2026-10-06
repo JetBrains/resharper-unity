@@ -8,6 +8,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Analys
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Daemon\Stages\Analysis";
 
-        [Test] public void TestDuplicatePropertyHighlights() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Highlighting", "Duplicate properties")] public void TestDuplicatePropertyHighlights() { DoNamedTest2(); }
     }
 }

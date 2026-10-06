@@ -27,7 +27,7 @@ public class UnityFixFloatingPointComparingQuickFixAvailabilityTests : QuickFixA
             base.DoTest(lifetime, solution);
     }
 
-    [Test] public void Test01() { DoNamedTest(); }
+    [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Fix floating point comparing")] public void Test01() { DoNamedTest(); }
    
 }
 
@@ -44,6 +44,6 @@ public class UnityFixFloatingPointComparingQuickFixTests : QuickFixTestBase<Unit
             base.DoTest(lifetime, solution);
     }
 
-    [Test] public void Test01() { DoNamedTest(); }
-    [Test] public void Test02() { DoNamedTest(); }
+    [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Fix floating point comparing")] public void Test01() { DoNamedTest(); }
+    [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Fix floating point comparing")] public void Test02() { DoNamedTest(); }
 }

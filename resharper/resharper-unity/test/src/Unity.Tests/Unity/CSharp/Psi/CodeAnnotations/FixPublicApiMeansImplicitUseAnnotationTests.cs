@@ -8,6 +8,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeAnnotations
     {
         protected override string RelativeTestDataPath => @"CSharp\Psi\CodeAnnotations";
 
-        [Test] public void TestPublicApiAnnotation() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Code annotations", "PublicAPI implicit use annotation")] public void TestPublicApiAnnotation() { DoNamedTest2(); }
     }
 }

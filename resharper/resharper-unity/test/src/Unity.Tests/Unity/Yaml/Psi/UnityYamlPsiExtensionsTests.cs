@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Yaml.Psi
         [TestCase("'a''b''c'", "a'b'c")]
         [TestCase("\"W\\xFCrzburg\"", "Würzburg")]
         [TestCase("\"\\u27A2 W\\u00FCrzburg\"", "➢ Würzburg")]
+        [UnityPluginBackendChecklist("Unity YAML", "PSI extensions and decoding")]
         public void TestDecoding(string input, string? expected)
         {
             var lexer = new YamlLexer(new StringBuffer($"key: {input}"), false, false);

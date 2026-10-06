@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.BlockShaders.Feature.Services.
         [TestCase("TestSemantic04.shaderFoundry")]
         [TestCase("TestSemantic05.shaderFoundry")]
         [TestCase("TestSemantic06.shaderFoundry")]
+        [UnityPluginBackendChecklist("HLSL support", "Block shaders semantic completion")]
         public void Test(string name) => DoTestSolution(name);
 
         protected override bool LookupItemFilter(ILookupItem item)

@@ -22,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("ShaderVariant06.shader")]
         [TestCase("ShaderVariant07.shader")]
         [TestCase("ShaderVariant08.shader")]
+        [UnityPluginBackendChecklist("ShaderLab", "Completion", "Shader variant completion")]
         public void Test(string name) => DoTestSolution(name);
 
         protected override bool LookupItemFilter(ILookupItem item)

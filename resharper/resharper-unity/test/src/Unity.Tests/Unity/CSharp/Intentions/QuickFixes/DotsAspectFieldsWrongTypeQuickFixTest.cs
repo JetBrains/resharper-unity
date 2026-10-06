@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                 base.DoTest(lifetime, project);
         }
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Aspect field of wrong type")] public void Test01() { DoNamedTest(); }
     }
     
     [TestUnity]
@@ -47,9 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
                 base.DoTest(lifetime, project);
         }
 
-        [Test] public void ROTest() { DoNamedTest(); }
-        [Test] public void RWTest() { DoNamedTest(); }
-        [Test] public void EnabledROTest() { DoNamedTest(); }
-        [Test] public void EnabledRWTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Aspect field of wrong type")] public void ROTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Aspect field of wrong type")] public void RWTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Aspect field of wrong type")] public void EnabledROTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS quick fixes", "Aspect field of wrong type")] public void EnabledRWTest() { DoNamedTest(); }
     }
 }

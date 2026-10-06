@@ -18,6 +18,7 @@ public class InactiveShaderVariantBranchCodeInsightsTests : HighlightingTestBase
     protected override string RelativeTestDataPath => @"ShaderLab\Daemon\CodeInsights";
     
     [TestCase]
+    [UnityPluginBackendChecklist("Shader variants", "Inactive shader variant branch code insights")]
     public void TestShaderVariantBranches() => DoNamedTest2();
 
     protected override PsiLanguageType? CompilerIdsLanguage => CppLanguage.Instance;

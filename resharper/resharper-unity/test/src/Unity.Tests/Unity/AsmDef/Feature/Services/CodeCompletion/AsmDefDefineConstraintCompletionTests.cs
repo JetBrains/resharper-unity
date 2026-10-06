@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
 
         protected override string ProjectName => "Assembly-CSharp";
 
-        [Test] public void TestList01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Completion", "Define constraints completion")] public void TestList01() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -30,8 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
 
         protected override string ProjectName => "Assembly-CSharp";
 
-        [Test] public void TestAction01() { DoNamedTest(); }
-        [Test] public void TestAction02() { DoNamedTest(); }
-        [Test] public void TestAction03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Completion", "Define constraints completion")] public void TestAction01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Completion", "Define constraints completion")] public void TestAction02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "Completion", "Define constraints completion")] public void TestAction03() { DoNamedTest(); }
     }
 }

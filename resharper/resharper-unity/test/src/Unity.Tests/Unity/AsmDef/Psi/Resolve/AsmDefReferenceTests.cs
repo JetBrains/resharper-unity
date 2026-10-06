@@ -12,10 +12,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Psi.Resolve
         protected override string RelativeTestDataPath => @"AsmDef\Psi\Resolve";
         protected override bool AcceptReference(IReference reference) => reference is AsmDefNameReference;
 
-        [Test] public void TestCorrectJsonReferences() { DoNamedTest2(); }
-        [Test] public void TestUnresolvedReference01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "References", "Reference resolve")] public void TestCorrectJsonReferences() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Assembly definition files", "References", "Reference resolve")] public void TestUnresolvedReference01() { DoNamedTest2(); }
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "References", "Reference resolve")]
         public void TestUnresolvedReference02()
         {
             DoTestSolution(new[] { "UnresolvedReference02.asmdef" },
@@ -23,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Psi.Resolve
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "References", "Reference resolve")]
         public void TestCrossProjectReference()
         {
             DoTestSolution(new[] { "CrossProjectReference.asmdef" },
@@ -30,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Psi.Resolve
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "References", "Reference resolve")]
         public void TestGuidReference()
         {
             // This isn't exactly like a production Unity project, because we're adding the .meta file directly, but the
@@ -39,12 +42,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Psi.Resolve
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "References", "Reference resolve")]
         public void TestAsmRefReference()
         {
             DoTestSolution("AsmRefReference.asmref", "CrossProjectReference.asmdef");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "References", "Reference resolve")]
         public void TestAsmRefGuidReference()
         {
             // We're reusing the GuidReference test files, but as part of the first project

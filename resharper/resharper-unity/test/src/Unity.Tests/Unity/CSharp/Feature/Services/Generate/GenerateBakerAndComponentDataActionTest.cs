@@ -19,52 +19,52 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             base.CheckProjectFile(projectItem, test);
         }
 
-        [Test] public void GenerateComponentAndBaker()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void GenerateComponentAndBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void GenerateEmptyComponentAndBaker()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void GenerateEmptyComponentAndBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void GenerateToExistingComponent()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void GenerateToExistingComponent()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
                 
-        [Test] public void NewComponentToExistingBaker()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void NewComponentToExistingBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void ExistingBakerWithCustomGetEntity()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void ExistingBakerWithCustomGetEntity()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void ExistingBakerWithCustomGetEntity2()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void ExistingBakerWithCustomGetEntity2()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void ExistingBakerWithCustomGetEntity3()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void ExistingBakerWithCustomGetEntity3()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
                 
-        [Test] public void ExistingBakerAndComponent()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void ExistingBakerAndComponent()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
                 
-        [Test] public void ExistingBakerAndComponentObject()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void ExistingBakerAndComponentObject()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void ComponentAndBakerInOtherFiles()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and component data")] public void ComponentAndBakerInOtherFiles()
         {
             DoNamedTest($"../{DotsClassesFileName}"
                 , $"{TestMethod!.Name}_Baker.cs"

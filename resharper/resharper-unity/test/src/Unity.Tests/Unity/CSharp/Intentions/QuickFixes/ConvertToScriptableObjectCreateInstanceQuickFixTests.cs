@@ -10,8 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertToScriptableObjectCreateInstance\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest("MyScriptableObject.cs"); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Object creation", "Convert to ScriptableObject.CreateInstance")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Object creation", "Convert to ScriptableObject.CreateInstance")] public void Test02() { DoNamedTest("MyScriptableObject.cs"); }
     }
 
     [TestUnity]
@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertToScriptableObjectCreateInstance";
         protected override bool AllowHighlightingOverlap => true;
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest("MyScriptableObject.cs"); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Object creation", "Convert to ScriptableObject.CreateInstance")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Object creation", "Convert to ScriptableObject.CreateInstance")] public void Test02() { DoNamedTest("MyScriptableObject.cs"); }
     }
 }

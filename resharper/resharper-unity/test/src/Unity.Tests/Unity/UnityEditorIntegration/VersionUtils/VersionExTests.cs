@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
     public class VersionExTests
     {
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void CompareToLenient_MatchingMajorMinorComponents()
         {
             var version = new Version(2020, 2);
@@ -18,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void CompareToLenient_MatchingMajorMinorBuildComponents()
         {
             var version = new Version(2020, 2, 100);
@@ -30,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void CompareToLenient_MatchingMajorMinorBuildRevisionComponents()
         {
             var version = new Version(2020, 2, 100, 42);
@@ -42,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void CompareToLenient_OtherHasMoreComponents()
         {
             var version = new Version(2020, 2);
@@ -53,6 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Unity editor integration", "Unity version parsing and comparison")]
         public void CompareToLenient_OtherHasLessComponents()
         {
             var version = new Version(2020, 2, 1);

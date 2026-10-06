@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Bre
         protected override string RelativeTestDataPath => @"ShaderLab\Breadcrumbs";
 
         [Test]
+        [UnityPluginBackendChecklist("HLSL support", "Breadcrumbs in HLSL")]
         public void TestHLSLFile() => DoNamedTest();
     }
 }

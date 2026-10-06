@@ -23,6 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRider.CSharp.Daemon
         // IMPORTANT! Keep in sync with equivalent class in Unity.Tests
         // ********************************************************************
 
-        [Test] public void TestUnityEventFunctionAnalyzer() { DoNamedTest2(); }
+        [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Event functions", "Event function highlightings")]
+        public void TestUnityEventFunctionAnalyzer() { DoNamedTest2(); }
     }
 }

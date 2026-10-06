@@ -19,63 +19,64 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             base.CheckProjectFile(projectItem, test);
         }
 
-        [Test] public void GenerateNewBakerNotNested()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void GenerateNewBakerNotNested()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void GenerateNewBakerNested()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void GenerateNewBakerNested()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void GenerateNewBakerForEmptyComponent()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void GenerateNewBakerForEmptyComponent()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")]
         public void GenerateNewBakerForEmptyComponentClass()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void UpdateBakerForExistingEmptyComponent()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void UpdateBakerForExistingEmptyComponent()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void GenerateNewBakerForComponentWithValue()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void GenerateNewBakerForComponentWithValue()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void AddNewComponentToBaker()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void AddNewComponentToBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void UpdateExistingNestedBaker()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void UpdateExistingNestedBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void UpdateExistingPartialBaker()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void UpdateExistingPartialBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void CreateNewWithExistingBaker()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void CreateNewWithExistingBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void CreateNewNestedWithExistingBaker()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void CreateNewNestedWithExistingBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void AuthoringAndBakerInOtherFiles()
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate baker and authoring component")] public void AuthoringAndBakerInOtherFiles()
         {
             DoNamedTest($"../{DotsClassesFileName}"
                 , $"{TestMethod!.Name}_Authoring.cs"

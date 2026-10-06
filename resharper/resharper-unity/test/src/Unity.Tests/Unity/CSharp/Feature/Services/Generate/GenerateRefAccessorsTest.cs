@@ -26,42 +26,49 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateRefROProperties()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateRefROWithSameName()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateRefRWProperties()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateRefRWGetter()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
                 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateAspectAccessor1()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
                 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateAspectAccessor2()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateRefRWValueNamed()
         {
             DoNamedTest($"../{DotsClassesFileName}");
@@ -78,6 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             @"CSharp\Intentions\QuickFixes\Dots\GenerateRefAccessorsActionFix";
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateRefRWActionAvailability()
         {
             DoNamedTest($"../{DotsClassesFileName}");
@@ -106,12 +114,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         }
         
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateRefRWAction()
         {
             DoNamedTest();
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate ref accessors")]
         public void GenerateRefROAction()
         {
             DoNamedTest();

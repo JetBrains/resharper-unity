@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
         protected override string RelativeTestDataPath => @"ShaderLab\CodeCompletion\VariableReference";
 
-        [Test] public void TestList01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Completion", "Variable reference completion")] public void TestList01() { DoNamedTest(); }
     }
 
     [RequireHlslSupport]
@@ -19,6 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         protected override string RelativeTestDataPath => @"ShaderLab\CodeCompletion\VariableReference";
         protected override bool CheckAutomaticCompletionDefault() => true;
 
-        [Test] public void TestAction01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Completion", "Variable reference completion")] public void TestAction01() { DoNamedTest(); }
     }
 }

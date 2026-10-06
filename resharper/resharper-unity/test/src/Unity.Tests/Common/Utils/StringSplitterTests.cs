@@ -1,3 +1,4 @@
+using JetBrains.ReSharper.Plugins.Tests.Unity;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using NUnit.Framework;
@@ -20,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Common.Utils
         [TestCase(" a   b ", new[] { "a", "b" })]
         [TestCase(" a\tb\tc", new[] { "a", "b", "c" })]
         [TestCase("foo bar", new[] { "foo", "bar" })]
+        [UnityPluginBackendChecklist("Common utilities", "String splitting by whitespace")]
         public void TestSplitByWhitespace(string input, string[] slices)
         {
             var splitter = StringSplitter.ByWhitespace(input);

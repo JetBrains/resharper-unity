@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "GenerateUnityEventFunctions";
 
-        [Test] public void TestAvailability01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Generate Unity event functions")] public void TestAvailability01() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
             };
         }
 
-        [Test] public void TestGenerateEvents() { DoNamedTest2(); }
-        [Test] public void TestGenerateEventsAtCaretLocation() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Generate Unity event functions")] public void TestGenerateEvents() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Generate Unity event functions")] public void TestGenerateEventsAtCaretLocation() { DoNamedTest2(); }
     }
 }

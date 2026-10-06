@@ -17,27 +17,35 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
         protected override string RelativeTestDataPath => @"ShaderLab\Daemon\Stages\Highlightings";
 
         [Test, ShaderVariantsTest]
+        [UnityPluginBackendChecklist("Shader variants", "Shader variants highlighting")]
         public void TestImplicitHighlight() => DoTestSolution("ShaderVariants.hlsl", "FooBar.shader");
         
         [Test, ShaderVariantsTest]
+        [UnityPluginBackendChecklist("Shader variants", "Shader variants highlighting")]
         public void TestSingleKeywordInShader() => DoTestSolution("SingleKeywordInShader.shader");
         
         [Test, ShaderVariantsTest]
+        [UnityPluginBackendChecklist("Shader variants", "Shader variants highlighting")]
         public void TestPragmaHighlight() => DoTestSolution("FooBar.shader");
         
         [Test, ShaderVariantsTest(enabledKeywords: ["FOO", "B", "C"])]
+        [UnityPluginBackendChecklist("Shader variants", "Shader variants highlighting")]
         public void TestEnabledKeywordsInShader() => DoTestSolution("EnabledKeywordsInShader.shader");
 
         [Test, ShaderVariantsTest]
+        [UnityPluginBackendChecklist("Shader variants", "Shader variants highlighting")]
         public void TestShaderApiInShader() => DoTestSolution("ShaderApiInShader.shader");
 
         [Test, ShaderVariantsTest(shaderApi: ShaderApi.Metal)]
+        [UnityPluginBackendChecklist("Shader variants", "Shader variants highlighting")]
         public void TestShaderApiInShaderMetal() => DoTestSolution("ShaderApiInShaderMetal.shader");
 
         [Test, ShaderVariantsTest]
+        [UnityPluginBackendChecklist("Shader variants", "Shader variants highlighting")]
         public void TestShaderPlatformInShader() => DoTestSolution("ShaderPlatformInShader.shader");
         
         [Test, ShaderVariantsTest(shaderPlatform: ShaderPlatform.Mobile)]
+        [UnityPluginBackendChecklist("Shader variants", "Shader variants highlighting")]
         public void TestShaderPlatformInShaderMobile() => DoTestSolution("ShaderPlatformInShaderMobile.shader");
 
         private class ShaderVariantsTestAttribute(ShaderApi shaderApi = ShaderApi.D3D11, ShaderPlatform shaderPlatform = ShaderPlatform.Desktop, params string[] enabledKeywords): TestAspectAttribute

@@ -62,6 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         [TestCase("MultilineComment")]
         [TestCase("MismatchedMultilineComment")]
         [TestCase("Float")]
+        [UnityPluginBackendChecklist("ShaderLab", "Language and parsing", "Lexer")]
         public void TestLexer(string name) => DoOneTest(name);
     }
 }

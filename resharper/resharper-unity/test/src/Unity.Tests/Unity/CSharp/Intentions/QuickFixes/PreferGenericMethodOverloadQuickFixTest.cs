@@ -9,15 +9,15 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\PreferGenericMethodOverload\Availability";
 
-        [Test] public void GetComponentAvailableTest() { DoNamedTest(); }
-        [Test] public void GetComponentBuiltInComponentTest() { DoNamedTest(); }
-        [Test] public void GetComponentUnavailableDueToBadSyntaxTest() { DoNamedTest(); }
-        [Test] public void GetComponentUnavailableTest() { DoNamedTest(); }
-        [Test] public void ScriptableObjectAvailableTest() { DoNamedTest(); }
-        [Test] public void GetComponentUnavailableDueToGenericClass() { DoNamedTest(); }
-        [Test] public void GetComponentWithNamespaceUnavailableTest() { DoNamedTest(); }
-        [Test] public void GetComponentWithPreprocessorDirectives() { DoNamedTest(); }
-        [Test] public void AllScopedTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentAvailableTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentBuiltInComponentTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentUnavailableDueToBadSyntaxTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentUnavailableTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void ScriptableObjectAvailableTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentUnavailableDueToGenericClass() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentWithNamespaceUnavailableTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentWithPreprocessorDirectives() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void AllScopedTest() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -26,13 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\PreferGenericMethodOverload";
         protected override bool AllowHighlightingOverlap => true;
 
-        [Test] public void AddComponentOnObjectTransformationTest() { DoNamedTest(); }
-        [Test] public void GetComponentBuiltInTransform() { DoNamedTest(); }
-        [Test] public void GetComponentInScriptTransformationTest() { DoNamedTest(); }
-        [Test] public void GetComponentTransformationTest() { DoNamedTest(); }
-        [Test] public void ScriptableObjectTest() { DoNamedTest(); }
-        [Test] public void GetComponentWithNamespaceTest01() { DoNamedTest(); }
-        [Test] public void GetComponentWithNamespaceTest02() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void AllScopedTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void AddComponentOnObjectTransformationTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentBuiltInTransform() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentInScriptTransformationTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentTransformationTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void ScriptableObjectTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentWithNamespaceTest01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void GetComponentWithNamespaceTest02() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("Quick fixes", "Performance", "Prefer generic method overload")] public void AllScopedTest() { DoNamedTest(); }
     }
 }

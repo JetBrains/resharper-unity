@@ -23,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         private const string AssembliesDirectory = "Assemblies";
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant SerializeField attribute")]
         public void TestSerialisedReferenceFromSourceCode()
         {
             var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\Test001\Test001.sln");
@@ -30,6 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant SerializeField attribute")]
         public void TestWithSerialisedReferenceFromAssemblies()
         {
             var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\Test002\Test002.sln");
@@ -39,6 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
 
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant SerializeField attribute")]
         public void TestWithoutSerialisedReferenceFromAssemblies()
         {
             var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\Test003\Test003.sln");
@@ -47,6 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         }
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant SerializeField attribute")]
         public void RedundantFieldsWithGenerics()
         {
             var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\RedundantFieldsWithGenerics\RedundantFieldsWithGenerics.sln");

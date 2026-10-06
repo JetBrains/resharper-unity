@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Intentions.QuickFixe
     {
         protected override string RelativeTestDataPath=> @"ShaderLab\Intentions\QuickFixes\InvalidParametersOnVariableReference\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Highlighting", "Invalid parameters on variable reference")] public void Test01() { DoNamedTest(); }
     }
 
     [RequireHlslSupport]
@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Intentions.QuickFixe
     {
         protected override string RelativeTestDataPath=> @"ShaderLab\Intentions\QuickFixes\InvalidParametersOnVariableReference";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Highlighting", "Invalid parameters on variable reference")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Highlighting", "Invalid parameters on variable reference")] public void Test02() { DoNamedTest(); }
     }
 }

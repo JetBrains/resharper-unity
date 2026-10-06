@@ -29,6 +29,7 @@ public class ShaderKeywordQuickFixTest : QuickFixTestBase<ShaderKeywordQuickFix>
     [TestCase("Test04.shader")]
     [TestCase("Test05.shader")]
     [TestCase("Test06.shader")]
+    [UnityPluginBackendChecklist("Shader variants", "Shader keyword quick fix")]
     public void Test(string fileName) => DoTestSolution(fileName);
 
     protected override void DoTestOnTextControlAndExecuteWithGold(

@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"CreateAssetMenu";
 
-        [Test] public void TestAvailability01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Add CreateAssetMenu attribute")] public void TestAvailability01() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -20,6 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "CreateAssetMenu";
 
-        [Test] public void AddCreateAssetMenu() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Add CreateAssetMenu attribute")] public void AddCreateAssetMenu() { DoNamedTest(); }
     }
 }

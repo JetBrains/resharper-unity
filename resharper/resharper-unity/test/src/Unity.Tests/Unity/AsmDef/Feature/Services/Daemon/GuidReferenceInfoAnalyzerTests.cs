@@ -12,6 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\GuidReference";
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Analysis")]
         public void Test01()
         {
             DoTestSolution(new[] { "GuidReference.asmdef" },
@@ -19,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "GUID references", "Analysis")]
         public void TestAsmRef01()
         {
             // The second project files are added to the main project, as in a real asmdef/asmref scenario

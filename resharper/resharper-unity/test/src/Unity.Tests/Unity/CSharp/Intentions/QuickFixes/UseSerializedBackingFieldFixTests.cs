@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\UseSerializedBackingField\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test, CSharpLanguageLevel(CSharpLanguageLevel.CSharp60)] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Use serialized backing field")] public void Test01() { DoNamedTest(); }
+        [Test, CSharpLanguageLevel(CSharpLanguageLevel.CSharp60), UnityPluginBackendChecklist("Quick fixes", "Serialization", "Use serialized backing field")] public void Test02() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\UseSerializedBackingField";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test, CSharpLanguageLevel(CSharpLanguageLevel.CSharp60)] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Serialization", "Use serialized backing field")] public void Test01() { DoNamedTest(); }
+        [Test, CSharpLanguageLevel(CSharpLanguageLevel.CSharp60), UnityPluginBackendChecklist("Quick fixes", "Serialization", "Use serialized backing field")] public void Test02() { DoNamedTest(); }
     }
 }

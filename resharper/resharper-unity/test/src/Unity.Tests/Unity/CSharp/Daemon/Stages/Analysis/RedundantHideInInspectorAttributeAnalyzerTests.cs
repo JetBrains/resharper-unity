@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-        [Test] public void TestRedundantHideInInspectorAttribute() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant HideInInspector attribute")] public void TestRedundantHideInInspectorAttribute() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -16,6 +16,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
-        [Test] public void TestRedundantHideInInspectorAttribute() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Serialization", "Redundant HideInInspector attribute")] public void TestRedundantHideInInspectorAttribute() { DoNamedTest2(); }
     }
 }

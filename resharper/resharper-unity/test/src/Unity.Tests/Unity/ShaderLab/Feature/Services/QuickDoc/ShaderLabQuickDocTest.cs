@@ -17,6 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Qui
         }
 
         [TestCase("ShaderLabKeyword")] 
+        [UnityPluginBackendChecklist("ShaderLab", "Navigation and refactorings", "Quick doc")]
         public void TestQuickDoc(string testName) { DoOneTest(testName); }
     }
 }

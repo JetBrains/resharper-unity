@@ -12,9 +12,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Dots
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Dots";
 
-        [Test] public void ISystemTest() { DoNamedTest(); }
-        [Test] public void SystemBaseTest() { DoNamedTest(); }
-        [Test] public void SystemBaseNestedTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS inspection suppression")] public void ISystemTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS inspection suppression")] public void SystemBaseTest() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "DOTS inspection suppression")] public void SystemBaseNestedTest() { DoNamedTest(); }
 
         protected override void DoTest(Lifetime lifetime, IProject project)
         {

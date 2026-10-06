@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"BurstDiscardAttribute\Availability";
 
-        [Test] public void Everything() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst quick fixes", "Add BurstDiscard attribute")] public void Everything() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -19,8 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "BurstDiscardAttribute";
 
-        [Test] public void TransitiveActions1() { DoNamedTest(); }
-        [Test] public void TransitiveActions2() { DoNamedTest(); }
-        [Test] public void TransitiveActions3() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst quick fixes", "Add BurstDiscard attribute")] public void TransitiveActions1() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst quick fixes", "Add BurstDiscard attribute")] public void TransitiveActions2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst quick fixes", "Add BurstDiscard attribute")] public void TransitiveActions3() { DoNamedTest(); }
     }
 }

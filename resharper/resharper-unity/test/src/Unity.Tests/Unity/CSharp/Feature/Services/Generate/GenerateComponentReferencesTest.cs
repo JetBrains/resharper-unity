@@ -20,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             @"CSharp\Intentions\QuickFixes\Dots\GenerateComponentReferencesActionFix";
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate component references")]
         public void GenerateComponentRefActionAvailability()
         {
             DoNamedTest($"../{DotsClassesFileName}");
@@ -48,6 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         }
 
         [Test]
+        [UnityPluginBackendChecklist("DOTS and Burst", "Code generation", "Generate component references")]
         public void GenerateRefROAction()
         {
             DoNamedTest();

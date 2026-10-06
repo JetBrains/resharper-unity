@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.ContextHighli
         protected override string RelativeTestDataPath => @"ShaderLab\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"PropertyUsage";
 
-        [Test] public void TestPropertyUsage01() { DoNamedTest2(); }
-        [Test] public void TestPropertyUsage02() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Navigation and refactorings", "Property usage highlighting")] public void TestPropertyUsage01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Navigation and refactorings", "Property usage highlighting")] public void TestPropertyUsage02() { DoNamedTest2(); }
     }
 }

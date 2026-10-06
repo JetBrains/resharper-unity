@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "Inlay hints", "GUID reference hints")]
         public void TestGuidReferencesInlayHints01()
         {
             DoTestSolution(new[] { "GuidReference.asmdef" },
@@ -28,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
         }
 
         [Test]
+        [UnityPluginBackendChecklist("Assembly definition files", "Inlay hints", "GUID reference hints")]
         public void TestGuidReferencesInlayHintsAsmRef()
         {
             // Second project files are added to the main project, as in a real asmref scenario

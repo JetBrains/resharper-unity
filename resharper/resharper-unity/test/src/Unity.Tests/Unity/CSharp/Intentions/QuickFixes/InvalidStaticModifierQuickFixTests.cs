@@ -9,10 +9,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidStaticModifier\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
-        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid static modifier")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid static modifier")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid static modifier")] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid static modifier")] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -20,9 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\InvalidStaticModifier";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
-        [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid static modifier")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid static modifier")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid static modifier")] public void InitializeOnLoadMethod() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Event functions", "Invalid static modifier")] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
     }
 }

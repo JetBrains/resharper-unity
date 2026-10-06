@@ -85,6 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("TestBlend01")]
         [TestCase("TestBlend02")]
         [TestCase("TestBlend03")]
+        [UnityPluginBackendChecklist("ShaderLab", "Completion", "Keywords completion list")]
         public void TestCompletion(string testName) => DoOneTest(testName);
     }
 }

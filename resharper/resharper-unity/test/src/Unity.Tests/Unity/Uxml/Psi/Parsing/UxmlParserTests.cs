@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.Psi.Parsing
         protected override string RelativeTestDataPath => @"Uxml\Psi\Parsing";
 
         [TestCase("MainMenu")]
+        [UnityPluginBackendChecklist("UXML", "Parser")]
         public void TestParser(string name) => DoOneTest(name);
     }
 }

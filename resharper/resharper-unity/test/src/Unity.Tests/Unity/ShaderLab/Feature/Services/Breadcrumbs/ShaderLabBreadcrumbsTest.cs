@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Bre
         protected override string RelativeTestDataPath => @"ShaderLab\Breadcrumbs";
 
         [TestCase("TestCGProgramBlock")]
+        [UnityPluginBackendChecklist("ShaderLab", "Navigation and refactorings", "Breadcrumbs")]
         public void TestBreadcrumbs(string testName) => DoOneTest(testName);
     }
 }

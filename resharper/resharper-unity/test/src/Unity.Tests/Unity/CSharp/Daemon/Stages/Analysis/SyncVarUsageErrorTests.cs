@@ -9,6 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
         [Test]
+        [UnityPluginBackendChecklist("C# code analysis", "Networking SyncVar", "SyncVar usage errors")]
         public void TestSyncVarUsageError() { DoNamedTest2(); }
     }
 }

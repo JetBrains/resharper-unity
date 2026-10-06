@@ -13,12 +13,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertCoalescingToConditional\Availability";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test] public void Test05() { DoNamedTest(); }
-        [Test] public void Test06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test04() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test05() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test06() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -28,11 +28,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\ConvertCoalescingToConditional";
         protected override bool AllowHighlightingOverlap => true;
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
-        [Test] public void Test04() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void Test05() { DoNamedTest(); }
-        [Test, ExecuteScopedActionInFile] public void Test06() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test04() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test05() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile, UnityPluginBackendChecklist("Quick fixes", "Unity object checks", "Convert coalescing to conditional")] public void Test06() { DoNamedTest(); }
     }
 }

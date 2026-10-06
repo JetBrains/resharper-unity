@@ -13,7 +13,7 @@ public class UnityObjectNullComparisonHintTests : CSharpHighlightingTestBase<Uni
 {
     protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
         
-    [Test] public void TestUnityObjectNullComparisonHint() { DoNamedTest2(); }
+    [Test, UnityPluginBackendChecklist("C# code analysis", "Unity object null checks", "Null comparison hints")] public void TestUnityObjectNullComparisonHint() { DoNamedTest2(); }
 
     protected override void DoTest(Lifetime lifetime, IProject project)
     {

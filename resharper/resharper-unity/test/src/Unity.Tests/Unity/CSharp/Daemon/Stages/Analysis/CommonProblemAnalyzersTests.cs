@@ -8,6 +8,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\CommonCodeAnalysis\";
 
-        [Test] public void SharedStaticTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Common problem analyzers")] public void SharedStaticTests() { DoNamedTest(); }
     }
 }

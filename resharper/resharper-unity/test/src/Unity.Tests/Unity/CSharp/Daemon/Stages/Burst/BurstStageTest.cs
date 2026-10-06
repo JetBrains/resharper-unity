@@ -8,32 +8,32 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Burst
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\BurstCodeAnalysis\";
 
-        [Test] public void SmartMarkingTests() { DoNamedTest(); }
-        [Test] public void PrimitivesTests() { DoNamedTest(); }
-        [Test] public void ReferenceExpressionTests() { DoNamedTest(); }
-        [Test] public void MethodInvocationTests() { DoNamedTest(); }
-        [Test] public void FunctionParametersReturnTests() { DoNamedTest(); }
-        [Ignore("Try/finally, using and foreach are allowed fom burst 1.4")][Test] public void ExceptionsTests() { DoNamedTest(); }
-        [Test] public void EqualsTests() { DoNamedTest(); }
-        [Test] public void DirectivesTests() { DoNamedTest(); }
-        [Test] public void BurstDiscardTests() { DoNamedTest(); }
-        [Test] public void DebugStringTests() { DoNamedTest(); }
-        [Test] public void TypeofTests() { DoNamedTest(); }
-        [Test] public void SharedStaticCreateTests() { DoNamedTest(); }
-        [Test] public void NullableTests() { DoNamedTest(); }
-        [Test] public void ConditionalAttributesTests() { DoNamedTest(); }
-        [Test] public void CommentRootsTests() { DoNamedTest(); }
-        [Test] public void BugRider53010() { DoNamedTest(); }
-        [Test] public void BugRider68193() { DoNamedTest(); }
-        [Test] public void BugRider68095() { DoNamedTest(); }
-        [Test] public void BugRider92491() { DoNamedTest(); }
-        [Test] public void BugRider92491_2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void SmartMarkingTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void PrimitivesTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void ReferenceExpressionTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void MethodInvocationTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void FunctionParametersReturnTests() { DoNamedTest(); }
+        [Ignore("Try/finally, using and foreach are allowed fom burst 1.4")][Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void ExceptionsTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void EqualsTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void DirectivesTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void BurstDiscardTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void DebugStringTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void TypeofTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void SharedStaticCreateTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void NullableTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void ConditionalAttributesTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis")] public void CommentRootsTests() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis regressions")] public void BugRider53010() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis regressions")] public void BugRider68193() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis regressions")] public void BugRider68095() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis regressions")] public void BugRider92491() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis regressions")] public void BugRider92491_2() { DoNamedTest(); }
         // Bug - youtrack
         // Issue - github.com/jetbrains/resharper-unity
-        [Test] public void IssueRider2181() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis regressions")] public void IssueRider2181() { DoNamedTest(); }
         
-        [Test] public void BugRider106221() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis regressions")] public void BugRider106221() { DoNamedTest(); }
         
-        [Test] public void BugRider113317WithoutBurst() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("DOTS and Burst", "Burst code analysis regressions")] public void BugRider113317WithoutBurst() { DoNamedTest(); }
     }
 }

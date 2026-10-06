@@ -16,19 +16,19 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
             return reference is UnityEventFunctionReference;
         }
 
-        [Test] public void Invoke01() { DoNamedTest(); }
-        [Test] public void Invoke02() { DoNamedTest(); }
-        [Test] public void InvokeRepeating01() { DoNamedTest(); }
-        [Test] public void InvokeRepeating02() { DoNamedTest(); }
-        [Test] public void CancelInvoke01() { DoNamedTest(); }
-        [Test] public void CancelInvoke02() { DoNamedTest(); }
-        [Test] public void IsInvoking01() { DoNamedTest(); }
-        [Test] public void InvokeOtherType01() { DoNamedTest(); }
-        [Test] public void StartCoroutine01() { DoNamedTest(); }
-        [Test] public void StopCoroutine01() { DoNamedTest(); }
-        [Test] public void CoroutineInOtherType01() { DoNamedTest(); }
-        [Test] public void BaseClassMethod01() { DoNamedTest(); }
-        [Test] public void BaseClassMethod02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void Invoke01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void Invoke02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void InvokeRepeating01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void InvokeRepeating02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void CancelInvoke01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void CancelInvoke02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void IsInvoking01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void InvokeOtherType01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void StartCoroutine01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void StopCoroutine01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void CoroutineInOtherType01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void BaseClassMethod01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void BaseClassMethod02() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -38,15 +38,15 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
 
-        [Test] public void Invoke01() { DoNamedTest(); }
-        [Test] public void InvokeRepeating01() { DoNamedTest(); }
-        [Test] public void CancelInvoke01() { DoNamedTest(); }
-        [Test] public void IsInvoking01() { DoNamedTest(); }
-        [Test] public void InvokeOtherType01() { DoNamedTest(); }
-        [Test] public void StartCoroutine01() { DoNamedTest(); }
-        [Test] public void StopCoroutine01() { DoNamedTest(); }
-        [Test] public void CoroutineInOtherType01() { DoNamedTest(); }
-        [Test] public void BaseClassMethod01() { DoNamedTest(); }
-        [Test] public void BaseClassMethod02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void Invoke01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void InvokeRepeating01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void CancelInvoke01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void IsInvoking01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void InvokeOtherType01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void StartCoroutine01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void StopCoroutine01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void CoroutineInOtherType01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void BaseClassMethod01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("References and rename", "Event function references in string literals")] public void BaseClassMethod02() { DoNamedTest(); }
     }
 }

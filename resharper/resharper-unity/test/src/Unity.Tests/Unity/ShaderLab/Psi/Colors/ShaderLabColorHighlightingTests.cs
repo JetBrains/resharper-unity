@@ -15,16 +15,16 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Colors
         protected override bool ColorIdentifiers => true;
         protected override string RelativeTestDataPath => @"ShaderLab\Daemon\Stages\Colors";
 
-        [Test] public void TestPropertyColor() { DoNamedTest2(); }
-        [Test] public void TestColorValues() { DoNamedTest2(); }
-        [Test] public void TestEdgeCasesAndErrors() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Colors", "Color highlighting")] public void TestPropertyColor() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Colors", "Color highlighting")] public void TestColorValues() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Colors", "Color highlighting")] public void TestEdgeCasesAndErrors() { DoNamedTest2(); }
 
-        [SetCulture("en-US")] [Test] public void TestPropertyColorCultureEn() { DoOneTest("PropertyColor"); }
-        [SetCulture("en-US")] [Test] public void TestColorValuesCultureEn() { DoOneTest("ColorValues"); }
-        [SetCulture("en-US")] [Test] public void TestEdgeCasesAndErrorsCultureEn() { DoOneTest("EdgeCasesAndErrors"); }
+        [SetCulture("en-US")] [Test, UnityPluginBackendChecklist("ShaderLab", "Colors", "Color highlighting")] public void TestPropertyColorCultureEn() { DoOneTest("PropertyColor"); }
+        [SetCulture("en-US")] [Test, UnityPluginBackendChecklist("ShaderLab", "Colors", "Color highlighting")] public void TestColorValuesCultureEn() { DoOneTest("ColorValues"); }
+        [SetCulture("en-US")] [Test, UnityPluginBackendChecklist("ShaderLab", "Colors", "Color highlighting")] public void TestEdgeCasesAndErrorsCultureEn() { DoOneTest("EdgeCasesAndErrors"); }
 
-        [SetCulture("de-DE")] [Test] public void TestPropertyColorCultureDe() { DoOneTest("PropertyColor"); }
-        [SetCulture("de-DE")] [Test] public void TestColorValuesCultureDe() { DoOneTest("ColorValues"); }
-        [SetCulture("de-DE")] [Test] public void TestEdgeCasesAndErrorsCultureDe() { DoOneTest("EdgeCasesAndErrors"); }
+        [SetCulture("de-DE")] [Test, UnityPluginBackendChecklist("ShaderLab", "Colors", "Color highlighting")] public void TestPropertyColorCultureDe() { DoOneTest("PropertyColor"); }
+        [SetCulture("de-DE")] [Test, UnityPluginBackendChecklist("ShaderLab", "Colors", "Color highlighting")] public void TestColorValuesCultureDe() { DoOneTest("ColorValues"); }
+        [SetCulture("de-DE")] [Test, UnityPluginBackendChecklist("ShaderLab", "Colors", "Color highlighting")] public void TestEdgeCasesAndErrorsCultureDe() { DoOneTest("EdgeCasesAndErrors"); }
     }
 }

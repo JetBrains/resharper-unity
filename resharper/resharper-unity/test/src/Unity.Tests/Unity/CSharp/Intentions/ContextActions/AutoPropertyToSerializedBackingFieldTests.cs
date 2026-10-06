@@ -11,8 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"AutoPropertyToSerializedBackingField";
 
-        [Test] public void TestAvailability01() { DoNamedTest2(); }
-        [Test] public void TestAvailability02() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Auto-property to serialized backing field")] public void TestAvailability01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Auto-property to serialized backing field")] public void TestAvailability02() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -22,8 +22,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "AutoPropertyToSerializedBackingField";
 
-        [Test] public void Test01() { DoNamedTest(); }
-        [Test] public void Test02() { DoNamedTest(); }
-        [Test] public void Test03() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Auto-property to serialized backing field")] public void Test01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Auto-property to serialized backing field")] public void Test02() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Auto-property to serialized backing field")] public void Test03() { DoNamedTest(); }
     }
 }

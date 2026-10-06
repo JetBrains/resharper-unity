@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "ConvertXmlDocToTooltipAttribute";
 
-        [Test] public void TestAvailability() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Convert XML doc to Tooltip attribute")] public void TestAvailability() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -21,10 +21,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "ConvertXmlDocToTooltipAttribute";
 
-        [Test] public void TestConvertSerialisedFieldWithXmlDoc01() { DoNamedTest2(); }
-        [Test] public void TestConvertSerialisedFieldWithXmlDoc02() { DoNamedTest2(); }
-        [Test] public void TestConvertSerialisedFieldWithXmlDoc03() { DoNamedTest2(); }
-        [Test] public void TestConvertSerialisedFieldWithXmlDoc04() { DoNamedTest2(); }
-        [Test] public void TestConvertSerialisedFieldWithXmlDoc05() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Convert XML doc to Tooltip attribute")] public void TestConvertSerialisedFieldWithXmlDoc01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Convert XML doc to Tooltip attribute")] public void TestConvertSerialisedFieldWithXmlDoc02() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Convert XML doc to Tooltip attribute")] public void TestConvertSerialisedFieldWithXmlDoc03() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Convert XML doc to Tooltip attribute")] public void TestConvertSerialisedFieldWithXmlDoc04() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Serialized fields", "Convert XML doc to Tooltip attribute")] public void TestConvertSerialisedFieldWithXmlDoc05() { DoNamedTest2(); }
     }
 }

@@ -14,9 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCostlyMethod\Availability";
 
-        [Test]  public void EveryThingAvailable() { DoNamedTest(); }
-        [Test][Ignore("AvailabilityTestBase does not support global analysis")]  public void NotAvailableDueToLocalDependencies1() { DoNamedTest(); }
-        [Test][Ignore("AvailabilityTestBase does not support global analysis")]  public void NotAvailableDueToLocalDependencies2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")]  public void EveryThingAvailable() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")][Ignore("AvailabilityTestBase does not support global analysis")]  public void NotAvailableDueToLocalDependencies1() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")][Ignore("AvailabilityTestBase does not support global analysis")]  public void NotAvailableDueToLocalDependencies2() { DoNamedTest(); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
@@ -33,14 +33,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCostlyMethod";
 
-        [Test] public void MoveToStart() { DoNamedTest(); }
-        [Test] public void MoveToAwake() { DoNamedTest(); }
-        [Test] public void MoveOutsideTheLoop() { DoNamedTest(); }
-        [Test] public void MoveOutsideTheLoop2() { DoNamedTest(); }
-        [Test] public void MoveOutsideTheLoop3() { DoNamedTest(); }
-        [Test] public void MoveOutsideTheLoop4() { DoNamedTest(); }
-        [Test] public void FieldGenerationWithRespectToCodeStyleTest() {DoNamedTest(); }
-        [Test] public void MultiReplace() { DoNamedTest();}
-        [Test] public void MoveCostlyVoid() {DoNamedTest();}
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")] public void MoveToStart() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")] public void MoveToAwake() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")] public void MoveOutsideTheLoop() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")] public void MoveOutsideTheLoop2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")] public void MoveOutsideTheLoop3() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")] public void MoveOutsideTheLoop4() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")] public void FieldGenerationWithRespectToCodeStyleTest() {DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")] public void MultiReplace() { DoNamedTest();}
+        [Test, UnityPluginBackendChecklist("Quick fixes", "Performance", "Move costly method invocation")] public void MoveCostlyVoid() {DoNamedTest();}
     }
 }

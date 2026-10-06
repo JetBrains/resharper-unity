@@ -15,6 +15,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Tod
         protected override PsiLanguageType? CompilerIdsLanguage => ShaderLabLanguage.Instance;
         protected override string RelativeTestDataPath => @"ShaderLab\ToDo";
 
-        [Test] public void TestTodo01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("ShaderLab", "Highlighting", "TODO items")] public void TestTodo01() { DoNamedTest2(); }
     }
 }

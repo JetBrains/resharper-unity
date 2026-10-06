@@ -16,8 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
             return reference is SyncVarHookReference;
         }
 
-        [Test] public void SyncVarHook01() { DoNamedTest(); }
-        [Test] public void InvalidSignature01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Networking SyncVar", "SyncVar hook references")] public void SyncVarHook01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Networking SyncVar", "SyncVar hook references")] public void InvalidSignature01() { DoNamedTest(); }
     }
 
     [TestUnity(UnityVersion.Unity55, IncludeNetworking = true)]
@@ -27,6 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
         protected override bool CheckAutomaticCompletionDefault() => true;
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.ModernList;
 
-        [Test] public void SyncVarHook01() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("C# code analysis", "Networking SyncVar", "SyncVar hook references")] public void SyncVarHook01() { DoNamedTest(); }
     }
 }

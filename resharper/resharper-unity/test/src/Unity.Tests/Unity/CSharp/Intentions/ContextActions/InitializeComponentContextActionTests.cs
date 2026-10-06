@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"InitializeFieldComponent";
 
-        [Test] public void TestAvailability01() { DoNamedTest2(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Initialize component")] public void TestAvailability01() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -20,9 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "InitializeFieldComponent";
 
-        [Test] public void AddRequireComponent() { DoNamedTest(); }
-        [Test] public void AddRequireComponent2() { DoNamedTest(); }
-        [Test] public void InitializeInStart() { DoNamedTest(); }
-        [Test] public void InitializeInAwake() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Initialize component")] public void AddRequireComponent() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Initialize component")] public void AddRequireComponent2() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Initialize component")] public void InitializeInStart() { DoNamedTest(); }
+        [Test, UnityPluginBackendChecklist("Context actions", "Initialize component")] public void InitializeInAwake() { DoNamedTest(); }
     }
 }
