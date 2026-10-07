@@ -75,10 +75,11 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
                 "Unity Editor has been started, waiting for sln/csproj structure to be generated, attempt:$i/$attemptsCount")
             val isSolutionGenerated = waitForSlnGeneratedByUnity(unityProcessHandle, unityProjectPath.absoluteCanonicalPath,
                                                                  Duration.ofMinutes(2L * i))
-            if (isSolutionGenerated)
+            if (isSolutionGenerated) {
                 frameworkLogger.info("Sln/csproj structure has been created, opening project in Rider")
-            else
-                frameworkLogger.info("Sln/csproj structure hasn't been created")
+                break
+            }
+            frameworkLogger.info("Sln/csproj structure hasn't been created")
         }
         super.setUpTestCaseSolution()
     }
