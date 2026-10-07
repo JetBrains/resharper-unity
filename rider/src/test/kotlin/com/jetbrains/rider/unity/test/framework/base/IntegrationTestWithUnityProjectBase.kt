@@ -15,6 +15,7 @@ import com.jetbrains.rider.test.scriptingApi.putUnityProjectToTempTestDir
 import com.jetbrains.rider.test.scriptingApi.riderPackageVersion
 import com.jetbrains.rider.test.scriptingApi.setRiderPackageVersion
 import com.jetbrains.rider.test.scriptingApi.waitForSlnGeneratedByUnity
+import com.jetbrains.rider.test.scriptingApi.withPreparedUnityProjectCache
 import com.jetbrains.rider.unity.test.framework.api.getUnityDependentGoldFile
 import com.jetbrains.rider.unity.test.framework.api.startUnity
 import org.junit.jupiter.api.BeforeEach
@@ -56,30 +57,33 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
     @BeforeEach
     override fun setUpTestCaseSolution() {
         unityProjectPath = putUnityProjectToTempTestDir(testMethod.solution!!.name, testWorkDirectory, solutionSourceRootDirectory, testDataDirectory)
-        setRiderPackageVersion(unityProjectPath, riderPackageVersion)
+        withPreparedUnityProjectCache(unityProjectPath, unityExecutable) {
+            setRiderPackageVersion(unityProjectPath, riderPackageVersion)
 
-        val attemptsCount = 3
-        for (i in 1..attemptsCount) {
-            val unityProcessHandle = startUnity(
-                executable = unityExecutable.absoluteCanonicalPath,
-                projectPath = unityProjectPath.absoluteCanonicalPath,
-                withCoverage = false,
-                resetEditorPrefs = resetEditorPrefs,
-                useRiderTestPath = useRiderTestPath,
-                batchMode = batchMode,
-                generateSolution = true
-            )
+            val attemptsCount = 3
+            for (i in 1..attemptsCount) {
+                val unityProcessHandle = startUnity(
+                    executable = unityExecutable.absoluteCanonicalPath,
+                    projectPath = unityProjectPath.absoluteCanonicalPath,
+                    withCoverage = false,
+                    resetEditorPrefs = resetEditorPrefs,
+                    useRiderTestPath = useRiderTestPath,
+                    batchMode = batchMode,
+                    generateSolution = true
+                )
 
-            //Generate sln and csproj
-            frameworkLogger.info(
-                "Unity Editor has been started, waiting for sln/csproj structure to be generated, attempt:$i/$attemptsCount")
-            val isSolutionGenerated = waitForSlnGeneratedByUnity(unityProcessHandle, unityProjectPath.absoluteCanonicalPath,
-                                                                 Duration.ofMinutes(2L * i))
-            if (isSolutionGenerated) {
-                frameworkLogger.info("Sln/csproj structure has been created, opening project in Rider")
-                break
+                //Generate sln and csproj
+                frameworkLogger.info(
+                    "Unity Editor has been started, waiting for sln/csproj structure to be generated, attempt:$i/$attemptsCount")
+                val isSolutionGenerated = waitForSlnGeneratedByUnity(unityProcessHandle, unityProjectPath.absoluteCanonicalPath,
+                                                                     Duration.ofMinutes(2L * i))
+                if (isSolutionGenerated) {
+                    frameworkLogger.info("Sln/csproj structure has been created, opening project in Rider")
+                    return@withPreparedUnityProjectCache true
+                }
+                frameworkLogger.info("Sln/csproj structure hasn't been created")
             }
-            frameworkLogger.info("Sln/csproj structure hasn't been created")
+            false
         }
         super.setUpTestCaseSolution()
     }
