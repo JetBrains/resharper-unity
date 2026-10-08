@@ -135,7 +135,7 @@
          the default is written twice: here and in UnityForAgentsFeature. -->
     <registryKey key="rider.unity.agents.enabled"
                  defaultValue="false"
-                 description="Enables the Unity for Agents settings page and the Unity CLI integration"
+                 description="Enables the Unity for Agents settings page, the Unity CLI integration and the Unity MCP section"
                  restartRequired="false"/>
 
     <!-- An empty value asks Rider to probe the CDN of Unity for a stable channel. The value
@@ -152,6 +152,14 @@
     <registryKey key="rider.unity.suggest.cli.install"
                  defaultValue="true"
                  description="Suggests the Unity CLI with a balloon when a Unity project opens"
+                 restartRequired="false"/>
+
+    <!-- The second narrow key. It takes the Unity MCP section away and it leaves the Unity CLI
+         section alone. The kill switch above dominates it. The section asks a foreign binary to
+         write a file in the home directory of the user, so it carries a switch of its own. -->
+    <registryKey key="rider.unity.agents.mcp.enabled"
+                 defaultValue="true"
+                 description="Enables the Unity MCP section of the Unity for Agents settings page"
                  restartRequired="false"/>
 
     <!-- `provider=` rather than `instance=`: a Configurable has no hook that hides it, and the kill

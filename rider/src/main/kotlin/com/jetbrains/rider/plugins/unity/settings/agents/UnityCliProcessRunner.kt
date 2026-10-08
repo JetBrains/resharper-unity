@@ -25,7 +25,11 @@ class UnityCliProcessRunner private constructor(
     companion object {
         const val IDENTIFY_TIMEOUT_MS: Int = 10_000
         const val DIAGNOSE_TIMEOUT_MS: Int = 30_000
+        const val STORE_READ_TIMEOUT_MS: Int = 15_000
+        const val STORE_WRITE_TIMEOUT_MS: Int = 60_000
+
         fun getInstance(): UnityCliProcessRunner = service()
+
         @TestOnly
         fun runnerAnswering(run: suspend (GeneralCommandLine, Int) -> ProcessOutput): UnityCliProcessRunner =
             UnityCliProcessRunner(run)

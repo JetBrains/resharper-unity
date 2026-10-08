@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.actions.ShowLogAction
-import com.intellij.ide.trustedProjects.TrustedProjects
 import com.intellij.ide.trustedProjects.TrustedProjectsDialog
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationActivationListener
@@ -12,6 +11,7 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFrame
@@ -28,17 +28,25 @@ import com.jetbrains.rider.plugins.unity.UnityPluginScopeService
 import icons.UnityIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.awt.datatransfer.StringSelection
 import java.awt.event.HierarchyEvent
+import java.nio.file.Path
 import javax.swing.JComponent
 import javax.swing.JProgressBar
 
 internal class UnityForAgentsConfigurable(private val project: Project) : SearchableConfigurable {
     private var scope: CoroutineScope? = null
+    private var refreshJob: Job? = null
     private var cliStatus: Placeholder? = null
+    private var mcpStatus: Placeholder? = null
+    private var mcpPanel: UnityMcpSectionPanel? = null
+    private var lastSection: UnityMcpSectionPresentation? = null
+    // Not lastSection: a write and the CLI install and update paint a busy state that no read returned.
+    private var paintedSection: UnityMcpSectionPresentation? = null
     private var root: JComponent? = null
     private var pageDisposable: Disposable? = null
 
@@ -50,7 +58,10 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
 
     override fun isModified(): Boolean = false
 
-    override fun apply() {
+    override fun apply() {}
+
+    override fun reset() {
+        refresh()
     }
 
     override fun createComponent(): JComponent {
@@ -71,9 +82,13 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                 }
             }
 
-            group(UnityBundle.message("unity.agents.mcp.title")) {
-                row { text(UnityBundle.message("unity.agents.mcp.description")) }
-                row { comment(UnityBundle.message("unity.agents.coming.soon")) }
+            if (UnityForAgentsFeature.isMcpSectionEnabled()) {
+                group(UnityBundle.message("unity.agents.mcp.title")) {
+                    row { text(UnityBundle.message("unity.agents.mcp.description")) }
+                    row {
+                        mcpStatus = placeholder().align(AlignX.FILL)
+                    }
+                }
             }
 
             group(UnityBundle.message("unity.agents.skills.title")) {
@@ -82,6 +97,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             }
         }
 
+        this.mcpPanel = UnityMcpSectionPanel(project, write = { stores, operation -> startWrite(stores, operation) })
         this.root = root
         UnityForAgentsPageVisibility.getInstance().register(root)
         watchForOutsideChanges(root)
@@ -93,7 +109,12 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
     override fun disposeUIResources() {
         scope?.cancel()
         scope = null
+        refreshJob = null
         cliStatus = null
+        mcpStatus = null
+        mcpPanel = null
+        lastSection = null
+        paintedSection = null
         pageDisposable?.let(Disposer::dispose)
         pageDisposable = null
         root?.let { UnityForAgentsPageVisibility.getInstance().unregister(it) }
@@ -122,30 +143,90 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
     private fun refresh() {
         val activeScope = scope ?: return
         val modality = ModalityState.current()
-        activeScope.launch {
-            val presentation =
-                if (TrustedProjects.isProjectTrusted(project)) UnityCliStatusProvider.getInstance().read()
-                else UnityCliPresentation(projectTrusted = false)
+        val drawsMcp = mcpStatus != null
+        // A slow read must not paint over the answer of a later one.
+        refreshJob?.cancel()
+        refreshJob = activeScope.launch {
+            val section =
+                if (drawsMcp) UnityMcpStatusProvider.getInstance(project).read()
+                else UnityMcpSectionPresentation(readUnityCli(project))
             withContext(Dispatchers.EDT + modality.asContextElement()) {
-                cliStatus?.component = buildCliStatus(presentation)
+                lastSection = section
+                if (section == paintedSection) return@withContext
+                paintedSection = section
+                cliStatus?.component = buildCliStatus(section.cli)
+                mcpStatus?.component = mcpPanel?.build(section)
             }
         }
+    }
+
+    private fun startWrite(stores: List<UnityMcpStore>, operation: UnityMcpOperation) {
+        if (!UnityForAgentsFeature.isMcpSectionEnabled()) return
+        val activeScope = scope ?: return
+        if (operation == UnityMcpOperation.REMOVING && !confirmedSharedRemoval(stores)) return
+        val packageInstallAgreed = operation == UnityMcpOperation.CONFIGURING && agreedToPipelinePackage()
+        if (operation == UnityMcpOperation.CONFIGURING && needsPipelinePackage() && !packageInstallAgreed) return
+
+        val modality = ModalityState.current()
+
+        refreshJob?.cancel()
+        paintedSection = null
+        lastSection?.let { mcpStatus?.component = mcpPanel?.build(it.withRunning(stores, operation)) }
+        activeScope.launch {
+            UnityMcpStatusProvider.getInstance(project).write(stores, operation, modality, packageInstallAgreed)
+            withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
+        }
+    }
+
+    private fun needsPipelinePackage(): Boolean = lastSection?.needsPipelinePackage == true
+
+    private fun agreedToPipelinePackage(): Boolean {
+        if (!needsPipelinePackage()) return false
+        val manifest = lastSection?.manifestPath ?: return false
+        return MessageDialogBuilder
+            .yesNo(UnityBundle.message("unity.agents.mcp.pipeline.confirm.title"), unityMcpPipelineConfirmation(manifest))
+            .yesText(UnityBundle.message("unity.agents.mcp.pipeline.confirm.yes"))
+            .ask(project)
+    }
+
+    private fun confirmedSharedRemoval(stores: List<UnityMcpStore>): Boolean {
+        val solution = lastSection?.project?.path?.let { Path.of(it) }
+        val question = unityMcpSharedRemovalQuestion(stores, solution) ?: return true
+        return MessageDialogBuilder
+            .yesNo(UnityBundle.message("unity.agents.mcp.remove.shared.title"), question)
+            .yesText(UnityBundle.message("unity.agents.mcp.action.remove"))
+            .ask(project)
+    }
+
+    /**
+     * Draws every row the write is about to take, and not only the row the user clicked.
+     *
+     * The service claims a shared store file whole, so a click on the Claude Code row also takes the
+     * GitHub Copilot CLI row. A redraw that covered the click alone left the second row with an
+     * enabled button that the next click could not use.
+     */
+    private fun UnityMcpSectionPresentation.withRunning(
+        stores: List<UnityMcpStore>,
+        operation: UnityMcpOperation,
+    ): UnityMcpSectionPresentation {
+        val running = unityMcpWriteGroups(stores).flatten().toSet()
+        return copy(
+            rows = rows.map {
+                if (it.store in running) it.copy(operation = operation, failure = null, failureExitCode = null) else it
+            }
+        )
     }
 
     private fun buildCliStatus(presentation: UnityCliPresentation): JComponent = panel {
         statusRows(presentation)
     }
 
-    // One shape carries every state. The path and the version report what Rider measured, and the
-    // action row holds at most one button with the text that explains it.
     private fun Panel.statusRows(presentation: UnityCliPresentation) {
         locationRow(presentation)
         versionRow(presentation)
         actionRow(presentation)
     }
 
-    // Detection has not answered yet in CHECKING, and it never runs in an untrusted project. Neither
-    // state knows the version, so neither may claim "Not installed".
     private fun Panel.versionRow(presentation: UnityCliPresentation) {
         if (presentation.offer == UnityCliOffer.CHECKING) return
         if (presentation.offer == UnityCliOffer.NOT_TRUSTED) return
@@ -178,8 +259,6 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                 comment(UnityBundle.message("unity.agents.cli.up.to.date"))
             }
 
-            // The answer of the feed is cached for six hours, so a plain redraw would repeat the
-            // same "unknown". The button drops the cached answer first.
             UnityCliOffer.LATEST_VERSION_UNKNOWN -> row {
                 button(UnityBundle.message("unity.agents.cli.check.again")) { recheck() }.gap(RightGap.SMALL)
                 comment(UnityBundle.message("unity.agents.cli.latest.unknown"))
@@ -214,8 +293,6 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                 }
             }
 
-            // The failure sits beside the button that retries it. The page has no other failure
-            // surface, and a failure that arrives while the page is closed reaches a balloon.
             UnityCliOffer.FAILED -> {
                 row {
                     button(UnityBundle.message("unity.agents.cli.try.again")) { retry(presentation) }.gap(RightGap.SMALL)
@@ -255,7 +332,6 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         }
     }
 
-    // The retry clears the failure that the user saw, so the row leaves the failed state at once.
     private fun retry(presentation: UnityCliPresentation) {
         val failureId = presentation.failureId
         if (failureId != null) UnityCliStatusProvider.getInstance().clearFailure(failureId)
@@ -271,8 +347,9 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         if (!UnityForAgentsFeature.isEnabled()) return
         val activeScope = scope ?: return
         val modality = ModalityState.current()
-        // Renders BUSY now, on the same click. A second click before the coroutine below runs then
-        // sees the running state instead of starting a second install.
+
+        refreshJob?.cancel()
+        paintedSection = null
         cliStatus?.component = buildCliStatus(UnityCliPresentation(detected = true, operation = UnityCliOperation.INSTALLING))
         activeScope.launch {
             UnityCliStatusProvider.getInstance().install(project, modality)
@@ -284,6 +361,8 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         if (!UnityForAgentsFeature.isEnabled()) return
         val activeScope = scope ?: return
         val modality = ModalityState.current()
+        refreshJob?.cancel()
+        paintedSection = null
         cliStatus?.component = buildCliStatus(UnityCliPresentation(detected = true, operation = UnityCliOperation.UPDATING))
         activeScope.launch {
             UnityCliStatusProvider.getInstance().update(project, modality)

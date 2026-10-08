@@ -16,7 +16,7 @@ private const val UNITY_CLI_HOME_VARIABLE = "UNITY_CLI_HOME"
 
 private const val LOCAL_APP_DATA_VARIABLE = "LOCALAPPDATA"
 
-private const val UNITY_CLI_HELP_MARKER = "CLI for Unity"
+private val UNITY_CLI_SUBCOMMANDS = listOf("editors", "self-update", "project", "mcp")
 
 private const val UNITY_HUB_APP_BUNDLE = "Unity Hub.app"
 
@@ -49,7 +49,9 @@ internal fun isUnityHubPrivateCopy(path: Path): Boolean =
 
 internal fun isUnityCliVersionOutput(stdout: String): Boolean = SemVer.parseFromText(stdout.trim()) != null
 
-internal fun isUnityCliHelpOutput(stdout: String): Boolean = stdout.contains(UNITY_CLI_HELP_MARKER)
+fun isUnityCliHelpOutput(stdout: String): Boolean =
+    (stdout.contains("Usage: unity", ignoreCase = true) || stdout.contains("unity [options]", ignoreCase = true)) &&
+    UNITY_CLI_SUBCOMMANDS.any { stdout.contains(it, ignoreCase = true) }
 
 internal fun unityCliInstallMethodFromPath(resolvedPath: Path): UnityCliInstallMethod {
     val directories = resolvedPath.map { it.toString() }
@@ -114,7 +116,14 @@ internal fun UnityCliEnvironment.unityCliHome(): String? = environmentVariable(U
 
 internal fun UnityCliEnvironment.localAppData(): String? = environmentVariable(LOCAL_APP_DATA_VARIABLE)
 
-private data class DiagnoseUpdateEnvelope(val data: DiagnoseUpdateData?)
+fun isUnityCliDiagnoseUpdateOutput(stdout: String): Boolean {
+    val envelope = parse<DiagnoseUpdateEnvelope>(stdout) ?: return false
+    val data = envelope.data ?: return false
+    return envelope.command == "diagnose-update" &&
+           (!data.installMethod.isNullOrBlank() || !data.updateCommand.isNullOrBlank() || !data.manifestUrl.isNullOrBlank())
+}
+
+private data class DiagnoseUpdateEnvelope(val data: DiagnoseUpdateData?, val command: String? = null)
 
 private data class DiagnoseUpdateData(
     val installMethod: String?,
