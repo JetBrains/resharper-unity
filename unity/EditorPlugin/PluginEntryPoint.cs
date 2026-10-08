@@ -11,6 +11,7 @@ using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Unity.Editor.FindUsages.Window;
 using JetBrains.Rider.Unity.Editor.Profiler;
+using JetBrains.Rider.Unity.Editor.Utils;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 using UnityEditor;
@@ -158,7 +159,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
       {
         var executingAssembly = Assembly.GetExecutingAssembly();
-        var location = executingAssembly.Location;
+        var location = AssemblyLoading.GetLoadedAssemblyPath(executingAssembly);
         Debug.Log(
           $"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location) ? "" : " from: " + location)}. " +
           $"LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogInitializer.LogPath}.");

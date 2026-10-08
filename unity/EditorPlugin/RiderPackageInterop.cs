@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
+using JetBrains.Rider.Unity.Editor.Utils;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -13,9 +13,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static Assembly GetAssembly()
     {
-      var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-      var riderPackageAssembly = assemblies
-        .FirstOrDefault(assembly => assembly.GetName().Name.Equals("Unity.Rider.Editor"));
+      var riderPackageAssembly = AssemblyLoading.GetAssembly("Unity.Rider.Editor");
       if (riderPackageAssembly == null)
       {
         ourLogger.Verbose("Could not find Unity.Rider.Editor assembly in current AppDomain");

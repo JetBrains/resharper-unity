@@ -6,6 +6,7 @@ using JetBrains.Util;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
+  // TODO: looks like this could be removed, along with ClientControllerInfo in general, ask platform people
   internal class ClientControllerWrapper
   {
     private static readonly ILog ourLogger = Log.GetLog(typeof(ClientControllerWrapper));
