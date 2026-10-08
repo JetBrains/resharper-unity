@@ -528,9 +528,7 @@ namespace JetBrains.Rider.Unity.Editor
         try
         {
           ourLogger.Verbose($"Attempt to execute {data.MethodName}");
-          var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-          var assembly = assemblies
-            .FirstOrDefault(a => a.GetName().Name.Equals(data.AssemblyName));
+          var assembly = AssemblyLoading.GetAssembly(data.AssemblyName);
           if (assembly == null)
             throw new Exception($"Could not find {data.AssemblyName} assembly in current AppDomain");
 

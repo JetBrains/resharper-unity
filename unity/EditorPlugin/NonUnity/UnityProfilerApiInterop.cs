@@ -41,7 +41,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
         private static void InvokeApi(string apiPath, string methodName)
         {
             // C:\Work\dotnet-products\Bin.RiderBackend\JetBrains.Etw.UnityProfilerApi.dll
-            var assembly = AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(apiPath));
+            var assembly = AssemblyLoading.LoadFromPath(apiPath);
 
             var profilerApiType = assembly.GetType("JetBrains.Etw.Api.UnityProfilerApi");
             if (profilerApiType == null)
