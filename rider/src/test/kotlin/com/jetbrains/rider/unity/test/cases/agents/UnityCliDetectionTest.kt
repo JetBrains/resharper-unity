@@ -18,6 +18,8 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliPresentation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliProcessRunner
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliStatusProvider
 import com.jetbrains.rider.plugins.unity.settings.agents.isReadableManifestUrl
+import com.jetbrains.rider.plugins.unity.settings.agents.isUnityCliDiagnoseUpdateOutput
+import com.jetbrains.rider.plugins.unity.settings.agents.isUnityCliHelpOutput
 import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityCliManifestVersion
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliExecutableName
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliVersionMessage
@@ -109,6 +111,47 @@ class UnityCliDetectionTest {
 
         assertEquals(LOCAL_ROOT_COPY, presentation.location)
         assertNoLaunchOf(machine, HOME_ROOT_COPY)
+    }
+
+    @Test
+    fun `a Windows machine discovers the copy in LOCALAPPDATA when PATH is empty`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val localAppData = "C:\\Users\\tester\\AppData\\Local"
+        val windowsCopy = Path.of(localAppData, "Unity", "bin", unityCliExecutableName())
+        val beta12Help = """
+            Usage: unity [options] [command]
+
+            Automate Unity from the command line: install an Editor and create a project without the GUI.
+
+            Commands:
+              editors Manage Unity editors
+              self-update Update the unity CLI
+        """.trimIndent()
+
+        val machine = machineWith().answering(windowsCopy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput("1.0.0-beta.12", "", 0, false, false)
+                listOf("--help") -> ProcessOutput(beta12Help, "", 0, false, false)
+                listOf("diagnose", "update", "--format", "json") ->
+                    ProcessOutput(diagnoseUpdateJson(null), "", 0, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+
+        install(
+            disposable,
+            machine,
+            environment(
+                localAppData = localAppData,
+                executables = setOf(windowsCopy),
+            ),
+        )
+
+        val presentation = detect()
+
+        assertEquals(windowsCopy, presentation.location)
+        assertEquals("1.0.0-beta.12", presentation.installedVersion)
     }
 
     @Test
@@ -207,6 +250,45 @@ class UnityCliDetectionTest {
 
         assertEquals(UnityCliOffer.INSTALL, presentation.offer)
         assertEquals(impostor, presentation.foreignBinaryOnPath)
+    }
+
+    @Test
+    fun `a copy whose help answers runs diagnose update only for the update check`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/help-first/bin/unity")
+        val machine = machineWith(copy)
+        install(disposable, machine, environment(onPath = copy))
+
+        val presentation = detect()
+
+        assertEquals(copy, presentation.location)
+        val launches = machine.launched.map { it.parametersList.list }
+        assertEquals(
+            listOf(listOf("--version"), listOf("--help"), listOf("diagnose", "update", "--format", "json")),
+            launches,
+        )
+    }
+
+    @Test
+    fun `a copy whose help Rider does not know is identified by diagnose update`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/reworded-help/bin/unity")
+        val machine = machineWith().answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 0, false, false)
+                listOf("--help") -> ProcessOutput("Usage: some reworded help", "", 0, false, false)
+                listOf("diagnose", "update", "--format", "json") ->
+                    ProcessOutput(diagnoseUpdateJson(null), "", 0, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(disposable, machine, environment(onPath = copy))
+
+        val presentation = detect()
+
+        assertEquals(copy, presentation.location, "the diagnose update fallback did not identify the copy")
     }
 
     @Test
@@ -337,6 +419,74 @@ class UnityCliDetectionTest {
         assertNull(parseUnityCliManifestVersion("not json"))
     }
 
+    // --- isUnityCliHelpOutput: identifies the Unity CLI across help output formats ---
+
+    @Test
+    fun `modern beta 12 help output is accepted`() {
+        val beta12Help = """
+            Usage: unity [options] [command]
+
+            Automate Unity from the command line: install an Editor and create a project without the GUI.
+
+            Options:
+              -V, --version output the version number
+            Commands:
+              editors Manage Unity editors
+              self-update Update the unity CLI
+        """.trimIndent()
+        assertTrue(isUnityCliHelpOutput(beta12Help))
+    }
+
+    @Test
+    fun `help output with usage and commands but no banner is accepted`() {
+        val bannerlessHelp = """
+            Usage: unity [options] [command]
+
+            Commands:
+              editors Manage Unity editors
+              self-update Update the unity CLI
+        """.trimIndent()
+        assertTrue(isUnityCliHelpOutput(bannerlessHelp))
+    }
+
+    @Test
+    fun `an impostor help output is rejected`() {
+        val desktopShellHelp = """
+            Usage: unity [options]
+            Options:
+              --replace
+              --debug
+        """.trimIndent()
+        assertFalse(isUnityCliHelpOutput(desktopShellHelp))
+        assertFalse(isUnityCliHelpOutput("Usage: some other tool"))
+    }
+
+    // --- isUnityCliDiagnoseUpdateOutput: verifies structured JSON output from diagnose update ---
+
+    @Test
+    fun `a valid diagnose update JSON response identifies the CLI`() {
+        val validJson = """
+            {
+              "success": true,
+              "command": "diagnose-update",
+              "data": {
+                "version": "1.0.0-beta.12",
+                "installMethod": "cdn"
+              }
+            }
+        """.trimIndent()
+        assertTrue(isUnityCliDiagnoseUpdateOutput(validJson))
+    }
+
+    @Test
+    fun `an invalid or non-JSON output does not identify the CLI`() {
+        assertFalse(isUnityCliDiagnoseUpdateOutput("not json"))
+        assertFalse(isUnityCliDiagnoseUpdateOutput("""{"command": "other"}"""))
+        assertFalse(isUnityCliDiagnoseUpdateOutput("""{"data": {}}"""))
+        assertFalse(isUnityCliDiagnoseUpdateOutput("""{"command": "diagnose-update"}"""))
+        assertFalse(isUnityCliDiagnoseUpdateOutput("""{"command": "diagnose-update", "data": {}}"""))
+    }
+
     /** One machine, and the record of every command line it was asked to run. */
     private class Machine(
         private val unityCliCopies: Set<Path>,
@@ -423,10 +573,9 @@ class UnityCliDetectionTest {
         val HELP_OUTPUT = """
             Usage: unity [options] [command]
 
-            CLI for Unity
-
-            Options:
-              -V, --version                              output the version number
+            Commands:
+              editors Manage Unity editors
+              self-update Update the unity CLI
         """.trimIndent()
 
         fun diagnoseUpdateJson(manifestUrl: String?): String {

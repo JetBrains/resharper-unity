@@ -205,7 +205,12 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
             }
             else {
                 val version = findLocalCopy(UnityCliEnvironment.getInstance()).copy?.version
-                confirm(project, UnityCliOperation.UPDATING, version)
+                if (version != null) {
+                    confirm(project, UnityCliOperation.UPDATING, version)
+                }
+                else {
+                    report(project, modality, UnityCliFailure.VERIFICATION, exitCode, UnityCliOperation.UPDATING)
+                }
             }
         }
         finally {
@@ -350,8 +355,16 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
 
         val help = runQuietly(candidate) { runner ->
             runner.runProcess(unityCliHelpCommandLine(candidate), UnityCliProcessRunner.IDENTIFY_TIMEOUT_MS)
+        }
+        if (help != null && !help.isTimeout && help.exitCode == 0 && isUnityCliHelpOutput(help.stdout)) {
+            return version.stdout.trim()
+        }
+
+        // A later CLI can reword its help, so the JSON contract of `diagnose update` is the fallback.
+        val diagnose = runQuietly(candidate) { runner ->
+            runner.runProcess(unityCliDiagnoseUpdateCommandLine(candidate), UnityCliProcessRunner.IDENTIFY_TIMEOUT_MS)
         } ?: return null
-        if (help.isTimeout || help.exitCode != 0 || !isUnityCliHelpOutput(help.stdout)) return null
+        if (diagnose.isTimeout || diagnose.exitCode != 0 || !isUnityCliDiagnoseUpdateOutput(diagnose.stdout)) return null
 
         return version.stdout.trim()
     }
