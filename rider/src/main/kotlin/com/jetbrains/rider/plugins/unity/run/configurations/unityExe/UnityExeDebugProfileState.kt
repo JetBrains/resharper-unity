@@ -23,6 +23,7 @@ import com.intellij.util.NetworkUtils
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
+import com.jetbrains.rd.util.threading.coroutines.launch
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.tryWriteMessageToConsoleView
@@ -43,6 +44,7 @@ import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.createEmptyConsoleCommandLine
 import com.jetbrains.rider.run.pid
 import com.jetbrains.rider.shared.run.withRawParameters
+import kotlinx.coroutines.Dispatchers
 import java.nio.file.Path
 
 /**
@@ -161,7 +163,9 @@ class UnityExeDebugProfileState(val exeConfiguration: UnityExeConfiguration,
                 else
                     workerProcessHandler.workerModel.activeSession.adviseNotNullOnce(lifetime) {
                         it.initialized.adviseNotNullOnce(lifetime) {
-                            runUnityEditor()
+                            lifetime.launch(Dispatchers.IO) {
+                                runUnityEditor()
+                            }
                         }
                     }
 
