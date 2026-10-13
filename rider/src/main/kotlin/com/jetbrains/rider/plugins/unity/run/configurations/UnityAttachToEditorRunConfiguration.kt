@@ -13,6 +13,7 @@ import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.extensions.ExtensionPointName
@@ -49,6 +50,9 @@ import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
 import com.jetbrains.rider.run.configurations.unity.UnityAttachRunConfiguration
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jdom.Element
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: ConfigurationFactory, val play: Boolean = false)
@@ -114,8 +118,20 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                                                                               finder.getApplicationVersion()), environment) { _, _, _ ->
                     run {
                         if (executorId == "dotTrace Profiler") {
-                            project.solution.frontendBackendModel.startProfiling.start(UnityProjectLifetimeService.getLifetime(project),
-                                                                                       play)
+                            if (processId == null)
+                                startProfiling()
+                            else
+                                UnityProjectLifetimeService.getScope(project).launch {
+                                    // The profiler attaches to a CoreCLR editor itself. The Unity profiler API that startProfiling loads is for Mono only,
+                                    // so for CoreCLR only the play mode is left to set.
+                                    val isCoreClr = getIsCoreClrProcess(processId, project)
+                                    withContext(Dispatchers.EDT) {
+                                        if (isCoreClr)
+                                            project.solution.frontendBackendModel.playControls.play.set(play)
+                                        else
+                                            startProfiling()
+                                    }
+                                }
                         }
                     }
                 }
@@ -143,6 +159,10 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             return UnityAttachToEditorProfileState(exeDebugProfileState, this, environment)
         }
         return null
+    }
+
+    private fun startProfiling() {
+        project.solution.frontendBackendModel.startProfiling.start(UnityProjectLifetimeService.getLifetime(project), play)
     }
 
     override fun checkRunnerSettings(
