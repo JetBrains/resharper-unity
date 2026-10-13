@@ -151,3 +151,13 @@ class DotsDebuggerTestUnity6_3 : DotsDebuggerTest() {
         addMute(Mute("RIDER-133998"), ::checkUnityPausePoint)
     }
 }
+
+@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@Mute("RIDER-141916 The test solution setup times out on Unity 6.5")
+@UnityTestSettings(unityVersion = UnityVersion.V6_5)
+class DotsDebuggerTestUnity6_5 : DotsDebuggerTest() {
+    init {
+        addMute(Mute("RIDER-133998"), ::checkUnityPausePoint)
+    }
+}

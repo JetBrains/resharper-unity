@@ -105,6 +105,10 @@ class PlayModeTestUnity6_2 : PlayModeTest(){}
 class PlayModeTestUnity6_3 : PlayModeTest(){}
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@UnityTestSettings(unityVersion = UnityVersion.V6_5)
+class PlayModeTestUnity6_5 : PlayModeTest(){}
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
 @UnityTestSettings(tuanjieVersion = TuanjieVersion.V2022)

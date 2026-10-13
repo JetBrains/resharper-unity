@@ -4,6 +4,7 @@ import com.intellij.openapi.util.registry.RegistryManager
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rider.debugger.settings.DotNetDebuggerSettings
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.RiderTestTimeout
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -155,3 +156,9 @@ class DotsSystemApiQueryEvaluationTestUnity6_2 : DotsSystemApiQueryEvaluationTes
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class DotsSystemApiQueryEvaluationTestUnity6_3 : DotsSystemApiQueryEvaluationTest()
+
+@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@Mute("RIDER-141916 The test solution setup times out on Unity 6.5")
+@UnityTestSettings(unityVersion = UnityVersion.V6_5)
+class DotsSystemApiQueryEvaluationTestUnity6_5 : DotsSystemApiQueryEvaluationTest()

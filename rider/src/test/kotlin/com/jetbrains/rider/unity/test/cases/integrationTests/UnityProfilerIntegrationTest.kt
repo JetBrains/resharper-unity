@@ -288,3 +288,7 @@ class ProfilerIntegrationUnity62Test : UnityProfilerIntegrationTest()
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class ProfilerIntegrationUnity63Test: UnityProfilerIntegrationTest()
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@UnityTestSettings(unityVersion = UnityVersion.V6_5)
+class ProfilerIntegrationUnity65Test: UnityProfilerIntegrationTest()

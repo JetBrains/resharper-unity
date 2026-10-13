@@ -102,6 +102,10 @@ class UnitTestingTestUnity6_2 : UnitTestingTest()
 class UnitTestingTestUnity6_3 : UnitTestingTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
+@UnityTestSettings(unityVersion = UnityVersion.V6_5)
+class UnitTestingTestUnity6_5 : UnitTestingTest()
+
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @Mute("RIDER-113191")
 @Solution("TuanjieDebugAndUnitTesting/Project")
 @UnityTestSettings(tuanjieVersion = TuanjieVersion.V2022)
