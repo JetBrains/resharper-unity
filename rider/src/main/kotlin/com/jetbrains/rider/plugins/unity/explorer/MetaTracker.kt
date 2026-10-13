@@ -165,7 +165,7 @@ class MetaTracker : VfsBackendRequester {
         return "meta".equals(extension, true)
     }
 
-    @RequiresEdt(generateAssertion = false /* IJPL-115548 */)
+    @RequiresEdt
     private fun isApplicableForProject(event: VFileEvent, project: Project): Boolean {
         val file = event.file ?: return false
         return UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree.getAncestors(file).any()
@@ -186,7 +186,7 @@ class MetaTracker : VfsBackendRequester {
 
     private fun getMetaFileName(fileName: String) = "$fileName.meta"
 
-    @RequiresEdt(generateAssertion = false /* IJPL-115548 */)
+    @RequiresEdt
     private fun shouldCreateMetaFile(project: Project, assetFile: VirtualFile?, parent: VirtualFile): Boolean {
         // avoid adding a meta file for:
         // a hidden Asset (like `Documentation~`), but not its children
@@ -224,7 +224,7 @@ class MetaTracker : VfsBackendRequester {
             })
         }
 
-        @RequiresEdt(generateAssertion = false /* IJPL-115548 */)
+        @RequiresEdt
         private fun clear() {
             changedMetaFiles.clear()
             actions.clear()
