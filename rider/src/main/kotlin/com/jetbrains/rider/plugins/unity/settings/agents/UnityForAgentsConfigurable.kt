@@ -345,8 +345,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             icon(AllIcons.General.InspectionsOK).gap(RightGap.SMALL)
             label(UnityBundle.message("unity.agents.cli.installed"))
                 .applyToComponent { foreground = UIUtil.getLabelSuccessForeground() }
-                .gap(RightGap.SMALL)
-            text(unityCliVersionMessage(version), MAX_LINE_LENGTH_NO_WRAP).gap(RightGap.SMALL)
+            text(unityCliVersionMessage(version), MAX_LINE_LENGTH_NO_WRAP)
             text(unityCliLocationText(location), MAX_LINE_LENGTH_NO_WRAP)
         }
     }
