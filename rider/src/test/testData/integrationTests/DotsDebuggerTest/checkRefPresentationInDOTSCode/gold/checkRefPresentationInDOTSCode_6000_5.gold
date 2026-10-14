@@ -1,0 +1,44 @@
+--> ResetTransformSystem.cs:44(1342,1439) // transform.ValueRW = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity};
+ResetTransformSystemBase.OnUpdate() in Assembly-CSharp.dll
+    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
+        +[Game objects]
+        buildIndex = {int} 0
+        +defaultParent = {EntityId} 0
+        dirtyID = {int} 0
+        guid = {string} "b9ec685346ea44649b91eb03037495c8"
+        +handle = {SceneHandle} <scene_handle>
+        isDirty = {bool} false
+        isLoaded = {bool} true
+        isSubScene = {bool} false
+        +loadableScene = {LoadableScene} 00000000000000000000000000000000
+        +loadingState = {Scene.LoadingState} Loaded
+        +m_Handle = {SceneHandle} <scene_handle>
+        name = {string} "SampleScene"
+        path = {string} "Assets/Scenes/SampleScene.unity"
+        rootCount = {int} 3
+    +DontDestroyOnLoad Scene = DontDestroyOnLoad (DontDestroyOnLoad)
+        +[Game objects]
+        buildIndex = {int} -1
+        +defaultParent = {EntityId} 0
+        dirtyID = {int} 0
+        guid = {string} "00000000000000000000000000000000"
+        +handle = {SceneHandle} <scene_handle>
+        isDirty = {bool} false
+        isLoaded = {bool} true
+        isSubScene = {bool} false
+        +loadableScene = {LoadableScene} 00000000000000000000000000000000
+        +loadingState = {Scene.LoadingState} Loaded
+        +m_Handle = {SceneHandle} <scene_handle>
+        name = {string} "DontDestroyOnLoad"
+        path = {string} "DontDestroyOnLoad"
+        rootCount = {int} 1
+    +speed = InternalCompilerInterface.UncheckedRefRO<RotationSpeed>
+        RadiansPerSecond = {float} 4.45058966
+        +[Raw View]
+    +transform = InternalCompilerInterface.UncheckedRefRW<LocalTransform>
+        +Position = {float3} float3(<float_value>, <float_value>, <float_value>)
+        +Rotation = {quaternion} quaternion(<float_value>, <float_value>, <float_value>, <float_value>)
+        Scale = {float} 0
+        +[Static members]
+        +[Raw View]
+

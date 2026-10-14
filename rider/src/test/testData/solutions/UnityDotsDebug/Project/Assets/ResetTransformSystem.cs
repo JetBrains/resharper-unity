@@ -5,7 +5,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-
 public partial struct ResetTransformSystem : ISystem
 {
     [BurstCompile]
@@ -15,6 +14,7 @@ public partial struct ResetTransformSystem : ISystem
         resetTransformJobEntity.Schedule();
     }
 }
+#if !UNITY_6000_4_OR_NEWER
 public partial class ResetTransformSystemBase : SystemBase
 {
     protected override void OnUpdate()
@@ -25,7 +25,7 @@ public partial class ResetTransformSystemBase : SystemBase
         }).ScheduleParallel();
     }
 }
-
+#endif
 [BurstCompile]
 partial struct ResetTransformJobEntity : IJobEntity
 {
@@ -34,3 +34,15 @@ partial struct ResetTransformJobEntity : IJobEntity
         transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
     }
 }
+#if UNITY_6000_4_OR_NEWER
+public partial class ResetTransformSystemBase : SystemBase
+{
+    protected override void OnUpdate()
+    {
+        foreach (var (transform, speed) in SystemAPI.Query<RefRW<LocalTransform>, RefRO<RotationSpeed>>())
+        {
+            transform.ValueRW = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity}; //put breakpoint on this line
+        }
+    }
+}
+#endif

@@ -1,0 +1,13 @@
+--> ResetTransformSystem.cs:44(1342,1439) // transform.ValueRW = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity};
+ResetTransformSystemBase.OnUpdate() in Assembly-CSharp.dll
+    +Active scene = SampleScene (Assets/Scenes/SampleScene.unity)
+    +DontDestroyOnLoad Scene = DontDestroyOnLoad (DontDestroyOnLoad)
+    +speed = InternalCompilerInterface.UncheckedRefRO<RotationSpeed>
+    +transform = InternalCompilerInterface.UncheckedRefRW<LocalTransform>
+
+--> ResetTransformSystem.cs:34(953,1042) // transform = new LocalTransform(){Position = float3.zero, Rotation = quaternion.identity};
+ResetTransformJobEntity.Execute() in Assembly-CSharp.dll
+    +Current Entity = '' Entity<id>
+    +speed = RotationSpeed
+    +transform = {LocalTransform} Position=float3(<float_value>, <float_value>, <float_value>) Rotation=quaternion(<float_value>, <float_value>, <float_value>, <float_value>) Scale=0
+

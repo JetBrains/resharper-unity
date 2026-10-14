@@ -4,7 +4,6 @@ import com.intellij.openapi.util.registry.RegistryManager
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.unity.test.framework.api.removeAllUnityPausepoints
-import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.RiderTestTimeout
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -45,6 +44,14 @@ import java.util.concurrent.TimeUnit
 abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
     override val traceScenarios: Set<LogTraceScenario>
         get() = super.traceScenarios + LogTraceScenarios.Debugger + LogTraceScenarios.MonoDebuggerConnection
+
+    /** The breakpoint line in `ResetTransformSystemBase`: Unity 6.4+ uses the `SystemAPI.Query` variant at line 44. */
+    private val systemBaseBreakpointLine: Int
+        get() {
+            val version = engineVersion.version.split('.').map { it.toInt() }
+            val hasEntitiesForEach = !engineVersion.isUnity() || version[0] < 6000 || version.getOrElse(1) { 0 } < 4
+            return if (hasEntitiesForEach) 24 else 44
+        }
     
     @Test // Check breakpoint for Unity DOTS code
     @ChecklistItems(["Breakpoints/Breakpoint in DOTS"])
@@ -52,14 +59,14 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
         attachDebuggerToUnityEditorAndPlay(
             {
                 RegistryManager.getInstance().get("rider.debugger.softdebugger.enable.burst.compatibility").setValue(true)
-                toggleBreakpoint("ResetTransformSystem.cs", 24) //set new breakpoint
+                toggleBreakpoint("ResetTransformSystem.cs", systemBaseBreakpointLine) //set new breakpoint
             },
             {
                 setCustomRegextToMask()
 
                 waitForPause()
                 dumpFullCurrentData()
-                toggleBreakpoint("ResetTransformSystem.cs", 24) //disable breakpoint
+                toggleBreakpoint("ResetTransformSystem.cs", systemBaseBreakpointLine) //disable breakpoint
                 resumeSession()
 
                 toggleBreakpoint("ResetTransformSystem.cs", 34)//set new breakpoint
@@ -76,7 +83,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
         attachDebuggerToUnityEditorAndPlay(
             {
                 RegistryManager.getInstance().get("rider.debugger.softdebugger.enable.burst.compatibility").setValue(true)
-                toggleBreakpoint("ResetTransformSystem.cs", 24) //set new breakpoint
+                toggleBreakpoint("ResetTransformSystem.cs", systemBaseBreakpointLine) //set new breakpoint
             },
             {
                 setCustomRegextToMask()
@@ -91,6 +98,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
         dumpProfile.customRegexToMask["<id>"] = Regex("\\((\\d+:\\d+)\\)")
         dumpProfile.customRegexToMask["<float_value>"] = Regex("-?\\d+\\.*\\d*f")
         dumpProfile.customRegexToMask["<ResetTransformSystemBase_LambdaJob_Job>"] = Regex("ResetTransformSystemBase_.*_Job")
+        dumpProfile.customRegexToMask["<scene_handle>"] = Regex("(?<=\\{SceneHandle} )\\d+")
     }
 
     @Test // Check Unity pause point in debugging for Unity DOTS
@@ -99,7 +107,7 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
         attachDebuggerToUnityEditorAndPlay(
             test = {
                 waitForUnityEditorPlayMode()
-                toggleUnityPausepoint(project, "ResetTransformSystem.cs", 24)
+                toggleUnityPausepoint(project, "ResetTransformSystem.cs", systemBaseBreakpointLine)
                 waitForUnityEditorPauseMode()
                 removeAllUnityPausepoints()
                 unpause()
@@ -137,6 +145,5 @@ class DotsDebuggerTestUnity6_3 : DotsDebuggerTest()
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@Mute("RIDER-141916 The test solution setup times out on Unity 6.5")
 @UnityTestSettings(unityVersion = UnityVersion.V6_5)
 class DotsDebuggerTestUnity6_5 : DotsDebuggerTest()
