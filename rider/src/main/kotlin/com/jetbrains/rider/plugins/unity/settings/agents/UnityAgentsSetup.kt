@@ -192,8 +192,8 @@ internal class UnityAgentsSetupService(
         notification.setDisplayId(SETUP_DONE_DISPLAY_ID)
         notification.setIcon(AllIcons.Status.Success)
         notification.addAction(
-            NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.setup.show.skills")) {
-                openUnityForAgentsPage(project)
+            NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.skills.browse")) {
+                openUnitySkillsPage(project)
             }
         )
         notification.notify(project)

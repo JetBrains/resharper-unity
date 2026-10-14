@@ -12,7 +12,6 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.options.SearchableConfigurable
-import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.options.ex.Settings
 import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.project.Project
@@ -318,12 +317,14 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
 
     private fun openSkillsSettings(component: JComponent) {
         val settings = Settings.KEY.getData(DataManager.getInstance().getDataContext(component))
-        val page = settings?.find(AGENT_SKILLS_SETTINGS_ID)
-        if (settings != null && page != null) {
-            settings.select(page)
+        if (settings != null) {
+            val page = settings.find(AGENT_SKILLS_SETTINGS_ID)
+            if (page != null) {
+                settings.select(page, UNITY_SKILLS_SEARCH)
+            }
         }
         else {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, AGENT_SKILLS_SETTINGS_ID)
+            openUnitySkillsPage(project)
         }
     }
 
@@ -481,5 +482,3 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
 }
 
 private val BUSY_REFRESH_INTERVAL = 1.seconds
-
-private const val AGENT_SKILLS_SETTINGS_ID = "com.intellij.aiagentextensions.skills.settings"
