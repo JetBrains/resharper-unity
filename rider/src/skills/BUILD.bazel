@@ -1,0 +1,65 @@
+load("@community//platform/build-scripts/bazel-rules:content_module_jar.bzl", "content_module_jar")
+load("@rules_jvm//:jvm.bzl", "jvm_library")
+
+### auto-generated section `dev intellij.rider.plugins.unity.skills` start
+content_module_jar(module = ":skills")
+### auto-generated section `dev intellij.rider.plugins.unity.skills` end
+
+### auto-generated section `build intellij.rider.plugins.unity.skills` start
+jvm_library(
+    name = "skills",
+    srcs = glob(
+        [
+            "src/**/*.kt",
+            "src/**/*.java",
+            "src/**/*.form",
+        ],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.skills",
+    resource_strip_prefix = "resources",
+    resources = glob(
+        ["resources/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        # do not sort,
+        "@lib//:kotlin-stdlib",
+        "@community//platform/core-api:core",
+        "@community//platform/util",
+        "//plugins/air/backend/agent-extensions/skills",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
+        "@community//libraries/rd/core",
+    ],
+)
+
+jvm_library(
+    name = "skills_test_lib",
+    testonly = True,
+    srcs = glob(
+        [],
+        allow_empty = True,
+    ),
+    module_name = "intellij.rider.plugins.unity.skills",
+    visibility = ["//visibility:public"],
+    runtime_deps = [
+        # do not sort,
+        ":skills",
+        "@community//platform/core-api:core_test_lib",
+        "@community//platform/util:util_test_lib",
+        "//plugins/air/backend/agent-extensions/skills:skills_test_lib",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
+        "@community//libraries/rd/core:core_test_lib",
+    ],
+)
+### auto-generated section `build intellij.rider.plugins.unity.skills` end
+
+### auto-generated section `iml intellij.rider.plugins.unity.skills` start
+exports_files(
+    [
+        "intellij.rider.plugins.unity.skills.iml",
+        "resources/intellij.rider.plugins.unity.skills.xml",
+    ],
+    visibility = ["//visibility:public"],
+)
+### auto-generated section `iml intellij.rider.plugins.unity.skills` end
