@@ -8,6 +8,7 @@ import com.intellij.openapi.rd.util.lifetime
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.WaitFor
 import com.intellij.util.application
+import com.intellij.util.system.OS
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
@@ -35,6 +36,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
+import com.jetbrains.rider.plugins.unity.run.UnityCustomPlayer
 import com.jetbrains.rider.plugins.unity.run.UnityDebugTarget
 import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
 import com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind
@@ -48,6 +50,7 @@ import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.enums.EngineVersion
 import com.jetbrains.rider.test.facades.environment.RiderTestExecutionTarget
 import com.jetbrains.rider.test.facades.solution.SolutionApiFacade
+import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.flushQueues
 import com.jetbrains.rider.test.framework.frameworkLogger
@@ -448,7 +451,27 @@ private fun UnityPlayerDebuggerTestBase.startUnityStandaloneProject(playerFile: 
         job.isCompleted
     }
 
+    // The UDP multicast does not reach the listener on the macOS agents on TeamCity, see RIDER-127915
+    if (unityDebugTarget == null && OS.CURRENT == OS.macOS && TeamCityHelper.isUnderTeamCity) {
+        job.cancel()
+        val fallbackTarget = createPlayerTargetFromLog(startGameExecutable, logPath, project.solutionName)
+        if (fallbackTarget != null) {
+            frameworkLogger.warn("UDP discovery found no Unity player, attaching by the port from the player log: ${fallbackTarget.dump()}")
+            unityDebugTarget = fallbackTarget
+        }
+    }
+
     return Pair(unityDebugTarget, startGameExecutable)
+}
+
+/** Finds the port in the player log line `Starting managed debugger on port 56474`. */
+private val debuggerPortRegex = Regex("""Starting managed debugger on port (\d+)""")
+
+/** Attaches to a Mono or IL2CPP player by the debugger port from [logPath], without the UDP discovery. */
+private fun createPlayerTargetFromLog(process: Process, logPath: Path, projectName: String): UnityDebugTarget? {
+    if (!logPath.exists()) return null
+    val port = debuggerPortRegex.find(logPath.readText())?.groupValues?.get(1)?.toInt() ?: return null
+    return UnityCustomPlayer("OSXPlayer(${process.pid()})", "127.0.0.1", port, projectName)
 }
 
 fun waitForUnityRunConfigurations(project: Project) {
