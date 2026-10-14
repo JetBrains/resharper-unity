@@ -149,11 +149,6 @@ abstract class DotsSystemApiQueryEvaluationTest : IntegrationTestWithUnityProjec
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@UnityTestSettings(unityVersion = UnityVersion.V6_2)
-class DotsSystemApiQueryEvaluationTestUnity6_2 : DotsSystemApiQueryEvaluationTest()
-
-@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class DotsSystemApiQueryEvaluationTestUnity6_3 : DotsSystemApiQueryEvaluationTest()
 

@@ -94,10 +94,6 @@ class UnitTestingTestUnity2022 : UnitTestingTest()
 class UnitTestingTestUnity6 : UnitTestingTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@UnityTestSettings(unityVersion = UnityVersion.V6_2)
-class UnitTestingTestUnity6_2 : UnitTestingTest()
-
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class UnitTestingTestUnity6_3 : UnitTestingTest()
 
