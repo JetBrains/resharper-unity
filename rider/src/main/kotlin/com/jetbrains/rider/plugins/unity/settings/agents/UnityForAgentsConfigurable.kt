@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.icons.AllIcons
+import com.intellij.ide.DataManager
 import com.intellij.ide.actions.ShowLogAction
 import com.intellij.ide.trustedProjects.TrustedProjectsDialog
 import com.intellij.openapi.Disposable
@@ -11,6 +12,8 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.openapi.options.ShowSettingsUtil
+import com.intellij.openapi.options.ex.Settings
 import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -49,6 +52,8 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
     private var cliStatus: Placeholder? = null
     private var pipelineStatus: Placeholder? = null
     private var pipelinePanel: UnityPipelineSectionPanel? = null
+    private var skillStatus: Placeholder? = null
+    private var skillPanel: UnitySkillSectionPanel? = null
     private var mcpStatus: Placeholder? = null
     private var mcpPanel: UnityMcpSectionPanel? = null
     private var lastPage: UnityAgentsPagePresentation? = null
@@ -97,7 +102,9 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             group(UnityBundle.message("unity.agents.skills.title"), indent = false) {
                 row { comment(UnityBundle.message("unity.agents.skills.description")) }
                 indent {
-                    row { comment(UnityBundle.message("unity.agents.coming.soon")) }
+                    row {
+                        skillStatus = placeholder().align(AlignX.FILL)
+                    }
                 }
             }
 
@@ -118,6 +125,11 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             upgrade = { startPipeline(UnityPipelineOperation.UPGRADING) },
             retry = { retryPipeline(it) },
         )
+        this.skillPanel = UnitySkillSectionPanel(
+            install = { startSkillInstall(it) },
+            retry = { retrySkill() },
+            openSkillsSettings = { openSkillsSettings(it) },
+        )
         this.mcpPanel = UnityMcpSectionPanel(project, write = { stores, operation -> startWrite(stores, operation) })
         this.root = root
         UnityForAgentsPageVisibility.getInstance().register(root)
@@ -134,6 +146,8 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         cliStatus = null
         pipelineStatus = null
         pipelinePanel = null
+        skillStatus = null
+        skillPanel = null
         mcpStatus = null
         mcpPanel = null
         lastPage = null
@@ -172,9 +186,11 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         refreshJob = activeScope.launch {
             val cli = readUnityCli(project)
             val page = coroutineScope {
-                val pipeline = async { UnityPipelineStatusProvider.getInstance(project).read(cli) }
+                val pipelineDeferred = async { UnityPipelineStatusProvider.getInstance(project).read(cli) }
                 val mcp = if (drawsMcp) async { UnityMcpStatusProvider.getInstance(project).read(cli) } else null
-                UnityAgentsPagePresentation(cli, pipeline.await(), mcp?.await())
+                val pipeline = pipelineDeferred.await()
+                val skill = UnitySkillStatusProvider.getInstance(project).read(cli, pipeline)
+                UnityAgentsPagePresentation(cli, pipeline, skill, mcp?.await())
             }
             withContext(Dispatchers.EDT + modality.asContextElement()) {
                 lastPage = page
@@ -182,9 +198,10 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                 paintedPage = page
                 cliStatus?.component = buildCliStatus(page.cli)
                 pipelineStatus?.component = pipelinePanel?.build(page.pipeline)
+                skillStatus?.component = skillPanel?.build(page.skill)
                 page.mcp?.let { mcpStatus?.component = mcpPanel?.build(it, needsPipelinePackage()) }
             }
-            if (page.cli.operation != null || page.pipeline.operation != null) {
+            if (page.cli.operation != null || page.pipeline.operation != null || page.skill.installing) {
                 delay(BUSY_REFRESH_INTERVAL)
                 withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
             }
@@ -275,6 +292,39 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
     private fun paintPipelineBusy(operation: UnityPipelineOperation) {
         val pipeline = lastPage?.pipeline ?: return
         pipelineStatus?.component = pipelinePanel?.build(pipeline.copy(operation = operation, failure = null))
+    }
+
+    private fun startSkillInstall(target: UnitySkillTarget) {
+        if (!UnityForAgentsFeature.isEnabled()) return
+        val activeScope = scope ?: return
+        val modality = ModalityState.current()
+
+        refreshJob?.cancel()
+        paintedPage = null
+        val skill = lastPage?.skill
+        if (skill != null) {
+            skillStatus?.component = skillPanel?.build(skill.copy(installing = true, failure = null))
+        }
+        activeScope.launch {
+            UnitySkillStatusProvider.getInstance(project).install(target, modality)
+            withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
+        }
+    }
+
+    private fun retrySkill() {
+        UnitySkillStatusProvider.getInstance(project).clearFailure()
+        startSkillInstall(UnitySkillTarget.ALL)
+    }
+
+    private fun openSkillsSettings(component: JComponent) {
+        val settings = Settings.KEY.getData(DataManager.getInstance().getDataContext(component))
+        val page = settings?.find(AGENT_SKILLS_SETTINGS_ID)
+        if (settings != null && page != null) {
+            settings.select(page)
+        }
+        else {
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, AGENT_SKILLS_SETTINGS_ID)
+        }
     }
 
     private fun buildCliStatus(presentation: UnityCliPresentation): JComponent = panel {
@@ -431,3 +481,5 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
 }
 
 private val BUSY_REFRESH_INTERVAL = 1.seconds
+
+private const val AGENT_SKILLS_SETTINGS_ID = "com.intellij.aiagentextensions.skills.settings"

@@ -2,6 +2,8 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.notification.Notification
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsContexts
+import com.jetbrains.rider.plugins.unity.UnityBundle
 
 enum class UnityCliSuggestion {
     NONE,
@@ -14,6 +16,7 @@ data class UnityAgentsSweepFacts(
     val packageUpgradable: Boolean,
     val installDeclined: Boolean,
     val updateDeclined: Boolean,
+    val skillMissing: Boolean = false,
 )
 
 fun unityCliSuggestion(presentation: UnityCliPresentation, facts: UnityAgentsSweepFacts): UnityCliSuggestion {
@@ -24,7 +27,7 @@ fun unityCliSuggestion(presentation: UnityCliPresentation, facts: UnityAgentsSwe
         UnityCliOffer.LATEST_VERSION_UNKNOWN,
         UnityCliOffer.UPDATE,
         UnityCliOffer.SHOW_UPDATE_COMMAND,
-            -> facts.packageMissing
+            -> facts.packageMissing || facts.skillMissing
         UnityCliOffer.CHECKING, UnityCliOffer.NOT_TRUSTED, UnityCliOffer.BUSY, UnityCliOffer.FAILED -> false
     }
     if (wantsInstall) return if (facts.installDeclined) UnityCliSuggestion.NONE else UnityCliSuggestion.INSTALL
@@ -39,6 +42,25 @@ fun unityCliSuggestion(presentation: UnityCliPresentation, facts: UnityAgentsSwe
             -> false
     }
     return if (wantsUpdate && !facts.updateDeclined) UnityCliSuggestion.UPDATE else UnityCliSuggestion.NONE
+}
+
+fun unityAgentsSetupPrompt(
+    cliMissing: Boolean,
+    packageMissing: Boolean,
+    skillMissing: Boolean,
+): Pair<@NlsContexts.NotificationTitle String, @NlsContexts.NotificationContent String> = when {
+    cliMissing ->
+        UnityBundle.message("unity.agents.setup.suggest.title") to
+            UnityBundle.message("unity.agents.setup.suggest.content.cli")
+    packageMissing && skillMissing ->
+        UnityBundle.message("unity.agents.setup.suggest.title") to
+            UnityBundle.message("unity.agents.setup.suggest.content")
+    packageMissing ->
+        UnityBundle.message("unity.agents.setup.finish.title") to
+            UnityBundle.message("unity.agents.setup.finish.content.package")
+    else ->
+        UnityBundle.message("unity.agents.setup.finish.title") to
+            UnityBundle.message("unity.agents.setup.finish.content.skill")
 }
 
 fun unityCliUpdatable(presentation: UnityCliPresentation): Boolean =

@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
+import com.intellij.diagnostic.rethrowControlFlowException
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.ide.actions.ShowLogAction
@@ -197,12 +198,32 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
             if (failure != null) {
                 report(project, modality, failure, exitCode, UnityCliOperation.UPDATING)
             }
-            else if (findLocalCopy(UnityCliEnvironment.getInstance()).copy?.version == null) {
-                report(project, modality, UnityCliFailure.VERIFICATION, exitCode, UnityCliOperation.UPDATING)
+            else {
+                val copy = findLocalCopy(UnityCliEnvironment.getInstance()).copy
+                if (copy?.version == null) {
+                    report(project, modality, UnityCliFailure.VERIFICATION, exitCode, UnityCliOperation.UPDATING)
+                }
+                else {
+                    refreshSkills(copy.path)
+                }
             }
         }
         finally {
             runningOperation.set(null)
+        }
+    }
+
+    private suspend fun refreshSkills(location: Path) {
+        try {
+            val command = unitySkillRefreshCommandLine(location)
+            val output = UnityCliProcessRunner.getInstance().runProcess(command, UnityCliProcessRunner.STORE_WRITE_TIMEOUT_MS)
+            if (output.isTimeout || output.exitCode != 0) {
+                logger.warn("Rider could not refresh the Unity CLI skills after update: exitCode=${output.exitCode}, timeout=${output.isTimeout}")
+            }
+        }
+        catch (e: Throwable) {
+            rethrowControlFlowException(e)
+            logger.warn("Rider could not refresh the Unity CLI skills after update", e)
         }
     }
 

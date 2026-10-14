@@ -49,3 +49,30 @@ private fun unityAgentsUpdateAvailableMessage(cliVersion: String?, packageVersio
     else ->
         UnityBundle.message("unity.agents.update.suggest.title")
 }
+
+@Nls
+fun unityAgentsSetupDoneMessage(
+    installedCli: Boolean,
+    installedPackage: Boolean,
+    installedSkill: Boolean,
+    skillPresent: Boolean,
+): String = when {
+    installedCli && skillPresent -> UnityBundle.message("unity.agents.setup.done.content.cli")
+    installedCli -> UnityBundle.message("unity.agents.setup.done.content.cli.package")
+    installedPackage && installedSkill -> UnityBundle.message("unity.agents.setup.done.content")
+    installedPackage -> UnityBundle.message("unity.agents.setup.done.content.package")
+    installedSkill -> UnityBundle.message("unity.agents.setup.done.content.skill")
+    skillPresent -> UnityBundle.message("unity.agents.setup.done.content")
+    else -> UnityBundle.message("unity.agents.setup.done.content.package")
+}
+
+@Nls
+fun unityAgentsSkillFailedMessage(installedCli: Boolean, failure: UnitySkillFailure, exitCode: Int?): String {
+    val failureText = unitySkillFailureMessage(failure, exitCode)
+    return if (installedCli) {
+        UnityBundle.message("unity.agents.setup.skill.failed.content.cli", failureText)
+    }
+    else {
+        UnityBundle.message("unity.agents.setup.skill.failed.content", failureText)
+    }
+}
