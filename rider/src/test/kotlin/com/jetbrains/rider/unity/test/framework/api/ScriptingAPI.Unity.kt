@@ -296,8 +296,8 @@ fun checkSweaInSolution(project: Project) {
 
 fun SolutionApiFacade.checkSweaInSolution() = checkSweaInSolution(project)
 
-fun SolutionApiFacade.executeIntegrationTestMethod(methodName: String) =
-    executeMethod(RunMethodData("Assembly-CSharp-Editor", "Editor.IntegrationTestHelper", methodName))
+fun SolutionApiFacade.executeIntegrationTestMethod(methodName: String, assemblyName: String = "Assembly-CSharp-Editor") =
+    executeMethod(RunMethodData(assemblyName, "Editor.IntegrationTestHelper", methodName))
 
 fun printEditorLogEntry(stream: PrintStream, logEvent: LogEvent) {
     if (logEvent.type == LogEventType.Message) {
