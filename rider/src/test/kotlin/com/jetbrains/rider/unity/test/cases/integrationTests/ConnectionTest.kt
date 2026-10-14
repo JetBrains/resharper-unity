@@ -7,6 +7,7 @@ import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.annotations.UnityTestSettings
+import com.jetbrains.rider.test.annotations.report.ChecklistItems
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.annotations.report.Severity
 import com.jetbrains.rider.test.annotations.report.SeverityLevel
@@ -34,16 +35,19 @@ import org.junit.jupiter.api.Test
 @Tag(TeamCityTags.Plugins.Unity.Integration)
 abstract class ConnectionTest : IntegrationTestWithUnityProjectBase() {
     @Test // Check connection with Unity Editor for a project with the Rider package
+    @ChecklistItems(["Connection with Editor/Connection to Unity Editor"])
     fun checkConnectionToUnityEditor() {
         waitConnectionToUnityEditor(project)
     }
 
     @Test // Check external Editor in Unity settings
+    @ChecklistItems(["Connection with Editor/External Editor setting"])
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor {
         executeIntegrationTestMethod("DumpExternalEditor", EDITOR_ASSEMBLY_NAME)
     }
 
     @Test // Check external Editor in Unity with Unity model refresh
+    @ChecklistItems(["Connection with Editor/External Editor setting"])
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor { executeScript("DumpExternalEditor.cs") }
 
     private fun checkExternalEditor(execute: () -> Unit) {
@@ -61,9 +65,11 @@ abstract class ConnectionTest : IntegrationTestWithUnityProjectBase() {
     }
 
     @Test // Check Unity Log
+    @ChecklistItems(["Connection with Editor/Unity Editor log"])
     fun checkLogWithExecutingMethod() = checkLog { executeIntegrationTestMethod("WriteToLog", EDITOR_ASSEMBLY_NAME) }
 
     @Test // Check Unity Log with Unity model refresh
+    @ChecklistItems(["Connection with Editor/Unity Editor log"])
     fun checkLogWithUnityModelRefresh() = checkLog { executeScript("WriteToLog.cs") }
 
     private fun checkLog(execute: () -> Unit) {
