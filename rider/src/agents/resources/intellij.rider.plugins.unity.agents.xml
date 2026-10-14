@@ -8,6 +8,6 @@
   </dependencies>
   <!-- endregion -->
   <extensions defaultExtensionNs="com.intellij.aiagentextensions.skills">
-    <bundledRegistry implementation="com.jetbrains.rider.plugins.unity.skills.UnitySkillRegistryProvider"/>
+    <bundledRegistry implementation="com.jetbrains.rider.plugins.unity.agents.UnitySkillRegistryProvider"/>
   </extensions>
 </idea-plugin>

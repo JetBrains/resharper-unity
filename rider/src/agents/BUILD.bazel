@@ -1,13 +1,13 @@
 load("@community//platform/build-scripts/bazel-rules:content_module_jar.bzl", "content_module_jar")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
-### auto-generated section `dev intellij.rider.plugins.unity.skills` start
-content_module_jar(module = ":skills")
-### auto-generated section `dev intellij.rider.plugins.unity.skills` end
+### auto-generated section `dev intellij.rider.plugins.unity.agents` start
+content_module_jar(module = ":agents")
+### auto-generated section `dev intellij.rider.plugins.unity.agents` end
 
-### auto-generated section `build intellij.rider.plugins.unity.skills` start
+### auto-generated section `build intellij.rider.plugins.unity.agents` start
 jvm_library(
-    name = "skills",
+    name = "agents",
     srcs = glob(
         [
             "src/**/*.kt",
@@ -16,7 +16,7 @@ jvm_library(
         ],
         allow_empty = True,
     ),
-    module_name = "intellij.rider.plugins.unity.skills",
+    module_name = "intellij.rider.plugins.unity.agents",
     resource_strip_prefix = "resources",
     resources = glob(
         ["resources/**/*"],
@@ -34,17 +34,17 @@ jvm_library(
 )
 
 jvm_library(
-    name = "skills_test_lib",
+    name = "agents_test_lib",
     testonly = True,
     srcs = glob(
         [],
         allow_empty = True,
     ),
-    module_name = "intellij.rider.plugins.unity.skills",
+    module_name = "intellij.rider.plugins.unity.agents",
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
-        ":skills",
+        ":agents",
         "@community//platform/core-api:core_test_lib",
         "@community//platform/util:util_test_lib",
         "//plugins/air/backend/agent-extensions/skills:skills_test_lib",
@@ -52,14 +52,14 @@ jvm_library(
         "@community//libraries/rd/core:core_test_lib",
     ],
 )
-### auto-generated section `build intellij.rider.plugins.unity.skills` end
+### auto-generated section `build intellij.rider.plugins.unity.agents` end
 
-### auto-generated section `iml intellij.rider.plugins.unity.skills` start
+### auto-generated section `iml intellij.rider.plugins.unity.agents` start
 exports_files(
     [
-        "intellij.rider.plugins.unity.skills.iml",
-        "resources/intellij.rider.plugins.unity.skills.xml",
+        "intellij.rider.plugins.unity.agents.iml",
+        "resources/intellij.rider.plugins.unity.agents.xml",
     ],
     visibility = ["//visibility:public"],
 )
-### auto-generated section `iml intellij.rider.plugins.unity.skills` end
+### auto-generated section `iml intellij.rider.plugins.unity.agents` end

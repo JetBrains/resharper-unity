@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.skills
+package com.jetbrains.rider.plugins.unity.agents
 
 import com.intellij.aiagentextensions.skills.extension.AgentSkillRegistryProvider
 import com.intellij.openapi.project.Project
