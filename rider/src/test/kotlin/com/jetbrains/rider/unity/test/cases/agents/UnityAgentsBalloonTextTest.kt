@@ -1,14 +1,21 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
+import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupDoneMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsUpdateSuggestionMessage
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.shared.constants.TeamCityTags
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
 /**
  * What the suggestion balloons of a project open say.
@@ -70,5 +77,36 @@ class UnityAgentsBalloonTextTest {
 
         assertTrue(byHand.contains("Unity Agents Setup"), "the balloon did not name 'Unity Agents Setup': '$byHand'")
         assertFalse(byRider.contains("Unity Agents Setup"), "a CLI that Rider updates got the by-hand sentence: '$byRider'")
+    }
+
+    @ParameterizedTest
+    @MethodSource("setupDoneCases")
+    fun `setup done message rules`(
+        installedCli: Boolean,
+        installedPackage: Boolean,
+        installedSkill: Boolean,
+        skillPresent: Boolean,
+        expected: String,
+    ) {
+        val message = unityAgentsSetupDoneMessage(
+            installedCli = installedCli,
+            installedPackage = installedPackage,
+            installedSkill = installedSkill,
+            skillPresent = skillPresent,
+        )
+        assertEquals(expected, message)
+    }
+
+    companion object {
+        @JvmStatic
+        fun setupDoneCases(): Stream<Arguments> = Stream.of(
+            Arguments.of(true, false, false, true, UnityBundle.message("unity.agents.setup.done.content.cli")),
+            Arguments.of(true, false, false, false, UnityBundle.message("unity.agents.setup.done.content.cli.package")),
+            Arguments.of(false, true, true, true, UnityBundle.message("unity.agents.setup.done.content")),
+            Arguments.of(false, true, false, false, UnityBundle.message("unity.agents.setup.done.content.package")),
+            Arguments.of(false, false, true, true, UnityBundle.message("unity.agents.setup.done.content.skill")),
+            Arguments.of(false, false, false, true, UnityBundle.message("unity.agents.setup.done.content")),
+            Arguments.of(false, false, false, false, UnityBundle.message("unity.agents.setup.done.content.package")),
+        )
     }
 }

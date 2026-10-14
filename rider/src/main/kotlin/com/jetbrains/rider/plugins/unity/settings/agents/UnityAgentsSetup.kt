@@ -34,6 +34,7 @@ internal class UnityAgentsSetupService(
         scope.launch { runUpdate() }
     }
 
+    @Suppress("DialogTitleCapitalization")
     private suspend fun runSetup() {
         if (!UnityForAgentsFeature.isEnabled()) return
         if (!TrustedProjects.isProjectTrusted(project)) return
@@ -57,24 +58,49 @@ internal class UnityAgentsSetupService(
         }
 
         val pipelineAfter = pipelineProvider.read(cli)
+        val installedPackage = pipeline.offer == UnityPipelineOffer.INSTALL &&
+                               (pipelineAfter.offer == UnityPipelineOffer.INSTALLED || pipelineAfter.offer == UnityPipelineOffer.UPGRADE)
         when (pipelineAfter.offer) {
-            UnityPipelineOffer.FAILED -> showPackageFailureBalloon(
+            UnityPipelineOffer.FAILED -> showFailureBalloon(
                 title = UnityBundle.message("unity.agents.setup.package.failed.title"),
-                failure = pipelineAfter.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
-                failureExitCode = pipelineAfter.failureExitCode,
+                content = unityPipelineFailureMessage(
+                    pipelineAfter.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
+                    pipelineAfter.failureExitCode,
+                ),
                 displayId = PACKAGE_FAILED_DISPLAY_ID,
+                clearFailure = UnityPipelineStatusProvider.getInstance(project)::clearFailure,
                 retry = { requestSetup() },
             )
             UnityPipelineOffer.INSTALLED, UnityPipelineOffer.UPGRADE -> {
-                val message = if (installedCli) {
-                    UnityBundle.message("unity.agents.setup.done.content.cli")
+                val skillProvider = UnitySkillStatusProvider.getInstance(project)
+                val skill = skillProvider.read(cli, pipelineAfter)
+                val needsSkill = skill.offer == UnitySkillOffer.INSTALL || skill.offer == UnitySkillOffer.FAILED
+                val finalSkill = if (needsSkill) {
+                    skillProvider.install(UnitySkillTarget.ALL, ModalityState.nonModal())
+                    skillProvider.read(cli, pipelineAfter)
                 }
                 else {
-                    UnityBundle.message("unity.agents.setup.done.content")
+                    skill
                 }
+                if (finalSkill.offer == UnitySkillOffer.FAILED) {
+                    showFailureBalloon(
+                        title = UnityBundle.message("unity.agents.setup.skill.failed.title"),
+                        content = unityAgentsSkillFailedMessage(
+                            installedCli,
+                            finalSkill.failure ?: UnitySkillFailure.NOT_CONFIRMED,
+                            finalSkill.failureExitCode,
+                        ),
+                        displayId = SKILL_FAILED_DISPLAY_ID,
+                        clearFailure = skillProvider::clearFailure,
+                        retry = { requestSetup() },
+                    )
+                    return
+                }
+                val installedSkill = needsSkill && finalSkill.offer == UnitySkillOffer.INSTALLED
+                val skillPresent = finalSkill.offer == UnitySkillOffer.INSTALLED
                 showSuccessBalloon(
                     title = UnityBundle.message("unity.agents.setup.done.title"),
-                    body = message,
+                    body = unityAgentsSetupDoneMessage(installedCli, installedPackage, installedSkill, skillPresent),
                 )
             }
             UnityPipelineOffer.GATED,
@@ -105,22 +131,25 @@ internal class UnityAgentsSetupService(
         provider.upgrade(ModalityState.nonModal())
         val after = provider.read(cli)
         if (after.offer == UnityPipelineOffer.FAILED) {
-            showPackageFailureBalloon(
+            showFailureBalloon(
                 title = UnityBundle.message("unity.agents.update.package.failed.title"),
-                failure = after.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
-                failureExitCode = after.failureExitCode,
+                content = unityPipelineFailureMessage(
+                    after.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
+                    after.failureExitCode,
+                ),
                 displayId = PACKAGE_UPDATE_FAILED_DISPLAY_ID,
+                clearFailure = UnityPipelineStatusProvider.getInstance(project)::clearFailure,
                 retry = { requestUpdate() },
             )
         }
     }
 
     @Suppress("DialogTitleCapitalization")
-    private suspend fun showPackageFailureBalloon(
+    private suspend fun showFailureBalloon(
         title: @NlsContexts.NotificationTitle String,
-        failure: UnityPipelineFailure,
-        failureExitCode: Int?,
+        content: @NlsContexts.NotificationContent String,
         displayId: String,
+        clearFailure: () -> Unit,
         retry: () -> Unit,
     ) {
         val pageIsShowing = withContext(Dispatchers.EDT) {
@@ -132,7 +161,7 @@ internal class UnityAgentsSetupService(
             .getNotificationGroup(UNITY_AGENTS_ERRORS_GROUP)
             .createNotification(
                 title,
-                unityPipelineFailureMessage(failure, failureExitCode),
+                content,
                 NotificationType.ERROR,
             )
         notification.setDisplayId(displayId)
@@ -140,7 +169,7 @@ internal class UnityAgentsSetupService(
         notification.setAddExtraAction(true)
         notification.addAction(
             NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.pipeline.try.again")) {
-                UnityPipelineStatusProvider.getInstance(project).clearFailure()
+                clearFailure()
                 retry()
             }
         )
@@ -179,6 +208,7 @@ internal class UnityAgentsSetupService(
         private const val SETUP_DONE_DISPLAY_ID = "unity.for.agents.setup.done"
         private const val PACKAGE_FAILED_DISPLAY_ID = "unity.for.agents.setup.package.failed"
         private const val PACKAGE_UPDATE_FAILED_DISPLAY_ID = "unity.for.agents.update.package.failed"
+        private const val SKILL_FAILED_DISPLAY_ID = "unity.for.agents.setup.skill.failed"
     }
 }
 

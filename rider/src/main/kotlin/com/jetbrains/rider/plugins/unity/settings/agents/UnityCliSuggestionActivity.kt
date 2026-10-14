@@ -23,17 +23,22 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
 
         val presentation = UnityCliStatusProvider.getInstance().read()
         val pipeline = UnityPipelineStatusProvider.getInstance(project).read(presentation)
+        val skill = UnitySkillStatusProvider.getInstance(project).read(presentation, pipeline)
+        val packageMissing = pipeline.offer == UnityPipelineOffer.INSTALL
+        val skillMissing = skill.installs?.isEmpty() == true &&
+                           (packageMissing || skill.offer == UnitySkillOffer.INSTALL || skill.offer == UnitySkillOffer.FAILED)
         val facts = UnityAgentsSweepFacts(
-            packageMissing = pipeline.offer == UnityPipelineOffer.INSTALL,
+            packageMissing = packageMissing,
             packageUpgradable = pipeline.offer == UnityPipelineOffer.UPGRADE,
             installDeclined = UnityCliDeclines.isDeclined(project, UnityCliDeclines.INSTALL_DISPLAY_ID),
             updateDeclined = UnityCliDeclines.isDeclined(project, UnityCliDeclines.UPDATE_DISPLAY_ID),
+            skillMissing = skillMissing,
         )
         val suggestion = unityCliSuggestion(presentation, facts)
         if (suggestion == UnityCliSuggestion.NONE) return
 
         logger.debug("The Unity CLI sweep offers $suggestion for ${project.name}")
-        prompt(project, suggestion, presentation, pipeline)
+        prompt(project, suggestion, presentation, pipeline, skillMissing)
     }
 
     @Suppress("DialogTitleCapitalization")
@@ -42,17 +47,17 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
         suggestion: UnityCliSuggestion,
         presentation: UnityCliPresentation,
         pipeline: UnityPipelinePresentation,
+        skillMissing: Boolean,
     ) {
         val displayId = UnityCliDeclines.displayIdOf(suggestion) ?: return
         when (suggestion) {
             UnityCliSuggestion.INSTALL -> {
                 val cliMissing = presentation.copy(projectTrusted = true).offer == UnityCliOffer.INSTALL
-                val message =
-                    if (cliMissing) UnityBundle.message("unity.agents.setup.suggest.content.cli")
-                    else UnityBundle.message("unity.agents.setup.suggest.content")
+                val packageMissing = pipeline.offer == UnityPipelineOffer.INSTALL
+                val (title, message) = unityAgentsSetupPrompt(cliMissing, packageMissing, skillMissing)
                 val notification = UnityAgentsFullContentNotification(
                     UNITY_AGENTS_GROUP,
-                    UnityBundle.message("unity.agents.setup.suggest.title"),
+                    title,
                     message,
                 )
                 notification.setDisplayId(displayId)

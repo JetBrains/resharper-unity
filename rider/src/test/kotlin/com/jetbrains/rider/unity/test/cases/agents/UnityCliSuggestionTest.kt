@@ -252,6 +252,28 @@ class UnityCliSuggestionTest {
     }
 
     @Test
+    fun `a missing skill asks for the install when the CLI is current and the package is present`() {
+        val current = UnityCliPresentation(
+            detected = true,
+            installedVersion = "1.0.0-beta.10",
+            location = installed,
+            latestVersion = "1.0.0-beta.10",
+        )
+        val facts = UnityAgentsSweepFacts(
+            packageMissing = false,
+            packageUpgradable = false,
+            installDeclined = false,
+            updateDeclined = false,
+            skillMissing = true,
+        )
+        assertEquals(
+            UnityCliSuggestion.INSTALL,
+            unityCliSuggestion(current, facts),
+            "CLI is current, package is present, skill is missing -> INSTALL",
+        )
+    }
+
+    @Test
     fun `a package update asks for the update`() {
         data class Case(
             val name: String,
