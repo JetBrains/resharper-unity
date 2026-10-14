@@ -89,7 +89,6 @@ internal class UnityPipelineSectionPanel(
             icon(AllIcons.General.InspectionsOK).gap(RightGap.SMALL)
             label(UnityBundle.message("unity.agents.pipeline.installed"))
                 .applyToComponent { foreground = UIUtil.getLabelSuccessForeground() }
-                .gap(RightGap.SMALL)
             text(unityPipelineVersionMessage(presentation.manifest?.version.orEmpty()), MAX_LINE_LENGTH_NO_WRAP)
         }
     }

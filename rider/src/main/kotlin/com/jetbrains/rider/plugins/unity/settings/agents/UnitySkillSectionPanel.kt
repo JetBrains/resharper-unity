@@ -64,10 +64,8 @@ internal class UnitySkillSectionPanel(
                     icon(AllIcons.General.InspectionsOK).gap(RightGap.SMALL)
                     label(UnityBundle.message("unity.agents.skills.installed"))
                         .applyToComponent { foreground = UIUtil.getLabelSuccessForeground() }
-                        .gap(RightGap.SMALL)
                     text(unitySkillPlacesMessage(presentation.installs.orEmpty()), MAX_LINE_LENGTH_NO_WRAP)
                         .applyToComponent { foreground = UIUtil.getContextHelpForeground() }
-                        .gap(RightGap.SMALL)
                     if (presentation.gate == UnityMcpSectionState.READY && presentation.packageInstalled) {
                         val openTargets = unitySkillOpenTargets(presentation.installs.orEmpty())
                         if (openTargets.isNotEmpty()) {
