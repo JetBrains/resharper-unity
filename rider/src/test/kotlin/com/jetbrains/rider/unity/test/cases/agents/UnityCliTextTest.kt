@@ -1,9 +1,8 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
-import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallMethod
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliInstallDisclosure
+import com.jetbrains.rider.plugins.unity.settings.agents.unityCliLocationText
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliNewVersionMessage
-import com.jetbrains.rider.plugins.unity.settings.agents.unityCliPathMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliUpdateByHandMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliVersionMessage
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -77,28 +76,11 @@ class UnityCliTextTest {
     }
 
     @Test
-    fun `the path of the local copy is escaped`() {
-        // macOS and Linux both allow this in a directory name, so the user reaches it without help.
-        val message = unityCliPathMessage(Path.of("/home/t/<b>games</b>/unity"), UnityCliInstallMethod.UNKNOWN)
+    fun `the location of the local copy is escaped`() {
+        val text = unityCliLocationText(Path.of("/home/t/<b>games</b>/unity"))
 
-        assertFalse(message.contains("<b>"), "the path reached the markup unescaped: '$message'")
-        assertTrue(message.contains("&lt;b&gt;"), "the path was not escaped at all: '$message'")
-    }
-
-    @Test
-    fun `the path names the mechanism that installed the copy`() {
-        val message = unityCliPathMessage(Path.of("/opt/homebrew/bin/unity"), UnityCliInstallMethod.HOMEBREW)
-
-        assertTrue(message.contains("/opt/homebrew/bin/unity"), "the path row lost the path: '$message'")
-        assertTrue(message.contains("Homebrew"), "the path row lost the install method: '$message'")
-    }
-
-    @Test
-    fun `an unknown mechanism is left unnamed`() {
-        val message = unityCliPathMessage(Path.of("/opt/unity/bin/unity"), UnityCliInstallMethod.UNKNOWN)
-
-        assertTrue(message.contains("/opt/unity/bin/unity"), "the path row lost the path: '$message'")
-        assertFalse(message.contains("·"), "the path row named a mechanism it does not know: '$message'")
+        assertFalse(text.contains("<b>"), "the path reached the markup unescaped: '$text'")
+        assertTrue(text.contains("&lt;b&gt;"), "the path was not escaped to '&lt;b&gt;': '$text'")
     }
 
     @Test

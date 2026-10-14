@@ -10,15 +10,19 @@ import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.junit5.TestDisposable
 import com.intellij.testFramework.replaceService
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSweepFacts
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsUpdateAction
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliDeclines
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliEnvironment
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliFailure
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallMethod
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliOffer
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliOperation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliPresentation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliSuggestion
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliSuggestionActivity
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityForAgentsFeature
+import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsUpdateActions
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliSuggestionActs
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliSuggestion
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -160,8 +164,169 @@ class UnityCliSuggestionTest {
     @Test
     fun eachStateProducesItsSuggestion() {
         for ((name, presentation, installDeclined, updateDeclined, expected) in cases) {
-            assertEquals(expected, unityCliSuggestion(presentation, installDeclined, updateDeclined), name)
+            val facts = UnityAgentsSweepFacts(
+                packageMissing = false,
+                packageUpgradable = false,
+                installDeclined = installDeclined,
+                updateDeclined = updateDeclined,
+            )
+            assertEquals(
+                expected,
+                unityCliSuggestion(presentation, facts),
+                name,
+            )
         }
+    }
+
+    @Test
+    fun `a missing package asks for the install even when the CLI is current`() {
+        data class Case(
+            val name: String,
+            val presentation: UnityCliPresentation,
+            val packageMissing: Boolean,
+            val installDeclined: Boolean = false,
+            val updateDeclined: Boolean = false,
+            val expected: UnityCliSuggestion,
+        )
+
+        val current = UnityCliPresentation(
+            detected = true,
+            installedVersion = "1.0.0-beta.10",
+            location = installed,
+            latestVersion = "1.0.0-beta.10",
+        )
+
+        val cases = listOf(
+            Case(
+                "CLI installed and current, packageMissing = true, not declined -> INSTALL",
+                current,
+                packageMissing = true,
+                expected = UnityCliSuggestion.INSTALL,
+            ),
+            Case(
+                "CLI installed and current, packageMissing = true, installDeclined = true -> NONE",
+                current,
+                packageMissing = true,
+                installDeclined = true,
+                expected = UnityCliSuggestion.NONE,
+            ),
+            Case(
+                "CLI with an update available, packageMissing = true -> INSTALL",
+                outdated(UnityCliInstallMethod.HOMEBREW),
+                packageMissing = true,
+                expected = UnityCliSuggestion.INSTALL,
+            ),
+            Case(
+                "CLI missing, packageMissing = false -> INSTALL (unchanged)",
+                UnityCliPresentation(detected = true),
+                packageMissing = false,
+                expected = UnityCliSuggestion.INSTALL,
+            ),
+            Case(
+                "CLI installed and current, packageMissing = false -> NONE",
+                current,
+                packageMissing = false,
+                expected = UnityCliSuggestion.NONE,
+            ),
+            Case(
+                "CLI checking (not detected), packageMissing = true -> NONE",
+                UnityCliPresentation(),
+                packageMissing = true,
+                expected = UnityCliSuggestion.NONE,
+            ),
+        )
+
+        for ((name, presentation, packageMissing, installDeclined, updateDeclined, expected) in cases) {
+            val facts = UnityAgentsSweepFacts(
+                packageMissing = packageMissing,
+                packageUpgradable = false,
+                installDeclined = installDeclined,
+                updateDeclined = updateDeclined,
+            )
+            assertEquals(
+                expected,
+                unityCliSuggestion(presentation, facts),
+                name,
+            )
+        }
+    }
+
+    @Test
+    fun `a package update asks for the update`() {
+        data class Case(
+            val name: String,
+            val presentation: UnityCliPresentation,
+            val packageMissing: Boolean = false,
+            val packageUpgradable: Boolean = false,
+            val installDeclined: Boolean = false,
+            val updateDeclined: Boolean = false,
+            val expected: UnityCliSuggestion,
+        )
+
+        val current = UnityCliPresentation(
+            detected = true,
+            installedVersion = "1.0.0-beta.10",
+            location = installed,
+            latestVersion = "1.0.0-beta.10",
+        )
+
+        val cases = listOf(
+            Case(
+                "CLI current, packageUpgradable -> UPDATE",
+                current,
+                packageUpgradable = true,
+                expected = UnityCliSuggestion.UPDATE,
+            ),
+            Case(
+                "CLI current, packageUpgradable with updateDeclined -> NONE",
+                current,
+                packageUpgradable = true,
+                updateDeclined = true,
+                expected = UnityCliSuggestion.NONE,
+            ),
+            Case(
+                "CLI current, packageMissing and packageUpgradable both true -> INSTALL",
+                current,
+                packageMissing = true,
+                packageUpgradable = true,
+                expected = UnityCliSuggestion.INSTALL,
+            ),
+            Case(
+                "CLI update available, packageUpgradable -> UPDATE",
+                outdated(UnityCliInstallMethod.HOMEBREW),
+                packageUpgradable = true,
+                expected = UnityCliSuggestion.UPDATE,
+            ),
+            Case(
+                "CLI current, nothing -> NONE",
+                current,
+                expected = UnityCliSuggestion.NONE,
+            ),
+        )
+
+        for ((name, presentation, packageMissing, packageUpgradable, installDeclined, updateDeclined, expected) in cases) {
+            val facts = UnityAgentsSweepFacts(
+                packageMissing = packageMissing,
+                packageUpgradable = packageUpgradable,
+                installDeclined = installDeclined,
+                updateDeclined = updateDeclined,
+            )
+            assertEquals(
+                expected,
+                unityCliSuggestion(presentation, facts),
+                name,
+            )
+        }
+
+        val cannotUpdateCli = outdated(UnityCliInstallMethod.APT)
+        assertTrue(
+            unityCliSuggestionActs(UnityCliSuggestion.UPDATE, cannotUpdateCli, packageUpgradable = true),
+            "a package update gives the update balloon an action even when Rider cannot update the CLI",
+        )
+        assertFalse(
+            unityCliSuggestionActs(UnityCliSuggestion.UPDATE, cannotUpdateCli, packageUpgradable = false),
+            "with no package update, Rider cannot update this CLI",
+        )
     }
 
     /** Fails when [UnityCliSuggestion] gains a value that no case above reaches. */
@@ -202,9 +367,13 @@ class UnityCliSuggestionTest {
         assertEquals(
             UnityCliSuggestion.NONE,
             unityCliSuggestion(
-                UnityCliPresentation(detected = true),
-                installDeclined = UnityCliDeclines.isDeclined(null, UnityCliDeclines.INSTALL_DISPLAY_ID),
-                updateDeclined = false,
+                presentation = UnityCliPresentation(detected = true),
+                facts = UnityAgentsSweepFacts(
+                    packageMissing = false,
+                    packageUpgradable = false,
+                    installDeclined = UnityCliDeclines.isDeclined(null, UnityCliDeclines.INSTALL_DISPLAY_ID),
+                    updateDeclined = false,
+                ),
             ),
         )
         // The update decline is untouched, because the two are separate switches.
@@ -214,7 +383,7 @@ class UnityCliSuggestionTest {
     @Test
     fun `the balloon installs by itself`() {
         assertTrue(
-            unityCliSuggestionActs(UnityCliSuggestion.INSTALL, UnityCliPresentation(detected = true)),
+            unityCliSuggestionActs(UnityCliSuggestion.INSTALL, UnityCliPresentation(detected = true), packageUpgradable = false),
             "the install balloon lost its action",
         )
     }
@@ -222,10 +391,15 @@ class UnityCliSuggestionTest {
     @Test
     fun `the balloon updates a copy Rider owns`() {
         for (method in listOf(UnityCliInstallMethod.CDN, UnityCliInstallMethod.HOMEBREW, UnityCliInstallMethod.WINGET)) {
-            val presentation = UnityCliPresentation(detected = true, installMethod = method)
+            val presentation = UnityCliPresentation(
+                detected = true,
+                installedVersion = "1.0.0-beta.11",
+                latestVersion = "1.0.0-beta.12",
+                installMethod = method,
+            )
 
             assertTrue(
-                unityCliSuggestionActs(UnityCliSuggestion.UPDATE, presentation),
+                unityCliSuggestionActs(UnityCliSuggestion.UPDATE, presentation, packageUpgradable = false),
                 "the update balloon lost its action on $method",
             )
         }
@@ -237,13 +411,46 @@ class UnityCliSuggestionTest {
         // elevate, so an Update action there would call an update that refuses. The balloon points
         // at the page instead, and the page names the command.
         for (method in listOf(UnityCliInstallMethod.APT, UnityCliInstallMethod.DNF)) {
-            val presentation = UnityCliPresentation(detected = true, installMethod = method)
+            val presentation = UnityCliPresentation(
+                detected = true,
+                installedVersion = "1.0.0-beta.11",
+                latestVersion = "1.0.0-beta.12",
+                installMethod = method,
+            )
 
             assertFalse(
-                unityCliSuggestionActs(UnityCliSuggestion.UPDATE, presentation),
+                unityCliSuggestionActs(UnityCliSuggestion.UPDATE, presentation, packageUpgradable = false),
                 "the balloon offered an update that Rider cannot run on $method",
             )
         }
+    }
+
+    @Test
+    fun `the update balloon draws Update as its button`() {
+        assertEquals(
+            listOf(UnityAgentsUpdateAction.UPDATE, UnityAgentsUpdateAction.LEARN_MORE),
+            unityAgentsUpdateActions(acts = true, cliOffer = UnityCliOffer.CURRENT),
+        )
+    }
+
+    @Test
+    fun `the update balloon keeps the command link next to Update`() {
+        // Three actions fold behind "More" unless the balloon shows the extra one. The order is
+        // the order on screen, so the link must come second.
+        assertEquals(
+            listOf(UnityAgentsUpdateAction.UPDATE, UnityAgentsUpdateAction.SHOW_UPDATE_COMMAND, UnityAgentsUpdateAction.LEARN_MORE),
+            unityAgentsUpdateActions(acts = true, cliOffer = UnityCliOffer.SHOW_UPDATE_COMMAND),
+        )
+    }
+
+    @Test
+    fun `a balloon that cannot update has no button`() {
+        // The first action of a suggestion balloon is a button. A balloon that only navigates must
+        // not draw a link as a button.
+        val actions = unityAgentsUpdateActions(acts = false, cliOffer = UnityCliOffer.SHOW_UPDATE_COMMAND)
+
+        assertFalse(UnityAgentsUpdateAction.UPDATE in actions, "a balloon that cannot update offered Update: $actions")
+        assertEquals(UnityAgentsUpdateAction.SHOW_UPDATE_COMMAND, actions.first())
     }
 
     /**
@@ -256,7 +463,7 @@ class UnityCliSuggestionTest {
     private fun declineTheInstallBalloon() {
         DoNotAskAppManager.getInstance().markDoNotAsk(
             UnityCliDeclines.INSTALL_DISPLAY_ID,
-            UnityBundle.message("unity.agents.cli.suggest.install.title"),
+            UnityBundle.message("unity.agents.setup.suggest.title"),
         )
     }
 

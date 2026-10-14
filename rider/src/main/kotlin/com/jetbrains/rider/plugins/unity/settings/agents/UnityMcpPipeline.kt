@@ -23,6 +23,17 @@ fun unityPipelineInstallCommandLine(unity: Path, solution: Path): GeneralCommand
         .withParameters("--non-interactive", "--json")
         .withWorkingDirectory(solution)
 
+fun unityPipelineUpgradeCommandLine(unity: Path, solution: Path): GeneralCommandLine =
+    GeneralCommandLine(unity.toString(), "pipeline", "upgrade", "--project-path", solution.toString())
+        .withParameters("--non-interactive", "--json")
+        .withWorkingDirectory(solution)
+
+fun unityPipelineListVersionsCommandLine(unity: Path): GeneralCommandLine =
+    GeneralCommandLine(unity.toString(), "pipeline", "list-versions", "--non-interactive", "--json")
+
+fun parseUnityPipelineLatestVersion(json: String): @NlsSafe String? =
+    parsePipelineJson<ListVersionsAnswer>(json)?.data?.latest?.takeIf { it.isNotBlank() }
+
 enum class UnityMcpPackageStep {
     NONE,
     INSTALL,
@@ -52,11 +63,20 @@ data class UnityPipelineManifest(val version: @NlsSafe String?) {
     val present: Boolean get() = version != null
 }
 
-fun unityPipelineInstallOutcome(output: ProcessOutput?, inManifest: Boolean?): UnityMcpFailure? = when {
-    output == null || output.isTimeout -> UnityMcpFailure.LAUNCH_FAILED
-    inManifest == true -> null
-    output.exitCode != 0 -> UnityMcpFailure.EXIT_CODE
-    else -> UnityMcpFailure.NOT_CONFIRMED
+fun unityPipelineInstallOutcome(output: ProcessOutput?, inManifest: Boolean?): UnityPipelineFailure? =
+    unityPipelineOutcome(output, landed = inManifest == true)
+
+fun unityPipelineUpgradeOutcome(output: ProcessOutput?, versionAfter: String?, latestVersion: String?): UnityPipelineFailure? {
+    val landed = versionAfter != null && latestVersion != null &&
+                 (versionAfter == latestVersion || unityPipelineHasNewerVersion(versionAfter, latestVersion))
+    return unityPipelineOutcome(output, landed)
+}
+
+private fun unityPipelineOutcome(output: ProcessOutput?, landed: Boolean): UnityPipelineFailure? = when {
+    output == null || output.isTimeout -> UnityPipelineFailure.LAUNCH_FAILED
+    landed -> null
+    output.exitCode != 0 -> UnityPipelineFailure.EXIT_CODE
+    else -> UnityPipelineFailure.NOT_CONFIRMED
 }
 
 private inline fun <reified T> parsePipelineJson(text: String): T? =
@@ -67,3 +87,7 @@ private inline fun <reified T> parsePipelineJson(text: String): T? =
     }
 
 private data class PackageManifest(val dependencies: Map<String, String>? = null)
+
+private data class ListVersionsAnswer(val data: ListVersionsData? = null)
+
+private data class ListVersionsData(val latest: String? = null)
