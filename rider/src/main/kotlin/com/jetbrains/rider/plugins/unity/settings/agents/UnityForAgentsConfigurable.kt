@@ -18,18 +18,22 @@ import com.intellij.openapi.wm.IdeFrame
 import com.intellij.platform.util.coroutines.childScope
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.MAX_LINE_LENGTH_NO_WRAP
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.Placeholder
 import com.intellij.ui.dsl.builder.RightGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.UIUtil
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityPluginScopeService
-import icons.UnityIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.awt.datatransfer.StringSelection
@@ -37,16 +41,19 @@ import java.awt.event.HierarchyEvent
 import java.nio.file.Path
 import javax.swing.JComponent
 import javax.swing.JProgressBar
+import kotlin.time.Duration.Companion.seconds
 
 internal class UnityForAgentsConfigurable(private val project: Project) : SearchableConfigurable {
     private var scope: CoroutineScope? = null
     private var refreshJob: Job? = null
     private var cliStatus: Placeholder? = null
+    private var pipelineStatus: Placeholder? = null
+    private var pipelinePanel: UnityPipelineSectionPanel? = null
     private var mcpStatus: Placeholder? = null
     private var mcpPanel: UnityMcpSectionPanel? = null
-    private var lastSection: UnityMcpSectionPresentation? = null
-    // Not lastSection: a write and the CLI install and update paint a busy state that no read returned.
-    private var paintedSection: UnityMcpSectionPresentation? = null
+    private var lastPage: UnityAgentsPagePresentation? = null
+    // Not lastPage: a write, an install and an update paint a busy state that no read returned.
+    private var paintedPage: UnityAgentsPagePresentation? = null
     private var root: JComponent? = null
     private var pageDisposable: Disposable? = null
 
@@ -69,34 +76,48 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         scope = newScope
 
         val root = panel {
-            // The head of the block never changes. Only the path, the version and the action do,
-            // so the page does not move under the pointer of the user as the state arrives.
-            group(UnityBundle.message("unity.agents.cli.title")) {
-                row {
-                    icon(UnityIcons.Icons.UnityLogo).gap(RightGap.SMALL)
-                    label(UnityBundle.message("unity.agents.cli.title")).bold()
-                }
+            group(UnityBundle.message("unity.agents.cli.title"), indent = false) {
                 row { comment(UnityBundle.message("unity.agents.cli.description")) }
-                row {
-                    cliStatus = placeholder().align(AlignX.FILL)
-                }
-            }
-
-            if (UnityForAgentsFeature.isMcpSectionEnabled()) {
-                group(UnityBundle.message("unity.agents.mcp.title")) {
-                    row { text(UnityBundle.message("unity.agents.mcp.description")) }
+                indent {
                     row {
-                        mcpStatus = placeholder().align(AlignX.FILL)
+                        cliStatus = placeholder().align(AlignX.FILL)
                     }
                 }
             }
 
-            group(UnityBundle.message("unity.agents.skills.title")) {
-                row { text(UnityBundle.message("unity.agents.skills.description")) }
-                row { comment(UnityBundle.message("unity.agents.coming.soon")) }
+            group(UnityBundle.message("unity.agents.pipeline.title"), indent = false) {
+                row { comment(UnityBundle.message("unity.agents.pipeline.description")) }
+                indent {
+                    row {
+                        pipelineStatus = placeholder().align(AlignX.FILL)
+                    }
+                }
+            }
+
+            group(UnityBundle.message("unity.agents.skills.title"), indent = false) {
+                row { comment(UnityBundle.message("unity.agents.skills.description")) }
+                indent {
+                    row { comment(UnityBundle.message("unity.agents.coming.soon")) }
+                }
+            }
+
+            if (UnityForAgentsFeature.isMcpSectionEnabled()) {
+                group(UnityBundle.message("unity.agents.mcp.title"), indent = false) {
+                    row { comment(UnityBundle.message("unity.agents.mcp.description")) }
+                    indent {
+                        row {
+                            mcpStatus = placeholder().align(AlignX.FILL)
+                        }
+                    }
+                }
             }
         }
 
+        this.pipelinePanel = UnityPipelineSectionPanel(
+            install = { startPipeline(UnityPipelineOperation.INSTALLING) },
+            upgrade = { startPipeline(UnityPipelineOperation.UPGRADING) },
+            retry = { retryPipeline(it) },
+        )
         this.mcpPanel = UnityMcpSectionPanel(project, write = { stores, operation -> startWrite(stores, operation) })
         this.root = root
         UnityForAgentsPageVisibility.getInstance().register(root)
@@ -111,10 +132,12 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         scope = null
         refreshJob = null
         cliStatus = null
+        pipelineStatus = null
+        pipelinePanel = null
         mcpStatus = null
         mcpPanel = null
-        lastSection = null
-        paintedSection = null
+        lastPage = null
+        paintedPage = null
         pageDisposable?.let(Disposer::dispose)
         pageDisposable = null
         root?.let { UnityForAgentsPageVisibility.getInstance().unregister(it) }
@@ -147,15 +170,23 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         // A slow read must not paint over the answer of a later one.
         refreshJob?.cancel()
         refreshJob = activeScope.launch {
-            val section =
-                if (drawsMcp) UnityMcpStatusProvider.getInstance(project).read()
-                else UnityMcpSectionPresentation(readUnityCli(project))
+            val cli = readUnityCli(project)
+            val page = coroutineScope {
+                val pipeline = async { UnityPipelineStatusProvider.getInstance(project).read(cli) }
+                val mcp = if (drawsMcp) async { UnityMcpStatusProvider.getInstance(project).read(cli) } else null
+                UnityAgentsPagePresentation(cli, pipeline.await(), mcp?.await())
+            }
             withContext(Dispatchers.EDT + modality.asContextElement()) {
-                lastSection = section
-                if (section == paintedSection) return@withContext
-                paintedSection = section
-                cliStatus?.component = buildCliStatus(section.cli)
-                mcpStatus?.component = mcpPanel?.build(section)
+                lastPage = page
+                if (page == paintedPage) return@withContext
+                paintedPage = page
+                cliStatus?.component = buildCliStatus(page.cli)
+                pipelineStatus?.component = pipelinePanel?.build(page.pipeline)
+                page.mcp?.let { mcpStatus?.component = mcpPanel?.build(it, needsPipelinePackage()) }
+            }
+            if (page.cli.operation != null || page.pipeline.operation != null) {
+                delay(BUSY_REFRESH_INTERVAL)
+                withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
             }
         }
     }
@@ -170,19 +201,20 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         val modality = ModalityState.current()
 
         refreshJob?.cancel()
-        paintedSection = null
-        lastSection?.let { mcpStatus?.component = mcpPanel?.build(it.withRunning(stores, operation)) }
+        paintedPage = null
+        lastPage?.mcp?.let { mcpStatus?.component = mcpPanel?.build(it.withRunning(stores, operation), needsPipelinePackage()) }
+        if (packageInstallAgreed) paintPipelineBusy(UnityPipelineOperation.INSTALLING)
         activeScope.launch {
             UnityMcpStatusProvider.getInstance(project).write(stores, operation, modality, packageInstallAgreed)
             withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
         }
     }
 
-    private fun needsPipelinePackage(): Boolean = lastSection?.needsPipelinePackage == true
+    private fun needsPipelinePackage(): Boolean = lastPage?.pipeline?.needsPipelinePackage == true
 
     private fun agreedToPipelinePackage(): Boolean {
         if (!needsPipelinePackage()) return false
-        val manifest = lastSection?.manifestPath ?: return false
+        val manifest = lastPage?.pipeline?.manifestPath ?: return false
         return MessageDialogBuilder
             .yesNo(UnityBundle.message("unity.agents.mcp.pipeline.confirm.title"), unityMcpPipelineConfirmation(manifest))
             .yesText(UnityBundle.message("unity.agents.mcp.pipeline.confirm.yes"))
@@ -190,7 +222,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
     }
 
     private fun confirmedSharedRemoval(stores: List<UnityMcpStore>): Boolean {
-        val solution = lastSection?.project?.path?.let { Path.of(it) }
+        val solution = lastPage?.mcp?.project?.path?.let { Path.of(it) }
         val question = unityMcpSharedRemovalQuestion(stores, solution) ?: return true
         return MessageDialogBuilder
             .yesNo(UnityBundle.message("unity.agents.mcp.remove.shared.title"), question)
@@ -217,20 +249,55 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         )
     }
 
+    private fun startPipeline(operation: UnityPipelineOperation) {
+        if (!UnityForAgentsFeature.isEnabled()) return
+        val activeScope = scope ?: return
+        val modality = ModalityState.current()
+
+        refreshJob?.cancel()
+        paintedPage = null
+        paintPipelineBusy(operation)
+        activeScope.launch {
+            val provider = UnityPipelineStatusProvider.getInstance(project)
+            when (operation) {
+                UnityPipelineOperation.INSTALLING -> provider.install(modality)
+                UnityPipelineOperation.UPGRADING -> provider.upgrade(modality)
+            }
+            withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
+        }
+    }
+
+    private fun retryPipeline(presentation: UnityPipelinePresentation) {
+        UnityPipelineStatusProvider.getInstance(project).clearFailure()
+        startPipeline(presentation.failedOperation ?: UnityPipelineOperation.INSTALLING)
+    }
+
+    private fun paintPipelineBusy(operation: UnityPipelineOperation) {
+        val pipeline = lastPage?.pipeline ?: return
+        pipelineStatus?.component = pipelinePanel?.build(pipeline.copy(operation = operation, failure = null))
+    }
+
     private fun buildCliStatus(presentation: UnityCliPresentation): JComponent = panel {
         statusRows(presentation)
     }
 
     private fun Panel.statusRows(presentation: UnityCliPresentation) {
-        locationRow(presentation)
-        versionRow(presentation)
+        installedRow(presentation)
         actionRow(presentation)
     }
 
-    private fun Panel.versionRow(presentation: UnityCliPresentation) {
-        if (presentation.offer == UnityCliOffer.CHECKING) return
-        if (presentation.offer == UnityCliOffer.NOT_TRUSTED) return
-        row { comment(unityCliVersionMessage(presentation.installedVersion)) }
+    private fun Panel.installedRow(presentation: UnityCliPresentation) {
+        val version = presentation.installedVersion ?: return
+        val location = presentation.location ?: return
+        if (presentation.offer == UnityCliOffer.CHECKING || presentation.offer == UnityCliOffer.NOT_TRUSTED) return
+        row {
+            icon(AllIcons.General.InspectionsOK).gap(RightGap.SMALL)
+            label(UnityBundle.message("unity.agents.cli.installed"))
+                .applyToComponent { foreground = UIUtil.getLabelSuccessForeground() }
+                .gap(RightGap.SMALL)
+            text(unityCliVersionMessage(version), MAX_LINE_LENGTH_NO_WRAP).gap(RightGap.SMALL)
+            text(unityCliLocationText(location), MAX_LINE_LENGTH_NO_WRAP)
+        }
     }
 
     private fun Panel.actionRow(presentation: UnityCliPresentation) {
@@ -254,10 +321,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                 row { comment(unityCliInstallDisclosure(presentation.foreignBinaryOnPath)) }
             }
 
-            UnityCliOffer.CURRENT -> row {
-                icon(AllIcons.General.InspectionsOK).gap(RightGap.SMALL)
-                comment(UnityBundle.message("unity.agents.cli.up.to.date"))
-            }
+            UnityCliOffer.CURRENT -> {}
 
             UnityCliOffer.LATEST_VERSION_UNKNOWN -> row {
                 button(UnityBundle.message("unity.agents.cli.check.again")) { recheck() }.gap(RightGap.SMALL)
@@ -321,11 +385,6 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         return bar
     }
 
-    private fun Panel.locationRow(presentation: UnityCliPresentation) {
-        val location = presentation.location ?: return
-        row { comment(unityCliPathMessage(location, presentation.installMethod)) }
-    }
-
     private fun trustProject() {
         if (TrustedProjectsDialog.confirmLoadingUntrustedProject(project)) {
             refresh()
@@ -349,7 +408,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         val modality = ModalityState.current()
 
         refreshJob?.cancel()
-        paintedSection = null
+        paintedPage = null
         cliStatus?.component = buildCliStatus(UnityCliPresentation(detected = true, operation = UnityCliOperation.INSTALLING))
         activeScope.launch {
             UnityCliStatusProvider.getInstance().install(project, modality)
@@ -362,7 +421,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         val activeScope = scope ?: return
         val modality = ModalityState.current()
         refreshJob?.cancel()
-        paintedSection = null
+        paintedPage = null
         cliStatus?.component = buildCliStatus(UnityCliPresentation(detected = true, operation = UnityCliOperation.UPDATING))
         activeScope.launch {
             UnityCliStatusProvider.getInstance().update(project, modality)
@@ -370,3 +429,5 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         }
     }
 }
+
+private val BUSY_REFRESH_INTERVAL = 1.seconds

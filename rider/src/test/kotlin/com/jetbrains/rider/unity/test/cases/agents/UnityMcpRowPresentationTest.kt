@@ -15,6 +15,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.configPathOf
 import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityMcpClientList
 import com.jetbrains.rider.plugins.unity.settings.agents.readMcpServersEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.readCodexEntry
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCanConfigure
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCanRemove
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpOpenableStore
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpRestartLine
@@ -216,6 +217,20 @@ class UnityMcpRowPresentationTest {
         assertFalse(unityMcpCanRemove(row(entry = UnityMcpEntry.ABSENT)))
         assertFalse(unityMcpCanRemove(row(entry = UnityMcpEntry.ABSENT, restartNeeded = true)))
         assertFalse(unityMcpCanRemove(row(entry = UnityMcpEntry.PRESENT, operation = UnityMcpOperation.CONFIGURING)))
+    }
+
+    /** Found in a manual run on 2026-10-08: the click on a broken JSON store wrote nothing and blamed the write. */
+    @Test
+    fun `a broken JSON store cannot be configured, and the Codex row still can`() {
+        for (store in listOf(UnityMcpStore.CLAUDE_CODE_CLI, UnityMcpStore.COPILOT_CLI, UnityMcpStore.JUNIE_CLI)) {
+            assertFalse(unityMcpCanConfigure(row(entry = UnityMcpEntry.UNREADABLE, store = store)), "$store")
+            assertTrue(unityMcpCanConfigure(row(entry = UnityMcpEntry.ABSENT, store = store)), "$store")
+        }
+        assertTrue(
+            unityMcpCanConfigure(row(entry = UnityMcpEntry.UNREADABLE, store = UnityMcpStore.CODEX_CLI)),
+            "the Codex row reads through the Unity CLI, and its write can still land",
+        )
+        assertFalse(unityMcpCanConfigure(row(entry = UnityMcpEntry.ABSENT, operation = UnityMcpOperation.CONFIGURING)))
     }
 
     @Test

@@ -9,31 +9,67 @@ enum class UnityCliSuggestion {
     UPDATE,
 }
 
-fun unityCliSuggestion(
-    presentation: UnityCliPresentation,
-    installDeclined: Boolean,
-    updateDeclined: Boolean,
-): UnityCliSuggestion =
-    when (presentation.copy(projectTrusted = true).offer) {
-        UnityCliOffer.INSTALL -> if (installDeclined) UnityCliSuggestion.NONE else UnityCliSuggestion.INSTALL
-        UnityCliOffer.UPDATE, UnityCliOffer.SHOW_UPDATE_COMMAND ->
-            if (updateDeclined) UnityCliSuggestion.NONE else UnityCliSuggestion.UPDATE
+data class UnityAgentsSweepFacts(
+    val packageMissing: Boolean,
+    val packageUpgradable: Boolean,
+    val installDeclined: Boolean,
+    val updateDeclined: Boolean,
+)
 
-        UnityCliOffer.CHECKING,
-        UnityCliOffer.NOT_TRUSTED,
+fun unityCliSuggestion(presentation: UnityCliPresentation, facts: UnityAgentsSweepFacts): UnityCliSuggestion {
+    val cli = presentation.copy(projectTrusted = true).offer
+    val wantsInstall = when (cli) {
+        UnityCliOffer.INSTALL -> true
         UnityCliOffer.CURRENT,
         UnityCliOffer.LATEST_VERSION_UNKNOWN,
+        UnityCliOffer.UPDATE,
+        UnityCliOffer.SHOW_UPDATE_COMMAND,
+            -> facts.packageMissing
+        UnityCliOffer.CHECKING, UnityCliOffer.NOT_TRUSTED, UnityCliOffer.BUSY, UnityCliOffer.FAILED -> false
+    }
+    if (wantsInstall) return if (facts.installDeclined) UnityCliSuggestion.NONE else UnityCliSuggestion.INSTALL
+    val wantsUpdate = when (cli) {
+        UnityCliOffer.UPDATE, UnityCliOffer.SHOW_UPDATE_COMMAND -> true
+        UnityCliOffer.CURRENT, UnityCliOffer.LATEST_VERSION_UNKNOWN -> facts.packageUpgradable
+        UnityCliOffer.INSTALL,
+        UnityCliOffer.CHECKING,
+        UnityCliOffer.NOT_TRUSTED,
         UnityCliOffer.BUSY,
         UnityCliOffer.FAILED,
-            -> UnityCliSuggestion.NONE
+            -> false
     }
+    return if (wantsUpdate && !facts.updateDeclined) UnityCliSuggestion.UPDATE else UnityCliSuggestion.NONE
+}
 
-fun unityCliSuggestionActs(suggestion: UnityCliSuggestion, presentation: UnityCliPresentation): Boolean =
+fun unityCliUpdatable(presentation: UnityCliPresentation): Boolean =
+    presentation.copy(projectTrusted = true).offer == UnityCliOffer.UPDATE
+
+fun unityCliSuggestionActs(
+    suggestion: UnityCliSuggestion,
+    presentation: UnityCliPresentation,
+    packageUpgradable: Boolean,
+): Boolean =
     when (suggestion) {
         UnityCliSuggestion.INSTALL -> true
-        UnityCliSuggestion.UPDATE -> presentation.installMethod.updatableFromRider
+        UnityCliSuggestion.UPDATE -> unityCliUpdatable(presentation) || packageUpgradable
         UnityCliSuggestion.NONE -> false
     }
+
+enum class UnityAgentsUpdateAction {
+    UPDATE,
+    SHOW_UPDATE_COMMAND,
+    LEARN_MORE,
+}
+
+/**
+ * The actions of the update balloon, in order. The balloon draws [UnityAgentsUpdateAction.UPDATE] as its
+ * button and every other action as a link.
+ */
+fun unityAgentsUpdateActions(acts: Boolean, cliOffer: UnityCliOffer): List<UnityAgentsUpdateAction> = buildList {
+    if (acts) add(UnityAgentsUpdateAction.UPDATE)
+    if (cliOffer == UnityCliOffer.SHOW_UPDATE_COMMAND) add(UnityAgentsUpdateAction.SHOW_UPDATE_COMMAND)
+    add(UnityAgentsUpdateAction.LEARN_MORE)
+}
 
 object UnityCliDeclines {
     const val INSTALL_DISPLAY_ID: String = "unity.for.agents.cli.install"

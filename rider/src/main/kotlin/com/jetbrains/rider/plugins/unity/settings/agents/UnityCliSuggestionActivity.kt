@@ -2,15 +2,11 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.ide.trustedProjects.TrustedProjects
 import com.intellij.notification.NotificationAction
-import com.intellij.notification.NotificationGroupManager
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.help.HelpManager
-import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.help.HelpManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
-import com.intellij.openapi.util.NlsContexts
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
@@ -26,15 +22,18 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
         if (!TrustedProjects.isProjectTrusted(project)) return
 
         val presentation = UnityCliStatusProvider.getInstance().read()
-        val suggestion = unityCliSuggestion(
-            presentation = presentation,
+        val pipeline = UnityPipelineStatusProvider.getInstance(project).read(presentation)
+        val facts = UnityAgentsSweepFacts(
+            packageMissing = pipeline.offer == UnityPipelineOffer.INSTALL,
+            packageUpgradable = pipeline.offer == UnityPipelineOffer.UPGRADE,
             installDeclined = UnityCliDeclines.isDeclined(project, UnityCliDeclines.INSTALL_DISPLAY_ID),
             updateDeclined = UnityCliDeclines.isDeclined(project, UnityCliDeclines.UPDATE_DISPLAY_ID),
         )
+        val suggestion = unityCliSuggestion(presentation, facts)
         if (suggestion == UnityCliSuggestion.NONE) return
 
         logger.debug("The Unity CLI sweep offers $suggestion for ${project.name}")
-        prompt(project, suggestion, presentation)
+        prompt(project, suggestion, presentation, pipeline)
     }
 
     @Suppress("DialogTitleCapitalization")
@@ -42,54 +41,83 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
         project: Project,
         suggestion: UnityCliSuggestion,
         presentation: UnityCliPresentation,
+        pipeline: UnityPipelinePresentation,
     ) {
         val displayId = UnityCliDeclines.displayIdOf(suggestion) ?: return
-        val title = when (suggestion) {
-            UnityCliSuggestion.INSTALL -> UnityBundle.message("unity.agents.cli.suggest.install.title")
-            UnityCliSuggestion.UPDATE -> UnityBundle.message("unity.agents.cli.suggest.update.title")
-            UnityCliSuggestion.NONE -> return
-        }
-        val message = when (suggestion) {
-            UnityCliSuggestion.INSTALL -> UnityBundle.message("unity.agents.cli.suggest.install.content")
-            UnityCliSuggestion.UPDATE -> unityCliUpdateSuggestionMessage(presentation.latestVersion)
-            UnityCliSuggestion.NONE -> return
-        }
-        val acts = unityCliSuggestionActs(suggestion, presentation)
-
-        val notification = NotificationGroupManager.getInstance()
-            .getNotificationGroup(UNITY_AGENTS_GROUP)
-            .createNotification(title, message, NotificationType.INFORMATION)
-        notification.setDisplayId(displayId)
-        notification.setSuggestionType(true)
-        notification.addAction(
-            NotificationAction.createSimpleExpiring(confirmLabel(suggestion, acts)) {
-                if (!acts) {
-                    openUnityForAgentsPage(project)
-                }
-                else {
-                    val provider = UnityCliStatusProvider.getInstance()
-                    when (suggestion) {
-                        UnityCliSuggestion.INSTALL -> provider.requestInstall(project, ModalityState.nonModal())
-                        UnityCliSuggestion.UPDATE -> provider.requestUpdate(project, ModalityState.nonModal())
-                        UnityCliSuggestion.NONE -> Unit
+        when (suggestion) {
+            UnityCliSuggestion.INSTALL -> {
+                val cliMissing = presentation.copy(projectTrusted = true).offer == UnityCliOffer.INSTALL
+                val message =
+                    if (cliMissing) UnityBundle.message("unity.agents.setup.suggest.content.cli")
+                    else UnityBundle.message("unity.agents.setup.suggest.content")
+                val notification = UnityAgentsFullContentNotification(
+                    UNITY_AGENTS_GROUP,
+                    UnityBundle.message("unity.agents.setup.suggest.title"),
+                    message,
+                )
+                notification.setDisplayId(displayId)
+                notification.setSuggestionType(true)
+                notification.addAction(
+                    NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.setup.action.install")) {
+                        UnityAgentsSetupService.getInstance(project).requestSetup()
                     }
-                }
+                )
+                notification.addAction(
+                    NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.setup.action.manual")) {
+                        openUnityForAgentsPage(project)
+                    }
+                )
+                notification.notify(project)
             }
-        )
-        notification.addAction(
-            NotificationAction.createSimple(UnityBundle.message("unity.agents.learn.more")) {
-                HelpManager.getInstance().invokeHelp(UNITY_FOR_AGENTS_HELP_TOPIC)
-            }
-        )
-        notification.notify(project)
-    }
 
-    @Suppress("DialogTitleCapitalization")
-    @NlsContexts.Button
-    private fun confirmLabel(suggestion: UnityCliSuggestion, acts: Boolean): String = when {
-        !acts -> UnityBundle.message("unity.agents.open.settings")
-        suggestion == UnityCliSuggestion.UPDATE -> UnityBundle.message("unity.agents.cli.action.update")
-        else -> UnityBundle.message("unity.agents.cli.action.install")
+            UnityCliSuggestion.UPDATE -> {
+                val packageUpgradable = pipeline.offer == UnityPipelineOffer.UPGRADE
+                val acts = unityCliSuggestionActs(suggestion, presentation, packageUpgradable)
+                val cliOffer = presentation.copy(projectTrusted = true).offer
+                val cliVersion =
+                    if (cliOffer == UnityCliOffer.UPDATE || cliOffer == UnityCliOffer.SHOW_UPDATE_COMMAND) {
+                        presentation.latestVersion
+                    }
+                    else {
+                        null
+                    }
+                val packageVersion = if (packageUpgradable) pipeline.latestVersion else null
+                val notification = UnityAgentsFullContentNotification(
+                    UNITY_AGENTS_GROUP,
+                    UnityBundle.message("unity.agents.update.suggest.title"),
+                    unityAgentsUpdateSuggestionMessage(
+                        cliVersion,
+                        packageVersion,
+                        cliByHand = cliOffer == UnityCliOffer.SHOW_UPDATE_COMMAND,
+                    ),
+                )
+                val actions = unityAgentsUpdateActions(acts, cliOffer)
+                notification.setDisplayId(displayId)
+                notification.setSuggestionType(actions.first() == UnityAgentsUpdateAction.UPDATE)
+                notification.setAddExtraAction(true)
+                for (action in actions) {
+                    notification.addAction(
+                        when (action) {
+                            UnityAgentsUpdateAction.UPDATE ->
+                                NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.update.action")) {
+                                    UnityAgentsSetupService.getInstance(project).requestUpdate()
+                                }
+                            UnityAgentsUpdateAction.SHOW_UPDATE_COMMAND ->
+                                NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.update.show.command")) {
+                                    openUnityForAgentsPage(project)
+                                }
+                            UnityAgentsUpdateAction.LEARN_MORE ->
+                                NotificationAction.createSimple(UnityBundle.message("unity.agents.learn.more")) {
+                                    HelpManager.getInstance().invokeHelp(UNITY_FOR_AGENTS_HELP_TOPIC)
+                                }
+                        }
+                    )
+                }
+                notification.notify(project)
+            }
+
+            UnityCliSuggestion.NONE -> Unit
+        }
     }
 
     private companion object {

@@ -130,11 +130,21 @@ data class UnityMcpSectionPresentation(
     val cli: UnityCliPresentation = UnityCliPresentation(),
     val project: UnityMcpProject? = null,
     val rows: List<UnityMcpRowPresentation> = emptyList(),
-    val manifestPath: @NlsSafe String? = null,
-    val pipelinePackage: UnityPipelineManifest? = null,
 ) {
     val state: UnityMcpSectionState get() = unityMcpSectionState(cli, project != null)
-    val needsPipelinePackage: Boolean? get() = pipelinePackage?.present?.not()
+}
+
+fun unityMcpCanConfigure(row: UnityMcpRowPresentation): Boolean = when (row.state) {
+    UnityMcpRowState.BUSY -> false
+    UnityMcpRowState.UNREADABLE -> unityMcpJsonStoreName(row.store) == null
+    UnityMcpRowState.FAILED,
+    UnityMcpRowState.UNAVAILABLE,
+    UnityMcpRowState.CHECKING,
+    UnityMcpRowState.RESTART_NEEDED,
+    UnityMcpRowState.ENTRY_PRESENT,
+    UnityMcpRowState.NOT_DETECTED,
+    UnityMcpRowState.NOT_CONFIGURED,
+        -> true
 }
 
 fun unityMcpCanRemove(row: UnityMcpRowPresentation): Boolean =

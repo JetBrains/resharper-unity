@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessOutput
-import com.intellij.icons.AllIcons
 import com.intellij.ide.actions.ShowLogAction
 import com.intellij.ide.trustedProjects.TrustedProjects
 import com.intellij.openapi.application.EDT
@@ -169,11 +168,6 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
             if (result.failure != null) {
                 report(project, modality, result.failure, result.exitCode, UnityCliOperation.INSTALLING)
             }
-            else {
-                // No version: the confirmation names the terminal instead, and a second tier 1
-                // pass to read a version the sentence never uses would be waste.
-                confirm(project, UnityCliOperation.INSTALLING, version = null)
-            }
         }
         finally {
             runningOperation.set(null)
@@ -203,14 +197,8 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
             if (failure != null) {
                 report(project, modality, failure, exitCode, UnityCliOperation.UPDATING)
             }
-            else {
-                val version = findLocalCopy(UnityCliEnvironment.getInstance()).copy?.version
-                if (version != null) {
-                    confirm(project, UnityCliOperation.UPDATING, version)
-                }
-                else {
-                    report(project, modality, UnityCliFailure.VERIFICATION, exitCode, UnityCliOperation.UPDATING)
-                }
+            else if (findLocalCopy(UnityCliEnvironment.getInstance()).copy?.version == null) {
+                report(project, modality, UnityCliFailure.VERIFICATION, exitCode, UnityCliOperation.UPDATING)
             }
         }
         finally {
@@ -271,6 +259,7 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
             }
         )
         notification.setSuggestionType(true)
+        notification.setAddExtraAction(true)
         notification.addAction(
             NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.cli.try.again")) {
                 clearFailure(record.id)
@@ -291,34 +280,6 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         if (ShowLogAction.isSupported()) {
             notification.addAction(ShowLogAction.notificationAction())
         }
-        notification.notify(project)
-    }
-
-    private fun confirm(
-        project: Project,
-        operation: UnityCliOperation,
-        version: String?,
-    ) {
-        val notification = NotificationGroupManager.getInstance()
-            .getNotificationGroup(UNITY_AGENTS_CONFIRMATIONS_GROUP)
-            .createNotification(
-                unityCliConfirmationTitle(operation),
-                unityCliConfirmationMessage(operation, version),
-                NotificationType.INFORMATION,
-            )
-        notification.setDisplayId(
-            when (operation) {
-                UnityCliOperation.INSTALLING -> INSTALLED_DISPLAY_ID
-                UnityCliOperation.UPDATING -> UPDATED_DISPLAY_ID
-            }
-        )
-        notification.setIcon(AllIcons.Status.Success)
-        notification.setSuggestionType(true)
-        notification.addAction(
-            NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.open.settings")) {
-                openUnityForAgentsPage(project)
-            }
-        )
         notification.notify(project)
     }
 
@@ -468,11 +429,8 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         val logger: Logger = Logger.getInstance(UnityCliStatusService::class.java)
 
         const val UNITY_AGENTS_ERRORS_GROUP = "Unity for Agents Errors"
-        const val UNITY_AGENTS_CONFIRMATIONS_GROUP = "Unity for Agents Confirmations"
         const val FAILED_INSTALL_DISPLAY_ID = "unity.for.agents.cli.install.failed"
         const val FAILED_UPDATE_DISPLAY_ID = "unity.for.agents.cli.update.failed"
-        const val INSTALLED_DISPLAY_ID = "unity.for.agents.cli.installed"
-        const val UPDATED_DISPLAY_ID = "unity.for.agents.cli.updated"
         const val DOWNLOAD_WORK = 20
         const val INSTALLER_WORK = 80
         const val MANIFEST_BODY_CAP_BYTES = 64 * 1024

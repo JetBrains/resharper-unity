@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.text.StringUtil.escapeXmlEntities
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import org.jetbrains.annotations.Nls
@@ -17,20 +18,8 @@ fun unityCliVersionMessage(installedVersion: String?): String =
 fun unityCliNewVersionMessage(latestVersion: String?): String =
     UnityBundle.message("unity.agents.cli.new.version", escapeXmlEntities(latestVersion.orEmpty()))
 
-@Nls
-fun unityCliPathMessage(location: Path, installMethod: UnityCliInstallMethod): String {
-    val path = escapeXmlEntities(location.toString())
-    val method = when (installMethod) {
-        UnityCliInstallMethod.CDN -> UnityBundle.message("unity.agents.cli.method.cdn")
-        UnityCliInstallMethod.HOMEBREW -> UnityBundle.message("unity.agents.cli.method.homebrew")
-        UnityCliInstallMethod.WINGET -> UnityBundle.message("unity.agents.cli.method.winget")
-        UnityCliInstallMethod.APT -> UnityBundle.message("unity.agents.cli.method.apt")
-        UnityCliInstallMethod.DNF -> UnityBundle.message("unity.agents.cli.method.dnf")
-        UnityCliInstallMethod.UNKNOWN -> null
-    }
-    return if (method == null) UnityBundle.message("unity.agents.cli.path", path)
-    else UnityBundle.message("unity.agents.cli.path.with.method", path, method)
-}
+@NlsSafe
+fun unityCliLocationText(location: Path): String = escapeXmlEntities(location.toString())
 
 @Nls
 fun unityCliInstallDisclosure(foreignBinaryOnPath: Path?): String =
@@ -41,3 +30,22 @@ fun unityCliInstallDisclosure(foreignBinaryOnPath: Path?): String =
 fun unityCliUpdateByHandMessage(command: String?): String =
     if (command == null) UnityBundle.message("unity.agents.cli.update.by.hand.unsafe")
     else UnityBundle.message("unity.agents.cli.update.by.hand", escapeXmlEntities(command))
+
+@Nls
+fun unityAgentsUpdateSuggestionMessage(cliVersion: String?, packageVersion: String?, cliByHand: Boolean = false): String {
+    val available = unityAgentsUpdateAvailableMessage(cliVersion, packageVersion)
+    return if (cliVersion != null && cliByHand) available + " " + UnityBundle.message("unity.agents.update.suggest.by.hand")
+    else available
+}
+
+@Nls
+private fun unityAgentsUpdateAvailableMessage(cliVersion: String?, packageVersion: String?): String = when {
+    cliVersion != null && packageVersion != null ->
+        UnityBundle.message("unity.agents.update.suggest.both", escapeXmlEntities(cliVersion), escapeXmlEntities(packageVersion))
+    cliVersion != null ->
+        UnityBundle.message("unity.agents.update.suggest.cli", escapeXmlEntities(cliVersion))
+    packageVersion != null ->
+        UnityBundle.message("unity.agents.update.suggest.package", escapeXmlEntities(packageVersion))
+    else ->
+        UnityBundle.message("unity.agents.update.suggest.title")
+}

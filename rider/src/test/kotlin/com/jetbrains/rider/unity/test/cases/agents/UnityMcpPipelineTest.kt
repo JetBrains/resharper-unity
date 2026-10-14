@@ -2,16 +2,18 @@ package com.jetbrains.rider.unity.test.cases.agents
 
 import com.intellij.execution.process.ProcessOutput
 import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_PIPELINE_PACKAGE_ID
-import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpFailure
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpPackageStep
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpPackageStep
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpOperation
-import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpSectionPresentation
-import com.jetbrains.rider.plugins.unity.settings.agents.UnityPipelineManifest
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityPipelineFailure
+import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityPipelineLatestVersion
 import com.jetbrains.rider.plugins.unity.settings.agents.readUnityPipelineManifest
 import com.jetbrains.rider.plugins.unity.settings.agents.unityManifestPath
 import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineInstallCommandLine
 import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineInstallOutcome
+import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineListVersionsCommandLine
+import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineUpgradeCommandLine
+import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineUpgradeOutcome
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -36,32 +38,6 @@ import java.nio.file.Path
 class UnityMcpPipelineTest {
     private val unity: Path = Path.of("/Users/dev/.unity/bin/unity")
     private val solution: Path = Path.of("/Users/dev/projects/game")
-
-    /**
-     * The manifest is the only thing the section reads about the package.
-     *
-     * Scope call 23 took the row that used to report it, so this one value decides whether the user
-     * is asked at all. The section draws nothing else about the package.
-     */
-    @Test
-    fun `the section asks for the package only where the project holds none`() {
-        assertEquals(
-            true,
-            section(UnityPipelineManifest(version = null)).needsPipelinePackage,
-            "an absent package needs the install",
-        )
-        assertEquals(
-            false,
-            section(UnityPipelineManifest(version = "0.8.0-exp.1")).needsPipelinePackage,
-            "a package in the manifest needs nothing",
-        )
-        assertNull(
-            section(null).needsPipelinePackage,
-            "a read that has not returned is no answer, and the page must not ask on it",
-        )
-    }
-
-    private fun section(manifest: UnityPipelineManifest?) = UnityMcpSectionPresentation(pipelinePackage = manifest)
 
     private data class StepCase(
         val name: String,
@@ -218,17 +194,17 @@ class UnityMcpPipelineTest {
         assertNull(unityPipelineInstallOutcome(output(0), inManifest = true), "the manifest holds it, so it landed")
         assertNull(unityPipelineInstallOutcome(output(6), inManifest = true), "even after a nonzero exit code")
         assertEquals(
-            UnityMcpFailure.EXIT_CODE,
+            UnityPipelineFailure.EXIT_CODE,
             unityPipelineInstallOutcome(output(6), inManifest = false),
             "a nonzero code explains a manifest that did not change",
         )
         assertEquals(
-            UnityMcpFailure.NOT_CONFIRMED,
+            UnityPipelineFailure.NOT_CONFIRMED,
             unityPipelineInstallOutcome(output(0), inManifest = false),
             "a zero code with no change is the unconfirmed case",
         )
         assertEquals(
-            UnityMcpFailure.NOT_CONFIRMED,
+            UnityPipelineFailure.NOT_CONFIRMED,
             unityPipelineInstallOutcome(output(0), inManifest = null),
             "and a manifest Rider could not read is not a confirmation",
         )
@@ -236,9 +212,9 @@ class UnityMcpPipelineTest {
 
     @Test
     fun `a process that did not start is a launch failure`() {
-        assertEquals(UnityMcpFailure.LAUNCH_FAILED, unityPipelineInstallOutcome(null, inManifest = true))
+        assertEquals(UnityPipelineFailure.LAUNCH_FAILED, unityPipelineInstallOutcome(null, inManifest = true))
         val timeout = ProcessOutput().apply { setTimeout() }
-        assertEquals(UnityMcpFailure.LAUNCH_FAILED, unityPipelineInstallOutcome(timeout, inManifest = true))
+        assertEquals(UnityPipelineFailure.LAUNCH_FAILED, unityPipelineInstallOutcome(timeout, inManifest = true))
     }
 
     @Test
@@ -253,9 +229,94 @@ class UnityMcpPipelineTest {
     }
 
     @Test
+    fun `the upgrade command names the project and asks no question`() {
+        val command = unityPipelineUpgradeCommandLine(unity, solution)
+        assertEquals(unity.toString(), command.exePath)
+        assertEquals(
+            listOf("pipeline", "upgrade", "--project-path", solution.toString(), "--non-interactive", "--json"),
+            command.parametersList.parameters,
+        )
+        assertEquals(solution.toFile(), command.workDirectory)
+    }
+
+    @Test
+    fun `the version list needs no project`() {
+        val command = unityPipelineListVersionsCommandLine(unity)
+        assertEquals(unity.toString(), command.exePath)
+        assertEquals(listOf("pipeline", "list-versions", "--non-interactive", "--json"), command.parametersList.parameters)
+    }
+
+    /** Both shapes were measured on 2026-10-08 against `1.0.0-beta.12`, the second through a proxy that refuses. */
+    @Test
+    fun `the version list answers the latest version or nothing`() {
+        assertEquals("0.8.0-exp.1", parseUnityPipelineLatestVersion(LIST_VERSIONS_JSON))
+        assertNull(parseUnityPipelineLatestVersion(LIST_VERSIONS_OFFLINE_JSON), "a failed lookup has no data")
+        assertNull(parseUnityPipelineLatestVersion("not json"), "and text that is not JSON is no answer")
+        assertNull(parseUnityPipelineLatestVersion("""{"data": {"latest": ""}}"""), "nor is an empty version")
+    }
+
+    /**
+     * Measured on 2026-10-08: an upgrade of the latest package and an upgrade of a git URL both exit 0 and change nothing,
+     * and an upgrade of an absent package exits 6. So the manifest decides, the same as for the install.
+     */
+    @Test
+    fun `the manifest decides whether the upgrade landed`() {
+        assertNull(unityPipelineUpgradeOutcome(output(0), versionAfter = "0.8.0-exp.1", latestVersion = "0.8.0-exp.1"))
+        assertNull(
+            unityPipelineUpgradeOutcome(output(0), versionAfter = "0.9.0-exp.1", latestVersion = "0.8.0-exp.1"),
+            "a version past the cached latest one also landed",
+        )
+        assertEquals(
+            UnityPipelineFailure.NOT_CONFIRMED,
+            unityPipelineUpgradeOutcome(output(0), versionAfter = "0.7.0-exp.1", latestVersion = "0.8.0-exp.1"),
+            "a zero code with the old version is the unconfirmed case",
+        )
+        assertEquals(
+            UnityPipelineFailure.EXIT_CODE,
+            unityPipelineUpgradeOutcome(output(6), versionAfter = null, latestVersion = "0.8.0-exp.1"),
+            "the package went away before the upgrade",
+        )
+        assertEquals(
+            UnityPipelineFailure.NOT_CONFIRMED,
+            unityPipelineUpgradeOutcome(output(0), versionAfter = "0.8.0-exp.1", latestVersion = null),
+            "with no latest version, nothing confirms the upgrade",
+        )
+        assertEquals(
+            UnityPipelineFailure.LAUNCH_FAILED,
+            unityPipelineUpgradeOutcome(null, versionAfter = "0.8.0-exp.1", latestVersion = "0.8.0-exp.1"),
+        )
+    }
+
+    @Test
     fun `the package id is the one the manifest holds`() {
         assertEquals("com.unity.pipeline", UNITY_PIPELINE_PACKAGE_ID)
     }
 
     private fun output(exitCode: Int): ProcessOutput = ProcessOutput().apply { this.exitCode = exitCode }
+
+    private companion object {
+        val LIST_VERSIONS_JSON = """
+            {
+              "success": true,
+              "command": "pipeline list-versions",
+              "data": {
+                "packageId": "com.unity.pipeline",
+                "latest": "0.8.0-exp.1",
+                "versions": ["0.8.0-exp.1", "0.7.0-exp.1", "0.6.0-exp.1"]
+              },
+              "errors": [],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val LIST_VERSIONS_OFFLINE_JSON = """
+            {
+              "success": false,
+              "command": "unity pipeline list-versions",
+              "data": null,
+              "errors": [{"code": "COMMAND_FAILED", "message": "Connection refused (127.0.0.1:9)"}],
+              "warnings": []
+            }
+        """.trimIndent()
+    }
 }

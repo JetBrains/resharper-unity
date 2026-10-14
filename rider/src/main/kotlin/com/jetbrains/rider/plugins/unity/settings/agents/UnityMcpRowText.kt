@@ -28,11 +28,12 @@ internal fun unityMcpSharedRemovalQuestion(stores: List<UnityMcpStore>, solution
     )
 }
 
-internal fun unityMcpGateMessage(section: UnityMcpSectionState): @Nls String? = when (section) {
+internal fun unityMcpGateMessage(section: UnityMcpSectionState, packageMissing: Boolean): @Nls String? = when (section) {
     UnityMcpSectionState.NO_PROJECT -> UnityBundle.message("unity.agents.mcp.no.project")
     UnityMcpSectionState.NOT_TRUSTED -> UnityBundle.message("unity.agents.mcp.not.trusted")
-    UnityMcpSectionState.NO_CLI -> UnityBundle.message("unity.agents.mcp.needs.cli")
-    UnityMcpSectionState.CHECKING, UnityMcpSectionState.READY -> null
+    UnityMcpSectionState.NO_CLI -> UnityBundle.message("unity.agents.mcp.needs.setup")
+    UnityMcpSectionState.READY -> if (packageMissing) UnityBundle.message("unity.agents.mcp.needs.setup") else null
+    UnityMcpSectionState.CHECKING -> null
 }
 
 internal fun unityMcpRowStatus(row: UnityMcpRowPresentation): UnityMcpRowStatus = when (row.state) {
@@ -40,12 +41,17 @@ internal fun unityMcpRowStatus(row: UnityMcpRowPresentation): UnityMcpRowStatus 
     UnityMcpRowState.FAILED -> problem(unityMcpWriteFailureMessage(row.failure, row.failureExitCode))
     UnityMcpRowState.UNAVAILABLE -> plain(null, UnityBundle.message("unity.agents.mcp.state.unavailable"))
     UnityMcpRowState.CHECKING -> plain(AnimatedIcon.Default.INSTANCE, UnityBundle.message("unity.agents.mcp.state.checking"))
-    UnityMcpRowState.UNREADABLE -> problem(UnityBundle.message("unity.agents.mcp.state.unreadable"))
+    UnityMcpRowState.UNREADABLE -> problem(unreadableMessage(row.store))
     UnityMcpRowState.RESTART_NEEDED -> ok(restartMessage(unityMcpRestartLine(row.entry)))
     UnityMcpRowState.ENTRY_PRESENT -> ok(UnityBundle.message("unity.agents.mcp.state.configured"))
     UnityMcpRowState.NOT_DETECTED -> plain(null, UnityBundle.message("unity.agents.mcp.state.not.detected"))
     UnityMcpRowState.NOT_CONFIGURED -> plain(null, UnityBundle.message("unity.agents.mcp.state.not.configured"))
 }
+
+@Nls
+private fun unreadableMessage(store: UnityMcpStore): String =
+    if (unityMcpJsonStoreName(store) != null) UnityBundle.message("unity.agents.mcp.state.unreadable.json")
+    else UnityBundle.message("unity.agents.mcp.state.unreadable")
 
 @Nls
 private fun restartMessage(line: UnityMcpRestartLine): String = when (line) {
