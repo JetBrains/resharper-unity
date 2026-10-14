@@ -30,6 +30,7 @@ jvm_library(
         "//plugins/air/backend/agent-extensions/skills",
         "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
         "@community//libraries/rd/core",
+        "//rider/plugins/plugins-appender/mcpServer",
     ],
 )
 
@@ -50,6 +51,7 @@ jvm_library(
         "//plugins/air/backend/agent-extensions/skills:skills_test_lib",
         "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
         "@community//libraries/rd/core:core_test_lib",
+        "//rider/plugins/plugins-appender/mcpServer:mcpServer_test_lib",
     ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.agents` end

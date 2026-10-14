@@ -16,8 +16,10 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -25,9 +27,42 @@ import kotlinx.coroutines.withContext
 internal class UnityAgentsSetupService(
     private val project: Project,
     private val scope: CoroutineScope,
-) {
+) : UnityAgentsSetupProvider {
+    private val setupLock = Any()
+    private var setupJob: Job? = null
+
     fun requestSetup() {
-        scope.launch { runSetup() }
+        startSetup()
+    }
+
+    override suspend fun setup() {
+        startSetup().join()
+    }
+
+    override suspend fun awaitSetup() {
+        synchronized(setupLock) { setupJob }?.join()
+    }
+
+    override fun isRunning(): Boolean = synchronized(setupLock) { setupJob?.isActive == true }
+
+    private fun startSetup(): Job = synchronized(setupLock) {
+        setupJob?.takeIf { it.isActive } ?: scope.launch { runSetup() }.also { setupJob = it }
+    }
+
+    override fun isAvailable(): Boolean =
+        UnityForAgentsFeature.isEnabled() &&
+            !project.isDefault &&
+            project.isUnityProject.value &&
+            TrustedProjects.isProjectTrusted(project)
+
+    override suspend fun readMissingSteps(): List<UnityAgentsSetupStep>? {
+        if (!isAvailable()) return null
+
+        val cli = readUnityCli(project)
+        if (cli.location == null) return missingUnityAgentsSetupSteps(cli, pipeline = null, skill = null)
+        val pipeline = UnityPipelineStatusProvider.getInstance(project).read(cli)
+        val skill = UnitySkillStatusProvider.getInstance(project).read(cli, pipeline)
+        return missingUnityAgentsSetupSteps(cli, pipeline, skill)
     }
 
     fun requestUpdate() {
@@ -199,6 +234,18 @@ internal class UnityAgentsSetupService(
         notification.notify(project)
     }
 
+    private fun missingUnityAgentsSetupSteps(
+        cli: UnityCliPresentation,
+        pipeline: UnityPipelinePresentation?,
+        skill: UnitySkillPresentation?,
+    ): List<UnityAgentsSetupStep> {
+        if (cli.location == null) return UnityAgentsSetupStep.entries
+        return buildList {
+            if (pipeline?.needsPipelinePackage == true) add(UnityAgentsSetupStep.PIPELINE_PACKAGE)
+            if (skill != null && skill.offer in MISSING_SKILL_OFFERS) add(UnityAgentsSetupStep.CLI_SKILL)
+        }
+    }
+
     companion object {
         fun getInstance(project: Project): UnityAgentsSetupService = project.service()
 
@@ -209,6 +256,9 @@ internal class UnityAgentsSetupService(
         private const val PACKAGE_FAILED_DISPLAY_ID = "unity.for.agents.setup.package.failed"
         private const val PACKAGE_UPDATE_FAILED_DISPLAY_ID = "unity.for.agents.update.package.failed"
         private const val SKILL_FAILED_DISPLAY_ID = "unity.for.agents.setup.skill.failed"
+
+        private val MISSING_SKILL_OFFERS: Set<UnitySkillOffer> =
+            setOf(UnitySkillOffer.INSTALL, UnitySkillOffer.FAILED, UnitySkillOffer.GATED)
     }
 }
 
