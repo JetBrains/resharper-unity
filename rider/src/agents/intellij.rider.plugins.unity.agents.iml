@@ -14,5 +14,6 @@
     <orderEntry type="module" module-name="intellij.aiagentextensions.skills" />
     <orderEntry type="module" module-name="intellij.rider.plugins.unity.backend" />
     <orderEntry type="module" module-name="intellij.libraries.rd.core" />
+    <orderEntry type="module" module-name="intellij.rider.plugins.appender.mcpServer" />
   </component>
 </module>
