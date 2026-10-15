@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.ide.actions.ShowSettingsUtilImpl
+import com.intellij.internal.statistic.collectors.fus.ui.SettingsOpeningTracker.OpeningEntry
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.options.ex.ConfigurableVisitor
@@ -29,7 +30,7 @@ internal fun openUnitySkillsPage(project: Project) {
         openUnityForAgentsPage(project)
         return
     }
-    settings.showSettingsDialogLazily(project, null) { groups ->
+    settings.showSettingsDialogLazily(project, null, OpeningEntry.OTHER) { groups ->
         val page = ConfigurableVisitor.findById(AGENT_SKILLS_SETTINGS_ID, groups)
         if (page != null) {
             (page as? SearchableConfigurable)?.enableSearch(UNITY_SKILLS_SEARCH)?.run()
