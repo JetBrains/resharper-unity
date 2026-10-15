@@ -49,5 +49,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 		public IViewableProperty<bool> ForceEventPipesForTimeBetweenDebuggerStops => DebuggerSessionOptionsImplementation.ForceEventPipesForTimeBetweenDebuggerStops;
         public IOutputAssembliesInfo? OutputAssembliesInfo => DebuggerSessionOptionsImplementation.OutputAssembliesInfo;
         public bool TrackHandledExceptionsInAsyncCode => DebuggerSessionOptionsImplementation.TrackHandledExceptionsInAsyncCode;
+        public SoftUserUnhandledExceptionsMode SoftUserUnhandledExceptionsMode => DebuggerSessionOptionsImplementation.SoftUserUnhandledExceptionsMode;
     }
 }
