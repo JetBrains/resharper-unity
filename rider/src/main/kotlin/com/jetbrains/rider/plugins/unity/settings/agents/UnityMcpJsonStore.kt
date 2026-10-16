@@ -11,6 +11,7 @@ import com.intellij.openapi.application.readAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.openapi.vfs.newvfs.ManagingFS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.AccessDeniedException
@@ -83,6 +84,7 @@ suspend fun writeUnityMcpJsonStoreInIde(file: Path, entry: UnityMcpServerEntry?)
 
 internal suspend fun writeStoreInIde(file: Path, write: () -> Boolean): Boolean {
     return saveUnsavedDocument(file) && withContext(Dispatchers.IO) {
+        flushPendingVfsWrites(file)
         val written = write()
         if (written) VfsUtil.markDirtyAndRefresh(false, false, false, file)
         written
@@ -97,6 +99,11 @@ private suspend fun saveUnsavedDocument(file: Path): Boolean {
         manager.saveDocument(document)
         !manager.isDocumentUnsaved(document)
     }
+}
+
+private fun flushPendingVfsWrites(file: Path) {
+    val virtualFile = VirtualFileManager.getInstance().findFileByNioPath(file) ?: return
+    ManagingFS.getInstance().flushPendingUpdates(virtualFile)
 }
 
 fun writeUnityMcpJsonStore(file: Path, entry: UnityMcpServerEntry?): Boolean {
