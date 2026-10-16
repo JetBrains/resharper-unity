@@ -24,6 +24,7 @@ internal class UnitySkillSectionPanel(
     private val install: (UnitySkillTarget) -> Unit,
     private val retry: () -> Unit,
     private val openSkillsSettings: (JComponent) -> Unit,
+    private val browseSkills: (JComponent) -> Unit,
 ) {
     fun build(presentation: UnitySkillPresentation): JComponent = panel {
         when (presentation.offer) {
@@ -118,7 +119,7 @@ internal class UnitySkillSectionPanel(
         row {
             link(UnityBundle.message("unity.agents.skills.browse")) { event ->
                 val link = event.source as? JComponent ?: return@link
-                openSkillsSettings(link)
+                browseSkills(link)
             }
         }
     }

@@ -128,14 +128,33 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         }
 
         this.pipelinePanel = UnityPipelineSectionPanel(
-            install = { startPipeline(UnityPipelineOperation.INSTALLING) },
-            upgrade = { startPipeline(UnityPipelineOperation.UPGRADING) },
-            retry = { retryPipeline(it) },
+            install = {
+                logClick(UnityAgentsAction.INSTALL)
+                startPipeline(UnityPipelineOperation.INSTALLING)
+            },
+            upgrade = {
+                logClick(UnityAgentsAction.UPDATE)
+                startPipeline(UnityPipelineOperation.UPGRADING)
+            },
+            retry = {
+                logClick(UnityAgentsAction.RETRY)
+                retryPipeline(it)
+            },
         )
         this.skillPanel = UnitySkillSectionPanel(
-            install = { startSkillInstall(it) },
-            retry = { retrySkill() },
+            install = {
+                logClick(UnityAgentsAction.INSTALL)
+                startSkillInstall(it)
+            },
+            retry = {
+                logClick(UnityAgentsAction.RETRY)
+                retrySkill()
+            },
             openSkillsSettings = { openSkillsSettings(it) },
+            browseSkills = {
+                logClick(UnityAgentsAction.BROWSE_SKILLS)
+                openSkillsSettings(it)
+            },
         )
         this.mcpPanel = UnityMcpSectionPanel(project, write = { stores, operation -> startWrite(stores, operation) })
         this.root = root
@@ -221,6 +240,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         if (operation == UnityMcpOperation.REMOVING && !confirmedSharedRemoval(stores)) return
         val packageInstallAgreed = operation == UnityMcpOperation.CONFIGURING && agreedToPipelinePackage()
         if (operation == UnityMcpOperation.CONFIGURING && needsPipelinePackage() && !packageInstallAgreed) return
+        if (packageInstallAgreed) logClick(UnityAgentsAction.INSTALL)
 
         val modality = ModalityState.current()
 
@@ -284,8 +304,8 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         activeScope.launch {
             val provider = UnityPipelineStatusProvider.getInstance(project)
             when (operation) {
-                UnityPipelineOperation.INSTALLING -> provider.install(modality)
-                UnityPipelineOperation.UPGRADING -> provider.upgrade(modality)
+                UnityPipelineOperation.INSTALLING -> provider.install(modality, UnityAgentsSource.SETTINGS)
+                UnityPipelineOperation.UPGRADING -> provider.upgrade(modality, UnityAgentsSource.SETTINGS)
             }
             withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
         }
@@ -313,7 +333,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             skillStatus?.component = skillPanel?.build(skill.copy(installing = true, failure = null))
         }
         activeScope.launch {
-            UnitySkillStatusProvider.getInstance(project).install(target, modality)
+            UnitySkillStatusProvider.getInstance(project).install(target, modality, UnityAgentsSource.SETTINGS)
             withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
         }
     }
@@ -334,6 +354,10 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         else {
             openUnitySkillsPage(project)
         }
+    }
+
+    private fun logClick(action: UnityAgentsAction) {
+        UnityForAgentsUsagesCollector.logActionClicked(project, action, UnityAgentsSource.SETTINGS)
     }
 
     private fun buildCliStatus(presentation: UnityCliPresentation): JComponent = panel {
@@ -372,7 +396,10 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
 
             UnityCliOffer.INSTALL -> {
                 row {
-                    button(UnityBundle.message("unity.agents.cli.install")) { startInstall() }.gap(RightGap.SMALL)
+                    button(UnityBundle.message("unity.agents.cli.install")) {
+                        logClick(UnityAgentsAction.INSTALL)
+                        startInstall()
+                    }.gap(RightGap.SMALL)
                     comment(UnityBundle.message("unity.agents.cli.install.hint"))
                 }
                 // Rider runs a script of a third party, so the page says so before the user clicks.
@@ -387,7 +414,10 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             }
 
             UnityCliOffer.UPDATE -> row {
-                button(UnityBundle.message("unity.agents.cli.update")) { startUpdate() }.gap(RightGap.SMALL)
+                button(UnityBundle.message("unity.agents.cli.update")) {
+                    logClick(UnityAgentsAction.UPDATE)
+                    startUpdate()
+                }.gap(RightGap.SMALL)
                 comment(unityCliNewVersionMessage(presentation.latestVersion))
             }
 
@@ -450,6 +480,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
     }
 
     private fun retry(presentation: UnityCliPresentation) {
+        logClick(UnityAgentsAction.RETRY)
         val failureId = presentation.failureId
         if (failureId != null) UnityCliStatusProvider.getInstance().clearFailure(failureId)
         if (presentation.failedOperation == UnityCliOperation.UPDATING) startUpdate() else startInstall()
@@ -469,7 +500,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         paintedPage = null
         cliStatus?.component = buildCliStatus(UnityCliPresentation(detected = true, operation = UnityCliOperation.INSTALLING))
         activeScope.launch {
-            UnityCliStatusProvider.getInstance().install(project, modality)
+            UnityCliStatusProvider.getInstance().install(project, modality, UnityAgentsSource.SETTINGS)
             withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
         }
     }
@@ -482,7 +513,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         paintedPage = null
         cliStatus?.component = buildCliStatus(UnityCliPresentation(detected = true, operation = UnityCliOperation.UPDATING))
         activeScope.launch {
-            UnityCliStatusProvider.getInstance().update(project, modality)
+            UnityCliStatusProvider.getInstance().update(project, modality, UnityAgentsSource.SETTINGS)
             withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
         }
     }

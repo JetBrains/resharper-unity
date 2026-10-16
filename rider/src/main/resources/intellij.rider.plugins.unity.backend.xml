@@ -309,6 +309,7 @@
 
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantEventLogger"/>
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.profiler.UnityProfilerUsagesCollector"/>
+    <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.settings.agents.UnityForAgentsUsagesCollector"/>
 
     <rider.completion.csharpIdentifierPartHelper implementation="com.jetbrains.rider.plugins.unity.csharp.completion.OdinLayoutAttributeCSharpIdentifierPartHelper"/>
 
@@ -491,11 +492,14 @@
     <!-- One group for each intent, so a user who silences one still hears the others. A prompt
          that asks for an action waits for the user, and a confirmation does not. -->
     <notificationGroup id="Unity for Agents" displayType="STICKY_BALLOON" bundle="messages.UnityBundle"
-                       key="notification.group.unity.agents"/>
+                       key="notification.group.unity.agents"
+                       notificationIds="unity.for.agents.cli.install;unity.for.agents.cli.update"/>
     <notificationGroup id="Unity for Agents Errors" displayType="STICKY_BALLOON" bundle="messages.UnityBundle"
-                       key="notification.group.unity.agents.errors"/>
+                       key="notification.group.unity.agents.errors"
+                       notificationIds="unity.for.agents.cli.install.failed;unity.for.agents.cli.update.failed;unity.for.agents.setup.package.failed;unity.for.agents.update.package.failed;unity.for.agents.setup.skill.failed"/>
     <notificationGroup id="Unity for Agents Confirmations" displayType="BALLOON" bundle="messages.UnityBundle"
-                       key="notification.group.unity.agents.confirmations"/>
+                       key="notification.group.unity.agents.confirmations"
+                       notificationIds="unity.for.agents.setup.done"/>
     <iconMapper mappingFile="UnityIconMappings.json"/>
 
     <!-- Unity Profiler line markers -->

@@ -3,6 +3,7 @@ package com.jetbrains.rider.unity.test.cases.agents
 import com.google.gson.Gson
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsResult
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpSectionState
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillClient
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillCore
@@ -14,6 +15,8 @@ import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.shared.constants.TeamCityTags
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -147,6 +150,57 @@ class UnitySkillCoreTest {
         assertEquals(UnitySkillFailure.LAUNCH_FAILED, presentation.failure)
         assertNull(presentation.failureExitCode)
         assertEquals(UnitySkillOffer.FAILED, presentation.offer)
+    }
+
+    @Test
+    fun `an install that lands reports SUCCESS once`() = runBlocking {
+        // The absolute path keeps the skill inside the solution on Windows too, where a rooted path gets a drive letter.
+        val skillPath = solution.toAbsolutePath().normalize().resolve(".agents/skills/unity-cli")
+        processAnswer = answerWithList { cmd ->
+            val params = cmd.parametersList.parameters
+            val client = UnitySkillClient.entries.first { it.key in params }.key
+            installs.add(UnitySkillInstall(client, local = true, skillPath))
+            output(0)
+        }
+
+        val results = mutableListOf<UnityAgentsResult>()
+        core.install(unity, solution, UnitySkillTarget.CODEX.clients) { results.add(it) }
+
+        assertEquals(listOf(UnityAgentsResult.SUCCESS), results)
+    }
+
+    @Test
+    fun `an install that stops at a failure reports FAILED once`() = runBlocking {
+        processAnswer = answerWithList { output(2) }
+
+        val results = mutableListOf<UnityAgentsResult>()
+        core.install(unity, solution, UnitySkillTarget.ALL.clients) { results.add(it) }
+
+        assertEquals(listOf(UnityAgentsResult.FAILED), results)
+    }
+
+    @Test
+    fun `a second install call while one runs reports nothing`() = runBlocking {
+        val started = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        processAnswer = { cmd ->
+            if (cmd.parametersList.parameters.contains("install")) {
+                started.complete(Unit)
+                release.await()
+            }
+            output(0, skillListJson(installs))
+        }
+
+        val firstResults = mutableListOf<UnityAgentsResult>()
+        val secondResults = mutableListOf<UnityAgentsResult>()
+        val first = async { core.install(unity, solution, UnitySkillTarget.CODEX.clients) { firstResults.add(it) } }
+        started.await()
+        core.install(unity, solution, UnitySkillTarget.CODEX.clients) { secondResults.add(it) }
+        release.complete(Unit)
+        first.await()
+
+        assertEquals(1, firstResults.size)
+        assertEquals(emptyList<UnityAgentsResult>(), secondResults)
     }
 
     @Test

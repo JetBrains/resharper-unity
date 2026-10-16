@@ -38,10 +38,10 @@ import java.util.concurrent.atomic.AtomicReference
 @ApiStatus.Internal
 interface UnityCliStatusProvider {
     suspend fun read(): UnityCliPresentation
-    suspend fun install(project: Project, modality: ModalityState)
-    suspend fun update(project: Project, modality: ModalityState)
-    fun requestInstall(project: Project, modality: ModalityState)
-    fun requestUpdate(project: Project, modality: ModalityState)
+    suspend fun install(project: Project, modality: ModalityState, source: UnityAgentsSource)
+    suspend fun update(project: Project, modality: ModalityState, source: UnityAgentsSource)
+    fun requestInstall(project: Project, modality: ModalityState, source: UnityAgentsSource)
+    fun requestUpdate(project: Project, modality: ModalityState, source: UnityAgentsSource)
     /**
      * Clears the failure with this id. A failure that arrived later stays, because the user did not see it.
      */
@@ -69,32 +69,32 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
 
     override suspend fun read(): UnityCliPresentation = withHeldState(detect())
 
-    override suspend fun install(project: Project, modality: ModalityState) {
+    override suspend fun install(project: Project, modality: ModalityState, source: UnityAgentsSource) {
         if (!UnityForAgentsFeature.isEnabled()) return
         if (!TrustedProjects.isProjectTrusted(project)) return
         if (!runningOperation.compareAndSet(null, UnityCliOperation.INSTALLING)) {
             logger.info("The Unity CLI install was asked for while ${runningOperation.get()} runs")
             return
         }
-        scope.launch { runInstall(project, modality) }.join()
+        scope.launch { runInstall(project, modality, source) }.join()
     }
 
-    override suspend fun update(project: Project, modality: ModalityState) {
+    override suspend fun update(project: Project, modality: ModalityState, source: UnityAgentsSource) {
         if (!UnityForAgentsFeature.isEnabled()) return
         if (!TrustedProjects.isProjectTrusted(project)) return
         if (!runningOperation.compareAndSet(null, UnityCliOperation.UPDATING)) {
             logger.info("The Unity CLI update was asked for while ${runningOperation.get()} runs")
             return
         }
-        scope.launch { runUpdate(project, modality) }.join()
+        scope.launch { runUpdate(project, modality, source) }.join()
     }
 
-    override fun requestInstall(project: Project, modality: ModalityState) {
-        scope.launch { install(project, modality) }
+    override fun requestInstall(project: Project, modality: ModalityState, source: UnityAgentsSource) {
+        scope.launch { install(project, modality, source) }
     }
 
-    override fun requestUpdate(project: Project, modality: ModalityState) {
-        scope.launch { update(project, modality) }
+    override fun requestUpdate(project: Project, modality: ModalityState, source: UnityAgentsSource) {
+        scope.launch { update(project, modality, source) }
     }
 
     override fun forgetUpdateInfo() {
@@ -136,12 +136,12 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         )
     }
 
-    private suspend fun runInstall(project: Project, modality: ModalityState) {
+    private suspend fun runInstall(project: Project, modality: ModalityState, source: UnityAgentsSource) {
         try {
             val script = UnityCliInstallerScript.forCurrentOs()
             if (script == null) {
                 logger.warn("Unity publishes no installer script for this operating system")
-                report(project, modality, UnityCliFailure.DOWNLOAD, null, UnityCliOperation.INSTALLING)
+                report(project, modality, UnityCliFailure.DOWNLOAD, null, UnityCliOperation.INSTALLING, source)
                 return
             }
 
@@ -169,7 +169,10 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
                 }
             }
             if (result.failure != null) {
-                report(project, modality, result.failure, result.exitCode, UnityCliOperation.INSTALLING)
+                report(project, modality, result.failure, result.exitCode, UnityCliOperation.INSTALLING, source)
+            }
+            else {
+                logResult(project, UnityCliOperation.INSTALLING, source, UnityAgentsResult.SUCCESS)
             }
         }
         finally {
@@ -177,7 +180,7 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         }
     }
 
-    private suspend fun runUpdate(project: Project, modality: ModalityState) {
+    private suspend fun runUpdate(project: Project, modality: ModalityState, source: UnityAgentsSource) {
         try {
             lastFailure.set(null)
             val state = detect()
@@ -189,7 +192,7 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
                     "Rider will not update a ${state.installMethod} copy of the Unity CLI at " +
                     "${state.location} with the command '${state.updateCommand}'"
                 )
-                report(project, modality, UnityCliFailure.LAUNCH_FAILED, null, UnityCliOperation.UPDATING)
+                report(project, modality, UnityCliFailure.LAUNCH_FAILED, null, UnityCliOperation.UPDATING, source)
                 return
             }
 
@@ -198,14 +201,15 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
             }
             val failure = unityCliUpdateOutcome(exitCode)
             if (failure != null) {
-                report(project, modality, failure, exitCode, UnityCliOperation.UPDATING)
+                report(project, modality, failure, exitCode, UnityCliOperation.UPDATING, source)
             }
             else {
                 val copy = findLocalCopy(UnityCliEnvironment.getInstance()).copy
                 if (copy?.version == null) {
-                    report(project, modality, UnityCliFailure.VERIFICATION, exitCode, UnityCliOperation.UPDATING)
+                    report(project, modality, UnityCliFailure.VERIFICATION, exitCode, UnityCliOperation.UPDATING, source)
                 }
                 else {
+                    logResult(project, UnityCliOperation.UPDATING, source, UnityAgentsResult.SUCCESS)
                     refreshSkills(copy.path)
                 }
             }
@@ -251,6 +255,14 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         if (line.isNotBlank()) logger.info("Unity CLI: $line")
     }
 
+    private fun logResult(project: Project, operation: UnityCliOperation, source: UnityAgentsSource, result: UnityAgentsResult) {
+        val agentsOperation = when (operation) {
+            UnityCliOperation.INSTALLING -> UnityAgentsOperation.INSTALLING
+            UnityCliOperation.UPDATING -> UnityAgentsOperation.UPDATING
+        }
+        UnityForAgentsUsagesCollector.logComponentOperationFinished(project, UnityAgentsSetupStep.CLI, agentsOperation, source, result)
+    }
+
     @Suppress("DialogTitleCapitalization")
     private suspend fun report(
         project: Project,
@@ -258,7 +270,9 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         failure: UnityCliFailure,
         exitCode: Int?,
         operation: UnityCliOperation,
+        source: UnityAgentsSource,
     ) {
+        logResult(project, operation, source, UnityAgentsResult.FAILED)
         val record = FailureRecord(failureIds.incrementAndGet(), failure, exitCode, operation)
         lastFailure.set(record)
 
@@ -285,10 +299,11 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         notification.setAddExtraAction(true)
         notification.addAction(
             NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.cli.try.again")) {
+                UnityForAgentsUsagesCollector.logActionClicked(project, UnityAgentsAction.RETRY, UnityAgentsSource.NOTIFICATION)
                 clearFailure(record.id)
                 when (operation) {
-                    UnityCliOperation.INSTALLING -> requestInstall(project, ModalityState.nonModal())
-                    UnityCliOperation.UPDATING -> requestUpdate(project, ModalityState.nonModal())
+                    UnityCliOperation.INSTALLING -> requestInstall(project, ModalityState.nonModal(), UnityAgentsSource.NOTIFICATION)
+                    UnityCliOperation.UPDATING -> requestUpdate(project, ModalityState.nonModal(), UnityAgentsSource.NOTIFICATION)
                 }
             }
         )
@@ -296,7 +311,7 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         // the page that carries the same failure and the rest of the state.
         notification.addAction(
             NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.open.settings")) {
-                openUnityForAgentsPage(project)
+                UnityAgentsSetupProvider.getInstance(project).openSettings(UnityAgentsSource.NOTIFICATION)
             }
         )
 

@@ -49,6 +49,22 @@ fun unityCliSuggestion(presentation: UnityCliPresentation, facts: UnityAgentsSwe
 }
 
 @ApiStatus.Internal
+fun unityAgentsMissingSteps(
+    cliMissing: Boolean,
+    packageMissing: Boolean,
+    skillMissing: Boolean,
+): List<UnityAgentsSetupStep> =
+    if (cliMissing) {
+        UnityAgentsSetupStep.entries
+    }
+    else {
+        buildList {
+            if (packageMissing) add(UnityAgentsSetupStep.PIPELINE_PACKAGE)
+            if (skillMissing) add(UnityAgentsSetupStep.CLI_SKILL)
+        }
+    }
+
+@ApiStatus.Internal
 fun unityAgentsSetupPrompt(
     cliMissing: Boolean,
     packageMissing: Boolean,
