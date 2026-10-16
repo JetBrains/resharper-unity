@@ -26,7 +26,7 @@ private val logger: Logger = Logger.getInstance(UnitySkillStatusService::class.j
 
 internal interface UnitySkillStatusProvider {
     suspend fun read(cli: UnityCliPresentation, pipeline: UnityPipelinePresentation): UnitySkillPresentation
-    suspend fun install(target: UnitySkillTarget, modality: ModalityState)
+    suspend fun install(target: UnitySkillTarget, modality: ModalityState, source: UnityAgentsSource)
     fun clearFailure()
 
     companion object {
@@ -48,14 +48,22 @@ internal class UnitySkillStatusService(
         return core.read(gate, packageInstalled, cli.location, solution)
     }
 
-    override suspend fun install(target: UnitySkillTarget, modality: ModalityState) {
+    override suspend fun install(target: UnitySkillTarget, modality: ModalityState, source: UnityAgentsSource) {
         if (!UnityForAgentsFeature.isEnabled()) return
         if (!TrustedProjects.isProjectTrusted(project)) return
         val unity = UnityCliStatusProvider.getInstance().read().location ?: return
         val solution = unitySolutionDirectory(project) ?: return
         scope.launch(modality.asContextElement()) {
             withBackgroundProgress(project, UnityBundle.message("unity.agents.skills.progress.install")) {
-                core.install(unity, solution, target.clients)
+                core.install(unity, solution, target.clients) { result ->
+                    UnityForAgentsUsagesCollector.logComponentOperationFinished(
+                        project,
+                        UnityAgentsSetupStep.CLI_SKILL,
+                        UnityAgentsOperation.INSTALLING,
+                        source,
+                        result,
+                    )
+                }
             }
         }.join()
     }
@@ -116,13 +124,19 @@ class UnitySkillCore(
         }
     }
 
-    suspend fun install(unity: Path, solution: Path, clients: List<UnitySkillClient>) {
+    suspend fun install(
+        unity: Path,
+        solution: Path,
+        clients: List<UnitySkillClient>,
+        onResult: (UnityAgentsResult) -> Unit = {},
+    ) {
         if (!installing.compareAndSet(false, true)) {
             logger.info("The unity-cli skill install was asked for while another install runs")
             return
         }
         try {
             lastFailure.set(null)
+            var result = UnityAgentsResult.SUCCESS
             for (client in clients) {
                 val command = unitySkillInstallCommandLine(unity, client, solution)
                 val output = runProcess(command, UnityCliProcessRunner.STORE_WRITE_TIMEOUT_MS)
@@ -132,9 +146,11 @@ class UnitySkillCore(
                 if (failure != null) {
                     lastFailure.set(SkillFailureRecord(failure, exitCodeOf(output)))
                     logger.warn("Rider could not install the unity-cli skill for ${client.key} in $solution: $failure${processOutputForLog(output)}")
+                    result = UnityAgentsResult.FAILED
                     break
                 }
             }
+            onResult(result)
         }
         finally {
             installing.set(false)

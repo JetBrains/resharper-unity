@@ -12,7 +12,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_CLI_SKILL_NAME
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupProvider
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupRowLink
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupStep
-import com.jetbrains.rider.plugins.unity.settings.agents.openUnityForAgentsPage
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSource
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupRowInstallingText
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupRowPresentation
 import org.jetbrains.annotations.Nls
@@ -42,7 +42,7 @@ internal class UnityAgentSetupRowProvider : AgentSetupRowProvider {
     }
 
     override fun open(project: Project) {
-        openUnityForAgentsPage(project)
+        UnityAgentsSetupProvider.getInstance(project).openSettings(UnityAgentsSource.AGENT_WIDGET)
     }
 
     override suspend fun awaitIdle(project: Project) {
@@ -63,11 +63,12 @@ internal class UnityAgentSetupRowProvider : AgentSetupRowProvider {
                 text = link.text,
                 progress = unityAgentsSetupRowInstallingText(),
             ) {
-                UnityAgentsSetupProvider.getInstance(project).setup()
+                UnityAgentsSetupProvider.getInstance(project).requestSetup(UnityAgentsSource.AGENT_WIDGET, missing).join()
                 null
             }
 
             UnityAgentsSetupRowLink.DISMISS -> AgentSetupRowLink(text = link.text) {
+                UnityAgentsSetupProvider.getInstance(project).reportDismiss(UnityAgentsSource.AGENT_WIDGET)
                 PropertiesComponent.getInstance(project).setList(DISMISSED_STEPS_KEY, missing.map { it.name })
                 AgentSetupRow(summary = summary)
             }

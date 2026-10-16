@@ -1,6 +1,7 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupStep
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpSectionState
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillClient
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillFailure
@@ -9,6 +10,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillOffer
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillPresentation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillTarget
 import com.jetbrains.rider.plugins.unity.settings.agents.parseUnitySkillList
+import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsMissingSteps
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupPrompt
 import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillInstallCommandLine
 import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillInstallsOf
@@ -246,6 +248,30 @@ class UnitySkillTest {
             UnityBundle.message("unity.agents.setup.finish.title") to
                 UnityBundle.message("unity.agents.setup.finish.content.skill"),
             unityAgentsSetupPrompt(cliMissing = false, packageMissing = false, skillMissing = true),
+        )
+    }
+
+    @Test
+    fun `unityAgentsMissingSteps lists the steps that the setup balloon offers`() {
+        assertEquals(
+            UnityAgentsSetupStep.entries,
+            unityAgentsMissingSteps(cliMissing = true, packageMissing = false, skillMissing = false),
+        )
+        assertEquals(
+            UnityAgentsSetupStep.entries,
+            unityAgentsMissingSteps(cliMissing = true, packageMissing = true, skillMissing = true),
+        )
+        assertEquals(
+            listOf(UnityAgentsSetupStep.PIPELINE_PACKAGE, UnityAgentsSetupStep.CLI_SKILL),
+            unityAgentsMissingSteps(cliMissing = false, packageMissing = true, skillMissing = true),
+        )
+        assertEquals(
+            listOf(UnityAgentsSetupStep.PIPELINE_PACKAGE),
+            unityAgentsMissingSteps(cliMissing = false, packageMissing = true, skillMissing = false),
+        )
+        assertEquals(
+            listOf(UnityAgentsSetupStep.CLI_SKILL),
+            unityAgentsMissingSteps(cliMissing = false, packageMissing = false, skillMissing = true),
         )
     }
 

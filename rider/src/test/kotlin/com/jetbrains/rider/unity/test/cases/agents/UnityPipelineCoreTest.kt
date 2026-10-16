@@ -2,6 +2,7 @@ package com.jetbrains.rider.unity.test.cases.agents
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsResult
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpFailure
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpSectionState
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityPipelineCore
@@ -227,6 +228,97 @@ class UnityPipelineCoreTest {
         assertEquals(UnityPipelineOperation.UPGRADING, presentation.failedOperation)
         assertNull(presentation.failureExitCode)
         assertEquals(UnityPipelineOffer.FAILED, presentation.offer)
+    }
+
+    @Test
+    fun `an install that lands reports SUCCESS`() = runBlocking {
+        val results = mutableListOf<UnityAgentsResult>()
+        core.install(unity, solution) { results.add(it) }
+        assertEquals(listOf(UnityAgentsResult.SUCCESS), results)
+    }
+
+    @Test
+    fun `an install that exits with an error reports FAILED`() = runBlocking {
+        processAnswer = { output(6) }
+        val results = mutableListOf<UnityAgentsResult>()
+        core.install(unity, solution) { results.add(it) }
+        assertEquals(listOf(UnityAgentsResult.FAILED), results)
+    }
+
+    @Test
+    fun `an install of a present package runs nothing and reports nothing`() = runBlocking {
+        manifest = UnityPipelineManifest(version = "0.8.0-exp.1")
+        val results = mutableListOf<UnityAgentsResult>()
+        core.install(unity, solution) { results.add(it) }
+        assertEquals(emptyList<UnityAgentsResult>(), results)
+        assertEquals(0, executedCommands.size)
+    }
+
+    @Test
+    fun `a second install call while one runs reports nothing`() = runBlocking {
+        val started = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        processAnswer = {
+            started.complete(Unit)
+            release.await()
+            output(0)
+        }
+        val firstResults = mutableListOf<UnityAgentsResult>()
+        val secondResults = mutableListOf<UnityAgentsResult>()
+        val first = async { core.install(unity, solution) { firstResults.add(it) } }
+        started.await()
+        core.install(unity, solution) { secondResults.add(it) }
+        release.complete(Unit)
+        first.await()
+        assertEquals(listOf(UnityAgentsResult.SUCCESS), firstResults)
+        assertEquals(emptyList<UnityAgentsResult>(), secondResults)
+    }
+
+    @Test
+    fun `an upgrade to the latest version reports SUCCESS`() = runBlocking {
+        manifest = UnityPipelineManifest(version = "0.7.0-exp.1")
+        core.read(UnityMcpSectionState.READY, unity, cliVersion, solution)
+        processAnswer = { command ->
+            if (command.parametersList.parameters.contains("upgrade")) manifest = UnityPipelineManifest(version = "0.8.0-exp.1")
+            output(0)
+        }
+        val results = mutableListOf<UnityAgentsResult>()
+        core.upgrade(unity, solution) { results.add(it) }
+        assertEquals(listOf(UnityAgentsResult.SUCCESS), results)
+    }
+
+    @Test
+    fun `an upgrade of an absent package reports FAILED`() = runBlocking {
+        manifest = UnityPipelineManifest(version = null)
+        val results = mutableListOf<UnityAgentsResult>()
+        core.upgrade(unity, solution) { results.add(it) }
+        assertEquals(listOf(UnityAgentsResult.FAILED), results)
+    }
+
+    @Test
+    fun `ensureInstalled reports the install it runs and nothing for a present package`() = runBlocking {
+        val results = mutableListOf<UnityAgentsResult>()
+        core.ensureInstalled(agreed = true, unity, solution) { results.add(it) }
+        assertEquals(listOf(UnityAgentsResult.SUCCESS), results)
+
+        core.ensureInstalled(agreed = true, unity, solution) { results.add(it) }
+        assertEquals(listOf(UnityAgentsResult.SUCCESS), results)
+    }
+
+    @Test
+    fun `ensureInstalled reports nothing when the user declines the package`() = runBlocking {
+        val results = mutableListOf<UnityAgentsResult>()
+        core.ensureInstalled(agreed = false, unity, solution) { results.add(it) }
+        assertEquals(emptyList<UnityAgentsResult>(), results)
+    }
+
+    @Test
+    fun `ensureInstalled without the Unity CLI fails and reports nothing`() = runBlocking {
+        val results = mutableListOf<UnityAgentsResult>()
+        val outcome = core.ensureInstalled(agreed = true, unity = null, solution) { results.add(it) }
+        assertEquals(UnityPipelinePackageOutcome.Failed(UnityMcpFailure.PACKAGE_INSTALL, null), outcome)
+        assertEquals(emptyList<UnityAgentsResult>(), results)
+        assertEquals(0, executedCommands.size)
     }
 
     private fun output(exitCode: Int, stdout: String = ""): ProcessOutput =

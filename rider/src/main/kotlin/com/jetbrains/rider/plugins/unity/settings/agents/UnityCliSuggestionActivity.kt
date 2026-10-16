@@ -56,6 +56,7 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
             UnityCliSuggestion.INSTALL -> {
                 val cliMissing = presentation.copy(projectTrusted = true).offer == UnityCliOffer.INSTALL
                 val packageMissing = pipeline.offer == UnityPipelineOffer.INSTALL
+                val missingSteps = unityAgentsMissingSteps(cliMissing, packageMissing, skillMissing)
                 val (title, message) = unityAgentsSetupPrompt(cliMissing, packageMissing, skillMissing)
                 val notification = UnityAgentsFullContentNotification(
                     UNITY_AGENTS_GROUP,
@@ -66,12 +67,12 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
                 notification.setSuggestionType(true)
                 notification.addAction(
                     NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.setup.action.install")) {
-                        UnityAgentsSetupService.getInstance(project).requestSetup()
+                        UnityAgentsSetupProvider.getInstance(project).requestSetup(UnityAgentsSource.NOTIFICATION, missingSteps)
                     }
                 )
                 notification.addAction(
                     NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.setup.action.manual")) {
-                        openUnityForAgentsPage(project)
+                        UnityAgentsSetupProvider.getInstance(project).openSettings(UnityAgentsSource.NOTIFICATION)
                     }
                 )
                 notification.notify(project)
@@ -107,14 +108,19 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
                         when (action) {
                             UnityAgentsUpdateAction.UPDATE ->
                                 NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.update.action")) {
-                                    UnityAgentsSetupService.getInstance(project).requestUpdate()
+                                    UnityAgentsSetupProvider.getInstance(project).requestUpdate(UnityAgentsSource.NOTIFICATION)
                                 }
                             UnityAgentsUpdateAction.SHOW_UPDATE_COMMAND ->
                                 NotificationAction.createSimpleExpiring(UnityBundle.message("unity.agents.update.show.command")) {
-                                    openUnityForAgentsPage(project)
+                                    UnityAgentsSetupProvider.getInstance(project).openSettings(UnityAgentsSource.NOTIFICATION)
                                 }
                             UnityAgentsUpdateAction.LEARN_MORE ->
                                 NotificationAction.createSimple(UnityBundle.message("unity.agents.learn.more")) {
+                                    UnityForAgentsUsagesCollector.logActionClicked(
+                                        project,
+                                        UnityAgentsAction.LEARN_MORE,
+                                        UnityAgentsSource.NOTIFICATION,
+                                    )
                                     HelpManager.getInstance().invokeHelp(UNITY_FOR_AGENTS_HELP_TOPIC)
                                 }
                         }

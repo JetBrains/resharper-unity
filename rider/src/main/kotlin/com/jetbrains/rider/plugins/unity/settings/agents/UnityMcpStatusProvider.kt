@@ -148,7 +148,7 @@ internal class UnityMcpStatusService(
                 val before = readEntries(claimed, unity, solution)
                 val outcome = when (operation) {
                     UnityMcpOperation.CONFIGURING ->
-                        UnityPipelineStatusProvider.getInstance(project).ensureInstalled(packageInstallAgreed)
+                        UnityPipelineStatusProvider.getInstance(project).ensureInstalled(packageInstallAgreed, UnityAgentsSource.SETTINGS)
                     UnityMcpOperation.REMOVING -> UnityPipelinePackageOutcome.Ready
                 }
                 val answers = when (outcome) {
@@ -160,7 +160,12 @@ internal class UnityMcpStatusService(
                 val after = readEntries(claimed, unity, solution)
                 for ((store, answer) in answers) {
                     val confirmed = unityMcpWriteConfirmed(operation, after.getValue(store))
-                    release(store, answer.failure(confirmed), answer.exitCode(), before.getValue(store), after.getValue(store))
+                    val failure = answer.failure(confirmed)
+                    release(store, failure, answer.exitCode(), before.getValue(store), after.getValue(store))
+                    if (store in stores) {
+                        val result = if (failure == null) UnityAgentsResult.SUCCESS else UnityAgentsResult.FAILED
+                        UnityForAgentsUsagesCollector.logMcpOperationFinished(project, store, operation, result)
+                    }
                 }
             }
         }

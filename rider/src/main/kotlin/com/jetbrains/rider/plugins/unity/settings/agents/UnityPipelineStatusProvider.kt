@@ -29,9 +29,9 @@ private val logger: Logger = Logger.getInstance(UnityPipelineStatusService::clas
 
 internal interface UnityPipelineStatusProvider {
     suspend fun read(cli: UnityCliPresentation): UnityPipelinePresentation
-    suspend fun install(modality: ModalityState)
-    suspend fun upgrade(modality: ModalityState)
-    suspend fun ensureInstalled(agreed: Boolean): UnityPipelinePackageOutcome
+    suspend fun install(modality: ModalityState, source: UnityAgentsSource)
+    suspend fun upgrade(modality: ModalityState, source: UnityAgentsSource)
+    suspend fun ensureInstalled(agreed: Boolean, source: UnityAgentsSource): UnityPipelinePackageOutcome
     fun clearFailure()
 
     companion object {
@@ -52,34 +52,38 @@ internal class UnityPipelineStatusService(
         return core.read(gate, cli.location, cli.installedVersion, solution)
     }
 
-    override suspend fun install(modality: ModalityState) {
+    override suspend fun install(modality: ModalityState, source: UnityAgentsSource) {
         if (!UnityForAgentsFeature.isEnabled()) return
         if (!TrustedProjects.isProjectTrusted(project)) return
         val unity = UnityCliStatusProvider.getInstance().read().location ?: return
         val solution = unitySolutionDirectory(project) ?: return
         scope.launch(modality.asContextElement()) {
             withBackgroundProgress(project, UnityBundle.message("unity.agents.pipeline.progress.install")) {
-                core.install(unity, solution)
+                core.install(unity, solution) { logOperationFinished(UnityAgentsOperation.INSTALLING, source, it) }
             }
         }.join()
     }
 
-    override suspend fun upgrade(modality: ModalityState) {
+    override suspend fun upgrade(modality: ModalityState, source: UnityAgentsSource) {
         if (!UnityForAgentsFeature.isEnabled()) return
         if (!TrustedProjects.isProjectTrusted(project)) return
         val unity = UnityCliStatusProvider.getInstance().read().location ?: return
         val solution = unitySolutionDirectory(project) ?: return
         scope.launch(modality.asContextElement()) {
             withBackgroundProgress(project, UnityBundle.message("unity.agents.pipeline.progress.update")) {
-                core.upgrade(unity, solution)
+                core.upgrade(unity, solution) { logOperationFinished(UnityAgentsOperation.UPDATING, source, it) }
             }
         }.join()
     }
 
-    override suspend fun ensureInstalled(agreed: Boolean): UnityPipelinePackageOutcome {
+    override suspend fun ensureInstalled(agreed: Boolean, source: UnityAgentsSource): UnityPipelinePackageOutcome {
         val solution = unitySolutionDirectory(project) ?: return UnityPipelinePackageOutcome.Ready
         val unity = UnityCliStatusProvider.getInstance().read().location
-        return core.ensureInstalled(agreed, unity, solution)
+        return core.ensureInstalled(agreed, unity, solution) { logOperationFinished(UnityAgentsOperation.INSTALLING, source, it) }
+    }
+
+    private fun logOperationFinished(operation: UnityAgentsOperation, source: UnityAgentsSource, result: UnityAgentsResult) {
+        UnityForAgentsUsagesCollector.logComponentOperationFinished(project, UnityAgentsSetupStep.PIPELINE_PACKAGE, operation, source, result)
     }
 
     override fun clearFailure() {
@@ -175,7 +179,7 @@ class UnityPipelineCore(
         lastFailure.set(null)
     }
 
-    suspend fun install(unity: Path, solution: Path): Boolean {
+    suspend fun install(unity: Path, solution: Path, onResult: (UnityAgentsResult) -> Unit = {}): Boolean {
         if (!runningOperation.compareAndSet(null, UnityPipelineOperation.INSTALLING)) {
             logger.info("The Unity Pipeline package install was asked for while ${runningOperation.get()} runs")
             return false
@@ -193,6 +197,7 @@ class UnityPipelineCore(
                     lastFailure.set(FailureRecord(failure, exitCodeOf(output), UnityPipelineOperation.INSTALLING))
                     logger.warn("Rider could not add the Unity Pipeline package to $solution: $failure${processOutputForLog(output)}")
                 }
+                onResult(if (failure == null) UnityAgentsResult.SUCCESS else UnityAgentsResult.FAILED)
             }
         }
         finally {
@@ -201,7 +206,7 @@ class UnityPipelineCore(
         return true
     }
 
-    suspend fun upgrade(unity: Path, solution: Path): Boolean {
+    suspend fun upgrade(unity: Path, solution: Path, onResult: (UnityAgentsResult) -> Unit = {}): Boolean {
         if (!runningOperation.compareAndSet(null, UnityPipelineOperation.UPGRADING)) {
             logger.info("The Unity Pipeline package update was asked for while ${runningOperation.get()} runs")
             return false
@@ -212,6 +217,7 @@ class UnityPipelineCore(
                 if (readManifest(solution)?.present != true) {
                     lastFailure.set(FailureRecord(UnityPipelineFailure.NOT_CONFIRMED, null, UnityPipelineOperation.UPGRADING))
                     logger.warn("Rider could not upgrade the Unity Pipeline package in $solution: package is absent or unreadable")
+                    onResult(UnityAgentsResult.FAILED)
                     return@withLock
                 }
                 val output = runProcess(
@@ -223,6 +229,7 @@ class UnityPipelineCore(
                     lastFailure.set(FailureRecord(failure, exitCodeOf(output), UnityPipelineOperation.UPGRADING))
                     logger.warn("Rider could not upgrade the Unity Pipeline package in $solution: $failure${processOutputForLog(output)}")
                 }
+                onResult(if (failure == null) UnityAgentsResult.SUCCESS else UnityAgentsResult.FAILED)
             }
         }
         finally {
@@ -231,7 +238,12 @@ class UnityPipelineCore(
         return true
     }
 
-    suspend fun ensureInstalled(agreed: Boolean, unity: Path?, solution: Path): UnityPipelinePackageOutcome =
+    suspend fun ensureInstalled(
+        agreed: Boolean,
+        unity: Path?,
+        solution: Path,
+        onInstallResult: (UnityAgentsResult) -> Unit = {},
+    ): UnityPipelinePackageOutcome =
         packageLock.withLock {
             val present = readManifest(solution)?.present
             when (unityMcpPackageStep(UnityMcpOperation.CONFIGURING, present, agreed)) {
@@ -263,10 +275,12 @@ class UnityPipelineCore(
                             val failure = unityPipelineInstallOutcome(output, readManifest(solution)?.present)
                             if (failure == null) {
                                 clearHeldInstallFailure()
+                                onInstallResult(UnityAgentsResult.SUCCESS)
                                 UnityPipelinePackageOutcome.Ready
                             }
                             else {
                                 logger.warn("Rider could not add the Unity Pipeline package to $solution: $failure${processOutputForLog(output)}")
+                                onInstallResult(UnityAgentsResult.FAILED)
                                 UnityPipelinePackageOutcome.Failed(UnityMcpFailure.PACKAGE_INSTALL, exitCodeOf(output))
                             }
                         }
