@@ -133,11 +133,11 @@ class UnityMcpWriteTest {
             """
             {
               "unity-editor-mcp": {
-                "command": "/home/tester/.unity/bin/unity",
+                "command": "${escaped(unity)}",
                 "args": [
                   "mcp",
                   "--project-path",
-                  "/home/tester/projects/Platformer"
+                  "${escaped(solution)}"
                 ]
               }
             }
@@ -152,7 +152,7 @@ class UnityMcpWriteTest {
             """
             {
               "unity-editor-mcp": {
-                "command": "/home/tester/.unity/bin/unity",
+                "command": "${escaped(unity)}",
                 "args": [
                   "mcp"
                 ]
@@ -200,7 +200,7 @@ class UnityMcpWriteTest {
         assertEquals(
             """
             [mcp_servers.unity]
-            command = "/home/tester/.unity/bin/unity"
+            command = "${escaped(unity)}"
             args = ["mcp"]
 
             [sandbox_workspace_write]
@@ -221,9 +221,10 @@ class UnityMcpWriteTest {
 
     @Test
     fun `the Codex snippet keeps a quote and an ampersand literal`() {
-        val snippet = unityMcpCodexSnippet(Path.of("/home/o'neil/R&D/unity"))
+        val path = Path.of("/home/o'neil/R&D/unity")
+        val snippet = unityMcpCodexSnippet(path)
 
-        assertTrue(snippet.contains("""command = "/home/o'neil/R&D/unity""""), snippet)
+        assertTrue(snippet.contains("""command = "${escaped(path)}""""), snippet)
     }
 
     @Test
@@ -350,4 +351,10 @@ class UnityMcpWriteTest {
     private fun exit(code: Int): ProcessOutput = ProcessOutput("", "", code, false, false)
 
     private fun timedOut(): ProcessOutput = ProcessOutput("", "", -1, true, false)
+
+    /**
+     * The text of [path] inside a JSON or a TOML string. Both formats escape a backslash, and Windows writes a backslash
+     * between the parts of a path.
+     */
+    private fun escaped(path: Path): String = path.toString().replace("\\", "\\\\")
 }
