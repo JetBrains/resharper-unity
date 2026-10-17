@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledOnOs
+import org.junit.jupiter.api.condition.OS
 import java.nio.file.Path
 
 /**
@@ -76,6 +78,7 @@ class UnityCliTextTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS, disabledReason = WINDOWS_PATH_HAS_NO_MARKUP)
     fun `the location of the local copy is escaped`() {
         val text = unityCliLocationText(Path.of("/home/t/<b>games</b>/unity"))
 
@@ -95,6 +98,7 @@ class UnityCliTextTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS, disabledReason = WINDOWS_PATH_HAS_NO_MARKUP)
     fun `the binary ahead on the PATH is named and escaped`() {
         val message = unityCliInstallDisclosure(Path.of("/usr/<i>local</i>/bin/unity"))
 
@@ -127,5 +131,8 @@ class UnityCliTextTest {
 
     private companion object {
         const val HOSTILE_VERSION = "1.0.0<img src=x onerror=alert(1)>"
+
+        /** `Path.of` refuses `<` and `>` on Windows, so no Windows path can carry markup. */
+        const val WINDOWS_PATH_HAS_NO_MARKUP = "A Windows path cannot hold '<' or '>'"
     }
 }

@@ -35,7 +35,8 @@ class UnitySkillCoreTest {
         val params = cmd.parametersList.parameters
         if (params.contains("install")) {
             val client = UnitySkillClient.entries.firstOrNull { it.key in params }?.key ?: "unknown"
-            installs.add(UnitySkillInstall(client, local = true, solution.resolve(".agents/skills/unity-cli")))
+            // The absolute path keeps the skill inside the solution on Windows too, where a rooted path gets a drive letter.
+            installs.add(UnitySkillInstall(client, local = true, solution.toAbsolutePath().normalize().resolve(".agents/skills/unity-cli")))
         }
         output(0)
     }
