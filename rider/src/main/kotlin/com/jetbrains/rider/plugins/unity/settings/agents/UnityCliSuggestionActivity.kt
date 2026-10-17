@@ -11,7 +11,9 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import kotlinx.coroutines.flow.first
+import org.jetbrains.annotations.ApiStatus
 
+@ApiStatus.Internal
 class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
     override suspend fun execute(project: Project) {
         if (!UnityForAgentsFeature.isCliSuggestionEnabled()) return

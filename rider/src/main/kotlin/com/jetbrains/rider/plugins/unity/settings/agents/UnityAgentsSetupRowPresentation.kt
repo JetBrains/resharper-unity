@@ -1,9 +1,11 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
 
 /** A link of the Unity row in the AI Agent Setup widget. */
+@ApiStatus.Internal
 enum class UnityAgentsSetupRowLink {
     INSTALL,
     INSTALL_ALL,
@@ -22,6 +24,7 @@ enum class UnityAgentsSetupRowLink {
  *
  * @param progress replaces [links] while the setup chain runs.
  */
+@ApiStatus.Internal
 data class UnityAgentsSetupRowPresentation(
     val summary: @Nls String,
     val links: List<UnityAgentsSetupRowLink>,
@@ -36,6 +39,7 @@ data class UnityAgentsSetupRowPresentation(
  * @param missing the steps that are not done, in the order of [UnityAgentsSetupStep].
  * @param enabledSkillCount the number of enabled Unity skills. The row shows it only when [missing] is empty.
  */
+@ApiStatus.Internal
 fun unityAgentsSetupRowPresentation(
     missing: List<UnityAgentsSetupStep>,
     dismissed: Boolean,
@@ -61,6 +65,7 @@ fun unityAgentsSetupRowPresentation(
 }
 
 /** The text that replaces the links of the Unity row while the setup chain runs. */
+@ApiStatus.Internal
 fun unityAgentsSetupRowInstallingText(): @Nls String = UnityBundle.message("unity.agents.setup.row.installing")
 
 private fun UnityAgentsSetupStep.rowText(): @Nls String = when (this) {

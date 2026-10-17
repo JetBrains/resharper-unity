@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import javax.swing.JComponent
 
 @Service(Service.Level.APP)
-class UnityForAgentsPageVisibility {
+internal class UnityForAgentsPageVisibility {
     private val pages = CopyOnWriteArrayList<JComponent>()
 
     fun register(page: JComponent) {

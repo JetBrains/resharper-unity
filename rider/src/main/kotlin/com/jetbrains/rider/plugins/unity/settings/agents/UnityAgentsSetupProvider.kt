@@ -2,14 +2,17 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import org.jetbrains.annotations.ApiStatus
 
 /** The three steps of the Unity for Agents setup, in the order the setup chain runs them. */
+@ApiStatus.Internal
 enum class UnityAgentsSetupStep {
     CLI,
     PIPELINE_PACKAGE,
     CLI_SKILL,
 }
 
+@ApiStatus.Internal
 interface UnityAgentsSetupProvider {
     /** False when the setup does not apply: the feature is off, the project is default, not a Unity project, or not trusted. */
     fun isAvailable(): Boolean

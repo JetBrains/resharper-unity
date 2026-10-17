@@ -2,18 +2,22 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.util.text.SemVer
+import org.jetbrains.annotations.ApiStatus
 
+@ApiStatus.Internal
 enum class UnityPipelineOperation {
     INSTALLING,
     UPGRADING,
 }
 
+@ApiStatus.Internal
 enum class UnityPipelineFailure {
     LAUNCH_FAILED,
     EXIT_CODE,
     NOT_CONFIRMED,
 }
 
+@ApiStatus.Internal
 enum class UnityPipelineOffer {
     GATED,
     CHECKING,
@@ -25,6 +29,7 @@ enum class UnityPipelineOffer {
     FAILED,
 }
 
+@ApiStatus.Internal
 data class UnityPipelinePresentation(
     val gate: UnityMcpSectionState = UnityMcpSectionState.CHECKING,
     val manifestPath: @NlsSafe String? = null,
@@ -66,12 +71,14 @@ private fun offerInReadyProject(manifest: UnityPipelineManifest?, latestVersion:
  *
  * The manifest can name the package by a git URL or a `file:` path, and the Unity CLI reports such a package as the latest.
  */
+@ApiStatus.Internal
 fun unityPipelineHasNewerVersion(latest: String, installed: String): Boolean {
     val latestSemVer = SemVer.parseFromText(latest) ?: return false
     val installedSemVer = SemVer.parseFromText(installed) ?: return false
     return latestSemVer > installedSemVer
 }
 
+@ApiStatus.Internal
 sealed interface UnityPipelinePackageOutcome {
     data object Ready : UnityPipelinePackageOutcome
     data object Declined : UnityPipelinePackageOutcome

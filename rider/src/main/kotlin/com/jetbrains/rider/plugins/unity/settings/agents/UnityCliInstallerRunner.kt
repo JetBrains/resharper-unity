@@ -15,6 +15,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import org.jetbrains.annotations.ApiStatus
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.resume
@@ -23,6 +24,7 @@ import kotlin.time.Duration.Companion.seconds
 private val logger = Logger.getInstance(UnityCliInstallerRunner::class.java)
 
 @Service(Service.Level.APP)
+@ApiStatus.Internal
 class UnityCliInstallerRunner private constructor(
     val cdnBaseUrl: String,
     private val run: suspend (GeneralCommandLine, (String) -> Unit) -> Int?,

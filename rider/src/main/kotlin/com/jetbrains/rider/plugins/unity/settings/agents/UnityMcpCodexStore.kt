@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
+import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.readText
@@ -8,12 +9,14 @@ private const val CODEX_STORE_FILE = "config.toml"
 private const val MCP_SERVERS_TABLE = "mcp_servers"
 private val CODEX_ENTRY = listOf(MCP_SERVERS_TABLE, UNITY_MCP_CODEX_SERVER_NAME)
 
+@ApiStatus.Internal
 fun unityMcpCodexStoreFile(solution: Path): Path =
     solution.resolve(UNITY_MCP_CODEX_DIRECTORY).resolve(CODEX_STORE_FILE)
 
-suspend fun removeUnityMcpCodexEntryInIde(file: Path): Boolean =
+internal suspend fun removeUnityMcpCodexEntryInIde(file: Path): Boolean =
     writeStoreInIde(file) { removeUnityMcpCodexEntry(file) }
 
+@ApiStatus.Internal
 fun removeUnityMcpCodexEntry(file: Path): Boolean {
     if (Files.notExists(file)) return true
     val content = file.readText()
@@ -31,6 +34,7 @@ fun removeUnityMcpCodexEntry(file: Path): Boolean {
  * Returns null for a file that this line scan cannot edit safely: an entry in a dotted key or an
  * inline table, or a header or a value that does not parse.
  */
+@ApiStatus.Internal
 fun unityMcpCodexStoreWithoutEntry(content: String): String? {
     val kept = StringBuilder()
     val value = TomlValueScan()

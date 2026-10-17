@@ -1,7 +1,9 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.openapi.util.NlsSafe
+import org.jetbrains.annotations.ApiStatus
 
+@ApiStatus.Internal
 enum class UnityMcpStore {
     /** `<solution>/.codex/config.toml`. The Unity CLI adds the entry `unity`, and Rider removes it. */
     CODEX_CLI,
@@ -19,11 +21,13 @@ enum class UnityMcpStore {
     JUNIE_CLI,
 }
 
+@ApiStatus.Internal
 enum class UnityMcpOperation {
     CONFIGURING,
     REMOVING
 }
 
+@ApiStatus.Internal
 enum class UnityMcpFailure {
     LAUNCH_FAILED,
     EXIT_CODE,
@@ -39,6 +43,7 @@ enum class UnityMcpFailure {
     NOT_CONFIRMED,
 }
 
+@ApiStatus.Internal
 enum class UnityMcpSectionState {
     NO_PROJECT,
     CHECKING,
@@ -51,6 +56,7 @@ enum class UnityMcpSectionState {
     val drawsBody: Boolean get() = this != NO_PROJECT
 }
 
+@ApiStatus.Internal
 enum class UnityMcpEntry {
     ABSENT,
     PRESENT,
@@ -63,14 +69,17 @@ enum class UnityMcpEntry {
  * `UnityMcpRowState.RESTART_NEEDED` covers a configure and a removal, because a client keeps the
  * server it already loaded either way. The two cannot share one sentence.
  */
+@ApiStatus.Internal
 enum class UnityMcpRestartLine {
     CONFIGURED,
     REMOVED,
 }
 
+@ApiStatus.Internal
 fun unityMcpRestartLine(entry: UnityMcpEntry?): UnityMcpRestartLine =
     if (entry == UnityMcpEntry.ABSENT) UnityMcpRestartLine.REMOVED else UnityMcpRestartLine.CONFIGURED
 
+@ApiStatus.Internal
 enum class UnityMcpRowState {
     BUSY,
     FAILED,
@@ -83,6 +92,7 @@ enum class UnityMcpRowState {
     NOT_CONFIGURED,
 }
 
+@ApiStatus.Internal
 data class UnityMcpRowPresentation(
     val store: UnityMcpStore,
     val section: UnityMcpSectionState = UnityMcpSectionState.CHECKING,
@@ -116,6 +126,7 @@ data class UnityMcpRowPresentation(
         }
 }
 
+@ApiStatus.Internal
 fun unityMcpSectionState(cli: UnityCliPresentation, unityProject: Boolean): UnityMcpSectionState = when {
     !unityProject -> UnityMcpSectionState.NO_PROJECT
     !cli.projectTrusted -> UnityMcpSectionState.NOT_TRUSTED
@@ -124,9 +135,9 @@ fun unityMcpSectionState(cli: UnityCliPresentation, unityProject: Boolean): Unit
     else -> UnityMcpSectionState.READY
 }
 
-data class UnityMcpProject(val name: @NlsSafe String, val path: @NlsSafe String)
+internal data class UnityMcpProject(val name: @NlsSafe String, val path: @NlsSafe String)
 
-data class UnityMcpSectionPresentation(
+internal data class UnityMcpSectionPresentation(
     val cli: UnityCliPresentation = UnityCliPresentation(),
     val project: UnityMcpProject? = null,
     val rows: List<UnityMcpRowPresentation> = emptyList(),
@@ -134,6 +145,7 @@ data class UnityMcpSectionPresentation(
     val state: UnityMcpSectionState get() = unityMcpSectionState(cli, project != null)
 }
 
+@ApiStatus.Internal
 fun unityMcpCanConfigure(row: UnityMcpRowPresentation): Boolean = when (row.state) {
     UnityMcpRowState.BUSY -> false
     UnityMcpRowState.UNREADABLE -> unityMcpJsonStoreName(row.store) == null
@@ -147,8 +159,10 @@ fun unityMcpCanConfigure(row: UnityMcpRowPresentation): Boolean = when (row.stat
         -> true
 }
 
+@ApiStatus.Internal
 fun unityMcpCanRemove(row: UnityMcpRowPresentation): Boolean =
     row.state != UnityMcpRowState.BUSY && row.entry != UnityMcpEntry.ABSENT
 
+@ApiStatus.Internal
 fun unityMcpOpenableStore(row: UnityMcpRowPresentation): String? =
     row.storePath?.takeIf { row.storeFileExists }

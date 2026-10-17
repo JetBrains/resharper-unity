@@ -46,6 +46,14 @@ import javax.swing.JProgressBar
 import kotlin.time.Duration.Companion.seconds
 
 internal class UnityForAgentsConfigurable(private val project: Project) : SearchableConfigurable {
+    private data class UnityAgentsPagePresentation(
+        val cli: UnityCliPresentation,
+        val pipeline: UnityPipelinePresentation,
+        val skill: UnitySkillPresentation,
+        /** Null when the Unity MCP section is switched off. */
+        val mcp: UnityMcpSectionPresentation?,
+    )
+
     private var scope: CoroutineScope? = null
     private var refreshJob: Job? = null
     private var cliStatus: Placeholder? = null
