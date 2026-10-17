@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.io.path.readText
 
-interface UnityMcpStatusProvider {
+internal interface UnityMcpStatusProvider {
     suspend fun read(cli: UnityCliPresentation): UnityMcpSectionPresentation
 
     suspend fun write(

@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
@@ -26,7 +27,7 @@ import kotlin.io.path.readText
 
 private val logger: Logger = Logger.getInstance(UnityPipelineStatusService::class.java)
 
-interface UnityPipelineStatusProvider {
+internal interface UnityPipelineStatusProvider {
     suspend fun read(cli: UnityCliPresentation): UnityPipelinePresentation
     suspend fun install(modality: ModalityState)
     suspend fun upgrade(modality: ModalityState)
@@ -96,6 +97,7 @@ internal class UnityPipelineStatusService(
         }
 }
 
+@ApiStatus.Internal
 class UnityPipelineCore(
     private val runProcess: suspend (GeneralCommandLine, Int) -> ProcessOutput?,
     private val readManifest: suspend (Path) -> UnityPipelineManifest?,

@@ -1,11 +1,15 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
+import org.jetbrains.annotations.ApiStatus
+
+@ApiStatus.Internal
 enum class UnitySkillFailure {
     LAUNCH_FAILED,
     EXIT_CODE,
     NOT_CONFIRMED,
 }
 
+@ApiStatus.Internal
 enum class UnitySkillOffer {
     GATED,
     CHECKING,
@@ -16,6 +20,7 @@ enum class UnitySkillOffer {
     FAILED,
 }
 
+@ApiStatus.Internal
 data class UnitySkillPresentation(
     val gate: UnityMcpSectionState = UnityMcpSectionState.CHECKING,
     val packageInstalled: Boolean = false,

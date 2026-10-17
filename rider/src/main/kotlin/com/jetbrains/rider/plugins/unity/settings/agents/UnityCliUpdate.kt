@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.execution.configurations.GeneralCommandLine
+import org.jetbrains.annotations.ApiStatus
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 
@@ -18,6 +19,7 @@ private val CLIPBOARD_PROGRAMS: Map<UnityCliInstallMethod, Set<String>> = mapOf(
 )
 private val SHELL_CHARACTERS: Set<Char> = setOf('|', '&', ';', '<', '>', '(', ')', '$', '`', '"', '\'', '\n', '\r')
 
+@ApiStatus.Internal
 fun splitUnityCliUpdateCommand(updateCommand: String): List<String>? {
     if (updateCommand.any { it in SHELL_CHARACTERS }) return null
     val argv = updateCommand.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
@@ -44,6 +46,7 @@ internal fun programName(token: String): String? {
  * The allowlist keeps Rider from running a word the CLI invents later, and `upgrade` is the
  * fallback, because every measured version runs it.
  */
+@ApiStatus.Internal
 fun unityCliSelfUpdateSubcommand(updateCommand: String?): String {
     val argv = updateCommand?.let { splitUnityCliUpdateCommand(it) } ?: return UPGRADE_SUBCOMMAND
     val reported = argv.getOrNull(1) ?: return UPGRADE_SUBCOMMAND
@@ -65,6 +68,7 @@ fun unityCliSelfUpdateSubcommand(updateCommand: String?): String {
  *
  * @param updateCommand the command the CLI reported, which names the CDN subcommand and nothing else
  */
+@ApiStatus.Internal
 fun unityCliUpdateCommandLine(
     installMethod: UnityCliInstallMethod,
     cliPath: Path,
@@ -80,6 +84,7 @@ fun unityCliUpdateCommandLine(
     UnityCliInstallMethod.APT, UnityCliInstallMethod.DNF, UnityCliInstallMethod.UNKNOWN -> null
 }
 
+@ApiStatus.Internal
 fun unityCliUpdateCommandForClipboard(installMethod: UnityCliInstallMethod, updateCommand: String?): String? {
     val argv = updateCommand?.let { splitUnityCliUpdateCommand(it) } ?: return null
     val allowed = CLIPBOARD_PROGRAMS[installMethod] ?: return null
@@ -88,6 +93,7 @@ fun unityCliUpdateCommandForClipboard(installMethod: UnityCliInstallMethod, upda
     return updateCommand
 }
 
+@ApiStatus.Internal
 fun unityCliUpdateOutcome(exitCode: Int?): UnityCliFailure? = when {
     // The process never started, so there is no code.
     // This branch runs first, because a null code must not read as nonzero.

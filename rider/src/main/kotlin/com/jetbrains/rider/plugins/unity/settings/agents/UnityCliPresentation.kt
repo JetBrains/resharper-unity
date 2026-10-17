@@ -1,8 +1,10 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.util.text.SemVer
+import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Path
 
+@ApiStatus.Internal
 enum class UnityCliInstallMethod {
     /** The install script of Unity, or a direct download. The CLI updates the copy itself. */
     CDN,
@@ -16,8 +18,10 @@ enum class UnityCliInstallMethod {
         get() = this == CDN || this == HOMEBREW || this == WINGET
 }
 
+@ApiStatus.Internal
 enum class UnityCliOperation { INSTALLING, UPDATING }
 
+@ApiStatus.Internal
 enum class UnityCliFailure {
     DOWNLOAD,
     LAUNCH_FAILED,
@@ -26,6 +30,7 @@ enum class UnityCliFailure {
     VERIFICATION,
 }
 
+@ApiStatus.Internal
 enum class UnityCliOffer {
     CHECKING,
     NOT_TRUSTED,
@@ -45,6 +50,7 @@ internal fun unityCliHasNewerVersion(latest: String, installed: String): Boolean
     return latestSemVer > installedSemVer
 }
 
+@ApiStatus.Internal
 data class UnityCliPresentation(
     val detected: Boolean = false,
     val installedVersion: String? = null,

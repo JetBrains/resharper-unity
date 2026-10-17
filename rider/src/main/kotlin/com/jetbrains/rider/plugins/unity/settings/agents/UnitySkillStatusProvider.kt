@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
@@ -23,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 private val logger: Logger = Logger.getInstance(UnitySkillStatusService::class.java)
 
-interface UnitySkillStatusProvider {
+internal interface UnitySkillStatusProvider {
     suspend fun read(cli: UnityCliPresentation, pipeline: UnityPipelinePresentation): UnitySkillPresentation
     suspend fun install(target: UnitySkillTarget, modality: ModalityState)
     fun clearFailure()
@@ -74,6 +75,7 @@ internal class UnitySkillStatusService(
         }
 }
 
+@ApiStatus.Internal
 class UnitySkillCore(
     private val runProcess: suspend (GeneralCommandLine, Int) -> ProcessOutput?,
     private val exists: (Path) -> Boolean,

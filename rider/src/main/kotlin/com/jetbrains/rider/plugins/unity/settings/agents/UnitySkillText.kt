@@ -2,9 +2,10 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.openapi.util.text.StringUtil.escapeXmlEntities
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
 
-fun unitySkillGateMessage(gate: UnityMcpSectionState): @Nls String? = when (gate) {
+internal fun unitySkillGateMessage(gate: UnityMcpSectionState): @Nls String? = when (gate) {
     UnityMcpSectionState.NO_PROJECT -> UnityBundle.message("unity.agents.skills.no.project")
     UnityMcpSectionState.NOT_TRUSTED -> UnityBundle.message("unity.agents.skills.not.trusted")
     UnityMcpSectionState.NO_CLI,
@@ -14,6 +15,7 @@ fun unitySkillGateMessage(gate: UnityMcpSectionState): @Nls String? = when (gate
 }
 
 @Nls
+@ApiStatus.Internal
 fun unitySkillPlacesMessage(installs: List<UnitySkillInstall>): String {
     val places = installs
         .distinctBy { it.client to it.local }
@@ -36,7 +38,7 @@ fun unitySkillPlacesMessage(installs: List<UnitySkillInstall>): String {
 }
 
 @Nls
-fun unitySkillFailureMessage(failure: UnitySkillFailure, exitCode: Int?): String = when (failure) {
+internal fun unitySkillFailureMessage(failure: UnitySkillFailure, exitCode: Int?): String = when (failure) {
     UnitySkillFailure.LAUNCH_FAILED -> UnityBundle.message("unity.agents.skills.failed.launch")
     UnitySkillFailure.EXIT_CODE -> UnityBundle.message("unity.agents.skills.failed.exit.code", exitCode ?: -1)
     UnitySkillFailure.NOT_CONFIRMED -> UnityBundle.message("unity.agents.skills.failed.not.confirmed")

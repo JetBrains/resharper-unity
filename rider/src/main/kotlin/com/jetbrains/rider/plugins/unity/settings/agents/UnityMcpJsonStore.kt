@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.ManagingFS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.ApiStatus
 import java.nio.file.AccessDeniedException
 import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
@@ -31,15 +32,17 @@ private const val UNITY_MCP_PROJECT_PATH_OPTION = "--project-path"
 
 private val storeGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 
+@ApiStatus.Internal
 data class UnityMcpServerEntry(
     val command: String,
     val args: List<String>,
     val type: String? = null,
 )
 
+@ApiStatus.Internal
 data class UnityMcpOwnedStore(val file: Path, val entry: UnityMcpServerEntry)
 
-fun unityMcpStoreEntry(store: UnityMcpStore, unity: Path): UnityMcpServerEntry? = when (store) {
+internal fun unityMcpStoreEntry(store: UnityMcpStore, unity: Path): UnityMcpServerEntry? = when (store) {
     UnityMcpStore.CODEX_CLI -> null
     UnityMcpStore.CLAUDE_CODE_CLI, UnityMcpStore.COPILOT_CLI ->
         UnityMcpServerEntry(unity.toString(), listOf(UNITY_MCP_SUBCOMMAND), type = UNITY_MCP_STDIO_TYPE)
@@ -47,20 +50,23 @@ fun unityMcpStoreEntry(store: UnityMcpStore, unity: Path): UnityMcpServerEntry? 
     UnityMcpStore.JUNIE_CLI -> UnityMcpServerEntry(unity.toString(), listOf(UNITY_MCP_SUBCOMMAND))
 }
 
+@ApiStatus.Internal
 fun unityMcpOwnedStore(store: UnityMcpStore, unity: Path, solution: Path): UnityMcpOwnedStore? {
     val entry = unityMcpStoreEntry(store, unity) ?: return null
     val file = unityMcpJsonStoreFile(store, solution) ?: return null
     return UnityMcpOwnedStore(file, entry)
 }
 
-fun unityMcpJsonSnippet(entry: UnityMcpServerEntry): String =
+internal fun unityMcpJsonSnippet(entry: UnityMcpServerEntry): String =
     storeGson.toJson(JsonObject().apply { add(UNITY_MCP_RIDER_SERVER_NAME, entry.toJson()) })
 
+@ApiStatus.Internal
 fun unityMcpManualSnippet(unity: Path, solution: Path?): String {
     val pin = solution?.let { listOf(UNITY_MCP_PROJECT_PATH_OPTION, it.toString()) }.orEmpty()
     return unityMcpJsonSnippet(UnityMcpServerEntry(unity.toString(), listOf(UNITY_MCP_SUBCOMMAND) + pin))
 }
 
+@ApiStatus.Internal
 fun readMcpServersEntry(content: String?, fileExists: Boolean): UnityMcpEntry {
     if (!fileExists) return UnityMcpEntry.ABSENT
     if (content == null) return UnityMcpEntry.UNREADABLE
@@ -69,6 +75,7 @@ fun readMcpServersEntry(content: String?, fileExists: Boolean): UnityMcpEntry {
     return if (servers.has(UNITY_MCP_RIDER_SERVER_NAME)) UnityMcpEntry.PRESENT else UnityMcpEntry.ABSENT
 }
 
+@ApiStatus.Internal
 fun unityMcpMergedStore(content: String?, entry: UnityMcpServerEntry?): String? {
     val root = if (content.isNullOrBlank()) JsonObject() else parseObject(content) ?: return null
     val servers = root.mcpServers() ?: return null
@@ -79,6 +86,7 @@ fun unityMcpMergedStore(content: String?, entry: UnityMcpServerEntry?): String? 
     return storeGson.toJson(root) + "\n"
 }
 
+@ApiStatus.Internal
 suspend fun writeUnityMcpJsonStoreInIde(file: Path, entry: UnityMcpServerEntry?): Boolean =
     writeStoreInIde(file) { writeUnityMcpJsonStore(file, entry) }
 
@@ -106,6 +114,7 @@ private fun flushPendingVfsWrites(file: Path) {
     ManagingFS.getInstance().flushPendingUpdates(virtualFile)
 }
 
+@ApiStatus.Internal
 fun writeUnityMcpJsonStore(file: Path, entry: UnityMcpServerEntry?): Boolean {
     val content = if (Files.notExists(file)) null else file.readText()
     if (entry == null && readMcpServersEntry(content, fileExists = content != null) == UnityMcpEntry.ABSENT) return true

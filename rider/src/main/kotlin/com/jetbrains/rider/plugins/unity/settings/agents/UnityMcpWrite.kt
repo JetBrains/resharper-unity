@@ -2,12 +2,15 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
+import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Path
 
+@ApiStatus.Internal
 fun unityMcpConfigureLocalCommandLine(unity: Path, solution: Path?): GeneralCommandLine =
     GeneralCommandLine(unity.toString(), "mcp", "configure", UNITY_MCP_CODEX_KEY, "--local", "--yes")
         .withWorkingDirectory(solution)
 
+@ApiStatus.Internal
 fun unityMcpWriteCommandLine(
     store: UnityMcpStore,
     operation: UnityMcpOperation,
@@ -21,11 +24,13 @@ fun unityMcpWriteCommandLine(
     UnityMcpStore.CLAUDE_CODE_CLI, UnityMcpStore.COPILOT_CLI, UnityMcpStore.JUNIE_CLI -> null
 }
 
+@ApiStatus.Internal
 fun unityMcpWriteConfirmed(operation: UnityMcpOperation, entry: UnityMcpEntry?): Boolean = when (operation) {
     UnityMcpOperation.CONFIGURING -> entry == UnityMcpEntry.PRESENT
     UnityMcpOperation.REMOVING -> entry == UnityMcpEntry.ABSENT
 }
 
+@ApiStatus.Internal
 fun unityMcpWriteOutcome(output: ProcessOutput?, confirmed: Boolean): UnityMcpFailure? = when {
     output == null || output.isTimeout -> UnityMcpFailure.LAUNCH_FAILED
     confirmed -> null
@@ -33,12 +38,14 @@ fun unityMcpWriteOutcome(output: ProcessOutput?, confirmed: Boolean): UnityMcpFa
     else -> UnityMcpFailure.NOT_CONFIRMED
 }
 
+@ApiStatus.Internal
 fun unityMcpFileWriteOutcome(written: Boolean, confirmed: Boolean): UnityMcpFailure? = when {
     !written -> UnityMcpFailure.FILE_WRITE
     confirmed -> null
     else -> UnityMcpFailure.NOT_CONFIRMED
 }
 
+@ApiStatus.Internal
 fun unityMcpRestartNeeded(
     failure: UnityMcpFailure?,
     before: UnityMcpEntry?,
@@ -51,6 +58,7 @@ fun unityMcpRestartNeeded(
     return carried || changed
 }
 
+@ApiStatus.Internal
 fun unityMcpHeldIsStale(
     heldEntry: UnityMcpEntry?,
     heldRelease: Long,

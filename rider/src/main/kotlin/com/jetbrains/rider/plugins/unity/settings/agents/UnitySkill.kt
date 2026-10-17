@@ -5,18 +5,22 @@ import com.google.gson.JsonSyntaxException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.util.NlsSafe
+import org.jetbrains.annotations.ApiStatus
 import java.io.IOException
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 
+@ApiStatus.Internal
 const val UNITY_CLI_SKILL_NAME: String = "unity-cli"
 private const val VSCODE_CLIENT: String = "vscode"
 
+@ApiStatus.Internal
 enum class UnitySkillClient(val key: String) {
     CODEX("codex"),
     CLAUDE_CODE("claude-code"),
 }
 
+@ApiStatus.Internal
 enum class UnitySkillTarget(val clients: List<UnitySkillClient>) {
     ALL(listOf(UnitySkillClient.CODEX, UnitySkillClient.CLAUDE_CODE)),
     CODEX(listOf(UnitySkillClient.CODEX)),
@@ -25,6 +29,7 @@ enum class UnitySkillTarget(val clients: List<UnitySkillClient>) {
     JUNIE(listOf(UnitySkillClient.CODEX)),
 }
 
+@ApiStatus.Internal
 data class UnitySkillInstall(
     val client: @NlsSafe String,
     val local: Boolean,
@@ -33,16 +38,18 @@ data class UnitySkillInstall(
 
 private val gson = Gson()
 
-fun unitySkillListCommandLine(unity: Path): GeneralCommandLine =
+internal fun unitySkillListCommandLine(unity: Path): GeneralCommandLine =
     GeneralCommandLine(unity.toString(), "skill", "list", "--non-interactive", "--json")
 
+@ApiStatus.Internal
 fun unitySkillInstallCommandLine(unity: Path, client: UnitySkillClient, solution: Path): GeneralCommandLine =
     GeneralCommandLine(unity.toString(), "skill", "install", client.key, "--local", "--yes", "--non-interactive", "--json")
         .withWorkingDirectory(solution)
 
-fun unitySkillRefreshCommandLine(unity: Path): GeneralCommandLine =
+internal fun unitySkillRefreshCommandLine(unity: Path): GeneralCommandLine =
     GeneralCommandLine(unity.toString(), "skill", "refresh", "--yes", "--non-interactive", "--json")
 
+@ApiStatus.Internal
 fun parseUnitySkillList(json: String): List<UnitySkillInstall>? {
     val answer = try {
         gson.fromJson(json, SkillListAnswer::class.java)
@@ -71,6 +78,7 @@ fun parseUnitySkillList(json: String): List<UnitySkillInstall>? {
     }
 }
 
+@ApiStatus.Internal
 fun unitySkillInstallsOf(
     installs: List<UnitySkillInstall>,
     solution: Path,
@@ -85,6 +93,7 @@ fun unitySkillInstallsOf(
     return installs.filter { exists(it.path) && (!it.local || it.path.startsWith(realSolution)) }
 }
 
+@ApiStatus.Internal
 fun unitySkillOpenTargets(installs: List<UnitySkillInstall>): List<UnitySkillTarget> {
     val localInstalls = installs.filter { it.local }
     val hasCodex = localInstalls.any { it.client == UnitySkillClient.CODEX.key }
@@ -99,7 +108,7 @@ fun unitySkillOpenTargets(installs: List<UnitySkillInstall>): List<UnitySkillTar
     return targets
 }
 
-fun unitySkillInstallOutcome(output: ProcessOutput?, landed: Boolean): UnitySkillFailure? = when {
+internal fun unitySkillInstallOutcome(output: ProcessOutput?, landed: Boolean): UnitySkillFailure? = when {
     output == null || output.isTimeout -> UnitySkillFailure.LAUNCH_FAILED
     landed -> null
     output.exitCode != 0 -> UnitySkillFailure.EXIT_CODE
