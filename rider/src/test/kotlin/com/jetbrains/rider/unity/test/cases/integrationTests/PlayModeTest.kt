@@ -93,10 +93,6 @@ abstract class PlayModeTest() : IntegrationTestWithUnityProjectBase() {
 class PlayModeTestUnity2022 : PlayModeTest(){}
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@UnityTestSettings(unityVersion = UnityVersion.V6)
-class PlayModeTestUnity6 : PlayModeTest(){}
-
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class PlayModeTestUnity6_3 : PlayModeTest(){}
 

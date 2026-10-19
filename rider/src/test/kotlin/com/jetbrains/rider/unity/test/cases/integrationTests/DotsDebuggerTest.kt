@@ -135,11 +135,6 @@ class DotsDebuggerTestUnity2022 : DotsDebuggerTest()
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@UnityTestSettings(unityVersion = UnityVersion.V6)
-class DotsDebuggerTestUnity6 : DotsDebuggerTest()
-
-@RiderTestTimeout(5, unit = TimeUnit.MINUTES)
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class DotsDebuggerTestUnity6_3 : DotsDebuggerTest()
 

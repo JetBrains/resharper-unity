@@ -90,10 +90,6 @@ abstract class UnitTestingTest() : IntegrationTestWithUnityProjectBase() {
 class UnitTestingTestUnity2022 : UnitTestingTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@UnityTestSettings(unityVersion = UnityVersion.V6)
-class UnitTestingTestUnity6 : UnitTestingTest()
-
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class UnitTestingTestUnity6_3 : UnitTestingTest()
 

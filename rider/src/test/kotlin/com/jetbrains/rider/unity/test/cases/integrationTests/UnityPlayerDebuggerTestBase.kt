@@ -81,10 +81,6 @@ class UnityPlayerDebuggerTest {
     inner class TestMonoUnityBuild2022 : UnityPlayerDebuggerTestBase()
 
     @Nested
-    @UnityTestSettings(unityVersion = UnityVersion.V6, unityBackend = UnityBackend.Mono)
-    inner class TestMonoUnityBuild6 : UnityPlayerDebuggerTestBase()
-
-    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V6_3, unityBackend = UnityBackend.Mono)
     inner class TestMonoUnityBuild6_3 : UnityPlayerDebuggerTestBase()
 
@@ -95,10 +91,6 @@ class UnityPlayerDebuggerTest {
     @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V2022, unityBackend = UnityBackend.Il2CPP)
     inner class TestIL2CPPUnityBuild2022 : UnityPlayerDebuggerTestBase()
-
-    @Nested
-    @UnityTestSettings(unityVersion = UnityVersion.V6, unityBackend = UnityBackend.Il2CPP)
-    inner class TestIL2CPPUnityBuild6 : UnityPlayerDebuggerTestBase()
 
     @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V6_3, unityBackend = UnityBackend.Il2CPP)

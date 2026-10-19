@@ -278,10 +278,6 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
 class DebuggerTestUnity2022 : DebuggerTest()
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-@UnityTestSettings(unityVersion = UnityVersion.V6)
-class DebuggerTestUnity6 : DebuggerTest()
-
-@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
 class DebuggerTestUnity6_3 : DebuggerTest()
 
