@@ -2,13 +2,16 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.notification.Notification
 import com.intellij.openapi.project.Project
+import org.jetbrains.annotations.ApiStatus
 
+@ApiStatus.Internal
 enum class UnityCliSuggestion {
     NONE,
     INSTALL,
     UPDATE,
 }
 
+@ApiStatus.Internal
 data class UnityAgentsSweepFacts(
     val packageMissing: Boolean,
     val packageUpgradable: Boolean,
@@ -16,6 +19,7 @@ data class UnityAgentsSweepFacts(
     val updateDeclined: Boolean,
 )
 
+@ApiStatus.Internal
 fun unityCliSuggestion(presentation: UnityCliPresentation, facts: UnityAgentsSweepFacts): UnityCliSuggestion {
     val cli = presentation.copy(projectTrusted = true).offer
     val wantsInstall = when (cli) {
@@ -41,9 +45,10 @@ fun unityCliSuggestion(presentation: UnityCliPresentation, facts: UnityAgentsSwe
     return if (wantsUpdate && !facts.updateDeclined) UnityCliSuggestion.UPDATE else UnityCliSuggestion.NONE
 }
 
-fun unityCliUpdatable(presentation: UnityCliPresentation): Boolean =
+internal fun unityCliUpdatable(presentation: UnityCliPresentation): Boolean =
     presentation.copy(projectTrusted = true).offer == UnityCliOffer.UPDATE
 
+@ApiStatus.Internal
 fun unityCliSuggestionActs(
     suggestion: UnityCliSuggestion,
     presentation: UnityCliPresentation,
@@ -55,6 +60,7 @@ fun unityCliSuggestionActs(
         UnityCliSuggestion.NONE -> false
     }
 
+@ApiStatus.Internal
 enum class UnityAgentsUpdateAction {
     UPDATE,
     SHOW_UPDATE_COMMAND,
@@ -65,12 +71,14 @@ enum class UnityAgentsUpdateAction {
  * The actions of the update balloon, in order. The balloon draws [UnityAgentsUpdateAction.UPDATE] as its
  * button and every other action as a link.
  */
+@ApiStatus.Internal
 fun unityAgentsUpdateActions(acts: Boolean, cliOffer: UnityCliOffer): List<UnityAgentsUpdateAction> = buildList {
     if (acts) add(UnityAgentsUpdateAction.UPDATE)
     if (cliOffer == UnityCliOffer.SHOW_UPDATE_COMMAND) add(UnityAgentsUpdateAction.SHOW_UPDATE_COMMAND)
     add(UnityAgentsUpdateAction.LEARN_MORE)
 }
 
+@ApiStatus.Internal
 object UnityCliDeclines {
     const val INSTALL_DISPLAY_ID: String = "unity.for.agents.cli.install"
     const val UPDATE_DISPLAY_ID: String = "unity.for.agents.cli.update"

@@ -10,9 +10,11 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.util.Key
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.TestOnly
 import java.util.concurrent.atomic.AtomicLong
 
+@ApiStatus.Internal
 @Service(Service.Level.APP)
 class UnityCliProcessRunner private constructor(
     private val run: suspend (GeneralCommandLine, Int) -> ProcessOutput,

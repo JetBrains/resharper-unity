@@ -4,25 +4,29 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.util.system.OS
+import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Path
 
+@ApiStatus.Internal
 const val UNITY_MCP_CODEX_KEY: String = "codex"
-const val UNITY_MCP_CODEX_SERVER_NAME: String = "unity"
-const val UNITY_MCP_RIDER_SERVER_NAME: String = "unity-editor-mcp"
-const val UNITY_MCP_CODEX_BINARY: String = "codex"
-const val UNITY_MCP_CLAUDE_CODE_BINARY: String = "claude"
-const val UNITY_MCP_JUNIE_BINARY: String = "junie"
-const val UNITY_MCP_CODEX_DIRECTORY: String = ".codex"
-const val UNITY_MCP_PROJECT_STORE_FILE: String = ".mcp.json"
-const val UNITY_MCP_JUNIE_STORE_FILE: String = ".junie/mcp/mcp.json"
+internal const val UNITY_MCP_CODEX_SERVER_NAME: String = "unity"
+internal const val UNITY_MCP_RIDER_SERVER_NAME: String = "unity-editor-mcp"
+internal const val UNITY_MCP_CODEX_BINARY: String = "codex"
+private const val UNITY_MCP_CLAUDE_CODE_BINARY: String = "claude"
+private const val UNITY_MCP_JUNIE_BINARY: String = "junie"
+internal const val UNITY_MCP_CODEX_DIRECTORY: String = ".codex"
+private const val UNITY_MCP_PROJECT_STORE_FILE: String = ".mcp.json"
+private const val UNITY_MCP_JUNIE_STORE_FILE: String = ".junie/mcp/mcp.json"
 private const val UNITY_MCP_STATUS_CONFIGURED = "configured"
 
 private val gson = GsonBuilder().disableHtmlEscaping().create()
 
+@ApiStatus.Internal
 fun unityMcpLocalClientListCommandLine(unity: Path, solution: Path?): GeneralCommandLine =
     GeneralCommandLine(unity.toString(), "mcp", "configure", "--list", "--local", "--json")
         .withWorkingDirectory(solution)
 
+@ApiStatus.Internal
 data class UnityMcpClient(
     val key: String? = null,
     val displayName: String? = null,
@@ -30,44 +34,53 @@ data class UnityMcpClient(
     val status: String? = null,
 )
 
+@ApiStatus.Internal
 data class UnityMcpClientList(val clients: List<UnityMcpClient> = emptyList())
 
+@ApiStatus.Internal
 fun parseUnityMcpClientList(stdout: String): UnityMcpClientList? {
     val envelope = parseJson<ClientListEnvelope>(stdout) ?: return null
     return UnityMcpClientList(clients = envelope.data.orEmpty().filterNotNull())
 }
 
-fun UnityMcpClientList.clientOf(key: String): UnityMcpClient? = clients.firstOrNull { it.key == key }
+private fun UnityMcpClientList.clientOf(key: String): UnityMcpClient? = clients.firstOrNull { it.key == key }
 
+@ApiStatus.Internal
 fun UnityMcpClientList.configPathOf(key: String): String? = clientOf(key)?.configPath
 
+@ApiStatus.Internal
 fun readCodexEntry(list: UnityMcpClientList?): UnityMcpEntry {
     val status = list?.clientOf(UNITY_MCP_CODEX_KEY)?.status ?: return UnityMcpEntry.UNREADABLE
     return if (status == UNITY_MCP_STATUS_CONFIGURED) UnityMcpEntry.PRESENT else UnityMcpEntry.ABSENT
 }
 
-fun unityMcpJsonStoreName(store: UnityMcpStore): String? = when (store) {
+internal fun unityMcpJsonStoreName(store: UnityMcpStore): String? = when (store) {
     UnityMcpStore.CODEX_CLI -> null
     UnityMcpStore.CLAUDE_CODE_CLI, UnityMcpStore.COPILOT_CLI -> UNITY_MCP_PROJECT_STORE_FILE
     UnityMcpStore.JUNIE_CLI -> UNITY_MCP_JUNIE_STORE_FILE
 }
 
+@ApiStatus.Internal
 fun unityMcpJsonStoreFile(store: UnityMcpStore, solution: Path): Path? =
     unityMcpJsonStoreName(store)?.let { solution.resolve(it) }
 
+@ApiStatus.Internal
 fun unityMcpStoreSharers(store: UnityMcpStore): List<UnityMcpStore> {
     val name = unityMcpJsonStoreName(store) ?: return emptyList()
     return UnityMcpStore.entries.filter { it != store && unityMcpJsonStoreName(it) == name }
 }
 
+@ApiStatus.Internal
 fun unityMcpUnnamedSharers(stores: List<UnityMcpStore>): List<UnityMcpStore> =
     stores.flatMap { unityMcpStoreSharers(it) }.distinct().filterNot { it in stores }
 
+@ApiStatus.Internal
 fun unityMcpWriteGroups(stores: List<UnityMcpStore>): List<List<UnityMcpStore>> =
     stores
         .map { store -> listOf(store) + unityMcpStoreSharers(store) }
         .distinctBy { it.toSet() }
 
+@ApiStatus.Internal
 fun unityMcpAgentBinary(store: UnityMcpStore): String? = when (store) {
     UnityMcpStore.CODEX_CLI -> UNITY_MCP_CODEX_BINARY
     UnityMcpStore.CLAUDE_CODE_CLI -> UNITY_MCP_CLAUDE_CODE_BINARY
@@ -76,6 +89,7 @@ fun unityMcpAgentBinary(store: UnityMcpStore): String? = when (store) {
 }
 
 /** The folders of `DefaultTerminalAgentsProvider`, which the Terminal plugin probes after the PATH. */
+@ApiStatus.Internal
 fun unityMcpAgentWellKnownCandidates(binary: String, os: OS, userHome: Path): List<Path> {
     val localBin = userHome.resolve(".local").resolve("bin")
     val npm = userHome.resolve("AppData").resolve("Roaming").resolve("npm")
@@ -94,10 +108,12 @@ fun unityMcpAgentWellKnownCandidates(binary: String, os: OS, userHome: Path): Li
     return folders.flatMap { folder -> names.map { folder.resolve(it) } }
 }
 
+@ApiStatus.Internal
 fun unityMcpRowSnippet(store: UnityMcpStore, unity: Path): String =
     unityMcpStoreEntry(store, unity)?.let(::unityMcpJsonSnippet) ?: unityMcpCodexSnippet(unity)
 
 /** The four tables that `unity mcp configure codex` writes. */
+@ApiStatus.Internal
 fun unityMcpCodexSnippet(unity: Path): String = """
     [mcp_servers.$UNITY_MCP_CODEX_SERVER_NAME]
     command = ${gson.toJson(unity.toString())}

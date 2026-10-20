@@ -6,6 +6,7 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.util.system.LowLevelLocalMachineAccess
 import com.intellij.util.system.OS
 import com.intellij.util.text.SemVer
+import org.jetbrains.annotations.ApiStatus
 import java.net.URI
 import java.net.URISyntaxException
 import java.nio.file.Path
@@ -28,6 +29,7 @@ internal data class UnityCliUpdateInfo(
     val updateCommand: String?,
 )
 
+@ApiStatus.Internal
 @OptIn(LowLevelLocalMachineAccess::class)
 fun unityCliExecutableName(): String =
     if (OS.CURRENT == OS.Windows) "$UNITY_CLI_COMMAND.exe" else UNITY_CLI_COMMAND
@@ -49,6 +51,7 @@ internal fun isUnityHubPrivateCopy(path: Path): Boolean =
 
 internal fun isUnityCliVersionOutput(stdout: String): Boolean = SemVer.parseFromText(stdout.trim()) != null
 
+@ApiStatus.Internal
 fun isUnityCliHelpOutput(stdout: String): Boolean =
     (stdout.contains("Usage: unity", ignoreCase = true) || stdout.contains("unity [options]", ignoreCase = true)) &&
     UNITY_CLI_SUBCOMMANDS.any { stdout.contains(it, ignoreCase = true) }
@@ -80,6 +83,7 @@ internal fun parseUnityCliUpdateInfo(stdout: String): UnityCliUpdateInfo? {
 
 private val UNITY_CLI_CDN_HOST: String = URI(UNITY_CLI_CDN_BASE_URL).host
 
+@ApiStatus.Internal
 fun isReadableManifestUrl(manifestUrl: String): Boolean {
     val uri = try {
         URI(manifestUrl)
@@ -92,6 +96,7 @@ fun isReadableManifestUrl(manifestUrl: String): Boolean {
            uri.host?.equals(UNITY_CLI_CDN_HOST, ignoreCase = true) == true
 }
 
+@ApiStatus.Internal
 fun parseUnityCliManifestVersion(body: String): String? =
     parse<ChannelManifest>(body)?.version?.takeIf { it.isNotBlank() }
 
@@ -116,6 +121,7 @@ internal fun UnityCliEnvironment.unityCliHome(): String? = environmentVariable(U
 
 internal fun UnityCliEnvironment.localAppData(): String? = environmentVariable(LOCAL_APP_DATA_VARIABLE)
 
+@ApiStatus.Internal
 fun isUnityCliDiagnoseUpdateOutput(stdout: String): Boolean {
     val envelope = parse<DiagnoseUpdateEnvelope>(stdout) ?: return false
     val data = envelope.data ?: return false

@@ -1,10 +1,12 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.openapi.util.registry.Registry
+import org.jetbrains.annotations.ApiStatus
 
 /**
  * The kill switch of the Unity for Agents feature.
  */
+@ApiStatus.Internal
 object UnityForAgentsFeature {
     const val ENABLED_KEY: String = "rider.unity.agents.enabled"
 
