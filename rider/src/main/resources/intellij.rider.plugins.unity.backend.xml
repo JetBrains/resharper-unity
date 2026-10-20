@@ -249,6 +249,7 @@
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
     <backend.markup.adapterFactory language="UXML" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <backend.actions.support language="UXML" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
+    <typing.policy language="UXML" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlTypingPolicy" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlIconProvider" />
     <completion.contributor language="UXML" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
     <completion.contributor language="UXML" implementationClass="com.jetbrains.rider.completion.patchEngine.RiderPatchEngineCompletionContributor" />
