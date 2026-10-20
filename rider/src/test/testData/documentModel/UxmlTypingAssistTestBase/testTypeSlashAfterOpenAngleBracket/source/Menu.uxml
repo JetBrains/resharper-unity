@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="root" class="screen">
+        <ui:Label text="Hello" name="title" />
+        <ui:Button text="Start" name="start">Click<<caret>
+    </ui:VisualElement>
+</ui:UXML>
