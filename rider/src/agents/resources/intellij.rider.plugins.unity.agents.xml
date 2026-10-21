@@ -1,0 +1,17 @@
+<idea-plugin>
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+  <dependencies>
+    <module name="intellij.aiagentextensions.skills"/>
+    <module name="intellij.libraries.rd.core"/>
+    <module name="intellij.platform.core"/>
+    <module name="intellij.rider.plugins.appender.mcpServer"/>
+    <module name="intellij.rider.plugins.unity.backend"/>
+  </dependencies>
+  <!-- endregion -->
+  <extensions defaultExtensionNs="com.intellij.aiagentextensions.skills">
+    <bundledRegistry implementation="com.jetbrains.rider.plugins.unity.agents.UnitySkillRegistryProvider"/>
+  </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+    <rider.agentSetupRowProvider implementation="com.jetbrains.rider.plugins.unity.agents.UnityAgentSetupRowProvider"/>
+  </extensions>
+</idea-plugin>

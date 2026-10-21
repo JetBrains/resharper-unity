@@ -26,11 +26,9 @@ jvm_library(
         # do not sort,
         "@community//platform/kernel/rpc",
         "@community//platform/core-api:core",
-        "@community//platform/kernel/shared:kernel",
         "@community//libraries/kotlinx/serialization/core",
         "@community//platform/xdebugger-impl/rpc",
         "@community//libraries/jetbrains/annotations",
-        "@community//fleet/rhizomedb",
     ],
 )
 
@@ -48,11 +46,9 @@ jvm_library(
         ":common",
         "@community//platform/kernel/rpc:rpc_test_lib",
         "@community//platform/core-api:core_test_lib",
-        "@community//platform/kernel/shared:kernel_test_lib",
         "@community//libraries/kotlinx/serialization/core:core_test_lib",
         "@community//platform/xdebugger-impl/rpc:rpc_test_lib",
         "@community//libraries/jetbrains/annotations:annotations_test_lib",
-        "@community//fleet/rhizomedb:rhizomedb_test_lib",
     ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.common` end

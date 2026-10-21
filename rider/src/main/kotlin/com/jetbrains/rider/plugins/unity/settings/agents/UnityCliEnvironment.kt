@@ -5,12 +5,14 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.util.EnvironmentUtil
 import com.intellij.util.SystemProperties
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.TestOnly
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 
 @Service(Service.Level.APP)
+@ApiStatus.Internal
 class UnityCliEnvironment private constructor(
     val findOnPath: (String) -> Path?,
     val environmentVariable: (String) -> String?,

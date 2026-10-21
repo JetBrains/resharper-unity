@@ -180,6 +180,14 @@ class UnityScriptingBackendDetectionTest {
     inner class TestIL2CPPUnityBuild6_3 : UnityScriptingBackendDetectionTestBase(UnityScriptingBackend.IL2CPP)
 
     @Nested
+    @UnityTestSettings(unityVersion = UnityVersion.V6_5, unityBackend = UnityBackend.Il2CPP)
+    inner class TestIL2CPPUnityBuild6_5 : UnityScriptingBackendDetectionTestBase(UnityScriptingBackend.IL2CPP)
+
+    @Nested
     @UnityTestSettings(unityVersion = UnityVersion.V6_3, unityBackend = UnityBackend.Mono)
     inner class TestMonoUnityBuild6_3 : UnityScriptingBackendDetectionTestBase(UnityScriptingBackend.Mono)
+
+    @Nested
+    @UnityTestSettings(unityVersion = UnityVersion.V6_5, unityBackend = UnityBackend.Mono)
+    inner class TestMonoUnityBuild6_5 : UnityScriptingBackendDetectionTestBase(UnityScriptingBackend.Mono)
 }

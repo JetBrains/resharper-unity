@@ -31,8 +31,8 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.io.path.readText
 
-interface UnityMcpStatusProvider {
-    suspend fun read(): UnityMcpSectionPresentation
+internal interface UnityMcpStatusProvider {
+    suspend fun read(cli: UnityCliPresentation): UnityMcpSectionPresentation
 
     suspend fun write(
         stores: List<UnityMcpStore>,
@@ -50,21 +50,37 @@ internal suspend fun readUnityCli(project: Project): UnityCliPresentation =
     if (TrustedProjects.isProjectTrusted(project)) UnityCliStatusProvider.getInstance().read()
     else UnityCliPresentation(projectTrusted = false)
 
+internal fun unityMcpProject(project: Project): UnityMcpProject? {
+    if (project.isDefault || !project.isUnityProject.value) return null
+    val path = unitySolutionDirectory(project)?.toString() ?: return null
+    return UnityMcpProject(project.name, path)
+}
+
+internal fun unitySolutionDirectory(project: Project): Path? =
+    try {
+        project.projectDir.toNioPath()
+    }
+    catch (e: Throwable) {
+        rethrowControlFlowException(e)
+        logger.debug("Rider could not read the solution directory of the project", e)
+        null
+    }
+
+private val logger: Logger = Logger.getInstance(UnityMcpStatusService::class.java)
+
 @Service(Service.Level.PROJECT)
 internal class UnityMcpStatusService(
     private val project: Project,
     private val scope: CoroutineScope,
 ) : UnityMcpStatusProvider {
     private val heldRows = ConcurrentHashMap<UnityMcpStore, HeldRow>()
-    private val packageLock = Mutex()
     private val claimLock = Mutex()
     private val claimCounter = AtomicLong()
     private val releaseCounter = AtomicLong()
 
-    override suspend fun read(): UnityMcpSectionPresentation {
+    override suspend fun read(cli: UnityCliPresentation): UnityMcpSectionPresentation {
         val readStart = releaseCounter.get()
-        val unityProject = unityProject(project)
-        val cli = readUnityCli(project)
+        val unityProject = unityMcpProject(project)
         val section = unityMcpSectionState(cli, unityProject != null)
         val unity = cli.location
         val solution = unityProject?.let { Path.of(it.path) }
@@ -74,8 +90,6 @@ internal class UnityMcpStatusService(
                 cli = cli,
                 project = unityProject,
                 rows = rows,
-                manifestPath = solution?.let { unityManifestPath(it).toString() },
-                pipelinePackage = solution?.let { readPipelineFromManifest(it) },
             )
         }
 
@@ -83,7 +97,6 @@ internal class UnityMcpStatusService(
             val clientList = async { readLocalClientList(unity, solution) }
             val storeFiles = async { readJsonStores(UnityMcpStore.entries, solution) }
             val agentBinaries = async { findAgentBinaries() }
-            val manifest = async { readPipelineFromManifest(solution) }
 
             val readings = storeFiles.await()
             val binaries = agentBinaries.await()
@@ -100,40 +113,9 @@ internal class UnityMcpStatusService(
                 cli = cli,
                 project = unityProject,
                 rows = rows,
-                manifestPath = unityManifestPath(solution).toString(),
-                pipelinePackage = manifest.await(),
             )
         }
     }
-
-    private suspend fun runPipelineInstall(unity: Path?, solution: Path): PackageOutcome {
-        if (unity == null) {
-            return PackageOutcome.Failed(UnityMcpFailure.PACKAGE_INSTALL, null)
-        }
-
-        val output = runWriteProcess(unityPipelineInstallCommandLine(unity, solution))
-        val after = readPipelineFromManifest(solution)?.present
-        val failure = unityPipelineInstallOutcome(output, after)
-        if (failure == null) return PackageOutcome.Ready
-
-        logger.warn("Rider could not add the Unity Pipeline package to $solution: $failure")
-        return PackageOutcome.Failed(UnityMcpFailure.PACKAGE_INSTALL, output?.takeIf { !it.isTimeout }?.exitCode)
-    }
-
-    private suspend fun readPipelineFromManifest(solution: Path): UnityPipelineManifest? =
-        withContext(Dispatchers.IO) {
-            val file = unityManifestPath(solution)
-            val reading = try {
-                if (!Files.isRegularFile(file)) ManifestReading(exists = false)
-                else ManifestReading(exists = true, content = file.readText())
-            }
-            catch (e: Throwable) {
-                rethrowControlFlowException(e)
-                logger.debug("Rider could not read $file", e)
-                ManifestReading(exists = true)
-            }
-            readUnityPipelineManifest(reading.content, reading.exists)
-        }
 
     override suspend fun write(
         stores: List<UnityMcpStore>,
@@ -162,59 +144,34 @@ internal class UnityMcpStatusService(
             }
             withBackgroundProgress(project, title) {
                 val unity = UnityCliStatusProvider.getInstance().read().location
-                val solution = projectDirectory(project)
+                val solution = unitySolutionDirectory(project)
                 val before = readEntries(claimed, unity, solution)
-                val answers = when (val outcome = preparePackage(operation, packageInstallAgreed, unity, solution)) {
-                    PackageOutcome.Ready -> runWrites(claimed, operation, unity, solution)
-                    PackageOutcome.Declined -> return@withBackgroundProgress
-                    is PackageOutcome.Failed ->
+                val outcome = when (operation) {
+                    UnityMcpOperation.CONFIGURING ->
+                        UnityPipelineStatusProvider.getInstance(project).ensureInstalled(packageInstallAgreed, UnityAgentsSource.SETTINGS)
+                    UnityMcpOperation.REMOVING -> UnityPipelinePackageOutcome.Ready
+                }
+                val answers = when (outcome) {
+                    UnityPipelinePackageOutcome.Ready -> runWrites(claimed, operation, unity, solution)
+                    UnityPipelinePackageOutcome.Declined -> return@withBackgroundProgress
+                    is UnityPipelinePackageOutcome.Failed ->
                         claimed.associateWith { WriteAnswer.Failed(outcome.failure, outcome.exitCode) }
                 }
                 val after = readEntries(claimed, unity, solution)
                 for ((store, answer) in answers) {
                     val confirmed = unityMcpWriteConfirmed(operation, after.getValue(store))
-                    release(store, answer.failure(confirmed), answer.exitCode(), before.getValue(store), after.getValue(store))
+                    val failure = answer.failure(confirmed)
+                    release(store, failure, answer.exitCode(), before.getValue(store), after.getValue(store))
+                    if (store in stores) {
+                        val result = if (failure == null) UnityAgentsResult.SUCCESS else UnityAgentsResult.FAILED
+                        UnityForAgentsUsagesCollector.logMcpOperationFinished(project, store, operation, result)
+                    }
                 }
             }
         }
         finally {
             claimed.forEach { releaseIfBusy(it, token) }
         }
-    }
-
-    private suspend fun preparePackage(
-        operation: UnityMcpOperation,
-        agreed: Boolean,
-        unity: Path?,
-        solution: Path?,
-    ): PackageOutcome {
-        if (operation != UnityMcpOperation.CONFIGURING) return PackageOutcome.Ready
-        if (solution == null) return PackageOutcome.Ready
-        return packageLock.withLock {
-            // The page asked from a read that can be stale, so the manifest answers again here.
-            val present = readPipelineFromManifest(solution)?.present
-            when (unityMcpPackageStep(operation, present, agreed)) {
-                UnityMcpPackageStep.NONE -> PackageOutcome.Ready
-                UnityMcpPackageStep.INSTALL -> runPipelineInstall(unity, solution)
-                UnityMcpPackageStep.ABORT -> abortedPackage(present, solution)
-            }
-        }
-    }
-
-    private fun abortedPackage(present: Boolean?, solution: Path): PackageOutcome =
-        if (present == null) {
-            logger.warn("Rider will not configure an agent: ${unityManifestPath(solution)} did not answer")
-            PackageOutcome.Failed(UnityMcpFailure.PACKAGE_UNREADABLE, null)
-        }
-        else {
-            logger.info("Rider will not configure an agent: the user declined the Unity Pipeline package")
-            PackageOutcome.Declined
-        }
-
-    private sealed interface PackageOutcome {
-        data object Ready : PackageOutcome
-        data object Declined : PackageOutcome
-        data class Failed(val failure: UnityMcpFailure, val exitCode: Int?) : PackageOutcome
     }
 
     private suspend fun runWrites(
@@ -470,22 +427,6 @@ internal class UnityMcpStatusService(
         ?: unityMcpAgentWellKnownCandidates(binary, OS.CURRENT, environment.userHome()).firstOrNull(environment.isExecutable)
     }
 
-    private fun unityProject(project: Project): UnityMcpProject? {
-        if (project.isDefault || !project.isUnityProject.value) return null
-        val path = projectDirectory(project)?.toString() ?: return null
-        return UnityMcpProject(project.name, path)
-    }
-
-    private fun projectDirectory(project: Project): Path? =
-        try {
-            project.projectDir.toNioPath()
-        }
-        catch (e: Throwable) {
-            rethrowControlFlowException(e)
-            logger.debug("Rider could not read the solution directory of the project", e)
-            null
-        }
-
     private data class HeldRow(
         val restartNeeded: Boolean = false,
         val operation: UnityMcpOperation? = null,
@@ -497,8 +438,6 @@ internal class UnityMcpStatusService(
     )
 
     private data class JsonStoreReading(val exists: Boolean, val content: String? = null)
-
-    private data class ManifestReading(val exists: Boolean, val content: String? = null)
 
     private sealed interface WriteAnswer {
         data class Failed(val failure: UnityMcpFailure, val exitCode: Int?) : WriteAnswer
@@ -520,9 +459,5 @@ internal class UnityMcpStatusService(
         companion object {
             val LAUNCH_FAILED: WriteAnswer = Failed(UnityMcpFailure.LAUNCH_FAILED, null)
         }
-    }
-
-    private companion object {
-        val logger: Logger = Logger.getInstance(UnityMcpStatusService::class.java)
     }
 }

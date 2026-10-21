@@ -25,7 +25,6 @@ jvm_library(
     deps = [
         # do not sort,
         "@community//platform/kernel/rpc.backend",
-        "@community//platform/kernel/shared:kernel",
         "@community//platform/platform-impl:ide-impl",
         "@community//platform/core-api:core",
         "@community//platform/xdebugger-api:debugger",
@@ -43,7 +42,6 @@ jvm_library(
         "@community//libraries/rd/framework",
         "@community//libraries/rd/core",
         "//dotnet/Plugins:rider-plugins-unity-model",
-        "@community//fleet/rhizomedb",
     ],
 )
 
@@ -60,7 +58,6 @@ jvm_library(
         # do not sort,
         ":backend",
         "@community//platform/kernel/rpc.backend:rpc.backend_test_lib",
-        "@community//platform/kernel/shared:kernel_test_lib",
         "@community//platform/platform-impl:ide-impl_test_lib",
         "@community//platform/core-api:core_test_lib",
         "@community//platform/xdebugger-api:debugger_test_lib",
@@ -78,7 +75,6 @@ jvm_library(
         "@community//libraries/rd/framework:framework_test_lib",
         "@community//libraries/rd/core:core_test_lib",
         "//dotnet/Plugins:rider-plugins-unity-model_test_lib",
-        "@community//fleet/rhizomedb:rhizomedb_test_lib",
     ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer.backend` end
