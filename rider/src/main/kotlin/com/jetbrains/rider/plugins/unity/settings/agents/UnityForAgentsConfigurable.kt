@@ -399,8 +399,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                     button(UnityBundle.message("unity.agents.cli.install")) {
                         logClick(UnityAgentsAction.INSTALL)
                         startInstall()
-                    }.gap(RightGap.SMALL)
-                    comment(UnityBundle.message("unity.agents.cli.install.hint"))
+                    }
                 }
                 // Rider runs a script of a third party, so the page says so before the user clicks.
                 row { comment(unityCliInstallDisclosure(presentation.foreignBinaryOnPath)) }
