@@ -63,6 +63,9 @@ internal fun unityMcpJsonStoreName(store: UnityMcpStore): String? = when (store)
 fun unityMcpJsonStoreFile(store: UnityMcpStore, solution: Path): Path? =
     unityMcpJsonStoreName(store)?.let { solution.resolve(it) }
 
+internal fun unityMcpStoreFile(store: UnityMcpStore, solution: Path): Path =
+    unityMcpJsonStoreFile(store, solution) ?: unityMcpCodexStoreFile(solution)
+
 @ApiStatus.Internal
 fun unityMcpStoreSharers(store: UnityMcpStore): List<UnityMcpStore> {
     val name = unityMcpJsonStoreName(store) ?: return emptyList()

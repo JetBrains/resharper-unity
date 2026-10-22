@@ -9,27 +9,62 @@ private const val CODEX_STORE_FILE = "config.toml"
 private const val MCP_SERVERS_TABLE = "mcp_servers"
 private val CODEX_ENTRY = listOf(MCP_SERVERS_TABLE, UNITY_MCP_SERVER_NAME)
 
+private class NetworkPolicyKey(val table: List<String>, val key: String, val values: Set<String>)
+
+private val SANDBOX_TABLE = listOf("sandbox_workspace_write")
+private val NETWORK_PROXY_TABLE = listOf("features", "network_proxy")
+private val NETWORK_PROXY_DOMAINS_TABLE = NETWORK_PROXY_TABLE + "domains"
+private val DOMAIN_ALLOWED = setOf("\"allow\"", "'allow'")
+
+private val UNITY_NETWORK_POLICY = listOf(
+    NetworkPolicyKey(SANDBOX_TABLE, "network_access", setOf("true")),
+    NetworkPolicyKey(NETWORK_PROXY_TABLE, "enabled", setOf("true")),
+    NetworkPolicyKey(NETWORK_PROXY_TABLE, "allow_local_binding", setOf("false")),
+    NetworkPolicyKey(NETWORK_PROXY_DOMAINS_TABLE, "localhost", DOMAIN_ALLOWED),
+    NetworkPolicyKey(NETWORK_PROXY_DOMAINS_TABLE, "127.0.0.1", DOMAIN_ALLOWED),
+    NetworkPolicyKey(NETWORK_PROXY_DOMAINS_TABLE, "::1", DOMAIN_ALLOWED),
+)
+private val UNITY_NETWORK_POLICY_TABLES = UNITY_NETWORK_POLICY.map { it.table }.toSet()
+
 @ApiStatus.Internal
 fun unityMcpCodexStoreFile(solution: Path): Path =
     solution.resolve(UNITY_MCP_CODEX_DIRECTORY).resolve(CODEX_STORE_FILE)
 
-internal suspend fun removeUnityMcpCodexEntryInIde(file: Path): Boolean =
-    writeStoreInIde(file) { removeUnityMcpCodexEntry(file) }
+internal suspend fun removeUnityMcpCodexEntryInIde(file: Path, removeNetworkPolicy: Boolean): Boolean =
+    writeStoreInIde(file) { removeUnityMcpCodexEntry(file, removeNetworkPolicy) }
 
 @ApiStatus.Internal
-fun removeUnityMcpCodexEntry(file: Path): Boolean {
+fun removeUnityMcpCodexEntry(file: Path, removeNetworkPolicy: Boolean): Boolean {
     if (Files.notExists(file)) return true
     val content = file.readText()
-    val stripped = unityMcpCodexStoreWithoutEntry(content) ?: return false
+    val removal = unityMcpCodexRemoval(content) ?: return false
+    if (removal.deletesStore) {
+        deleteWithEmptyParent(file)
+        return true
+    }
+    val stripped = if (removeNetworkPolicy) removal.withoutUnity else removal.withoutEntry
     if (stripped != content) replaceStoreFile(file, stripped)
     return true
+}
+
+@ApiStatus.Internal
+data class UnityMcpCodexRemoval(val withoutEntry: String, val withoutUnity: String) {
+    val deletesStore: Boolean get() = withoutUnity.isBlank()
+    val asksForNetworkPolicy: Boolean get() = !deletesStore && withoutUnity != withoutEntry
+}
+
+@ApiStatus.Internal
+fun unityMcpCodexRemoval(content: String): UnityMcpCodexRemoval? {
+    val withoutEntry = unityMcpCodexStoreWithoutEntry(content) ?: return null
+    val withoutUnity = unityMcpCodexStoreWithoutNetworkPolicy(withoutEntry) ?: return null
+    return UnityMcpCodexRemoval(withoutEntry, withoutUnity)
 }
 
 /**
  * Drops the `[mcp_servers.unity]` table and its sub-tables, and keeps every other line as it is.
  *
- * The three sandbox tables that `unity mcp configure codex` also writes stay, as `codex mcp remove`
- * leaves them too. Rider cannot tell whether the user or another server needs them.
+ * Codex's sandbox network policy, which `unity mcp configure codex` also writes, stays, as `codex mcp remove`
+ * leaves it too. [unityMcpCodexStoreWithoutNetworkPolicy] drops it.
  *
  * Returns null for a file that this line scan cannot edit safely: an entry in a dotted key or an
  * inline table, or a header or a value that does not parse.
@@ -65,7 +100,98 @@ fun unityMcpCodexStoreWithoutEntry(content: String): String? {
     return if (value.isOpen) null else kept.toString()
 }
 
+/**
+ * Drops the keys of Codex's sandbox network policy that `unity mcp configure codex` writes, and keeps every other
+ * line as it is.
+ *
+ * A key goes only under a plain table header, with the exact value of the Unity CLI and with no comment. A table
+ * goes whole when it loses its last line, with the blank lines above its header.
+ *
+ * Returns null for a header or a value that does not parse.
+ */
+@ApiStatus.Internal
+fun unityMcpCodexStoreWithoutNetworkPolicy(content: String): String? {
+    val kept = StringBuilder()
+    val value = TomlValueScan()
+    var section = TomlSection(policyTable = null, leading = "", header = null)
+
+    for (line in content.split(Regex("(?<=\n)"))) {
+        if (value.isOpen) {
+            value.scan(line)
+            section.keep(line)
+            continue
+        }
+        val text = line.trim()
+        when {
+            text.isEmpty() -> section.blank(line)
+            text.startsWith("[") -> {
+                val table = readTomlHeader(text) ?: return null
+                val policyTable = table.takeIf { it in UNITY_NETWORK_POLICY_TABLES && isPlainTomlHeader(text) }
+                val leading = section.takeBlanks()
+                section.appendTo(kept)
+                section = TomlSection(policyTable, leading, line)
+            }
+            text.startsWith("#") -> section.keep(line)
+            else -> {
+                val key = readTomlKey(text, 0) ?: return null
+                val rest = text.substring(key.end)
+                if (!rest.startsWith("=")) return null
+                val raw = rest.substring(1)
+                if (section.isUnityPolicyKey(key.path, raw.trim())) section.drop() else section.keep(line)
+                value.scan(raw)
+            }
+        }
+    }
+    if (value.isOpen) return null
+    section.appendTo(kept)
+    return kept.toString()
+}
+
 private class TomlKey(val path: List<String>, val end: Int)
+
+/**
+ * One table of the store, with the blank lines above its header.
+ *
+ * A table of the network policy that loses all its lines goes whole, so that no empty header stays.
+ */
+private class TomlSection(private val policyTable: List<String>?, leading: String, header: String?) {
+    private val text = StringBuilder(leading).append(header.orEmpty())
+    private val blanks = StringBuilder()
+    private var kept = false
+    private var dropped = false
+
+    fun isUnityPolicyKey(path: List<String>, value: String): Boolean =
+        policyTable != null &&
+        UNITY_NETWORK_POLICY.any { it.table == policyTable && path == listOf(it.key) && value in it.values }
+
+    fun keep(line: String) {
+        text.append(blanks).append(line)
+        blanks.setLength(0)
+        kept = true
+    }
+
+    fun blank(line: String) {
+        blanks.append(line)
+    }
+
+    fun drop() {
+        dropped = true
+    }
+
+    /** Hands the blank lines at the end of this table to the next header. */
+    fun takeBlanks(): String = blanks.toString().also { blanks.setLength(0) }
+
+    fun appendTo(out: StringBuilder) {
+        if (dropped && !kept) return
+        out.append(text).append(blanks)
+    }
+}
+
+/** A `[table]` header with no comment after it. An array of tables or a comment marks a table that the user wrote. */
+private fun isPlainTomlHeader(text: String): Boolean {
+    val key = readTomlKey(text, 1) ?: return false
+    return text.substring(key.end).trim() == "]"
+}
 
 private fun readTomlHeader(text: String): List<String>? {
     val brackets = if (text.startsWith("[[")) 2 else 1

@@ -39,6 +39,7 @@ internal interface UnityMcpStatusProvider {
         operation: UnityMcpOperation,
         modality: ModalityState,
         packageInstallAgreed: Boolean = false,
+        networkPolicyRemovalAgreed: Boolean = false,
     )
 
     companion object {
@@ -96,6 +97,7 @@ internal class UnityMcpStatusService(
         return coroutineScope {
             val clientList = async { readLocalClientList(unity, solution) }
             val storeFiles = async { readJsonStores(UnityMcpStore.entries, solution) }
+            val codexStoreFile = async { readStoreFile(unityMcpCodexStoreFile(solution)) }
             val agentBinaries = async { findAgentBinaries() }
 
             val readings = storeFiles.await()
@@ -103,7 +105,8 @@ internal class UnityMcpStatusService(
             val rows = withHeldState(
                 UnityMcpStore.entries.map { store ->
                     when (store) {
-                        UnityMcpStore.CODEX_CLI -> codexRow(section, clientList.await(), binaries[UNITY_MCP_CODEX_BINARY])
+                        UnityMcpStore.CODEX_CLI ->
+                            codexRow(section, clientList.await(), codexStoreFile.await(), binaries[UNITY_MCP_CODEX_BINARY])
                         else -> jsonStoreRow(store, section, readings, binaries, solution)
                     }
                 },
@@ -122,14 +125,18 @@ internal class UnityMcpStatusService(
         operation: UnityMcpOperation,
         modality: ModalityState,
         packageInstallAgreed: Boolean,
+        networkPolicyRemovalAgreed: Boolean,
     ) {
-        scope.launch(modality.asContextElement()) { claimAndWrite(stores, operation, packageInstallAgreed) }.join()
+        scope.launch(modality.asContextElement()) {
+            claimAndWrite(stores, operation, packageInstallAgreed, networkPolicyRemovalAgreed)
+        }.join()
     }
 
     private suspend fun claimAndWrite(
         stores: List<UnityMcpStore>,
         operation: UnityMcpOperation,
         packageInstallAgreed: Boolean,
+        networkPolicyRemovalAgreed: Boolean,
     ) {
         if (!UnityForAgentsFeature.isMcpSectionEnabled()) return
         if (!TrustedProjects.isProjectTrusted(project)) return
@@ -152,7 +159,7 @@ internal class UnityMcpStatusService(
                     UnityMcpOperation.REMOVING -> UnityPipelinePackageOutcome.Ready
                 }
                 val answers = when (outcome) {
-                    UnityPipelinePackageOutcome.Ready -> runWrites(claimed, operation, unity, solution)
+                    UnityPipelinePackageOutcome.Ready -> runWrites(claimed, operation, unity, solution, networkPolicyRemovalAgreed)
                     UnityPipelinePackageOutcome.Declined -> return@withBackgroundProgress
                     is UnityPipelinePackageOutcome.Failed ->
                         claimed.associateWith { WriteAnswer.Failed(outcome.failure, outcome.exitCode) }
@@ -179,12 +186,13 @@ internal class UnityMcpStatusService(
         operation: UnityMcpOperation,
         unity: Path?,
         solution: Path?,
+        networkPolicyRemovalAgreed: Boolean,
     ): Map<UnityMcpStore, WriteAnswer> {
         if (unity == null || solution == null) return stores.associateWith { WriteAnswer.LAUNCH_FAILED }
 
         return coroutineScope {
             unityMcpWriteGroups(stores)
-                .map { group -> async { group to runWrite(group.first(), operation, unity, solution) } }
+                .map { group -> async { group to runWrite(group.first(), operation, unity, solution, networkPolicyRemovalAgreed) } }
                 .awaitAll()
         }.flatMap { (group, answer) -> group.map { it to answer } }.toMap()
     }
@@ -204,7 +212,7 @@ internal class UnityMcpStatusService(
                 when (store) {
                     UnityMcpStore.CODEX_CLI -> readCodexEntry(clientList.await())
                     else -> {
-                        val reading = readings[unityMcpJsonStoreFile(store, solution)] ?: JsonStoreReading(exists = false)
+                        val reading = readings[unityMcpJsonStoreFile(store, solution)] ?: StoreReading(exists = false)
                         readMcpServersEntry(reading.content, reading.exists)
                     }
                 }
@@ -217,15 +225,16 @@ internal class UnityMcpStatusService(
         operation: UnityMcpOperation,
         unity: Path,
         solution: Path,
+        networkPolicyRemovalAgreed: Boolean,
     ): WriteAnswer {
         if (store == UnityMcpStore.CODEX_CLI && operation == UnityMcpOperation.REMOVING) {
             val file = unityMcpCodexStoreFile(solution)
-            return WriteAnswer.Wrote(writeStoreFile(file) { removeUnityMcpCodexEntryInIde(file) })
+            return WriteAnswer.Wrote(writeStoreFile(file) { removeUnityMcpCodexEntryInIde(file, networkPolicyRemovalAgreed) })
         }
         unityMcpOwnedStore(store, unity, solution)?.let { return runOwnWrite(it, operation) }
 
         val command = unityMcpWriteCommandLine(store, operation, unity, solution) ?: return WriteAnswer.LAUNCH_FAILED
-        return WriteAnswer.Ran(runWriteProcess(command))
+        return runWriteProcess(command, unityMcpStoreFile(store, solution))
     }
 
     private suspend fun runOwnWrite(owned: UnityMcpOwnedStore, operation: UnityMcpOperation): WriteAnswer {
@@ -246,15 +255,21 @@ internal class UnityMcpStatusService(
             false
         }
 
-    private suspend fun runWriteProcess(command: GeneralCommandLine): ProcessOutput? =
-        try {
-            UnityCliProcessRunner.getInstance().runProcess(command, UnityCliProcessRunner.STORE_WRITE_TIMEOUT_MS)
+    private suspend fun runWriteProcess(command: GeneralCommandLine, file: Path): WriteAnswer {
+        var output: ProcessOutput? = null
+        return try {
+            val saved = writeStoreInIde(file) {
+                output = UnityCliProcessRunner.getInstance().runProcess(command, UnityCliProcessRunner.STORE_WRITE_TIMEOUT_MS)
+                true
+            }
+            if (saved) WriteAnswer.Ran(output) else WriteAnswer.Wrote(written = false)
         }
         catch (e: Throwable) {
             rethrowControlFlowException(e)
             logger.warn("Rider could not run ${command.exePath}", e)
-            null
+            WriteAnswer.Ran(output)
         }
+    }
 
     private fun gatedRows(section: UnityMcpSectionState): List<UnityMcpRowPresentation> =
         UnityMcpStore.entries.map { UnityMcpRowPresentation(store = it, section = section) }
@@ -340,26 +355,27 @@ internal class UnityMcpStatusService(
     private fun codexRow(
         section: UnityMcpSectionState,
         clientList: UnityMcpClientList?,
+        storeFile: StoreReading,
         binary: Path?,
     ): UnityMcpRowPresentation = UnityMcpRowPresentation(
         store = UnityMcpStore.CODEX_CLI,
         section = section,
         storePath = clientList?.configPathOf(UNITY_MCP_CODEX_KEY),
-        // The Unity CLI answers with a path only where a file is there, measured on 2026-09-28.
-        storeFileExists = clientList?.configPathOf(UNITY_MCP_CODEX_KEY) != null,
+        storeFileExists = storeFile.exists,
         entry = readCodexEntry(clientList),
         agentDetected = binary != null,
+        removalAsksForNetworkPolicy = storeFile.content?.let(::unityMcpCodexRemoval)?.asksForNetworkPolicy == true,
     )
 
     private fun jsonStoreRow(
         store: UnityMcpStore,
         section: UnityMcpSectionState,
-        readings: Map<Path, JsonStoreReading>,
+        readings: Map<Path, StoreReading>,
         binaries: Map<String, Path?>,
         solution: Path,
     ): UnityMcpRowPresentation {
         val file = unityMcpJsonStoreFile(store, solution)
-        val reading = readings[file] ?: JsonStoreReading(exists = false)
+        val reading = readings[file] ?: StoreReading(exists = false)
         val binary = unityMcpAgentBinary(store)
         return UnityMcpRowPresentation(
             store = store,
@@ -374,11 +390,11 @@ internal class UnityMcpStatusService(
     private suspend fun readJsonStores(
         stores: List<UnityMcpStore>,
         solution: Path,
-    ): Map<Path, JsonStoreReading> = coroutineScope {
+    ): Map<Path, StoreReading> = coroutineScope {
         stores
             .mapNotNull { unityMcpJsonStoreFile(it, solution) }
             .distinct()
-            .map { file -> async { file to readJsonStore(file) } }
+            .map { file -> async { file to readStoreFile(file) } }
             .awaitAll()
             .toMap()
     }
@@ -398,15 +414,15 @@ internal class UnityMcpStatusService(
         return parseUnityMcpClientList(output.stdout)
     }
 
-    private suspend fun readJsonStore(file: Path): JsonStoreReading = withContext(Dispatchers.IO) {
+    private suspend fun readStoreFile(file: Path): StoreReading = withContext(Dispatchers.IO) {
         try {
-            if (Files.notExists(file)) JsonStoreReading(exists = false)
-            else JsonStoreReading(exists = true, content = file.readText())
+            if (Files.notExists(file)) StoreReading(exists = false)
+            else StoreReading(exists = true, content = file.readText())
         }
         catch (e: Throwable) {
             rethrowControlFlowException(e)
             logger.debug("Rider could not read $file", e)
-            JsonStoreReading(exists = true)
+            StoreReading(exists = true)
         }
     }
 
@@ -437,7 +453,7 @@ internal class UnityMcpStatusService(
         val release: Long = 0,
     )
 
-    private data class JsonStoreReading(val exists: Boolean, val content: String? = null)
+    private data class StoreReading(val exists: Boolean, val content: String? = null)
 
     private sealed interface WriteAnswer {
         data class Failed(val failure: UnityMcpFailure, val exitCode: Int?) : WriteAnswer

@@ -9,7 +9,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillInstall
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillOffer
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillPresentation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillTarget
-import com.jetbrains.rider.plugins.unity.settings.agents.deleteUnitySkill
+import com.jetbrains.rider.plugins.unity.settings.agents.deleteWithEmptyParent
 import com.jetbrains.rider.plugins.unity.settings.agents.parseUnitySkillList
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsMissingSteps
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupPrompt
@@ -83,7 +83,7 @@ class UnitySkillTest {
         val disabled = Files.createDirectories(tempDir.resolve(".agents/skills.disabled/unity-cli"))
         Files.writeString(disabled.resolve("SKILL.md"), "skill")
 
-        deleteUnitySkill(disabled)
+        deleteWithEmptyParent(disabled)
 
         assertFalse(Files.exists(disabled.parent))
     }
@@ -94,7 +94,7 @@ class UnitySkillTest {
         Files.writeString(disabled.resolve("SKILL.md"), "skill")
         val other = Files.createDirectories(tempDir.resolve(".agents/skills.disabled/other-skill"))
 
-        deleteUnitySkill(disabled)
+        deleteWithEmptyParent(disabled)
 
         assertFalse(Files.exists(disabled))
         assertTrue(Files.isDirectory(other))

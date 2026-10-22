@@ -40,7 +40,7 @@ internal class UnitySkillStatusService(
     private val project: Project,
     private val scope: CoroutineScope,
 ) : UnitySkillStatusProvider {
-    private val core = UnitySkillCore(::runProcess, Files::exists, ::deleteUnitySkill)
+    private val core = UnitySkillCore(::runProcess, Files::exists, ::deleteWithEmptyParent)
 
     override suspend fun read(cli: UnityCliPresentation, pipeline: UnityPipelinePresentation): UnitySkillPresentation {
         val solution = unityMcpProject(project)?.let { Path.of(it.path) }
