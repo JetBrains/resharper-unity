@@ -44,12 +44,15 @@ class UnitySkillCoreTest {
         output(0)
     }
 
-    private val core = UnitySkillCore(
+    private val core = coreWith(exists = { true })
+
+    private fun coreWith(exists: (Path) -> Boolean, delete: (Path) -> Unit = {}): UnitySkillCore = UnitySkillCore(
         runProcess = { command, _ ->
             executedCommands.add(command.parametersList.parameters)
             processAnswer(command)
         },
-        exists = { true },
+        exists = exists,
+        delete = delete,
     )
 
     private fun answerWithList(onInstall: (GeneralCommandLine) -> ProcessOutput?): suspend (GeneralCommandLine) -> ProcessOutput? = { cmd ->
@@ -177,6 +180,29 @@ class UnitySkillCoreTest {
         core.install(unity, solution, UnitySkillTarget.ALL.clients) { results.add(it) }
 
         assertEquals(listOf(UnityAgentsResult.FAILED), results)
+    }
+
+    @Test
+    fun `install deletes the disabled copy of the installed skill`() = runBlocking {
+        val deleted = mutableListOf<Path>()
+        val disabledCore = coreWith(exists = { true }, delete = { deleted.add(it) })
+
+        val results = mutableListOf<UnityAgentsResult>()
+        disabledCore.install(unity, solution, UnitySkillTarget.CODEX.clients) { results.add(it) }
+
+        assertEquals(listOf(solution.toAbsolutePath().normalize().resolve(".agents/skills.disabled/unity-cli")), deleted)
+        assertEquals(1, executedCommands.count { it.contains("install") })
+        assertEquals(listOf(UnityAgentsResult.SUCCESS), results)
+    }
+
+    @Test
+    fun `a failed install keeps the disabled skill`() = runBlocking {
+        processAnswer = answerWithList { output(2) }
+        val deleted = mutableListOf<Path>()
+
+        coreWith(exists = { true }, delete = { deleted.add(it) }).install(unity, solution, UnitySkillTarget.CODEX.clients)
+
+        assertEquals(emptyList<Path>(), deleted)
     }
 
     @Test

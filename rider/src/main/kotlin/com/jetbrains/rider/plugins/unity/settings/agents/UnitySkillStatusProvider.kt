@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.ApiStatus
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
@@ -39,7 +40,7 @@ internal class UnitySkillStatusService(
     private val project: Project,
     private val scope: CoroutineScope,
 ) : UnitySkillStatusProvider {
-    private val core = UnitySkillCore(::runProcess, Files::exists)
+    private val core = UnitySkillCore(::runProcess, Files::exists, ::deleteUnitySkill)
 
     override suspend fun read(cli: UnityCliPresentation, pipeline: UnityPipelinePresentation): UnitySkillPresentation {
         val solution = unityMcpProject(project)?.let { Path.of(it.path) }
@@ -87,6 +88,7 @@ internal class UnitySkillStatusService(
 class UnitySkillCore(
     private val runProcess: suspend (GeneralCommandLine, Int) -> ProcessOutput?,
     private val exists: (Path) -> Boolean,
+    private val delete: (Path) -> Unit,
 ) {
     private val installing = AtomicBoolean(false)
     private val lastFailure = AtomicReference<SkillFailureRecord?>(null)
@@ -140,9 +142,9 @@ class UnitySkillCore(
             for (client in clients) {
                 val command = unitySkillInstallCommandLine(unity, client, solution)
                 val output = runProcess(command, UnityCliProcessRunner.STORE_WRITE_TIMEOUT_MS)
-                val installs = readInstalls(unity, solution)
-                val landed = installs?.any { it.client == client.key && it.local } == true
-                val failure = unitySkillInstallOutcome(output, landed)
+                val installed = readInstalls(unity, solution).orEmpty().filter { it.client == client.key && it.local }
+                installed.forEach { deleteDisabledSkill(it.path) }
+                val failure = unitySkillInstallOutcome(output, landed = installed.isNotEmpty())
                 if (failure != null) {
                     lastFailure.set(SkillFailureRecord(failure, exitCodeOf(output)))
                     logger.warn("Rider could not install the unity-cli skill for ${client.key} in $solution: $failure${processOutputForLog(output)}")
@@ -154,6 +156,22 @@ class UnitySkillCore(
         }
         finally {
             installing.set(false)
+        }
+    }
+
+    private suspend fun deleteDisabledSkill(installPath: Path) {
+        withContext(Dispatchers.IO) {
+            val skills = installPath.parent ?: return@withContext
+            // TODO: control the unity-cli skill through the Air skills API instead of a direct delete
+            val disabled = skills.resolveSibling("${skills.fileName}.disabled").resolve(installPath.fileName)
+            if (!exists(disabled)) return@withContext
+            try {
+                delete(disabled)
+                logger.info("Rider deleted the disabled unity-cli skill at $disabled")
+            }
+            catch (e: IOException) {
+                logger.warn("Rider could not delete the disabled unity-cli skill at $disabled", e)
+            }
         }
     }
 

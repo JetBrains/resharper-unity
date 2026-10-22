@@ -5,8 +5,11 @@ import com.google.gson.JsonSyntaxException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.util.NlsSafe
+import com.intellij.platform.eel.fs.EelFileUtils
 import org.jetbrains.annotations.ApiStatus
 import java.io.IOException
+import java.nio.file.DirectoryNotEmptyException
+import java.nio.file.Files
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 
@@ -113,6 +116,17 @@ internal fun unitySkillInstallOutcome(output: ProcessOutput?, landed: Boolean): 
     landed -> null
     output.exitCode != 0 -> UnitySkillFailure.EXIT_CODE
     else -> UnitySkillFailure.NOT_CONFIRMED
+}
+
+@ApiStatus.Internal
+fun deleteUnitySkill(skill: Path) {
+    EelFileUtils.deleteRecursively(skill)
+    try {
+        Files.deleteIfExists(skill.parent)
+    }
+    catch (_: DirectoryNotEmptyException) {
+        // The parent still holds other skills.
+    }
 }
 
 private data class SkillListAnswer(
