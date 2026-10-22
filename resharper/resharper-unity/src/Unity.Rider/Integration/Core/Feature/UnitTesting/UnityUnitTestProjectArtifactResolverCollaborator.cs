@@ -24,10 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
             return myUnitySolutionTracker.IsUnityProject.Maybe.Value && myServiceProvider.IsUnityUnitTestStrategy();
         }
 
-        public FileSystemPath ResolveArtifact(IProject project, TargetFrameworkId targetFrameworkId)
+        public VirtualFileSystemPath ResolveArtifact(IProject project, TargetFrameworkId targetFrameworkId)
         {
             var dllName = project.GetOutputFilePath(targetFrameworkId).Name;
-            return project.Location.Combine("Library").Combine("ScriptAssemblies").Combine(dllName).ToNativeFileSystemPath();
+            return project.Location.Combine("Library").Combine("ScriptAssemblies").Combine(dllName);
         }
     }
 }
