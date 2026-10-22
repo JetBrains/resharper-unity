@@ -11,8 +11,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
-import com.intellij.util.system.LowLevelLocalMachineAccess
-import com.intellij.util.system.OS
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectDir
@@ -98,16 +96,13 @@ internal class UnityMcpStatusService(
             val clientList = async { readLocalClientList(unity, solution) }
             val storeFiles = async { readJsonStores(UnityMcpStore.entries, solution) }
             val codexStoreFile = async { readStoreFile(unityMcpCodexStoreFile(solution)) }
-            val agentBinaries = async { findAgentBinaries() }
 
             val readings = storeFiles.await()
-            val binaries = agentBinaries.await()
             val rows = withHeldState(
                 UnityMcpStore.entries.map { store ->
                     when (store) {
-                        UnityMcpStore.CODEX_CLI ->
-                            codexRow(section, clientList.await(), codexStoreFile.await(), binaries[UNITY_MCP_CODEX_BINARY])
-                        else -> jsonStoreRow(store, section, readings, binaries, solution)
+                        UnityMcpStore.CODEX_CLI -> codexRow(section, clientList.await(), codexStoreFile.await())
+                        else -> jsonStoreRow(store, section, readings, solution)
                     }
                 },
                 readStart,
@@ -356,14 +351,12 @@ internal class UnityMcpStatusService(
         section: UnityMcpSectionState,
         clientList: UnityMcpClientList?,
         storeFile: StoreReading,
-        binary: Path?,
     ): UnityMcpRowPresentation = UnityMcpRowPresentation(
         store = UnityMcpStore.CODEX_CLI,
         section = section,
         storePath = clientList?.configPathOf(UNITY_MCP_CODEX_KEY),
         storeFileExists = storeFile.exists,
         entry = readCodexEntry(clientList),
-        agentDetected = binary != null,
         removalAsksForNetworkPolicy = storeFile.content?.let(::unityMcpCodexRemoval)?.asksForNetworkPolicy == true,
     )
 
@@ -371,19 +364,16 @@ internal class UnityMcpStatusService(
         store: UnityMcpStore,
         section: UnityMcpSectionState,
         readings: Map<Path, StoreReading>,
-        binaries: Map<String, Path?>,
         solution: Path,
     ): UnityMcpRowPresentation {
         val file = unityMcpJsonStoreFile(store, solution)
         val reading = readings[file] ?: StoreReading(exists = false)
-        val binary = unityMcpAgentBinary(store)
         return UnityMcpRowPresentation(
             store = store,
             section = section,
             storePath = file?.toString(),
             storeFileExists = reading.exists,
             entry = readMcpServersEntry(reading.content, reading.exists),
-            agentDetected = binary == null || binaries[binary] != null,
         )
     }
 
@@ -395,15 +385,6 @@ internal class UnityMcpStatusService(
             .mapNotNull { unityMcpJsonStoreFile(it, solution) }
             .distinct()
             .map { file -> async { file to readStoreFile(file) } }
-            .awaitAll()
-            .toMap()
-    }
-
-    private suspend fun findAgentBinaries(): Map<String, Path?> = coroutineScope {
-        UnityMcpStore.entries
-            .mapNotNull { unityMcpAgentBinary(it) }
-            .distinct()
-            .map { binary -> async { binary to findAgentBinary(binary) } }
             .awaitAll()
             .toMap()
     }
@@ -435,13 +416,6 @@ internal class UnityMcpStatusService(
             logger.debug("Rider could not run ${command.exePath}", e)
             null
         }
-
-    @OptIn(LowLevelLocalMachineAccess::class)
-    private suspend fun findAgentBinary(binary: String): Path? = withContext(Dispatchers.IO) {
-        val environment = UnityCliEnvironment.getInstance()
-        environment.findOnPath(binary)
-        ?: unityMcpAgentWellKnownCandidates(binary, OS.CURRENT, environment.userHome()).firstOrNull(environment.isExecutable)
-    }
 
     private data class HeldRow(
         val restartNeeded: Boolean = false,

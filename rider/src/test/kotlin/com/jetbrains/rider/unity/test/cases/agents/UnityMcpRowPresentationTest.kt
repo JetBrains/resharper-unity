@@ -59,7 +59,6 @@ class UnityMcpRowPresentationTest {
         entry: UnityMcpEntry? = null,
         store: UnityMcpStore = UnityMcpStore.CODEX_CLI,
         section: UnityMcpSectionState = UnityMcpSectionState.READY,
-        agentDetected: Boolean = true,
         restartNeeded: Boolean = false,
         operation: UnityMcpOperation? = null,
         failure: UnityMcpFailure? = null,
@@ -67,7 +66,6 @@ class UnityMcpRowPresentationTest {
         store = store,
         section = section,
         entry = entry,
-        agentDetected = agentDetected,
         restartNeeded = restartNeeded,
         operation = operation,
         failure = failure,
@@ -156,19 +154,8 @@ class UnityMcpRowPresentationTest {
             row(entry = UnityMcpEntry.PRESENT),
             UnityMcpRowState.ENTRY_PRESENT,
         ),
-        // Configuration outranks presence. An entry can be there with the agent uninstalled.
         RowCase(
-            "the entry is there and the agent is not on the machine",
-            row(entry = UnityMcpEntry.PRESENT, agentDetected = false),
-            UnityMcpRowState.ENTRY_PRESENT,
-        ),
-        RowCase(
-            "no entry, and the probe found no agent",
-            row(entry = UnityMcpEntry.ABSENT, agentDetected = false),
-            UnityMcpRowState.NOT_DETECTED,
-        ),
-        RowCase(
-            "the agent is on the machine and the store holds no entry",
+            "the store holds no entry",
             row(entry = UnityMcpEntry.ABSENT),
             UnityMcpRowState.NOT_CONFIGURED,
         ),
@@ -231,6 +218,14 @@ class UnityMcpRowPresentationTest {
             "the Codex row reads through the Unity CLI, and its write can still land",
         )
         assertFalse(unityMcpCanConfigure(row(entry = UnityMcpEntry.ABSENT, operation = UnityMcpOperation.CONFIGURING)))
+    }
+
+    /** RIDER-144470: Rider does not look for the agent, so a row can be configured for an agent that Rider cannot find. */
+    @Test
+    fun `every row without an entry can be configured`() {
+        for (store in UnityMcpStore.entries) {
+            assertTrue(unityMcpCanConfigure(row(entry = UnityMcpEntry.ABSENT, store = store)), "$store")
+        }
     }
 
     @Test
@@ -396,10 +391,8 @@ class UnityMcpRowPresentationTest {
     /**
      * Two rows read `<solution>/.mcp.json`, and the store is what decides their state.
      *
-     * Two things outside the store may still differ, and both are honest. A click leaves its
-     * failure on the row it ran on. And the probe answers for Claude Code and not for the GitHub
-     * Copilot CLI, which has no measured binary name. So this case holds
-     * `agentDetected` and walks every gate, every reading and the restart line.
+     * One thing outside the store may still differ, and it is honest: a click leaves its failure on
+     * the row it ran on. So this case walks every gate, every reading and the restart line.
      */
     @Test
     fun `the two rows over one file agree on every state the store decides`() {

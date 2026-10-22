@@ -3,16 +3,12 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.util.system.OS
 import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Path
 
 @ApiStatus.Internal
 const val UNITY_MCP_CODEX_KEY: String = "codex"
 internal const val UNITY_MCP_SERVER_NAME: String = "unity"
-internal const val UNITY_MCP_CODEX_BINARY: String = "codex"
-private const val UNITY_MCP_CLAUDE_CODE_BINARY: String = "claude"
-private const val UNITY_MCP_JUNIE_BINARY: String = "junie"
 internal const val UNITY_MCP_CODEX_DIRECTORY: String = ".codex"
 private const val UNITY_MCP_PROJECT_STORE_FILE: String = ".mcp.json"
 private const val UNITY_MCP_JUNIE_STORE_FILE: String = ".junie/mcp/mcp.json"
@@ -81,34 +77,6 @@ fun unityMcpWriteGroups(stores: List<UnityMcpStore>): List<List<UnityMcpStore>> 
     stores
         .map { store -> listOf(store) + unityMcpStoreSharers(store) }
         .distinctBy { it.toSet() }
-
-@ApiStatus.Internal
-fun unityMcpAgentBinary(store: UnityMcpStore): String? = when (store) {
-    UnityMcpStore.CODEX_CLI -> UNITY_MCP_CODEX_BINARY
-    UnityMcpStore.CLAUDE_CODE_CLI -> UNITY_MCP_CLAUDE_CODE_BINARY
-    UnityMcpStore.JUNIE_CLI -> UNITY_MCP_JUNIE_BINARY
-    UnityMcpStore.COPILOT_CLI -> null
-}
-
-/** The folders of `DefaultTerminalAgentsProvider`, which the Terminal plugin probes after the PATH. */
-@ApiStatus.Internal
-fun unityMcpAgentWellKnownCandidates(binary: String, os: OS, userHome: Path): List<Path> {
-    val localBin = userHome.resolve(".local").resolve("bin")
-    val npm = userHome.resolve("AppData").resolve("Roaming").resolve("npm")
-    val usrLocalBin = Path.of("/usr/local/bin")
-    val folders = when (binary) {
-        UNITY_MCP_CODEX_BINARY -> if (os == OS.Windows) listOf(npm) else listOf(localBin, usrLocalBin)
-        UNITY_MCP_CLAUDE_CODE_BINARY -> if (os == OS.Windows) listOf(npm, localBin) else listOf(localBin, usrLocalBin)
-        UNITY_MCP_JUNIE_BINARY -> listOf(localBin)
-        else -> emptyList()
-    }
-    val names = when {
-        os != OS.Windows -> listOf(binary)
-        binary == UNITY_MCP_JUNIE_BINARY -> listOf("$binary.bat")
-        else -> listOf("$binary.exe", "$binary.bat", "$binary.cmd")
-    }
-    return folders.flatMap { folder -> names.map { folder.resolve(it) } }
-}
 
 @ApiStatus.Internal
 fun unityMcpRowSnippet(store: UnityMcpStore, unity: Path): String =

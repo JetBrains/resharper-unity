@@ -1,14 +1,11 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
 import com.google.gson.JsonParser
-import com.intellij.util.system.OS
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpFailure
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpServerEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpStore
 import com.jetbrains.rider.plugins.unity.settings.agents.readMcpServersEntry
-import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpAgentBinary
-import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpAgentWellKnownCandidates
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpFileWriteOutcome
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpJsonStoreFile
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpMergedStore
@@ -158,50 +155,6 @@ class UnityMcpJsonStoreTest {
 
         assertEquals(UnityMcpStore.entries.toSet(), rows.toSet())
         assertEquals(rows.distinct(), rows, "a row landed in two groups and would get two answers")
-    }
-
-    /**
-     * The GitHub Copilot CLI was never installed on the measuring machine, so its binary name is unmeasured.
-     *
-     * So its row does not look for a binary, and it must not report the agent as missing. No write
-     * needs the answer either, because Rider writes that store.
-     */
-    @Test
-    fun `each row probes the binary of its agent, and Copilot probes none`() {
-        assertEquals(
-            mapOf(
-                UnityMcpStore.CODEX_CLI to "codex",
-                UnityMcpStore.CLAUDE_CODE_CLI to "claude",
-                UnityMcpStore.JUNIE_CLI to "junie",
-                UnityMcpStore.COPILOT_CLI to null,
-            ),
-            UnityMcpStore.entries.associateWith { unityMcpAgentBinary(it) },
-        )
-    }
-
-    /** An agent off the PATH is still found in the folders that the Terminal plugin probes. */
-    @Test
-    fun `each agent has the well-known folders of the Terminal plugin`() {
-        val home = Path.of("/home/tester")
-        val localBin = home.resolve(".local/bin")
-        val npm = home.resolve("AppData/Roaming/npm")
-        val usrLocalBin = Path.of("/usr/local/bin")
-        val cases = listOf(
-            Triple("codex", OS.macOS, listOf(localBin.resolve("codex"), usrLocalBin.resolve("codex"))),
-            Triple("codex", OS.Windows, listOf("codex.exe", "codex.bat", "codex.cmd").map { npm.resolve(it) }),
-            Triple("claude", OS.Linux, listOf(localBin.resolve("claude"), usrLocalBin.resolve("claude"))),
-            Triple(
-                "claude",
-                OS.Windows,
-                listOf(npm, localBin).flatMap { folder -> listOf("claude.exe", "claude.bat", "claude.cmd").map { folder.resolve(it) } },
-            ),
-            Triple("junie", OS.macOS, listOf(localBin.resolve("junie"))),
-            Triple("junie", OS.Windows, listOf(localBin.resolve("junie.bat"))),
-            Triple("copilot", OS.macOS, emptyList()),
-        )
-        for ((binary, os, expected) in cases) {
-            assertEquals(expected, unityMcpAgentWellKnownCandidates(binary, os, home), "$binary on $os")
-        }
     }
 
     @Test
