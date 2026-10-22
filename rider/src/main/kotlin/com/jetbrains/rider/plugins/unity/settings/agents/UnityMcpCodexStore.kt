@@ -7,7 +7,7 @@ import kotlin.io.path.readText
 
 private const val CODEX_STORE_FILE = "config.toml"
 private const val MCP_SERVERS_TABLE = "mcp_servers"
-private val CODEX_ENTRY = listOf(MCP_SERVERS_TABLE, UNITY_MCP_CODEX_SERVER_NAME)
+private val CODEX_ENTRY = listOf(MCP_SERVERS_TABLE, UNITY_MCP_SERVER_NAME)
 
 @ApiStatus.Internal
 fun unityMcpCodexStoreFile(solution: Path): Path =

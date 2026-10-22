@@ -9,7 +9,7 @@ enum class UnityMcpStore {
     CODEX_CLI,
 
     /**
-     * `<solution>/.mcp.json`. Rider writes it, as `unity-editor-mcp`.
+     * `<solution>/.mcp.json`. Rider writes it, as `unity`.
      *
      * [COPILOT_CLI] reads the same file, so the two rows always report the same state and a removal
      * on either one unconfigures both. They draw side by side for that reason.
@@ -17,7 +17,7 @@ enum class UnityMcpStore {
     CLAUDE_CODE_CLI,
     COPILOT_CLI,
 
-    /** `<solution>/.junie/mcp/mcp.json`. Rider writes it, as `unity-editor-mcp` */
+    /** `<solution>/.junie/mcp/mcp.json`. Rider writes it, as `unity` */
     JUNIE_CLI,
 }
 

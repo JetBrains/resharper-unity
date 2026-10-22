@@ -9,8 +9,7 @@ import java.nio.file.Path
 
 @ApiStatus.Internal
 const val UNITY_MCP_CODEX_KEY: String = "codex"
-internal const val UNITY_MCP_CODEX_SERVER_NAME: String = "unity"
-internal const val UNITY_MCP_RIDER_SERVER_NAME: String = "unity-editor-mcp"
+internal const val UNITY_MCP_SERVER_NAME: String = "unity"
 internal const val UNITY_MCP_CODEX_BINARY: String = "codex"
 private const val UNITY_MCP_CLAUDE_CODE_BINARY: String = "claude"
 private const val UNITY_MCP_JUNIE_BINARY: String = "junie"
@@ -115,7 +114,7 @@ fun unityMcpRowSnippet(store: UnityMcpStore, unity: Path): String =
 /** The four tables that `unity mcp configure codex` writes. */
 @ApiStatus.Internal
 fun unityMcpCodexSnippet(unity: Path): String = """
-    [mcp_servers.$UNITY_MCP_CODEX_SERVER_NAME]
+    [mcp_servers.$UNITY_MCP_SERVER_NAME]
     command = ${gson.toJson(unity.toString())}
     args = ["mcp"]
 
