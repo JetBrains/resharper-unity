@@ -9,6 +9,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillInstall
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillOffer
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillPresentation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillTarget
+import com.jetbrains.rider.plugins.unity.settings.agents.deleteUnitySkill
 import com.jetbrains.rider.plugins.unity.settings.agents.parseUnitySkillList
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsMissingSteps
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupPrompt
@@ -75,6 +76,28 @@ class UnitySkillTest {
             listOf(UnitySkillInstall("codex", local = true, Path.of("/Users/dev/.agents/skills/unity-cli"))),
             installs,
         )
+    }
+
+    @Test
+    fun `deleteUnitySkill deletes the disabled directory when it becomes empty`(@TempDir tempDir: Path) {
+        val disabled = Files.createDirectories(tempDir.resolve(".agents/skills.disabled/unity-cli"))
+        Files.writeString(disabled.resolve("SKILL.md"), "skill")
+
+        deleteUnitySkill(disabled)
+
+        assertFalse(Files.exists(disabled.parent))
+    }
+
+    @Test
+    fun `deleteUnitySkill keeps the disabled directory that holds other skills`(@TempDir tempDir: Path) {
+        val disabled = Files.createDirectories(tempDir.resolve(".agents/skills.disabled/unity-cli"))
+        Files.writeString(disabled.resolve("SKILL.md"), "skill")
+        val other = Files.createDirectories(tempDir.resolve(".agents/skills.disabled/other-skill"))
+
+        deleteUnitySkill(disabled)
+
+        assertFalse(Files.exists(disabled))
+        assertTrue(Files.isDirectory(other))
     }
 
     @Test

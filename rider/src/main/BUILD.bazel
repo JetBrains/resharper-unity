@@ -110,6 +110,7 @@ jvm_library(
         "@community//platform/util-ex",
         "//dotnet/Plugins:rider-plugins-unity-model",
         "//rider/debugger/shared",
+        "@community//platform/eel-nioFs",
     ],
 )
 
@@ -197,6 +198,7 @@ jvm_library(
         "@community//platform/util-ex:util-ex_test_lib",
         "//dotnet/Plugins:rider-plugins-unity-model_test_lib",
         "//rider/debugger/shared:shared_test_lib",
+        "@community//platform/eel-nioFs:eel-nioFs_test_lib",
     ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.backend` end
