@@ -88,7 +88,6 @@ enum class UnityMcpRowState {
     UNREADABLE,
     RESTART_NEEDED,
     ENTRY_PRESENT,
-    NOT_DETECTED,
     NOT_CONFIGURED,
 }
 
@@ -105,7 +104,6 @@ data class UnityMcpRowPresentation(
      */
     val storeFileExists: Boolean = false,
     val entry: UnityMcpEntry? = null,
-    val agentDetected: Boolean = true,
     val restartNeeded: Boolean = false,
     val operation: UnityMcpOperation? = null,
     val failure: UnityMcpFailure? = null,
@@ -122,8 +120,6 @@ data class UnityMcpRowPresentation(
             entry == UnityMcpEntry.UNREADABLE -> UnityMcpRowState.UNREADABLE
             restartNeeded -> UnityMcpRowState.RESTART_NEEDED
             entry == UnityMcpEntry.PRESENT -> UnityMcpRowState.ENTRY_PRESENT
-            // Only UnityMcpEntry.ABSENT reaches this line, so NOT_DETECTED holds both facts it needs.
-            !agentDetected -> UnityMcpRowState.NOT_DETECTED
             else -> UnityMcpRowState.NOT_CONFIGURED
         }
 }
@@ -156,7 +152,6 @@ fun unityMcpCanConfigure(row: UnityMcpRowPresentation): Boolean = when (row.stat
     UnityMcpRowState.CHECKING,
     UnityMcpRowState.RESTART_NEEDED,
     UnityMcpRowState.ENTRY_PRESENT,
-    UnityMcpRowState.NOT_DETECTED,
     UnityMcpRowState.NOT_CONFIGURED,
         -> true
 }

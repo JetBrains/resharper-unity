@@ -44,7 +44,6 @@ internal fun unityMcpRowStatus(row: UnityMcpRowPresentation): UnityMcpRowStatus 
     UnityMcpRowState.UNREADABLE -> problem(unreadableMessage(row.store))
     UnityMcpRowState.RESTART_NEEDED -> ok(restartMessage(unityMcpRestartLine(row.entry)))
     UnityMcpRowState.ENTRY_PRESENT -> ok(UnityBundle.message("unity.agents.mcp.state.configured"))
-    UnityMcpRowState.NOT_DETECTED -> plain(null, UnityBundle.message("unity.agents.mcp.state.not.detected"))
     UnityMcpRowState.NOT_CONFIGURED -> plain(null, UnityBundle.message("unity.agents.mcp.state.not.configured"))
 }
 
