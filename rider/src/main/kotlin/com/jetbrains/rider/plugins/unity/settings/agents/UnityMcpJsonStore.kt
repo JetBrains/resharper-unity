@@ -10,6 +10,7 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSyntaxException
 import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.application.readAction
+import com.intellij.openapi.diagnostic.fileLogger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -33,6 +34,8 @@ private const val UNITY_MCP_STDIO_TYPE = "stdio"
 private const val UNITY_MCP_PROJECT_PATH_OPTION = "--project-path"
 
 private val storeGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
+
+private val logger = fileLogger()
 
 @ApiStatus.Internal
 data class UnityMcpServerEntry(
@@ -95,23 +98,28 @@ fun unityMcpMergedStore(content: String?, entry: UnityMcpServerEntry?): String? 
 suspend fun writeUnityMcpJsonStoreInIde(file: Path, entry: UnityMcpServerEntry?): Boolean =
     writeStoreInIde(file) { writeUnityMcpJsonStore(file, entry) }
 
-internal suspend fun writeStoreInIde(file: Path, write: () -> Boolean): Boolean {
+internal suspend fun writeStoreInIde(file: Path, write: suspend () -> Boolean): Boolean {
     return saveUnsavedDocument(file) && withContext(Dispatchers.IO) {
         flushPendingVfsWrites(file)
         val written = write()
-        if (written) VfsUtil.markDirtyAndRefresh(false, false, false, file)
+        if (written) VfsUtil.markDirtyAndRefresh(false, false, false, *refreshedByWrite(file))
         written
     }
 }
+
+private fun refreshedByWrite(file: Path): Array<Path> =
+    if (Files.exists(file)) arrayOf(file) else arrayOf(file, file.toAbsolutePath().parent)
 
 private suspend fun saveUnsavedDocument(file: Path): Boolean {
     val virtualFile = VirtualFileManager.getInstance().findFileByNioPath(file) ?: return true
     val manager = FileDocumentManager.getInstance()
     val document = readAction { manager.getCachedDocument(virtualFile)?.takeIf { manager.isDocumentUnsaved(it) } } ?: return true
-    return edtWriteAction {
+    val saved = edtWriteAction {
         manager.saveDocument(document)
         !manager.isDocumentUnsaved(document)
     }
+    if (!saved) logger.warn("Rider could not save the open document of $file, so it did not write the file")
+    return saved
 }
 
 private fun flushPendingVfsWrites(file: Path) {

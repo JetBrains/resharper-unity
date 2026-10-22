@@ -8,7 +8,6 @@ import com.intellij.openapi.util.NlsSafe
 import com.intellij.platform.eel.fs.EelFileUtils
 import org.jetbrains.annotations.ApiStatus
 import java.io.IOException
-import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.Files
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
@@ -119,13 +118,13 @@ internal fun unitySkillInstallOutcome(output: ProcessOutput?, landed: Boolean): 
 }
 
 @ApiStatus.Internal
-fun deleteUnitySkill(skill: Path) {
-    EelFileUtils.deleteRecursively(skill)
+fun deleteWithEmptyParent(path: Path) {
+    EelFileUtils.deleteRecursively(path)
     try {
-        Files.deleteIfExists(skill.parent)
+        Files.deleteIfExists(path.parent)
     }
-    catch (_: DirectoryNotEmptyException) {
-        // The parent still holds other skills.
+    catch (_: IOException) {
+        // The parent still holds other files, or another process holds it open.
     }
 }
 

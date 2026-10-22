@@ -14,6 +14,7 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.options.ex.Settings
 import com.intellij.openapi.ui.MessageDialogBuilder
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFrame
@@ -238,6 +239,10 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         if (!UnityForAgentsFeature.isMcpSectionEnabled()) return
         val activeScope = scope ?: return
         if (operation == UnityMcpOperation.REMOVING && !confirmedSharedRemoval(stores)) return
+        val networkPolicyRemovalAgreed = when (operation) {
+            UnityMcpOperation.REMOVING -> agreedToNetworkPolicyRemoval(stores) ?: return
+            UnityMcpOperation.CONFIGURING -> false
+        }
         val packageInstallAgreed = operation == UnityMcpOperation.CONFIGURING && agreedToPipelinePackage()
         if (operation == UnityMcpOperation.CONFIGURING && needsPipelinePackage() && !packageInstallAgreed) return
         if (packageInstallAgreed) logClick(UnityAgentsAction.INSTALL)
@@ -249,7 +254,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         lastPage?.mcp?.let { mcpStatus?.component = mcpPanel?.build(it.withRunning(stores, operation), needsPipelinePackage()) }
         if (packageInstallAgreed) paintPipelineBusy(UnityPipelineOperation.INSTALLING)
         activeScope.launch {
-            UnityMcpStatusProvider.getInstance(project).write(stores, operation, modality, packageInstallAgreed)
+            UnityMcpStatusProvider.getInstance(project).write(stores, operation, modality, packageInstallAgreed, networkPolicyRemovalAgreed)
             withContext(Dispatchers.EDT + modality.asContextElement()) { refresh() }
         }
     }
@@ -272,6 +277,25 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             .yesNo(UnityBundle.message("unity.agents.mcp.remove.shared.title"), question)
             .yesText(UnityBundle.message("unity.agents.mcp.action.remove"))
             .ask(project)
+    }
+
+    private fun agreedToNetworkPolicyRemoval(stores: List<UnityMcpStore>): Boolean? {
+        val asks = UnityMcpStore.CODEX_CLI in stores &&
+                   lastPage?.mcp?.rows.orEmpty().any { it.store == UnityMcpStore.CODEX_CLI && it.removalAsksForNetworkPolicy }
+        if (!asks) return false
+        val answer = MessageDialogBuilder
+            .yesNoCancel(
+                UnityBundle.message("unity.agents.mcp.remove.network.policy.title"),
+                UnityBundle.message("unity.agents.mcp.remove.network.policy"),
+            )
+            .yesText(UnityBundle.message("unity.agents.mcp.remove.network.policy.yes"))
+            .noText(UnityBundle.message("unity.agents.mcp.remove.network.policy.no"))
+            .show(project)
+        return when (answer) {
+            Messages.YES -> true
+            Messages.NO -> false
+            else -> null
+        }
     }
 
     /**
