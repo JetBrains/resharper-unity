@@ -209,7 +209,7 @@ class UnityMcpJsonStoreTest {
         val merged = unityMcpMergedStore(CLAUDE_WRITTEN_STORE, junieEntry)
 
         assertEquals(
-            listOf("idea", "unity-editor-mcp"),
+            listOf("idea", "unity"),
             JsonParser.parseString(merged).asJsonObject.getAsJsonObject("mcpServers").keySet().toList(),
         )
     }
@@ -300,6 +300,36 @@ class UnityMcpJsonStoreTest {
         assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(CLAUDE_WRITTEN_STORE, fileExists = true))
     }
 
+    /** The Unity CLI writes this entry for every client. A configure over it must not add a second server. */
+    @Test
+    fun `a configure over the entry of the Unity CLI keeps one Unity server`() {
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(UNITY_CLI_STORE, fileExists = true))
+
+        val merged = unityMcpMergedStore(UNITY_CLI_STORE, junieEntry)
+
+        assertEquals(
+            listOf("idea", "unity"),
+            JsonParser.parseString(merged).asJsonObject.getAsJsonObject("mcpServers").keySet().toList(),
+        )
+    }
+
+    /** A user can give the server any name, and Rider still finds it. A name alone does not make a Unity server. */
+    @Test
+    fun `the command finds the Unity server and the name does not`() {
+        assertEquals(
+            UnityMcpEntry.PRESENT,
+            readMcpServersEntry("""{"mcpServers": {"my unity": {"command": "C:\\bin\\unity.exe", "args": ["mcp"]}}}""", fileExists = true),
+        )
+        assertEquals(
+            UnityMcpEntry.ABSENT,
+            readMcpServersEntry("""{"mcpServers": {"unity": {"command": "npx", "args": ["unity-mcp"]}}}""", fileExists = true),
+        )
+        assertEquals(
+            UnityMcpEntry.ABSENT,
+            readMcpServersEntry("""{"mcpServers": {"unity 1": {"command": "/opt/unity", "args": ["editors"]}}}""", fileExists = true),
+        )
+    }
+
     /** A removal over the old bytes drops the entry, and the merge of Rider keeps the siblings. */
     @Test
     fun `a removal over a store written by claude mcp add drops the entry`() {
@@ -315,7 +345,7 @@ class UnityMcpJsonStoreTest {
             """
             {
               "mcpServers": {
-                "unity-editor-mcp": {
+                "unity": {
                   "command": "/home/tester/.unity/bin/unity",
                   "args": [
                     "mcp"
@@ -559,6 +589,16 @@ class UnityMcpJsonStoreTest {
                   "env": {}
                 },
                 "idea": {"command": "idea"}
+              }
+            }
+        """
+
+        /** What `unity mcp configure claude-code` writes, as the issue RIDER-144089 shows it. */
+        const val UNITY_CLI_STORE = """
+            {
+              "mcpServers": {
+                "idea": {"command": "idea"},
+                "unity": {"command": "/home/tester/.unity/bin/unity", "args": ["mcp"]}
               }
             }
         """

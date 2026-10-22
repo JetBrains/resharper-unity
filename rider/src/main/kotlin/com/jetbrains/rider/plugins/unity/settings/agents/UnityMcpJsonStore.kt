@@ -2,9 +2,11 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSyntaxException
 import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.application.readAction
@@ -58,7 +60,7 @@ fun unityMcpOwnedStore(store: UnityMcpStore, unity: Path, solution: Path): Unity
 }
 
 internal fun unityMcpJsonSnippet(entry: UnityMcpServerEntry): String =
-    storeGson.toJson(JsonObject().apply { add(UNITY_MCP_RIDER_SERVER_NAME, entry.toJson()) })
+    storeGson.toJson(JsonObject().apply { add(UNITY_MCP_SERVER_NAME, entry.toJson()) })
 
 @ApiStatus.Internal
 fun unityMcpManualSnippet(unity: Path, solution: Path?): String {
@@ -72,15 +74,18 @@ fun readMcpServersEntry(content: String?, fileExists: Boolean): UnityMcpEntry {
     if (content == null) return UnityMcpEntry.UNREADABLE
     if (content.isBlank()) return UnityMcpEntry.ABSENT
     val servers = parseObject(content)?.mcpServers() ?: return UnityMcpEntry.UNREADABLE
-    return if (servers.has(UNITY_MCP_RIDER_SERVER_NAME)) UnityMcpEntry.PRESENT else UnityMcpEntry.ABSENT
+    return if (servers.entrySet().any { it.value.isUnityMcpServer() }) UnityMcpEntry.PRESENT else UnityMcpEntry.ABSENT
 }
 
 @ApiStatus.Internal
 fun unityMcpMergedStore(content: String?, entry: UnityMcpServerEntry?): String? {
     val root = if (content.isNullOrBlank()) JsonObject() else parseObject(content) ?: return null
     val servers = root.mcpServers() ?: return null
-    servers.remove(UNITY_MCP_RIDER_SERVER_NAME)
-    if (entry != null) servers.add(UNITY_MCP_RIDER_SERVER_NAME, entry.toJson())
+    servers.entrySet().removeIf { it.value.isUnityMcpServer() }
+    if (entry != null) {
+        servers.remove(UNITY_MCP_SERVER_NAME)
+        servers.add(UNITY_MCP_SERVER_NAME, entry.toJson())
+    }
 
     root.add(MCP_SERVERS_KEY, servers)
     return storeGson.toJson(root) + "\n"
@@ -152,7 +157,15 @@ private fun UnityMcpServerEntry.toJson(): JsonObject = JsonObject().apply {
     add("args", JsonArray().apply { args.forEach { add(it) } })
 }
 
-// Rider owns one key in `mcpServers` and nothing else. Rider cannot merge into a `mcpServers` that is
+private fun JsonElement.isUnityMcpServer(): Boolean {
+    val server = this as? JsonObject ?: return false
+    val command = (server.get("command") as? JsonPrimitive)?.asString ?: return false
+    val subcommand = ((server.get("args") as? JsonArray)?.firstOrNull() as? JsonPrimitive)?.asString
+    return command.substringAfterLast('/').substringAfterLast('\\').removeSuffix(".exe") == UNITY_CLI_COMMAND &&
+           subcommand == UNITY_MCP_SUBCOMMAND
+}
+
+// Rider owns the Unity servers in `mcpServers` and nothing else. Rider cannot merge into a `mcpServers` that is
 // not an object. So the read reports it as unreadable, and the write leaves the file alone.
 private fun JsonObject.mcpServers(): JsonObject? = when (val servers = get(MCP_SERVERS_KEY)) {
     null, is JsonNull -> JsonObject()

@@ -132,7 +132,7 @@ class UnityMcpWriteTest {
         assertEquals(
             """
             {
-              "unity-editor-mcp": {
+              "unity": {
                 "command": "${escaped(unity)}",
                 "args": [
                   "mcp",
@@ -151,7 +151,7 @@ class UnityMcpWriteTest {
         assertEquals(
             """
             {
-              "unity-editor-mcp": {
+              "unity": {
                 "command": "${escaped(unity)}",
                 "args": [
                   "mcp"
