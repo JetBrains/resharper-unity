@@ -231,6 +231,20 @@ class UnityPipelineCoreTest {
     }
 
     @Test
+    fun `upgrade without a known latest version runs no process and holds not confirmed`() = runBlocking {
+        manifest = UnityPipelineManifest(version = "0.7.0-exp.1")
+        val results = mutableListOf<UnityAgentsResult>()
+        val upgraded = core.upgrade(unity, solution) { results.add(it) }
+        assertTrue(upgraded)
+        assertEquals(listOf(UnityAgentsResult.FAILED), results)
+        assertEquals(0, executedCommands.size)
+        val presentation = core.read(UnityMcpSectionState.READY, unity, cliVersion, solution)
+        assertEquals(UnityPipelineFailure.NOT_CONFIRMED, presentation.failure)
+        assertEquals(UnityPipelineOperation.UPGRADING, presentation.failedOperation)
+        assertNull(presentation.failureExitCode)
+    }
+
+    @Test
     fun `an install that lands reports SUCCESS`() = runBlocking {
         val results = mutableListOf<UnityAgentsResult>()
         core.install(unity, solution) { results.add(it) }
@@ -275,16 +289,15 @@ class UnityPipelineCoreTest {
     }
 
     @Test
-    fun `an upgrade to the latest version reports SUCCESS`() = runBlocking {
+    fun `an upgrade installs the cached latest version and reports SUCCESS`() = runBlocking {
         manifest = UnityPipelineManifest(version = "0.7.0-exp.1")
         core.read(UnityMcpSectionState.READY, unity, cliVersion, solution)
-        processAnswer = { command ->
-            if (command.parametersList.parameters.contains("upgrade")) manifest = UnityPipelineManifest(version = "0.8.0-exp.1")
-            output(0)
-        }
+        processAnswer = { output(0) }
         val results = mutableListOf<UnityAgentsResult>()
         core.upgrade(unity, solution) { results.add(it) }
         assertEquals(listOf(UnityAgentsResult.SUCCESS), results)
+        val upgrade = executedCommands.last()
+        assertEquals("0.8.0-exp.1", upgrade[upgrade.indexOf("--package-version") + 1])
     }
 
     @Test

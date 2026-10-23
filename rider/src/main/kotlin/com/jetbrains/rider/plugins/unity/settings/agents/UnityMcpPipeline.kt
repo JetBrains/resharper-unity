@@ -28,9 +28,9 @@ fun unityPipelineInstallCommandLine(unity: Path, solution: Path): GeneralCommand
         .withWorkingDirectory(solution)
 
 @ApiStatus.Internal
-fun unityPipelineUpgradeCommandLine(unity: Path, solution: Path): GeneralCommandLine =
-    GeneralCommandLine(unity.toString(), "pipeline", "upgrade", "--project-path", solution.toString())
-        .withParameters("--non-interactive", "--json")
+fun unityPipelineUpgradeCommandLine(unity: Path, solution: Path, version: String): GeneralCommandLine =
+    GeneralCommandLine(unity.toString(), "pipeline", "install", "--project-path", solution.toString())
+        .withParameters("--package-version", version, "--non-interactive", "--json")
         .withWorkingDirectory(solution)
 
 @ApiStatus.Internal
