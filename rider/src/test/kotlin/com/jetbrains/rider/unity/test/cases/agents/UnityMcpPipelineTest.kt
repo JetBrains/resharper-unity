@@ -229,11 +229,14 @@ class UnityMcpPipelineTest {
     }
 
     @Test
-    fun `the upgrade command names the project and asks no question`() {
-        val command = unityPipelineUpgradeCommandLine(unity, solution)
+    fun `the upgrade command installs the named version and asks no question`() {
+        val command = unityPipelineUpgradeCommandLine(unity, solution, "0.9.0-exp.1")
         assertEquals(unity.toString(), command.exePath)
         assertEquals(
-            listOf("pipeline", "upgrade", "--project-path", solution.toString(), "--non-interactive", "--json"),
+            listOf(
+                "pipeline", "install", "--project-path", solution.toString(),
+                "--package-version", "0.9.0-exp.1", "--non-interactive", "--json",
+            ),
             command.parametersList.parameters,
         )
         assertEquals(solution.toFile(), command.workDirectory)

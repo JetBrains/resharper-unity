@@ -220,11 +220,18 @@ class UnityPipelineCore(
                     onResult(UnityAgentsResult.FAILED)
                     return@withLock
                 }
+                val latest = cachedLatest?.version
+                if (latest == null) {
+                    lastFailure.set(FailureRecord(UnityPipelineFailure.NOT_CONFIRMED, null, UnityPipelineOperation.UPGRADING))
+                    logger.warn("Rider could not upgrade the Unity Pipeline package in $solution: the latest version is unknown")
+                    onResult(UnityAgentsResult.FAILED)
+                    return@withLock
+                }
                 val output = runProcess(
-                    unityPipelineUpgradeCommandLine(unity, solution),
+                    unityPipelineUpgradeCommandLine(unity, solution, latest),
                     UnityCliProcessRunner.STORE_WRITE_TIMEOUT_MS,
                 )
-                val failure = unityPipelineUpgradeOutcome(output, readManifest(solution)?.version, cachedLatest?.version)
+                val failure = unityPipelineUpgradeOutcome(output, readManifest(solution)?.version, latest)
                 if (failure != null) {
                     lastFailure.set(FailureRecord(failure, exitCodeOf(output), UnityPipelineOperation.UPGRADING))
                     logger.warn("Rider could not upgrade the Unity Pipeline package in $solution: $failure${processOutputForLog(output)}")
