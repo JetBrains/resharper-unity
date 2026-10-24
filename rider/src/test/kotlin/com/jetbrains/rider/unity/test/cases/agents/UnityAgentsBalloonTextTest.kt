@@ -100,8 +100,12 @@ class UnityAgentsBalloonTextTest {
     companion object {
         @JvmStatic
         fun setupDoneCases(): Stream<Arguments> = Stream.of(
-            Arguments.of(true, false, false, true, UnityBundle.message("unity.agents.setup.done.content.cli")),
-            Arguments.of(true, false, false, false, UnityBundle.message("unity.agents.setup.done.content.cli.package")),
+            Arguments.of(true, true, true, true, UnityBundle.message("unity.agents.setup.done.content.cli")),
+            Arguments.of(true, true, false, true, UnityBundle.message("unity.agents.setup.done.content.cli.package")),
+            Arguments.of(true, true, false, false, UnityBundle.message("unity.agents.setup.done.content.cli.package")),
+            Arguments.of(true, false, true, true, UnityBundle.message("unity.agents.setup.done.content.cli.skill")),
+            Arguments.of(true, false, false, true, UnityBundle.message("unity.agents.setup.done.content.cli.only")),
+            Arguments.of(true, false, false, false, UnityBundle.message("unity.agents.setup.done.content.cli.only")),
             Arguments.of(false, true, true, true, UnityBundle.message("unity.agents.setup.done.content")),
             Arguments.of(false, true, false, false, UnityBundle.message("unity.agents.setup.done.content.package")),
             Arguments.of(false, false, true, true, UnityBundle.message("unity.agents.setup.done.content.skill")),

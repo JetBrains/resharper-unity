@@ -53,16 +53,11 @@ fun unityAgentsMissingSteps(
     cliMissing: Boolean,
     packageMissing: Boolean,
     skillMissing: Boolean,
-): List<UnityAgentsSetupStep> =
-    if (cliMissing) {
-        UnityAgentsSetupStep.entries
-    }
-    else {
-        buildList {
-            if (packageMissing) add(UnityAgentsSetupStep.PIPELINE_PACKAGE)
-            if (skillMissing) add(UnityAgentsSetupStep.CLI_SKILL)
-        }
-    }
+): List<UnityAgentsSetupStep> = buildList {
+    if (cliMissing) add(UnityAgentsSetupStep.CLI)
+    if (packageMissing) add(UnityAgentsSetupStep.PIPELINE_PACKAGE)
+    if (cliMissing || skillMissing) add(UnityAgentsSetupStep.CLI_SKILL)
+}
 
 @ApiStatus.Internal
 fun unityAgentsSetupPrompt(
@@ -70,9 +65,12 @@ fun unityAgentsSetupPrompt(
     packageMissing: Boolean,
     skillMissing: Boolean,
 ): Pair<@NlsContexts.NotificationTitle String, @NlsContexts.NotificationContent String> = when {
-    cliMissing ->
+    cliMissing && packageMissing ->
         UnityBundle.message("unity.agents.setup.suggest.title") to
             UnityBundle.message("unity.agents.setup.suggest.content.cli")
+    cliMissing ->
+        UnityBundle.message("unity.agents.setup.suggest.title") to
+            UnityBundle.message("unity.agents.setup.suggest.content.cli.skill")
     packageMissing && skillMissing ->
         UnityBundle.message("unity.agents.setup.suggest.title") to
             UnityBundle.message("unity.agents.setup.suggest.content")

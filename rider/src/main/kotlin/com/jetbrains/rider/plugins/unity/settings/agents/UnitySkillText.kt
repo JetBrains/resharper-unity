@@ -5,12 +5,14 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
 
-internal fun unitySkillGateMessage(gate: UnityMcpSectionState): @Nls String? = when (gate) {
+@ApiStatus.Internal
+fun unitySkillGateMessage(gate: UnityMcpSectionState, packageInstalled: Boolean): @Nls String? = when (gate) {
     UnityMcpSectionState.NO_PROJECT -> UnityBundle.message("unity.agents.skills.no.project")
     UnityMcpSectionState.NOT_TRUSTED -> UnityBundle.message("unity.agents.skills.not.trusted")
-    UnityMcpSectionState.NO_CLI,
-    UnityMcpSectionState.READY,
-        -> UnityBundle.message("unity.agents.skills.needs.setup")
+    UnityMcpSectionState.NO_CLI ->
+        if (packageInstalled) UnityBundle.message("unity.agents.skills.needs.cli")
+        else UnityBundle.message("unity.agents.skills.needs.setup")
+    UnityMcpSectionState.READY -> if (packageInstalled) null else UnityBundle.message("unity.agents.skills.needs.package")
     UnityMcpSectionState.CHECKING -> null
 }
 

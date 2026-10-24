@@ -26,7 +26,7 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
         val presentation = UnityCliStatusProvider.getInstance().read()
         val pipeline = UnityPipelineStatusProvider.getInstance(project).read(presentation)
         val skill = UnitySkillStatusProvider.getInstance(project).read(presentation, pipeline)
-        val packageMissing = pipeline.offer == UnityPipelineOffer.INSTALL
+        val packageMissing = pipeline.needsPipelinePackage == true
         val skillMissing = skill.installs?.isEmpty() == true &&
                            (packageMissing || skill.offer == UnitySkillOffer.INSTALL || skill.offer == UnitySkillOffer.FAILED)
         val facts = UnityAgentsSweepFacts(
@@ -40,7 +40,7 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
         if (suggestion == UnityCliSuggestion.NONE) return
 
         logger.debug("The Unity CLI sweep offers $suggestion for ${project.name}")
-        prompt(project, suggestion, presentation, pipeline, skillMissing)
+        prompt(project, suggestion, presentation, pipeline, packageMissing, skillMissing)
     }
 
     @Suppress("DialogTitleCapitalization")
@@ -49,13 +49,13 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
         suggestion: UnityCliSuggestion,
         presentation: UnityCliPresentation,
         pipeline: UnityPipelinePresentation,
+        packageMissing: Boolean,
         skillMissing: Boolean,
     ) {
         val displayId = UnityCliDeclines.displayIdOf(suggestion) ?: return
         when (suggestion) {
             UnityCliSuggestion.INSTALL -> {
                 val cliMissing = presentation.copy(projectTrusted = true).offer == UnityCliOffer.INSTALL
-                val packageMissing = pipeline.offer == UnityPipelineOffer.INSTALL
                 val missingSteps = unityAgentsMissingSteps(cliMissing, packageMissing, skillMissing)
                 val (title, message) = unityAgentsSetupPrompt(cliMissing, packageMissing, skillMissing)
                 val notification = UnityAgentsFullContentNotification(

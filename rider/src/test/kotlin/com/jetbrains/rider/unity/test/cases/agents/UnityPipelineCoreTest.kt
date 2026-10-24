@@ -116,14 +116,14 @@ class UnityPipelineCoreTest {
     }
 
     @Test
-    fun `a gated read runs no process and answers the manifest`() = runBlocking {
+    fun `a read without the Unity CLI runs no process and answers the manifest`() = runBlocking {
         manifest = UnityPipelineManifest(version = "0.8.0-exp.1")
         val presentation = core.read(UnityMcpSectionState.NO_CLI, unity = null, cliVersion = null, solution)
         assertEquals(0, executedCommands.size)
         assertEquals(unityManifestPath(solution).toString(), presentation.manifestPath)
         assertEquals(manifest, presentation.manifest)
         assertNull(presentation.latestVersion)
-        assertEquals(UnityPipelineOffer.GATED, presentation.offer)
+        assertEquals(UnityPipelineOffer.INSTALLED, presentation.offer)
     }
 
     @Test
