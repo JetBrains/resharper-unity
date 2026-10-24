@@ -43,7 +43,11 @@ internal fun unityCliWellKnownCandidates(
     if (!unityCliHome.isNullOrBlank()) add(Path.of(unityCliHome, "bin", executableName))
     add(userHome.resolve(".unity").resolve("bin").resolve(executableName))
     add(userHome.resolve(".local").resolve("bin").resolve(executableName))
-    if (!localAppData.isNullOrBlank()) add(Path.of(localAppData, "Unity", "bin", executableName))
+    if (!localAppData.isNullOrBlank()) {
+        add(Path.of(localAppData, "Unity", "bin", executableName))
+        // The PATH lookup skips an MSIX app execution alias, because Java cannot read its attributes.
+        add(Path.of(localAppData, "Microsoft", "WindowsApps", executableName))
+    }
 }
 
 internal fun isUnityHubPrivateCopy(path: Path): Boolean =
