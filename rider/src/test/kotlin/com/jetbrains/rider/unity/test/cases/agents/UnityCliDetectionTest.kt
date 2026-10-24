@@ -21,6 +21,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.isReadableManifestUrl
 import com.jetbrains.rider.plugins.unity.settings.agents.isUnityCliDiagnoseUpdateOutput
 import com.jetbrains.rider.plugins.unity.settings.agents.isUnityCliHelpOutput
 import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityCliManifestVersion
+import com.jetbrains.rider.plugins.unity.settings.agents.unityCliDirectoryOffPath
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliExecutableName
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliVersionMessage
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -485,6 +486,23 @@ class UnityCliDetectionTest {
         assertFalse(isUnityCliDiagnoseUpdateOutput("""{"data": {}}"""))
         assertFalse(isUnityCliDiagnoseUpdateOutput("""{"command": "diagnose-update"}"""))
         assertFalse(isUnityCliDiagnoseUpdateOutput("""{"command": "diagnose-update", "data": {}}"""))
+    }
+
+    @Test
+    fun `a copy in a well-known root that the PATH does not have gives its directory`() {
+        val environment = environment(executables = setOf(LOCAL_ROOT_COPY))
+        assertEquals(LOCAL_ROOT_COPY.parent, environment.unityCliDirectoryOffPath())
+    }
+
+    @Test
+    fun `a copy on the PATH gives no directory`() {
+        val environment = environment(onPath = BREW_COPY, executables = setOf(HOME_ROOT_COPY))
+        assertNull(environment.unityCliDirectoryOffPath())
+    }
+
+    @Test
+    fun `no copy in the well-known roots gives no directory`() {
+        assertNull(environment().unityCliDirectoryOffPath())
     }
 
     /** One machine, and the record of every command line it was asked to run. */

@@ -122,6 +122,14 @@ internal fun UnityCliEnvironment.unityCliHome(): String? = environmentVariable(U
 internal fun UnityCliEnvironment.localAppData(): String? = environmentVariable(LOCAL_APP_DATA_VARIABLE)
 
 @ApiStatus.Internal
+fun UnityCliEnvironment.unityCliDirectoryOffPath(): Path? {
+    if (findOnPath(UNITY_CLI_COMMAND) != null) return null
+    return unityCliWellKnownCandidates(unityCliHome(), localAppData(), userHome(), unityCliExecutableName())
+        .firstOrNull { !isUnityHubPrivateCopy(it) && isExecutable(it) }
+        ?.parent
+}
+
+@ApiStatus.Internal
 fun isUnityCliDiagnoseUpdateOutput(stdout: String): Boolean {
     val envelope = parse<DiagnoseUpdateEnvelope>(stdout) ?: return false
     val data = envelope.data ?: return false
