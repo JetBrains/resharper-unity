@@ -1,6 +1,7 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
 import com.jetbrains.rider.plugins.unity.settings.agents.removeUnityMcpCodexEntry
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexCommand
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexRemoval
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexSnippet
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexStoreFile
@@ -336,6 +337,21 @@ class UnityMcpCodexStoreTest {
 
         assertFalse(removeUnityMcpCodexEntry(file, removeNetworkPolicy = true))
         assertEquals(store, file.readText())
+    }
+
+    @Test
+    fun `the command of the entry reads from the store`() {
+        val windowsStore = """
+            [mcp_servers.unity]
+            command = "C:\\Users\\tester\\AppData\\Local\\Unity\\bin\\unity.exe"
+        """.trimIndent()
+
+        assertEquals("/home/tester/.unity/bin/unity", unityMcpCodexCommand(UNITY_CLI_STORE))
+        assertEquals("""C:\Users\tester\AppData\Local\Unity\bin\unity.exe""", unityMcpCodexCommand(windowsStore))
+        assertEquals("unity", unityMcpCodexCommand("[mcp_servers.unity]\ncommand = 'unity' # on the PATH\n"))
+        assertEquals("unity", unityMcpCodexCommand("mcp_servers.unity.command = \"unity\"\n"))
+        assertNull(unityMcpCodexCommand("[mcp_servers.github]\ncommand = \"gh\"\n"), "another server is not the Unity entry")
+        assertNull(unityMcpCodexCommand("[mcp_servers.unity]\ncommand = [\"unity\"]\n"), "a command that is not a string")
     }
 
     private companion object {

@@ -72,12 +72,16 @@ fun unityMcpManualSnippet(unity: Path, solution: Path?): String {
 }
 
 @ApiStatus.Internal
-fun readMcpServersEntry(content: String?, fileExists: Boolean): UnityMcpEntry {
+fun readMcpServersEntry(content: String?, fileExists: Boolean, unity: Path?): UnityMcpEntry {
     if (!fileExists) return UnityMcpEntry.ABSENT
     if (content == null) return UnityMcpEntry.UNREADABLE
     if (content.isBlank()) return UnityMcpEntry.ABSENT
-    val servers = parseObject(content)?.mcpServers() ?: return UnityMcpEntry.UNREADABLE
-    return if (servers.entrySet().any { it.value.isUnityMcpServer() }) UnityMcpEntry.PRESENT else UnityMcpEntry.ABSENT
+    val servers = parseObject(content)?.mcpServers()?.entrySet()?.map { it.value } ?: return UnityMcpEntry.UNREADABLE
+    return when {
+        servers.any { it.isUnityMcpServer(unity) } -> UnityMcpEntry.PRESENT
+        servers.any { it.isUnityMcpServer() } -> UnityMcpEntry.OTHER_CLI
+        else -> UnityMcpEntry.ABSENT
+    }
 }
 
 @ApiStatus.Internal
@@ -130,7 +134,8 @@ private fun flushPendingVfsWrites(file: Path) {
 @ApiStatus.Internal
 fun writeUnityMcpJsonStore(file: Path, entry: UnityMcpServerEntry?): Boolean {
     val content = if (Files.notExists(file)) null else file.readText()
-    if (entry == null && readMcpServersEntry(content, fileExists = content != null) == UnityMcpEntry.ABSENT) return true
+    // The removal drops the entry of any Unity CLI.
+    if (entry == null && readMcpServersEntry(content, fileExists = content != null, unity = null) == UnityMcpEntry.ABSENT) return true
 
     val merged = unityMcpMergedStore(content, entry) ?: return false
     replaceStoreFile(file, merged)
@@ -165,12 +170,13 @@ private fun UnityMcpServerEntry.toJson(): JsonObject = JsonObject().apply {
     add("args", JsonArray().apply { args.forEach { add(it) } })
 }
 
-private fun JsonElement.isUnityMcpServer(): Boolean {
+private fun JsonElement.isUnityMcpServer(unity: Path? = null): Boolean {
     val server = this as? JsonObject ?: return false
     val command = (server.get("command") as? JsonPrimitive)?.asString ?: return false
     val subcommand = ((server.get("args") as? JsonArray)?.firstOrNull() as? JsonPrimitive)?.asString
     return command.substringAfterLast('/').substringAfterLast('\\').removeSuffix(".exe") == UNITY_CLI_COMMAND &&
-           subcommand == UNITY_MCP_SUBCOMMAND
+           subcommand == UNITY_MCP_SUBCOMMAND &&
+           (unity == null || isUnityCliCommand(command, unity))
 }
 
 // Rider owns the Unity servers in `mcpServers` and nothing else. Rider cannot merge into a `mcpServers` that is

@@ -155,6 +155,11 @@ class UnityMcpRowPresentationTest {
             UnityMcpRowState.ENTRY_PRESENT,
         ),
         RowCase(
+            "the store holds the entry of a different Unity CLI",
+            row(entry = UnityMcpEntry.OTHER_CLI, store = UnityMcpStore.CLAUDE_CODE_CLI),
+            UnityMcpRowState.OTHER_CLI,
+        ),
+        RowCase(
             "the store holds no entry",
             row(entry = UnityMcpEntry.ABSENT),
             UnityMcpRowState.NOT_CONFIGURED,
@@ -225,6 +230,16 @@ class UnityMcpRowPresentationTest {
     fun `every row without an entry can be configured`() {
         for (store in UnityMcpStore.entries) {
             assertTrue(unityMcpCanConfigure(row(entry = UnityMcpEntry.ABSENT, store = store)), "$store")
+        }
+    }
+
+    /** RIDER-144088: Auto-Configure replaces the entry of a different Unity CLI, and Remove drops it. */
+    @Test
+    fun `a row with the entry of a different Unity CLI can be configured and removed`() {
+        for (store in listOf(UnityMcpStore.CLAUDE_CODE_CLI, UnityMcpStore.COPILOT_CLI, UnityMcpStore.JUNIE_CLI)) {
+            val row = row(entry = UnityMcpEntry.OTHER_CLI, store = store)
+            assertTrue(unityMcpCanConfigure(row), "$store")
+            assertTrue(unityMcpCanRemove(row), "$store")
         }
     }
 
@@ -356,19 +371,23 @@ class UnityMcpRowPresentationTest {
      */
     @Test
     fun theCodexReaderPinsEveryStatusValue() {
-        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(clientList("configured")))
-        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("not-configured")))
-        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("file-not-found")))
-        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("no-file")))
-        assertEquals(UnityMcpEntry.UNREADABLE, readCodexEntry(null), "a list that Rider could not read is not an answer")
+        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(clientList("configured"), store = null, unity = null))
+        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("not-configured"), store = null, unity = null))
+        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("file-not-found"), store = null, unity = null))
+        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("no-file"), store = null, unity = null))
         assertEquals(
             UnityMcpEntry.UNREADABLE,
-            readCodexEntry(parseUnityMcpClientList(EMPTY_LIST)),
+            readCodexEntry(null, store = null, unity = null),
+            "a list that Rider could not read is not an answer",
+        )
+        assertEquals(
+            UnityMcpEntry.UNREADABLE,
+            readCodexEntry(parseUnityMcpClientList(EMPTY_LIST), store = null, unity = null),
             "a list with no Codex client is not an answer",
         )
         assertEquals(
             UnityMcpEntry.UNREADABLE,
-            readCodexEntry(parseUnityMcpClientList("""{"success": true, "data": [{"key": "codex"}]}""")),
+            readCodexEntry(parseUnityMcpClientList("""{"success": true, "data": [{"key": "codex"}]}"""), store = null, unity = null),
             "a Codex client with no status is not an answer",
         )
     }
@@ -377,7 +396,33 @@ class UnityMcpRowPresentationTest {
     fun `a null slot in the client list is dropped and the other clients still read`() {
         val list = parseUnityMcpClientList("""{"success": true, "data": [null, {"key": "codex", "status": "configured"}]}""")
 
-        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(list))
+        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(list, store = null, unity = null))
+    }
+
+    /** RIDER-144088: the Unity CLI reports `configured` for any command, so the reader compares the command of the store. */
+    @Test
+    fun `the Codex reader compares the command of the store with the detected Unity CLI`() {
+        val configured = clientList("configured")
+
+        assertEquals(UnityMcpEntry.OTHER_CLI, readCodexEntry(configured, codexStore("/opt/homebrew/bin/unity"), unity))
+        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(configured, codexStore("/home/tester/.unity/bin/unity"), unity))
+        assertEquals(
+            UnityMcpEntry.PRESENT,
+            readCodexEntry(configured, codexStore("unity"), unity),
+            "a bare command runs the Unity CLI from the PATH",
+        )
+        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(configured, codexStore("unity.exe"), unity))
+        assertEquals(
+            UnityMcpEntry.OTHER_CLI,
+            readCodexEntry(configured, codexStore("unity123"), unity),
+            "a bare command of another program is not the Unity CLI",
+        )
+        assertEquals(
+            UnityMcpEntry.PRESENT,
+            readCodexEntry(configured, null, unity),
+            "a store that Rider could not read changes nothing",
+        )
+        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("not-configured"), codexStore("/opt/homebrew/bin/unity"), unity))
     }
 
     @Test
@@ -423,37 +468,39 @@ class UnityMcpRowPresentationTest {
     fun theClaudeCodeReaderPinsEveryFileShape() {
         assertEquals(
             UnityMcpEntry.ABSENT,
-            readMcpServersEntry(null, fileExists = false),
+            readMcpServersEntry(null, fileExists = false, unity = null),
             "no file means no entry",
         )
         assertEquals(
             UnityMcpEntry.UNREADABLE,
-            readMcpServersEntry(null, fileExists = true),
+            readMcpServersEntry(null, fileExists = true, unity = null),
             "a file Rider could not read is not an answer",
         )
         for (content in listOf("not json at all", "null", "[]", """{"mcpServers": []}""", """{"mcpServers": "a string"}""")) {
             assertEquals(
                 UnityMcpEntry.UNREADABLE,
-                readMcpServersEntry(content, fileExists = true),
+                readMcpServersEntry(content, fileExists = true, unity = null),
                 "'$content' is not an answer",
             )
         }
         for (content in listOf("", " \n", "{}", """{"mcpServers": null}""")) {
-            assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(content, fileExists = true), "'$content' holds no entry")
+            assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(content, fileExists = true, unity = null), "'$content' holds no entry")
         }
         assertEquals(
             UnityMcpEntry.ABSENT,
-            readMcpServersEntry("""{"mcpServers": {"other": {"command": "x"}}}""", fileExists = true),
+            readMcpServersEntry("""{"mcpServers": {"other": {"command": "x"}}}""", fileExists = true, unity = null),
             "another server is not the Unity entry",
         )
         assertEquals(
             UnityMcpEntry.PRESENT,
-            readMcpServersEntry(CLAUDE_PROJECT_STORE, fileExists = true),
+            readMcpServersEntry(CLAUDE_PROJECT_STORE, fileExists = true, unity = null),
         )
     }
 
     private fun clientList(status: String) =
         parseUnityMcpClientList("""{"success": true, "data": [{"key": "codex", "status": "$status"}]}""")
+
+    private fun codexStore(command: String) = "[mcp_servers.unity]\ncommand = \"$command\"\nargs = [\"mcp\"]\n"
 
     private companion object {
         const val EMPTY_LIST = """{"success": true, "data": []}"""

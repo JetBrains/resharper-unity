@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Path
 
@@ -44,9 +45,18 @@ private fun UnityMcpClientList.clientOf(key: String): UnityMcpClient? = clients.
 fun UnityMcpClientList.configPathOf(key: String): String? = clientOf(key)?.configPath
 
 @ApiStatus.Internal
-fun readCodexEntry(list: UnityMcpClientList?): UnityMcpEntry {
+fun readCodexEntry(list: UnityMcpClientList?, store: String?, unity: Path?): UnityMcpEntry {
     val status = list?.clientOf(UNITY_MCP_CODEX_KEY)?.status ?: return UnityMcpEntry.UNREADABLE
-    return if (status == UNITY_MCP_STATUS_CONFIGURED) UnityMcpEntry.PRESENT else UnityMcpEntry.ABSENT
+    if (status != UNITY_MCP_STATUS_CONFIGURED) return UnityMcpEntry.ABSENT
+    val command = store?.let(::unityMcpCodexCommand)
+    return if (unity != null && command != null && !isUnityCliCommand(command, unity)) UnityMcpEntry.OTHER_CLI
+    else UnityMcpEntry.PRESENT
+}
+
+internal fun isUnityCliCommand(command: String, unity: Path): Boolean {
+    val bareName = '/' !in command && '\\' !in command
+    return if (bareName) command.removeSuffix(".exe") == UNITY_CLI_COMMAND
+    else FileUtil.pathsEqual(command, unity.toString())
 }
 
 internal fun unityMcpJsonStoreName(store: UnityMcpStore): String? = when (store) {

@@ -44,6 +44,7 @@ internal fun unityMcpRowStatus(row: UnityMcpRowPresentation): UnityMcpRowStatus 
     UnityMcpRowState.UNREADABLE -> problem(unreadableMessage(row.store))
     UnityMcpRowState.RESTART_NEEDED -> ok(restartMessage(unityMcpRestartLine(row.entry)))
     UnityMcpRowState.ENTRY_PRESENT -> ok(UnityBundle.message("unity.agents.mcp.state.configured"))
+    UnityMcpRowState.OTHER_CLI -> warning(UnityBundle.message("unity.agents.mcp.state.other.cli"))
     UnityMcpRowState.NOT_CONFIGURED -> plain(null, UnityBundle.message("unity.agents.mcp.state.not.configured"))
 }
 
@@ -85,5 +86,7 @@ private fun busy(operation: UnityMcpOperation?): UnityMcpRowStatus {
 private fun ok(@Nls text: String) = UnityMcpRowStatus(AllIcons.General.InspectionsOK, text, isProblem = false)
 
 private fun problem(@Nls text: String) = UnityMcpRowStatus(AllIcons.General.Error, text, isProblem = true)
+
+private fun warning(@Nls text: String) = UnityMcpRowStatus(AllIcons.General.Warning, text, isProblem = true)
 
 private fun plain(icon: Icon?, @Nls text: String) = UnityMcpRowStatus(icon, text, isProblem = false)

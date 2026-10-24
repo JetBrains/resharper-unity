@@ -60,6 +60,7 @@ enum class UnityMcpSectionState {
 enum class UnityMcpEntry {
     ABSENT,
     PRESENT,
+    OTHER_CLI,
     UNREADABLE,
 }
 
@@ -88,6 +89,7 @@ enum class UnityMcpRowState {
     UNREADABLE,
     RESTART_NEEDED,
     ENTRY_PRESENT,
+    OTHER_CLI,
     NOT_CONFIGURED,
 }
 
@@ -120,6 +122,7 @@ data class UnityMcpRowPresentation(
             entry == UnityMcpEntry.UNREADABLE -> UnityMcpRowState.UNREADABLE
             restartNeeded -> UnityMcpRowState.RESTART_NEEDED
             entry == UnityMcpEntry.PRESENT -> UnityMcpRowState.ENTRY_PRESENT
+            entry == UnityMcpEntry.OTHER_CLI -> UnityMcpRowState.OTHER_CLI
             else -> UnityMcpRowState.NOT_CONFIGURED
         }
 }
@@ -152,6 +155,7 @@ fun unityMcpCanConfigure(row: UnityMcpRowPresentation): Boolean = when (row.stat
     UnityMcpRowState.CHECKING,
     UnityMcpRowState.RESTART_NEEDED,
     UnityMcpRowState.ENTRY_PRESENT,
+    UnityMcpRowState.OTHER_CLI,
     UnityMcpRowState.NOT_CONFIGURED,
         -> true
 }
