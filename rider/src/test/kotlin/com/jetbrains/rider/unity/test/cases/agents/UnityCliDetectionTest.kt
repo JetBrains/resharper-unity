@@ -156,6 +156,21 @@ class UnityCliDetectionTest {
     }
 
     @Test
+    fun `a Windows machine discovers the MSIX alias in WindowsApps when PATH misses it`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val localAppData = "C:\\Users\\tester\\AppData\\Local"
+        val alias = Path.of(localAppData, "Microsoft", "WindowsApps", unityCliExecutableName())
+        val machine = machineWith(alias)
+        install(disposable, machine, environment(localAppData = localAppData, executables = setOf(alias)))
+
+        val presentation = detect()
+
+        assertEquals(alias, presentation.location)
+        assertEquals(INSTALLED_VERSION, presentation.installedVersion)
+    }
+
+    @Test
     fun `an empty machine launches nothing and offers the install`(
         @TestDisposable disposable: Disposable,
     ) {
