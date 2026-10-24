@@ -72,10 +72,13 @@ internal class UnityAgentsSetupService(
         if (!isAvailable()) return null
 
         val cli = readUnityCli(project)
-        if (cli.location == null) return missingUnityAgentsSetupSteps(cli, pipeline = null, skill = null)
         val pipeline = UnityPipelineStatusProvider.getInstance(project).read(cli)
         val skill = UnitySkillStatusProvider.getInstance(project).read(cli, pipeline)
-        return missingUnityAgentsSetupSteps(cli, pipeline, skill)
+        return unityAgentsMissingSteps(
+            cliMissing = cli.location == null,
+            packageMissing = pipeline.needsPipelinePackage == true,
+            skillMissing = skill.offer in MISSING_SKILL_OFFERS,
+        )
     }
 
     override fun requestUpdate(source: UnityAgentsSource) {
@@ -257,18 +260,6 @@ internal class UnityAgentsSetupService(
             }
         )
         notification.notify(project)
-    }
-
-    private fun missingUnityAgentsSetupSteps(
-        cli: UnityCliPresentation,
-        pipeline: UnityPipelinePresentation?,
-        skill: UnitySkillPresentation?,
-    ): List<UnityAgentsSetupStep> {
-        if (cli.location == null) return UnityAgentsSetupStep.entries
-        return buildList {
-            if (pipeline?.needsPipelinePackage == true) add(UnityAgentsSetupStep.PIPELINE_PACKAGE)
-            if (skill != null && skill.offer in MISSING_SKILL_OFFERS) add(UnityAgentsSetupStep.CLI_SKILL)
-        }
     }
 
     companion object {

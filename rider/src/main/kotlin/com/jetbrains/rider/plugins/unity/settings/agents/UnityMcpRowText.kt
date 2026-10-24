@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 import com.intellij.icons.AllIcons
 import com.intellij.ui.AnimatedIcon
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
 import java.nio.file.Path
 import javax.swing.Icon
@@ -28,11 +29,14 @@ internal fun unityMcpSharedRemovalQuestion(stores: List<UnityMcpStore>, solution
     )
 }
 
-internal fun unityMcpGateMessage(section: UnityMcpSectionState, packageMissing: Boolean): @Nls String? = when (section) {
+@ApiStatus.Internal
+fun unityMcpGateMessage(section: UnityMcpSectionState, packageMissing: Boolean): @Nls String? = when (section) {
     UnityMcpSectionState.NO_PROJECT -> UnityBundle.message("unity.agents.mcp.no.project")
     UnityMcpSectionState.NOT_TRUSTED -> UnityBundle.message("unity.agents.mcp.not.trusted")
-    UnityMcpSectionState.NO_CLI -> UnityBundle.message("unity.agents.mcp.needs.setup")
-    UnityMcpSectionState.READY -> if (packageMissing) UnityBundle.message("unity.agents.mcp.needs.setup") else null
+    UnityMcpSectionState.NO_CLI ->
+        if (packageMissing) UnityBundle.message("unity.agents.mcp.needs.setup")
+        else UnityBundle.message("unity.agents.mcp.needs.cli")
+    UnityMcpSectionState.READY -> if (packageMissing) UnityBundle.message("unity.agents.mcp.needs.package") else null
     UnityMcpSectionState.CHECKING -> null
 }
 

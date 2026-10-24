@@ -65,8 +65,10 @@ fun unityAgentsSetupDoneMessage(
     installedSkill: Boolean,
     skillPresent: Boolean,
 ): String = when {
-    installedCli && skillPresent -> UnityBundle.message("unity.agents.setup.done.content.cli")
-    installedCli -> UnityBundle.message("unity.agents.setup.done.content.cli.package")
+    installedCli && installedPackage && installedSkill -> UnityBundle.message("unity.agents.setup.done.content.cli")
+    installedCli && installedPackage -> UnityBundle.message("unity.agents.setup.done.content.cli.package")
+    installedCli && installedSkill -> UnityBundle.message("unity.agents.setup.done.content.cli.skill")
+    installedCli -> UnityBundle.message("unity.agents.setup.done.content.cli.only")
     installedPackage && installedSkill -> UnityBundle.message("unity.agents.setup.done.content")
     installedPackage -> UnityBundle.message("unity.agents.setup.done.content.package")
     installedSkill -> UnityBundle.message("unity.agents.setup.done.content.skill")

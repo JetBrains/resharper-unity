@@ -1,5 +1,6 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_MCP_CODEX_KEY
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliOperation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliPresentation
@@ -17,6 +18,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.readMcpServersEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.readCodexEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCanConfigure
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCanRemove
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpGateMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpOpenableStore
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpRestartLine
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpSectionState
@@ -287,6 +289,24 @@ class UnityMcpRowPresentationTest {
             setOf(UnityMcpSectionState.NO_PROJECT),
             UnityMcpSectionState.entries.filterNot { it.drawsBody }.toSet(),
         )
+    }
+
+    @Test
+    fun `the gate message asks only for the steps that are missing`() {
+        assertEquals(
+            UnityBundle.message("unity.agents.mcp.needs.setup"),
+            unityMcpGateMessage(UnityMcpSectionState.NO_CLI, packageMissing = true),
+        )
+        assertEquals(
+            UnityBundle.message("unity.agents.mcp.needs.cli"),
+            unityMcpGateMessage(UnityMcpSectionState.NO_CLI, packageMissing = false),
+        )
+        assertEquals(
+            UnityBundle.message("unity.agents.mcp.needs.package"),
+            unityMcpGateMessage(UnityMcpSectionState.READY, packageMissing = true),
+        )
+        assertNull(unityMcpGateMessage(UnityMcpSectionState.READY, packageMissing = false))
+        assertNull(unityMcpGateMessage(UnityMcpSectionState.CHECKING, packageMissing = true))
     }
 
     private val gateCases: List<GateCase> = listOf(

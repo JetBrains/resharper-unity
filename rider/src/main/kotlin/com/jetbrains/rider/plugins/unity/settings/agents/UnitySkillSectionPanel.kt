@@ -35,7 +35,7 @@ internal class UnitySkillSectionPanel(
                     }
                     browseRow()
                 }
-                unitySkillGateMessage(presentation.gate)?.let { message ->
+                unitySkillGateMessage(presentation.gate, presentation.packageInstalled)?.let { message ->
                     row { comment(message) }
                 }
             }

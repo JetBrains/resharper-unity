@@ -69,6 +69,22 @@ class UnityPipelinePresentationTest {
             UnityPipelinePresentation(gate = UnityMcpSectionState.NO_CLI).offer,
         )
         assertEquals(
+            UnityPipelineOffer.GATED,
+            UnityPipelinePresentation(
+                gate = UnityMcpSectionState.NO_CLI,
+                manifest = UnityPipelineManifest(version = null),
+            ).offer,
+            "without the Unity CLI, Rider cannot add an absent package",
+        )
+        assertEquals(
+            UnityPipelineOffer.INSTALLED,
+            UnityPipelinePresentation(
+                gate = UnityMcpSectionState.NO_CLI,
+                manifest = UnityPipelineManifest(version = "0.8.0-exp.1"),
+            ).offer,
+            "the manifest shows the package without the Unity CLI",
+        )
+        assertEquals(
             UnityPipelineOffer.UNREADABLE,
             UnityPipelinePresentation(
                 gate = UnityMcpSectionState.READY,

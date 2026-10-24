@@ -47,8 +47,9 @@ data class UnityPipelinePresentation(
             else -> when (gate) {
                 UnityMcpSectionState.NO_PROJECT,
                 UnityMcpSectionState.NOT_TRUSTED,
-                UnityMcpSectionState.NO_CLI,
                     -> UnityPipelineOffer.GATED
+                UnityMcpSectionState.NO_CLI ->
+                    if (manifest?.present == true) UnityPipelineOffer.INSTALLED else UnityPipelineOffer.GATED
                 UnityMcpSectionState.CHECKING ->
                     if (failure != null) UnityPipelineOffer.FAILED else UnityPipelineOffer.CHECKING
                 UnityMcpSectionState.READY ->

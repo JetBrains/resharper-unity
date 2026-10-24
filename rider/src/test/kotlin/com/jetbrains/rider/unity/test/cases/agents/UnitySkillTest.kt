@@ -13,6 +13,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.deleteWithEmptyParent
 import com.jetbrains.rider.plugins.unity.settings.agents.parseUnitySkillList
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsMissingSteps
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupPrompt
+import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillGateMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillInstallCommandLine
 import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillInstallsOf
 import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillOpenTargets
@@ -272,16 +273,26 @@ class UnitySkillTest {
     }
 
     @Test
-    fun `unityAgentsSetupPrompt handles the four cases`() {
-        assertEquals(
-            UnityBundle.message("unity.agents.setup.suggest.title") to
-                UnityBundle.message("unity.agents.setup.suggest.content.cli"),
-            unityAgentsSetupPrompt(cliMissing = true, packageMissing = false, skillMissing = false),
-        )
+    fun `unityAgentsSetupPrompt names only the missing steps`() {
         assertEquals(
             UnityBundle.message("unity.agents.setup.suggest.title") to
                 UnityBundle.message("unity.agents.setup.suggest.content.cli"),
             unityAgentsSetupPrompt(cliMissing = true, packageMissing = true, skillMissing = true),
+        )
+        assertEquals(
+            UnityBundle.message("unity.agents.setup.suggest.title") to
+                UnityBundle.message("unity.agents.setup.suggest.content.cli"),
+            unityAgentsSetupPrompt(cliMissing = true, packageMissing = true, skillMissing = false),
+        )
+        assertEquals(
+            UnityBundle.message("unity.agents.setup.suggest.title") to
+                UnityBundle.message("unity.agents.setup.suggest.content.cli.skill"),
+            unityAgentsSetupPrompt(cliMissing = true, packageMissing = false, skillMissing = true),
+        )
+        assertEquals(
+            UnityBundle.message("unity.agents.setup.suggest.title") to
+                UnityBundle.message("unity.agents.setup.suggest.content.cli.skill"),
+            unityAgentsSetupPrompt(cliMissing = true, packageMissing = false, skillMissing = false),
         )
         assertEquals(
             UnityBundle.message("unity.agents.setup.suggest.title") to
@@ -303,8 +314,12 @@ class UnitySkillTest {
     @Test
     fun `unityAgentsMissingSteps lists the steps that the setup balloon offers`() {
         assertEquals(
-            UnityAgentsSetupStep.entries,
+            listOf(UnityAgentsSetupStep.CLI, UnityAgentsSetupStep.CLI_SKILL),
             unityAgentsMissingSteps(cliMissing = true, packageMissing = false, skillMissing = false),
+        )
+        assertEquals(
+            UnityAgentsSetupStep.entries,
+            unityAgentsMissingSteps(cliMissing = true, packageMissing = true, skillMissing = false),
         )
         assertEquals(
             UnityAgentsSetupStep.entries,
@@ -322,6 +337,24 @@ class UnitySkillTest {
             listOf(UnityAgentsSetupStep.CLI_SKILL),
             unityAgentsMissingSteps(cliMissing = false, packageMissing = false, skillMissing = true),
         )
+    }
+
+    @Test
+    fun `unitySkillGateMessage asks only for the steps that are missing`() {
+        assertEquals(
+            UnityBundle.message("unity.agents.skills.needs.setup"),
+            unitySkillGateMessage(UnityMcpSectionState.NO_CLI, packageInstalled = false),
+        )
+        assertEquals(
+            UnityBundle.message("unity.agents.skills.needs.cli"),
+            unitySkillGateMessage(UnityMcpSectionState.NO_CLI, packageInstalled = true),
+        )
+        assertEquals(
+            UnityBundle.message("unity.agents.skills.needs.package"),
+            unitySkillGateMessage(UnityMcpSectionState.READY, packageInstalled = false),
+        )
+        assertNull(unitySkillGateMessage(UnityMcpSectionState.READY, packageInstalled = true))
+        assertNull(unitySkillGateMessage(UnityMcpSectionState.CHECKING, packageInstalled = false))
     }
 
     @Test
