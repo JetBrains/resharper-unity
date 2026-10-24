@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
+import com.intellij.openapi.util.text.StringUtil
 import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Files
 import java.nio.file.Path
@@ -8,6 +9,7 @@ import kotlin.io.path.readText
 private const val CODEX_STORE_FILE = "config.toml"
 private const val MCP_SERVERS_TABLE = "mcp_servers"
 private val CODEX_ENTRY = listOf(MCP_SERVERS_TABLE, UNITY_MCP_SERVER_NAME)
+private val CODEX_COMMAND = CODEX_ENTRY + "command"
 
 private class NetworkPolicyKey(val table: List<String>, val key: String, val values: Set<String>)
 
@@ -72,32 +74,29 @@ fun unityMcpCodexRemoval(content: String): UnityMcpCodexRemoval? {
 @ApiStatus.Internal
 fun unityMcpCodexStoreWithoutEntry(content: String): String? {
     val kept = StringBuilder()
-    val value = TomlValueScan()
-    var table = emptyList<String>()
     var inEntry = false
-
-    for (line in content.split(Regex("(?<=\n)"))) {
-        if (value.isOpen) {
-            value.scan(line)
-        }
-        else {
-            val text = line.trim()
-            if (text.startsWith("[")) {
-                table = readTomlHeader(text) ?: return null
-                inEntry = table.startsWith(CODEX_ENTRY)
-            }
-            else if (text.isNotEmpty() && !text.startsWith("#")) {
-                val key = readTomlKey(text, 0) ?: return null
-                val path = table + key.path
-                if (!inEntry && (path.startsWith(CODEX_ENTRY) || path == listOf(MCP_SERVERS_TABLE))) return null
-                val rest = text.substring(key.end)
-                if (!rest.startsWith("=")) return null
-                value.scan(rest.substring(1))
-            }
+    val parsed = walkTomlLines(content) { line, kind ->
+        if (kind is TomlLine.Header) inEntry = kind.table.startsWith(CODEX_ENTRY)
+        if (kind is TomlLine.KeyValue && !inEntry && (kind.path.startsWith(CODEX_ENTRY) || kind.path == listOf(MCP_SERVERS_TABLE))) {
+            return null
         }
         if (!inEntry) kept.append(line)
     }
-    return if (value.isOpen) null else kept.toString()
+    return if (parsed) kept.toString() else null
+}
+
+/**
+ * Reads the `command` of the `[mcp_servers.unity]` table.
+ *
+ * Returns null when the store has no command, when the command is not a one-line string, or when a line before it
+ * does not parse. [readCodexEntry] then reads a configured entry as present.
+ */
+@ApiStatus.Internal
+fun unityMcpCodexCommand(content: String): String? {
+    walkTomlLines(content) { _, kind ->
+        if (kind is TomlLine.KeyValue && kind.path == CODEX_COMMAND) return readTomlString(kind.value)
+    }
+    return null
 }
 
 /**
@@ -112,42 +111,71 @@ fun unityMcpCodexStoreWithoutEntry(content: String): String? {
 @ApiStatus.Internal
 fun unityMcpCodexStoreWithoutNetworkPolicy(content: String): String? {
     val kept = StringBuilder()
-    val value = TomlValueScan()
     var section = TomlSection(policyTable = null, leading = "", header = null)
-
-    for (line in content.split(Regex("(?<=\n)"))) {
-        if (value.isOpen) {
-            value.scan(line)
-            section.keep(line)
-            continue
-        }
-        val text = line.trim()
-        when {
-            text.isEmpty() -> section.blank(line)
-            text.startsWith("[") -> {
-                val table = readTomlHeader(text) ?: return null
-                val policyTable = table.takeIf { it in UNITY_NETWORK_POLICY_TABLES && isPlainTomlHeader(text) }
+    val parsed = walkTomlLines(content) { line, kind ->
+        when (kind) {
+            TomlLine.Blank -> section.blank(line)
+            TomlLine.Comment, TomlLine.Continuation -> section.keep(line)
+            is TomlLine.Header -> {
+                val policyTable = kind.table.takeIf { it in UNITY_NETWORK_POLICY_TABLES && kind.isPlain }
                 val leading = section.takeBlanks()
                 section.appendTo(kept)
                 section = TomlSection(policyTable, leading, line)
             }
-            text.startsWith("#") -> section.keep(line)
-            else -> {
-                val key = readTomlKey(text, 0) ?: return null
-                val rest = text.substring(key.end)
-                if (!rest.startsWith("=")) return null
-                val raw = rest.substring(1)
-                if (section.isUnityPolicyKey(key.path, raw.trim())) section.drop() else section.keep(line)
-                value.scan(raw)
-            }
+            is TomlLine.KeyValue -> if (section.isUnityPolicyKey(kind.key, kind.value)) section.drop() else section.keep(line)
         }
     }
-    if (value.isOpen) return null
+    if (!parsed) return null
     section.appendTo(kept)
     return kept.toString()
 }
 
 private class TomlKey(val path: List<String>, val end: Int)
+
+/** What one line of the store holds. */
+private sealed interface TomlLine {
+    /** A line inside a value that spans lines. */
+    data object Continuation : TomlLine
+    data object Blank : TomlLine
+    data object Comment : TomlLine
+    class Header(val table: List<String>, val isPlain: Boolean) : TomlLine
+    class KeyValue(val table: List<String>, val key: List<String>, val value: String) : TomlLine {
+        val path: List<String> get() = table + key
+    }
+}
+
+/**
+ * Hands each line of [content] to [visit], with what the line holds.
+ *
+ * Returns false for a header or a key that does not parse, or for a value that is still open at the end.
+ */
+private inline fun walkTomlLines(content: String, visit: (line: String, kind: TomlLine) -> Unit): Boolean {
+    val value = TomlValueScan()
+    var table = emptyList<String>()
+    for (line in content.split(Regex("(?<=\n)"))) {
+        val kind = if (value.isOpen) TomlLine.Continuation else readTomlLine(line.trim(), table) ?: return false
+        when (kind) {
+            TomlLine.Continuation -> value.scan(line)
+            is TomlLine.Header -> table = kind.table
+            is TomlLine.KeyValue -> value.scan(kind.value)
+            TomlLine.Blank, TomlLine.Comment -> {}
+        }
+        visit(line, kind)
+    }
+    return !value.isOpen
+}
+
+private fun readTomlLine(text: String, table: List<String>): TomlLine? = when {
+    text.isEmpty() -> TomlLine.Blank
+    text.startsWith("#") -> TomlLine.Comment
+    text.startsWith("[") -> readTomlHeader(text)?.let { TomlLine.Header(it, isPlainTomlHeader(text)) }
+    else -> {
+        val key = readTomlKey(text, 0)
+        val rest = key?.let { text.substring(it.end) }
+        if (key == null || rest == null || !rest.startsWith("=")) null
+        else TomlLine.KeyValue(table, key.path, rest.substring(1).trim())
+    }
+}
 
 /**
  * One table of the store, with the blank lines above its header.
@@ -257,6 +285,16 @@ private class TomlValueScan {
             i++
         }
     }
+}
+
+private fun readTomlString(text: String): String? {
+    val quote = text.firstOrNull()?.takeIf { it == '"' || it == '\'' } ?: return null
+    if (text.startsWith("$quote$quote$quote")) return null
+    val end = closingQuote(text, 0, quote) ?: return null
+    val rest = text.substring(end).trim()
+    if (rest.isNotEmpty() && !rest.startsWith("#")) return null
+    val body = text.substring(1, end - 1)
+    return if (quote == '"') StringUtil.unescapeStringCharacters(body) else body
 }
 
 /** The index after the quote that closes the string opened at [start]. A literal string has no escapes. */

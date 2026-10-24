@@ -66,4 +66,4 @@ fun unityMcpHeldIsStale(
     readStart: Long,
 ): Boolean = heldEntry != null && heldRelease <= readStart && entry.isKnown() && entry != heldEntry
 
-private fun UnityMcpEntry?.isKnown(): Boolean = this == UnityMcpEntry.ABSENT || this == UnityMcpEntry.PRESENT
+private fun UnityMcpEntry?.isKnown(): Boolean = this != null && this != UnityMcpEntry.UNREADABLE

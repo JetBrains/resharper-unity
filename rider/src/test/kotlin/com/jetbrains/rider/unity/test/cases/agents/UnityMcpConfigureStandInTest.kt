@@ -64,7 +64,7 @@ class UnityMcpConfigureStandInTest {
         assertEquals(0, output.exitCode, "the stand-in Unity CLI did not run")
         val list = parseUnityMcpClientList(output.stdout) ?: fail("the output of the process did not parse")
         assertEquals("/home/tester/Platformer/.codex/config.toml", list.configPathOf(UNITY_MCP_CODEX_KEY))
-        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(list))
+        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(list, store = null, unity = null))
     }
 
     @Test
@@ -95,7 +95,7 @@ class UnityMcpConfigureStandInTest {
         val output = run(unityMcpLocalClientListCommandLine(unity, directory))
 
         assertEquals(EXIT_CODE, output.exitCode, "the exit code of the process did not reach the caller")
-        assertEquals(UnityMcpEntry.UNREADABLE, readCodexEntry(parseUnityMcpClientList(output.stdout)))
+        assertEquals(UnityMcpEntry.UNREADABLE, readCodexEntry(parseUnityMcpClientList(output.stdout), store = null, unity = null))
     }
 
     private fun run(command: GeneralCommandLine): ProcessOutput =

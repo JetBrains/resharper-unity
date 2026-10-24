@@ -4,6 +4,7 @@ import com.google.gson.JsonParser
 import com.intellij.execution.process.ProcessOutput
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry.ABSENT
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry.OTHER_CLI
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry.PRESENT
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry.UNREADABLE
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpFailure
@@ -177,7 +178,7 @@ class UnityMcpWriteTest {
     fun `a pasted manual snippet reads as configured in a JSON store`() {
         val pasted = """{"mcpServers": ${unityMcpManualSnippet(unity, solution)}}"""
 
-        assertEquals(PRESENT, readMcpServersEntry(pasted, fileExists = true))
+        assertEquals(PRESENT, readMcpServersEntry(pasted, fileExists = true, unity = null))
     }
 
     @Test
@@ -294,6 +295,7 @@ class UnityMcpWriteTest {
 
     private val restartCases = listOf(
         RestartCase("a configure added the entry", null, ABSENT, PRESENT, false, null, true),
+        RestartCase("a configure replaced the entry of a different Unity CLI", null, OTHER_CLI, PRESENT, false, null, true),
         RestartCase("a removal dropped the entry", null, PRESENT, ABSENT, false, null, true),
         RestartCase("a removal with nothing to remove", null, ABSENT, ABSENT, false, null, false),
         RestartCase("a configure over an entry that was there", null, PRESENT, PRESENT, false, null, false),
@@ -330,6 +332,7 @@ class UnityMcpWriteTest {
         StaleCase("the file still holds what the write left", PRESENT, 3, PRESENT, 5, false),
         StaleCase("the user fixed the file by hand", ABSENT, 3, PRESENT, 5, true),
         StaleCase("a checkout took the entry away", PRESENT, 3, ABSENT, 5, true),
+        StaleCase("the detected Unity CLI moved", PRESENT, 3, OTHER_CLI, 5, true),
         StaleCase("a read that began before the release", PRESENT, 6, ABSENT, 5, false),
         StaleCase("a read that began right after the release", PRESENT, 5, ABSENT, 5, true),
         StaleCase("a file that does not parse for a moment", PRESENT, 3, UNREADABLE, 5, false),

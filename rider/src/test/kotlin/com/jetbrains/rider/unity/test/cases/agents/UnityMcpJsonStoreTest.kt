@@ -239,7 +239,7 @@ class UnityMcpJsonStoreTest {
         val merged = unityMcpMergedStore(null, owned!!.entry)!!
 
         assertTrue(merged.indexOf(""""type": "stdio"""") < merged.indexOf(""""command""""), merged)
-        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(merged, fileExists = true))
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(merged, fileExists = true, unity = null))
     }
 
     /**
@@ -250,13 +250,13 @@ class UnityMcpJsonStoreTest {
      */
     @Test
     fun `a store written by claude mcp add still reads as configured`() {
-        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(CLAUDE_WRITTEN_STORE, fileExists = true))
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(CLAUDE_WRITTEN_STORE, fileExists = true, unity = null))
     }
 
     /** The Unity CLI writes this entry for every client. A configure over it must not add a second server. */
     @Test
     fun `a configure over the entry of the Unity CLI keeps one Unity server`() {
-        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(UNITY_CLI_STORE, fileExists = true))
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(UNITY_CLI_STORE, fileExists = true, unity = null))
 
         val merged = unityMcpMergedStore(UNITY_CLI_STORE, junieEntry)
 
@@ -271,16 +271,47 @@ class UnityMcpJsonStoreTest {
     fun `the command finds the Unity server and the name does not`() {
         assertEquals(
             UnityMcpEntry.PRESENT,
-            readMcpServersEntry("""{"mcpServers": {"my unity": {"command": "C:\\bin\\unity.exe", "args": ["mcp"]}}}""", fileExists = true),
+            readMcpServersEntry(
+                """{"mcpServers": {"my unity": {"command": "C:\\bin\\unity.exe", "args": ["mcp"]}}}""",
+                fileExists = true,
+                unity = null,
+            ),
         )
         assertEquals(
             UnityMcpEntry.ABSENT,
-            readMcpServersEntry("""{"mcpServers": {"unity": {"command": "npx", "args": ["unity-mcp"]}}}""", fileExists = true),
+            readMcpServersEntry(
+                """{"mcpServers": {"unity": {"command": "npx", "args": ["unity-mcp"]}}}""",
+                fileExists = true,
+                unity = null,
+            ),
         )
         assertEquals(
             UnityMcpEntry.ABSENT,
-            readMcpServersEntry("""{"mcpServers": {"unity 1": {"command": "/opt/unity", "args": ["editors"]}}}""", fileExists = true),
+            readMcpServersEntry(
+                """{"mcpServers": {"unity 1": {"command": "/opt/unity", "args": ["editors"]}}}""",
+                fileExists = true,
+                unity = null,
+            ),
         )
+    }
+
+    @Test
+    fun `a server of a different Unity CLI reads as OTHER_CLI`() {
+        val otherCli = """{"mcpServers": {"unity": {"command": "/opt/homebrew/bin/unity", "args": ["mcp"]}}}"""
+
+        assertEquals(UnityMcpEntry.OTHER_CLI, readMcpServersEntry(otherCli, fileExists = true, unity))
+        assertEquals(
+            UnityMcpEntry.PRESENT,
+            readMcpServersEntry(otherCli, fileExists = true, unity = null),
+            "a read with no Unity CLI takes any one",
+        )
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(UNITY_CLI_STORE, fileExists = true, unity))
+        assertEquals(
+            UnityMcpEntry.PRESENT,
+            readMcpServersEntry("""{"mcpServers": {"unity": {"command": "unity", "args": ["mcp"]}}}""", fileExists = true, unity),
+            "a bare command runs the Unity CLI from the PATH",
+        )
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(unityMcpMergedStore(otherCli, junieEntry), fileExists = true, unity))
     }
 
     /** A removal over the old bytes drops the entry, and the merge of Rider keeps the siblings. */
@@ -288,7 +319,7 @@ class UnityMcpJsonStoreTest {
     fun `a removal over a store written by claude mcp add drops the entry`() {
         val merged = unityMcpMergedStore(CLAUDE_WRITTEN_STORE, null)
 
-        assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(merged, fileExists = true))
+        assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(merged, fileExists = true, unity = null))
     }
 
     /** The shape of the file that Rider creates. The two-space indent is the one of the platform writer. */
@@ -324,7 +355,7 @@ class UnityMcpJsonStoreTest {
 
         assertTrue(merged?.contains(""""idea"""") == true, merged)
         assertTrue(merged?.contains(""""rider"""") == true, merged)
-        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(merged, fileExists = true))
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(merged, fileExists = true, unity = null))
     }
 
     /** The platform writer keeps the root-level fields of the file, and so does this one. */
@@ -333,7 +364,7 @@ class UnityMcpJsonStoreTest {
         val merged = unityMcpMergedStore(ROOT_FIELD, junieEntry)
 
         assertTrue(merged?.contains(""""inputs"""") == true, merged)
-        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(merged, fileExists = true))
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(merged, fileExists = true, unity = null))
     }
 
     @Test
@@ -355,7 +386,7 @@ class UnityMcpJsonStoreTest {
     fun `a removal drops the Unity entry and keeps the others`() {
         val merged = unityMcpMergedStore(unityMcpMergedStore(OTHER_SERVERS, junieEntry), null)
 
-        assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(merged, fileExists = true))
+        assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(merged, fileExists = true, unity = null))
         assertTrue(merged?.contains(""""idea"""") == true, "a removal took a server of another product")
     }
 
@@ -380,7 +411,7 @@ class UnityMcpJsonStoreTest {
 
         assertTrue(writeUnityMcpJsonStore(file, junieEntry))
 
-        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(file.readText(), fileExists = true))
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(file.readText(), fileExists = true, unity = null))
         assertEquals(listOf(file), filesIn(file.parent), "the write left a file beside the store")
     }
 
@@ -409,7 +440,7 @@ class UnityMcpJsonStoreTest {
         assertTrue(writeUnityMcpJsonStore(file, null))
 
         assertTrue(file.exists(), "Rider deleted a file of the user")
-        assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(file.readText(), fileExists = true))
+        assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(file.readText(), fileExists = true, unity = null))
         assertTrue(file.readText().contains(""""idea""""))
     }
 

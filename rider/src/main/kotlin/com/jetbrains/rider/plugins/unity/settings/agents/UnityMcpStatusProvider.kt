@@ -101,8 +101,8 @@ internal class UnityMcpStatusService(
             val rows = withHeldState(
                 UnityMcpStore.entries.map { store ->
                     when (store) {
-                        UnityMcpStore.CODEX_CLI -> codexRow(section, clientList.await(), codexStoreFile.await())
-                        else -> jsonStoreRow(store, section, readings, solution)
+                        UnityMcpStore.CODEX_CLI -> codexRow(section, clientList.await(), codexStoreFile.await(), unity)
+                        else -> jsonStoreRow(store, section, readings, solution, unity)
                     }
                 },
                 readStart,
@@ -202,13 +202,16 @@ internal class UnityMcpStatusService(
             val clientList = async {
                 if (unity != null && UnityMcpStore.CODEX_CLI in stores) readLocalClientList(unity, solution) else null
             }
+            val codexStore = async {
+                if (UnityMcpStore.CODEX_CLI in stores) readStoreFile(unityMcpCodexStoreFile(solution)).content else null
+            }
             val readings = readJsonStores(stores, solution)
             stores.associateWith { store ->
                 when (store) {
-                    UnityMcpStore.CODEX_CLI -> readCodexEntry(clientList.await())
+                    UnityMcpStore.CODEX_CLI -> readCodexEntry(clientList.await(), codexStore.await(), unity)
                     else -> {
                         val reading = readings[unityMcpJsonStoreFile(store, solution)] ?: StoreReading(exists = false)
-                        readMcpServersEntry(reading.content, reading.exists)
+                        readMcpServersEntry(reading.content, reading.exists, unity)
                     }
                 }
             }
@@ -351,12 +354,13 @@ internal class UnityMcpStatusService(
         section: UnityMcpSectionState,
         clientList: UnityMcpClientList?,
         storeFile: StoreReading,
+        unity: Path,
     ): UnityMcpRowPresentation = UnityMcpRowPresentation(
         store = UnityMcpStore.CODEX_CLI,
         section = section,
         storePath = clientList?.configPathOf(UNITY_MCP_CODEX_KEY),
         storeFileExists = storeFile.exists,
-        entry = readCodexEntry(clientList),
+        entry = readCodexEntry(clientList, storeFile.content, unity),
         removalAsksForNetworkPolicy = storeFile.content?.let(::unityMcpCodexRemoval)?.asksForNetworkPolicy == true,
     )
 
@@ -365,6 +369,7 @@ internal class UnityMcpStatusService(
         section: UnityMcpSectionState,
         readings: Map<Path, StoreReading>,
         solution: Path,
+        unity: Path,
     ): UnityMcpRowPresentation {
         val file = unityMcpJsonStoreFile(store, solution)
         val reading = readings[file] ?: StoreReading(exists = false)
@@ -373,7 +378,7 @@ internal class UnityMcpStatusService(
             section = section,
             storePath = file?.toString(),
             storeFileExists = reading.exists,
-            entry = readMcpServersEntry(reading.content, reading.exists),
+            entry = readMcpServersEntry(reading.content, reading.exists, unity),
         )
     }
 

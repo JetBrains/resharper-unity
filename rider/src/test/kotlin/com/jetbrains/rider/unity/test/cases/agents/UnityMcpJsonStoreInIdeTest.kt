@@ -58,7 +58,7 @@ class UnityMcpJsonStoreInIdeTest {
 
         val onDisk = file.readText()
         assertTrue(onDisk.contains(""""idea"""")) { "the write lost the unsaved edit of the user, expected \"idea\" in: $onDisk" }
-        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(onDisk, fileExists = true))
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(onDisk, fileExists = true, unity = null))
         readAction {
             assertEquals(onDisk, document.text, "the editor still shows the file from before the write")
             assertFalse(FileDocumentManager.getInstance().isDocumentUnsaved(document))
@@ -76,7 +76,7 @@ class UnityMcpJsonStoreInIdeTest {
 
         val onDisk = file.readText()
         assertTrue(onDisk.contains(""""idea"""")) { "the removal lost the unsaved edit of the user, expected \"idea\" in: $onDisk" }
-        assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(onDisk, fileExists = true))
+        assertEquals(UnityMcpEntry.ABSENT, readMcpServersEntry(onDisk, fileExists = true, unity = null))
         readAction { assertEquals(onDisk, document.text, "the editor still shows the file from before the removal") }
     }
 
@@ -104,7 +104,7 @@ class UnityMcpJsonStoreInIdeTest {
 
         assertTrue(writeUnityMcpJsonStoreInIde(file, entry))
 
-        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(file.readText(), fileExists = true))
+        assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(file.readText(), fileExists = true, unity = null))
         assertNotNull(VirtualFileManager.getInstance().findFileByNioPath(file), "the IDE does not see the new store")
     }
 
