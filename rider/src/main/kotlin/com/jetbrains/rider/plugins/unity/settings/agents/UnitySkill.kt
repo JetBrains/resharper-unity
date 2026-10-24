@@ -95,19 +95,28 @@ fun unitySkillInstallsOf(
     return installs.filter { exists(it.path) && (!it.local || it.path.startsWith(realSolution)) }
 }
 
+internal fun unitySkillReaders(install: UnitySkillInstall): List<UnitySkillTarget> = when (install.client) {
+    UnitySkillClient.CODEX.key -> if (install.local) {
+        listOf(UnitySkillTarget.CODEX, UnitySkillTarget.COPILOT, UnitySkillTarget.JUNIE)
+    }
+    else {
+        listOf(UnitySkillTarget.CODEX)
+    }
+    UnitySkillClient.CLAUDE_CODE.key -> if (install.local) {
+        listOf(UnitySkillTarget.CLAUDE_CODE, UnitySkillTarget.COPILOT)
+    }
+    else {
+        listOf(UnitySkillTarget.CLAUDE_CODE)
+    }
+    VSCODE_CLIENT -> listOf(UnitySkillTarget.COPILOT)
+    else -> emptyList()
+}
+
 @ApiStatus.Internal
 fun unitySkillOpenTargets(installs: List<UnitySkillInstall>): List<UnitySkillTarget> {
-    val localInstalls = installs.filter { it.local }
-    val hasCodex = localInstalls.any { it.client == UnitySkillClient.CODEX.key }
-    val hasClaudeCode = localInstalls.any { it.client == UnitySkillClient.CLAUDE_CODE.key }
-    val hasCopilot = hasCodex || hasClaudeCode || localInstalls.any { it.client == VSCODE_CLIENT }
-
-    val targets = mutableListOf<UnitySkillTarget>()
-    if (!hasCodex) targets.add(UnitySkillTarget.CODEX)
-    if (!hasClaudeCode) targets.add(UnitySkillTarget.CLAUDE_CODE)
-    if (!hasCopilot) targets.add(UnitySkillTarget.COPILOT)
-    if (!hasCodex) targets.add(UnitySkillTarget.JUNIE)
-    return targets
+    val projectReaders = installs.filter { it.local }.flatMapTo(HashSet(), ::unitySkillReaders)
+    return listOf(UnitySkillTarget.CODEX, UnitySkillTarget.CLAUDE_CODE, UnitySkillTarget.COPILOT, UnitySkillTarget.JUNIE)
+        .filter { it !in projectReaders }
 }
 
 internal fun unitySkillInstallOutcome(output: ProcessOutput?, landed: Boolean): UnitySkillFailure? = when {
