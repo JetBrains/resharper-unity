@@ -64,6 +64,7 @@
     <module name="intellij.rider.plugins.unity.model"/>
     <module name="intellij.rider.plugins.unity.profiler.mcp" />
     <module name="intellij.rider.plugins.unity.agents"/>
+    <module name="intellij.rider.plugins.unity.terminal"/>
     <module name="intellij.rider.plugins.unity.yaml"/>
     <module name="intellij.rider.plugins.unity.css"/>
     <module name="intellij.rider.plugins.unity.javascript"/>

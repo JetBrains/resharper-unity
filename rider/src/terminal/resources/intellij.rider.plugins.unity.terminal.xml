@@ -1,0 +1,12 @@
+<idea-plugin>
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+  <dependencies>
+    <plugin id="org.jetbrains.plugins.terminal"/>
+    <module name="intellij.platform.core"/>
+    <module name="intellij.rider.plugins.unity.backend"/>
+  </dependencies>
+  <!-- endregion -->
+  <extensions defaultExtensionNs="org.jetbrains.plugins.terminal">
+    <shellExecOptionsCustomizer implementation="com.jetbrains.rider.plugins.unity.terminal.UnityCliShellExecOptionsCustomizer"/>
+  </extensions>
+</idea-plugin>
