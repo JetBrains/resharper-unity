@@ -231,18 +231,44 @@ class UnitySkillTest {
             UnitySkillInstall("codex", local = true, path1),
             UnitySkillInstall("claude-code", local = false, path2),
         )
-        assertEquals("(Codex, project; Claude Code, global)", unitySkillPlacesMessage(twoEntries))
+        assertEquals(
+            "(Codex, project; GitHub Copilot, project; Junie, project; Claude Code, global)",
+            unitySkillPlacesMessage(twoEntries),
+        )
 
         val duplicates = listOf(
-            UnitySkillInstall("codex", local = true, path1),
-            UnitySkillInstall("codex", local = true, path2),
+            UnitySkillInstall("codex", local = false, path1),
+            UnitySkillInstall("codex", local = false, path2),
         )
-        assertEquals("(Codex, project)", unitySkillPlacesMessage(duplicates))
+        assertEquals("(Codex, global)", unitySkillPlacesMessage(duplicates))
 
         val markup = listOf(
             UnitySkillInstall("<custom-client>", local = true, path1),
         )
         assertEquals("(&lt;custom-client&gt;, project)", unitySkillPlacesMessage(markup))
+    }
+
+    @Test
+    fun `unitySkillPlacesMessage names every agent that reads the project skill folder`() {
+        val agentsPath = Path.of("/projects/game/.agents/skills/unity-cli")
+        val claudePath = Path.of("/projects/game/.claude/skills/unity-cli")
+        assertEquals(
+            "(Codex, project; GitHub Copilot, project; Junie, project)",
+            unitySkillPlacesMessage(listOf(UnitySkillInstall("codex", local = true, agentsPath))),
+        )
+        assertEquals(
+            "(Claude Code, project; GitHub Copilot, project)",
+            unitySkillPlacesMessage(listOf(UnitySkillInstall("claude-code", local = true, claudePath))),
+        )
+    }
+
+    @Test
+    fun `unitySkillPlacesMessage is null when every agent reads the project skill`() {
+        val installs = listOf(
+            UnitySkillInstall("codex", local = true, Path.of("/projects/game/.agents/skills/unity-cli")),
+            UnitySkillInstall("claude-code", local = true, Path.of("/projects/game/.claude/skills/unity-cli")),
+        )
+        assertNull(unitySkillPlacesMessage(installs))
     }
 
     @Test
@@ -344,5 +370,17 @@ class UnitySkillTest {
             UnitySkillInstall("codex", local = true, path),
         )
         assertEquals(listOf(UnitySkillTarget.CLAUDE_CODE), unitySkillOpenTargets(installs))
+    }
+
+    @Test
+    fun `unitySkillOpenTargets returns CODEX CLAUDE_CODE and JUNIE when local vscode alone is installed`() {
+        val path = Path.of("/projects/game/.github/skills/unity-cli")
+        val installs = listOf(
+            UnitySkillInstall("vscode", local = true, path),
+        )
+        assertEquals(
+            listOf(UnitySkillTarget.CODEX, UnitySkillTarget.CLAUDE_CODE, UnitySkillTarget.JUNIE),
+            unitySkillOpenTargets(installs),
+        )
     }
 }

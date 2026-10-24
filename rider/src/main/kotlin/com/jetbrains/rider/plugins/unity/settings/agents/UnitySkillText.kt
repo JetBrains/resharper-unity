@@ -16,17 +16,16 @@ internal fun unitySkillGateMessage(gate: UnityMcpSectionState): @Nls String? = w
 
 @Nls
 @ApiStatus.Internal
-fun unitySkillPlacesMessage(installs: List<UnitySkillInstall>): String {
+fun unitySkillPlacesMessage(installs: List<UnitySkillInstall>): String? {
+    if (unitySkillOpenTargets(installs).isEmpty()) return null
     val places = installs
-        .distinctBy { it.client to it.local }
-        .joinToString("; ") { install ->
-            val agent = when (install.client) {
-                UnitySkillClient.CODEX.key -> UnityBundle.message("unity.agents.skills.client.codex")
-                UnitySkillClient.CLAUDE_CODE.key -> UnityBundle.message("unity.agents.skills.client.claude.code")
-                "vscode" -> UnityBundle.message("unity.agents.skills.client.copilot")
-                else -> escapeXmlEntities(install.client)
-            }
-            val scope = if (install.local) {
+        .flatMap { install ->
+            val agents = unitySkillReaders(install).mapNotNull(::unitySkillAgentName)
+            agents.ifEmpty { listOf(escapeXmlEntities(install.client)) }.map { agent -> agent to install.local }
+        }
+        .distinct()
+        .joinToString("; ") { (agent, local) ->
+            val scope = if (local) {
                 UnityBundle.message("unity.agents.skills.scope.project")
             }
             else {
@@ -35,6 +34,14 @@ fun unitySkillPlacesMessage(installs: List<UnitySkillInstall>): String {
             UnityBundle.message("unity.agents.skills.place", agent, scope)
         }
     return UnityBundle.message("unity.agents.skills.places", places)
+}
+
+private fun unitySkillAgentName(agent: UnitySkillTarget): @Nls String? = when (agent) {
+    UnitySkillTarget.CODEX -> UnityBundle.message("unity.agents.skills.client.codex")
+    UnitySkillTarget.CLAUDE_CODE -> UnityBundle.message("unity.agents.skills.client.claude.code")
+    UnitySkillTarget.COPILOT -> UnityBundle.message("unity.agents.skills.client.copilot")
+    UnitySkillTarget.JUNIE -> UnityBundle.message("unity.agents.skills.client.junie")
+    UnitySkillTarget.ALL -> null
 }
 
 @Nls
