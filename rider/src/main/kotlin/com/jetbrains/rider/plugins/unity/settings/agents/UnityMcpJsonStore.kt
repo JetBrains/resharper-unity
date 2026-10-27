@@ -85,6 +85,13 @@ fun readMcpServersEntry(content: String?, fileExists: Boolean, unity: Path?): Un
 }
 
 @ApiStatus.Internal
+fun unityMcpConfigureReplacesOtherServer(content: String?): Boolean {
+    if (content.isNullOrBlank()) return false
+    val server = parseObject(content)?.mcpServers()?.get(UNITY_MCP_SERVER_NAME) ?: return false
+    return !server.isUnityMcpServer()
+}
+
+@ApiStatus.Internal
 fun unityMcpMergedStore(content: String?, entry: UnityMcpServerEntry?): String? {
     val root = if (content.isNullOrBlank()) JsonObject() else parseObject(content) ?: return null
     val servers = root.mcpServers() ?: return null

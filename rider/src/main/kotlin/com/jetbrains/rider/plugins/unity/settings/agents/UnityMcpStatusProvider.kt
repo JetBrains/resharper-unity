@@ -379,6 +379,7 @@ internal class UnityMcpStatusService(
             storePath = file?.toString(),
             storeFileExists = reading.exists,
             entry = readMcpServersEntry(reading.content, reading.exists, unity),
+            configureReplacesOtherServer = unityMcpConfigureReplacesOtherServer(reading.content),
         )
     }
 

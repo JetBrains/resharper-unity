@@ -6,6 +6,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpFailure
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpServerEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpStore
 import com.jetbrains.rider.plugins.unity.settings.agents.readMcpServersEntry
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpConfigureReplacesOtherServer
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpFileWriteOutcome
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpJsonStoreFile
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpMergedStore
@@ -312,6 +313,17 @@ class UnityMcpJsonStoreTest {
             "a bare command runs the Unity CLI from the PATH",
         )
         assertEquals(UnityMcpEntry.PRESENT, readMcpServersEntry(unityMcpMergedStore(otherCli, junieEntry), fileExists = true, unity))
+    }
+
+    /** The issue RIDER-144566 shows this server of MCP for Unity under the name that Rider writes. */
+    @Test
+    fun `a configure asks before it replaces another server named unity`() {
+        assertTrue(
+            unityMcpConfigureReplacesOtherServer("""{"mcpServers": {"unity": {"command": "uvx", "args": ["mcp-for-unity"]}}}"""),
+        )
+        for (content in listOf(UNITY_CLI_STORE, CLAUDE_WRITTEN_STORE, OTHER_SERVERS, null, "   \n", "not json at all")) {
+            assertFalse(unityMcpConfigureReplacesOtherServer(content), "$content")
+        }
     }
 
     /** A removal over the old bytes drops the entry, and the merge of Rider keeps the siblings. */
