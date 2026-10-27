@@ -29,7 +29,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 
         public bool DeOptimizeMethodsOnStepInAndMethodsWithBreakpoints => DebuggerSessionOptionsImplementation.DeOptimizeMethodsOnStepInAndMethodsWithBreakpoints;
         public bool EnableExternalSourceDebug => DebuggerSessionOptionsImplementation.EnableExternalSourceDebug;
-        public bool AutomaticallyRefreshWatches => DebuggerSessionOptionsImplementation.AutomaticallyRefreshWatches;
         public bool EditAndContinueEnabled => DebuggerSessionOptionsImplementation.EditAndContinueEnabled;
         public bool EditAndContinueSupported => DebuggerSessionOptionsImplementation.EditAndContinueSupported;
         public bool ShowReturnValues => DebuggerSessionOptionsImplementation.ShowReturnValues;
