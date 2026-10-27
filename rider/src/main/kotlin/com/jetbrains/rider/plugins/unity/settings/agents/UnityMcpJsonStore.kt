@@ -18,11 +18,13 @@ import com.intellij.openapi.vfs.newvfs.ManagingFS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.ApiStatus
+import java.io.IOException
 import java.nio.file.AccessDeniedException
 import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.nio.file.attribute.PosixFilePermissions
 import kotlin.io.path.readText
 
 private const val MCP_SERVERS_KEY = "mcpServers"
@@ -152,9 +154,24 @@ fun writeUnityMcpJsonStore(file: Path, entry: UnityMcpServerEntry?): Boolean {
 internal fun replaceStoreFile(file: Path, text: String) {
     val directory = file.toAbsolutePath().parent
     Files.createDirectories(directory)
-    val temp = Files.createTempFile(directory, file.fileName.toString(), ".tmp")
+
+    val isPosix = "posix" in file.fileSystem.supportedFileAttributeViews()
+    val attributes = when {
+        !isPosix -> emptyArray()
+        else -> arrayOf(PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-r--r--")))
+    }
+    val temp = Files.createTempFile(directory, file.fileName.toString(), ".tmp", *attributes)
     try {
         Files.writeString(temp, text)
+        if (isPosix) {
+            try {
+                val permissions = Files.getPosixFilePermissions(file)
+                Files.setPosixFilePermissions(temp, permissions)
+            }
+            catch (_: IOException) {
+                // ignore errors
+            }
+        }
         try {
             Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
         }
