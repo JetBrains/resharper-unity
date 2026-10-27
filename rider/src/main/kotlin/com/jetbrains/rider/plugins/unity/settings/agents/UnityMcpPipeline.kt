@@ -5,6 +5,8 @@ import com.google.gson.JsonSyntaxException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.util.NlsSafe
+import com.intellij.openapi.util.text.StringUtil.collapseWhiteSpace
+import com.intellij.openapi.util.text.StringUtil.convertLineSeparators
 import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Path
 
@@ -92,6 +94,11 @@ private fun unityPipelineOutcome(output: ProcessOutput?, landed: Boolean): Unity
     else -> UnityPipelineFailure.NOT_CONFIRMED
 }
 
+@ApiStatus.Internal
+fun unityCliErrorMessage(stdout: String): @NlsSafe String? =
+    parsePipelineJson<CliAnswer>(stdout)?.errors.orEmpty()
+        .firstNotNullOfOrNull { error -> error?.message?.let { collapseWhiteSpace(convertLineSeparators(it)) }?.takeIf { it.isNotEmpty() } }
+
 private inline fun <reified T> parsePipelineJson(text: String): T? =
     try {
         gson.fromJson(text, T::class.java)
@@ -104,3 +111,7 @@ private data class PackageManifest(val dependencies: Map<String, String>? = null
 private data class ListVersionsAnswer(val data: ListVersionsData? = null)
 
 private data class ListVersionsData(val latest: String? = null)
+
+private data class CliAnswer(val errors: List<CliError?>? = null)
+
+private data class CliError(val message: String? = null)

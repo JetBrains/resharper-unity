@@ -8,6 +8,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpOperation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityPipelineFailure
 import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityPipelineLatestVersion
 import com.jetbrains.rider.plugins.unity.settings.agents.readUnityPipelineManifest
+import com.jetbrains.rider.plugins.unity.settings.agents.unityCliErrorMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unityManifestPath
 import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineInstallCommandLine
 import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineInstallOutcome
@@ -291,11 +292,37 @@ class UnityMcpPipelineTest {
     }
 
     @Test
+    fun `the answer names the error message, whatever its code`() {
+        assertEquals("Couldn't connect to packages.unity.com (ENOTFOUND).", unityCliErrorMessage(INSTALL_OFFLINE_JSON))
+        assertEquals("No such host is known. (packages.unity.com:443)", unityCliErrorMessage(INSTALL_NO_HOST_JSON))
+        assertEquals("Connection refused (127.0.0.1:9)", unityCliErrorMessage(LIST_VERSIONS_OFFLINE_JSON))
+        assertEquals(
+            "second",
+            unityCliErrorMessage("""{"errors": [{"code": "A"}, {"code": "B", "message": " second "}]}"""),
+            "the first error with a message wins, trimmed",
+        )
+        assertEquals(
+            "first line second line",
+            unityCliErrorMessage("""{"errors": [{"message": "\tfirst line\r\n\n  second\tline \n"}]}"""),
+            "each run of line breaks, tabs and spaces becomes one space",
+        )
+        assertNull(unityCliErrorMessage(LIST_VERSIONS_JSON), "a successful answer names no error")
+        assertNull(unityCliErrorMessage("""{"errors": [{"code": "COMMAND_FAILED", "message": " "}]}"""), "nor does a blank message")
+        assertNull(unityCliErrorMessage("not json"), "and text that is not JSON is no answer")
+        assertNull(unityCliErrorMessage(""), "nor is empty output")
+        assertEquals(
+            UnityPipelineFailure.EXIT_CODE,
+            unityPipelineInstallOutcome(output(6, INSTALL_NO_HOST_JSON), inManifest = false),
+            "the message does not change the failure",
+        )
+    }
+
+    @Test
     fun `the package id is the one the manifest holds`() {
         assertEquals("com.unity.pipeline", UNITY_PIPELINE_PACKAGE_ID)
     }
 
-    private fun output(exitCode: Int): ProcessOutput = ProcessOutput().apply { this.exitCode = exitCode }
+    private fun output(exitCode: Int, stdout: String = ""): ProcessOutput = ProcessOutput(stdout, "", exitCode, false, false)
 
     private companion object {
         val LIST_VERSIONS_JSON = """
@@ -319,6 +346,27 @@ class UnityMcpPipelineTest {
               "data": null,
               "errors": [{"code": "COMMAND_FAILED", "message": "Connection refused (127.0.0.1:9)"}],
               "warnings": []
+            }
+        """.trimIndent()
+
+        val INSTALL_OFFLINE_JSON = """
+            {
+              "success": false,
+              "command": "unity pipeline install",
+              "errors": [{"code": "ENOTFOUND", "message": "Couldn't connect to packages.unity.com (ENOTFOUND)."}]
+            }
+        """.trimIndent()
+
+        val INSTALL_NO_HOST_JSON = """
+            {
+              "success" : false,
+              "command" : "unity pipeline install",
+              "data" : null,
+              "errors" : [ {
+                "code" : "COMMAND_FAILED",
+                "message" : "No such host is known. (packages.unity.com:443)"
+              } ],
+              "warnings" : [ ]
             }
         """.trimIndent()
     }

@@ -245,6 +245,25 @@ class UnityPipelineCoreTest {
     }
 
     @Test
+    fun `an upgrade without the network holds the error message of the Unity CLI`() = runBlocking {
+        manifest = UnityPipelineManifest(version = "0.7.0-exp.1")
+        core.read(UnityMcpSectionState.READY, unity, cliVersion, solution)
+        processAnswer = { output(6, INSTALL_NO_HOST_JSON) }
+        val results = mutableListOf<UnityAgentsResult>()
+        core.upgrade(unity, solution) { results.add(it) }
+        assertEquals(listOf(UnityAgentsResult.FAILED), results)
+        val presentation = core.read(UnityMcpSectionState.READY, unity, cliVersion, solution)
+        assertEquals(UnityPipelineOffer.FAILED, presentation.offer)
+        assertEquals(UnityPipelineFailure.EXIT_CODE, presentation.failure)
+        assertEquals(6, presentation.failureExitCode)
+        assertEquals("No such host is known. (packages.unity.com:443)", presentation.failureCliError)
+        assertEquals(UnityPipelineOperation.UPGRADING, presentation.failedOperation)
+
+        core.clearFailure()
+        assertNull(core.read(UnityMcpSectionState.READY, unity, cliVersion, solution).failureCliError)
+    }
+
+    @Test
     fun `an install that lands reports SUCCESS`() = runBlocking {
         val results = mutableListOf<UnityAgentsResult>()
         core.install(unity, solution) { results.add(it) }
@@ -349,6 +368,19 @@ class UnityPipelineCoreTest {
               },
               "errors": [],
               "warnings": []
+            }
+        """.trimIndent()
+
+        val INSTALL_NO_HOST_JSON = """
+            {
+              "success" : false,
+              "command" : "unity pipeline install",
+              "data" : null,
+              "errors" : [ {
+                "code" : "COMMAND_FAILED",
+                "message" : "No such host is known. (packages.unity.com:443)"
+              } ],
+              "warnings" : [ ]
             }
         """.trimIndent()
     }
