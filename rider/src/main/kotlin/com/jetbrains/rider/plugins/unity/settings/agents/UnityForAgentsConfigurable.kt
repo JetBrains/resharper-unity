@@ -243,6 +243,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             UnityMcpOperation.REMOVING -> agreedToNetworkPolicyRemoval(stores) ?: return
             UnityMcpOperation.CONFIGURING -> false
         }
+        if (operation == UnityMcpOperation.CONFIGURING && !confirmedReplacement(stores)) return
         val packageInstallAgreed = operation == UnityMcpOperation.CONFIGURING && agreedToPipelinePackage()
         if (operation == UnityMcpOperation.CONFIGURING && needsPipelinePackage() && !packageInstallAgreed) return
         if (packageInstallAgreed) logClick(UnityAgentsAction.INSTALL)
@@ -276,6 +277,21 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         return MessageDialogBuilder
             .yesNo(UnityBundle.message("unity.agents.mcp.remove.shared.title"), question)
             .yesText(UnityBundle.message("unity.agents.mcp.action.remove"))
+            .ask(project)
+    }
+
+    private fun confirmedReplacement(stores: List<UnityMcpStore>): Boolean {
+        val files = lastPage?.mcp?.rows.orEmpty()
+            .filter { it.store in stores && it.configureReplacesOtherServer }
+            .mapNotNull { it.storePath }
+            .distinct()
+            .ifEmpty { return true }
+        return MessageDialogBuilder
+            .yesNo(
+                UnityBundle.message("unity.agents.mcp.replace.title"),
+                UnityBundle.message("unity.agents.mcp.replace", files.joinToString(", ")),
+            )
+            .yesText(UnityBundle.message("unity.agents.mcp.replace.yes"))
             .ask(project)
     }
 

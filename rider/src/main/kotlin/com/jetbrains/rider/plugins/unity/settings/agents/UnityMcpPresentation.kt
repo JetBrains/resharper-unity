@@ -112,6 +112,8 @@ data class UnityMcpRowPresentation(
     val failureExitCode: Int? = null,
     /** The Codex store holds other content next to Codex's sandbox network policy, so a removal asks the user. */
     val removalAsksForNetworkPolicy: Boolean = false,
+    /** The JSON store holds another server named `unity`, so a configure asks the user before it replaces it. */
+    val configureReplacesOtherServer: Boolean = false,
 ) {
     val state: UnityMcpRowState
         get() = when {
