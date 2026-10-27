@@ -127,6 +127,7 @@ internal class UnityAgentsSetupService(
                 content = unityPipelineFailureMessage(
                     pipelineAfter.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
                     pipelineAfter.failureExitCode,
+                    pipelineAfter.failureCliError,
                 ),
                 displayId = PACKAGE_FAILED_DISPLAY_ID,
                 clearFailure = UnityPipelineStatusProvider.getInstance(project)::clearFailure,
@@ -198,6 +199,7 @@ internal class UnityAgentsSetupService(
                 content = unityPipelineFailureMessage(
                     after.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
                     after.failureExitCode,
+                    after.failureCliError,
                 ),
                 displayId = PACKAGE_UPDATE_FAILED_DISPLAY_ID,
                 clearFailure = UnityPipelineStatusProvider.getInstance(project)::clearFailure,

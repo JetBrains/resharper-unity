@@ -64,21 +64,40 @@ class UnityPipelineTextTest {
 
     @Test
     fun `the exit-code failure contains the exit code and every failure value has a non-blank message without placeholders`() {
-        val exitCodeMessage = unityPipelineFailureMessage(UnityPipelineFailure.EXIT_CODE, 6)
+        val exitCodeMessage = unityPipelineFailureMessage(UnityPipelineFailure.EXIT_CODE, 6, null)
         assertTrue(exitCodeMessage.contains("6"), "exit code 6 was not formatted: '$exitCodeMessage'")
 
         for (failure in UnityPipelineFailure.entries) {
-            val message = unityPipelineFailureMessage(failure, 0)
+            val message = unityPipelineFailureMessage(failure, 0, null)
             assertTrue(message.isNotBlank(), "message for $failure was blank")
             assertFalse(message.contains("{0}"), "message for $failure leaked placeholder: '$message'")
 
-            val messageWithoutCode = unityPipelineFailureMessage(failure, null)
+            val messageWithoutCode = unityPipelineFailureMessage(failure, null, null)
             assertTrue(messageWithoutCode.isNotBlank(), "message for $failure with null exitCode was blank")
             assertFalse(
                 messageWithoutCode.contains("{0}"),
                 "message for $failure with null exitCode leaked placeholder: '$messageWithoutCode'",
             )
         }
+    }
+
+    @Test
+    fun `the error message of the Unity CLI replaces the failure text and is escaped`() {
+        val cliError = "No such host is known. (packages.unity.com:443)"
+        for (failure in UnityPipelineFailure.entries) {
+            val message = unityPipelineFailureMessage(failure, 6, cliError)
+            assertTrue(message.contains(cliError), "message for $failure lost the error of the Unity CLI: '$message'")
+        }
+        assertEscaped(
+            unityPipelineFailureMessage(UnityPipelineFailure.EXIT_CODE, 6, HOSTILE_VERSION),
+            "the error of the Unity CLI reached the markup unescaped",
+        )
+    }
+
+    @Test
+    fun `a long error message of the Unity CLI is cut`() {
+        val message = unityPipelineFailureMessage(UnityPipelineFailure.EXIT_CODE, 6, "x".repeat(10_000))
+        assertTrue(message.length < 1_000, "the message kept ${message.length} characters")
     }
 
     @Test

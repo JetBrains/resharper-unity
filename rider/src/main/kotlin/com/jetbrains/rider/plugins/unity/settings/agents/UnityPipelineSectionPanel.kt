@@ -71,6 +71,7 @@ internal class UnityPipelineSectionPanel(
                         unityPipelineFailureMessage(
                             presentation.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
                             presentation.failureExitCode,
+                            presentation.failureCliError,
                         )
                     )
                 }

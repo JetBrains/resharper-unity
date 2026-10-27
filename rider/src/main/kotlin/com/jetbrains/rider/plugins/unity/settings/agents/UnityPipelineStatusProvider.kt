@@ -134,6 +134,7 @@ class UnityPipelineCore(
             operation = operation,
             failure = failure?.failure,
             failureExitCode = failure?.exitCode,
+            failureCliError = failure?.cliError,
             failedOperation = failure?.operation,
         )
     }
@@ -194,7 +195,7 @@ class UnityPipelineCore(
                 )
                 val failure = unityPipelineInstallOutcome(output, readManifest(solution)?.present)
                 if (failure != null) {
-                    lastFailure.set(FailureRecord(failure, exitCodeOf(output), UnityPipelineOperation.INSTALLING))
+                    lastFailure.set(FailureRecord(failure, exitCodeOf(output), UnityPipelineOperation.INSTALLING, cliErrorOf(output)))
                     logger.warn("Rider could not add the Unity Pipeline package to $solution: $failure${processOutputForLog(output)}")
                 }
                 onResult(if (failure == null) UnityAgentsResult.SUCCESS else UnityAgentsResult.FAILED)
@@ -233,7 +234,7 @@ class UnityPipelineCore(
                 )
                 val failure = unityPipelineUpgradeOutcome(output, readManifest(solution)?.version, latest)
                 if (failure != null) {
-                    lastFailure.set(FailureRecord(failure, exitCodeOf(output), UnityPipelineOperation.UPGRADING))
+                    lastFailure.set(FailureRecord(failure, exitCodeOf(output), UnityPipelineOperation.UPGRADING, cliErrorOf(output)))
                     logger.warn("Rider could not upgrade the Unity Pipeline package in $solution: $failure${processOutputForLog(output)}")
                 }
                 onResult(if (failure == null) UnityAgentsResult.SUCCESS else UnityAgentsResult.FAILED)
@@ -313,6 +314,9 @@ class UnityPipelineCore(
     private fun exitCodeOf(output: ProcessOutput?): Int? =
         output?.takeIf { !it.isTimeout }?.exitCode
 
+    private fun cliErrorOf(output: ProcessOutput?): String? =
+        output?.takeIf { !it.isTimeout }?.let { unityCliErrorMessage(it.stdout) }
+
     private fun processOutputForLog(output: ProcessOutput?): String {
         if (output == null) return ""
         return "\nstdout: ${output.stdout.trim().take(LOGGED_OUTPUT_CAP)}\nstderr: ${output.stderr.trim().take(LOGGED_OUTPUT_CAP)}"
@@ -325,6 +329,7 @@ private data class FailureRecord(
     val failure: UnityPipelineFailure,
     val exitCode: Int?,
     val operation: UnityPipelineOperation,
+    val cliError: String? = null,
 )
 
 private data class CachedLatest(

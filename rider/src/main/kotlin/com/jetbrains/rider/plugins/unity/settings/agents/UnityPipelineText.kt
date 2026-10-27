@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.util.text.StringUtil.escapeXmlEntities
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import org.jetbrains.annotations.ApiStatus
@@ -39,8 +40,16 @@ fun unityPipelineBusyMessage(operation: UnityPipelineOperation): String = when (
 
 @Nls
 @ApiStatus.Internal
-fun unityPipelineFailureMessage(failure: UnityPipelineFailure, exitCode: Int?): String = when (failure) {
-    UnityPipelineFailure.LAUNCH_FAILED -> UnityBundle.message("unity.agents.pipeline.failed.launch")
-    UnityPipelineFailure.EXIT_CODE -> UnityBundle.message("unity.agents.pipeline.failed.exit.code", exitCode ?: -1)
-    UnityPipelineFailure.NOT_CONFIRMED -> UnityBundle.message("unity.agents.pipeline.failed.not.confirmed")
+fun unityPipelineFailureMessage(failure: UnityPipelineFailure, exitCode: Int?, cliError: String?): String {
+    if (cliError != null) {
+        val shown = StringUtil.first(cliError, CLI_ERROR_CAP, true)
+        return UnityBundle.message("unity.agents.pipeline.failed.cli.error", escapeXmlEntities(shown))
+    }
+    return when (failure) {
+        UnityPipelineFailure.LAUNCH_FAILED -> UnityBundle.message("unity.agents.pipeline.failed.launch")
+        UnityPipelineFailure.EXIT_CODE -> UnityBundle.message("unity.agents.pipeline.failed.exit.code", exitCode ?: -1)
+        UnityPipelineFailure.NOT_CONFIRMED -> UnityBundle.message("unity.agents.pipeline.failed.not.confirmed")
+    }
 }
+
+private const val CLI_ERROR_CAP = 400

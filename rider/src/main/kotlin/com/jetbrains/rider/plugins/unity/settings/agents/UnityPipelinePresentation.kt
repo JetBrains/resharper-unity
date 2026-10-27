@@ -39,6 +39,7 @@ data class UnityPipelinePresentation(
     val operation: UnityPipelineOperation? = null,
     val failure: UnityPipelineFailure? = null,
     val failureExitCode: Int? = null,
+    val failureCliError: @NlsSafe String? = null,
     val failedOperation: UnityPipelineOperation? = null,
 ) {
     val offer: UnityPipelineOffer
