@@ -23,18 +23,6 @@ jvm_library(
     ),
     visibility = ["//visibility:public"],
 )
-
-jvm_library(
-    name = "common_test_lib",
-    testonly = True,
-    srcs = glob(
-        [],
-        allow_empty = True,
-    ),
-    module_name = "intellij.rider.plugins.unity.common",
-    visibility = ["//visibility:public"],
-    runtime_deps = [":common"],
-)
 ### auto-generated section `build intellij.rider.plugins.unity.common` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.common` start

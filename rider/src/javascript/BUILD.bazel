@@ -33,27 +33,6 @@ jvm_library(
         "//rider",
     ],
 )
-
-jvm_library(
-    name = "javascript_test_lib",
-    testonly = True,
-    srcs = glob(
-        [],
-        allow_empty = True,
-    ),
-    module_name = "intellij.rider.plugins.unity.javascript",
-    visibility = ["//visibility:public"],
-    runtime_deps = [
-        # do not sort,
-        ":javascript",
-        "@community//libraries/rd/core:core_test_lib",
-        "@community//platform/core-api:core_test_lib",
-        "@community//platform/util:util_test_lib",
-        "//rider/plugins/plugins-appender/javascript:javascript_test_lib",
-        "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
-        "//rider:rider_test_lib",
-    ],
-)
 ### auto-generated section `build intellij.rider.plugins.unity.javascript` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.javascript` start

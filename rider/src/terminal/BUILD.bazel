@@ -31,25 +31,6 @@ jvm_library(
         "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
     ],
 )
-
-jvm_library(
-    name = "terminal_test_lib",
-    testonly = True,
-    srcs = glob(
-        [],
-        allow_empty = True,
-    ),
-    module_name = "intellij.rider.plugins.unity.terminal",
-    visibility = ["//visibility:public"],
-    runtime_deps = [
-        # do not sort,
-        ":terminal",
-        "@community//platform/core-api:core_test_lib",
-        "@community//platform/eel:eel_test_lib",
-        "@community//plugins/terminal:terminal_test_lib",
-        "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
-    ],
-)
 ### auto-generated section `build intellij.rider.plugins.unity.terminal` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.terminal` start
