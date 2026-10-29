@@ -3,9 +3,11 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 import com.intellij.icons.AllIcons
 import com.intellij.ide.actions.ShowLogAction
 import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.MAX_LINE_LENGTH_NO_WRAP
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.RightGap
+import com.intellij.ui.dsl.builder.impl.DslComponentPropertyInternal
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rider.plugins.unity.UnityBundle
@@ -65,15 +67,21 @@ internal class UnityPipelineSectionPanel(
 
             UnityPipelineOffer.FAILED -> {
                 row {
-                    button(UnityBundle.message("unity.agents.pipeline.try.again")) { retry(presentation) }.gap(RightGap.SMALL)
-                    icon(AllIcons.General.Error).gap(RightGap.SMALL)
+                    panel {
+                        row {
+                            button(UnityBundle.message("unity.agents.pipeline.try.again")) { retry(presentation) }.gap(RightGap.SMALL)
+                            icon(AllIcons.General.Error)
+                        }.resizableRow()
+                    }.align(AlignY.FILL).gap(RightGap.SMALL)
                     comment(
                         unityPipelineFailureMessage(
                             presentation.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
                             presentation.failureExitCode,
                             presentation.failureCliError,
                         )
-                    )
+                    ).align(AlignY.CENTER).applyToComponent {
+                        putClientProperty(DslComponentPropertyInternal.PREFERRED_COLUMNS_LABEL_WORD_WRAP, 20)
+                    }
                 }
 
                 if (ShowLogAction.isSupported()) {
