@@ -29,6 +29,7 @@ jvm_library(
         "//rider/rdclient-dotnet",
         "@community//platform/util",
         "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
+        "@community//plugins/yaml",
         "@community//platform/diff-api:diff",
         "@community//libraries/rd/core",
         "@community//platform/ide-core",

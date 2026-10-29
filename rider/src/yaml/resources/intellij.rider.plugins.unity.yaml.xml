@@ -28,6 +28,7 @@
     <module name="intellij.rider.shared"/>
     <module name="intellij.spellchecker"/>
     <module name="intellij.xml.psi"/>
+    <module name="intellij.yaml"/>
   </dependencies>
   <!-- endregion -->
   <extensions defaultExtensionNs="com.intellij">
