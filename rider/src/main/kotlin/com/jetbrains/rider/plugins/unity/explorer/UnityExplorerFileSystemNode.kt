@@ -7,6 +7,7 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.isFile
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
@@ -67,7 +68,35 @@ open class UnityExplorerFileSystemNode(project: Project,
                 return true
             }
 
+            if (isUnityMsBuildPipelineFile(file)) {
+                return true
+            }
+
             return file.name.endsWith("~")
+        }
+
+        private const val UNITY_MSBUILD_GEN_PROJECT_SUFFIX = ".gen.csproj"
+        private const val UNITY_MSBUILD_PROPS_SUFFIX = ".Build.props"
+
+        private fun isUnityMsBuildPipelineFile(file: VirtualFile): Boolean {
+            if (!file.isFile) return false
+            val fileName = file.name
+
+            // Unity's MSBuild-based compilation pipeline generates .gen.csproj files directly in the assembly folders (or Assets for the implicit one)
+            // we don't want to show them in the Unity solution explorer, just like Unity hides them inside its Project window.
+            if (fileName.endsWith(UNITY_MSBUILD_GEN_PROJECT_SUFFIX)) return true
+
+            // apparently in some cases it also generates .Build.props files for projects (see RIDER-144634)
+            // we want to hide those too, but only if they are generated for/with the .gen.csproj file,
+            // because there can also be user-created `Directory.Build.props` files.
+            // TODO: find out when and if these files are actually generated in newer Unity (the MSBuild feature is still experimental
+            //  and subject to change even in Unity 7 alpha and the ticket is talking about 6.7)
+            if (fileName.endsWith(UNITY_MSBUILD_PROPS_SUFFIX)) {
+                val projectName = fileName.dropLast(UNITY_MSBUILD_PROPS_SUFFIX.length)
+                return file.parent?.findChild(projectName + UNITY_MSBUILD_GEN_PROJECT_SUFFIX) != null
+            }
+
+            return false
         }
 
         private fun isDescendantOfReadOnlyPackage(node: UnityExplorerFileSystemNode?): Boolean {
