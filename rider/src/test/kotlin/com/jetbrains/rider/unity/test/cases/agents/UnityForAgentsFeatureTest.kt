@@ -21,9 +21,9 @@ import org.junit.jupiter.api.Test
 /**
  * The kill switch of the Unity for Agents feature, and the page it takes away.
  *
- * The feature ships dark, so the default of `rider.unity.agents.enabled` is false and no release
- * build shows the page until somebody turns the key on. `rider.unity.suggest.cli.install` is the
- * narrower key, and it silences the project-open balloon alone.
+ * The default of `rider.unity.agents.enabled` is true, so every release build shows the page until
+ * somebody turns the key off. `rider.unity.suggest.cli.install` is the narrower key, and it silences
+ * the project-open balloon alone.
  *
  * Both keys write their default twice, in the XML and as a fallback in the code, and nothing but the
  * two tests below checks that the pairs agree.
@@ -42,8 +42,8 @@ class UnityForAgentsFeatureTest {
      *
      * `UnityForAgentsFeature.isEnabled` carries a fallback and
      * `intellij.rider.plugins.unity.backend.xml` carries a `defaultValue`. A change to one is a
-     * change to both, and a feature that is off in the declaration and on in the code ships to
-     * every user.
+     * change to both, and a feature that is on in the declaration and off in the code is missing
+     * until the registry loads.
      *
      * The declared value is read with [Registry.getBundleValueOrNull] and **not** with
      * `Registry.is(key, false)`. The second one answers with the fallback of the caller until the
@@ -54,8 +54,8 @@ class UnityForAgentsFeatureTest {
     fun `the default of the declaration and the default of the code agree`() {
         val declared = Registry.getInstance().getBundleValueOrNull(UnityForAgentsFeature.ENABLED_KEY)
 
-        assertEquals("false", declared, "the declaration of ${UnityForAgentsFeature.ENABLED_KEY} is not false")
-        assertFalse(UnityForAgentsFeature.isEnabled(), "the code reads a default the declaration does not carry")
+        assertEquals("true", declared, "the declaration of ${UnityForAgentsFeature.ENABLED_KEY} is not true")
+        assertTrue(UnityForAgentsFeature.isEnabled(), "the code reads a default the declaration does not carry")
     }
 
     /**
@@ -77,6 +77,7 @@ class UnityForAgentsFeatureTest {
 
     /** A [com.intellij.openapi.options.Configurable] has no hook that hides it, so the page must never be created. */
     @Test
+    @RegistryKey(key = UnityForAgentsFeature.ENABLED_KEY, value = "false")
     fun `the settings page is not created while the feature is off`(@TestDisposable disposable: Disposable) {
         val provider = UnityForAgentsConfigurableProvider(MockProject(null, disposable))
 
