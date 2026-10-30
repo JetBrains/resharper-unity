@@ -122,15 +122,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
             {
                 var valueReference = valueRole.ValueReference;
                 var thisObj = valueReference.GetValue(options);
-                var evaluationOptions =
-                    valueReference.OriginatingFrame.DebuggerSession.Options.EvaluationOptions.Apply(options);
 
                 // This can throw if there are members missing, which is entirely possible when debugging on a device,
                 // due to stripping. It will throw EvaluatorException. Anything else is logged and thrown as a new
                 // EvaluatorException. We can also get InvalidOperationException, but only if no other evaluators can
                 // handle the current context, which is unlikely
                 var display = ExpressionEvaluators.EvaluateDebuggerDisplay(valueReference.OriginatingFrame, thisObj,
-                    debuggerDisplayString, evaluationOptions, token);
+                    debuggerDisplayString, options, token);
 
                 var flags = valueReference.DefaultFlags;
                 if (valueReference is CalculatedValueReferenceDecorator<TValue> { AllowDefaultTypePresentation: false })
