@@ -60,7 +60,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Breakpoints
 
             if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {
-                var assemblyName = UnityPausePointHelper<TValue>.GetAssemblyName(session.DebugeeRuntime.IsDotNetCore());
+                var assemblyName = UnityPausePointHelper<TValue>.GetAssemblyName(session.DebuggeeRuntime.IsDotNetCore());
                 myAssemblyBundleInfo = unityStartInfo.GetBundleInfo(assemblyName, logger);
             }
         }

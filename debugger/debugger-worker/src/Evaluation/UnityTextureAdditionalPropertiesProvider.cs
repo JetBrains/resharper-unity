@@ -54,7 +54,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
             if (creationInfo.StartInfo is UnityStartInfo unityStartInfo)
             {
-                var assemblyName = UnityTextureDebuggerHelper<TValue>.GetAssemblyName(debuggerSession.DebugeeRuntime.IsDotNetCore());
+                var assemblyName = UnityTextureDebuggerHelper<TValue>.GetAssemblyName(debuggerSession.DebuggeeRuntime.IsDotNetCore());
                 myAssemblyBundleInfo = unityStartInfo.GetBundleInfo(assemblyName, logger);
             }
         }
