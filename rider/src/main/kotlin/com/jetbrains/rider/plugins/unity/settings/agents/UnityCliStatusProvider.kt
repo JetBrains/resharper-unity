@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
-import com.intellij.diagnostic.rethrowControlFlowException
 import com.intellij.execution.ExecutionException
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessOutput
 import com.intellij.ide.actions.ShowLogAction
 import com.intellij.ide.trustedProjects.TrustedProjects
@@ -15,11 +15,13 @@ import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.util.io.HttpRequests
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +33,7 @@ import org.jetbrains.annotations.ApiStatus
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
@@ -48,7 +51,7 @@ interface UnityCliStatusProvider {
     fun clearFailure(failureId: Long)
 
     /**
-     * Drops the cached answer of the update check. The next [read] asks the CLI and the feed again.
+     * Drops the cached versions. The next [read] runs `unity --version` and `unity --help`, and reads the channel manifest again.
      */
     fun forgetUpdateInfo()
 
@@ -63,6 +66,7 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
 
     @Volatile
     private var cachedUpdateInfo: CachedUpdateInfo? = null
+    private val cachedVersions = ConcurrentHashMap<Path, CachedVersion>()
     private val runningOperation = AtomicReference<UnityCliOperation?>(null)
     private val lastFailure = AtomicReference<FailureRecord?>(null)
     private val failureIds = AtomicLong()
@@ -99,6 +103,7 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
 
     override fun forgetUpdateInfo() {
         cachedUpdateInfo = null
+        cachedVersions.clear()
     }
 
     override fun clearFailure(failureId: Long) {
@@ -114,14 +119,12 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         val copy = lookup.copy
             ?: return UnityCliPresentation(detected = true, foreignBinaryOnPath = lookup.foreignBinaryOnPath)
 
-        val update = readUpdateInfo(copy)
         return UnityCliPresentation(
             detected = true,
             installedVersion = copy.version,
             location = copy.path,
-            installMethod = installMethodOf(environment, copy, update.info),
-            latestVersion = update.latestVersion,
-            updateCommand = update.info?.updateCommand,
+            installMethod = installMethodOf(environment, copy),
+            latestVersion = readUpdateInfo(copy).latestVersion,
         )
     }
 
@@ -164,7 +167,7 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
                                 runner.runInstaller(commandLine, ::logProcessOutput)
                             }
                         },
-                        findCli = { findLocalCopy(UnityCliEnvironment.getInstance()).copy != null },
+                        findCli = { findCurrentVersion() != null },
                     )
                 }
             }
@@ -184,33 +187,22 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         try {
             lastFailure.set(null)
             val state = detect()
-            val commandLine = state.location?.let {
-                unityCliUpdateCommandLine(state.installMethod, it, state.updateCommand)
+            val location = state.location
+            val installedVersion = state.installedVersion
+            val result = when {
+                location == null || installedVersion == null -> null
+                state.installMethod == UnityCliInstallMethod.CDN -> runCdnUpdate(project, location, installedVersion)
+                else -> unityCliUpdateCommandLine(state.installMethod)?.let { runPackageManagerUpdate(project, it) }
             }
-            if (commandLine == null) {
-                logger.warn(
-                    "Rider will not update a ${state.installMethod} copy of the Unity CLI at " +
-                    "${state.location} with the command '${state.updateCommand}'"
-                )
-                report(project, modality, UnityCliFailure.LAUNCH_FAILED, null, UnityCliOperation.UPDATING, source)
-                return
-            }
-
-            val exitCode = withBackgroundProgress(project, UnityBundle.message("unity.agents.cli.progress.update")) {
-                UnityCliInstallerRunner.getInstance().runInstaller(commandLine, ::logProcessOutput)
-            }
-            val failure = unityCliUpdateOutcome(exitCode)
-            if (failure != null) {
-                report(project, modality, failure, exitCode, UnityCliOperation.UPDATING, source)
-            }
-            else {
-                val copy = findLocalCopy(UnityCliEnvironment.getInstance()).copy
-                if (copy?.version == null) {
-                    report(project, modality, UnityCliFailure.VERIFICATION, exitCode, UnityCliOperation.UPDATING, source)
+            when {
+                result == null -> {
+                    logger.warn("Rider will not update a ${state.installMethod} copy of the Unity CLI at ${state.location}")
+                    report(project, modality, UnityCliFailure.LAUNCH_FAILED, null, UnityCliOperation.UPDATING, source)
                 }
-                else {
+                result.failure != null -> report(project, modality, result.failure, result.exitCode, UnityCliOperation.UPDATING, source)
+                else -> {
                     logResult(project, UnityCliOperation.UPDATING, source, UnityAgentsResult.SUCCESS)
-                    refreshSkills(copy.path)
+                    refreshSkills(source)
                 }
             }
         }
@@ -219,18 +211,39 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         }
     }
 
-    private suspend fun refreshSkills(location: Path) {
-        try {
-            val command = unitySkillRefreshCommandLine(location)
-            val output = UnityCliProcessRunner.getInstance().runProcess(command, UnityCliProcessRunner.STORE_WRITE_TIMEOUT_MS)
-            if (output.isTimeout || output.exitCode != 0) {
-                logger.warn("Rider could not refresh the Unity CLI skills after update: exitCode=${output.exitCode}, timeout=${output.isTimeout}")
-            }
+    /** Installs the unity-cli skill again in each open Unity project that has it, so that the skill matches the new CLI. */
+    private fun refreshSkills(source: UnityAgentsSource) {
+        for (openProject in ProjectManager.getInstance().openProjects) {
+            if (openProject.isDisposed || openProject.isDefault || !openProject.isUnityProject.value) continue
+            UnitySkillStatusProvider.getInstance(openProject).requestRefresh(source)
         }
-        catch (e: Throwable) {
-            rethrowControlFlowException(e)
-            logger.warn("Rider could not refresh the Unity CLI skills after update", e)
+    }
+
+    private suspend fun runPackageManagerUpdate(project: Project, commandLine: GeneralCommandLine): UnityCliInstallResult {
+        val exitCode = withBackgroundProgress(project, UnityBundle.message("unity.agents.cli.progress.update")) {
+            UnityCliInstallerRunner.getInstance().runInstaller(commandLine, ::logProcessOutput)
         }
+        val failure = unityCliUpdateOutcome(exitCode) ?: UnityCliFailure.VERIFICATION.takeIf { findCurrentVersion() == null }
+        return UnityCliInstallResult(failure, exitCode)
+    }
+
+    private suspend fun runCdnUpdate(project: Project, location: Path, installedVersion: String): UnityCliInstallResult {
+        val runner = UnityCliInstallerRunner.getInstance()
+        val channel = channelOf(installedVersion)
+        return withBackgroundProgress(project, UnityBundle.message("unity.agents.cli.progress.update")) {
+            runUnityCliUpdateChain(
+                cliPath = location,
+                readLatestVersion = { readLatestVersion(channel) },
+                runCommand = { commandLine -> runner.runInstaller(commandLine, ::logProcessOutput) },
+                findCli = { findCurrentVersion() },
+            )
+        }
+    }
+
+    /** Detects the CLI again after an install or an update, because both can replace the binary. */
+    private suspend fun findCurrentVersion(): String? {
+        forgetUpdateInfo()
+        return findLocalCopy(UnityCliEnvironment.getInstance()).copy?.version
     }
 
     private suspend fun downloadInstaller(url: String, script: UnityCliInstallerScript): Path? {
@@ -326,7 +339,7 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         val onPath = environment.findOnPath(UNITY_CLI_COMMAND)
         if (onPath != null) {
             if (isUnityHubPrivateCopy(onPath)) return@withContext LocalLookup(foreignBinaryOnPath = onPath)
-            val version = identify(onPath)
+            val version = identify(onPath, environment)
             return@withContext if (version == null) LocalLookup(foreignBinaryOnPath = onPath)
             else LocalLookup(copy = LocalCopy(onPath, version))
         }
@@ -340,61 +353,66 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         for (candidate in candidates) {
             if (isUnityHubPrivateCopy(candidate)) continue
             if (!environment.isExecutable(candidate)) continue
-            val version = identify(candidate) ?: continue
+            val version = identify(candidate, environment) ?: continue
             return@withContext LocalLookup(copy = LocalCopy(candidate, version))
         }
         LocalLookup()
     }
 
-    private suspend fun identify(candidate: Path): String? {
-        val version = runQuietly(candidate) { runner ->
-            runner.runProcess(unityCliVersionCommandLine(candidate), UnityCliProcessRunner.IDENTIFY_TIMEOUT_MS)
-        } ?: return null
-        if (version.isTimeout || version.exitCode != 0 || !isUnityCliVersionOutput(version.stdout)) return null
-
-        val help = runQuietly(candidate) { runner ->
-            runner.runProcess(unityCliHelpCommandLine(candidate), UnityCliProcessRunner.IDENTIFY_TIMEOUT_MS)
-        }
-        if (help != null && !help.isTimeout && help.exitCode == 0 && isUnityCliHelpOutput(help.stdout)) {
-            return version.stdout.trim()
+    private suspend fun identify(candidate: Path, environment: UnityCliEnvironment): String? {
+        val stamp = environment.fileStamp(candidate)
+        val now = environment.currentTimeMs()
+        val cached = cachedVersions[candidate]
+        if (stamp != null && cached != null && cached.stamp == stamp && now - cached.readAt < versionTtl(cached.version)) {
+            return cached.version
         }
 
-        // A later CLI can reword its help, so the JSON contract of `diagnose update` is the fallback.
-        val diagnose = runQuietly(candidate) { runner ->
-            runner.runProcess(unityCliDiagnoseUpdateCommandLine(candidate), UnityCliProcessRunner.IDENTIFY_TIMEOUT_MS)
-        } ?: return null
-        if (diagnose.isTimeout || diagnose.exitCode != 0 || !isUnityCliDiagnoseUpdateOutput(diagnose.stdout)) return null
-
-        return version.stdout.trim()
+        val identity = readIdentity(candidate) ?: return null
+        // A copy with no stamp gets no entry, so both commands run on each read.
+        if (stamp != null) cachedVersions[candidate] = CachedVersion(stamp, identity.version, now)
+        return identity.version
     }
+
+    /** A version stays cached for hours. A program that is not the Unity CLI is checked again after a minute. */
+    private fun versionTtl(version: String?): Long = if (version != null) VERSION_TTL_MS else NOT_CLI_TTL_MS
+
+    /**
+     * Runs `--version`, then `--help`, and gives the version of a Unity CLI.
+     *
+     * Rider runs `--help` only for a program that printed a version, so an unknown program gets no unknown arguments.
+     * Gives null when a command timed out or did not start, so that the next read tries again.
+     */
+    private suspend fun readIdentity(candidate: Path): Identity? {
+        val versionOutput = runIdentifyCommand(candidate, unityCliVersionCommandLine(candidate)) ?: return null
+        val version = parseUnityCliVersion(versionOutput.stdout)?.takeIf { versionOutput.exitCode == 0 }
+                      ?: return Identity(version = null)
+        val helpOutput = runIdentifyCommand(candidate, unityCliHelpCommandLine(candidate)) ?: return null
+        val isUnityCli = helpOutput.exitCode == 0 && isUnityCliHelpOutput(helpOutput.stdout)
+        return Identity(version = version.takeIf { isUnityCli })
+    }
+
+    /** Runs [commandLine], and gives null when it timed out or did not start. */
+    private suspend fun runIdentifyCommand(candidate: Path, commandLine: GeneralCommandLine): ProcessOutput? =
+        runQuietly(candidate) { runner -> runner.runProcess(commandLine, UnityCliProcessRunner.IDENTIFY_TIMEOUT_MS) }
+            ?.takeIf { !it.isTimeout }
 
     private suspend fun readUpdateInfo(copy: LocalCopy): CachedUpdateInfo {
         val key = CacheKey(copy.path, copy.version)
         freshCache(key)?.let { return it }
         return updateInfoLock.withLock {
-            freshCache(key) ?: readUpdateInfoFromCli(key).also { cachedUpdateInfo = it }
+            freshCache(key)
+            ?: CachedUpdateInfo(key, System.currentTimeMillis(), readLatestVersion(channelOf(copy.version))).also { cachedUpdateInfo = it }
         }
     }
 
     private fun freshCache(key: CacheKey): CachedUpdateInfo? =
         cachedUpdateInfo?.takeIf { it.key == key && System.currentTimeMillis() - it.readAt < UPDATE_INFO_TTL_MS }
 
-    private suspend fun readUpdateInfoFromCli(key: CacheKey): CachedUpdateInfo {
-        val output = runQuietly(key.path) { runner ->
-            runner.runProcess(unityCliDiagnoseUpdateCommandLine(key.path), UnityCliProcessRunner.DIAGNOSE_TIMEOUT_MS)
-        }
-        val info = output
-            ?.takeIf { !it.isTimeout && it.exitCode == 0 }
-            ?.let { parseUnityCliUpdateInfo(it.stdout) }
-        val latestVersion = info?.manifestUrl?.let { readLatestVersion(it) }
-        return CachedUpdateInfo(key, System.currentTimeMillis(), info, latestVersion)
-    }
+    private fun channelOf(installedVersion: String): String =
+        unityCliChannel(Registry.stringValue(UNITY_CLI_CHANNEL_KEY), installedVersion)
 
-    private suspend fun readLatestVersion(manifestUrl: String): String? {
-        if (!isReadableManifestUrl(manifestUrl)) {
-            logger.warn("The Unity CLI named a manifest that Rider will not read: '$manifestUrl'")
-            return null
-        }
+    private suspend fun readLatestVersion(channel: String): String? {
+        val manifestUrl = unityCliCdnUrl(UnityCliInstallerRunner.getInstance().cdnBaseUrl, unityCliChannelManifest(channel))
         return withContext(Dispatchers.IO) {
             try {
                 val bytes = HttpRequests.request(manifestUrl).connect { request ->
@@ -415,17 +433,18 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         }
     }
 
-    private suspend fun installMethodOf(
-        environment: UnityCliEnvironment,
-        copy: LocalCopy,
-        info: UnityCliUpdateInfo?,
-    ): UnityCliInstallMethod {
-        // realPath reads the link target from the disk.
-        val realPath = withContext(Dispatchers.IO) { environment.realPath(copy.path) }
-        val fromPath = unityCliInstallMethodFromPath(realPath)
-        if (fromPath != UnityCliInstallMethod.UNKNOWN) return fromPath
-        return info?.installMethod ?: UnityCliInstallMethod.UNKNOWN
-    }
+    // realPath reads the link targets from the disk.
+    private suspend fun installMethodOf(environment: UnityCliEnvironment, copy: LocalCopy): UnityCliInstallMethod =
+        withContext(Dispatchers.IO) {
+            val cdnDirectories = unityCliCdnDirectories(environment.unityCliHome(), environment.localAppData(), environment.userHome())
+            unityCliInstallMethodFromPath(
+                path = copy.path,
+                realPath = environment.realPath(copy.path),
+                cdnDirectories = (cdnDirectories + cdnDirectories.map(environment.realPath)).distinct(),
+                dpkgListsUnityCli = { dpkgListsUnityCli(DPKG_INFO) },
+                dnfIsInstalled = { DNF_EXECUTABLES.any { Files.isRegularFile(it) } },
+            )
+        }
 
     private suspend fun runQuietly(
         candidate: Path,
@@ -456,12 +475,14 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         val operation: UnityCliOperation,
     )
 
-    private data class CachedUpdateInfo(
-        val key: CacheKey,
-        val readAt: Long,
-        val info: UnityCliUpdateInfo?,
-        val latestVersion: String?,
-    )
+    private data class CachedUpdateInfo(val key: CacheKey, val readAt: Long, val latestVersion: String?)
+
+    private data class CachedVersion(val stamp: UnityCliFileStamp, val version: String?, val readAt: Long)
+
+    /**
+     * The answer of the two commands. A null [version] means that the program is not the Unity CLI.
+     */
+    private data class Identity(val version: String?)
 
     private companion object {
         val logger: Logger = Logger.getInstance(UnityCliStatusService::class.java)
@@ -474,5 +495,13 @@ internal class UnityCliStatusService(private val scope: CoroutineScope) : UnityC
         const val MANIFEST_BODY_CAP_BYTES = 64 * 1024
         const val UNITY_CLI_CHANNEL_KEY = "rider.unity.agents.cli.channel"
         val UPDATE_INFO_TTL_MS: Long = TimeUnit.HOURS.toMillis(6)
+
+        /** A wrapper script keeps its stamp when the binary behind it changes, so a version expires too. */
+        val VERSION_TTL_MS: Long = TimeUnit.HOURS.toMillis(6)
+
+        /** A copy that failed once can answer on the next run, for example after its first start. */
+        val NOT_CLI_TTL_MS: Long = TimeUnit.MINUTES.toMillis(1)
+        val DPKG_INFO: Path = Path.of("/var/lib/dpkg/info")
+        val DNF_EXECUTABLES: List<Path> = listOf(Path.of("/usr/bin/dnf"), Path.of("/usr/bin/dnf5"))
     }
 }

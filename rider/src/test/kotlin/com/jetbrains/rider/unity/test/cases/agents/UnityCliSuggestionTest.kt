@@ -23,6 +23,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliSuggestion
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliSuggestionActivity
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityForAgentsFeature
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsUpdateActions
+import com.jetbrains.rider.plugins.unity.settings.agents.unityCliBalloonOffer
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliSuggestionActs
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliSuggestion
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -274,6 +275,52 @@ class UnityCliSuggestionTest {
     }
 
     @Test
+    fun `an old Editor that blocks the setup silences the install and keeps the CLI update`() {
+        data class Case(
+            val name: String,
+            val presentation: UnityCliPresentation,
+            val setupBlocked: Boolean,
+            val expected: UnityCliSuggestion,
+        )
+
+        val cases = listOf(
+            Case(
+                "CLI missing, setupBlocked = true -> NONE",
+                UnityCliPresentation(detected = true),
+                setupBlocked = true,
+                expected = UnityCliSuggestion.NONE,
+            ),
+            Case(
+                "CLI missing, setupBlocked = false -> INSTALL (unchanged)",
+                UnityCliPresentation(detected = true),
+                setupBlocked = false,
+                expected = UnityCliSuggestion.INSTALL,
+            ),
+            Case(
+                "CLI update available, setupBlocked = true, nothing else missing -> UPDATE",
+                outdated(UnityCliInstallMethod.HOMEBREW),
+                setupBlocked = true,
+                expected = UnityCliSuggestion.UPDATE,
+            ),
+        )
+
+        for ((name, presentation, setupBlocked, expected) in cases) {
+            val facts = UnityAgentsSweepFacts(
+                packageMissing = false,
+                packageUpgradable = false,
+                installDeclined = false,
+                updateDeclined = false,
+                setupBlocked = setupBlocked,
+            )
+            assertEquals(
+                expected,
+                unityCliSuggestion(presentation, facts),
+                name,
+            )
+        }
+    }
+
+    @Test
     fun `a package update asks for the update`() {
         data class Case(
             val name: String,
@@ -349,6 +396,85 @@ class UnityCliSuggestionTest {
             unityCliSuggestionActs(UnityCliSuggestion.UPDATE, cannotUpdateCli, packageUpgradable = false),
             "with no package update, Rider cannot update this CLI",
         )
+    }
+
+    // The page still shows a copy with no update command. A balloon about it would lead nowhere.
+    @Test
+    fun `the balloon offer reads a copy with no update command as current`() {
+        data class Case(
+            val name: String,
+            val presentation: UnityCliPresentation,
+            val expected: UnityCliOffer,
+        )
+
+        val cases = listOf(
+            Case(
+                "UNKNOWN copy with a newer version -> CURRENT",
+                outdated(UnityCliInstallMethod.UNKNOWN),
+                expected = UnityCliOffer.CURRENT,
+            ),
+            Case(
+                "APT copy with a newer version -> SHOW_UPDATE_COMMAND (unchanged)",
+                outdated(UnityCliInstallMethod.APT),
+                expected = UnityCliOffer.SHOW_UPDATE_COMMAND,
+            ),
+            Case(
+                "CDN copy with a newer version -> UPDATE (unchanged)",
+                outdated(UnityCliInstallMethod.CDN),
+                expected = UnityCliOffer.UPDATE,
+            ),
+        )
+
+        for ((name, presentation, expected) in cases) {
+            assertEquals(
+                expected,
+                unityCliBalloonOffer(presentation),
+                name,
+            )
+        }
+    }
+
+    @Test
+    fun `the sweep reads a copy with no update command as current`() {
+        data class Case(
+            val name: String,
+            val presentation: UnityCliPresentation,
+            val packageUpgradable: Boolean = false,
+            val expected: UnityCliSuggestion,
+        )
+
+        val cases = listOf(
+            Case(
+                "UNKNOWN copy with a newer version, nothing else -> NONE",
+                outdated(UnityCliInstallMethod.UNKNOWN),
+                expected = UnityCliSuggestion.NONE,
+            ),
+            Case(
+                "UNKNOWN copy with a newer version, packageUpgradable -> UPDATE",
+                outdated(UnityCliInstallMethod.UNKNOWN),
+                packageUpgradable = true,
+                expected = UnityCliSuggestion.UPDATE,
+            ),
+            Case(
+                "APT copy with a newer version -> UPDATE (unchanged)",
+                outdated(UnityCliInstallMethod.APT),
+                expected = UnityCliSuggestion.UPDATE,
+            ),
+        )
+
+        for ((name, presentation, packageUpgradable, expected) in cases) {
+            val facts = UnityAgentsSweepFacts(
+                packageMissing = false,
+                packageUpgradable = packageUpgradable,
+                installDeclined = false,
+                updateDeclined = false,
+            )
+            assertEquals(
+                expected,
+                unityCliSuggestion(presentation, facts),
+                name,
+            )
+        }
     }
 
     /** Fails when [UnityCliSuggestion] gains a value that no case above reaches. */
@@ -530,6 +656,5 @@ class UnityCliSuggestionTest {
         location = installed,
         installMethod = method,
         latestVersion = "1.0.0-beta.10",
-        updateCommand = "brew upgrade unity-cli",
     )
 }

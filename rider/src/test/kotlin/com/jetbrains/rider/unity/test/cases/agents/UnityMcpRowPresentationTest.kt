@@ -1,7 +1,6 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
 import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_MCP_CODEX_KEY
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliOperation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliPresentation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry
@@ -12,8 +11,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpRestartLine
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpRowState
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpSectionState
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpStore
-import com.jetbrains.rider.plugins.unity.settings.agents.configPathOf
-import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityMcpClientList
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityOldEditor
 import com.jetbrains.rider.plugins.unity.settings.agents.readMcpServersEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.readCodexEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCanConfigure
@@ -21,6 +19,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCanRemove
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpGateMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpOpenableStore
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpRestartLine
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpRowStatus
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpSectionState
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
@@ -81,17 +80,17 @@ class UnityMcpRowPresentationTest {
         ),
         RowCase(
             "a write outranks the failure of the write before it",
-            row(operation = UnityMcpOperation.REMOVING, failure = UnityMcpFailure.EXIT_CODE),
+            row(operation = UnityMcpOperation.REMOVING, failure = UnityMcpFailure.FILE_WRITE),
             UnityMcpRowState.BUSY,
         ),
         RowCase(
-            "the last write stopped on an exit code",
-            row(entry = UnityMcpEntry.ABSENT, failure = UnityMcpFailure.EXIT_CODE),
+            "the last write could not write the store",
+            row(entry = UnityMcpEntry.ABSENT, failure = UnityMcpFailure.FILE_WRITE),
             UnityMcpRowState.FAILED,
         ),
         RowCase(
             "a failure outranks the closed gate of the section",
-            row(section = UnityMcpSectionState.NO_CLI, failure = UnityMcpFailure.LAUNCH_FAILED),
+            row(section = UnityMcpSectionState.NO_CLI, failure = UnityMcpFailure.PACKAGE_INSTALL),
             UnityMcpRowState.FAILED,
         ),
         RowCase(
@@ -182,6 +181,16 @@ class UnityMcpRowPresentationTest {
             rowCases.map { it.expected }.toSet(),
             "every row state needs one case",
         )
+    }
+
+    @Test
+    fun `a Codex store that Rider cannot edit fails its row with a problem text`() {
+        val row = row(entry = UnityMcpEntry.UNREADABLE, failure = UnityMcpFailure.CODEX_STORE_SHAPE)
+
+        assertEquals(UnityMcpRowState.FAILED, row.state)
+        val status = unityMcpRowStatus(row)
+        assertTrue(status.isProblem)
+        assertEquals(UnityBundle.message("unity.agents.mcp.failed.codex.shape"), status.text)
     }
 
     /**
@@ -309,6 +318,20 @@ class UnityMcpRowPresentationTest {
         assertNull(unityMcpGateMessage(UnityMcpSectionState.CHECKING, packageMissing = true))
     }
 
+    @Test
+    fun `the gate message names the old Editor when it blocks the package`() {
+        val oldEditor = UnityOldEditor("6000.0", "2022.3.62f1")
+        val oldEditorText = UnityBundle.message("unity.agents.old.editor.gate", "6000.0", "2022.3.62f1")
+        assertEquals(
+            oldEditorText,
+            unityMcpGateMessage(UnityMcpSectionState.NO_CLI, packageMissing = true, blockingEditor = oldEditor),
+        )
+        assertEquals(
+            oldEditorText,
+            unityMcpGateMessage(UnityMcpSectionState.READY, packageMissing = true, blockingEditor = oldEditor),
+        )
+    }
+
     private val gateCases: List<GateCase> = listOf(
         GateCase(
             "the first detection has not returned",
@@ -384,73 +407,80 @@ class UnityMcpRowPresentationTest {
     }
 
     /**
-     * The Codex row reads the project-local client list of the Unity CLI.
+     * The Codex row reads the `[mcp_servers.unity]` table of `<solution>/.codex/config.toml`.
      *
-     * The four `status` values were measured on 2026-09-29 against `1.0.0-beta.11`. Only
-     * `configured` means that the store holds the entry.
+     * A missing file is an answer, and a file that Rider could not read is not. A store with no Unity table holds no
+     * entry, and a header that does not parse is not an answer.
      */
     @Test
-    fun theCodexReaderPinsEveryStatusValue() {
-        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(clientList("configured"), store = null, unity = null))
-        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("not-configured"), store = null, unity = null))
-        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("file-not-found"), store = null, unity = null))
-        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("no-file"), store = null, unity = null))
+    fun theCodexReaderPinsEveryFileShape() {
         assertEquals(
-            UnityMcpEntry.UNREADABLE,
-            readCodexEntry(null, store = null, unity = null),
-            "a list that Rider could not read is not an answer",
+            UnityMcpEntry.ABSENT,
+            readCodexEntry(null, fileExists = false, unity = unity),
+            "no file means no entry",
         )
         assertEquals(
             UnityMcpEntry.UNREADABLE,
-            readCodexEntry(parseUnityMcpClientList(EMPTY_LIST), store = null, unity = null),
-            "a list with no Codex client is not an answer",
+            readCodexEntry(null, fileExists = true, unity = unity),
+            "a file Rider could not read is not an answer",
+        )
+        assertEquals(
+            UnityMcpEntry.ABSENT,
+            codexEntry("[sandbox_workspace_write]\nnetwork_access = true\n"),
+            "a store with no Unity table holds no entry",
         )
         assertEquals(
             UnityMcpEntry.UNREADABLE,
-            readCodexEntry(parseUnityMcpClientList("""{"success": true, "data": [{"key": "codex"}]}"""), store = null, unity = null),
-            "a Codex client with no status is not an answer",
+            codexEntry("[mcp_servers.unity\ncommand = \"/home/tester/.unity/bin/unity\"\n"),
+            "a header that does not parse is not an answer",
+        )
+        assertEquals(
+            UnityMcpEntry.UNREADABLE,
+            codexEntry("mcp_servers = { unity = { command = \"unity\", args = [\"mcp\"] } }\n"),
+            "an inline mcp_servers table is not an answer",
         )
     }
 
+    /** RIDER-144088: a configured entry can run another Unity CLI, so the reader compares the command of the store. */
     @Test
-    fun `a null slot in the client list is dropped and the other clients still read`() {
-        val list = parseUnityMcpClientList("""{"success": true, "data": [null, {"key": "codex", "status": "configured"}]}""")
-
-        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(list, store = null, unity = null))
-    }
-
-    /** RIDER-144088: the Unity CLI reports `configured` for any command, so the reader compares the command of the store. */
-    @Test
-    fun `the Codex reader compares the command of the store with the detected Unity CLI`() {
-        val configured = clientList("configured")
-
-        assertEquals(UnityMcpEntry.OTHER_CLI, readCodexEntry(configured, codexStore("/opt/homebrew/bin/unity"), unity))
-        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(configured, codexStore("/home/tester/.unity/bin/unity"), unity))
+    fun `the Codex reader compares the command of the entry with the detected Unity CLI`() {
+        assertEquals(UnityMcpEntry.PRESENT, codexEntry(codexStore("/home/tester/.unity/bin/unity")))
+        assertEquals(UnityMcpEntry.OTHER_CLI, codexEntry(codexStore("/opt/homebrew/bin/unity")))
         assertEquals(
             UnityMcpEntry.PRESENT,
-            readCodexEntry(configured, codexStore("unity"), unity),
+            codexEntry(codexStore("unity")),
             "a bare command runs the Unity CLI from the PATH",
         )
-        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(configured, codexStore("unity.exe"), unity))
+        assertEquals(UnityMcpEntry.PRESENT, codexEntry(codexStore("unity.exe")))
         assertEquals(
             UnityMcpEntry.OTHER_CLI,
-            readCodexEntry(configured, codexStore("unity123"), unity),
+            codexEntry(codexStore("unity123")),
             "a bare command of another program is not the Unity CLI",
         )
-        assertEquals(
-            UnityMcpEntry.PRESENT,
-            readCodexEntry(configured, null, unity),
-            "a store that Rider could not read changes nothing",
-        )
-        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(clientList("not-configured"), codexStore("/opt/homebrew/bin/unity"), unity))
     }
 
     @Test
-    fun theClientListGivesTheCodexRowItsProjectPath() {
-        val list = parseUnityMcpClientList(CLIENT_LIST)
+    fun `the Codex reader reads an entry with no command and a dotted key as the entry`() {
+        assertEquals(
+            UnityMcpEntry.PRESENT,
+            codexEntry("[mcp_servers.unity]\nargs = [\"mcp\"]\n"),
+            "an entry with no command is still the entry",
+        )
+        assertEquals(
+            UnityMcpEntry.PRESENT,
+            codexEntry("mcp_servers.unity.command = \"/home/tester/.unity/bin/unity\"\n"),
+            "a dotted key under the Unity table is the entry",
+        )
+        assertEquals(UnityMcpEntry.OTHER_CLI, codexEntry("mcp_servers.unity.command = \"/opt/homebrew/bin/unity\"\n"))
+    }
 
-        assertEquals("/home/tester/Platformer/.codex/config.toml", list?.configPathOf(UNITY_MCP_CODEX_KEY))
-        assertNull(list?.configPathOf("claude-code"), "the Unity CLI keeps no path for a delegated write")
+    @Test
+    fun `a read with no Unity CLI takes any entry as present`() {
+        assertEquals(
+            UnityMcpEntry.PRESENT,
+            readCodexEntry(codexStore("/opt/homebrew/bin/unity"), fileExists = true, unity = null),
+            "a read with no Unity CLI takes any one",
+        )
     }
 
     /**
@@ -517,29 +547,12 @@ class UnityMcpRowPresentationTest {
         )
     }
 
-    private fun clientList(status: String) =
-        parseUnityMcpClientList("""{"success": true, "data": [{"key": "codex", "status": "$status"}]}""")
+    /** Reads [content] as the Codex store of the solution, which exists. */
+    private fun codexEntry(content: String): UnityMcpEntry = readCodexEntry(content, fileExists = true, unity = unity)
 
     private fun codexStore(command: String) = "[mcp_servers.unity]\ncommand = \"$command\"\nargs = [\"mcp\"]\n"
 
     private companion object {
-        const val EMPTY_LIST = """{"success": true, "data": []}"""
-
-        const val CLIENT_LIST = """
-            {
-              "success": true,
-              "command": "mcp-clients",
-              "data": [
-                {"key": "codex", "displayName": "OpenAI Codex CLI",
-                 "configPath": "/home/tester/Platformer/.codex/config.toml", "status": "configured"},
-                {"key": "claude-code", "displayName": "Claude Code CLI",
-                 "configPath": null, "status": "no-file"}
-              ],
-              "errors": [],
-              "warnings": []
-            }
-        """
-
         const val CLAUDE_PROJECT_STORE = """
             {
               "mcpServers": {

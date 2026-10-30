@@ -26,7 +26,7 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
         val presentation = UnityCliStatusProvider.getInstance().read()
         val pipeline = UnityPipelineStatusProvider.getInstance(project).read(presentation)
         val skill = UnitySkillStatusProvider.getInstance(project).read(presentation, pipeline)
-        val packageMissing = pipeline.needsPipelinePackage == true
+        val packageMissing = pipeline.setupAddsPackage
         val skillMissing = skill.installs?.isEmpty() == true &&
                            (packageMissing || skill.offer == UnitySkillOffer.INSTALL || skill.offer == UnitySkillOffer.FAILED)
         val facts = UnityAgentsSweepFacts(
@@ -35,6 +35,7 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
             installDeclined = UnityCliDeclines.isDeclined(project, UnityCliDeclines.INSTALL_DISPLAY_ID),
             updateDeclined = UnityCliDeclines.isDeclined(project, UnityCliDeclines.UPDATE_DISPLAY_ID),
             skillMissing = skillMissing,
+            setupBlocked = pipeline.blockingEditor != null,
         )
         val suggestion = unityCliSuggestion(presentation, facts)
         if (suggestion == UnityCliSuggestion.NONE) return
@@ -81,7 +82,7 @@ class UnityCliSuggestionActivity : ProjectActivity, DumbAware {
             UnityCliSuggestion.UPDATE -> {
                 val packageUpgradable = pipeline.offer == UnityPipelineOffer.UPGRADE
                 val acts = unityCliSuggestionActs(suggestion, presentation, packageUpgradable)
-                val cliOffer = presentation.copy(projectTrusted = true).offer
+                val cliOffer = unityCliBalloonOffer(presentation)
                 val cliVersion =
                     if (cliOffer == UnityCliOffer.UPDATE || cliOffer == UnityCliOffer.SHOW_UPDATE_COMMAND) {
                         presentation.latestVersion

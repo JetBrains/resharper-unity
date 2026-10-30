@@ -10,19 +10,23 @@ import com.intellij.testFramework.junit5.fixture.TestFixtures
 import com.intellij.testFramework.junit5.http.localhostHttpServer
 import com.intellij.testFramework.junit5.http.url
 import com.intellij.testFramework.replaceService
-import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_CLI_CDN_BASE_URL
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliEnvironment
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliFileStamp
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallMethod
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallerRunner
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliOffer
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliPresentation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliProcessRunner
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliStatusProvider
-import com.jetbrains.rider.plugins.unity.settings.agents.isReadableManifestUrl
-import com.jetbrains.rider.plugins.unity.settings.agents.isUnityCliDiagnoseUpdateOutput
+import com.jetbrains.rider.plugins.unity.settings.agents.dpkgListsUnityCli
 import com.jetbrains.rider.plugins.unity.settings.agents.isUnityCliHelpOutput
 import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityCliManifestVersion
+import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityCliVersion
+import com.jetbrains.rider.plugins.unity.settings.agents.unityCliChannel
+import com.jetbrains.rider.plugins.unity.settings.agents.unityCliChannelManifest
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliDirectoryOffPath
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliExecutableName
+import com.jetbrains.rider.plugins.unity.settings.agents.unityCliInstallMethodFromPath
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliVersionMessage
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
@@ -35,10 +39,17 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledOnOs
+import org.junit.jupiter.api.condition.OS
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Files
 import java.nio.file.Path
+import java.util.concurrent.TimeUnit
 
 /**
  * Which copy of the Unity CLI Rider reports, and which binaries it launches to decide.
+ *
+ * Rider runs `--version`, then `--help`, to decide whether a binary is the Unity CLI.
  *
  * Each case drives the real [UnityCliStatusProvider.read], with [UnityCliEnvironment] describing a
  * machine and [UnityCliProcessRunner] answering for each launch. Everything from the candidate order
@@ -47,10 +58,9 @@ import java.nio.file.Path
  * Every case also records the command lines, because what Rider must **not** launch carries as much
  * of the rule as what it must.
  *
- * The [isReadableManifestUrl] and [parseUnityCliManifestVersion] cases near the bottom call those
- * two pure functions directly. Rider pins the manifest read to one host, so a local test server can
- * no longer stand in for it inside [detect]. These two functions are the only way left to pin the
- * gate and the parse it guards.
+ * The [parseUnityCliManifestVersion] cases near the bottom call that pure function directly. A local
+ * test server stands in for the CDN through [UnityCliInstallerRunner.runnerAnswering], so no case
+ * reaches the real CDN.
  */
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity for Agents")
@@ -120,22 +130,11 @@ class UnityCliDetectionTest {
     ) {
         val localAppData = "C:\\Users\\tester\\AppData\\Local"
         val windowsCopy = Path.of(localAppData, "Unity", "bin", unityCliExecutableName())
-        val beta12Help = """
-            Usage: unity [options] [command]
-
-            Automate Unity from the command line: install an Editor and create a project without the GUI.
-
-            Commands:
-              editors Manage Unity editors
-              self-update Update the unity CLI
-        """.trimIndent()
 
         val machine = machineWith().answering(windowsCopy) { command ->
             when (command.parametersList.list) {
                 listOf("--version") -> ProcessOutput("1.0.0-beta.12", "", 0, false, false)
-                listOf("--help") -> ProcessOutput(beta12Help, "", 0, false, false)
-                listOf("diagnose", "update", "--format", "json") ->
-                    ProcessOutput(diagnoseUpdateJson(null), "", 0, false, false)
+                listOf("--help") -> ProcessOutput(HELP_OUTPUT, "", 0, false, false)
                 else -> ProcessOutput("", "unknown command", 2, false, false)
             }
         }
@@ -190,7 +189,13 @@ class UnityCliDetectionTest {
         @TestDisposable disposable: Disposable,
     ) {
         // The Ubuntu Unity desktop shell. It is on a real machine, and it answers `unity 7.5.0`.
-        val machine = machineWith(HOME_ROOT_COPY).answering(DESKTOP_SHELL) { ProcessOutput("unity 7.5.0", "", 0, false, false) }
+        val machine = machineWith(HOME_ROOT_COPY).answering(DESKTOP_SHELL) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput("unity 7.5.0", "", 0, false, false)
+                listOf("--help") -> ProcessOutput(OPTPARSE_HELP, "", 0, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
         install(
             disposable,
             machine,
@@ -234,7 +239,8 @@ class UnityCliDetectionTest {
     fun `a version that carries markup reaches the page escaped`(
         @TestDisposable disposable: Disposable,
     ) {
-        val version = "$INSTALLED_VERSION-<img src=x onerror=alert(1)>"
+        // A space would end the version word, so the markup has none.
+        val version = "$INSTALLED_VERSION-<img/src=x/onerror=alert(1)>"
         val machine = machineWith(BREW_COPY).answering(BREW_COPY) { command ->
             when (command.parametersList.list) {
                 listOf("--version") -> ProcessOutput(version, "", 0, false, false)
@@ -252,24 +258,7 @@ class UnityCliDetectionTest {
     }
 
     @Test
-    fun `a bare version with no Unity help is not the Unity CLI`(
-        @TestDisposable disposable: Disposable,
-    ) {
-        val impostor = Path.of("/usr/local/bin/unity")
-        val machine = machineWith().answering(impostor) { command ->
-            if (command.parametersList.list == listOf("--version")) ProcessOutput(INSTALLED_VERSION, "", 0, false, false)
-            else ProcessOutput("Usage: some other tool", "", 0, false, false)
-        }
-        install(disposable, machine, environment(onPath = impostor))
-
-        val presentation = detect()
-
-        assertEquals(UnityCliOffer.INSTALL, presentation.offer)
-        assertEquals(impostor, presentation.foreignBinaryOnPath)
-    }
-
-    @Test
-    fun `a copy whose help answers runs diagnose update only for the update check`(
+    fun `a copy is identified by --version, then --help`(
         @TestDisposable disposable: Disposable,
     ) {
         val copy = Path.of("/opt/help-first/bin/unity")
@@ -280,23 +269,37 @@ class UnityCliDetectionTest {
 
         assertEquals(copy, presentation.location)
         val launches = machine.launched.map { it.parametersList.list }
-        assertEquals(
-            listOf(listOf("--version"), listOf("--help"), listOf("diagnose", "update", "--format", "json")),
-            launches,
-        )
+        assertEquals(listOf(listOf("--version"), listOf("--help")), launches)
     }
 
     @Test
-    fun `a copy whose help Rider does not know is identified by diagnose update`(
+    fun `the Unity Editor on the PATH is not the Unity CLI, and only --version runs`(
         @TestDisposable disposable: Disposable,
     ) {
-        val copy = Path.of("/opt/reworded-help/bin/unity")
-        val machine = machineWith().answering(copy) { command ->
+        val editor = Path.of("/opt/unity-editor/2022.3.10f1/Editor/Unity")
+        val machine = machineWith(editor).answering(editor) { command ->
             when (command.parametersList.list) {
-                listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 0, false, false)
-                listOf("--help") -> ProcessOutput("Usage: some reworded help", "", 0, false, false)
-                listOf("diagnose", "update", "--format", "json") ->
-                    ProcessOutput(diagnoseUpdateJson(null), "", 0, false, false)
+                listOf("--version") -> ProcessOutput("2022.3.10f1", "", 0, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(disposable, machine, environment(onPath = editor))
+
+        val presentation = detect()
+
+        assertEquals(UnityCliOffer.INSTALL, presentation.offer)
+        assertEquals(editor, presentation.foreignBinaryOnPath)
+        assertEquals(listOf(listOf("--version")), machine.launched.map { it.parametersList.list })
+    }
+
+    @Test
+    fun `an empty --version output is not the Unity CLI, and only --version runs`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/silent/bin/unity")
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput("", "", 0, false, false)
                 else -> ProcessOutput("", "unknown command", 2, false, false)
             }
         }
@@ -304,7 +307,130 @@ class UnityCliDetectionTest {
 
         val presentation = detect()
 
-        assertEquals(copy, presentation.location, "the diagnose update fallback did not identify the copy")
+        assertEquals(UnityCliOffer.INSTALL, presentation.offer)
+        assertEquals(copy, presentation.foreignBinaryOnPath)
+        assertEquals(listOf(listOf("--version")), machine.launched.map { it.parametersList.list })
+    }
+
+    @Test
+    fun `a --version that exits with 1 is not the Unity CLI, even when it prints a version`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/failing/bin/unity")
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 1, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(disposable, machine, environment(onPath = copy))
+
+        val presentation = detect()
+
+        assertEquals(UnityCliOffer.INSTALL, presentation.offer)
+        assertEquals(copy, presentation.foreignBinaryOnPath)
+        assertEquals(listOf(listOf("--version")), machine.launched.map { it.parametersList.list })
+    }
+
+    @Test
+    fun `a program name before the version is skipped, and the version is read`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/named/bin/unity")
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput("unity 1.0.0-beta.16", "", 0, false, false)
+                listOf("--help") -> ProcessOutput(HELP_OUTPUT, "", 0, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(disposable, machine, environment(onPath = copy))
+
+        val presentation = detect()
+
+        assertEquals(copy, presentation.location)
+        assertEquals("1.0.0-beta.16", presentation.installedVersion)
+    }
+
+    @Test
+    fun `a banner line above the version is skipped, and the version is read`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/banner/bin/unity")
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput("Unity CLI\n1.0.0-beta.16\n", "", 0, false, false)
+                listOf("--help") -> ProcessOutput(HELP_OUTPUT, "", 0, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(disposable, machine, environment(onPath = copy))
+
+        val presentation = detect()
+
+        assertEquals(copy, presentation.location)
+        assertEquals("1.0.0-beta.16", presentation.installedVersion)
+    }
+
+    @Test
+    fun `a help without the MCP server is not the Unity CLI`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/no-mcp/bin/unity")
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 0, false, false)
+                listOf("--help") -> ProcessOutput(HELP_WITHOUT_MCP, "", 0, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(disposable, machine, environment(onPath = copy))
+
+        val presentation = detect()
+
+        assertEquals(UnityCliOffer.INSTALL, presentation.offer)
+        assertEquals(copy, presentation.foreignBinaryOnPath)
+    }
+
+    @Test
+    fun `a help that names upgrade, and not self-update, is the Unity CLI`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/older-name/bin/unity")
+        val olderHelp = HELP_OUTPUT.replace("self-update|upgrade", "upgrade")
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 0, false, false)
+                listOf("--help") -> ProcessOutput(olderHelp, "", 0, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(disposable, machine, environment(onPath = copy))
+
+        val presentation = detect()
+
+        assertEquals(copy, presentation.location)
+        assertEquals(INSTALLED_VERSION, presentation.installedVersion)
+    }
+
+    @Test
+    fun `a --help that exits with 2 is not the Unity CLI, even when it prints the help`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/failing-help/bin/unity")
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 0, false, false)
+                listOf("--help") -> ProcessOutput(HELP_OUTPUT, "", 2, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(disposable, machine, environment(onPath = copy))
+
+        val presentation = detect()
+
+        assertEquals(UnityCliOffer.INSTALL, presentation.offer)
+        assertEquals(copy, presentation.foreignBinaryOnPath)
     }
 
     @Test
@@ -344,73 +470,377 @@ class UnityCliDetectionTest {
     }
 
     @Test
-    fun `a manifest at a foreign host is refused, and Homebrew still comes from the path`(
+    fun `the latest version comes from the channel manifest of the installed version`(
         @TestDisposable disposable: Disposable,
     ) {
-        // The CLI can report any address. Rider reads only the pinned CDN host, so a local test
-        // server stands in for a foreign one and Rider must never connect to it. The gate itself is
-        // pinned below, in the isReadableManifestUrl cases.
-        val machine = machineWith(BREW_COPY, diagnoseManifestUrl = server.url + "/latest-beta.json")
+        server.createContext("/latest-beta.json") { exchange ->
+            val body = """{"version": "$LATEST_VERSION"}""".toByteArray()
+            exchange.sendResponseHeaders(200, body.size.toLong())
+            exchange.responseBody.write(body)
+            exchange.close()
+        }
+        val machine = machineWith(BREW_COPY)
         install(disposable, machine, environment(onPath = BREW_COPY, realPath = CASKROOM_COPY))
 
         val presentation = detect()
 
-        assertNull(presentation.latestVersion, "Rider read a manifest at a foreign host")
-        assertEquals(UnityCliOffer.LATEST_VERSION_UNKNOWN, presentation.offer)
-        // The install method comes from the resolved path, so it still renders when the manifest is
-        // refused.
+        assertEquals(LATEST_VERSION, presentation.latestVersion)
+        assertEquals(UnityCliOffer.UPDATE, presentation.offer)
         assertEquals(UnityCliInstallMethod.HOMEBREW, presentation.installMethod)
-        assertEquals(UPDATE_COMMAND, presentation.updateCommand)
+        assertEquals(listOf(listOf("--version"), listOf("--help")), machine.launched.map { it.parametersList.list })
     }
 
     @Test
-    fun `a manifest address Rider will not read leaves the latest version unknown`(
+    fun `a channel manifest that does not answer leaves the latest version unknown`(
         @TestDisposable disposable: Disposable,
     ) {
-        // A blank manifest address is possible, because the field comes from a third party.
-        // It raised `URI is not absolute` inside the platform reader, and the page rendered nothing.
-        val copy = Path.of("/opt/blank/bin/unity")
-        val machine = machineWith(copy, diagnoseManifestUrl = "")
-        install(disposable, machine, environment(onPath = copy))
+        // No context is registered, so the server answers 404 for the manifest.
+        val machine = machineWith(BREW_COPY)
+        install(disposable, machine, environment(onPath = BREW_COPY, realPath = CASKROOM_COPY))
 
         val presentation = detect()
 
-        assertEquals(copy, presentation.location, "detection stopped on a manifest address")
-        assertNull(presentation.latestVersion)
         assertEquals(UnityCliOffer.LATEST_VERSION_UNKNOWN, presentation.offer)
     }
 
-    // --- isReadableManifestUrl: the gate a reported manifest address must pass before Rider reads it ---
-
     @Test
-    fun `the pinned CDN host is accepted over https`() {
-        assertTrue(isReadableManifestUrl("${UNITY_CLI_CDN_BASE_URL}latest-beta.json"))
+    fun `a copy with an unchanged stamp runs --version and --help once`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/stamped/bin/unity")
+        val machine = machineWith(copy)
+        install(disposable, machine, environment(onPath = copy, fileStamp = { UnityCliFileStamp(100, 200) }))
+
+        detect()
+        detect()
+
+        assertEquals(listOf(listOf("--version"), listOf("--help")), machine.launched.map { it.parametersList.list })
     }
 
     @Test
-    fun `a foreign host is refused, even over https`() {
-        assertFalse(isReadableManifestUrl("https://evil.example.com/latest-beta.json"))
+    fun `a copy with a new stamp runs --version and --help again`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/stamped/bin/unity")
+        var stamp = UnityCliFileStamp(100, 200)
+        val machine = machineWith(copy)
+        install(disposable, machine, environment(onPath = copy, fileStamp = { stamp }))
+
+        detect()
+        stamp = UnityCliFileStamp(100, 300)
+        detect()
+
+        val launches = machine.launched.map { it.parametersList.list }
+        assertEquals(listOf(listOf("--version"), listOf("--help"), listOf("--version"), listOf("--help")), launches)
     }
 
     @Test
-    fun `the pinned host is refused over plain http`() {
-        val httpUrl = "${UNITY_CLI_CDN_BASE_URL}latest-beta.json".replaceFirst("https://", "http://")
-        assertFalse(isReadableManifestUrl(httpUrl))
+    fun `a copy without a stamp runs --version and --help on each read`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/unstamped/bin/unity")
+        val machine = machineWith(copy)
+        install(disposable, machine, environment(onPath = copy))
+
+        detect()
+        detect()
+
+        val launches = machine.launched.map { it.parametersList.list }
+        assertEquals(listOf(listOf("--version"), listOf("--help"), listOf("--version"), listOf("--help")), launches)
     }
 
     @Test
-    fun `a file address is refused`() {
-        assertFalse(isReadableManifestUrl("file:///etc/passwd"))
+    fun `a timed-out --help is not cached, so the next read runs it again`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/timed-out/bin/unity")
+        var helpLaunches = 0
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 0, false, false)
+                listOf("--help") -> {
+                    helpLaunches++
+                    // The first --help times out, and the second one answers.
+                    if (helpLaunches == 1) ProcessOutput("", "", -1, true, false) else ProcessOutput(HELP_OUTPUT, "", 0, false, false)
+                }
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(disposable, machine, environment(onPath = copy, fileStamp = { UnityCliFileStamp(100, 200) }))
+
+        val first = detect()
+        val second = detect()
+
+        assertNull(first.location, "a timed-out --help named the copy")
+        assertEquals(copy, second.location, "the next read did not detect the copy")
+        val launches = machine.launched.map { it.parametersList.list }
+        assertEquals(listOf(listOf("--version"), listOf("--help"), listOf("--version"), listOf("--help")), launches)
     }
 
     @Test
-    fun `a blank address is refused`() {
-        assertFalse(isReadableManifestUrl(""))
+    fun `a version stays cached for six hours`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/cached/bin/unity")
+        var now = 0L
+        val machine = machineWith(copy)
+        install(
+            disposable,
+            machine,
+            environment(onPath = copy, fileStamp = { UnityCliFileStamp(100, 200) }, currentTimeMs = { now }),
+        )
+
+        detect()
+        now = TimeUnit.HOURS.toMillis(5)
+        detect()
+
+        assertEquals(listOf(listOf("--version"), listOf("--help")), machine.launched.map { it.parametersList.list })
     }
 
     @Test
-    fun `a relative address is refused`() {
-        assertFalse(isReadableManifestUrl("latest-beta.json"))
+    fun `a version runs --version and --help again after six hours`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/cached/bin/unity")
+        var now = 0L
+        val machine = machineWith(copy)
+        install(
+            disposable,
+            machine,
+            environment(onPath = copy, fileStamp = { UnityCliFileStamp(100, 200) }, currentTimeMs = { now }),
+        )
+
+        detect()
+        now = TimeUnit.HOURS.toMillis(6)
+        detect()
+
+        val launches = machine.launched.map { it.parametersList.list }
+        assertEquals(listOf(listOf("--version"), listOf("--help"), listOf("--version"), listOf("--help")), launches)
+    }
+
+    @Test
+    fun `a copy whose --version exits with 1 is not run again within a minute`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/failing-version/bin/unity")
+        var now = 0L
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 1, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(
+            disposable,
+            machine,
+            environment(onPath = copy, fileStamp = { UnityCliFileStamp(100, 200) }, currentTimeMs = { now }),
+        )
+
+        detect()
+        now = TimeUnit.SECONDS.toMillis(59)
+        detect()
+
+        assertEquals(listOf(listOf("--version")), machine.launched.map { it.parametersList.list })
+    }
+
+    @Test
+    fun `a copy whose --version exits with 1 runs --version again after a minute`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/failing-version/bin/unity")
+        var now = 0L
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 1, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(
+            disposable,
+            machine,
+            environment(onPath = copy, fileStamp = { UnityCliFileStamp(100, 200) }, currentTimeMs = { now }),
+        )
+
+        detect()
+        now = TimeUnit.MINUTES.toMillis(1)
+        detect()
+
+        assertEquals(listOf(listOf("--version"), listOf("--version")), machine.launched.map { it.parametersList.list })
+    }
+
+    @Test
+    fun `a copy that fails --version once is detected on the next read after a minute`(
+        @TestDisposable disposable: Disposable,
+    ) {
+        val copy = Path.of("/opt/flaky/bin/unity")
+        var now = 0L
+        var versionLaunches = 0
+        val machine = machineWith(copy).answering(copy) { command ->
+            when (command.parametersList.list) {
+                listOf("--version") -> {
+                    versionLaunches++
+                    // The first start fails, and the next start answers.
+                    if (versionLaunches == 1) ProcessOutput("", "", 1, false, false)
+                    else ProcessOutput(INSTALLED_VERSION, "", 0, false, false)
+                }
+                listOf("--help") -> ProcessOutput(HELP_OUTPUT, "", 0, false, false)
+                else -> ProcessOutput("", "unknown command", 2, false, false)
+            }
+        }
+        install(
+            disposable,
+            machine,
+            environment(onPath = copy, fileStamp = { UnityCliFileStamp(100, 200) }, currentTimeMs = { now }),
+        )
+
+        val first = detect()
+        now = TimeUnit.MINUTES.toMillis(1)
+        val second = detect()
+
+        assertNull(first.location, "a failed --version named the copy")
+        assertEquals(copy, second.location, "the next read did not detect the copy")
+        assertEquals(INSTALLED_VERSION, second.installedVersion)
+    }
+
+    @Test
+    fun `a Caskroom copy of the Homebrew cask is Homebrew`() {
+        assertEquals(UnityCliInstallMethod.HOMEBREW, methodOf(CASKROOM_COPY))
+    }
+
+    @Test
+    fun `a WindowsApps alias and WinGet copies in the user or machine scope are WinGet`() {
+        val alias = Path.of("/home/tester/AppData/Local/Microsoft/WindowsApps/unity.exe")
+        val link = Path.of("/home/tester/AppData/Local/Microsoft/WinGet/Links/unity.exe")
+        val machineLink = Path.of("/Program Files/WinGet/Links/unity.exe")
+        val machinePackage = Path.of("/Program Files/WinGet/Packages/Unity.CLI_Microsoft.Winget.Source_8wekyb3d8bbwe/unity.exe")
+        assertEquals(UnityCliInstallMethod.WINGET, methodOf(alias))
+        assertEquals(UnityCliInstallMethod.WINGET, methodOf(link))
+        assertEquals(UnityCliInstallMethod.WINGET, methodOf(machineLink))
+        assertEquals(UnityCliInstallMethod.WINGET, methodOf(machinePackage))
+    }
+
+    @Test
+    fun `a copy in a CDN folder is CDN`() {
+        val copy = Path.of("/home/tester/.unity/bin/unity")
+        val method = unityCliInstallMethodFromPath(
+            path = copy,
+            realPath = copy,
+            cdnDirectories = listOf(Path.of("/home/tester/.unity/bin")),
+            dpkgListsUnityCli = { false },
+            dnfIsInstalled = { false },
+        )
+        assertEquals(UnityCliInstallMethod.CDN, method)
+    }
+
+    @Test
+    fun `a link in a CDN folder to an apt copy is APT`() {
+        val link = Path.of("/home/tester/.local/bin/unity")
+        val method = unityCliInstallMethodFromPath(
+            path = link,
+            realPath = Path.of("/usr/bin/unity"),
+            cdnDirectories = listOf(Path.of("/home/tester/.local/bin")),
+            dpkgListsUnityCli = { true },
+            dnfIsInstalled = { false },
+        )
+        assertEquals(UnityCliInstallMethod.APT, method)
+    }
+
+    @Test
+    fun `a link in a CDN folder to an unknown copy is not CDN`() {
+        val link = Path.of("/home/tester/.local/bin/unity")
+        val method = unityCliInstallMethodFromPath(
+            path = link,
+            realPath = Path.of("/opt/tool/unity"),
+            cdnDirectories = listOf(Path.of("/home/tester/.local/bin")),
+            dpkgListsUnityCli = { false },
+            dnfIsInstalled = { false },
+        )
+        assertEquals(UnityCliInstallMethod.UNKNOWN, method)
+    }
+
+    @Test
+    fun `a copy in a CDN folder behind a linked home folder is CDN`() {
+        val copy = Path.of("/home/tester/.local/bin/unity")
+        val method = unityCliInstallMethodFromPath(
+            path = copy,
+            realPath = Path.of("/data/home/tester/.local/bin/unity"),
+            cdnDirectories = listOf(Path.of("/home/tester/.local/bin"), Path.of("/data/home/tester/.local/bin")),
+            dpkgListsUnityCli = { false },
+            dnfIsInstalled = { false },
+        )
+        assertEquals(UnityCliInstallMethod.CDN, method)
+    }
+
+    @Test
+    fun `a copy under usr that dpkg lists is APT`() {
+        assertEquals(UnityCliInstallMethod.APT, methodOf(Path.of("/usr/bin/unity"), dpkgListsUnityCli = true))
+    }
+
+    @Test
+    fun `a copy under usr without dpkg and with dnf is DNF`() {
+        assertEquals(UnityCliInstallMethod.DNF, methodOf(Path.of("/usr/bin/unity"), dnfIsInstalled = true))
+    }
+
+    @Test
+    fun `a copy under usr with neither dpkg nor dnf is UNKNOWN, as on Arch and openSUSE`() {
+        assertEquals(UnityCliInstallMethod.UNKNOWN, methodOf(Path.of("/usr/bin/unity")))
+    }
+
+    @Test
+    fun `a copy under usr local or in an unknown folder has no package manager`() {
+        assertEquals(UnityCliInstallMethod.UNKNOWN, methodOf(Path.of("/usr/local/bin/unity")))
+        assertEquals(UnityCliInstallMethod.UNKNOWN, methodOf(Path.of("/opt/tool/unity")))
+    }
+
+    @Test
+    fun `dpkg lists unity-cli when its list file is there`(@TempDir dpkgInfo: Path) {
+        Files.createFile(dpkgInfo.resolve("unity-cli.list"))
+
+        assertTrue(dpkgListsUnityCli(dpkgInfo))
+    }
+
+    @Test
+    @DisabledOnOs(OS.WINDOWS, disabledReason = "Windows file names cannot hold a colon")
+    fun `dpkg lists unity-cli when its Multi-Arch list file carries the architecture`(@TempDir dpkgInfo: Path) {
+        Files.createFile(dpkgInfo.resolve("unity-cli:amd64.list"))
+
+        assertTrue(dpkgListsUnityCli(dpkgInfo))
+    }
+
+    @Test
+    fun `dpkg does not list unity-cli when only another package is listed`(@TempDir dpkgInfo: Path) {
+        Files.createFile(dpkgInfo.resolve("other.list"))
+
+        assertFalse(dpkgListsUnityCli(dpkgInfo))
+    }
+
+    @Test
+    fun `dpkg does not list unity-cli when its info folder is missing`(@TempDir tempDir: Path) {
+        assertFalse(dpkgListsUnityCli(tempDir.resolve("missing")))
+    }
+
+    @Test
+    fun `the beta and alpha tags of the installed version name their channels`() {
+        assertEquals("beta", unityCliChannel("", "1.0.0-beta.15"))
+        assertEquals("alpha", unityCliChannel("", "1.0.0-alpha.3"))
+    }
+
+    @Test
+    fun `a version with no pre-release tag is on the stable channel`() {
+        assertEquals("stable", unityCliChannel("", "1.0.0"))
+    }
+
+    @Test
+    fun `a forced channel wins over the channel of the installed version`() {
+        assertEquals("stable", unityCliChannel("stable", "1.0.0-beta.1"))
+        assertEquals("alpha", unityCliChannel("alpha", "1.0.0"))
+    }
+
+    @Test
+    fun `each channel names its manifest on the CDN`() {
+        assertEquals("latest-beta.json", unityCliChannelManifest("beta"))
+        assertEquals("latest-alpha.json", unityCliChannelManifest("alpha"))
+        assertEquals("latest.json", unityCliChannelManifest("stable"))
     }
 
     // --- parseUnityCliManifestVersion: the version inside a channel manifest ---
@@ -435,74 +865,6 @@ class UnityCliDetectionTest {
         assertNull(parseUnityCliManifestVersion("not json"))
     }
 
-    // --- isUnityCliHelpOutput: identifies the Unity CLI across help output formats ---
-
-    @Test
-    fun `modern beta 12 help output is accepted`() {
-        val beta12Help = """
-            Usage: unity [options] [command]
-
-            Automate Unity from the command line: install an Editor and create a project without the GUI.
-
-            Options:
-              -V, --version output the version number
-            Commands:
-              editors Manage Unity editors
-              self-update Update the unity CLI
-        """.trimIndent()
-        assertTrue(isUnityCliHelpOutput(beta12Help))
-    }
-
-    @Test
-    fun `help output with usage and commands but no banner is accepted`() {
-        val bannerlessHelp = """
-            Usage: unity [options] [command]
-
-            Commands:
-              editors Manage Unity editors
-              self-update Update the unity CLI
-        """.trimIndent()
-        assertTrue(isUnityCliHelpOutput(bannerlessHelp))
-    }
-
-    @Test
-    fun `an impostor help output is rejected`() {
-        val desktopShellHelp = """
-            Usage: unity [options]
-            Options:
-              --replace
-              --debug
-        """.trimIndent()
-        assertFalse(isUnityCliHelpOutput(desktopShellHelp))
-        assertFalse(isUnityCliHelpOutput("Usage: some other tool"))
-    }
-
-    // --- isUnityCliDiagnoseUpdateOutput: verifies structured JSON output from diagnose update ---
-
-    @Test
-    fun `a valid diagnose update JSON response identifies the CLI`() {
-        val validJson = """
-            {
-              "success": true,
-              "command": "diagnose-update",
-              "data": {
-                "version": "1.0.0-beta.12",
-                "installMethod": "cdn"
-              }
-            }
-        """.trimIndent()
-        assertTrue(isUnityCliDiagnoseUpdateOutput(validJson))
-    }
-
-    @Test
-    fun `an invalid or non-JSON output does not identify the CLI`() {
-        assertFalse(isUnityCliDiagnoseUpdateOutput("not json"))
-        assertFalse(isUnityCliDiagnoseUpdateOutput("""{"command": "other"}"""))
-        assertFalse(isUnityCliDiagnoseUpdateOutput("""{"data": {}}"""))
-        assertFalse(isUnityCliDiagnoseUpdateOutput("""{"command": "diagnose-update"}"""))
-        assertFalse(isUnityCliDiagnoseUpdateOutput("""{"command": "diagnose-update", "data": {}}"""))
-    }
-
     @Test
     fun `a copy in a well-known root that the PATH does not have gives its directory`() {
         val environment = environment(executables = setOf(LOCAL_ROOT_COPY))
@@ -520,11 +882,64 @@ class UnityCliDetectionTest {
         assertNull(environment().unityCliDirectoryOffPath())
     }
 
+    // --- parseUnityCliVersion: the version word of `--version` ---
+
+    @Test
+    fun `the version word of --version is the version, with or without a program name`() {
+        assertEquals("1.0.0-beta.15", parseUnityCliVersion("1.0.0-beta.15"))
+        assertEquals("1.0.0-beta.15", parseUnityCliVersion("unity 1.0.0-beta.15"))
+        assertEquals("7.5.0", parseUnityCliVersion("unity 7.5.0"))
+    }
+
+    @Test
+    fun `a pre-release segment is kept to the end of the version word`() {
+        assertEquals("1.0.0-something.123", parseUnityCliVersion("1.0.0-something.123"))
+    }
+
+    @Test
+    fun `white space around the version word is not part of the version`() {
+        assertEquals("1.0.0", parseUnityCliVersion("  1.0.0\n"))
+    }
+
+    @Test
+    fun `output with no version word names no version`() {
+        assertNull(parseUnityCliVersion("2022.3.10f1"), "a Unity Editor version read as the CLI version")
+        assertNull(parseUnityCliVersion(""))
+        assertNull(parseUnityCliVersion("unity"))
+        assertNull(parseUnityCliVersion("1.0"))
+    }
+
+    // --- isUnityCliHelpOutput: the help of the CLI ---
+
+    @Test
+    fun `the help of the CLI is recognized, in any letter case`() {
+        assertTrue(isUnityCliHelpOutput(HELP_OUTPUT), "the help of the CLI was refused")
+        assertTrue(isUnityCliHelpOutput(HELP_OUTPUT.uppercase()), "the upper-case help was refused")
+    }
+
+    @Test
+    fun `the optparse help of the desktop shell is not the help of the CLI`() {
+        assertFalse(isUnityCliHelpOutput(OPTPARSE_HELP))
+    }
+
+    @Test
+    fun `a help without the MCP server is not the help of the CLI`() {
+        assertFalse(isUnityCliHelpOutput(HELP_WITHOUT_MCP))
+    }
+
+    @Test
+    fun `a help without the usage line is not the help of the CLI`() {
+        val helpWithoutUsage = HELP_OUTPUT.replace("Usage: unity [options] [command]", "Synopsis: the CLI")
+        assertFalse(isUnityCliHelpOutput(helpWithoutUsage))
+    }
+
+    @Test
+    fun `a help with upgrade and no self-update is the help of the CLI`() {
+        assertTrue(isUnityCliHelpOutput(HELP_OUTPUT.replace("self-update|upgrade", "upgrade")))
+    }
+
     /** One machine, and the record of every command line it was asked to run. */
-    private class Machine(
-        private val unityCliCopies: Set<Path>,
-        private val diagnoseManifestUrl: String?,
-    ) {
+    private class Machine(private val unityCliCopies: Set<Path>) {
         val launched: MutableList<GeneralCommandLine> = mutableListOf()
         private val answers: MutableMap<Path, (GeneralCommandLine) -> ProcessOutput> = mutableMapOf()
 
@@ -541,16 +956,21 @@ class UnityCliDetectionTest {
             return when (command.parametersList.list) {
                 listOf("--version") -> ProcessOutput(INSTALLED_VERSION, "", 0, false, false)
                 listOf("--help") -> ProcessOutput(HELP_OUTPUT, "", 0, false, false)
-                listOf("diagnose", "update", "--format", "json") ->
-                    ProcessOutput(diagnoseUpdateJson(diagnoseManifestUrl), "", 0, false, false)
                 else -> ProcessOutput("", "unknown command", 2, false, false)
             }
         }
     }
 
-    /** A null [diagnoseManifestUrl] leaves the field out of the envelope, so no read is attempted. */
-    private fun machineWith(vararg unityCliCopies: Path, diagnoseManifestUrl: String? = null): Machine =
-        Machine(unityCliCopies.toSet(), diagnoseManifestUrl)
+    private fun machineWith(vararg unityCliCopies: Path): Machine = Machine(unityCliCopies.toSet())
+
+    private fun methodOf(path: Path, dpkgListsUnityCli: Boolean = false, dnfIsInstalled: Boolean = false): UnityCliInstallMethod =
+        unityCliInstallMethodFromPath(
+            path = path,
+            realPath = path,
+            cdnDirectories = emptyList(),
+            dpkgListsUnityCli = { dpkgListsUnityCli },
+            dnfIsInstalled = { dnfIsInstalled },
+        )
 
     private fun environment(
         onPath: Path? = null,
@@ -558,6 +978,8 @@ class UnityCliDetectionTest {
         localAppData: String? = null,
         executables: Set<Path> = emptySet(),
         realPath: Path? = null,
+        fileStamp: (Path) -> UnityCliFileStamp? = { null },
+        currentTimeMs: () -> Long = { 0L },
     ): UnityCliEnvironment = UnityCliEnvironment.environmentAnswering(
         findOnPath = { onPath },
         environmentVariable = { name ->
@@ -570,6 +992,8 @@ class UnityCliDetectionTest {
         userHome = { USER_HOME },
         isExecutable = { it in executables || it == onPath },
         realPath = { path -> if (realPath != null && path == onPath) realPath else path },
+        fileStamp = fileStamp,
+        currentTimeMs = currentTimeMs,
     )
 
     private fun install(disposable: Disposable, machine: Machine, environment: UnityCliEnvironment) {
@@ -580,6 +1004,12 @@ class UnityCliDetectionTest {
             UnityCliProcessRunner.runnerAnswering { command, _ -> machine.run(command) },
             disposable,
         )
+        application.replaceService(
+            UnityCliInstallerRunner::class.java,
+            UnityCliInstallerRunner.runnerAnswering(cdnBaseUrl = "${server.url}/"),
+            disposable,
+        )
+        UnityCliStatusProvider.getInstance().forgetUpdateInfo()
     }
 
     private fun detect(): UnityCliPresentation = runBlocking { UnityCliStatusProvider.getInstance().read() }
@@ -601,33 +1031,32 @@ class UnityCliDetectionTest {
 
         const val INSTALLED_VERSION = "1.0.0-beta.9"
         const val LATEST_VERSION = "1.0.0-beta.10"
-        const val UPDATE_COMMAND = "brew upgrade unity-cli"
 
+        // An excerpt of the help of the CLI 1.0.0-beta.15.
         val HELP_OUTPUT = """
             Usage: unity [options] [command]
 
-            Commands:
-              editors Manage Unity editors
-              self-update Update the unity CLI
+            Automate Unity from the command line: install an Editor and create a project
+            without the GUI.
+
+            Editor Automation Commands:
+              mcp [options]                              MCP server and client configuration for Unity Editor
+
+            Maintenance Commands:
+              self-update|upgrade [options]              Update the unity CLI to the latest version
         """.trimIndent()
 
-        fun diagnoseUpdateJson(manifestUrl: String?): String {
-            val manifest = if (manifestUrl == null) "" else """"manifestUrl": "$manifestUrl","""
-            return """
-                {
-                  "success": true,
-                  "command": "diagnose-update",
-                  "data": {
-                    "version": "$INSTALLED_VERSION",
-                    "installMethod": "homebrew",
-                    "channel": "beta",
-                    $manifest
-                    "updateCommand": "$UPDATE_COMMAND"
-                  },
-                  "errors": [],
-                  "warnings": []
-                }
-            """.trimIndent()
-        }
+        // The help of the optparse program that the Ubuntu desktop shell installs as `unity`.
+        val OPTPARSE_HELP = """
+            Usage: unity [options]
+
+            Options:
+              --version             show program's version number and exit
+              --replace             Run unity
+              --reset-icons         Reset the default launcher icons.
+        """.trimIndent()
+
+        // The help of the CLI without its MCP line.
+        val HELP_WITHOUT_MCP: String = HELP_OUTPUT.lines().filterNot { it.contains("mcp", ignoreCase = true) }.joinToString("\n")
     }
 }

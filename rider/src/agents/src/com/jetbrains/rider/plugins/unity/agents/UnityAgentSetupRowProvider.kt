@@ -9,6 +9,7 @@ import com.jetbrains.rider.plugins.appender.mcpServer.agentSetup.AgentSetupRowLi
 import com.jetbrains.rider.plugins.appender.mcpServer.agentSetup.AgentSetupRowProvider
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_CLI_SKILL_NAME
+import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_SKILL_REGISTRY_SOURCE
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupProvider
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupRowLink
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupStep
@@ -26,13 +27,16 @@ internal class UnityAgentSetupRowProvider : AgentSetupRowProvider {
 
     override suspend fun read(project: Project): AgentSetupRow? {
         val setup = UnityAgentsSetupProvider.getInstance(project)
-        val steps = setup.readMissingSteps() ?: return null
-        if (steps.isEmpty()) PropertiesComponent.getInstance(project).setList(DISMISSED_STEPS_KEY, null)
+        val status = setup.readStatus() ?: return null
+        val steps = status.missing
+        // A setup that an old Editor stops is not complete, so the dismissed steps stay stored.
+        if (steps.isEmpty() && status.blockingEditor == null) PropertiesComponent.getInstance(project).setList(DISMISSED_STEPS_KEY, null)
         val presentation = unityAgentsSetupRowPresentation(
             missing = steps,
             dismissed = isUnityAgentsSetupDismissed(dismissedSteps(project), steps),
             installing = setup.isRunning(),
-            enabledSkillCount = if (steps.isEmpty()) countUnitySkills(project) else 0,
+            enabledSkillCount = if (steps.isEmpty() && status.blockingEditor == null) countUnitySkills(project) else 0,
+            blockingEditor = status.blockingEditor,
         )
         return AgentSetupRow(
             summary = presentation.summary,

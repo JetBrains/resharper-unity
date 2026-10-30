@@ -3,6 +3,7 @@ package com.jetbrains.rider.unity.test.cases.agents
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupRowLink
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupRowPresentation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupStep
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityOldEditor
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupRowPresentation
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
@@ -78,10 +79,25 @@ class UnityAgentsSetupRowPresentationTest {
         assertEquals(emptyList<UnityAgentsSetupRowLink>(), presentation(enabledSkillCount = 3).links)
     }
 
+    @Test
+    fun `a complete setup that an old Editor stops names the minimum Editor version and offers no links`() {
+        val presentation = presentation(enabledSkillCount = 0, blockingEditor = UnityOldEditor("6000.0", "2022.3.62f1"))
+
+        assertEquals("Needs Unity 6000.0 or later", presentation.summary)
+        assertEquals(emptyList<UnityAgentsSetupRowLink>(), presentation.links)
+        assertNull(presentation.progress)
+    }
+
+    @Test
+    fun `a complete setup without an old Editor still shows Enabled`() {
+        assertEquals("Enabled", presentation(enabledSkillCount = 0, blockingEditor = null).summary)
+    }
+
     private fun presentation(
         missing: List<UnityAgentsSetupStep> = emptyList(),
         dismissed: Boolean = false,
         installing: Boolean = false,
         enabledSkillCount: Int = 1,
-    ): UnityAgentsSetupRowPresentation = unityAgentsSetupRowPresentation(missing, dismissed, installing, enabledSkillCount)
+        blockingEditor: UnityOldEditor? = null,
+    ): UnityAgentsSetupRowPresentation = unityAgentsSetupRowPresentation(missing, dismissed, installing, enabledSkillCount, blockingEditor)
 }

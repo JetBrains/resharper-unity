@@ -1,25 +1,22 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
-import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.platform.eel.fs.EelFileUtils
 import org.jetbrains.annotations.ApiStatus
 import java.io.IOException
 import java.nio.file.Files
-import java.nio.file.InvalidPathException
 import java.nio.file.Path
 
 @ApiStatus.Internal
 const val UNITY_CLI_SKILL_NAME: String = "unity-cli"
+internal const val UNITY_SKILL_FILE: String = "SKILL.md"
 private const val VSCODE_CLIENT: String = "vscode"
 
+/** A client that Rider installs the skill for, with the project folder that holds its skills. */
 @ApiStatus.Internal
-enum class UnitySkillClient(val key: String) {
-    CODEX("codex"),
-    CLAUDE_CODE("claude-code"),
+enum class UnitySkillClient(val key: String, val skillsDirectory: String) {
+    CODEX("codex", ".agents/skills"),
+    CLAUDE_CODE("claude-code", ".claude/skills"),
 }
 
 @ApiStatus.Internal
@@ -38,62 +35,36 @@ data class UnitySkillInstall(
     val path: Path,
 )
 
-private val gson = Gson()
+/** A folder that holds the skills of a client, as `unity skill install --list` reports it. */
+private class UnitySkillPlace(val client: String, val local: Boolean, val directory: String)
 
-internal fun unitySkillListCommandLine(unity: Path): GeneralCommandLine =
-    GeneralCommandLine(unity.toString(), "skill", "list", "--non-interactive", "--json")
+private val UNITY_SKILL_PLACES: List<UnitySkillPlace> = listOf(
+    UnitySkillPlace(client = UnitySkillClient.CODEX.key, local = true, directory = UnitySkillClient.CODEX.skillsDirectory),
+    UnitySkillPlace(client = UnitySkillClient.CLAUDE_CODE.key, local = true, directory = UnitySkillClient.CLAUDE_CODE.skillsDirectory),
+    UnitySkillPlace(client = VSCODE_CLIENT, local = true, directory = ".github/skills"),
+    UnitySkillPlace(client = UnitySkillClient.CODEX.key, local = false, directory = UnitySkillClient.CODEX.skillsDirectory),
+    UnitySkillPlace(client = UnitySkillClient.CLAUDE_CODE.key, local = false, directory = UnitySkillClient.CLAUDE_CODE.skillsDirectory),
+    UnitySkillPlace(client = VSCODE_CLIENT, local = false, directory = ".copilot/skills"),
+)
 
+/**
+ * The unity-cli skill folders in [solution] and in [userHome].
+ *
+ * A folder counts when its `SKILL.md` is a regular file.
+ */
 @ApiStatus.Internal
-fun unitySkillInstallCommandLine(unity: Path, client: UnitySkillClient, solution: Path): GeneralCommandLine =
-    GeneralCommandLine(unity.toString(), "skill", "install", client.key, "--local", "--yes", "--non-interactive", "--json")
-        .withWorkingDirectory(solution)
-
-internal fun unitySkillRefreshCommandLine(unity: Path): GeneralCommandLine =
-    GeneralCommandLine(unity.toString(), "skill", "refresh", "--yes", "--non-interactive", "--json")
-
-@ApiStatus.Internal
-fun parseUnitySkillList(json: String): List<UnitySkillInstall>? {
-    val answer = try {
-        gson.fromJson(json, SkillListAnswer::class.java)
-    }
-    catch (_: JsonSyntaxException) {
-        null
-    } ?: return null
-
-    if (answer.success != true || answer.data == null) return null
-
-    return answer.data.filterNotNull().mapNotNull { entry ->
-        if (entry.skill != UNITY_CLI_SKILL_NAME) return@mapNotNull null
-        val client = entry.client ?: return@mapNotNull null
-        val pathString = entry.path ?: return@mapNotNull null
-        val path = try {
-            Path.of(pathString)
+fun unitySkillInstalls(solution: Path, userHome: Path, isFile: (Path) -> Boolean): List<UnitySkillInstall> =
+    UNITY_SKILL_PLACES
+        .map { place ->
+            val root = if (place.local) solution else userHome
+            UnitySkillInstall(place.client, place.local, root.resolve(place.directory).resolve(UNITY_CLI_SKILL_NAME))
         }
-        catch (_: InvalidPathException) {
-            return@mapNotNull null
-        }
-        UnitySkillInstall(
-            client = client,
-            local = entry.local == true,
-            path = path,
-        )
-    }
-}
+        .filter { isFile(it.path.resolve(UNITY_SKILL_FILE)) }
 
+/** The project folder of the unity-cli skill for [client]. */
 @ApiStatus.Internal
-fun unitySkillInstallsOf(
-    installs: List<UnitySkillInstall>,
-    solution: Path,
-    exists: (Path) -> Boolean,
-): List<UnitySkillInstall> {
-    val realSolution = try {
-        solution.toRealPath()
-    }
-    catch (_: IOException) {
-        solution.toAbsolutePath().normalize()
-    }
-    return installs.filter { exists(it.path) && (!it.local || it.path.startsWith(realSolution)) }
-}
+fun unitySkillDirectory(client: UnitySkillClient, solution: Path): Path =
+    solution.resolve(client.skillsDirectory).resolve(UNITY_CLI_SKILL_NAME)
 
 internal fun unitySkillReaders(install: UnitySkillInstall): List<UnitySkillTarget> = when (install.client) {
     UnitySkillClient.CODEX.key -> if (install.local) {
@@ -119,13 +90,6 @@ fun unitySkillOpenTargets(installs: List<UnitySkillInstall>): List<UnitySkillTar
         .filter { it !in projectReaders }
 }
 
-internal fun unitySkillInstallOutcome(output: ProcessOutput?, landed: Boolean): UnitySkillFailure? = when {
-    output == null || output.isTimeout -> UnitySkillFailure.LAUNCH_FAILED
-    landed -> null
-    output.exitCode != 0 -> UnitySkillFailure.EXIT_CODE
-    else -> UnitySkillFailure.NOT_CONFIRMED
-}
-
 @ApiStatus.Internal
 fun deleteWithEmptyParent(path: Path) {
     EelFileUtils.deleteRecursively(path)
@@ -136,15 +100,3 @@ fun deleteWithEmptyParent(path: Path) {
         // The parent still holds other files, or another process holds it open.
     }
 }
-
-private data class SkillListAnswer(
-    val success: Boolean? = null,
-    val data: List<SkillEntry?>? = null,
-)
-
-private data class SkillEntry(
-    val skill: String? = null,
-    val client: String? = null,
-    val local: Boolean? = null,
-    val path: String? = null,
-)

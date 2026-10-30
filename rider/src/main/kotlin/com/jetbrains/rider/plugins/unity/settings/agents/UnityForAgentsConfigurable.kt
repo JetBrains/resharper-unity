@@ -149,7 +149,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             },
             retry = {
                 logClick(UnityAgentsAction.RETRY)
-                retrySkill()
+                retrySkill(it)
             },
             openSkillsSettings = { openSkillsSettings(it) },
             browseSkills = {
@@ -226,7 +226,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                 cliStatus?.component = buildCliStatus(page.cli)
                 pipelineStatus?.component = pipelinePanel?.build(page.pipeline)
                 skillStatus?.component = skillPanel?.build(page.skill)
-                page.mcp?.let { mcpStatus?.component = mcpPanel?.build(it, needsPipelinePackage()) }
+                page.mcp?.let { mcpStatus?.component = mcpPanel?.build(it, needsPipelinePackage(), page.pipeline.blockingEditor) }
             }
             if (page.cli.operation != null || page.pipeline.operation != null || page.skill.installing) {
                 delay(BUSY_REFRESH_INTERVAL)
@@ -252,7 +252,13 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
 
         refreshJob?.cancel()
         paintedPage = null
-        lastPage?.mcp?.let { mcpStatus?.component = mcpPanel?.build(it.withRunning(stores, operation), needsPipelinePackage()) }
+        lastPage?.mcp?.let {
+            mcpStatus?.component = mcpPanel?.build(
+                it.withRunning(stores, operation),
+                needsPipelinePackage(),
+                lastPage?.pipeline?.blockingEditor,
+            )
+        }
         if (packageInstallAgreed) paintPipelineBusy(UnityPipelineOperation.INSTALLING)
         activeScope.launch {
             UnityMcpStatusProvider.getInstance(project).write(stores, operation, modality, packageInstallAgreed, networkPolicyRemovalAgreed)
@@ -328,7 +334,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         val running = unityMcpWriteGroups(stores).flatten().toSet()
         return copy(
             rows = rows.map {
-                if (it.store in running) it.copy(operation = operation, failure = null, failureExitCode = null) else it
+                if (it.store in running) it.copy(operation = operation, failure = null) else it
             }
         )
     }
@@ -370,7 +376,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         paintedPage = null
         val skill = lastPage?.skill
         if (skill != null) {
-            skillStatus?.component = skillPanel?.build(skill.copy(installing = true, failure = null))
+            skillStatus?.component = skillPanel?.build(skill.copy(installing = true, failure = null, failedTarget = null))
         }
         activeScope.launch {
             UnitySkillStatusProvider.getInstance(project).install(target, modality, UnityAgentsSource.SETTINGS)
@@ -378,9 +384,9 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
         }
     }
 
-    private fun retrySkill() {
+    private fun retrySkill(presentation: UnitySkillPresentation) {
         UnitySkillStatusProvider.getInstance(project).clearFailure()
-        startSkillInstall(UnitySkillTarget.ALL)
+        startSkillInstall(presentation.failedTarget ?: UnitySkillTarget.ALL)
     }
 
     private fun openSkillsSettings(component: JComponent) {
@@ -461,7 +467,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             }
 
             UnityCliOffer.SHOW_UPDATE_COMMAND -> {
-                val command = unityCliUpdateCommandForClipboard(presentation.installMethod, presentation.updateCommand)
+                val command = presentation.updateCommand
                 row {
                     button(UnityBundle.message("unity.agents.cli.copy.command")) {
                         CopyPasteManager.getInstance().setContents(StringSelection(command.orEmpty()))

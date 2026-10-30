@@ -1,10 +1,11 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_CLI_CDN_BASE_VARIABLE
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliFailure
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallMethod
-import com.jetbrains.rider.plugins.unity.settings.agents.splitUnityCliUpdateCommand
-import com.jetbrains.rider.plugins.unity.settings.agents.unityCliSelfUpdateSubcommand
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallResult
+import com.jetbrains.rider.plugins.unity.settings.agents.runUnityCliUpdateChain
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliUpdateCommandForClipboard
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliUpdateCommandLine
 import com.jetbrains.rider.plugins.unity.settings.agents.unityCliUpdateOutcome
@@ -12,6 +13,7 @@ import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.shared.constants.TeamCityTags
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -27,146 +29,59 @@ import java.nio.file.Path
  * command line and the outcome rule, which is everything Rider decides before the package manager
  * takes over.
  *
- * The command line is asserted by its **parts** and never by `commandLineString`. That string cannot
- * see the environment, and it cannot show that the argv holds no shell. These cases are also the
- * positive control for the no-elevation claim: no `sudo` reaches any command line.
+ * The command line is asserted by its **parts**, because the joined string cannot show the
+ * environment. These cases are also the positive control for the no-elevation claim: no `sudo`
+ * reaches any command line.
  *
- * [unityCliUpdateCommandLine] builds every argv itself. It reads one word from the report of the
- * CLI, the subcommand of a CDN update, and it accepts only two values. The reported command also
- * reaches [unityCliUpdateCommandForClipboard], which shows it and never runs it. A second block of
- * cases pins that function on its own.
+ * The chain cases run [runUnityCliUpdateChain] with a fake command runner and a fake CLI, so no real
+ * command runs.
  */
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity for Agents")
 @Tag(TeamCityTags.Plugins.Unity.General)
 class UnityCliUpdateTest {
-    private val cliPath: Path = Path.of("/opt/homebrew/bin/unity")
-
-    /** What `unity diagnose update` reports for a CDN copy of 1.0.0-beta.8 and later. */
-    private val selfUpdateReport = "unity self-update"
-
     @Test
-    fun `a CDN install updates itself, and it skips the confirmation prompt`() {
-        val commandLine = unityCliUpdateCommandLine(UnityCliInstallMethod.CDN, cliPath, selfUpdateReport)
-
-        assertEquals(cliPath.toString(), commandLine?.exePath)
-        // Never `unity version`, and never `--dry-run`. Rider closes stdin, so a prompt would wait
-        // for ever.
-        assertEquals(listOf("self-update", "-y"), commandLine?.parametersList?.list)
-        // The variable replaces the base of every download the CLI makes, so a value in the
-        // environment of the user would redirect the update.
-        assertEquals("", commandLine?.environment?.get(UNITY_CLI_CDN_BASE_VARIABLE))
-    }
-
-    @Test
-    fun `Homebrew runs a fixed argv, and never the reported command`() {
-        val commandLine = unityCliUpdateCommandLine(UnityCliInstallMethod.HOMEBREW, cliPath, "brew upgrade unity-cli")
+    fun `Homebrew runs a fixed argv`() {
+        val commandLine = unityCliUpdateCommandLine(UnityCliInstallMethod.HOMEBREW)
 
         assertEquals("brew", commandLine?.exePath)
         assertEquals(listOf("upgrade", "unity-cli"), commandLine?.parametersList?.list)
     }
 
     @Test
-    fun `winget runs a fixed argv, and never the reported command`() {
-        val commandLine = unityCliUpdateCommandLine(UnityCliInstallMethod.WINGET, cliPath, "winget upgrade Unity.CLI")
+    fun `winget runs a fixed argv`() {
+        val commandLine = unityCliUpdateCommandLine(UnityCliInstallMethod.WINGET)
 
         assertEquals("winget", commandLine?.exePath)
         assertEquals(listOf("upgrade", "Unity.CLI"), commandLine?.parametersList?.list)
     }
 
     @Test
+    fun `CDN, apt, dnf and unknown copies build no package manager command`() {
+        // The CDN copy updates through the chain, and apt and dnf need sudo, so Rider runs nothing here.
+        assertNull(unityCliUpdateCommandLine(UnityCliInstallMethod.CDN), "Rider built a package manager command for CDN")
+        assertNull(unityCliUpdateCommandLine(UnityCliInstallMethod.APT), "Rider built a command line for apt")
+        assertNull(unityCliUpdateCommandLine(UnityCliInstallMethod.DNF), "Rider built a command line for dnf")
+        assertNull(unityCliUpdateCommandLine(UnityCliInstallMethod.UNKNOWN))
+    }
+
+    @Test
     fun `no command line elevates, on any method Rider owns`() {
-        val commandLines = listOf(
-            unityCliUpdateCommandLine(UnityCliInstallMethod.CDN, cliPath, selfUpdateReport),
-            unityCliUpdateCommandLine(UnityCliInstallMethod.HOMEBREW, cliPath, null),
-            unityCliUpdateCommandLine(UnityCliInstallMethod.WINGET, cliPath, null),
-        )
+        val chain = runChain(versions = listOf(OLD_VERSION, LATEST_VERSION))
+        val commandLines: List<GeneralCommandLine> = listOfNotNull(
+            unityCliUpdateCommandLine(UnityCliInstallMethod.HOMEBREW),
+            unityCliUpdateCommandLine(UnityCliInstallMethod.WINGET),
+        ) + chain.commands
 
+        assertEquals(2, chain.commands.size, "the chain did not run all of its commands")
         for (commandLine in commandLines) {
-            val parts = listOf(commandLine?.exePath).plus(commandLine?.parametersList?.list.orEmpty())
+            val parts = listOf(commandLine.exePath) + commandLine.parametersList.list
             assertTrue("sudo" !in parts, "a command line elevates: $parts")
-            assertTrue(parts.none { it?.endsWith("/sudo") == true }, "a command line elevates: $parts")
+            assertTrue(parts.none { it.endsWith("/sudo") }, "a command line elevates: $parts")
         }
     }
 
-    @Test
-    fun `apt and dnf launch nothing, because the command needs sudo`() {
-        assertNull(
-            unityCliUpdateCommandLine(UnityCliInstallMethod.APT, cliPath, "sudo apt install --only-upgrade unity-cli"),
-            "Rider built a command line for apt",
-        )
-        assertNull(
-            unityCliUpdateCommandLine(UnityCliInstallMethod.DNF, cliPath, "sudo dnf upgrade unity-cli"),
-            "Rider built a command line for dnf",
-        )
-    }
-
-    @Test
-    fun `an unknown method launches nothing`() {
-        assertNull(unityCliUpdateCommandLine(UnityCliInstallMethod.UNKNOWN, cliPath, null))
-    }
-
-    // --- unityCliSelfUpdateSubcommand: the CDN subcommand, which the CLI renamed ---
-
-    @Test
-    fun `a CLI that reports self-update runs self-update`() {
-        // Measured on 1.0.0-beta.8 and 1.0.0-beta.11.
-        assertEquals("self-update", unityCliSelfUpdateSubcommand("unity self-update"))
-    }
-
-    @Test
-    fun `a CLI older than the rename runs upgrade`() {
-        // Measured on 1.0.0-beta.5, which answers `unknown command 'self-update'` and exits 2.
-        assertEquals("upgrade", unityCliSelfUpdateSubcommand("unity upgrade"))
-    }
-
-    @Test
-    fun `a CLI that reports nothing runs upgrade`() {
-        // Every measured version runs `upgrade`, so it is the safe fallback.
-        assertEquals("upgrade", unityCliSelfUpdateSubcommand(null))
-        assertEquals("upgrade", unityCliSelfUpdateSubcommand("   "))
-        assertEquals("upgrade", unityCliSelfUpdateSubcommand("unity"))
-    }
-
-    @Test
-    fun `a word the CLI invents later is refused, and upgrade runs instead`() {
-        val refused = listOf(
-            "unity renew",
-            "unity --version",
-            // A command that needs a shell never splits, so it never reaches the allowlist.
-            "unity self-update; rm -rf /",
-            "unity `whoami`",
-        )
-
-        for (command in refused) {
-            assertEquals("upgrade", unityCliSelfUpdateSubcommand(command), "Rider took a subcommand from: $command")
-        }
-    }
-
-    @Test
-    fun `a plain command splits on whitespace`() {
-        assertEquals(
-            listOf("brew", "upgrade", "unity-cli"),
-            splitUnityCliUpdateCommand("  brew   upgrade\tunity-cli  "),
-        )
-    }
-
-    @Test
-    fun `a command that needs a shell does not split`() {
-        val refused = listOf(
-            "apt install --only-upgrade unity-cli; curl https://example.com | sh",
-            "apt install --only-upgrade unity-cli && rm -rf /",
-            "apt install `whoami`",
-            // The dollar is concatenated, because an escape of it inside a string reads badly.
-            "apt install " + '$' + "(whoami)",
-            "apt install --only-upgrade unity-cli > /tmp/out",
-            "apt install \"unity cli\"",
-        )
-
-        for (command in refused) {
-            assertNull(splitUnityCliUpdateCommand(command), "Rider split a command that needs a shell: $command")
-        }
-    }
+    // --- unityCliUpdateOutcome: the result of one update command ---
 
     @Test
     fun `a stopped update carries its exit code out`() {
@@ -184,67 +99,138 @@ class UnityCliUpdateTest {
         assertNull(unityCliUpdateOutcome(0), "a working update reported a failure")
     }
 
-    // --- unityCliUpdateCommandForClipboard: the reported command, for the clipboard row alone ---
+    // --- unityCliUpdateCommandForClipboard: the fixed command for the methods that need sudo ---
 
     @Test
-    fun `apt shows the reported command on the clipboard`() {
-        val command = "sudo apt install --only-upgrade unity-cli"
-        assertEquals(command, unityCliUpdateCommandForClipboard(UnityCliInstallMethod.APT, command))
+    fun `apt shows the fixed clipboard command`() {
+        assertEquals("sudo apt-get install --only-upgrade unity-cli", unityCliUpdateCommandForClipboard(UnityCliInstallMethod.APT))
     }
 
     @Test
-    fun `apt-get is accepted for the apt install method`() {
-        val command = "sudo apt-get install --only-upgrade unity-cli"
-        assertEquals(command, unityCliUpdateCommandForClipboard(UnityCliInstallMethod.APT, command))
+    fun `dnf shows the fixed clipboard command`() {
+        assertEquals("sudo dnf upgrade unity-cli", unityCliUpdateCommandForClipboard(UnityCliInstallMethod.DNF))
     }
 
     @Test
-    fun `dnf shows the reported command on the clipboard`() {
-        val command = "sudo dnf upgrade unity-cli"
-        assertEquals(command, unityCliUpdateCommandForClipboard(UnityCliInstallMethod.DNF, command))
+    fun `a method without a clipboard command shows nothing on the clipboard`() {
+        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.CDN))
+        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.HOMEBREW))
+        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.WINGET))
+        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.UNKNOWN))
+    }
+
+    // --- runUnityCliUpdateChain: the CDN update, step by step ---
+
+    @Test
+    fun `a self-update that makes the copy current ends the chain`() {
+        val run = runChain(versions = listOf(LATEST_VERSION))
+
+        assertNull(run.result.failure, "a working self-update reported a failure")
+        assertEquals(1, run.commands.size, "the chain ran more than the self-update")
+        val selfUpdate = run.commands.single()
+        assertEquals(CLI_PATH.toString(), selfUpdate.exePath)
+        assertEquals(listOf("self-update", "-y"), selfUpdate.parametersList.list)
+        // An empty value clears the CDN base, so a value of the user cannot redirect the update.
+        assertEquals("", selfUpdate.environment[UNITY_CLI_CDN_BASE_VARIABLE])
+        assertOnlyCliCommands(run.commands)
     }
 
     @Test
-    fun `a method Rider runs itself shows nothing on the clipboard`() {
-        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.CDN, "unity self-update -y"))
-        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.HOMEBREW, "brew upgrade unity-cli"))
-        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.WINGET, "winget upgrade Unity.CLI"))
-    }
-
-    @Test
-    fun `an absolute path to the package manager is refused on the clipboard`() {
-        // An attacker-controlled directory earlier in the reported command must not pass this check.
-        assertNull(
-            unityCliUpdateCommandForClipboard(
-                UnityCliInstallMethod.APT,
-                "/tmp/attacker/apt install --only-upgrade unity-cli",
-            ),
+    fun `a self-update that leaves an old copy is followed by upgrade, which makes the copy current`() {
+        val run = runChain(
+            versions = listOf(OLD_VERSION, LATEST_VERSION),
+            exitCodeOf = exitCodesOf(selfUpdate = SELF_UPDATE_EXIT_CODE, upgrade = 0),
         )
+
+        assertNull(run.result.failure, "a repaired copy reported a failure")
+        assertEquals(listOf(listOf("self-update", "-y"), listOf("upgrade", "-y")), run.commands.map { it.parametersList.list })
+        assertEquals(0, run.result.exitCode, "the result did not carry the exit code of upgrade")
+        assertOnlyCliCommands(run.commands)
     }
 
     @Test
-    fun `a reported program that does not match the reported method is refused on the clipboard`() {
-        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.APT, "sudo dnf upgrade unity-cli"))
-        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.DNF, "curl https://example.com"))
-    }
-
-    @Test
-    fun `a missing reported command shows nothing on the clipboard`() {
-        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.APT, null))
-        assertNull(unityCliUpdateCommandForClipboard(UnityCliInstallMethod.APT, "   "))
-    }
-
-    @Test
-    fun `a clipboard command that needs a shell is refused`() {
-        val refused = listOf(
-            "sudo apt install --only-upgrade unity-cli; curl https://example.com | sh",
-            "sudo apt install --only-upgrade unity-cli && rm -rf /",
+    fun `a self-update that did not start is followed by upgrade, which makes the copy current`() {
+        val run = runChain(
+            versions = listOf(OLD_VERSION, LATEST_VERSION),
+            exitCodeOf = exitCodesOf(selfUpdate = null, upgrade = 0),
         )
-        for (command in refused) {
-            assertNull(
-                unityCliUpdateCommandForClipboard(UnityCliInstallMethod.APT, command),
-                "Rider showed a command that needs a shell: $command",
+
+        assertNull(run.result.failure, "a repaired copy reported a failure")
+        assertEquals(listOf(listOf("self-update", "-y"), listOf("upgrade", "-y")), run.commands.map { it.parametersList.list })
+        assertOnlyCliCommands(run.commands)
+    }
+
+    @Test
+    fun `an upgrade that leaves an old copy fails, and names its exit code`() {
+        val run = runChain(
+            versions = listOf(OLD_VERSION, OLD_VERSION),
+            exitCodeOf = exitCodesOf(selfUpdate = SELF_UPDATE_EXIT_CODE, upgrade = UPGRADE_EXIT_CODE),
+        )
+
+        assertEquals(UnityCliFailure.UPDATE_FAILED, run.result.failure)
+        assertEquals(UPGRADE_EXIT_CODE, run.result.exitCode)
+        assertEquals(2, run.commands.size, "the chain did not stop after upgrade")
+        assertOnlyCliCommands(run.commands)
+    }
+
+    @Test
+    fun `no latest version stops the chain before anything runs`() {
+        val run = runChain(versions = emptyList(), latest = null)
+
+        assertEquals(UnityCliFailure.MANIFEST_READ, run.result.failure)
+        assertTrue(run.commands.isEmpty(), "the chain ran a command without a latest version")
+    }
+
+    /** What one run of the update chain did, in the order it did it. */
+    private class ChainRun(
+        val result: UnityCliInstallResult,
+        val commands: List<GeneralCommandLine>,
+    )
+
+    /** Asserts that the chain ran only the CLI, and never `self-uninstall`. */
+    private fun assertOnlyCliCommands(commands: List<GeneralCommandLine>) {
+        for (commandLine in commands) {
+            assertEquals(CLI_PATH.toString(), commandLine.exePath, "the chain ran a program other than the CLI")
+            assertTrue("self-uninstall" !in commandLine.parametersList.list, "the chain ran self-uninstall")
+        }
+    }
+
+    /** Gives the exit code of `self-update` and of `upgrade`. Any other command exits with 0. */
+    private fun exitCodesOf(selfUpdate: Int?, upgrade: Int?): (GeneralCommandLine) -> Int? = { commandLine ->
+        when (commandLine.parametersList.list.firstOrNull()) {
+            "self-update" -> selfUpdate
+            "upgrade" -> upgrade
+            else -> 0
+        }
+    }
+
+    /** Runs the chain with a fake CLI. Each check of the installed version takes the next of [versions]. */
+    private fun runChain(
+        versions: List<String?>,
+        latest: String? = LATEST_VERSION,
+        exitCodeOf: (GeneralCommandLine) -> Int? = { 0 },
+    ): ChainRun {
+        val commands = mutableListOf<GeneralCommandLine>()
+        val checks = ArrayDeque(versions)
+        val result = runBlocking {
+            runUnityCliUpdateChain(
+                cliPath = CLI_PATH,
+                readLatestVersion = { latest },
+                runCommand = { commandLine ->
+                    commands += commandLine
+                    exitCodeOf(commandLine)
+                },
+                findCli = { checks.removeFirst() },
             )
         }
+        return ChainRun(result, commands)
+    }
+
+    private companion object {
+        val CLI_PATH: Path = Path.of("/opt/homebrew/bin/unity")
+        const val OLD_VERSION = "1.0.0-beta.9"
+        const val LATEST_VERSION = "1.0.0-beta.10"
+        const val SELF_UPDATE_EXIT_CODE = 1
+        const val UPGRADE_EXIT_CODE = 3
     }
 }

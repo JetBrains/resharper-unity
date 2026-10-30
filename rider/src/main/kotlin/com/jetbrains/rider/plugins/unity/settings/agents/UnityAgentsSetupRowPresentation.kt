@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
+import com.intellij.openapi.util.text.StringUtil.escapeXmlEntities
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
@@ -35,9 +36,11 @@ data class UnityAgentsSetupRowPresentation(
  * Follows the design: Install for one missing step, Install All for two or more, and Dismiss beside it.
  * A dismissed row keeps the "Missing" text without links. "Installing…" replaces the links while the setup chain runs.
  * A complete setup shows "Enabled" and the Unity skill count.
+ * A setup that an old Editor stops shows the minimum Editor version instead.
  *
  * @param missing the steps that are not done, in the order of [UnityAgentsSetupStep].
  * @param enabledSkillCount the number of enabled Unity skills. The row shows it only when [missing] is empty.
+ * @param blockingEditor the old Editor that keeps the setup from its end. The row then names it instead of "Enabled".
  */
 @ApiStatus.Internal
 fun unityAgentsSetupRowPresentation(
@@ -45,13 +48,17 @@ fun unityAgentsSetupRowPresentation(
     dismissed: Boolean,
     installing: Boolean,
     enabledSkillCount: Int,
+    blockingEditor: UnityOldEditor? = null,
 ): UnityAgentsSetupRowPresentation {
     if (missing.isEmpty()) {
-        return UnityAgentsSetupRowPresentation(
-            summary = UnityBundle.message("unity.agents.setup.row.enabled", enabledSkillCount),
-            links = emptyList(),
-            progress = null,
-        )
+        val summary =
+            if (blockingEditor != null) {
+                UnityBundle.message("unity.agents.setup.row.old.editor", escapeXmlEntities(blockingEditor.minimumVersion))
+            }
+            else {
+                UnityBundle.message("unity.agents.setup.row.enabled", enabledSkillCount)
+            }
+        return UnityAgentsSetupRowPresentation(summary = summary, links = emptyList(), progress = null)
     }
     val summary = UnityBundle.message("unity.agents.setup.row.missing", missing.joinToString(", ") { it.rowText() })
     return when {

@@ -68,17 +68,22 @@ internal class UnityAgentsSetupService(
             project.isUnityProject.value &&
             TrustedProjects.isProjectTrusted(project)
 
-    override suspend fun readMissingSteps(): List<UnityAgentsSetupStep>? {
+    override suspend fun readStatus(): UnityAgentsSetupStatus? {
         if (!isAvailable()) return null
 
         val cli = readUnityCli(project)
         val pipeline = UnityPipelineStatusProvider.getInstance(project).read(cli)
+        val blockingEditor = pipeline.blockingEditor
+        // An old Editor keeps the package, the skill and MCP out of the project, so no step can bring the setup to its end.
+        if (blockingEditor != null) return UnityAgentsSetupStatus(missing = emptyList(), blockingEditor = blockingEditor)
+
         val skill = UnitySkillStatusProvider.getInstance(project).read(cli, pipeline)
-        return unityAgentsMissingSteps(
+        val missing = unityAgentsMissingSteps(
             cliMissing = cli.location == null,
-            packageMissing = pipeline.needsPipelinePackage == true,
+            packageMissing = pipeline.setupAddsPackage,
             skillMissing = skill.offer in MISSING_SKILL_OFFERS,
         )
+        return UnityAgentsSetupStatus(missing, blockingEditor = null)
     }
 
     override fun requestUpdate(source: UnityAgentsSource) {
@@ -124,11 +129,7 @@ internal class UnityAgentsSetupService(
         when (pipelineAfter.offer) {
             UnityPipelineOffer.FAILED -> showFailureBalloon(
                 title = UnityBundle.message("unity.agents.setup.package.failed.title"),
-                content = unityPipelineFailureMessage(
-                    pipelineAfter.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
-                    pipelineAfter.failureExitCode,
-                    pipelineAfter.failureCliError,
-                ),
+                content = unityPipelineFailureMessage(pipelineAfter.failure ?: UnityPipelineFailure.NOT_CONFIRMED),
                 displayId = PACKAGE_FAILED_DISPLAY_ID,
                 clearFailure = UnityPipelineStatusProvider.getInstance(project)::clearFailure,
                 retry = { retrySetup(UnityAgentsSource.NOTIFICATION) },
@@ -147,11 +148,7 @@ internal class UnityAgentsSetupService(
                 if (finalSkill.offer == UnitySkillOffer.FAILED) {
                     showFailureBalloon(
                         title = UnityBundle.message("unity.agents.setup.skill.failed.title"),
-                        content = unityAgentsSkillFailedMessage(
-                            installedCli,
-                            finalSkill.failure ?: UnitySkillFailure.NOT_CONFIRMED,
-                            finalSkill.failureExitCode,
-                        ),
+                        content = unityAgentsSkillFailedMessage(installedCli, finalSkill.failure ?: UnitySkillFailure.NOT_CONFIRMED),
                         displayId = SKILL_FAILED_DISPLAY_ID,
                         clearFailure = skillProvider::clearFailure,
                         retry = { retrySetup(UnityAgentsSource.NOTIFICATION) },
@@ -164,6 +161,16 @@ internal class UnityAgentsSetupService(
                     title = UnityBundle.message("unity.agents.setup.done.title"),
                     body = unityAgentsSetupDoneMessage(installedCli, installedPackage, installedSkill, skillPresent),
                 )
+            }
+
+            UnityPipelineOffer.EDITOR_TOO_OLD -> if (installedCli) {
+                showSuccessBalloon(
+                    title = UnityBundle.message("unity.agents.setup.done.title"),
+                    body = unityAgentsSetupOldEditorMessage(pipelineAfter.minimumEditorVersion, pipelineAfter.editorVersion),
+                )
+            }
+            else {
+                logger.info("The project uses Unity ${pipelineAfter.editorVersion}, so the setup chain adds no Unity Pipeline package")
             }
 
             UnityPipelineOffer.GATED,
@@ -196,11 +203,7 @@ internal class UnityAgentsSetupService(
         if (after.offer == UnityPipelineOffer.FAILED) {
             showFailureBalloon(
                 title = UnityBundle.message("unity.agents.update.package.failed.title"),
-                content = unityPipelineFailureMessage(
-                    after.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
-                    after.failureExitCode,
-                    after.failureCliError,
-                ),
+                content = unityPipelineFailureMessage(after.failure ?: UnityPipelineFailure.NOT_CONFIRMED),
                 displayId = PACKAGE_UPDATE_FAILED_DISPLAY_ID,
                 clearFailure = UnityPipelineStatusProvider.getInstance(project)::clearFailure,
                 retry = { retryUpdate(UnityAgentsSource.NOTIFICATION) },

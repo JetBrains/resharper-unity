@@ -20,11 +20,25 @@ data class UnityAgentsSweepFacts(
     val installDeclined: Boolean,
     val updateDeclined: Boolean,
     val skillMissing: Boolean = false,
+    /** An old Unity Editor keeps the Pipeline package out of the project, so the setup cannot reach its end. */
+    val setupBlocked: Boolean = false,
 )
+
+/**
+ * The offer of the CLI for the balloons.
+ *
+ * A copy that only the user can update, with no command to show, counts as current. The page still shows that copy, but
+ * a balloon about it would lead nowhere.
+ */
+@ApiStatus.Internal
+fun unityCliBalloonOffer(presentation: UnityCliPresentation): UnityCliOffer {
+    val offer = presentation.copy(projectTrusted = true).offer
+    return if (offer == UnityCliOffer.SHOW_UPDATE_COMMAND && presentation.updateCommand == null) UnityCliOffer.CURRENT else offer
+}
 
 @ApiStatus.Internal
 fun unityCliSuggestion(presentation: UnityCliPresentation, facts: UnityAgentsSweepFacts): UnityCliSuggestion {
-    val cli = presentation.copy(projectTrusted = true).offer
+    val cli = unityCliBalloonOffer(presentation)
     val wantsInstall = when (cli) {
         UnityCliOffer.INSTALL -> true
         UnityCliOffer.CURRENT,
@@ -34,7 +48,7 @@ fun unityCliSuggestion(presentation: UnityCliPresentation, facts: UnityAgentsSwe
             -> facts.packageMissing || facts.skillMissing
         UnityCliOffer.CHECKING, UnityCliOffer.NOT_TRUSTED, UnityCliOffer.BUSY, UnityCliOffer.FAILED -> false
     }
-    if (wantsInstall) return if (facts.installDeclined) UnityCliSuggestion.NONE else UnityCliSuggestion.INSTALL
+    if (wantsInstall) return if (facts.installDeclined || facts.setupBlocked) UnityCliSuggestion.NONE else UnityCliSuggestion.INSTALL
     val wantsUpdate = when (cli) {
         UnityCliOffer.UPDATE, UnityCliOffer.SHOW_UPDATE_COMMAND -> true
         UnityCliOffer.CURRENT, UnityCliOffer.LATEST_VERSION_UNKNOWN -> facts.packageUpgradable

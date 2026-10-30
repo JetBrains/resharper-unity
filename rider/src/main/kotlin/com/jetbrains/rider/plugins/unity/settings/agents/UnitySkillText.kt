@@ -6,15 +6,22 @@ import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
 
 @ApiStatus.Internal
-fun unitySkillGateMessage(gate: UnityMcpSectionState, packageInstalled: Boolean): @Nls String? = when (gate) {
-    UnityMcpSectionState.NO_PROJECT -> UnityBundle.message("unity.agents.skills.no.project")
-    UnityMcpSectionState.NOT_TRUSTED -> UnityBundle.message("unity.agents.skills.not.trusted")
-    UnityMcpSectionState.NO_CLI ->
-        if (packageInstalled) UnityBundle.message("unity.agents.skills.needs.cli")
-        else UnityBundle.message("unity.agents.skills.needs.setup")
-    UnityMcpSectionState.READY -> if (packageInstalled) null else UnityBundle.message("unity.agents.skills.needs.package")
-    UnityMcpSectionState.CHECKING -> null
-}
+fun unitySkillGateMessage(gate: UnityMcpSectionState, packageInstalled: Boolean, blockingEditor: UnityOldEditor? = null): @Nls String? =
+    when (gate) {
+        UnityMcpSectionState.NO_PROJECT -> UnityBundle.message("unity.agents.skills.no.project")
+        UnityMcpSectionState.NOT_TRUSTED -> UnityBundle.message("unity.agents.skills.not.trusted")
+        UnityMcpSectionState.NO_CLI -> when {
+            packageInstalled -> UnityBundle.message("unity.agents.skills.needs.cli")
+            blockingEditor != null -> unityOldEditorGateMessage(blockingEditor)
+            else -> UnityBundle.message("unity.agents.skills.needs.setup")
+        }
+        UnityMcpSectionState.READY -> when {
+            packageInstalled -> null
+            blockingEditor != null -> unityOldEditorGateMessage(blockingEditor)
+            else -> UnityBundle.message("unity.agents.skills.needs.package")
+        }
+        UnityMcpSectionState.CHECKING -> null
+    }
 
 @Nls
 @ApiStatus.Internal
@@ -47,8 +54,8 @@ private fun unitySkillAgentName(agent: UnitySkillTarget): @Nls String? = when (a
 }
 
 @Nls
-internal fun unitySkillFailureMessage(failure: UnitySkillFailure, exitCode: Int?): String = when (failure) {
-    UnitySkillFailure.LAUNCH_FAILED -> UnityBundle.message("unity.agents.skills.failed.launch")
-    UnitySkillFailure.EXIT_CODE -> UnityBundle.message("unity.agents.skills.failed.exit.code", exitCode ?: -1)
+internal fun unitySkillFailureMessage(failure: UnitySkillFailure): String = when (failure) {
+    UnitySkillFailure.DOWNLOAD -> UnityBundle.message("unity.agents.skills.failed.download")
+    UnitySkillFailure.WRITE -> UnityBundle.message("unity.agents.skills.failed.write")
     UnitySkillFailure.NOT_CONFIRMED -> UnityBundle.message("unity.agents.skills.failed.not.confirmed")
 }

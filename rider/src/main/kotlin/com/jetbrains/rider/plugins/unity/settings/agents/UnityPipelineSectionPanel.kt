@@ -60,6 +60,15 @@ internal class UnityPipelineSectionPanel(
                 }
             }
 
+            UnityPipelineOffer.EDITOR_TOO_OLD -> {
+                row {
+                    button(UnityBundle.message("unity.agents.pipeline.install")) {}.enabled(false)
+                }
+                row {
+                    comment(unityPipelineOldEditorMessage(presentation.minimumEditorVersion, presentation.editorVersion))
+                }
+            }
+
             UnityPipelineOffer.BUSY -> row {
                 icon(AnimatedIcon.Default.INSTANCE).gap(RightGap.SMALL)
                 comment(unityPipelineBusyMessage(presentation.operation ?: UnityPipelineOperation.INSTALLING))
@@ -74,11 +83,7 @@ internal class UnityPipelineSectionPanel(
                         }.resizableRow()
                     }.align(AlignY.FILL).gap(RightGap.SMALL)
                     comment(
-                        unityPipelineFailureMessage(
-                            presentation.failure ?: UnityPipelineFailure.NOT_CONFIRMED,
-                            presentation.failureExitCode,
-                            presentation.failureCliError,
-                        )
+                        unityPipelineFailureMessage(presentation.failure ?: UnityPipelineFailure.NOT_CONFIRMED)
                     ).align(AlignY.CENTER).applyToComponent {
                         putClientProperty(DslComponentPropertyInternal.PREFERRED_COLUMNS_LABEL_WORD_WRAP, 20)
                     }

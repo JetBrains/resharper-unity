@@ -14,17 +14,27 @@ enum class UnityAgentsSetupStep {
     CLI_SKILL,
 }
 
+/**
+ * What the setup reads for the agent widget.
+ *
+ * @param missing the steps that are not done yet, in the order of [UnityAgentsSetupStep]. It is empty when [blockingEditor] is set.
+ * @param blockingEditor the old Editor that keeps the Pipeline package out of the project, or null
+ */
+@ApiStatus.Internal
+data class UnityAgentsSetupStatus(val missing: List<UnityAgentsSetupStep>, val blockingEditor: UnityOldEditor?)
+
 @ApiStatus.Internal
 interface UnityAgentsSetupProvider {
     /** False when the setup does not apply: the feature is off, the project is default, not a Unity project, or not trusted. */
     fun isAvailable(): Boolean
 
     /**
-     * Reads the steps that are not done yet, in the order of [UnityAgentsSetupStep].
+     * Reads the steps that are not done yet, and the old Editor that blocks the setup.
+     * In a project with an old Editor, it lists no step, because no step can bring the setup to its end.
      * Returns null when the setup is not [isAvailable].
-     * Runs the Unity CLI up to three times.
+     * Runs the Unity CLI up to two times for a new binary.
      */
-    suspend fun readMissingSteps(): List<UnityAgentsSetupStep>?
+    suspend fun readStatus(): UnityAgentsSetupStatus?
 
     /** True while a setup chain runs. */
     fun isRunning(): Boolean

@@ -1,7 +1,6 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
 import com.google.gson.JsonParser
-import com.intellij.execution.process.ProcessOutput
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry.ABSENT
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpEntry.OTHER_CLI
@@ -12,23 +11,18 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpOperation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpStore
 import com.jetbrains.rider.plugins.unity.settings.agents.readMcpServersEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexSnippet
-import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpConfigureLocalCommandLine
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpHeldIsStale
-import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpLocalClientListCommandLine
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpManualSnippet
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpMergedStore
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpOwnedStore
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpRestartNeeded
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpRowSnippet
-import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpWriteCommandLine
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpWriteConfirmed
-import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpWriteOutcome
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -40,13 +34,8 @@ import java.nio.file.Path
  * The class runs no process and it needs no application. Every table below is the specification of
  * one rule, so a reader learns the rule from the test.
  *
- * Every store of this section lives in the solution directory. So every case here asserts that the
- * command line names the solution, through `--local` or through the working directory.
- *
- * The Codex configure is the only write a tool still does. [UnityMcpJsonStoreTest] and
- * [UnityMcpCodexStoreTest] answer for every write that Rider does itself.
- *
- * [UnityMcpConfigureStandInTest] proves that these command lines start a process at all.
+ * Rider writes every store of this section itself. [UnityMcpJsonStoreTest] and [UnityMcpCodexStoreTest]
+ * answer for those writes.
  */
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity for Agents")
@@ -54,74 +43,6 @@ import java.nio.file.Path
 class UnityMcpWriteTest {
     private val unity = Path.of("/home/tester/.unity/bin/unity")
     private val solution = Path.of("/home/tester/projects/Platformer")
-
-    @Test
-    fun `the Codex configure writes the project store and skips the prompt`() {
-        val command = unityMcpConfigureLocalCommandLine(unity, solution)
-
-        assertEquals(unity.toString(), command.exePath)
-        assertEquals(listOf("mcp", "configure", "codex", "--local", "--yes"), command.parametersList.list)
-        assertEquals(solution.toString(), command.workDirectory?.path, "the working directory names the project")
-    }
-
-    @Test
-    fun `the read asks the Unity CLI for the project-local client list`() {
-        val command = unityMcpLocalClientListCommandLine(unity, solution)
-
-        assertEquals(listOf("mcp", "configure", "--list", "--local", "--json"), command.parametersList.list)
-        assertEquals(solution.toString(), command.workDirectory?.path)
-    }
-
-    /**
-     * Rider writes every JSON store itself, and it removes the Codex entry itself, so a null here is
-     * not a missing input.
-     *
-     * [UnityMcpJsonStoreTest] and [UnityMcpCodexStoreTest] answer for these writes.
-     */
-    @Test
-    fun `a write that Rider does itself has no command line`() {
-        val owned = listOf(UnityMcpStore.CLAUDE_CODE_CLI, UnityMcpStore.COPILOT_CLI, UnityMcpStore.JUNIE_CLI)
-        for (store in owned) {
-            for (operation in UnityMcpOperation.entries) {
-                assertNull(
-                    unityMcpWriteCommandLine(store, operation, unity, solution),
-                    "$operation the $store store built a command line",
-                )
-            }
-        }
-        assertNull(unityMcpWriteCommandLine(UnityMcpStore.CODEX_CLI, UnityMcpOperation.REMOVING, unity, solution))
-    }
-
-    /**
-     * No write may reach a store outside the solution.
-     *
-     * The working directory is what every one of them has in common. `claude mcp remove --scope
-     * project` names the solution through that and through nothing else, because the scope word
-     * means "the directory I am in".
-     */
-    @Test
-    fun `every write runs in the solution directory`() {
-        for (store in UnityMcpStore.entries) {
-            for (operation in UnityMcpOperation.entries) {
-                val command = unityMcpWriteCommandLine(store, operation, unity, solution) ?: continue
-                assertEquals(
-                    solution.toString(),
-                    command.workDirectory?.path,
-                    "$operation the $store store ran somewhere else",
-                )
-            }
-        }
-    }
-
-    /** The delegated write also carries a marker that keeps it off the home directory of the user. */
-    @Test
-    fun `every delegated write carries its project-scope marker`() {
-        val configure = unityMcpWriteCommandLine(UnityMcpStore.CODEX_CLI, UnityMcpOperation.CONFIGURING, unity, solution)
-        assertTrue(
-            configure?.parametersList?.list?.contains("--local") == true,
-            "the Codex configure lost its '--local' marker",
-        )
-    }
 
     /**
      * The snippet is the only path to Unity MCP for a client with no row, so it must be pastable as
@@ -194,10 +115,10 @@ class UnityMcpWriteTest {
     }
 
     /**
-     * The Codex store is TOML, so its row copies the four tables of `unity mcp configure codex`.
+     * The Codex store is TOML, so its row copies the four tables that Rider writes into it.
      */
     @Test
-    fun `the copy on the Codex row is the TOML that the Unity CLI writes`() {
+    fun `the copy on the Codex row is the TOML that Rider writes`() {
         assertEquals(
             """
             [mcp_servers.unity]
@@ -258,31 +179,6 @@ class UnityMcpWriteTest {
         }
     }
 
-    private data class OutcomeCase(
-        val name: String,
-        val output: ProcessOutput?,
-        val confirmed: Boolean,
-        val expected: UnityMcpFailure?,
-    )
-
-    private val outcomeCases = listOf(
-        OutcomeCase("the process did not start", null, false, UnityMcpFailure.LAUNCH_FAILED),
-        OutcomeCase("the process ran past the timeout", timedOut(), true, UnityMcpFailure.LAUNCH_FAILED),
-        OutcomeCase("the store holds what the write asked for", exit(0), true, null),
-        // `claude mcp remove` returns 1 when the entry was already gone, measured on 2026-09-29.
-        OutcomeCase("a non-zero exit over a store that agrees", exit(1), true, null),
-        OutcomeCase("a non-zero exit over a store that did not change", exit(2), false, UnityMcpFailure.EXIT_CODE),
-        // `codex mcp remove` returns 0 when it removed nothing, measured on 2026-09-29.
-        OutcomeCase("a zero exit over a store that did not change", exit(0), false, UnityMcpFailure.NOT_CONFIRMED),
-    )
-
-    @Test
-    fun `the store decides the outcome and the exit code only explains it`() {
-        for (case in outcomeCases) {
-            assertEquals(case.expected, unityMcpWriteOutcome(case.output, case.confirmed), case.name)
-        }
-    }
-
     private data class RestartCase(
         val name: String,
         val failure: UnityMcpFailure?,
@@ -303,7 +199,7 @@ class UnityMcpWriteTest {
         RestartCase("a read that gave no answer proves no change", null, UNREADABLE, PRESENT, false, null, false),
         RestartCase("a gated read proves no change", null, null, PRESENT, false, null, false),
         RestartCase("an earlier request over the file it left", null, PRESENT, PRESENT, true, PRESENT, true),
-        RestartCase("an earlier request survives a failed write", UnityMcpFailure.EXIT_CODE, PRESENT, PRESENT, true, PRESENT, true),
+        RestartCase("an earlier request survives a failed write", UnityMcpFailure.FILE_WRITE, PRESENT, PRESENT, true, PRESENT, true),
         RestartCase("an earlier request over a file that changed since", null, ABSENT, ABSENT, true, PRESENT, false),
         RestartCase("an earlier request with no entry to check", null, PRESENT, PRESENT, true, null, false),
     )
@@ -350,10 +246,6 @@ class UnityMcpWriteTest {
             )
         }
     }
-
-    private fun exit(code: Int): ProcessOutput = ProcessOutput("", "", code, false, false)
-
-    private fun timedOut(): ProcessOutput = ProcessOutput("", "", -1, true, false)
 
     /**
      * The text of [path] inside a JSON or a TOML string. Both formats escape a backslash, and Windows writes a backslash

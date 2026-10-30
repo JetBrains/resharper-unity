@@ -22,7 +22,7 @@ import javax.swing.JComponent
 
 internal class UnitySkillSectionPanel(
     private val install: (UnitySkillTarget) -> Unit,
-    private val retry: () -> Unit,
+    private val retry: (UnitySkillPresentation) -> Unit,
     private val openSkillsSettings: (JComponent) -> Unit,
     private val browseSkills: (JComponent) -> Unit,
 ) {
@@ -35,7 +35,7 @@ internal class UnitySkillSectionPanel(
                     }
                     browseRow()
                 }
-                unitySkillGateMessage(presentation.gate, presentation.packageInstalled)?.let { message ->
+                unitySkillGateMessage(presentation.gate, presentation.packageInstalled, presentation.blockingEditor)?.let { message ->
                     row { comment(message) }
                 }
             }
@@ -43,11 +43,6 @@ internal class UnitySkillSectionPanel(
             UnitySkillOffer.CHECKING -> row {
                 icon(AnimatedIcon.Default.INSTANCE).gap(RightGap.SMALL)
                 comment(UnityBundle.message("unity.agents.skills.checking"))
-            }
-
-            UnitySkillOffer.UNREADABLE -> row {
-                icon(AllIcons.General.Error).gap(RightGap.SMALL)
-                comment(UnityBundle.message("unity.agents.skills.unreadable"))
             }
 
             UnitySkillOffer.INSTALL -> {
@@ -99,14 +94,9 @@ internal class UnitySkillSectionPanel(
 
             UnitySkillOffer.FAILED -> {
                 row {
-                    button(UnityBundle.message("unity.agents.skills.try.again")) { retry() }.gap(RightGap.SMALL)
+                    button(UnityBundle.message("unity.agents.skills.try.again")) { retry(presentation) }.gap(RightGap.SMALL)
                     icon(AllIcons.General.Error).gap(RightGap.SMALL)
-                    comment(
-                        unitySkillFailureMessage(
-                            presentation.failure ?: UnitySkillFailure.NOT_CONFIRMED,
-                            presentation.failureExitCode,
-                        ),
-                    )
+                    comment(unitySkillFailureMessage(presentation.failure ?: UnitySkillFailure.NOT_CONFIRMED))
                 }
 
                 if (ShowLogAction.isSupported()) {
