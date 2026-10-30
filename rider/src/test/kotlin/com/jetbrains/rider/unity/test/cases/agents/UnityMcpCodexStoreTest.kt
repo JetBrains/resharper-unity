@@ -1,10 +1,14 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
+import com.google.gson.Gson
+import com.jetbrains.rider.plugins.unity.settings.agents.addUnityMcpCodexEntry
+import com.jetbrains.rider.plugins.unity.settings.agents.hasUnityMcpCodexEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.removeUnityMcpCodexEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexCommand
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexRemoval
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexSnippet
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexStoreFile
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexStoreWithEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexStoreWithoutEntry
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
@@ -29,6 +33,9 @@ import kotlin.io.path.readText
 class UnityMcpCodexStoreTest {
     @TempDir
     lateinit var directory: Path
+
+    private val unity = Path.of("/home/tester/.unity/bin/unity")
+    private val unityCommand = Gson().toJson(unity.toString())
 
     @Test
     fun `the network policy stays without the entry, as codex mcp remove leaves it`() {
@@ -153,7 +160,7 @@ class UnityMcpCodexStoreTest {
     }
 
     @Test
-    fun `the merge of the Unity CLI into a user store asks, and the user content stays`() {
+    fun `the merge that the Unity CLI wrote into a user store asks, and the user content stays`() {
         val removal = unityMcpCodexRemoval(MERGED_STORE)!!
 
         assertEquals(MERGED_WITHOUT_ENTRY, removal.withoutEntry)
@@ -221,17 +228,31 @@ class UnityMcpCodexStoreTest {
     }
 
     @Test
-    fun `a dotted key, an inline table and a header with a comment are user content`() {
+    fun `a dotted key and an inline table are user content`() {
         val stores = listOf(
             "[mcp_servers.unity]\ncommand = \"unity\"\n[features]\nnetwork_proxy.enabled = true\n",
             "[mcp_servers.unity]\ncommand = \"unity\"\n[features.network_proxy]\ndomains = { localhost = \"allow\" }\n",
-            "[mcp_servers.unity]\ncommand = \"unity\"\n[sandbox_workspace_write] # mine\nnetwork_access = true\n",
         )
         for (store in stores) {
             val removal = unityMcpCodexRemoval(store)!!
             assertEquals(removal.withoutEntry, removal.withoutUnity, store)
             assertFalse(removal.deletesStore, store)
         }
+    }
+
+    @Test
+    fun `a header with a comment loses its policy keys and keeps its line`() {
+        val removal = unityMcpCodexRemoval("[sandbox_workspace_write] # mine\nnetwork_access = true\n")!!
+
+        assertEquals("[sandbox_workspace_write] # mine\n", removal.withoutUnity)
+        assertFalse(removal.deletesStore)
+    }
+
+    @Test
+    fun `an array of tables with a network policy key stays as it is`() {
+        val store = "[[sandbox_workspace_write]]\nnetwork_access = true\n"
+
+        assertEquals(store, unityMcpCodexRemoval(store)!!.withoutUnity)
     }
 
     @Test
@@ -354,7 +375,277 @@ class UnityMcpCodexStoreTest {
         assertNull(unityMcpCodexCommand("[mcp_servers.unity]\ncommand = [\"unity\"]\n"), "a command that is not a string")
     }
 
+    /** The four tables and then the entry, as Rider writes them into an empty store. */
+    private fun writtenTables(): String = """
+        [sandbox_workspace_write]
+        network_access = true
+
+        [features.network_proxy]
+        enabled = true
+        allow_local_binding = false
+
+        [features.network_proxy.domains]
+        localhost = "allow"
+        "127.0.0.1" = "allow"
+        "::1" = "allow"
+
+        [mcp_servers.unity]
+        command = $unityCommand
+        args = ["mcp"]
+        """.trimIndent() + "\n"
+
+    @Test
+    fun `an empty store gets the network policy, then the entry, with one blank line between tables`() {
+        assertEquals(writtenTables(), unityMcpCodexStoreWithEntry("", unity))
+    }
+
+    @Test
+    fun `the user content of the store stays in place, and the tables follow it`() {
+        assertEquals(USER_CONTENT + "\n" + writtenTables(), unityMcpCodexStoreWithEntry(USER_CONTENT, unity))
+    }
+
+    @Test
+    fun `an existing sandbox table keeps its other keys, and network_access turns true on the same line`() {
+        val store = "[sandbox_workspace_write]\nwritable_roots = [\"/tmp\"]\nnetwork_access = false\n"
+        val expected = """
+            [sandbox_workspace_write]
+            writable_roots = ["/tmp"]
+            network_access = true
+
+            [features.network_proxy]
+            enabled = true
+            allow_local_binding = false
+
+            [features.network_proxy.domains]
+            localhost = "allow"
+            "127.0.0.1" = "allow"
+            "::1" = "allow"
+
+            [mcp_servers.unity]
+            command = $unityCommand
+            args = ["mcp"]
+        """.trimIndent() + "\n"
+
+        assertEquals(expected, unityMcpCodexStoreWithEntry(store, unity))
+    }
+
+    @Test
+    fun `an existing proxy table gets the missing key right after enabled`() {
+        val store = "[features.network_proxy]\nenabled = true\n"
+        val expected = """
+            [features.network_proxy]
+            enabled = true
+            allow_local_binding = false
+
+            [sandbox_workspace_write]
+            network_access = true
+
+            [features.network_proxy.domains]
+            localhost = "allow"
+            "127.0.0.1" = "allow"
+            "::1" = "allow"
+
+            [mcp_servers.unity]
+            command = $unityCommand
+            args = ["mcp"]
+        """.trimIndent() + "\n"
+
+        assertEquals(expected, unityMcpCodexStoreWithEntry(store, unity))
+    }
+
+    @Test
+    fun `a single quoted allow line stays as it is, and the missing hosts follow it`() {
+        val store = """
+            [features.network_proxy]
+            enabled = true
+            allow_local_binding = false
+
+            [features.network_proxy.domains]
+            'localhost' = 'allow'
+        """.trimIndent() + "\n"
+        val expected = """
+            [features.network_proxy]
+            enabled = true
+            allow_local_binding = false
+
+            [features.network_proxy.domains]
+            'localhost' = 'allow'
+            "127.0.0.1" = "allow"
+            "::1" = "allow"
+
+            [sandbox_workspace_write]
+            network_access = true
+
+            [mcp_servers.unity]
+            command = $unityCommand
+            args = ["mcp"]
+        """.trimIndent() + "\n"
+
+        assertEquals(expected, unityMcpCodexStoreWithEntry(store, unity))
+    }
+
+    @Test
+    fun `an old entry with another command is replaced by one Unity table`() {
+        val store = "[mcp_servers.unity]\ncommand = \"/opt/homebrew/bin/unity\"\nargs = [\"mcp\"]\n"
+
+        assertEquals(writtenTables(), unityMcpCodexStoreWithEntry(store, unity))
+    }
+
+    @Test
+    fun `a second write over its own result changes nothing`() {
+        val once = unityMcpCodexStoreWithEntry(USER_CONTENT, unity)!!
+
+        assertEquals(once, unityMcpCodexStoreWithEntry(once, unity))
+    }
+
+    @Test
+    fun `Windows line endings stay in the lines that Rider adds`() {
+        val written = unityMcpCodexStoreWithEntry("model = \"o3\"\r\n", unity)!!
+
+        assertEquals(("model = \"o3\"\n\n" + writtenTables()).replace("\n", "\r\n"), written)
+    }
+
+    @Test
+    fun `a store that a line scan cannot edit safely gives no write`() {
+        val stores = listOf(
+            "sandbox_workspace_write.network_access = true\n",
+            "[features]\nnetwork_proxy.enabled = true\n",
+            "features = { network_proxy = { enabled = true } }\n",
+            "[[features.network_proxy]]\nenabled = true\n",
+            "[mcp_servers.unity\ncommand = \"unity\"\n",
+            "[mcp_servers]\nunity = { command = \"x\" }\n",
+        )
+        for (store in stores) {
+            assertNull(unityMcpCodexStoreWithEntry(store, unity), store)
+        }
+    }
+
+    @Test
+    fun `a table header with a comment does not stop the write, and the comment stays`() {
+        val store = """
+            [features] # flags
+            web_search = true
+        """.trimIndent() + "\n"
+        val expected = """
+            [features] # flags
+            web_search = true
+
+            [sandbox_workspace_write]
+            network_access = true
+
+            [features.network_proxy]
+            enabled = true
+            allow_local_binding = false
+
+            [features.network_proxy.domains]
+            localhost = "allow"
+            "127.0.0.1" = "allow"
+            "::1" = "allow"
+
+            [mcp_servers.unity]
+            command = $unityCommand
+            args = ["mcp"]
+        """.trimIndent() + "\n"
+
+        assertEquals(expected, unityMcpCodexStoreWithEntry(store, unity))
+    }
+
+    @Test
+    fun `network_access comes after the last key of a sandbox table with a comment on its header`() {
+        val store = """
+            [sandbox_workspace_write] # mine
+            writable_roots = ["/tmp"]
+        """.trimIndent() + "\n"
+        val expected = """
+            [sandbox_workspace_write] # mine
+            writable_roots = ["/tmp"]
+            network_access = true
+
+            [features.network_proxy]
+            enabled = true
+            allow_local_binding = false
+
+            [features.network_proxy.domains]
+            localhost = "allow"
+            "127.0.0.1" = "allow"
+            "::1" = "allow"
+
+            [mcp_servers.unity]
+            command = $unityCommand
+            args = ["mcp"]
+        """.trimIndent() + "\n"
+
+        assertEquals(expected, unityMcpCodexStoreWithEntry(store, unity))
+    }
+
+    @Test
+    fun `an array of tables still stops the write`() {
+        assertNull(unityMcpCodexStoreWithEntry("[[features]]\nx = 1\n", unity))
+    }
+
+    @Test
+    fun `the removal takes back what the write added and keeps the user lines`() {
+        val written = unityMcpCodexStoreWithEntry(USER_CONTENT, unity)!!
+
+        assertEquals(USER_CONTENT, unityMcpCodexRemoval(written)!!.withoutUnity)
+    }
+
+    @Test
+    fun `a write over a header with a comment is taken back by the removal`() {
+        val store = "[sandbox_workspace_write] # mine\nwritable_roots = [\"/tmp\"]\n"
+        val written = unityMcpCodexStoreWithEntry(store, unity)!!
+
+        assertEquals(store, unityMcpCodexRemoval(written)!!.withoutUnity)
+    }
+
+    @Test
+    fun `the Unity table, its sub-tables and a dotted key count as the entry`() {
+        assertEquals(true, hasUnityMcpCodexEntry("[mcp_servers.unity]\ncommand = \"unity\"\n"))
+        assertEquals(true, hasUnityMcpCodexEntry("[mcp_servers.unity.env]\nUNITY_QUIET = \"1\"\n"))
+        assertEquals(true, hasUnityMcpCodexEntry("mcp_servers.unity.command = \"unity\"\n"))
+        assertEquals(false, hasUnityMcpCodexEntry("[mcp_servers.github]\ncommand = \"gh\"\n"))
+        assertNull(hasUnityMcpCodexEntry("[mcp_servers.unity\n"), "a header that does not parse")
+    }
+
+    @Test
+    fun `an inline mcp_servers table gives no answer, and an inline unity key under its header counts`() {
+        assertNull(
+            hasUnityMcpCodexEntry("mcp_servers = { unity = { command = \"unity\", args = [\"mcp\"] } }\n"),
+            "an inline table that this line scan cannot read",
+        )
+        assertEquals(true, hasUnityMcpCodexEntry("[mcp_servers]\nunity = { command = \"unity\", args = [\"mcp\"] }\n"))
+        assertEquals(false, hasUnityMcpCodexEntry("[mcp_servers.github]\ncommand = \"gh\"\n[mcp_servers.github.env]\nTOKEN = \"x\"\n"))
+    }
+
+    @Test
+    fun `a missing store is created with the entry and the network policy`() {
+        val file = unityMcpCodexStoreFile(directory)
+
+        assertTrue(addUnityMcpCodexEntry(file, unity))
+        assertEquals(writtenTables(), file.readText())
+    }
+
+    @Test
+    fun `a store that Rider cannot edit stays as it is on disk`() {
+        val file = unityMcpCodexStoreFile(directory)
+        Files.createDirectories(file.parent)
+        val store = "[features]\nnetwork_proxy.enabled = true\n"
+        Files.writeString(file, store)
+
+        assertFalse(addUnityMcpCodexEntry(file, unity))
+        assertEquals(store, file.readText())
+    }
+
     private companion object {
+        /** The user content of a store that Rider writes into. The table has a comment, and the keys are not policy keys. */
+        val USER_CONTENT = """
+            model = "o3"
+
+            [profiles.fast]
+            # quick answers
+            model = "o3-mini"
+        """.trimIndent() + "\n"
+
         /** What `unity mcp configure codex --local --yes` wrote with the Unity CLI beta.12, measured on 2026-10-07. */
         val UNITY_CLI_STORE = "\n" + """
             [mcp_servers.unity]

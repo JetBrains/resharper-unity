@@ -24,10 +24,12 @@ enum class UnityCliOperation { INSTALLING, UPDATING }
 @ApiStatus.Internal
 enum class UnityCliFailure {
     DOWNLOAD,
+    MANIFEST_READ,
     LAUNCH_FAILED,
     INSTALLER_EXIT_CODE,
     UPDATE_EXIT_CODE,
     VERIFICATION,
+    UPDATE_FAILED,
 }
 
 @ApiStatus.Internal
@@ -57,7 +59,6 @@ data class UnityCliPresentation(
     val location: Path? = null,
     val installMethod: UnityCliInstallMethod = UnityCliInstallMethod.UNKNOWN,
     val latestVersion: String? = null,
-    val updateCommand: String? = null,
     val foreignBinaryOnPath: Path? = null,
     val projectTrusted: Boolean = true,
     val operation: UnityCliOperation? = null,
@@ -68,6 +69,10 @@ data class UnityCliPresentation(
     /** Names the failure that this presentation shows. [UnityCliStatusProvider.clearFailure] takes it. */
     val failureId: Long? = null,
 ) {
+    /** The command that the page shows for a copy that only the user can update. */
+    val updateCommand: String?
+        get() = unityCliUpdateCommandForClipboard(installMethod)
+
     val offer: UnityCliOffer
         get() = when {
             operation != null -> UnityCliOffer.BUSY

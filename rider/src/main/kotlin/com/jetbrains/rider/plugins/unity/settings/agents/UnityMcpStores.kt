@@ -1,54 +1,24 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonSyntaxException
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.annotations.ApiStatus
 import java.nio.file.Path
 
-@ApiStatus.Internal
-const val UNITY_MCP_CODEX_KEY: String = "codex"
 internal const val UNITY_MCP_SERVER_NAME: String = "unity"
 internal const val UNITY_MCP_CODEX_DIRECTORY: String = ".codex"
 private const val UNITY_MCP_PROJECT_STORE_FILE: String = ".mcp.json"
 private const val UNITY_MCP_JUNIE_STORE_FILE: String = ".junie/mcp/mcp.json"
-private const val UNITY_MCP_STATUS_CONFIGURED = "configured"
 
 private val gson = GsonBuilder().disableHtmlEscaping().create()
 
 @ApiStatus.Internal
-fun unityMcpLocalClientListCommandLine(unity: Path, solution: Path?): GeneralCommandLine =
-    GeneralCommandLine(unity.toString(), "mcp", "configure", "--list", "--local", "--json")
-        .withWorkingDirectory(solution)
-
-@ApiStatus.Internal
-data class UnityMcpClient(
-    val key: String? = null,
-    val displayName: String? = null,
-    val configPath: String? = null,
-    val status: String? = null,
-)
-
-@ApiStatus.Internal
-data class UnityMcpClientList(val clients: List<UnityMcpClient> = emptyList())
-
-@ApiStatus.Internal
-fun parseUnityMcpClientList(stdout: String): UnityMcpClientList? {
-    val envelope = parseJson<ClientListEnvelope>(stdout) ?: return null
-    return UnityMcpClientList(clients = envelope.data.orEmpty().filterNotNull())
-}
-
-private fun UnityMcpClientList.clientOf(key: String): UnityMcpClient? = clients.firstOrNull { it.key == key }
-
-@ApiStatus.Internal
-fun UnityMcpClientList.configPathOf(key: String): String? = clientOf(key)?.configPath
-
-@ApiStatus.Internal
-fun readCodexEntry(list: UnityMcpClientList?, store: String?, unity: Path?): UnityMcpEntry {
-    val status = list?.clientOf(UNITY_MCP_CODEX_KEY)?.status ?: return UnityMcpEntry.UNREADABLE
-    if (status != UNITY_MCP_STATUS_CONFIGURED) return UnityMcpEntry.ABSENT
-    val command = store?.let(::unityMcpCodexCommand)
+fun readCodexEntry(content: String?, fileExists: Boolean, unity: Path?): UnityMcpEntry {
+    if (!fileExists) return UnityMcpEntry.ABSENT
+    if (content == null) return UnityMcpEntry.UNREADABLE
+    val hasEntry = hasUnityMcpCodexEntry(content) ?: return UnityMcpEntry.UNREADABLE
+    if (!hasEntry) return UnityMcpEntry.ABSENT
+    val command = unityMcpCodexCommand(content)
     return if (unity != null && command != null && !isUnityCliCommand(command, unity)) UnityMcpEntry.OTHER_CLI
     else UnityMcpEntry.PRESENT
 }
@@ -68,9 +38,6 @@ internal fun unityMcpJsonStoreName(store: UnityMcpStore): String? = when (store)
 @ApiStatus.Internal
 fun unityMcpJsonStoreFile(store: UnityMcpStore, solution: Path): Path? =
     unityMcpJsonStoreName(store)?.let { solution.resolve(it) }
-
-internal fun unityMcpStoreFile(store: UnityMcpStore, solution: Path): Path =
-    unityMcpJsonStoreFile(store, solution) ?: unityMcpCodexStoreFile(solution)
 
 @ApiStatus.Internal
 fun unityMcpStoreSharers(store: UnityMcpStore): List<UnityMcpStore> {
@@ -92,13 +59,16 @@ fun unityMcpWriteGroups(stores: List<UnityMcpStore>): List<List<UnityMcpStore>> 
 fun unityMcpRowSnippet(store: UnityMcpStore, unity: Path): String =
     unityMcpStoreEntry(store, unity)?.let(::unityMcpJsonSnippet) ?: unityMcpCodexSnippet(unity)
 
-/** The four tables that `unity mcp configure codex` writes. */
-@ApiStatus.Internal
-fun unityMcpCodexSnippet(unity: Path): String = """
+/** The `[mcp_servers.unity]` table that runs [unity] as the MCP server. */
+internal fun unityMcpCodexEntry(unity: Path): String = """
     [mcp_servers.$UNITY_MCP_SERVER_NAME]
     command = ${gson.toJson(unity.toString())}
     args = ["mcp"]
+    """.trimIndent()
 
+/** The four tables that Rider writes into the Codex store. */
+@ApiStatus.Internal
+fun unityMcpCodexSnippet(unity: Path): String = unityMcpCodexEntry(unity) + "\n\n" + """
     [sandbox_workspace_write]
     network_access = true
 
@@ -111,13 +81,3 @@ fun unityMcpCodexSnippet(unity: Path): String = """
     "127.0.0.1" = "allow"
     "::1" = "allow"
     """.trimIndent()
-
-private inline fun <reified T> parseJson(text: String): T? =
-    try {
-        gson.fromJson(text, T::class.java)
-    }
-    catch (_: JsonSyntaxException) {
-        null
-    }
-
-private data class ClientListEnvelope(val data: List<UnityMcpClient?>? = null)

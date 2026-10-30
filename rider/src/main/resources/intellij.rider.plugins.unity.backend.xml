@@ -137,12 +137,12 @@
                  description="Enables the Unity for Agents settings page, the Unity CLI integration and the Unity MCP section"
                  restartRequired="false"/>
 
-    <!-- An empty value asks Rider to probe the CDN of Unity for a stable channel. The value
-         'stable' names no channel, and any other value goes to the installer script as it stands.
-         This pins a bad release back without a build of Rider. -->
+    <!-- An empty value lets Rider pick the channel. The install probes the CDN of Unity for a stable channel, and the
+         update check takes the channel of the installed version. The value 'stable' names no channel, and any other
+         value goes to the installer script as it stands. This pins a bad release back without a build of Rider. -->
     <registryKey key="rider.unity.agents.cli.channel"
                  defaultValue=""
-                 description="Forces the release channel of the Unity CLI installer instead of probing for one"
+                 description="Forces the release channel of the Unity CLI for the installer and the update check"
                  restartRequired="false"/>
 
     <!-- The narrow key. It silences the two project-open balloons and it leaves the page alone.

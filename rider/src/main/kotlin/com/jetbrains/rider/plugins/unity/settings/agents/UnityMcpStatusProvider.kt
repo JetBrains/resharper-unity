@@ -1,8 +1,6 @@
 package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.diagnostic.rethrowControlFlowException
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.ProcessOutput
 import com.intellij.ide.trustedProjects.TrustedProjects
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
@@ -93,7 +91,6 @@ internal class UnityMcpStatusService(
         }
 
         return coroutineScope {
-            val clientList = async { readLocalClientList(unity, solution) }
             val storeFiles = async { readJsonStores(UnityMcpStore.entries, solution) }
             val codexStoreFile = async { readStoreFile(unityMcpCodexStoreFile(solution)) }
 
@@ -101,7 +98,7 @@ internal class UnityMcpStatusService(
             val rows = withHeldState(
                 UnityMcpStore.entries.map { store ->
                     when (store) {
-                        UnityMcpStore.CODEX_CLI -> codexRow(section, clientList.await(), codexStoreFile.await(), unity)
+                        UnityMcpStore.CODEX_CLI -> codexRow(section, unityMcpCodexStoreFile(solution), codexStoreFile.await(), unity)
                         else -> jsonStoreRow(store, section, readings, solution, unity)
                     }
                 },
@@ -156,14 +153,13 @@ internal class UnityMcpStatusService(
                 val answers = when (outcome) {
                     UnityPipelinePackageOutcome.Ready -> runWrites(claimed, operation, unity, solution, networkPolicyRemovalAgreed)
                     UnityPipelinePackageOutcome.Declined -> return@withBackgroundProgress
-                    is UnityPipelinePackageOutcome.Failed ->
-                        claimed.associateWith { WriteAnswer.Failed(outcome.failure, outcome.exitCode) }
+                    is UnityPipelinePackageOutcome.Failed -> claimed.associateWith { WriteAnswer.Failed(outcome.failure) }
                 }
                 val after = readEntries(claimed, unity, solution)
                 for ((store, answer) in answers) {
                     val confirmed = unityMcpWriteConfirmed(operation, after.getValue(store))
                     val failure = answer.failure(confirmed)
-                    release(store, failure, answer.exitCode(), before.getValue(store), after.getValue(store))
+                    release(store, failure, before.getValue(store), after.getValue(store))
                     if (store in stores) {
                         val result = if (failure == null) UnityAgentsResult.SUCCESS else UnityAgentsResult.FAILED
                         UnityForAgentsUsagesCollector.logMcpOperationFinished(project, store, operation, result)
@@ -183,7 +179,10 @@ internal class UnityMcpStatusService(
         solution: Path?,
         networkPolicyRemovalAgreed: Boolean,
     ): Map<UnityMcpStore, WriteAnswer> {
-        if (unity == null || solution == null) return stores.associateWith { WriteAnswer.LAUNCH_FAILED }
+        if (unity == null || solution == null) {
+            logger.warn("Rider cannot write an MCP entry without the Unity CLI and the solution directory")
+            return stores.associateWith { WriteAnswer.Failed(UnityMcpFailure.FILE_WRITE) }
+        }
 
         return coroutineScope {
             unityMcpWriteGroups(stores)
@@ -199,16 +198,13 @@ internal class UnityMcpStatusService(
     ): Map<UnityMcpStore, UnityMcpEntry> {
         if (solution == null) return stores.associateWith { UnityMcpEntry.UNREADABLE }
         return coroutineScope {
-            val clientList = async {
-                if (unity != null && UnityMcpStore.CODEX_CLI in stores) readLocalClientList(unity, solution) else null
-            }
             val codexStore = async {
-                if (UnityMcpStore.CODEX_CLI in stores) readStoreFile(unityMcpCodexStoreFile(solution)).content else null
+                if (UnityMcpStore.CODEX_CLI in stores) readStoreFile(unityMcpCodexStoreFile(solution)) else StoreReading(exists = false)
             }
             val readings = readJsonStores(stores, solution)
             stores.associateWith { store ->
                 when (store) {
-                    UnityMcpStore.CODEX_CLI -> readCodexEntry(clientList.await(), codexStore.await(), unity)
+                    UnityMcpStore.CODEX_CLI -> codexStore.await().let { readCodexEntry(it.content, it.exists, unity) }
                     else -> {
                         val reading = readings[unityMcpJsonStoreFile(store, solution)] ?: StoreReading(exists = false)
                         readMcpServersEntry(reading.content, reading.exists, unity)
@@ -225,14 +221,24 @@ internal class UnityMcpStatusService(
         solution: Path,
         networkPolicyRemovalAgreed: Boolean,
     ): WriteAnswer {
-        if (store == UnityMcpStore.CODEX_CLI && operation == UnityMcpOperation.REMOVING) {
+        if (store == UnityMcpStore.CODEX_CLI) {
             val file = unityMcpCodexStoreFile(solution)
-            return WriteAnswer.Wrote(writeStoreFile(file) { removeUnityMcpCodexEntryInIde(file, networkPolicyRemovalAgreed) })
+            return when (operation) {
+                UnityMcpOperation.CONFIGURING -> configureCodex(file, unity)
+                UnityMcpOperation.REMOVING ->
+                    WriteAnswer.Wrote(writeStoreFile(file) { removeUnityMcpCodexEntryInIde(file, networkPolicyRemovalAgreed) })
+            }
         }
-        unityMcpOwnedStore(store, unity, solution)?.let { return runOwnWrite(it, operation) }
+        val owned = unityMcpOwnedStore(store, unity, solution) ?: return WriteAnswer.Failed(UnityMcpFailure.FILE_WRITE)
+        return runOwnWrite(owned, operation)
+    }
 
-        val command = unityMcpWriteCommandLine(store, operation, unity, solution) ?: return WriteAnswer.LAUNCH_FAILED
-        return runWriteProcess(command, unityMcpStoreFile(store, solution))
+    private suspend fun configureCodex(file: Path, unity: Path): WriteAnswer {
+        var editable = true
+        val written = writeStoreFile(file) {
+            writeStoreInIde(file) { addUnityMcpCodexEntry(file, unity).also { editable = it } }
+        }
+        return if (editable) WriteAnswer.Wrote(written) else WriteAnswer.Failed(UnityMcpFailure.CODEX_STORE_SHAPE)
     }
 
     private suspend fun runOwnWrite(owned: UnityMcpOwnedStore, operation: UnityMcpOperation): WriteAnswer {
@@ -253,22 +259,6 @@ internal class UnityMcpStatusService(
             false
         }
 
-    private suspend fun runWriteProcess(command: GeneralCommandLine, file: Path): WriteAnswer {
-        var output: ProcessOutput? = null
-        return try {
-            val saved = writeStoreInIde(file) {
-                output = UnityCliProcessRunner.getInstance().runProcess(command, UnityCliProcessRunner.STORE_WRITE_TIMEOUT_MS)
-                true
-            }
-            if (saved) WriteAnswer.Ran(output) else WriteAnswer.Wrote(written = false)
-        }
-        catch (e: Throwable) {
-            rethrowControlFlowException(e)
-            logger.warn("Rider could not run ${command.exePath}", e)
-            WriteAnswer.Ran(output)
-        }
-    }
-
     private fun gatedRows(section: UnityMcpSectionState): List<UnityMcpRowPresentation> =
         UnityMcpStore.entries.map { UnityMcpRowPresentation(store = it, section = section) }
 
@@ -283,7 +273,6 @@ internal class UnityMcpStatusService(
                 restartNeeded = held.restartNeeded,
                 operation = held.operation,
                 failure = held.failure,
-                failureExitCode = held.failureExitCode,
             )
         }
 
@@ -322,7 +311,6 @@ internal class UnityMcpStatusService(
     private fun release(
         store: UnityMcpStore,
         failure: UnityMcpFailure?,
-        exitCode: Int?,
         before: UnityMcpEntry,
         after: UnityMcpEntry,
     ) {
@@ -337,7 +325,6 @@ internal class UnityMcpStatusService(
                     heldEntry = held?.writtenEntry,
                 ),
                 failure = failure,
-                failureExitCode = exitCode,
                 writtenEntry = after,
                 release = release,
             )
@@ -352,15 +339,15 @@ internal class UnityMcpStatusService(
 
     private fun codexRow(
         section: UnityMcpSectionState,
-        clientList: UnityMcpClientList?,
+        file: Path,
         storeFile: StoreReading,
         unity: Path,
     ): UnityMcpRowPresentation = UnityMcpRowPresentation(
         store = UnityMcpStore.CODEX_CLI,
         section = section,
-        storePath = clientList?.configPathOf(UNITY_MCP_CODEX_KEY),
+        storePath = file.toString(),
         storeFileExists = storeFile.exists,
-        entry = readCodexEntry(clientList, storeFile.content, unity),
+        entry = readCodexEntry(storeFile.content, storeFile.exists, unity),
         removalAsksForNetworkPolicy = storeFile.content?.let(::unityMcpCodexRemoval)?.asksForNetworkPolicy == true,
     )
 
@@ -395,12 +382,6 @@ internal class UnityMcpStatusService(
             .toMap()
     }
 
-    private suspend fun readLocalClientList(unity: Path, solution: Path): UnityMcpClientList? {
-        val output = readStore(unityMcpLocalClientListCommandLine(unity, solution)) ?: return null
-        if (output.isTimeout || output.exitCode != 0) return null
-        return parseUnityMcpClientList(output.stdout)
-    }
-
     private suspend fun readStoreFile(file: Path): StoreReading = withContext(Dispatchers.IO) {
         try {
             if (Files.notExists(file)) StoreReading(exists = false)
@@ -413,22 +394,11 @@ internal class UnityMcpStatusService(
         }
     }
 
-    private suspend fun readStore(command: GeneralCommandLine): ProcessOutput? =
-        try {
-            UnityCliProcessRunner.getInstance().runProcess(command, UnityCliProcessRunner.STORE_READ_TIMEOUT_MS)
-        }
-        catch (e: Throwable) {
-            rethrowControlFlowException(e)
-            logger.debug("Rider could not run ${command.exePath}", e)
-            null
-        }
-
     private data class HeldRow(
         val restartNeeded: Boolean = false,
         val operation: UnityMcpOperation? = null,
         val claim: Long? = null,
         val failure: UnityMcpFailure? = null,
-        val failureExitCode: Int? = null,
         val writtenEntry: UnityMcpEntry? = null,
         val release: Long = 0,
     )
@@ -436,24 +406,12 @@ internal class UnityMcpStatusService(
     private data class StoreReading(val exists: Boolean, val content: String? = null)
 
     private sealed interface WriteAnswer {
-        data class Failed(val failure: UnityMcpFailure, val exitCode: Int?) : WriteAnswer
-        data class Ran(val output: ProcessOutput?) : WriteAnswer
+        data class Failed(val failure: UnityMcpFailure) : WriteAnswer
         data class Wrote(val written: Boolean) : WriteAnswer
 
         fun failure(confirmed: Boolean): UnityMcpFailure? = when (this) {
             is Failed -> failure
-            is Ran -> unityMcpWriteOutcome(output, confirmed)
             is Wrote -> unityMcpFileWriteOutcome(written, confirmed)
-        }
-
-        fun exitCode(): Int? = when (this) {
-            is Failed -> exitCode
-            is Ran -> output?.takeIf { !it.isTimeout }?.exitCode
-            is Wrote -> null
-        }
-
-        companion object {
-            val LAUNCH_FAILED: WriteAnswer = Failed(UnityMcpFailure.LAUNCH_FAILED, null)
         }
     }
 }

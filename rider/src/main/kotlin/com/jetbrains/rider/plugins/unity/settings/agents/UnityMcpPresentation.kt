@@ -5,7 +5,7 @@ import org.jetbrains.annotations.ApiStatus
 
 @ApiStatus.Internal
 enum class UnityMcpStore {
-    /** `<solution>/.codex/config.toml`. The Unity CLI adds the entry `unity` and Codex's sandbox network policy, and Rider removes them. */
+    /** `<solution>/.codex/config.toml`. Rider writes the entry `unity` and Codex's sandbox network policy, and removes them. */
     CODEX_CLI,
 
     /**
@@ -29,8 +29,6 @@ enum class UnityMcpOperation {
 
 @ApiStatus.Internal
 enum class UnityMcpFailure {
-    LAUNCH_FAILED,
-    EXIT_CODE,
     PACKAGE_INSTALL,
 
     /**
@@ -41,6 +39,13 @@ enum class UnityMcpFailure {
     PACKAGE_UNREADABLE,
     FILE_WRITE,
     NOT_CONFIRMED,
+
+    /**
+     * The Codex store defines the entry or the network policy in a way that a line scan cannot edit safely.
+     *
+     * The user copies the entry from the row instead.
+     */
+    CODEX_STORE_SHAPE,
 }
 
 @ApiStatus.Internal
@@ -109,7 +114,6 @@ data class UnityMcpRowPresentation(
     val restartNeeded: Boolean = false,
     val operation: UnityMcpOperation? = null,
     val failure: UnityMcpFailure? = null,
-    val failureExitCode: Int? = null,
     /** The Codex store holds other content next to Codex's sandbox network policy, so a removal asks the user. */
     val removalAsksForNetworkPolicy: Boolean = false,
     /** The JSON store holds another server named `unity`, so a configure asks the user before it replaces it. */

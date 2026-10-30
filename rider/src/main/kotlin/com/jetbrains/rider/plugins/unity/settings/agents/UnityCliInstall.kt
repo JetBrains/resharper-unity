@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.HttpRequests
 import com.intellij.util.system.LowLevelLocalMachineAccess
 import com.intellij.util.system.OS
+import com.intellij.util.text.SemVer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.ApiStatus
@@ -21,6 +22,8 @@ const val UNITY_CLI_CDN_BASE_URL: String = "https://public-cdn.cloud.unity3d.com
 private const val UNITY_CLI_STABLE_MANIFEST: String = "latest.json"
 
 private const val UNITY_CLI_BETA_CHANNEL: String = "beta"
+
+private const val UNITY_CLI_ALPHA_CHANNEL: String = "alpha"
 
 private const val UNITY_CLI_STABLE_CHANNEL: String = "stable"
 
@@ -51,6 +54,32 @@ enum class UnityCliInstallerScript(val fileName: String) {
 @ApiStatus.Internal
 fun unityCliCdnUrl(cdnBaseUrl: String, fileName: String): String =
     "${cdnBaseUrl.trimEnd('/')}/$fileName"
+
+/**
+ * The release channel of the CLI.
+ *
+ * The registry value wins when it is set. Else the pre-release tag of [installedVersion] names the channel: `beta` and
+ * `alpha` name their channels, and a version with no such tag is stable.
+ */
+@ApiStatus.Internal
+fun unityCliChannel(forcedChannel: String, installedVersion: String): String {
+    if (forcedChannel.isNotBlank()) return forcedChannel
+    val tag = SemVer.parseFromText(installedVersion)?.preRelease.orEmpty()
+    return when {
+        tag.startsWith(UNITY_CLI_BETA_CHANNEL) -> UNITY_CLI_BETA_CHANNEL
+        tag.startsWith(UNITY_CLI_ALPHA_CHANNEL) -> UNITY_CLI_ALPHA_CHANNEL
+        else -> UNITY_CLI_STABLE_CHANNEL
+    }
+}
+
+/** The file name of the channel manifest on the CDN: `latest.json` for stable, else `latest-<channel>.json`. */
+@ApiStatus.Internal
+fun unityCliChannelManifest(channel: String): String =
+    if (channel == UNITY_CLI_STABLE_CHANNEL) UNITY_CLI_STABLE_MANIFEST else "latest-$channel.json"
+
+/** The value of [UNITY_CLI_CHANNEL_VARIABLE] for [channel]. The installer reads no value as stable. */
+@ApiStatus.Internal
+fun unityCliInstallerChannel(channel: String): String? = channel.takeIf { it != UNITY_CLI_STABLE_CHANNEL }
 
 @ApiStatus.Internal
 fun unityCliInstallerCommandLine(
@@ -114,7 +143,7 @@ fun unityCliInstallOutcome(exitCode: Int?, cliFound: Boolean): UnityCliFailure? 
 @ApiStatus.Internal
 suspend fun probeUnityCliChannel(cdnBaseUrl: String, forcedChannel: String): String? {
     if (forcedChannel.isNotBlank()) {
-        return if (forcedChannel == UNITY_CLI_STABLE_CHANNEL) null else forcedChannel
+        return unityCliInstallerChannel(forcedChannel)
     }
 
     val url = unityCliCdnUrl(cdnBaseUrl, UNITY_CLI_STABLE_MANIFEST)

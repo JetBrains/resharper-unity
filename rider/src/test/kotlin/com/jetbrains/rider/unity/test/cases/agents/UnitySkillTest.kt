@@ -3,6 +3,7 @@ package com.jetbrains.rider.unity.test.cases.agents
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSetupStep
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpSectionState
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityOldEditor
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillClient
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillFailure
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillInstall
@@ -10,12 +11,11 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillOffer
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillPresentation
 import com.jetbrains.rider.plugins.unity.settings.agents.UnitySkillTarget
 import com.jetbrains.rider.plugins.unity.settings.agents.deleteWithEmptyParent
-import com.jetbrains.rider.plugins.unity.settings.agents.parseUnitySkillList
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsMissingSteps
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupPrompt
+import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillDirectory
 import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillGateMessage
-import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillInstallCommandLine
-import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillInstallsOf
+import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillInstalls
 import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillOpenTargets
 import com.jetbrains.rider.plugins.unity.settings.agents.unitySkillPlacesMessage
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -36,48 +36,8 @@ import java.nio.file.Path
 @Feature("Unity for Agents")
 @Tag(TeamCityTags.Plugins.Unity.General)
 class UnitySkillTest {
-    @Test
-    fun `parseUnitySkillList parses valid json and skips other skills`() {
-        val sample = """
-            {"success": true, "command": "skill-list", "data": [
-              {"skill": "unity-cli", "client": "claude-code", "local": true,
-               "path": "/private/var/folders/.../proj/.claude/skills/unity-cli", "kind": "tree", "enabled": true},
-              {"skill": "unity-cli", "client": "codex", "local": false,
-               "path": "/Users/dev/.agents/skills/unity-cli", "kind": "tree", "enabled": true},
-              {"skill": "other-skill", "client": "codex", "local": false,
-               "path": "/Users/dev/.agents/skills/other-skill", "kind": "tree", "enabled": true}
-            ], "errors": [], "warnings": []}
-        """.trimIndent()
-
-        val installs = parseUnitySkillList(sample)
-        assertEquals(2, installs?.size)
-        assertEquals("claude-code", installs?.get(0)?.client)
-        assertTrue(installs?.get(0)?.local == true)
-        assertEquals(Path.of("/private/var/folders/.../proj/.claude/skills/unity-cli"), installs?.get(0)?.path)
-        assertEquals("codex", installs?.get(1)?.client)
-        assertFalse(installs?.get(1)?.local == true)
-        assertEquals(Path.of("/Users/dev/.agents/skills/unity-cli"), installs?.get(1)?.path)
-
-        assertNull(parseUnitySkillList("not json"))
-        assertNull(parseUnitySkillList("""{"success": false, "data": null}"""))
-    }
-
-    @Test
-    fun `parseUnitySkillList skips null elements in data array`() {
-        val sample = """
-            {"success": true, "command": "skill-list", "data": [
-              null,
-              {"skill": "unity-cli", "client": "codex", "local": true,
-               "path": "/Users/dev/.agents/skills/unity-cli", "kind": "tree", "enabled": true}
-            ], "errors": [], "warnings": []}
-        """.trimIndent()
-
-        val installs = parseUnitySkillList(sample)
-        assertEquals(
-            listOf(UnitySkillInstall("codex", local = true, Path.of("/Users/dev/.agents/skills/unity-cli"))),
-            installs,
-        )
-    }
+    private val solution: Path = Path.of("/work/game")
+    private val userHome: Path = Path.of("/home/dev")
 
     @Test
     fun `deleteUnitySkill deletes the disabled directory when it becomes empty`(@TempDir tempDir: Path) {
@@ -102,38 +62,48 @@ class UnitySkillTest {
     }
 
     @Test
-    fun `unitySkillInstallsOf filters by existence and solution directory`(@TempDir tempDir: Path) {
-        val solution = tempDir.resolve("my-project")
-        Files.createDirectories(solution)
-        val realSolution = solution.toRealPath()
-
-        val validLocal = UnitySkillInstall("codex", local = true, realSolution.resolve(".agents/skills/unity-cli"))
-        val missingLocal = UnitySkillInstall("claude-code", local = true, realSolution.resolve(".claude/skills/unity-cli"))
-        val otherProjectLocal = UnitySkillInstall("codex", local = true, tempDir.resolve("other-project/.agents/skills/unity-cli"))
-        val validGlobal = UnitySkillInstall("codex", local = false, Path.of("/Users/dev/.agents/skills/unity-cli"))
-        val missingGlobal = UnitySkillInstall("claude-code", local = false, Path.of("/Users/dev/.claude/skills/unity-cli"))
-
-        val existingPaths = setOf(validLocal.path, otherProjectLocal.path, validGlobal.path)
-        val result = unitySkillInstallsOf(
-            listOf(validLocal, missingLocal, otherProjectLocal, validGlobal, missingGlobal),
-            solution,
-            exists = { it in existingPaths },
+    fun `unitySkillInstalls finds the six skill folders with their client and scope`() {
+        val files = setOf(
+            solution.resolve(".agents/skills/unity-cli/SKILL.md"),
+            solution.resolve(".claude/skills/unity-cli/SKILL.md"),
+            solution.resolve(".github/skills/unity-cli/SKILL.md"),
+            userHome.resolve(".agents/skills/unity-cli/SKILL.md"),
+            userHome.resolve(".claude/skills/unity-cli/SKILL.md"),
+            userHome.resolve(".copilot/skills/unity-cli/SKILL.md"),
         )
 
-        assertEquals(listOf(validLocal, validGlobal), result)
+        assertEquals(
+            listOf(
+                UnitySkillInstall("codex", local = true, solution.resolve(".agents/skills/unity-cli")),
+                UnitySkillInstall("claude-code", local = true, solution.resolve(".claude/skills/unity-cli")),
+                UnitySkillInstall("vscode", local = true, solution.resolve(".github/skills/unity-cli")),
+                UnitySkillInstall("codex", local = false, userHome.resolve(".agents/skills/unity-cli")),
+                UnitySkillInstall("claude-code", local = false, userHome.resolve(".claude/skills/unity-cli")),
+                UnitySkillInstall("vscode", local = false, userHome.resolve(".copilot/skills/unity-cli")),
+            ),
+            unitySkillInstalls(solution, userHome, isFile = { it in files }),
+        )
     }
 
     @Test
-    fun `unitySkillInstallCommandLine builds correct arguments and never passes force`() {
-        val unity = Path.of("/opt/unity/bin/unity")
-        val solution = Path.of("/projects/game")
-        val command = unitySkillInstallCommandLine(unity, UnitySkillClient.CODEX, solution)
-
-        assertEquals(
-            listOf("skill", "install", "codex", "--local", "--yes", "--non-interactive", "--json"),
-            command.parametersList.parameters,
+    fun `unitySkillInstalls skips a folder without SKILL md and another skill name`() {
+        val files = setOf(
+            solution.resolve(".claude/skills/unity-cli/references/a.md"),
+            solution.resolve(".agents/skills/other/SKILL.md"),
         )
-        assertEquals(solution, command.workingDirectory)
+
+        assertEquals(emptyList<UnitySkillInstall>(), unitySkillInstalls(solution, userHome, isFile = { it in files }))
+    }
+
+    @Test
+    fun `unitySkillInstalls gives an empty list for an empty tree`() {
+        assertEquals(emptyList<UnitySkillInstall>(), unitySkillInstalls(solution, userHome, isFile = { false }))
+    }
+
+    @Test
+    fun `unitySkillDirectory gives the unity-cli folder of each client in the solution`() {
+        assertEquals(solution.resolve(".agents/skills/unity-cli"), unitySkillDirectory(UnitySkillClient.CODEX, solution))
+        assertEquals(solution.resolve(".claude/skills/unity-cli"), unitySkillDirectory(UnitySkillClient.CLAUDE_CODE, solution))
     }
 
     @Test
@@ -165,7 +135,7 @@ class UnitySkillTest {
         val presentation = UnitySkillPresentation(
             gate = UnityMcpSectionState.READY,
             installs = listOf(UnitySkillInstall("codex", local = true, Path.of("/path"))),
-            failure = UnitySkillFailure.EXIT_CODE,
+            failure = UnitySkillFailure.WRITE,
         )
         assertEquals(UnitySkillOffer.FAILED, presentation.offer)
     }
@@ -177,7 +147,7 @@ class UnitySkillTest {
 
         val failed = UnitySkillPresentation(
             gate = UnityMcpSectionState.NO_CLI,
-            failure = UnitySkillFailure.EXIT_CODE,
+            failure = UnitySkillFailure.WRITE,
         )
         assertEquals(UnitySkillOffer.GATED, failed.offer)
     }
@@ -190,7 +160,7 @@ class UnitySkillTest {
         val failed = UnitySkillPresentation(
             gate = UnityMcpSectionState.CHECKING,
             installs = emptyList(),
-            failure = UnitySkillFailure.EXIT_CODE,
+            failure = UnitySkillFailure.WRITE,
         )
         assertEquals(UnitySkillOffer.FAILED, failed.offer)
     }
@@ -199,15 +169,15 @@ class UnitySkillTest {
     fun `offer rule 6 - gate READY evaluates failure, installs, and packageInstalled`() {
         val failed = UnitySkillPresentation(
             gate = UnityMcpSectionState.READY,
-            failure = UnitySkillFailure.LAUNCH_FAILED,
+            failure = UnitySkillFailure.DOWNLOAD,
         )
         assertEquals(UnitySkillOffer.FAILED, failed.offer)
 
-        val unreadable = UnitySkillPresentation(
+        val installsNull = UnitySkillPresentation(
             gate = UnityMcpSectionState.READY,
             installs = null,
         )
-        assertEquals(UnitySkillOffer.UNREADABLE, unreadable.offer)
+        assertEquals(UnitySkillOffer.GATED, installsNull.offer)
 
         val packageNotInstalled = UnitySkillPresentation(
             gate = UnityMcpSectionState.READY,
@@ -355,6 +325,25 @@ class UnitySkillTest {
         )
         assertNull(unitySkillGateMessage(UnityMcpSectionState.READY, packageInstalled = true))
         assertNull(unitySkillGateMessage(UnityMcpSectionState.CHECKING, packageInstalled = false))
+    }
+
+    @Test
+    fun `unitySkillGateMessage names the old Editor when it blocks the package`() {
+        val oldEditor = UnityOldEditor("6000.0", "2022.3.62f1")
+        val oldEditorText = UnityBundle.message("unity.agents.old.editor.gate", "6000.0", "2022.3.62f1")
+        assertEquals(
+            oldEditorText,
+            unitySkillGateMessage(UnityMcpSectionState.NO_CLI, packageInstalled = false, blockingEditor = oldEditor),
+        )
+        assertEquals(
+            oldEditorText,
+            unitySkillGateMessage(UnityMcpSectionState.READY, packageInstalled = false, blockingEditor = oldEditor),
+        )
+        assertEquals(
+            UnityBundle.message("unity.agents.skills.needs.cli"),
+            unitySkillGateMessage(UnityMcpSectionState.NO_CLI, packageInstalled = true, blockingEditor = oldEditor),
+        )
+        assertNull(unitySkillGateMessage(UnityMcpSectionState.READY, packageInstalled = true, blockingEditor = oldEditor))
     }
 
     @Test

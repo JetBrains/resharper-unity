@@ -16,6 +16,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.annotations.ApiStatus
+import org.jetbrains.annotations.TestOnly
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.resume
@@ -36,6 +37,12 @@ class UnityCliInstallerRunner private constructor(
 
     companion object {
         fun getInstance(): UnityCliInstallerRunner = service()
+
+        @TestOnly
+        fun runnerAnswering(
+            cdnBaseUrl: String,
+            run: suspend (GeneralCommandLine, (String) -> Unit) -> Int? = { _, _ -> null },
+        ): UnityCliInstallerRunner = UnityCliInstallerRunner(cdnBaseUrl, run)
     }
 }
 private const val OUTPUT_FORWARD_CAP_CHARS: Long = 64L * 1024L

@@ -1,20 +1,18 @@
 package com.jetbrains.rider.unity.test.cases.agents
 
-import com.intellij.execution.process.ProcessOutput
 import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_PIPELINE_PACKAGE_ID
-import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpPackageStep
-import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpPackageStep
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpOperation
-import com.jetbrains.rider.plugins.unity.settings.agents.UnityPipelineFailure
-import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityPipelineLatestVersion
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityMcpPackageStep
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityPipelineRegistry
+import com.jetbrains.rider.plugins.unity.settings.agents.UnityPipelineRelease
+import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityEditorVersion
+import com.jetbrains.rider.plugins.unity.settings.agents.parseUnityRegistry
 import com.jetbrains.rider.plugins.unity.settings.agents.readUnityPipelineManifest
-import com.jetbrains.rider.plugins.unity.settings.agents.unityCliErrorMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unityManifestPath
-import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineInstallCommandLine
-import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineInstallOutcome
-import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineListVersionsCommandLine
-import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineUpgradeCommandLine
-import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineUpgradeOutcome
+import com.jetbrains.rider.plugins.unity.settings.agents.unityManifestWithDependency
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpPackageStep
+import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineRegistryUrl
+import com.jetbrains.rider.plugins.unity.settings.agents.unityProjectVersionPath
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -28,16 +26,14 @@ import org.junit.jupiter.api.Test
 import java.nio.file.Path
 
 /**
- * Pins the Unity Pipeline package row of the Unity MCP section.
+ * Pins the Unity Pipeline package row of the Unity MCP section, and the manifest and the registry of the package.
  *
- * The class runs no process and it reads no file. Every output shape below was measured on
- * 2026-09-29, against `~/.unity/bin/unity`, version `1.0.0-beta.11`.
+ * The class reads no file and contacts no registry.
  */
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity for Agents")
 @Tag(TeamCityTags.Plugins.Unity.General)
 class UnityMcpPipelineTest {
-    private val unity: Path = Path.of("/Users/dev/.unity/bin/unity")
     private val solution: Path = Path.of("/Users/dev/projects/game")
 
     private data class StepCase(
@@ -46,6 +42,12 @@ class UnityMcpPipelineTest {
         val packagePresent: Boolean?,
         val agreed: Boolean,
         val expected: UnityMcpPackageStep,
+    )
+
+    private data class ManifestCase(
+        val name: String,
+        val content: String,
+        val expected: String?,
     )
 
     /**
@@ -121,6 +123,144 @@ class UnityMcpPipelineTest {
         ),
     )
 
+    private val manifestCases = listOf(
+        ManifestCase(
+            "the package goes after the other dependencies",
+            RIDER_MANIFEST,
+            RIDER_AND_PIPELINE,
+        ),
+        ManifestCase(
+            "the package goes last, and the other dependencies keep their order",
+            """
+            {
+              "dependencies": {
+                "com.unity.ide.rider": "3.0.40",
+                "com.unity.ugui": "1.0.0"
+              }
+            }
+            """.trimIndent(),
+            """
+            {
+              "dependencies": {
+                "com.unity.ide.rider": "3.0.40",
+                "com.unity.ugui": "1.0.0",
+                "com.unity.pipeline": "0.8.0-exp.1"
+              }
+            }
+            """.trimIndent(),
+        ),
+        ManifestCase(
+            "a present package takes the new version in its old place",
+            """
+            {
+              "dependencies": {
+                "com.unity.pipeline": "0.7.0-exp.1",
+                "com.unity.ide.rider": "3.0.40"
+              }
+            }
+            """.trimIndent(),
+            """
+            {
+              "dependencies": {
+                "com.unity.pipeline": "0.8.0-exp.1",
+                "com.unity.ide.rider": "3.0.40"
+              }
+            }
+            """.trimIndent(),
+        ),
+        ManifestCase(
+            "a manifest without dependencies gets one, last",
+            """
+            {
+              "testables": [
+                "com.unity.ugui"
+              ]
+            }
+            """.trimIndent(),
+            """
+            {
+              "testables": [
+                "com.unity.ugui"
+              ],
+              "dependencies": {
+                "com.unity.pipeline": "0.8.0-exp.1"
+              }
+            }
+            """.trimIndent(),
+        ),
+        ManifestCase(
+            "the other top-level keys keep their order",
+            """
+            {
+              "scopedRegistries": [
+                {
+                  "name": "Mirror",
+                  "url": "https://mirror.example",
+                  "scopes": [
+                    "com.unity"
+                  ]
+                }
+              ],
+              "dependencies": {
+                "com.unity.ide.rider": "3.0.40"
+              },
+              "testables": [
+                "com.unity.ugui"
+              ]
+            }
+            """.trimIndent(),
+            """
+            {
+              "scopedRegistries": [
+                {
+                  "name": "Mirror",
+                  "url": "https://mirror.example",
+                  "scopes": [
+                    "com.unity"
+                  ]
+                }
+              ],
+              "dependencies": {
+                "com.unity.ide.rider": "3.0.40",
+                "com.unity.pipeline": "0.8.0-exp.1"
+              },
+              "testables": [
+                "com.unity.ugui"
+              ]
+            }
+            """.trimIndent(),
+        ),
+        ManifestCase(
+            "a manifest with another indent is written with 2 spaces",
+            """
+            {
+                "dependencies": {
+                    "com.unity.ide.rider": "3.0.40"
+                }
+            }
+            """.trimIndent(),
+            RIDER_AND_PIPELINE,
+        ),
+        ManifestCase(
+            "a manifest that ends with a line break keeps it",
+            RIDER_MANIFEST + "\n",
+            RIDER_AND_PIPELINE + "\n",
+        ),
+        ManifestCase(
+            "a CRLF manifest stays CRLF",
+            RIDER_MANIFEST.crlf() + "\r\n",
+            RIDER_AND_PIPELINE.crlf() + "\r\n",
+        ),
+        ManifestCase("an array is no manifest object", "[]", null),
+        ManifestCase("text that is not JSON is no manifest object", "nope", null),
+        ManifestCase("an empty text is no manifest object", "", null),
+        ManifestCase(
+            "a dependencies array is no dependencies object",
+            """{"dependencies": ["com.unity.ugui"]}""",
+            null,
+        ),
+    )
+
     @Test
     fun `a configure installs the package first, and only where the manifest lacks it`() {
         for (case in stepCases) {
@@ -164,6 +304,16 @@ class UnityMcpPipelineTest {
     }
 
     @Test
+    fun `the manifest names its registry at the top level`() {
+        val manifest = """{"registry": "https://mirror.example/npm/", "dependencies": {}}"""
+        assertEquals("https://mirror.example/npm/", readUnityPipelineManifest(manifest, fileExists = true)?.registry)
+        assertNull(
+            readUnityPipelineManifest("""{"dependencies": {}}""", fileExists = true)?.registry,
+            "a manifest without a registry names none",
+        )
+    }
+
+    @Test
     fun `a manifest without the package is an answer`() {
         val manifest = """{"dependencies": {"com.unity.ide.rider": "3.0.40"}}"""
         val read = readUnityPipelineManifest(manifest, fileExists = true)
@@ -184,137 +334,149 @@ class UnityMcpPipelineTest {
         assertEquals(Path.of("/Users/dev/projects/game/Packages/manifest.json"), unityManifestPath(solution))
     }
 
-    /**
-     * The manifest decides, and the exit code only explains a failure.
-     *
-     * The install exits 0 and reports `alreadyInstalled: true` for a project that holds the package,
-     * so a zero exit code proves nothing on its own.
-     */
     @Test
-    fun `the manifest decides whether the install landed`() {
-        assertNull(unityPipelineInstallOutcome(output(0), inManifest = true), "the manifest holds it, so it landed")
-        assertNull(unityPipelineInstallOutcome(output(6), inManifest = true), "even after a nonzero exit code")
+    fun `the registry document answers the published versions up to the latest, or nothing`() {
         assertEquals(
-            UnityPipelineFailure.EXIT_CODE,
-            unityPipelineInstallOutcome(output(6), inManifest = false),
-            "a nonzero code explains a manifest that did not change",
+            UnityPipelineRegistry("0.9.1-exp.1", listOf(UnityPipelineRelease("0.9.1-exp.1", "6000.0"))),
+            parseUnityRegistry("""{"dist-tags":{"latest":"0.9.1-exp.1"},"versions":{"0.9.1-exp.1":{"unity":"6000.0"}}}"""),
         )
-        assertEquals(
-            UnityPipelineFailure.NOT_CONFIRMED,
-            unityPipelineInstallOutcome(output(0), inManifest = false),
-            "a zero code with no change is the unconfirmed case",
-        )
-        assertEquals(
-            UnityPipelineFailure.NOT_CONFIRMED,
-            unityPipelineInstallOutcome(output(0), inManifest = null),
-            "and a manifest Rider could not read is not a confirmation",
-        )
-    }
-
-    @Test
-    fun `a process that did not start is a launch failure`() {
-        assertEquals(UnityPipelineFailure.LAUNCH_FAILED, unityPipelineInstallOutcome(null, inManifest = true))
-        val timeout = ProcessOutput().apply { setTimeout() }
-        assertEquals(UnityPipelineFailure.LAUNCH_FAILED, unityPipelineInstallOutcome(timeout, inManifest = true))
-    }
-
-    @Test
-    fun `the install command names the project and asks no question`() {
-        val command = unityPipelineInstallCommandLine(unity, solution)
-        assertEquals(unity.toString(), command.exePath)
-        assertEquals(
-            listOf("pipeline", "install", "--project-path", solution.toString(), "--non-interactive", "--json"),
-            command.parametersList.parameters,
-        )
-        assertEquals(solution.toFile(), command.workDirectory)
-    }
-
-    @Test
-    fun `the upgrade command installs the named version and asks no question`() {
-        val command = unityPipelineUpgradeCommandLine(unity, solution, "0.9.0-exp.1")
-        assertEquals(unity.toString(), command.exePath)
-        assertEquals(
-            listOf(
-                "pipeline", "install", "--project-path", solution.toString(),
-                "--package-version", "0.9.0-exp.1", "--non-interactive", "--json",
-            ),
-            command.parametersList.parameters,
-        )
-        assertEquals(solution.toFile(), command.workDirectory)
-    }
-
-    @Test
-    fun `the version list needs no project`() {
-        val command = unityPipelineListVersionsCommandLine(unity)
-        assertEquals(unity.toString(), command.exePath)
-        assertEquals(listOf("pipeline", "list-versions", "--non-interactive", "--json"), command.parametersList.parameters)
-    }
-
-    /** Both shapes were measured on 2026-10-08 against `1.0.0-beta.12`, the second through a proxy that refuses. */
-    @Test
-    fun `the version list answers the latest version or nothing`() {
-        assertEquals("0.8.0-exp.1", parseUnityPipelineLatestVersion(LIST_VERSIONS_JSON))
-        assertNull(parseUnityPipelineLatestVersion(LIST_VERSIONS_OFFLINE_JSON), "a failed lookup has no data")
-        assertNull(parseUnityPipelineLatestVersion("not json"), "and text that is not JSON is no answer")
-        assertNull(parseUnityPipelineLatestVersion("""{"data": {"latest": ""}}"""), "nor is an empty version")
-    }
-
-    /**
-     * Measured on 2026-10-08: an upgrade of the latest package and an upgrade of a git URL both exit 0 and change nothing,
-     * and an upgrade of an absent package exits 6. So the manifest decides, the same as for the install.
-     */
-    @Test
-    fun `the manifest decides whether the upgrade landed`() {
-        assertNull(unityPipelineUpgradeOutcome(output(0), versionAfter = "0.8.0-exp.1", latestVersion = "0.8.0-exp.1"))
         assertNull(
-            unityPipelineUpgradeOutcome(output(0), versionAfter = "0.9.0-exp.1", latestVersion = "0.8.0-exp.1"),
-            "a version past the cached latest one also landed",
+            parseUnityRegistry("""{"name":"com.unity.pipeline"}"""),
+            "a document without dist-tags has no latest version",
         )
+        assertNull(parseUnityRegistry("""{"dist-tags":{"latest":" "}}"""), "nor does a blank latest version")
+        assertNull(parseUnityRegistry("not json"), "and text that is not JSON is no answer")
+    }
+
+    @Test
+    fun `every published version up to the latest keeps its minimum Editor`() {
+        val json = """
+        {
+          "dist-tags": {"latest": "0.9.1-exp.1"},
+          "versions": {
+            "0.8.0-exp.1": {"unity": "6000.0"},
+            "0.9.1-exp.1": {"unity": "6000.0"}
+          }
+        }
+        """.trimIndent()
         assertEquals(
-            UnityPipelineFailure.NOT_CONFIRMED,
-            unityPipelineUpgradeOutcome(output(0), versionAfter = "0.7.0-exp.1", latestVersion = "0.8.0-exp.1"),
-            "a zero code with the old version is the unconfirmed case",
-        )
-        assertEquals(
-            UnityPipelineFailure.EXIT_CODE,
-            unityPipelineUpgradeOutcome(output(6), versionAfter = null, latestVersion = "0.8.0-exp.1"),
-            "the package went away before the upgrade",
-        )
-        assertEquals(
-            UnityPipelineFailure.NOT_CONFIRMED,
-            unityPipelineUpgradeOutcome(output(0), versionAfter = "0.8.0-exp.1", latestVersion = null),
-            "with no latest version, nothing confirms the upgrade",
-        )
-        assertEquals(
-            UnityPipelineFailure.LAUNCH_FAILED,
-            unityPipelineUpgradeOutcome(null, versionAfter = "0.8.0-exp.1", latestVersion = "0.8.0-exp.1"),
+            UnityPipelineRegistry(
+                "0.9.1-exp.1",
+                listOf(
+                    UnityPipelineRelease("0.8.0-exp.1", "6000.0"),
+                    UnityPipelineRelease("0.9.1-exp.1", "6000.0"),
+                ),
+            ),
+            parseUnityRegistry(json),
         )
     }
 
     @Test
-    fun `the answer names the error message, whatever its code`() {
-        assertEquals("Couldn't connect to packages.unity.com (ENOTFOUND).", unityCliErrorMessage(INSTALL_OFFLINE_JSON))
-        assertEquals("No such host is known. (packages.unity.com:443)", unityCliErrorMessage(INSTALL_NO_HOST_JSON))
-        assertEquals("Connection refused (127.0.0.1:9)", unityCliErrorMessage(LIST_VERSIONS_OFFLINE_JSON))
+    fun `a version newer than the latest is left out`() {
+        val json = """
+        {
+          "dist-tags": {"latest": "0.9.1-exp.1"},
+          "versions": {
+            "0.9.1-exp.1": {"unity": "6000.0"},
+            "1.0.0-pre.1": {"unity": "6000.2"}
+          }
+        }
+        """.trimIndent()
         assertEquals(
-            "second",
-            unityCliErrorMessage("""{"errors": [{"code": "A"}, {"code": "B", "message": " second "}]}"""),
-            "the first error with a message wins, trimmed",
+            UnityPipelineRegistry("0.9.1-exp.1", listOf(UnityPipelineRelease("0.9.1-exp.1", "6000.0"))),
+            parseUnityRegistry(json),
         )
+    }
+
+    @Test
+    fun `a version key that is no version is left out`() {
+        val json = """
+        {
+          "dist-tags": {"latest": "0.9.1-exp.1"},
+          "versions": {
+            "main": {"unity": "6000.2"},
+            "0.9.1-exp.1": {"unity": "6000.0"}
+          }
+        }
+        """.trimIndent()
         assertEquals(
-            "first line second line",
-            unityCliErrorMessage("""{"errors": [{"message": "\tfirst line\r\n\n  second\tline \n"}]}"""),
-            "each run of line breaks, tabs and spaces becomes one space",
+            UnityPipelineRegistry("0.9.1-exp.1", listOf(UnityPipelineRelease("0.9.1-exp.1", "6000.0"))),
+            parseUnityRegistry(json),
         )
-        assertNull(unityCliErrorMessage(LIST_VERSIONS_JSON), "a successful answer names no error")
-        assertNull(unityCliErrorMessage("""{"errors": [{"code": "COMMAND_FAILED", "message": " "}]}"""), "nor does a blank message")
-        assertNull(unityCliErrorMessage("not json"), "and text that is not JSON is no answer")
-        assertNull(unityCliErrorMessage(""), "nor is empty output")
+    }
+
+    @Test
+    fun `a latest version without an entry in the versions gives that version a null minimum`() {
         assertEquals(
-            UnityPipelineFailure.EXIT_CODE,
-            unityPipelineInstallOutcome(output(6, INSTALL_NO_HOST_JSON), inManifest = false),
-            "the message does not change the failure",
+            UnityPipelineRegistry("0.9.1-exp.1", listOf(UnityPipelineRelease("0.9.1-exp.1", null))),
+            parseUnityRegistry("""{"dist-tags":{"latest":"0.9.1-exp.1"}}"""),
+            "a document without versions names no minimum Editor",
         )
+        val json = """
+        {
+          "dist-tags": {"latest": "0.9.1-exp.1"},
+          "versions": {
+            "0.8.0-exp.1": {"unity": "6000.0"}
+          }
+        }
+        """.trimIndent()
+        assertEquals(
+            UnityPipelineRegistry(
+                "0.9.1-exp.1",
+                listOf(
+                    UnityPipelineRelease("0.8.0-exp.1", "6000.0"),
+                    UnityPipelineRelease("0.9.1-exp.1", null),
+                ),
+            ),
+            parseUnityRegistry(json),
+        )
+    }
+
+    @Test
+    fun `a latest that is not a version gives no registry`() {
+        assertNull(
+            parseUnityRegistry("""{"dist-tags":{"latest":"https://evil.example/pkg.git"}}"""),
+            "a git URL is no version, so Rider never writes it into the manifest",
+        )
+        assertNull(parseUnityRegistry("""{"dist-tags":{"latest":"file:../x"}}"""), "a file path is no version")
+        assertNull(parseUnityRegistry("""{"dist-tags":{"latest":"latest"}}"""), "a tag name is no version")
+        assertNull(parseUnityRegistry("""{"dist-tags":{}}"""), "a missing latest version gives no registry")
+    }
+
+    @Test
+    fun `the Unity Editor version is the m_EditorVersion of the project version file`() {
+        val content = "m_EditorVersion: 2022.3.62f1\nm_EditorVersionWithRevision: 2022.3.62f1 (4af31df58517)\n"
+        assertEquals("2022.3.62f1", parseUnityEditorVersion(content))
+        assertEquals("2022.3.62f1", parseUnityEditorVersion(content.replace("\n", "\r\n")))
+        assertNull(parseUnityEditorVersion("m_ProjectName: game\n"), "text without the key has no Editor version")
+        assertNull(parseUnityEditorVersion("m_EditorVersion: \n"), "an empty value is no Editor version")
+    }
+
+    @Test
+    fun `the project version file sits under ProjectSettings in the solution`() {
+        assertEquals(Path.of("/Users/dev/projects/game/ProjectSettings/ProjectVersion.txt"), unityProjectVersionPath(solution))
+    }
+
+    @Test
+    fun `the registry of the package is the one of the manifest, or else the registry of Unity`() {
+        assertEquals("https://packages.unity.com/com.unity.pipeline", unityPipelineRegistryUrl(null))
+        assertEquals("https://mirror.example/npm/com.unity.pipeline", unityPipelineRegistryUrl("https://mirror.example/npm/"))
+        assertEquals(
+            "https://packages.unity.com/com.unity.pipeline",
+            unityPipelineRegistryUrl("file:///tmp/registry"),
+            "a file path is no registry",
+        )
+    }
+
+    @Test
+    fun `the dependency is written into the manifest text, and text that is no object is refused`() {
+        for ((name, content, expected) in manifestCases) {
+            assertEquals(
+                expected,
+                unityManifestWithDependency(content, UNITY_PIPELINE_PACKAGE_ID, "0.8.0-exp.1"),
+                name,
+            )
+        }
     }
 
     @Test
@@ -322,51 +484,23 @@ class UnityMcpPipelineTest {
         assertEquals("com.unity.pipeline", UNITY_PIPELINE_PACKAGE_ID)
     }
 
-    private fun output(exitCode: Int, stdout: String = ""): ProcessOutput = ProcessOutput(stdout, "", exitCode, false, false)
+    private fun String.crlf(): String = replace("\n", "\r\n")
 
     private companion object {
-        val LIST_VERSIONS_JSON = """
+        val RIDER_MANIFEST = """
             {
-              "success": true,
-              "command": "pipeline list-versions",
-              "data": {
-                "packageId": "com.unity.pipeline",
-                "latest": "0.8.0-exp.1",
-                "versions": ["0.8.0-exp.1", "0.7.0-exp.1", "0.6.0-exp.1"]
-              },
-              "errors": [],
-              "warnings": []
+              "dependencies": {
+                "com.unity.ide.rider": "3.0.40"
+              }
             }
         """.trimIndent()
 
-        val LIST_VERSIONS_OFFLINE_JSON = """
+        val RIDER_AND_PIPELINE = """
             {
-              "success": false,
-              "command": "unity pipeline list-versions",
-              "data": null,
-              "errors": [{"code": "COMMAND_FAILED", "message": "Connection refused (127.0.0.1:9)"}],
-              "warnings": []
-            }
-        """.trimIndent()
-
-        val INSTALL_OFFLINE_JSON = """
-            {
-              "success": false,
-              "command": "unity pipeline install",
-              "errors": [{"code": "ENOTFOUND", "message": "Couldn't connect to packages.unity.com (ENOTFOUND)."}]
-            }
-        """.trimIndent()
-
-        val INSTALL_NO_HOST_JSON = """
-            {
-              "success" : false,
-              "command" : "unity pipeline install",
-              "data" : null,
-              "errors" : [ {
-                "code" : "COMMAND_FAILED",
-                "message" : "No such host is known. (packages.unity.com:443)"
-              } ],
-              "warnings" : [ ]
+              "dependencies": {
+                "com.unity.ide.rider": "3.0.40",
+                "com.unity.pipeline": "0.8.0-exp.1"
+              }
             }
         """.trimIndent()
     }

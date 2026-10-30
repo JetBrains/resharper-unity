@@ -108,8 +108,7 @@ class UnityCliTextTest {
 
     @Test
     fun `the command to run by hand is escaped`() {
-        // `unityCliUpdateCommandForClipboard` refuses a command that holds `<` today, for a reason
-        // of its own. This row must stay right if that list ever relaxes.
+        // The clipboard commands are fixed today, and this row must stay right if that changes.
         val message = unityCliUpdateByHandMessage("apt install <pkg>")
 
         assertFalse(message.contains("<pkg>"), "the command reached the markup unescaped: '$message'")

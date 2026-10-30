@@ -77,8 +77,17 @@ fun unityAgentsSetupDoneMessage(
 }
 
 @Nls
-internal fun unityAgentsSkillFailedMessage(installedCli: Boolean, failure: UnitySkillFailure, exitCode: Int?): String {
-    val failureText = unitySkillFailureMessage(failure, exitCode)
+@ApiStatus.Internal
+fun unityAgentsSetupOldEditorMessage(minimumEditorVersion: String?, editorVersion: String?): String =
+    UnityBundle.message(
+        "unity.agents.setup.done.content.cli.old.editor",
+        escapeXmlEntities(minimumEditorVersion.orEmpty()),
+        escapeXmlEntities(editorVersion.orEmpty()),
+    )
+
+@Nls
+internal fun unityAgentsSkillFailedMessage(installedCli: Boolean, failure: UnitySkillFailure): String {
+    val failureText = unitySkillFailureMessage(failure)
     return if (installedCli) {
         UnityBundle.message("unity.agents.setup.skill.failed.content.cli", failureText)
     }

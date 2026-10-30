@@ -20,8 +20,12 @@ internal class UnityMcpSectionPanel(
     private val project: Project,
     private val write: (List<UnityMcpStore>, UnityMcpOperation) -> Unit,
 ) {
-    fun build(presentation: UnityMcpSectionPresentation, packageMissing: Boolean): JComponent = panel {
-        val gate = unityMcpGateMessage(presentation.state, packageMissing)
+    fun build(
+        presentation: UnityMcpSectionPresentation,
+        packageMissing: Boolean,
+        blockingEditor: UnityOldEditor? = null,
+    ): JComponent = panel {
+        val gate = unityMcpGateMessage(presentation.state, packageMissing, blockingEditor)
         if (gate != null) row { comment(gate) }
 
         rowsRange {

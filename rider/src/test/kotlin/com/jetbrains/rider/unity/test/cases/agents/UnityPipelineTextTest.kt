@@ -8,6 +8,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineFailureMes
 import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineGateMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineInstallHint
 import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineNewVersionMessage
+import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineOldEditorMessage
 import com.jetbrains.rider.plugins.unity.settings.agents.unityPipelineVersionMessage
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
@@ -63,41 +64,20 @@ class UnityPipelineTextTest {
     }
 
     @Test
-    fun `the exit-code failure contains the exit code and every failure value has a non-blank message without placeholders`() {
-        val exitCodeMessage = unityPipelineFailureMessage(UnityPipelineFailure.EXIT_CODE, 6, null)
-        assertTrue(exitCodeMessage.contains("6"), "exit code 6 was not formatted: '$exitCodeMessage'")
-
+    fun `every failure value has a non-blank message without placeholders`() {
         for (failure in UnityPipelineFailure.entries) {
-            val message = unityPipelineFailureMessage(failure, 0, null)
+            val message = unityPipelineFailureMessage(failure)
             assertTrue(message.isNotBlank(), "message for $failure was blank")
             assertFalse(message.contains("{0}"), "message for $failure leaked placeholder: '$message'")
-
-            val messageWithoutCode = unityPipelineFailureMessage(failure, null, null)
-            assertTrue(messageWithoutCode.isNotBlank(), "message for $failure with null exitCode was blank")
-            assertFalse(
-                messageWithoutCode.contains("{0}"),
-                "message for $failure with null exitCode leaked placeholder: '$messageWithoutCode'",
-            )
         }
     }
 
     @Test
-    fun `the error message of the Unity CLI replaces the failure text and is escaped`() {
-        val cliError = "No such host is known. (packages.unity.com:443)"
+    fun `every failure value has a sentence that ends with a full stop`() {
         for (failure in UnityPipelineFailure.entries) {
-            val message = unityPipelineFailureMessage(failure, 6, cliError)
-            assertTrue(message.contains(cliError), "message for $failure lost the error of the Unity CLI: '$message'")
+            val message = unityPipelineFailureMessage(failure)
+            assertTrue(message.isNotBlank() && message.endsWith("."), "message for $failure is no sentence with a full stop: '$message'")
         }
-        assertEscaped(
-            unityPipelineFailureMessage(UnityPipelineFailure.EXIT_CODE, 6, HOSTILE_VERSION),
-            "the error of the Unity CLI reached the markup unescaped",
-        )
-    }
-
-    @Test
-    fun `a long error message of the Unity CLI is cut`() {
-        val message = unityPipelineFailureMessage(UnityPipelineFailure.EXIT_CODE, 6, "x".repeat(10_000))
-        assertTrue(message.length < 1_000, "the message kept ${message.length} characters")
     }
 
     @Test
@@ -106,6 +86,25 @@ class UnityPipelineTextTest {
             val message = unityPipelineBusyMessage(operation)
             assertTrue(message.isNotBlank(), "busy message for $operation was blank")
         }
+    }
+
+    @Test
+    fun `the old Editor failure is a sentence that ends with a full stop`() {
+        val message = unityPipelineFailureMessage(UnityPipelineFailure.EDITOR_TOO_OLD)
+        assertTrue(message.isNotBlank() && message.endsWith("."), "the old Editor failure is no sentence: '$message'")
+    }
+
+    @Test
+    fun `the old Editor message names both versions`() {
+        val message = unityPipelineOldEditorMessage("6000.0", "2022.3.62f1")
+        assertTrue(message.contains("6000.0"), "the old Editor message lacks the minimum version: '$message'")
+        assertTrue(message.contains("2022.3.62f1"), "the old Editor message lacks the project version: '$message'")
+    }
+
+    @Test
+    fun `the old Editor message escapes a hostile version`() {
+        assertEscaped(unityPipelineOldEditorMessage(HOSTILE_VERSION, "2022.3.62f1"), "the minimum version reached the markup unescaped")
+        assertEscaped(unityPipelineOldEditorMessage("6000.0", HOSTILE_VERSION), "the project version reached the markup unescaped")
     }
 
     private fun assertEscaped(message: String, what: String) {

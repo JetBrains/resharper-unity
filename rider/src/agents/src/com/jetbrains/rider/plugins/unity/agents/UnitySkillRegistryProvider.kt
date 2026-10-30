@@ -3,9 +3,9 @@ package com.jetbrains.rider.plugins.unity.agents
 import com.intellij.aiagentextensions.skills.SkillWorkspaceContext
 import com.intellij.aiagentextensions.skills.extension.AgentSkillRegistryProvider
 import com.jetbrains.rider.plugins.unity.isUnityProject
+import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_SKILL_REGISTRY_SOURCE
 import java.net.URI
 
-internal const val UNITY_SKILL_REGISTRY_SOURCE = "Unity-Technologies/skills"
 internal val UNITY_SKILL_REGISTRY = URI("https://github.com/$UNITY_SKILL_REGISTRY_SOURCE/tree/main/skills")
 
 internal class UnitySkillRegistryProvider : AgentSkillRegistryProvider {

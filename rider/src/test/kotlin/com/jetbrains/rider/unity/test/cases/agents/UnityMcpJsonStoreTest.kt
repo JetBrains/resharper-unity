@@ -56,8 +56,8 @@ class UnityMcpJsonStoreTest {
     private val junieEntry = UnityMcpServerEntry("/home/tester/.unity/bin/unity", listOf("mcp"))
 
     @Test
-    fun `the Codex store is the only one a tool still writes`() {
-        assertNull(unityMcpOwnedStore(UnityMcpStore.CODEX_CLI, unity, solution), "the Unity CLI writes the Codex store")
+    fun `the Codex store has no JSON owner`() {
+        assertNull(unityMcpOwnedStore(UnityMcpStore.CODEX_CLI, unity, solution), "the Codex store is TOML, not JSON")
         val owned = UnityMcpStore.entries.filter { unityMcpOwnedStore(it, unity, solution) != null }
         assertEquals(
             listOf(UnityMcpStore.CLAUDE_CODE_CLI, UnityMcpStore.COPILOT_CLI, UnityMcpStore.JUNIE_CLI),

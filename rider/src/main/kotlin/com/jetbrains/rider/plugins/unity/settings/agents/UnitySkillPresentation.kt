@@ -4,8 +4,13 @@ import org.jetbrains.annotations.ApiStatus
 
 @ApiStatus.Internal
 enum class UnitySkillFailure {
-    LAUNCH_FAILED,
-    EXIT_CODE,
+    /** Rider could not download or read the skills archive. */
+    DOWNLOAD,
+
+    /** Rider could not write the skill folder into the project. */
+    WRITE,
+
+    /** The skills archive has no `skills/unity-cli` folder. */
     NOT_CONFIRMED,
 }
 
@@ -13,7 +18,6 @@ enum class UnitySkillFailure {
 enum class UnitySkillOffer {
     GATED,
     CHECKING,
-    UNREADABLE,
     INSTALL,
     INSTALLED,
     BUSY,
@@ -24,10 +28,13 @@ enum class UnitySkillOffer {
 data class UnitySkillPresentation(
     val gate: UnityMcpSectionState = UnityMcpSectionState.CHECKING,
     val packageInstalled: Boolean = false,
+    /** The old Editor that keeps the Pipeline package, and so the skill, out of the project. */
+    val blockingEditor: UnityOldEditor? = null,
     val installs: List<UnitySkillInstall>? = null,
     val installing: Boolean = false,
     val failure: UnitySkillFailure? = null,
-    val failureExitCode: Int? = null,
+    /** The target of the install that failed. Try Again installs for it again. */
+    val failedTarget: UnitySkillTarget? = null,
 ) {
     val offer: UnitySkillOffer
         get() = when {
@@ -44,7 +51,6 @@ data class UnitySkillPresentation(
                 UnityMcpSectionState.READY -> when {
                     failure != null -> UnitySkillOffer.FAILED
                     !installs.isNullOrEmpty() -> UnitySkillOffer.INSTALLED
-                    installs == null -> UnitySkillOffer.UNREADABLE
                     !packageInstalled -> UnitySkillOffer.GATED
                     else -> UnitySkillOffer.INSTALL
                 }

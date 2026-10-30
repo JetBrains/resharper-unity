@@ -8,7 +8,8 @@ import org.jetbrains.annotations.Nls
 import java.nio.file.Path
 import javax.swing.Icon
 
-internal data class UnityMcpRowStatus(val icon: Icon?, @param:Nls val text: String, val isProblem: Boolean)
+@ApiStatus.Internal
+data class UnityMcpRowStatus(val icon: Icon?, @param:Nls val text: String, val isProblem: Boolean)
 
 internal fun unityMcpStoreName(store: UnityMcpStore): @Nls String = when (store) {
     UnityMcpStore.CODEX_CLI -> UnityBundle.message("unity.agents.mcp.store.codex")
@@ -30,19 +31,30 @@ internal fun unityMcpSharedRemovalQuestion(stores: List<UnityMcpStore>, solution
 }
 
 @ApiStatus.Internal
-fun unityMcpGateMessage(section: UnityMcpSectionState, packageMissing: Boolean): @Nls String? = when (section) {
+fun unityMcpGateMessage(
+    section: UnityMcpSectionState,
+    packageMissing: Boolean,
+    blockingEditor: UnityOldEditor? = null,
+): @Nls String? = when (section) {
     UnityMcpSectionState.NO_PROJECT -> UnityBundle.message("unity.agents.mcp.no.project")
     UnityMcpSectionState.NOT_TRUSTED -> UnityBundle.message("unity.agents.mcp.not.trusted")
-    UnityMcpSectionState.NO_CLI ->
-        if (packageMissing) UnityBundle.message("unity.agents.mcp.needs.setup")
-        else UnityBundle.message("unity.agents.mcp.needs.cli")
-    UnityMcpSectionState.READY -> if (packageMissing) UnityBundle.message("unity.agents.mcp.needs.package") else null
+    UnityMcpSectionState.NO_CLI -> when {
+        packageMissing && blockingEditor != null -> unityOldEditorGateMessage(blockingEditor)
+        packageMissing -> UnityBundle.message("unity.agents.mcp.needs.setup")
+        else -> UnityBundle.message("unity.agents.mcp.needs.cli")
+    }
+    UnityMcpSectionState.READY -> when {
+        packageMissing && blockingEditor != null -> unityOldEditorGateMessage(blockingEditor)
+        packageMissing -> UnityBundle.message("unity.agents.mcp.needs.package")
+        else -> null
+    }
     UnityMcpSectionState.CHECKING -> null
 }
 
-internal fun unityMcpRowStatus(row: UnityMcpRowPresentation): UnityMcpRowStatus = when (row.state) {
+@ApiStatus.Internal
+fun unityMcpRowStatus(row: UnityMcpRowPresentation): UnityMcpRowStatus = when (row.state) {
     UnityMcpRowState.BUSY -> busy(row.operation)
-    UnityMcpRowState.FAILED -> problem(unityMcpWriteFailureMessage(row.failure, row.failureExitCode))
+    UnityMcpRowState.FAILED -> problem(unityMcpWriteFailureMessage(row.failure))
     UnityMcpRowState.UNAVAILABLE -> plain(null, UnityBundle.message("unity.agents.mcp.state.unavailable"))
     UnityMcpRowState.CHECKING -> plain(AnimatedIcon.Default.INSTANCE, UnityBundle.message("unity.agents.mcp.state.checking"))
     UnityMcpRowState.UNREADABLE -> problem(unreadableMessage(row.store))
@@ -70,12 +82,11 @@ internal fun unityMcpPipelineConfirmation(manifestPath: String): String =
     UnityBundle.message("unity.agents.mcp.pipeline.confirm", manifestPath)
 
 @Nls
-internal fun unityMcpWriteFailureMessage(failure: UnityMcpFailure?, exitCode: Int?): String = when (failure) {
-    UnityMcpFailure.LAUNCH_FAILED -> UnityBundle.message("unity.agents.mcp.failed.launch")
-    UnityMcpFailure.EXIT_CODE -> UnityBundle.message("unity.agents.mcp.failed.exit.code", exitCode ?: -1)
+internal fun unityMcpWriteFailureMessage(failure: UnityMcpFailure?): String = when (failure) {
     UnityMcpFailure.FILE_WRITE -> UnityBundle.message("unity.agents.mcp.failed.write")
     UnityMcpFailure.PACKAGE_INSTALL -> UnityBundle.message("unity.agents.mcp.failed.package")
     UnityMcpFailure.PACKAGE_UNREADABLE -> UnityBundle.message("unity.agents.mcp.failed.manifest")
+    UnityMcpFailure.CODEX_STORE_SHAPE -> UnityBundle.message("unity.agents.mcp.failed.codex.shape")
     UnityMcpFailure.NOT_CONFIRMED, null -> UnityBundle.message("unity.agents.mcp.failed.not.confirmed")
 }
 

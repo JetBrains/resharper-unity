@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nls
 @Nls
 internal fun unityCliFailureMessage(failure: UnityCliFailure?, exitCode: Int?): String = when (failure) {
     UnityCliFailure.DOWNLOAD -> UnityBundle.message("unity.agents.cli.failed.download")
+    UnityCliFailure.MANIFEST_READ -> UnityBundle.message("unity.agents.cli.failed.manifest")
     // No exit code, because nothing ran.
     UnityCliFailure.LAUNCH_FAILED -> UnityBundle.message("unity.agents.cli.failed.launch")
     UnityCliFailure.INSTALLER_EXIT_CODE ->
@@ -13,5 +14,6 @@ internal fun unityCliFailureMessage(failure: UnityCliFailure?, exitCode: Int?): 
     UnityCliFailure.UPDATE_EXIT_CODE ->
         UnityBundle.message("unity.agents.cli.failed.update", exitCode ?: -1)
     UnityCliFailure.VERIFICATION -> UnityBundle.message("unity.agents.cli.failed.verification")
+    UnityCliFailure.UPDATE_FAILED -> UnityBundle.message("unity.agents.cli.failed.self.update")
     null -> UnityBundle.message("unity.agents.cli.failed.unknown")
 }

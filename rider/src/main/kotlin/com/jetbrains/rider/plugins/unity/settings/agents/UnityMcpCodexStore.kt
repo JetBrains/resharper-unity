@@ -11,7 +11,10 @@ private const val MCP_SERVERS_TABLE = "mcp_servers"
 private val CODEX_ENTRY = listOf(MCP_SERVERS_TABLE, UNITY_MCP_SERVER_NAME)
 private val CODEX_COMMAND = CODEX_ENTRY + "command"
 
-private class NetworkPolicyKey(val table: List<String>, val key: String, val values: Set<String>)
+private class NetworkPolicyKey(val table: List<String>, val key: String, val values: Set<String>) {
+    /** The value that Rider writes. */
+    val written: String get() = values.first()
+}
 
 private val SANDBOX_TABLE = listOf("sandbox_workspace_write")
 private val NETWORK_PROXY_TABLE = listOf("features", "network_proxy")
@@ -49,6 +52,19 @@ fun removeUnityMcpCodexEntry(file: Path, removeNetworkPolicy: Boolean): Boolean 
     return true
 }
 
+/**
+ * Adds the Unity entry and Codex's sandbox network policy to the Codex store at [file].
+ *
+ * Returns false when [unityMcpCodexStoreWithEntry] cannot edit the store safely.
+ */
+@ApiStatus.Internal
+fun addUnityMcpCodexEntry(file: Path, unity: Path): Boolean {
+    val content = if (Files.notExists(file)) "" else file.readText()
+    val updated = unityMcpCodexStoreWithEntry(content, unity) ?: return false
+    if (updated != content) replaceStoreFile(file, updated)
+    return true
+}
+
 @ApiStatus.Internal
 data class UnityMcpCodexRemoval(val withoutEntry: String, val withoutUnity: String) {
     val deletesStore: Boolean get() = withoutUnity.isBlank()
@@ -65,11 +81,11 @@ fun unityMcpCodexRemoval(content: String): UnityMcpCodexRemoval? {
 /**
  * Drops the `[mcp_servers.unity]` table and its sub-tables, and keeps every other line as it is.
  *
- * Codex's sandbox network policy, which `unity mcp configure codex` also writes, stays, as `codex mcp remove`
+ * Codex's sandbox network policy, which [unityMcpCodexStoreWithEntry] also writes, stays, as `codex mcp remove`
  * leaves it too. [unityMcpCodexStoreWithoutNetworkPolicy] drops it.
  *
- * Returns null for a file that this line scan cannot edit safely: an entry in a dotted key or an
- * inline table, or a header or a value that does not parse.
+ * Returns null for a file that this line scan cannot edit safely.
+ * Such a file holds the entry in a dotted key or an inline table, or a header or a value that does not parse.
  */
 @ApiStatus.Internal
 fun unityMcpCodexStoreWithoutEntry(content: String): String? {
@@ -100,11 +116,33 @@ fun unityMcpCodexCommand(content: String): String? {
 }
 
 /**
- * Drops the keys of Codex's sandbox network policy that `unity mcp configure codex` writes, and keeps every other
+ * Tells whether the store has the `[mcp_servers.unity]` table, or a dotted key under it.
+ *
+ * Returns null for a header or a value that does not parse, and for an inline `mcp_servers` table, which this line scan cannot read.
+ */
+@ApiStatus.Internal
+fun hasUnityMcpCodexEntry(content: String): Boolean? {
+    var found = false
+    val parsed = walkTomlLines(content) { _, kind ->
+        when (kind) {
+            is TomlLine.Header -> if (kind.table.startsWith(CODEX_ENTRY)) found = true
+            is TomlLine.KeyValue -> when {
+                kind.path.startsWith(CODEX_ENTRY) -> found = true
+                // An inline `mcp_servers` table can hold the entry, and this line scan cannot look inside it.
+                kind.path == listOf(MCP_SERVERS_TABLE) -> return null
+            }
+            TomlLine.Blank, TomlLine.Comment, TomlLine.Continuation -> {}
+        }
+    }
+    return if (parsed) found else null
+}
+
+/**
+ * Drops the keys of Codex's sandbox network policy that [unityMcpCodexStoreWithEntry] writes, and keeps every other
  * line as it is.
  *
- * A key goes only under a plain table header, with the exact value of the Unity CLI and with no comment. A table
- * goes whole when it loses its last line, with the blank lines above its header.
+ * A key goes only under a table header that is not an array of tables, with a value of the policy and with no comment. A table
+ * goes whole when it loses its last line, with the blank lines above its header. A header with a comment stays.
  *
  * Returns null for a header or a value that does not parse.
  */
@@ -117,10 +155,10 @@ fun unityMcpCodexStoreWithoutNetworkPolicy(content: String): String? {
             TomlLine.Blank -> section.blank(line)
             TomlLine.Comment, TomlLine.Continuation -> section.keep(line)
             is TomlLine.Header -> {
-                val policyTable = kind.table.takeIf { it in UNITY_NETWORK_POLICY_TABLES && kind.isPlain }
+                val policyTable = kind.table.takeIf { it in UNITY_NETWORK_POLICY_TABLES && !kind.isArray }
                 val leading = section.takeBlanks()
                 section.appendTo(kept)
-                section = TomlSection(policyTable, leading, line)
+                section = TomlSection(policyTable, leading, line, keepsHeader = !kind.isPlain)
             }
             is TomlLine.KeyValue -> if (section.isUnityPolicyKey(kind.key, kind.value)) section.drop() else section.keep(line)
         }
@@ -128,6 +166,110 @@ fun unityMcpCodexStoreWithoutNetworkPolicy(content: String): String? {
     if (!parsed) return null
     section.appendTo(kept)
     return kept.toString()
+}
+
+/**
+ * Adds the `[mcp_servers.unity]` table and Codex's sandbox network policy, and keeps every other line as it is.
+ *
+ * Rider drops the old entry first. A policy key goes under the header of its table. Rider keeps a line with a value of
+ * the policy, and replaces another value. A missing key goes after the last key of the table. A policy table with no
+ * header goes to the end of the store, and the entry goes after it.
+ *
+ * Returns null for a store that this line scan cannot edit safely:
+ * - a policy key in a dotted key or an inline table;
+ * - a policy table in an array of tables;
+ * - an old entry that [unityMcpCodexStoreWithoutEntry] cannot drop;
+ * - a header or a value that does not parse.
+ */
+@ApiStatus.Internal
+fun unityMcpCodexStoreWithEntry(content: String, unity: Path): String? {
+    val newline = if ("\r\n" in content) "\r\n" else "\n"
+    var text = unityMcpCodexStoreWithoutEntry(content) ?: return null
+    for (table in UNITY_NETWORK_POLICY_TABLES) {
+        text = withTomlPolicyTable(text, table, newline) ?: return null
+    }
+    return appendTomlTable(text, unityMcpCodexEntry(unity).lines(), newline)
+}
+
+private class TomlEntry(val text: String, val kind: TomlLine)
+
+private fun readTomlEntries(content: String): List<TomlEntry>? {
+    val entries = mutableListOf<TomlEntry>()
+    return if (walkTomlLines(content) { line, kind -> entries += TomlEntry(line, kind) }) entries else null
+}
+
+/** Sets the keys of the policy [table], or appends the table when it has no header. */
+private fun withTomlPolicyTable(content: String, table: List<String>, newline: String): String? {
+    val entries = readTomlEntries(content) ?: return null
+    val keys = UNITY_NETWORK_POLICY.filter { it.table == table }
+    if (entries.any { !isSafePolicyLine(it.kind, table, keys) }) return null
+    val header = entries.indexOfFirst { (it.kind as? TomlLine.Header)?.table == table }
+    if (header < 0) return appendTomlTable(content, listOf("[${tomlKeyPath(table)}]") + keys.map(::tomlPolicyLine), newline)
+
+    val end = (header + 1 until entries.size).firstOrNull { entries[it].kind is TomlLine.Header } ?: entries.size
+    val lines = entries.mapTo(mutableListOf()) { it.text }
+    val missing = mutableListOf<String>()
+    for (key in keys) {
+        val index = (header + 1 until end).firstOrNull { (entries[it].kind as? TomlLine.KeyValue)?.key == listOf(key.key) }
+        if (index == null) {
+            missing += tomlPolicyLine(key) + newline
+            continue
+        }
+        val value = (entries[index].kind as TomlLine.KeyValue).value
+        if (value.substringBefore('#').trim() in key.values) continue
+        // A value that spans lines leaves its other lines behind, so Rider does not replace it.
+        if (entries.getOrNull(index + 1)?.kind == TomlLine.Continuation) return null
+        val line = lines[index]
+        lines[index] = line.takeWhile { it == ' ' || it == '\t' } + tomlPolicyLine(key) + lineEnding(line)
+    }
+    if (missing.isNotEmpty()) {
+        val last = (header + 1 until end).lastOrNull {
+            entries[it].kind is TomlLine.KeyValue || entries[it].kind == TomlLine.Continuation
+        } ?: header
+        if (!lines[last].endsWith("\n")) lines[last] += newline
+        lines.addAll(last + 1, missing)
+    }
+    return lines.joinToString("")
+}
+
+/**
+ * Tells whether [kind] leaves the policy [table] to table headers and plain keys.
+ *
+ * A dotted key or an inline table can define the table or one of its [keys] in another way. A line scan cannot edit
+ * that safely. An array of tables above the table counts as user content. A comment after a header is safe.
+ */
+private fun isSafePolicyLine(kind: TomlLine, table: List<String>, keys: List<NetworkPolicyKey>): Boolean = when (kind) {
+    is TomlLine.Header -> when {
+        table.startsWith(kind.table) -> !kind.isArray
+        else -> keys.none { kind.table.startsWith(table + it.key) }
+    }
+    is TomlLine.KeyValue -> when {
+        kind.table == table -> kind.key.size == 1 || keys.none { it.key == kind.key.first() }
+        kind.table.startsWith(table) -> true
+        else -> !kind.path.startsWith(table) && !table.startsWith(kind.path)
+    }
+    TomlLine.Blank, TomlLine.Comment, TomlLine.Continuation -> true
+}
+
+/** Appends [table] to [content], with one blank line before it. */
+private fun appendTomlTable(content: String, table: List<String>, newline: String): String {
+    val text = StringBuilder(content)
+    if (text.isNotEmpty() && !text.endsWith("\n")) text.append(newline)
+    if (text.isNotBlank() && !text.endsWith("\n\n") && !text.endsWith("\r\n\r\n")) text.append(newline)
+    table.forEach { text.append(it).append(newline) }
+    return text.toString()
+}
+
+private fun tomlPolicyLine(key: NetworkPolicyKey): String = "${tomlKey(key.key)} = ${key.written}"
+
+private fun tomlKeyPath(path: List<String>): String = path.joinToString(".", transform = ::tomlKey)
+
+private fun tomlKey(key: String): String = if (key.isNotEmpty() && key.all(::isBareKeyChar)) key else "\"$key\""
+
+private fun lineEnding(line: String): String = when {
+    line.endsWith("\r\n") -> "\r\n"
+    line.endsWith("\n") -> "\n"
+    else -> ""
 }
 
 private class TomlKey(val path: List<String>, val end: Int)
@@ -138,7 +280,7 @@ private sealed interface TomlLine {
     data object Continuation : TomlLine
     data object Blank : TomlLine
     data object Comment : TomlLine
-    class Header(val table: List<String>, val isPlain: Boolean) : TomlLine
+    class Header(val table: List<String>, val isPlain: Boolean, val isArray: Boolean) : TomlLine
     class KeyValue(val table: List<String>, val key: List<String>, val value: String) : TomlLine {
         val path: List<String> get() = table + key
     }
@@ -168,7 +310,7 @@ private inline fun walkTomlLines(content: String, visit: (line: String, kind: To
 private fun readTomlLine(text: String, table: List<String>): TomlLine? = when {
     text.isEmpty() -> TomlLine.Blank
     text.startsWith("#") -> TomlLine.Comment
-    text.startsWith("[") -> readTomlHeader(text)?.let { TomlLine.Header(it, isPlainTomlHeader(text)) }
+    text.startsWith("[") -> readTomlHeader(text)?.let { TomlLine.Header(it, isPlainTomlHeader(text), isArray = text.startsWith("[[")) }
     else -> {
         val key = readTomlKey(text, 0)
         val rest = key?.let { text.substring(it.end) }
@@ -181,8 +323,14 @@ private fun readTomlLine(text: String, table: List<String>): TomlLine? = when {
  * One table of the store, with the blank lines above its header.
  *
  * A table of the network policy that loses all its lines goes whole, so that no empty header stays.
+ * A header with a comment stays, because the comment belongs to the user.
  */
-private class TomlSection(private val policyTable: List<String>?, leading: String, header: String?) {
+private class TomlSection(
+    private val policyTable: List<String>?,
+    leading: String,
+    header: String?,
+    private val keepsHeader: Boolean = false,
+) {
     private val text = StringBuilder(leading).append(header.orEmpty())
     private val blanks = StringBuilder()
     private var kept = false
@@ -210,12 +358,12 @@ private class TomlSection(private val policyTable: List<String>?, leading: Strin
     fun takeBlanks(): String = blanks.toString().also { blanks.setLength(0) }
 
     fun appendTo(out: StringBuilder) {
-        if (dropped && !kept) return
+        if (dropped && !kept && !keepsHeader) return
         out.append(text).append(blanks)
     }
 }
 
-/** A `[table]` header with no comment after it. An array of tables or a comment marks a table that the user wrote. */
+/** A `[table]` header with no comment after it. A comment marks a header that the user wrote. */
 private fun isPlainTomlHeader(text: String): Boolean {
     val key = readTomlKey(text, 1) ?: return false
     return text.substring(key.end).trim() == "]"
