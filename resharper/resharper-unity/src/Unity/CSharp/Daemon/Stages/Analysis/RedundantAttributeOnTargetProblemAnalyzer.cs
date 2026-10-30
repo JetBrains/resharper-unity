@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -93,7 +94,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 case IFieldDeclaration _: return AttributeTargets.Field;
                 case IEventDeclaration _: return AttributeTargets.Event;
                 case IInterfaceDeclaration _: return AttributeTargets.Interface;
-                case IParameterDeclaration _: return AttributeTargets.Parameter;
+                case IParameterDeclaration p:
+                    return attribute.Target == AttributeTarget.Field && p.DeclaredElement.IsRecordPositionalParameter()
+                        ? AttributeTargets.Field
+                        : AttributeTargets.Parameter;
                 case ITypeParameterDeclaration _: return AttributeTargets.GenericParameter;
             }
 

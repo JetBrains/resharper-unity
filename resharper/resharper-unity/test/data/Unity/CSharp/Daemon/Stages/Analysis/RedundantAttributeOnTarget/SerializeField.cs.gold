@@ -68,6 +68,9 @@ public interface Quux
 {
 }
 
+[Serializable]
+record struct SerializableRecord([field: SerializeField] float radius, [field: SerializeField] float speed);
+
 ---------------------------------------------------------
 (0): ReSharper Dead Code: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
 (1): ReSharper Dead Code: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations.

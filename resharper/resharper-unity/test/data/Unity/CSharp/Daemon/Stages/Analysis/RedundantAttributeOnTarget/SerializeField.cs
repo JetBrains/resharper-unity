@@ -67,3 +67,6 @@ public enum Baz
 public interface Quux
 {
 }
+
+[Serializable]
+record struct SerializableRecord([field: SerializeField] float radius, [field: SerializeField] float speed);
