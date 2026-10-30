@@ -131,8 +131,7 @@
                              instance="com.jetbrains.rider.plugins.unity.settings.UnityProfilerOptionsPage"
                              key="configurable.name.unity.profiler"/>
 
-    <!-- The kill switch of the whole feature. The default is false, so the feature ships dark, and
-         the default is written twice: here and in UnityForAgentsFeature. -->
+    <!-- The kill switch of the whole feature. The default is written twice: here and in UnityForAgentsFeature. -->
     <registryKey key="rider.unity.agents.enabled"
                  defaultValue="true"
                  description="Enables the Unity for Agents settings page, the Unity CLI integration and the Unity MCP section"

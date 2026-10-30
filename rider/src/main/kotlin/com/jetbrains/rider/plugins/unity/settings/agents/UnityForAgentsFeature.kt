@@ -14,7 +14,7 @@ object UnityForAgentsFeature {
 
     const val MCP_SECTION_KEY: String = "rider.unity.agents.mcp.enabled"
 
-    fun isEnabled(): Boolean = Registry.`is`(ENABLED_KEY, false)
+    fun isEnabled(): Boolean = Registry.`is`(ENABLED_KEY, true)
 
     fun isCliSuggestionEnabled(): Boolean = isEnabled() && Registry.`is`(SUGGEST_CLI_INSTALL_KEY, true)
 

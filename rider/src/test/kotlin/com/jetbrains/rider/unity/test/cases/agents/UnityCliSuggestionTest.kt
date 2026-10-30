@@ -490,6 +490,7 @@ class UnityCliSuggestionTest {
     }
 
     @Test
+    @RegistryKey(key = UnityForAgentsFeature.ENABLED_KEY, value = "false")
     fun theKillSwitchStopsTheActivityBeforeItDetectsAnything(@TestDisposable disposable: Disposable) {
         val lookups = installRecordingEnvironment(disposable)
 
