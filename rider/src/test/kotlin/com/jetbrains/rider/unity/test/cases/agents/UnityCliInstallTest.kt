@@ -8,6 +8,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.BASH_ENV_VARIABLE
 import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_CLI_CDN_BASE_URL
 import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_CLI_CDN_BASE_VARIABLE
 import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_CLI_CHANNEL_VARIABLE
+import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_CLI_SKIP_SETUP_VARIABLE
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliFailure
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallerScript
 import com.jetbrains.rider.plugins.unity.settings.agents.probeUnityCliChannel
@@ -91,6 +92,16 @@ class UnityCliInstallTest {
             // Bash reads this file before any script it runs, even a non-interactive one. An empty
             // value reads as unset, the same as the scrub of the CDN base above.
             assertEquals("", commandLine.environment[BASH_ENV_VARIABLE], script.name)
+        }
+    }
+
+    @Test
+    fun `every command tells the installer to skip the agent setup`() {
+        for (script in UnityCliInstallerScript.entries) {
+            val commandLine = unityCliInstallerCommandLine(script, installer, null)
+
+            // Both scripts run `unity setup all` after the install unless the value is exactly 1.
+            assertEquals("1", commandLine.environment[UNITY_CLI_SKIP_SETUP_VARIABLE], script.name)
         }
     }
 

@@ -37,6 +37,9 @@ const val UNITY_CLI_CDN_BASE_VARIABLE: String = "UNITY_CLI_CDN_BASE"
 const val BASH_ENV_VARIABLE: String = "BASH_ENV"
 
 @ApiStatus.Internal
+const val UNITY_CLI_SKIP_SETUP_VARIABLE: String = "UNITY_CLI_SKIP_SETUP"
+
+@ApiStatus.Internal
 enum class UnityCliInstallerScript(val fileName: String) {
     SHELL("install.sh"),
     POWERSHELL("install.ps1");
@@ -104,6 +107,9 @@ fun unityCliInstallerCommandLine(
     // reads no such variable, but scrubbing both keeps one rule.
     commandLine.withEnvironment(UNITY_CLI_CDN_BASE_VARIABLE, "")
     commandLine.withEnvironment(BASH_ENV_VARIABLE, "")
+    // Without this value, both scripts end with `unity setup all`. That command changes the settings of every agent on the
+    // machine, and the user asked only for the CLI.
+    commandLine.withEnvironment(UNITY_CLI_SKIP_SETUP_VARIABLE, "1")
     if (channel != null) commandLine.withEnvironment(UNITY_CLI_CHANNEL_VARIABLE, channel)
     OSProcessHandler.deleteFileOnTermination(commandLine, installer.toFile())
     return commandLine
