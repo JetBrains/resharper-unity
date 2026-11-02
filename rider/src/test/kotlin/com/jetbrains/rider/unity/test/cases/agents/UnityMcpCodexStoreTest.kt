@@ -6,6 +6,8 @@ import com.jetbrains.rider.plugins.unity.settings.agents.hasUnityMcpCodexEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.removeUnityMcpCodexEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexCommand
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexConfigureReplacesOtherServer
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexHoldsOtherServer
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexNetworkPolicyToReplace
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexRemoval
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexSnippet
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexStoreFile
@@ -406,6 +408,16 @@ class UnityMcpCodexStoreTest {
         }
     }
 
+    /** A configure writes nothing to a store that Rider cannot edit, so Rider does not ask about a replacement. */
+    @Test
+    fun `a configure does not ask about another server in a store that Rider cannot edit`() {
+        val store = "[mcp_servers.unity]\ncommand = \"uvx\"\n\n[features]\nnetwork_proxy.enabled = true\n"
+
+        assertTrue(unityMcpCodexHoldsOtherServer(store, unity))
+        assertNull(unityMcpCodexStoreWithEntry(store, unity))
+        assertFalse(unityMcpCodexConfigureReplacesOtherServer(store, unity))
+    }
+
     /** On Windows, the PATH lookup can find a wrapper such as `unity.cmd`. The entry of the detected Unity CLI is no other server. */
     @Test
     fun `a configure replaces the entry of the detected Unity CLI without a question`() {
@@ -414,6 +426,59 @@ class UnityMcpCodexStoreTest {
 
         assertFalse(unityMcpCodexConfigureReplacesOtherServer(store, wrapper))
         assertTrue(unityMcpCodexConfigureReplacesOtherServer(store, unity), "a wrapper of another Unity CLI is another program")
+    }
+
+    /** RIDER-144842: the issue shows this store, where the user turned off the network access of the sandbox. */
+    @Test
+    fun `a configure asks before it replaces a value of the network policy`() {
+        assertEquals(listOf("sandbox_workspace_write.network_access = false"), unityMcpCodexNetworkPolicyToReplace(ISSUE_STORE))
+
+        val proxy = """
+            [features.network_proxy]
+            enabled = false
+            allow_local_binding = true
+
+            [features.network_proxy.domains]
+            localhost = "deny" # no local hosts
+            "::1" = 'deny'
+        """.trimIndent() + "\n"
+        val expected = listOf(
+            "features.network_proxy.enabled = false",
+            "features.network_proxy.allow_local_binding = true",
+            "features.network_proxy.domains.localhost = \"deny\"",
+            "features.network_proxy.domains.\"::1\" = 'deny'",
+        )
+        assertEquals(expected, unityMcpCodexNetworkPolicyToReplace(proxy))
+    }
+
+    @Test
+    fun `a configure that keeps or adds the network policy asks nothing`() {
+        val stores = listOf(
+            UNITY_CLI_STORE,
+            USER_CONTENT,
+            "[sandbox_workspace_write]\nnetwork_access = true # I need this\n",
+            "[features.network_proxy.domains]\n'localhost' = 'allow'\n",
+            "[profiles.offline]\nnetwork_access = false\n",
+            "",
+            null,
+        )
+        for (store in stores) {
+            assertEquals(emptyList<String>(), unityMcpCodexNetworkPolicyToReplace(store), "$store")
+        }
+        assertEquals(
+            emptyList<String>(),
+            unityMcpCodexNetworkPolicyToReplace("sandbox_workspace_write.network_access = false\n"),
+            "a store that Rider cannot edit gets no write, so nothing to ask",
+        )
+    }
+
+    /** RIDER-144842: after the user agrees, the replaced line loses its comment, and the removal takes the key. */
+    @Test
+    fun `a replaced value loses its comment, and the removal takes the key`() {
+        val written = unityMcpCodexStoreWithEntry(ISSUE_STORE, unity)!!
+
+        assertEquals(writtenTables(), written)
+        assertTrue(unityMcpCodexRemoval(written)!!.deletesStore)
     }
 
     /** The four tables and then the entry, as Rider writes them into an empty store. */
@@ -687,6 +752,9 @@ class UnityMcpCodexStoreTest {
             # quick answers
             model = "o3-mini"
         """.trimIndent() + "\n"
+
+        /** The store of RIDER-144842. The user turned off the network access of the sandbox, with a comment. */
+        const val ISSUE_STORE = "[sandbox_workspace_write]\nnetwork_access = false   # I don't want network in the sandbox\n"
 
         /** What `unity mcp configure codex --local --yes` wrote with the Unity CLI beta.12, measured on 2026-10-07. */
         val UNITY_CLI_STORE = "\n" + """

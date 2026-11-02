@@ -118,6 +118,8 @@ data class UnityMcpRowPresentation(
     val removalAsksForNetworkPolicy: Boolean = false,
     /** The store holds another server named `unity`, so a configure asks the user before it replaces it. */
     val configureReplacesOtherServer: Boolean = false,
+    /** The keys of Codex's sandbox network policy that a configure replaces in the Codex store, so it asks the user first. */
+    val networkPolicyToReplace: List<@NlsSafe String> = emptyList(),
 ) {
     val state: UnityMcpRowState
         get() = when {

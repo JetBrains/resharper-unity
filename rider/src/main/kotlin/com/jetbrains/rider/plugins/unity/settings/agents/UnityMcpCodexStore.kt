@@ -119,19 +119,28 @@ private fun unityMcpCodexCommandValue(content: String): String? {
 }
 
 /**
- * Tells whether the `[mcp_servers.unity]` table holds another MCP server, which a configure replaces.
+ * Tells whether the `[mcp_servers.unity]` table holds another MCP server.
  *
  * A table with no command holds no stdio server, for example an HTTP server with a `url`. A table with a command of
  * another program also holds another server. A command that runs [unity], and a command that this line scan cannot
  * read, count as the Unity entry.
  */
 @ApiStatus.Internal
-fun unityMcpCodexConfigureReplacesOtherServer(content: String?, unity: Path?): Boolean {
-    if (content == null || hasUnityMcpCodexEntry(content) != true) return false
+fun unityMcpCodexHoldsOtherServer(content: String, unity: Path?): Boolean {
+    if (hasUnityMcpCodexEntry(content) != true) return false
     val value = unityMcpCodexCommandValue(content) ?: return true
     val command = readTomlString(value) ?: return false
     return !namesUnityCli(command) && (unity == null || !isUnityCliCommand(command, unity))
 }
+
+/**
+ * Tells whether a configure replaces another MCP server in the `[mcp_servers.unity]` table.
+ *
+ * The answer is false for a store that [unityMcpCodexStoreWithEntry] cannot edit, because the configure then writes nothing.
+ */
+@ApiStatus.Internal
+fun unityMcpCodexConfigureReplacesOtherServer(content: String?, unity: Path?): Boolean =
+    content != null && unityMcpCodexHoldsOtherServer(content, unity) && withUnityNetworkPolicy(content, "\n") != null
 
 /**
  * Tells whether the store has the `[mcp_servers.unity]` table, or a dotted key under it.
@@ -203,11 +212,30 @@ fun unityMcpCodexStoreWithoutNetworkPolicy(content: String): String? {
 @ApiStatus.Internal
 fun unityMcpCodexStoreWithEntry(content: String, unity: Path): String? {
     val newline = if ("\r\n" in content) "\r\n" else "\n"
+    val edit = withUnityNetworkPolicy(content, newline) ?: return null
+    return appendTomlTable(edit.text, unityMcpCodexEntry(unity).lines(), newline)
+}
+
+/**
+ * Lists the keys of Codex's sandbox network policy that a configure replaces, with the values of the store.
+ *
+ * An item reads as `sandbox_workspace_write.network_access = false`. The replaced line loses its comment. The list is empty
+ * for a store that [unityMcpCodexStoreWithEntry] cannot edit, because the configure then writes nothing.
+ */
+@ApiStatus.Internal
+fun unityMcpCodexNetworkPolicyToReplace(content: String?): List<String> =
+    content?.let { withUnityNetworkPolicy(it, "\n") }?.replaced.orEmpty()
+
+/** The store without the Unity entry and with the network policy, and the policy keys whose values it replaced. */
+private class TomlPolicyEdit(val text: String, val replaced: List<String>)
+
+private fun withUnityNetworkPolicy(content: String, newline: String): TomlPolicyEdit? {
     var text = unityMcpCodexStoreWithoutEntry(content) ?: return null
+    val replaced = mutableListOf<String>()
     for (table in UNITY_NETWORK_POLICY_TABLES) {
-        text = withTomlPolicyTable(text, table, newline) ?: return null
+        text = withTomlPolicyTable(text, table, newline, replaced) ?: return null
     }
-    return appendTomlTable(text, unityMcpCodexEntry(unity).lines(), newline)
+    return TomlPolicyEdit(text, replaced)
 }
 
 private class TomlEntry(val text: String, val kind: TomlLine)
@@ -217,8 +245,8 @@ private fun readTomlEntries(content: String): List<TomlEntry>? {
     return if (walkTomlLines(content) { line, kind -> entries += TomlEntry(line, kind) }) entries else null
 }
 
-/** Sets the keys of the policy [table], or appends the table when it has no header. */
-private fun withTomlPolicyTable(content: String, table: List<String>, newline: String): String? {
+/** Sets the keys of the policy [table], or appends the table when it has no header. Adds each key whose value it replaces to [replaced]. */
+private fun withTomlPolicyTable(content: String, table: List<String>, newline: String, replaced: MutableList<String>): String? {
     val entries = readTomlEntries(content) ?: return null
     val keys = UNITY_NETWORK_POLICY.filter { it.table == table }
     if (entries.any { !isSafePolicyLine(it.kind, table, keys) }) return null
@@ -234,10 +262,11 @@ private fun withTomlPolicyTable(content: String, table: List<String>, newline: S
             missing += tomlPolicyLine(key) + newline
             continue
         }
-        val value = (entries[index].kind as TomlLine.KeyValue).value
-        if (value.substringBefore('#').trim() in key.values) continue
+        val value = (entries[index].kind as TomlLine.KeyValue).value.substringBefore('#').trim()
+        if (value in key.values) continue
         // A value that spans lines leaves its other lines behind, so Rider does not replace it.
         if (entries.getOrNull(index + 1)?.kind == TomlLine.Continuation) return null
+        replaced += "${tomlKeyPath(table + key.key)} = $value"
         val line = lines[index]
         lines[index] = line.takeWhile { it == ' ' || it == '\t' } + tomlPolicyLine(key) + lineEnding(line)
     }
