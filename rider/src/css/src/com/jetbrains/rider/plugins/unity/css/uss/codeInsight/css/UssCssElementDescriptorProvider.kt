@@ -15,16 +15,17 @@ import com.intellij.psi.css.impl.util.scheme.CssElementDescriptorProviderImpl
 import com.intellij.psi.css.impl.util.table.CssDescriptorsUtil.filterDescriptorsByContext
 import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.rider.plugins.unity.css.uss.UssLanguage
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 
 class UssCssElementDescriptorProvider : CssElementDescriptorProvider() {
     private val factory
         get() = UssCssElementDescriptorFactory.getInstance().getDescriptors()
 
-    override fun isMyContext(psiElement: PsiElement?) = psiElement?.containingFile?.language is UssLanguage
+    override fun isMyContext(psiElement: PsiElement?): Boolean = psiElement?.containingFile?.language is UssLanguage
 
     // Allow all type names as simple selectors for now (e.g. TextField { ... })
     // Future: Implement getSimpleSelectors to list all possible type names and remove this
-    override fun isPossibleSelector(selector: String, context: PsiElement) = true
+    override fun isPossibleSelector(selector: String, context: PsiElement): Boolean = true
 
     override fun getDeclarationsForSimpleSelector(selector: CssSimpleSelector): Array<PsiElement> {
         return arrayOf(selector)
@@ -44,8 +45,14 @@ class UssCssElementDescriptorProvider : CssElementDescriptorProvider() {
         return factory.properties.get(StringUtil.toLowerCase(propertyName))
     }
 
-    override fun getAllPropertyDescriptors(context: PsiElement?): MutableCollection<out CssPropertyDescriptor> {
-        return filterDescriptorsByContext(factory.properties.values(), context)
+    // Completion hides the properties that are newer than the Unity version of the project.
+    // findPropertyDescriptors is not filtered, so validation does not depend on the Unity version
+    override fun getAllPropertyDescriptors(context: PsiElement?): Collection<CssPropertyDescriptor> {
+        val descriptors = filterDescriptorsByContext(factory.properties.values(), context)
+        val project = context?.project ?: return descriptors
+        val unityVersion = UnityInstallationFinder.getInstance(project).getApplicationVersionParsed() ?: return descriptors
+        val unitySince = UssCssElementDescriptorFactory.getInstance().getUnitySinceVersions()
+        return filterByUnityVersion(descriptors, unitySince, unityVersion) { StringUtil.toLowerCase(it.propertyName) }
     }
 
     override fun findFunctionDescriptors(functionName: String, context: PsiElement?): MutableCollection<out CssFunctionDescriptor> {
@@ -64,8 +71,8 @@ class UssCssElementDescriptorProvider : CssElementDescriptorProvider() {
     }
 
     // Validator for property values, especially enums
-    override fun getValueValidator() = CssValueValidatorImpl(this)
+    override fun getValueValidator(): CssValueValidatorImpl = CssValueValidatorImpl(this)
 
-    override fun shouldAskOtherProviders(context: PsiElement?) = false
-    override fun providesClassicCss() = false
+    override fun shouldAskOtherProviders(context: PsiElement?): Boolean = false
+    override fun providesClassicCss(): Boolean = false
 }

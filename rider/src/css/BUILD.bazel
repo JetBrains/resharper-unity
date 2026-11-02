@@ -43,6 +43,7 @@ jvm_library(
         "@community//platform/platform-api:ide",
         "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
         "@community//platform/platform-impl:ide-impl",
+        "@community//platform/util/jdom",
     ],
 )
 
@@ -77,6 +78,7 @@ jvm_library(
         "@community//platform/platform-api:ide_test_lib",
         "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend_test_lib",
         "@community//platform/platform-impl:ide-impl_test_lib",
+        "@community//platform/util/jdom:jdom_test_lib",
     ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.css` end

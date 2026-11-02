@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <definitions xmlns="urn:schemas-jetbrains-com:css-xml">
 
-  <!-- See the readme.md in src/main/kotlin/com/jetbrains/rider/plugins/unity/ideaInterop/fileTypes/uss/readme.md -->
+  <!-- See the readme.md in rider/src/css/src/com/jetbrains/rider/plugins/unity/css/uss/impl/readme.md -->
 
   <!-- It would be nice to use declared-in and obsolete-in attributes, but these are CSS versions, and will return
        UNKNOWN if not a valid CSS version -->
+
+  <!-- unity-since.properties holds the Unity version that introduced a property. css.xsd does not allow a custom
+       attribute, so the version is not in this file. A property that is not in unity-since.properties exists in
+       2019.4 and earlier. Completion hides a property that is newer than the Unity version of the project.
+       Validation ignores the version.
+       Every id that this file declares replaces the definition with the same id from the webref schemes. -->
 
   <!-- Notes:
        * The code reads `inherit`, but it's not used or supported anywhere
@@ -26,6 +32,11 @@
          * This file uses the stricter syntax
        -->
 
+  <!-- CssValueDescriptorMapper looks up this id for every `comma-separated="yes"` value.
+       The platform declares it in manually-supported/patches.xml, but the USS factory does not load that file. -->
+  <named-value id="comma-separator" declared-in="0">
+    <text value=","/>
+  </named-value>
   <named-value id="global-keywords" declared-in="0">
     <name value="initial" />
   </named-value>
@@ -82,6 +93,142 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </named-value>
+  <!-- [ <resource> | <url> | none ]# (6000.6) -->
+  <named-value id="asset-none-list" declared-in="0">
+    <group type="or" comma-separated="yes">
+      <uri/>
+      <invoke id="resource"/>
+      <invoke id="url"/>
+      <name value="none"/>
+    </group>
+  </named-value>
+
+  <!-- Named values from StylePropertyCache.s_NonTerminalValues (2021.3+) and the types that the new properties use -->
+  <named-value id="timing-function" declared-in="0">
+    <!-- 2021.3+. easing-function is `linear | <timing-function>`, so `linear` is part of this list -->
+    <group type="any">
+      <!--  https://github.com/hybloid/UnityCsReference/blob/4d031e55aeeb51d36bd94c7f20182978d77807e4/ModuleOverrides/com.unity.ui/Core/Style/Generated/StylePropertyCache.cs#L121   -->
+      <name value="ease"/>
+      <name value="ease-in"/>
+      <name value="ease-out"/>
+      <name value="ease-in-out"/>
+      <name value="linear"/>
+      <name value="ease-in-sine" />
+      <name value="ease-out-sine" />
+      <name value="ease-in-out-sine" />
+      <name value="ease-in-cubic" />
+      <name value="ease-out-cubic" />
+      <name value="ease-in-out-cubic" />
+      <name value="ease-in-circ" />
+      <name value="ease-out-circ" />
+      <name value="ease-in-out-circ" />
+      <name value="ease-in-elastic" />
+      <name value="ease-out-elastic" />
+      <name value="ease-in-out-elastic" />
+      <name value="ease-in-back" />
+      <name value="ease-out-back" />
+      <name value="ease-in-out-back" />
+      <name value="ease-in-bounce" />
+      <name value="ease-out-bounce" />
+      <name value="ease-in-out-bounce" />
+    </group>
+  </named-value>
+  <named-value id="single-transition-property" declared-in="0">
+    <!-- 2021.3+: all | <custom-ident>. An empty name matches any identifier -->
+    <group type="or">
+      <name value="all"/>
+      <name/>
+    </group>
+  </named-value>
+  <named-value id="single-transition" declared-in="0">
+    <!-- 2021.3+: [ none | <single-transition-property> ] || <time> || <easing-function> || <time> -->
+    <group type="any">
+      <group type="or">
+        <name value="none"/>
+        <inline id="single-transition-property" inline="yes"/>
+      </group>
+      <time/>
+      <inline id="timing-function" inline="yes"/>
+      <time/>
+    </group>
+  </named-value>
+  <named-value id="filter-function" declared-in="0">
+    <!-- 6000.3+. drop-shadow() is 6000.6+ -->
+    <group type="or">
+      <invoke id="filter"/>
+      <invoke id="tint"/>
+      <invoke id="opacity"/>
+      <invoke id="invert"/>
+      <invoke id="grayscale"/>
+      <invoke id="sepia"/>
+      <invoke id="blur"/>
+      <invoke id="contrast"/>
+      <invoke id="hue-rotate"/>
+      <invoke id="drop-shadow"/>
+    </group>
+  </named-value>
+  <named-value id="track-size" declared-in="0">
+    <!-- 7000.0+. See GridTrackSize.cs and StylePropertyReader.ReadListGridTrackSize -->
+    <group type="or">
+      <inline id="length" inline="yes"/>
+      <percentage/>
+      <flex/>
+      <name value="auto"/>
+      <name value="min-content"/>
+      <name value="max-content"/>
+      <invoke id="minmax"/>
+      <invoke id="fit-content"/>
+      <invoke id="repeat"/>
+    </group>
+  </named-value>
+  <named-value id="grid-line" declared-in="0">
+    <!-- 7000.0+: auto | <integer> | span <integer>. Unity reads `span` without an integer as `span 1` -->
+    <group type="or">
+      <name value="auto"/>
+      <integer/>
+      <group>
+        <name value="span"/>
+        <integer min="0"/>
+      </group>
+    </group>
+  </named-value>
+  <named-value id="single-animation-direction" declared-in="0"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="normal"/>
+      <name value="reverse"/>
+      <name value="alternate"/>
+      <name value="alternate-reverse"/>
+    </group>
+  </named-value>
+  <named-value id="single-animation-iteration-count" declared-in="0"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="infinite"/>
+      <number/>
+    </group>
+  </named-value>
+  <named-value id="single-animation-play-state" declared-in="0"> <!-- 6000.6+ -->
+    <group type="or">
+      <name value="running"/>
+      <name value="paused"/>
+    </group>
+  </named-value>
+  <named-value id="single-animation" declared-in="0">
+    <!-- 7000.0+: [ none | <resource> | <url> ] || <time> || <time> || <single-animation-iteration-count> ||
+         <single-animation-direction> || <single-animation-play-state> -->
+    <group type="any">
+      <group type="or">
+        <name value="none"/>
+        <uri/>
+        <invoke id="resource"/>
+        <invoke id="url"/>
+      </group>
+      <time/>
+      <time/>
+      <inline id="single-animation-iteration-count" inline="yes"/>
+      <inline id="single-animation-direction" inline="yes"/>
+      <inline id="single-animation-play-state" inline="yes"/>
+    </group>
+  </named-value>
 
   <!-- In alphabetical ordering (see uss-properties.json) -->
   <property id="align-content" declared-in="0" initial="flex-start"> <!-- 2017.1-2019.3 -->
@@ -114,11 +261,73 @@
       <inline id="global-keywords" inline="yes" />
     </group>
   </property>
+  <property id="animation" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <inline id="single-animation" comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="animation-delay" declared-in="0" initial="0s" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <time comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="animation-direction" declared-in="0" initial="normal" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <inline id="single-animation-direction" comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="animation-duration" declared-in="0" initial="0s" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <time comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="animation-iteration-count" declared-in="0" initial="1" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <inline id="single-animation-iteration-count" comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="animation-name" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <inline id="asset-none-list" inline="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="animation-play-state" declared-in="0" initial="running" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 6000.6+ -->
+    <!-- 6000.6 running | paused, 7000.0 <single-animation-play-state># -->
+    <group type="or">
+      <inline id="single-animation-play-state" comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="aspect-ratio" declared-in="0" initial="auto" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 6000.3+ -->
+    <!-- auto | <ratio>, where <ratio> is <number [0,∞]> -->
+    <group type="or">
+      <name value="auto"/>
+      <number/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="backdrop-filter" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 6000.6+ -->
+    <group type="or">
+      <name value="none"/>
+      <inline id="filter-function" max="-1"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
   <property id="background-color" declared-in="0" initial="clear"> <!-- 2017.1-2019.3 -->
     <inline id="color" inline="yes" />
   </property>
   <property id="background-image" declared-in="0" initial="default"> <!-- 2017.1-2019.3 -->
-    <inline id="asset-none" inline="yes" />
+    <group type="or">
+      <inline id="asset-none" inline="yes" />
+      <invoke id="linear-gradient"/> <!-- 7000.0+ -->
+      <invoke id="radial-gradient"/> <!-- 7000.0+ -->
+    </group>
   </property>
   <property id="border-bottom-color" declared-in="0" initial="clear"> <!-- 2019.3 -->
     <inline id="color" inline="yes" />
@@ -191,8 +400,23 @@
   <property id="bottom" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
     <inline id="length-percentage-auto" inline="yes"/>
   </property>
+  <property id="box-shadow" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <!-- none | [ inset? && <length>{2,4} && <color>? ] -->
+    <group type="or">
+      <name value="none"/>
+      <group type="and">
+        <name value="inset" min="0"/>
+        <inline id="length" min="2" max="4"/>
+        <inline id="color" min="0"/>
+      </group>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
   <property id="color" declared-in="0" initial="#000000"> <!-- 2018.3-2019.3 -->
     <inline id="color" inline="yes"/>
+  </property>
+  <property id="column-gap" declared-in="0" initial="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <inline id="length-percentage" inline="yes"/>
   </property>
   <property id="cursor" declared-in="0" initial="default" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#cursor"> <!-- 2018.1-2019.3 -->
     <description><![CDATA[
@@ -231,6 +455,7 @@
         <name value="fps"/>
         <name value="split-resize-up-down"/>
         <name value="split-resize-left-right"/>
+        <name value="not-allowed"/> <!-- 6000.0+ -->
       </group>
       <inline id="global-keywords" inline="yes"/>
     </group>
@@ -239,6 +464,14 @@
     <group type="or">
       <name value="flex"/>
       <name value="none"/>
+      <name value="grid"/> <!-- 7000.0+ -->
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="filter" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 6000.3+ -->
+    <group type="or">
+      <name value="none"/>
+      <inline id="filter-function" max="-1"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
@@ -293,7 +526,99 @@
     </group>
   </property>
   <property id="font-size" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <!-- 2021.3-6000.3 <length-percentage>, 6000.6 <length>, 7000.0 <length-percentage> -->
     <inline id="length-percentage" inline="yes"/>
+  </property>
+  <property id="gap" declared-in="0" initial="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <!-- <'row-gap'> <'column-gap'>? -->
+    <inline id="length-percentage" max="2"/>
+  </property>
+  <property id="grid-auto-columns" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="none"/>
+      <inline id="track-size" max="-1"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-auto-flow" declared-in="0" initial="row" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="row"/>
+      <name value="column"/>
+      <name value="row-dense"/>
+      <name value="column-dense"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-auto-rows" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="none"/>
+      <inline id="track-size" max="-1"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-column" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <!-- <integer> [ / [ <integer> | span <integer> ] ]? | span <integer> -->
+    <group type="or">
+      <group>
+        <inline id="grid-line"/>
+        <group min="0">
+          <text value="/"/>
+          <inline id="grid-line"/>
+        </group>
+      </group>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-column-end" declared-in="0" initial="auto" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <inline id="grid-line"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-column-start" declared-in="0" initial="auto" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <inline id="grid-line"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-row" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <!-- <integer> [ / [ <integer> | span <integer> ] ]? | span <integer> -->
+    <group type="or">
+      <group>
+        <inline id="grid-line"/>
+        <group min="0">
+          <text value="/"/>
+          <inline id="grid-line"/>
+        </group>
+      </group>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-row-end" declared-in="0" initial="auto" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <inline id="grid-line"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-row-start" declared-in="0" initial="auto" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <inline id="grid-line"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-template-columns" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="none"/>
+      <inline id="track-size" max="-1"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="grid-template-rows" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="none"/>
+      <inline id="track-size" max="-1"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
   </property>
   <property id="height" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
     <inline id="length-percentage-auto"/>
@@ -306,6 +631,26 @@
       <name value="space-between"/>
       <name value="space-around"/>
       <name value="space-evenly"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="justify-items" declared-in="0" initial="stretch" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="auto"/>
+      <name value="flex-start"/>
+      <name value="flex-end"/>
+      <name value="center"/>
+      <name value="stretch"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="justify-self" declared-in="0" initial="auto" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="auto"/>
+      <name value="flex-start"/>
+      <name value="flex-end"/>
+      <name value="center"/>
+      <name value="stretch"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
@@ -341,6 +686,7 @@
   </property>
   <property id="opacity" declared-in="0" initial="1" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#opacity"> <!-- 2017.1-2019.3 -->
     <!-- Technically the code will read <length> here, but that is not correct -->
+    <!-- 6000.6+ <number [0,1]> -->
     <group type="or">
       <number/>
       <inline id="global-keywords" inline="yes"/>
@@ -379,7 +725,35 @@
   <property id="right" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
     <inline id="length-percentage-auto" inline="yes"/>
   </property>
-  <property id="text-overflow" declared-in="0" initial="clip">
+  <property id="rotate" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-Transform.html"> <!-- 2021.3+ -->
+    <!-- none | [ x | y | z | <number>{3} ] && <angle> | <angle> -->
+    <group type="or">
+      <name value="none"/>
+      <angle/>
+      <group type="and">
+        <group type="or">
+          <name value="x"/>
+          <name value="y"/>
+          <name value="z"/>
+          <number min="3" max="3"/>
+        </group>
+        <angle/>
+      </group>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="row-gap" declared-in="0" initial="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <inline id="length-percentage" inline="yes"/>
+  </property>
+  <property id="scale" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-Transform.html"> <!-- 2021.3+ -->
+    <!-- none | <number>{1,3} -->
+    <group type="or">
+      <name value="none"/>
+      <number max="3"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="text-overflow" declared-in="0" initial="clip"> <!-- 2020.3+ -->
     <group type="or">
       <name value="clip"/>
       <name value="ellipsis"/>
@@ -388,6 +762,84 @@
   </property>
   <property id="top" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
     <inline id="length-percentage-auto" inline="yes"/>
+  </property>
+  <property id="transform-origin" declared-in="0" initial="center" url="https://docs.unity3d.com/Manual/UIE-Transform.html"> <!-- 2021.3+ -->
+    <!-- [ <length> | <percentage> | left | center | right | top | bottom ] |
+         [ [ <length> | <percentage> | left | center | right ] && [ <length> | <percentage> | top | center | bottom ] ] <length>?
+         Approximated as up to 3 of these values -->
+    <group type="or">
+      <group type="or" max="3">
+        <inline id="length" inline="yes"/>
+        <percentage/>
+        <name value="left"/>
+        <name value="center"/>
+        <name value="right"/>
+        <name value="top"/>
+        <name value="bottom"/>
+      </group>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="transition" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-Transitions.html"> <!-- 2021.3+ -->
+    <group type="or">
+      <inline id="single-transition" comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="transition-delay" declared-in="0" initial="0s" url="https://docs.unity3d.com/Manual/UIE-Transitions.html"> <!-- 2021.3+ -->
+    <group type="or">
+      <time comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="transition-duration" declared-in="0" initial="0s" url="https://docs.unity3d.com/Manual/UIE-Transitions.html"> <!-- 2021.3+ -->
+    <group type="or">
+      <time comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="transition-property" declared-in="0" initial="all" url="https://docs.unity3d.com/Manual/UIE-Transitions.html"> <!-- 2021.3+ -->
+    <!-- none | <single-transition-property># -->
+    <group type="or">
+      <name value="none"/>
+      <inline id="single-transition-property" comma-separated="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="transition-timing-function" declared-in="0" initial="ease" url="https://docs.unity3d.com/Manual/UIE-Transitions.html"> <!-- 2021.3+ -->
+    <description><![CDATA[
+            Specifies how the property moves between values over time. Defaults to ease.
+      ]]></description>
+    <!-- <easing-function># -->
+    <group>
+      <group type="any">
+        <inline id="timing-function" inline="yes"/>
+      </group>
+      <group min="0" max="-1">
+        <text value=","/>
+        <group type="any">
+          <inline id="timing-function" inline="yes"/>
+        </group>
+      </group>
+    </group>
+  </property>
+  <property id="translate" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-Transform.html"> <!-- 2021.3+ -->
+    <!-- none | [<length> | <percentage>] [ [<length> | <percentage>] <length>? ]? -->
+    <group type="or">
+      <name value="none"/>
+      <group type="or" max="3">
+        <inline id="length" inline="yes"/>
+        <percentage/>
+      </group>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-animation-clip" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 6000.6+ -->
+    <!-- 6000.6 <resource> | <url> | none, 7000.0 [ <resource> | <url> | none ]# -->
+    <group type="or">
+      <inline id="asset-none-list" inline="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
   </property>
   <property id="-unity-background-image-tint-color" declared-in="0" initial="#ffffff" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-background"> <!-- 2019.1-2019.3 -->
     <inline id="color" inline="yes"/>
@@ -401,6 +853,21 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
+  <property id="-unity-curvature" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <!-- none | <angle>{1,2} -->
+    <group type="or">
+      <name value="none"/>
+      <angle max="2"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-editor-text-rendering-mode" declared-in="0" initial="sdf" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text"> <!-- 6000.0+ -->
+    <group type="or">
+      <name value="sdf"/>
+      <name value="bitmap"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
   <property id="-unity-font" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-font" initial="default"> <!-- 2018.3-2019.3 -->
     <inline id="asset" inline="yes"/>
   </property>
@@ -410,6 +877,21 @@
       <name value="italic"/>
       <name value="bold"/>
       <name value="bold-and-italic"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-material" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 6000.3+ -->
+    <!-- <resource> <prop>* | <url> <prop>* | none -->
+    <group type="or">
+      <name value="none"/>
+      <group>
+        <group type="or">
+          <uri/>
+          <invoke id="resource"/>
+          <invoke id="url"/>
+        </group>
+        <invoke id="prop" min="0" max="-1"/>
+      </group>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
@@ -444,6 +926,13 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
+  <property id="-unity-slice-type" declared-in="0" initial="sliced" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-slice"> <!-- 6000.0+ -->
+    <group type="or">
+      <name value="sliced"/>
+      <name value="tiled"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
   <property id="-unity-text-align" declared-in="0" initial="upper-left" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text"> <!-- 2018.3-2091.3 -->
     <group type="or">
       <name value="upper-left"/>
@@ -458,7 +947,29 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-text-overflow-position" declared-in="0" initial="end" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text">
+  <property id="-unity-text-auto-size" declared-in="0" initial="none" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text"> <!-- 6000.3+ -->
+    <!-- none | [best-fit && <length-percentage>{2}] -->
+    <group type="or">
+      <name value="none"/>
+      <group type="and">
+        <name value="best-fit"/>
+        <group type="or" min="2" max="2">
+          <inline id="length" inline="yes"/>
+          <percentage/>
+        </group>
+      </group>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-text-generator" declared-in="0" initial="standard" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text"> <!-- 6000.0+ -->
+    <!-- The initial value is `standard` in 6000.0-6000.6 and `advanced` in 7000.0 -->
+    <group type="or">
+      <name value="standard"/>
+      <name value="advanced"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-text-overflow-position" declared-in="0" initial="end" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text"> <!-- 2020.3+ -->
     <group type="or">
       <name value="start"/>
       <name value="middle"/>
@@ -477,24 +988,31 @@
     <group type="or">
       <name value="normal"/>
       <name value="nowrap"/>
+      <name value="pre"/> <!-- 6000.0+ -->
+      <name value="pre-wrap"/> <!-- 6000.0+ -->
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
   <property id="width" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
     <inline id="length-percentage-auto" inline="yes"/>
   </property>
+  <property id="z-index" declared-in="0" initial="auto" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html"> <!-- 7000.0+ -->
+    <group type="or">
+      <name value="auto"/>
+      <integer/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
 
-  <!-- 2021.2 -->
+  <!-- 2021.3. rotate, scale, translate, transform-origin and transition-* are in the alphabetical list above -->
 <!--  <property id="all" declared-in="0">--> <!--already works -->
-  <property id="letter-spacing" declared-in="0">
+  <property id="letter-spacing" declared-in="0"> <!-- 2021.3+ -->
     <group type="or">
       <inline id="length"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-<!--  "rotate" https://developer.mozilla.org/en-US/docs/Web/CSS/angle -->
-<!-- "scale" already works -->
-  <property id="text-shadow" declared-in="3.0" url="https://www.w3.org/TR/css-text-decor-3/#propdef-text-shadow" applies="all elements" initial="none" inherited="yes" percentage="n/a" media="visual">
+  <property id="text-shadow" declared-in="3.0" url="https://www.w3.org/TR/css-text-decor-3/#propdef-text-shadow" applies="all elements" initial="none" inherited="yes" percentage="n/a" media="visual"> <!-- 2021.3+ -->
     <description><![CDATA[<p>This property accepts a comma-separated list of shadow effects to be applied to the text of the element. Values are interpreted as for
  <see cref="P:box-shadow" /> [CSS-BACKGROUNDS-3]. (But note that spread values and the inset keyword are not allowed.) Each layer shadows the element’s text and all its text decorations (composited together). If the color of the shadow is not specified, it defaults to currentColor, i.e. the shadow’s color is taken from the element’s
  <see cref="P:color" /> property. </p>]]></description>
@@ -507,88 +1025,38 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-<!--  transform-origin: already works -->
-
-  <named-value id="timing-function" declared-in="0">
-    <group type="any">
-      <!--  https://github.com/hybloid/UnityCsReference/blob/4d031e55aeeb51d36bd94c7f20182978d77807e4/ModuleOverrides/com.unity.ui/Core/Style/Generated/StylePropertyCache.cs#L121   -->
-      <name value="ease"/>
-      <name value="ease-in"/>
-      <name value="ease-out"/>
-      <name value="ease-in-out"/>
-      <name value="linear"/>
-      <name value="ease-in-sine" />
-      <name value="ease-out-sine" />
-      <name value="ease-in-out-sine" />
-      <name value="ease-in-cubic" />
-      <name value="ease-out-cubic" />
-      <name value="ease-in-out-cubic" />
-      <name value="ease-in-circ" />
-      <name value="ease-out-circ" />
-      <name value="ease-in-out-circ" />
-      <name value="ease-in-elastic" />
-      <name value="ease-out-elastic" />
-      <name value="ease-in-out-elastic" />
-      <name value="ease-in-back" />
-      <name value="ease-out-back" />
-      <name value="ease-in-out-back" />
-      <name value="ease-in-bounce" />
-      <name value="ease-out-bounce" />
-      <name value="ease-in-out-bounce" />
-    </group>
-  </named-value>
-  <property id="transition-timing-function" declared-in="4.0" url="https://docs.unity3d.com/Manual/UIE-Transitions.html"
-            initial="ease" >
-    <description><![CDATA[
-            Specifies how the property moves between values over time. Defaults to ease.
-      ]]></description>
-
-    <group>
-      <group type="any">
-        <inline id="timing-function" inline="yes"/>
-      </group>
-      <group min="0" max="-1">
-        <text value=","/>
-        <group type="any">
-          <inline id="timing-function" inline="yes"/>
-        </group>
-      </group>
-    </group>
-  </property>
-
-<!--  translate works-->
-  <property id="-unity-font-definition" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-font">
+  <property id="-unity-font-definition" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-font"> <!-- 2021.3+ -->
     <inline id="asset" inline="yes"/>
   </property>
-  <property id="-unity-paragraph-spacing" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-paragraph-spacing">
+  <property id="-unity-paragraph-spacing" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-paragraph-spacing"> <!-- 2021.3+ -->
     <group type="or">
       <inline id="length"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-text-outline" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text">
+  <property id="-unity-text-outline" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text"> <!-- 2021.3+ -->
     <group type="any">
       <inline id="length"/>
       <inline id="color" inline="yes" />
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-text-outline-color" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text">
+  <property id="-unity-text-outline-color" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text"> <!-- 2021.3+ -->
     <inline id="color" inline="yes" />
   </property>
-  <property id="-unity-text-outline-width" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text">
+  <property id="-unity-text-outline-width" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text"> <!-- 2021.3+ -->
     <group type="or">
       <inline id="length"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="word-spacing" declared-in="0">
+  <property id="word-spacing" declared-in="0"> <!-- 2021.3+ -->
     <group type="or">
       <inline id="length"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="background-position" declared-in="0">
+  <property id="background-position" declared-in="0"> <!-- 2022.3+ -->
 
 <!--    [ [ left | center | right | top | bottom | <length-percentage> ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | [ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ] ]-->
     <group type="or">
@@ -634,7 +1102,7 @@
     </group>
   </property>
 
-  <property id="background-position-x" declared-in="0">
+  <property id="background-position-x" declared-in="0"> <!-- 2022.3+ -->
     <group type="or">
       <name value="center" tooltip="Horizontal alignment is centered."/>
       <group type="and">
@@ -646,7 +1114,7 @@
       </group>
     </group>
   </property>
-  <property id="background-position-y" declared-in="0">
+  <property id="background-position-y" declared-in="0"> <!-- 2022.3+ -->
     <group type="or">
       <name value="center" tooltip="Vertical alignment is centered."/>
       <group type="and">
@@ -658,7 +1126,7 @@
       </group>
     </group>
   </property>
-  <property id="background-repeat" declared-in="0">
+  <property id="background-repeat" declared-in="0"> <!-- 2022.3+ -->
     <group type="or">
       <name value="repeat-x"/>
       <name value="repeat-y"/>
@@ -670,14 +1138,14 @@
       </group>
     </group>
   </property>
-  <property id="background-size" declared-in="0">
+  <property id="background-size" declared-in="0"> <!-- 2022.3+ -->
     <group type="or">
       <inline id="length-percentage-auto" max="2"/>
       <name value="cover"/>
       <name value="contain"/>
     </group>
   </property>
-  <property id="-unity-slice-scale" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-slice">
+  <property id="-unity-slice-scale" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-slice"> <!-- 2022.3+ -->
     <group type="or">
       <inline id="length"/>
       <inline id="global-keywords" inline="yes"/>
@@ -729,6 +1197,78 @@
   <function id="resource" declared-in="0">
     <string/>
   </function>
+  <!-- Filter functions, 6000.3+. See StyleValueFunction.cs. Arguments are optional, as in CSS -->
+  <function id="blur" declared-in="0"> <!-- 6000.3+ -->
+    <inline id="length" min="0"/>
+  </function>
+  <function id="contrast" declared-in="0"> <!-- 6000.3+ -->
+    <group type="or" min="0">
+      <number/>
+      <percentage/>
+    </group>
+  </function>
+  <function id="drop-shadow" declared-in="0"> <!-- 6000.6+ -->
+    <!-- Approximated -->
+    <any max="-1"/>
+  </function>
+  <function id="filter" declared-in="0"> <!-- 6000.3+ -->
+    <!-- A custom filter: an asset and its parameters. Approximated -->
+    <any max="-1"/>
+  </function>
+  <function id="grayscale" declared-in="0"> <!-- 6000.3+ -->
+    <group type="or" min="0">
+      <number/>
+      <percentage/>
+    </group>
+  </function>
+  <function id="hue-rotate" declared-in="0"> <!-- 6000.3+ -->
+    <group type="or" min="0">
+      <angle/>
+      <number/>
+    </group>
+  </function>
+  <function id="invert" declared-in="0"> <!-- 6000.3+ -->
+    <group type="or" min="0">
+      <number/>
+      <percentage/>
+    </group>
+  </function>
+  <function id="opacity" declared-in="0"> <!-- 6000.3+ -->
+    <group type="or" min="0">
+      <number/>
+      <percentage/>
+    </group>
+  </function>
+  <function id="sepia" declared-in="0"> <!-- 6000.3+ -->
+    <group type="or" min="0">
+      <number/>
+      <percentage/>
+    </group>
+  </function>
+  <function id="tint" declared-in="0"> <!-- 6000.3+ -->
+    <inline id="color" min="0"/>
+  </function>
+  <!-- Material property of -unity-material, 6000.3+. Approximated -->
+  <function id="prop" declared-in="0"> <!-- 6000.3+ -->
+    <any max="-1"/>
+  </function>
+  <!-- Gradients of background-image, 7000.0+. Approximated -->
+  <function id="linear-gradient" declared-in="0"> <!-- 7000.0+ -->
+    <any max="-1"/>
+  </function>
+  <function id="radial-gradient" declared-in="0"> <!-- 7000.0+ -->
+    <any max="-1"/>
+  </function>
+  <!-- Grid track functions, 7000.0+. See GridTrackSize.cs. Approximated -->
+  <function id="fit-content" declared-in="0"> <!-- 7000.0+ -->
+    <any max="-1"/>
+  </function>
+  <function id="minmax" declared-in="0"> <!-- 7000.0+ -->
+    <any max="-1"/>
+  </function>
+  <function id="repeat" declared-in="0"> <!-- 7000.0+ -->
+    <any max="-1"/>
+  </function>
 
   <!-- Deprecated properties. Unity will silently mapped these to their new names. No longer supported in 2019.3 -->
   <!-- border-left 2017.1-2018.2 - <length>  -> border-left-width (2018.3) -->
@@ -763,7 +1303,9 @@
   <pseudo-class id="active" declared-in="0" tooltip="The visual element is being interacted with." />
   <pseudo-class id="inactive" declared-in="0" tooltip="A user stops to interact with the element." />
   <pseudo-class id="focus" declared-in="0" tooltip="The visual element has focus." />
-  <!-- ":selected	USS doesn’t support this pseudo-state. Use :checked instead." -->
+  <!-- ":selected	USS doesn’t support this pseudo-state. Use :checked instead."
+       StyleComplexSelector still maps :selected to :checked for backward compatibility (2019.4-7000.0) -->
+  <pseudo-class id="selected" declared-in="0" tooltip="Deprecated. The same as :checked." />
   <pseudo-class id="disabled" declared-in="0" tooltip="The element is in a disabled state." />
   <pseudo-class id="enabled" declared-in="0" tooltip="The element is in an enabled state." />
   <pseudo-class id="checked" declared-in="0" tooltip="The element is a Toggle or RadioButton element and it’s selected." />

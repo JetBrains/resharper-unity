@@ -182,6 +182,97 @@ required and is the fallback value.
 * Introduces the `border-*-color` properties
 * Introduces the `-unity-overflow-clip-box` property
 
+## 2019.4 and later
+
+From 2019.4, each branch of [UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference) has a generated
+`StylePropertyCache` file. Its dictionary `s_PropertySyntaxCache` maps each property name to its syntax. From 2021.3,
+the dictionary `s_NonTerminalValues` holds the named syntaxes, for example `easing-function`. The initial values are in
+`InitialStyle(.gen).cs`. The pseudo-classes are in `StyleComplexSelector.cs`, and the value functions are in
+`StyleValueFunction.cs`.
+
+| Branch | `StylePropertyCache` file |
+|--------|---------------------------|
+| 2019.4 | `Modules/UIElements/StyleSheets/Validation/StylePropertyCache.cs` |
+| 2020.3 | `External/MirroredPackageSources/com.unity.ui/Core/Style/Generated/StylePropertyCache.cs` |
+| 2021.3, 2022.3 | `ModuleOverrides/com.unity.ui/Core/Style/Generated/StylePropertyCache.cs` |
+| 6000.0, 6000.3 | `Modules/UIElements/Core/Style/Generated/StylePropertyCache.cs` |
+| 6000.5 and later | `Modules/UIElements/Core/Style/Generated/StylePropertyCache.gen.cs` |
+
+The pseudo-classes are the same in all these branches. `:selected` is a deprecated alias of `:checked`.
+
+### 2020.3
+
+* [`StylePropertyCache.cs`](https://github.com/Unity-Technologies/UnityCsReference/blob/2020.3/External/MirroredPackageSources/com.unity.ui/Core/Style/Generated/StylePropertyCache.cs)
+* Introduces `text-overflow` and `-unity-text-overflow-position`
+
+### 2021.3
+
+* [`StylePropertyCache.cs`](https://github.com/Unity-Technologies/UnityCsReference/blob/2021.3/ModuleOverrides/com.unity.ui/Core/Style/Generated/StylePropertyCache.cs)
+* Introduces the transitions: `transition`, `transition-delay`, `transition-duration`, `transition-property` and
+  `transition-timing-function`
+* Introduces the transforms: `rotate`, `scale`, `translate` and `transform-origin`
+* Introduces `letter-spacing`, `word-spacing`, `text-shadow`, `-unity-font-definition`, `-unity-paragraph-spacing` and
+  `-unity-text-outline(-color, -width)`
+* Uses `<length-percentage>` instead of `<length> | <percentage>`
+
+### 2022.3
+
+* [`StylePropertyCache.cs`](https://github.com/Unity-Technologies/UnityCsReference/blob/2022.3/ModuleOverrides/com.unity.ui/Core/Style/Generated/StylePropertyCache.cs)
+* Introduces `background-position(-x, -y)`, `background-repeat`, `background-size` and `-unity-slice-scale`
+
+### 6000.0
+
+* [`StylePropertyCache.cs`](https://github.com/Unity-Technologies/UnityCsReference/blob/6000.0/Modules/UIElements/Core/Style/Generated/StylePropertyCache.cs)
+* Introduces `-unity-editor-text-rendering-mode`, `-unity-slice-type` and `-unity-text-generator`
+* `white-space` accepts `pre` and `pre-wrap`. `cursor` accepts `not-allowed`
+
+### 6000.3
+
+* [`StylePropertyCache.cs`](https://github.com/Unity-Technologies/UnityCsReference/blob/6000.3/Modules/UIElements/Core/Style/Generated/StylePropertyCache.cs)
+* Introduces `aspect-ratio`, `filter`, `-unity-material` and `-unity-text-auto-size`
+* Introduces the filter functions `filter()`, `tint()`, `opacity()`, `invert()`, `grayscale()`, `sepia()`, `blur()`,
+  `contrast()` and `hue-rotate()`, and the material function `prop()`
+
+### 6000.5
+
+* [`StylePropertyCache.gen.cs`](https://github.com/Unity-Technologies/UnityCsReference/blob/6000.5/Modules/UIElements/Core/Style/Generated/StylePropertyCache.gen.cs)
+* No changes to the properties
+
+### 6000.6
+
+* [`StylePropertyCache.gen.cs`](https://github.com/Unity-Technologies/UnityCsReference/blob/6000.6/Modules/UIElements/Core/Style/Generated/StylePropertyCache.gen.cs)
+* Introduces `backdrop-filter`, `animation-play-state`, `-unity-animation-clip` and the `drop-shadow()` filter function
+* `font-size` accepts `<length>` only, and `opacity` accepts `<number [0,1]>`
+
+### 7000.0 (alpha)
+
+* [`StylePropertyCache.gen.cs`](https://github.com/Unity-Technologies/UnityCsReference/blob/7000.0/Modules/UIElements/Core/Style/Generated/StylePropertyCache.gen.cs)
+* This branch is an alpha. Its syntax can change
+* Introduces the grid: `display: grid`, `grid-*` (11 properties), `justify-items`, `justify-self`, and the
+  `minmax()`, `fit-content()` and `repeat()` functions
+* Introduces `gap`, `row-gap` and `column-gap`
+* Introduces the animations: `animation`, `animation-delay`, `animation-direction`, `animation-duration`,
+  `animation-iteration-count` and `animation-name`
+* Introduces `box-shadow`, `z-index` and `-unity-curvature`
+* `background-image` accepts `linear-gradient()` and `radial-gradient()`. `font-size` accepts `<length-percentage>`
+  again
+
+## How to update the schema
+
+1. Fetch the UnityCsReference branches, and run `git show origin/<branch>:<StylePropertyCache file>` for each target
+   branch.
+2. Extract the pairs of property name and syntax from `s_PropertySyntaxCache`, and compare the branches. Compare the
+   union with the `property` ids in `element-descriptors.xml`.
+3. Add each new property in alphabetical order, with `declared-in="0"`, `initial` from `InitialStyle` and a `url`.
+   Declare a named value before the first property that inlines it (RIDER-137719).
+4. For each property that is newer than 2019.4, add a line `<property id>=<first branch>` to
+   `resources/uss/unity-since.properties`. The XML cannot hold this data, because `css.xsd` does not allow a custom
+   attribute. Completion hides a property when the Unity version of the project is older than this version.
+   Validation ignores the file. `UssUnityVersionFilterTest` checks that each key is a property id in the XML.
+5. Merge the changed syntax of existing properties as a superset. Write the version of a new value in a comment.
+6. An id in `element-descriptors.xml` replaces the webref definition with the same id. Thus a USS property never has
+   two definitions.
+
 ----
 
 Note that StyleSheetCache.cs sets up initial values, for 2019.1 at least
