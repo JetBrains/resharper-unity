@@ -5,6 +5,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.addUnityMcpCodexEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.hasUnityMcpCodexEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.removeUnityMcpCodexEntry
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexCommand
+import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexConfigureReplacesOtherServer
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexRemoval
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexSnippet
 import com.jetbrains.rider.plugins.unity.settings.agents.unityMcpCodexStoreFile
@@ -375,6 +376,46 @@ class UnityMcpCodexStoreTest {
         assertNull(unityMcpCodexCommand("[mcp_servers.unity]\ncommand = [\"unity\"]\n"), "a command that is not a string")
     }
 
+    /** RIDER-144843: the issue shows this server of MCP for Unity under the name that Rider writes. */
+    @Test
+    fun `a configure asks before it replaces another server named unity`() {
+        val replacement = listOf(
+            "[mcp_servers.unity]\ncommand = \"uvx\"\nargs = [\"mcp-for-unity\"]\n",
+            "[mcp_servers.unity]\ncommand = 'C:\\tools\\uvx.exe'\n",
+            "[mcp_servers.unity]\nurl = \"http://localhost:8080/mcp\"\n",
+            "[mcp_servers.unity]\nargs = [\"mcp\"]\n",
+            "[mcp_servers.unity.env]\nUNITY_QUIET = \"1\"\n",
+        )
+        for (content in replacement) {
+            assertTrue(unityMcpCodexConfigureReplacesOtherServer(content, unity), content)
+            assertTrue(unityMcpCodexConfigureReplacesOtherServer(content, unity = null), content)
+        }
+        val noReplacement = listOf(
+            UNITY_CLI_STORE,
+            "[mcp_servers.unity]\ncommand = \"/opt/homebrew/bin/unity\"\nargs = [\"mcp\"]\n",
+            "[mcp_servers.unity]\ncommand = \"unity.exe\"\n",
+            "[mcp_servers.unity]\ncommand = [\"unity\"]\n",
+            "[mcp_servers]\nunity = { command = \"uvx\" }\n",
+            "[mcp_servers.github]\ncommand = \"gh\"\n",
+            "[mcp_servers.unity\ncommand = \"uvx\"\n",
+            "",
+            null,
+        )
+        for (content in noReplacement) {
+            assertFalse(unityMcpCodexConfigureReplacesOtherServer(content, unity), "$content")
+        }
+    }
+
+    /** On Windows, the PATH lookup can find a wrapper such as `unity.cmd`. The entry of the detected Unity CLI is no other server. */
+    @Test
+    fun `a configure replaces the entry of the detected Unity CLI without a question`() {
+        val wrapper = Path.of("/home/tester/bin/unity.cmd")
+        val store = "[mcp_servers.unity]\ncommand = \"/home/tester/bin/unity.cmd\"\nargs = [\"mcp\"]\n"
+
+        assertFalse(unityMcpCodexConfigureReplacesOtherServer(store, wrapper))
+        assertTrue(unityMcpCodexConfigureReplacesOtherServer(store, unity), "a wrapper of another Unity CLI is another program")
+    }
+
     /** The four tables and then the entry, as Rider writes them into an empty store. */
     private fun writtenTables(): String = """
         [sandbox_workspace_write]
@@ -608,12 +649,13 @@ class UnityMcpCodexStoreTest {
     }
 
     @Test
-    fun `an inline mcp_servers table gives no answer, and an inline unity key under its header counts`() {
+    fun `an inline mcp_servers or unity table gives no answer`() {
         assertNull(
             hasUnityMcpCodexEntry("mcp_servers = { unity = { command = \"unity\", args = [\"mcp\"] } }\n"),
             "an inline table that this line scan cannot read",
         )
-        assertEquals(true, hasUnityMcpCodexEntry("[mcp_servers]\nunity = { command = \"unity\", args = [\"mcp\"] }\n"))
+        assertNull(hasUnityMcpCodexEntry("[mcp_servers]\nunity = { command = \"unity\", args = [\"mcp\"] }\n"))
+        assertNull(hasUnityMcpCodexEntry("mcp_servers.unity = { command = \"unity\", args = [\"mcp\"] }\n"))
         assertEquals(false, hasUnityMcpCodexEntry("[mcp_servers.github]\ncommand = \"gh\"\n[mcp_servers.github.env]\nTOKEN = \"x\"\n"))
     }
 

@@ -12,12 +12,17 @@ private const val UNITY_MCP_JUNIE_STORE_FILE: String = ".junie/mcp/mcp.json"
 
 private val gson = GsonBuilder().disableHtmlEscaping().create()
 
+/**
+ * Reads the `[mcp_servers.unity]` table of the Codex store.
+ *
+ * A table of another MCP server holds no Unity entry. [unityMcpCodexConfigureReplacesOtherServer] finds such a table.
+ */
 @ApiStatus.Internal
 fun readCodexEntry(content: String?, fileExists: Boolean, unity: Path?): UnityMcpEntry {
     if (!fileExists) return UnityMcpEntry.ABSENT
     if (content == null) return UnityMcpEntry.UNREADABLE
     val hasEntry = hasUnityMcpCodexEntry(content) ?: return UnityMcpEntry.UNREADABLE
-    if (!hasEntry) return UnityMcpEntry.ABSENT
+    if (!hasEntry || unityMcpCodexConfigureReplacesOtherServer(content, unity)) return UnityMcpEntry.ABSENT
     val command = unityMcpCodexCommand(content)
     return if (unity != null && command != null && !isUnityCliCommand(command, unity)) UnityMcpEntry.OTHER_CLI
     else UnityMcpEntry.PRESENT
@@ -28,6 +33,10 @@ internal fun isUnityCliCommand(command: String, unity: Path): Boolean {
     return if (bareName) command.removeSuffix(".exe") == UNITY_CLI_COMMAND
     else FileUtil.pathsEqual(command, unity.toString())
 }
+
+/** Tells whether [command] runs a program named `unity`, from the PATH or from a path. */
+internal fun namesUnityCli(command: String): Boolean =
+    command.substringAfterLast('/').substringAfterLast('\\').removeSuffix(".exe") == UNITY_CLI_COMMAND
 
 internal fun unityMcpJsonStoreName(store: UnityMcpStore): String? = when (store) {
     UnityMcpStore.CODEX_CLI -> null

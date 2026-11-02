@@ -349,6 +349,7 @@ internal class UnityMcpStatusService(
         storeFileExists = storeFile.exists,
         entry = readCodexEntry(storeFile.content, storeFile.exists, unity),
         removalAsksForNetworkPolicy = storeFile.content?.let(::unityMcpCodexRemoval)?.asksForNetworkPolicy == true,
+        configureReplacesOtherServer = unityMcpCodexConfigureReplacesOtherServer(storeFile.content, unity),
     )
 
     private fun jsonStoreRow(

@@ -105,20 +105,39 @@ fun unityMcpCodexStoreWithoutEntry(content: String): String? {
  * Reads the `command` of the `[mcp_servers.unity]` table.
  *
  * Returns null when the store has no command, when the command is not a one-line string, or when a line before it
- * does not parse. [readCodexEntry] then reads a configured entry as present.
+ * does not parse.
  */
 @ApiStatus.Internal
-fun unityMcpCodexCommand(content: String): String? {
+fun unityMcpCodexCommand(content: String): String? = unityMcpCodexCommandValue(content)?.let(::readTomlString)
+
+/** The value of the `command` of the `[mcp_servers.unity]` table, as the store spells it. */
+private fun unityMcpCodexCommandValue(content: String): String? {
     walkTomlLines(content) { _, kind ->
-        if (kind is TomlLine.KeyValue && kind.path == CODEX_COMMAND) return readTomlString(kind.value)
+        if (kind is TomlLine.KeyValue && kind.path == CODEX_COMMAND) return kind.value
     }
     return null
 }
 
 /**
+ * Tells whether the `[mcp_servers.unity]` table holds another MCP server, which a configure replaces.
+ *
+ * A table with no command holds no stdio server, for example an HTTP server with a `url`. A table with a command of
+ * another program also holds another server. A command that runs [unity], and a command that this line scan cannot
+ * read, count as the Unity entry.
+ */
+@ApiStatus.Internal
+fun unityMcpCodexConfigureReplacesOtherServer(content: String?, unity: Path?): Boolean {
+    if (content == null || hasUnityMcpCodexEntry(content) != true) return false
+    val value = unityMcpCodexCommandValue(content) ?: return true
+    val command = readTomlString(value) ?: return false
+    return !namesUnityCli(command) && (unity == null || !isUnityCliCommand(command, unity))
+}
+
+/**
  * Tells whether the store has the `[mcp_servers.unity]` table, or a dotted key under it.
  *
- * Returns null for a header or a value that does not parse, and for an inline `mcp_servers` table, which this line scan cannot read.
+ * Returns null for a header or a value that does not parse, and for an inline `mcp_servers` or `unity` table, which this line
+ * scan cannot read.
  */
 @ApiStatus.Internal
 fun hasUnityMcpCodexEntry(content: String): Boolean? {
@@ -127,9 +146,9 @@ fun hasUnityMcpCodexEntry(content: String): Boolean? {
         when (kind) {
             is TomlLine.Header -> if (kind.table.startsWith(CODEX_ENTRY)) found = true
             is TomlLine.KeyValue -> when {
+                // An inline `mcp_servers` or `unity` table can hold the entry, and this line scan cannot look inside it.
+                kind.path == listOf(MCP_SERVERS_TABLE) || kind.path == CODEX_ENTRY -> return null
                 kind.path.startsWith(CODEX_ENTRY) -> found = true
-                // An inline `mcp_servers` table can hold the entry, and this line scan cannot look inside it.
-                kind.path == listOf(MCP_SERVERS_TABLE) -> return null
             }
             TomlLine.Blank, TomlLine.Comment, TomlLine.Continuation -> {}
         }

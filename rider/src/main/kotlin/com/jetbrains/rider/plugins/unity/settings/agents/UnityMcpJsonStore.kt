@@ -198,7 +198,7 @@ private fun JsonElement.isUnityMcpServer(unity: Path? = null): Boolean {
     val server = this as? JsonObject ?: return false
     val command = (server.get("command") as? JsonPrimitive)?.asString ?: return false
     val subcommand = ((server.get("args") as? JsonArray)?.firstOrNull() as? JsonPrimitive)?.asString
-    return command.substringAfterLast('/').substringAfterLast('\\').removeSuffix(".exe") == UNITY_CLI_COMMAND &&
+    return namesUnityCli(command) &&
            subcommand == UNITY_MCP_SUBCOMMAND &&
            (unity == null || isUnityCliCommand(command, unity))
 }
