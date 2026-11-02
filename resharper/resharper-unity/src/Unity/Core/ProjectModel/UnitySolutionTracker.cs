@@ -29,10 +29,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         public readonly ViewableProperty<bool> HasUnityReference = new(false);
                  
         public bool IsUnityProjectOrHasUnityReference => IsUnityProject.HasTrueValue() || HasUnityReference.HasTrueValue();
+        public readonly bool IsUnityMSBuildSolution;
 
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
         {
             mySolution = solution;
+
+            // unity's solution generator uses slnx, our old one uses sln, so we can easily distinguish by extension
+            IsUnityMSBuildSolution =
+                solution.SolutionFilePath.ExtensionWithDot.Equals(ExtensionConstants.Slnx, StringComparison.Ordinal);
 
             // SolutionDirectory isn't absolute in tests, and will throw an exception if we use it when we call Exists
             mySolutionDirectory = solution.SolutionDirectory;

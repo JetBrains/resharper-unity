@@ -5,6 +5,7 @@ using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Util;
@@ -16,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
     /// Namespace folder skip strategy that skips folders up from the Unity assembly definition (.asmdef) location.
     /// </summary>
     [SolutionComponent(Instantiation.DemandAnyThreadSafe)]
-    public class AsmDefNamespaceFolderSkipStrategyProvider(AsmDefCache asmDefCache) : INamespaceFolderSkipStrategyProvider
+    public class AsmDefNamespaceFolderSkipStrategyProvider(AsmDefCache asmDefCache, UnitySolutionTracker solutionTracker) : INamespaceFolderSkipStrategyProvider
     {
         public INamespaceFolderSkipStrategy? GetNamespaceFolderSkipStrategy(IProjectItem projectItem, PsiLanguageType language)
         {
@@ -29,7 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
             var featureEnabled = settingsStore.GetValue((UnitySettings s) => s.UseAsmDefFolderAsNamespaceRoot);
             if (!featureEnabled) return null;
             
-            var asmName = project.Name; // generated projects are named after assembly names, so they are interchangeable
+            // generated projects are named after assembly names
+            var asmName = NamingUtil.GetAssemblyNameByProjectName(project.Name, solutionTracker.IsUnityMSBuildSolution);
             var asmDefLocation = asmDefCache.GetAsmDefLocationByAssemblyName(asmName);
             if (asmDefLocation.IsEmpty) return null;
 

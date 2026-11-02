@@ -10,8 +10,10 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
@@ -30,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
     {
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
+        private readonly UnitySolutionTracker mySolutionTracker;
 
         private readonly Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement> myDeclaredElements = new();
         private readonly OneToListMap<string, IPsiSourceFile> myNames = new();
@@ -39,11 +42,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                            ISolution solution,
                            IShellLocks shellLocks,
                            IPersistentIndexManager persistentIndexManager,
+                           UnitySolutionTracker solutionTracker,
                            ILogger logger)
             : base(lifetime, shellLocks, persistentIndexManager, AsmDefCacheItem.Marshaller)
         {
             myLogger = logger;
             mySolution = solution;
+            mySolutionTracker = solutionTracker;
 
             myCacheUpdatedGroupingEvent = Locks.CreateGroupingEvent(lifetime, "Unity::AsmDefCacheUpdated",
                 TimeSpan.FromMilliseconds(500));
@@ -92,13 +97,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         // Note that the returned location might be Empty if the given project doesn't have a corresponding .asmdef file
         public (string, VirtualFileSystemPath) TryGetAsmDefLocationForProject(string projectName)
         {
+            var assemblyName = NamingUtil.GetAssemblyNameByProjectName(projectName, mySolutionTracker.IsUnityMSBuildSolution);
+            
             // Assembly name and project name are the same for asmdef projects, unless it's a .Player project. We want
             // to return the actual name of the asmdef reference we'll be adding
-            var location = GetAsmDefLocationByAssemblyName(projectName);
+            var location = GetAsmDefLocationByAssemblyName(assemblyName);
             if (location.IsNotEmpty)
-                return (projectName, location);
-            projectName = Core.ProjectModel.ProjectExtensions.StripPlayerSuffix(projectName);
-            return (projectName, GetAsmDefLocationByAssemblyName(projectName));
+                return (assemblyName, location);
+            assemblyName = Core.ProjectModel.ProjectExtensions.StripPlayerSuffix(assemblyName);
+            return (assemblyName, GetAsmDefLocationByAssemblyName(assemblyName));
         }
 
         public IEnumerable<AsmDefVersionDefine> GetVersionDefines(string assemblyName)

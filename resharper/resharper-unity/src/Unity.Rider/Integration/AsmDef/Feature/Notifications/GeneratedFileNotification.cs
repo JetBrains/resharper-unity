@@ -39,6 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
 
             if (!solutionTracker.IsUnityProject.Value)
                 return;
+
+            var isMsBuildSolution = solutionTracker.IsUnityMSBuildSolution;
             
             solutionLifecycleHost.BeforeFullStartupFinished.AdviseOnce(lifetime, _ =>
             {
@@ -89,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
 
                         // project is one of the default or it has asmdef
                         // otherwise project is likely not a generated one, so we don't want a notification for it
-                        if (name.StartsWith("Assembly-CSharp") || path != null) 
+                        if (path != null || IsImplicitUnityProject(name, isMsBuildSolution)) 
                         {
                             notificationPanelHost.AddNotificationPanel(modelLifetime, textControl,
                                 new NotificationPanel(Strings.GeneratedFileNotification_GeneratedFileNotification_This_file_is_generated_by_Unity__Any_changes_made_will_be_lost_,
@@ -98,6 +100,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                     });
                 });
             });
+        }
+
+        private static bool IsImplicitUnityProject(string projectName, bool isMsBuildSolution)
+        {
+            return projectName.StartsWith("Assembly-CSharp") || (isMsBuildSolution && projectName.Equals("Main.EntryPoint", StringComparison.Ordinal));
         }
     }
 }

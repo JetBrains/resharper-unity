@@ -8,12 +8,13 @@ using JetBrains.ReSharper.Psi.Naming.Extentions;
 using JetBrains.ReSharper.Psi.Naming.Impl;
 using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.Util;
+using JetBrains.Util.Extension;
 
 #nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Utils
 {
-    internal static class NamingUtil
+    public static class NamingUtil
     {
         public static string GetUniqueName<T>(T node,
                                               string? baseName,
@@ -64,6 +65,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             }
 
             return true;
+        }
+        
+        public static string GetAssemblyNameByProjectName(string projectName, bool isUnityMsBuildSolution)
+        {
+            // Unity's MSBuild pipeline adds .gen suffix to the project names for assemblies, so we have to strip that
+            // now if we want to use project names and assembly names interchangeably like it was before MSBuild
+            return isUnityMsBuildSolution ? projectName.RemoveEnd(".gen") : projectName;
         }
     }
 }
