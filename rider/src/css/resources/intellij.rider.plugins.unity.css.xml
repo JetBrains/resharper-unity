@@ -23,7 +23,7 @@
   <!-- endregion -->
 
   <!-- USS depends on CSS, but make it an optional dependency, so we don't disable all of Unity support if someone
-       decides to disable CSS. We'll prompt to enable CSS if they open a *.uss file -->
+       decides to disable CSS. The backend module prompts to enable CSS if they open a *.uss file. See UssDisabledEditorNotification -->
   <extensions defaultExtensionNs="com.intellij">
     <!-- USS support -->
     <fileType name="USS" language="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssFileType" extensions="uss;tss" />
@@ -36,8 +36,6 @@
     <lang.documentationProvider language="CSS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssDocumentationProvider" order="first"/>
 
     <css.cssFileReferenceProvider implementation="com.jetbrains.rider.plugins.unity.css.uss.impl.util.UssFileReferenceProvider"/>
-
-    <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.css.uss.ui.UssDisabledEditorNotification" />
   </extensions>
   <resource-bundle>messages.UnityCssBundle</resource-bundle>
 </idea-plugin>

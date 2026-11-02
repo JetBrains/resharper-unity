@@ -257,6 +257,7 @@
     <lang.inspectionSuppressor language="UXML" order="first" implementationClass="com.jetbrains.rider.inspections.suppression.BackendXmlInspectionSuppressor"/>
 
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
+    <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UssDisabledEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
 
     <!-- Unity Explorer -->

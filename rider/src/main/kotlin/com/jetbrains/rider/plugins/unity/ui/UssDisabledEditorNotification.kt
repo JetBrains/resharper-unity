@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.css.uss.ui
+package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.plugins.PluginManagerMain
@@ -10,7 +10,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.EditorNotifications
-import com.jetbrains.rider.plugins.unity.css.uss.impl.UnityCssBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import java.util.function.Function
 import javax.swing.JComponent
@@ -30,8 +29,8 @@ internal class UssDisabledEditorNotification : EditorNotificationProvider {
 
             return Function {
                 EditorNotificationPanel().also { panel ->
-                    panel.text(UnityCssBundle.message("uss.disabled.editor.notification.panel.text"))
-                    panel.createActionLabel(UnityCssBundle.message("uss.disabled.editor.notification.enable.css.plugin")) {
+                    panel.text(UnityUIBundle.message("uss.disabled.editor.notification.panel.text"))
+                    panel.createActionLabel(UnityUIBundle.message("uss.disabled.editor.notification.enable.css.plugin")) {
                         // TODO: Maybe in 2020.2 we can do this dynamically without restart?
                         // That would require enabling the CSS plugin dynamically, and then enabling our PluginCssPart.xml part
                         // dynamically, too
@@ -39,7 +38,7 @@ internal class UssDisabledEditorNotification : EditorNotificationProvider {
                         PluginManagerMain.notifyPluginsUpdated(project)
                         EditorNotifications.getInstance(project).updateAllNotifications()
                     }
-                    panel.createActionLabel(UnityCssBundle.message("don.t.show.again")) {
+                    panel.createActionLabel(UnityUIBundle.message("don.t.show.again")) {
                         // Project level - do not show again for this project
                         PropertiesComponent.getInstance(project).setValue(DO_NOT_SHOW_AGAIN_KEY, true)
                         EditorNotifications.getInstance(project).updateAllNotifications()
