@@ -482,6 +482,11 @@ class UnityMcpRowPresentationTest {
             codexEntry("[mcp_servers]\nunity = { command = \"uvx\", args = [\"mcp-for-unity\"] }\n"),
             "an inline unity table is not an answer",
         )
+        assertEquals(
+            UnityMcpEntry.ABSENT,
+            codexEntry("[mcp_servers.unity]\ncommand = \"uvx\"\n\n[features]\nnetwork_proxy.enabled = true\n"),
+            "a store that Rider cannot edit still holds another server",
+        )
     }
 
     /** On Windows, the PATH lookup can find a wrapper such as `unity.cmd`. The entry that runs the detected Unity CLI is the entry. */

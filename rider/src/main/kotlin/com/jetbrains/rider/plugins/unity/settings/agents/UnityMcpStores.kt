@@ -15,14 +15,14 @@ private val gson = GsonBuilder().disableHtmlEscaping().create()
 /**
  * Reads the `[mcp_servers.unity]` table of the Codex store.
  *
- * A table of another MCP server holds no Unity entry. [unityMcpCodexConfigureReplacesOtherServer] finds such a table.
+ * A table of another MCP server holds no Unity entry. [unityMcpCodexHoldsOtherServer] finds such a table.
  */
 @ApiStatus.Internal
 fun readCodexEntry(content: String?, fileExists: Boolean, unity: Path?): UnityMcpEntry {
     if (!fileExists) return UnityMcpEntry.ABSENT
     if (content == null) return UnityMcpEntry.UNREADABLE
     val hasEntry = hasUnityMcpCodexEntry(content) ?: return UnityMcpEntry.UNREADABLE
-    if (!hasEntry || unityMcpCodexConfigureReplacesOtherServer(content, unity)) return UnityMcpEntry.ABSENT
+    if (!hasEntry || unityMcpCodexHoldsOtherServer(content, unity)) return UnityMcpEntry.ABSENT
     val command = unityMcpCodexCommand(content)
     return if (unity != null && command != null && !isUnityCliCommand(command, unity)) UnityMcpEntry.OTHER_CLI
     else UnityMcpEntry.PRESENT

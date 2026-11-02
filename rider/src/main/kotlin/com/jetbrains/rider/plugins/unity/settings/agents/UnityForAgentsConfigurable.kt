@@ -243,6 +243,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
             UnityMcpOperation.CONFIGURING -> false
         }
         if (operation == UnityMcpOperation.CONFIGURING && !confirmedReplacement(stores)) return
+        if (operation == UnityMcpOperation.CONFIGURING && !confirmedPolicyReplacement(stores)) return
         val packageInstallAgreed = operation == UnityMcpOperation.CONFIGURING && agreedToPipelinePackage()
         if (operation == UnityMcpOperation.CONFIGURING && needsPipelinePackage() && !packageInstallAgreed) return
         if (packageInstallAgreed) logClick(UnityAgentsAction.INSTALL)
@@ -297,6 +298,21 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                 UnityBundle.message("unity.agents.mcp.replace", files.joinToString(", ")),
             )
             .yesText(UnityBundle.message("unity.agents.mcp.replace.yes"))
+            .ask(project)
+    }
+
+    private fun confirmedPolicyReplacement(stores: List<UnityMcpStore>): Boolean {
+        val row = lastPage?.mcp?.rows.orEmpty().find { it.store in stores && it.networkPolicyToReplace.isNotEmpty() } ?: return true
+        return MessageDialogBuilder
+            .yesNo(
+                UnityBundle.message("unity.agents.mcp.replace.network.policy.title"),
+                UnityBundle.message(
+                    "unity.agents.mcp.replace.network.policy",
+                    row.storePath.orEmpty(),
+                    row.networkPolicyToReplace.joinToString(", "),
+                ),
+            )
+            .yesText(UnityBundle.message("unity.agents.mcp.replace.network.policy.yes"))
             .ask(project)
     }
 
