@@ -38,8 +38,8 @@ import kotlin.time.Duration.Companion.seconds
  * No case runs the installer script of Unity, and none reaches the network. The download hands back
  * a local file, and the channel is forced.
  *
- * The stand-in script reports the channel it received, so the environment is read where it matters:
- * inside the process, and not off the command object.
+ * The stand-in script reports the channel and the `UNITY_CLI_SKIP_SETUP` value it received, so the environment is read
+ * where it matters: inside the process, and not off the command object.
  */
 @Subsystem(SubsystemConstants.UNITY_PLUGIN)
 @Feature("Unity for Agents")
@@ -85,6 +85,14 @@ class UnityCliInstallStandInTest {
 
     @Test
     @Timeout(60)
+    fun `the skip of the agent setup reaches the environment of the process`() {
+        install(exitCode = 0, leavesCli = true)
+
+        assertEquals("1", skipSetupFile.readText().trim(), "the script would run the agent setup")
+    }
+
+    @Test
+    @Timeout(60)
     fun `Rider deletes the script the process ran`() {
         val installer = writeStandIn(exitCode = 0, leavesCli = true)
 
@@ -114,12 +122,14 @@ class UnityCliInstallStandInTest {
         val body = when (script) {
             UnityCliInstallerScript.SHELL -> """
                 printf '%s' "${'$'}UNITY_CLI_CHANNEL" > '$channelFile'
+                printf '%s' "${'$'}UNITY_CLI_SKIP_SETUP" > '$skipSetupFile'
                 ${if (leavesCli) "printf 'unity' > '$cliFile'" else ":"}
                 exit $exitCode
             """.trimIndent()
 
             UnityCliInstallerScript.POWERSHELL -> """
                 Set-Content -Path '$channelFile' -Value ${'$'}env:UNITY_CLI_CHANNEL -NoNewline
+                Set-Content -Path '$skipSetupFile' -Value ${'$'}env:UNITY_CLI_SKIP_SETUP -NoNewline
                 ${if (leavesCli) "Set-Content -Path '$cliFile' -Value 'unity' -NoNewline" else ""}
                 exit $exitCode
             """.trimIndent()
@@ -132,6 +142,8 @@ class UnityCliInstallStandInTest {
         get() = if (SystemInfo.isWindows) UnityCliInstallerScript.POWERSHELL else UnityCliInstallerScript.SHELL
 
     private val channelFile: Path get() = directory.resolve("channel.txt")
+
+    private val skipSetupFile: Path get() = directory.resolve("skip-setup.txt")
 
     private val cliFile: Path get() = directory.resolve("unity")
 
