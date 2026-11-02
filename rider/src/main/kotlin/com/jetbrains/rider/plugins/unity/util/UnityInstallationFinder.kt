@@ -5,6 +5,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.Version
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
@@ -106,6 +107,11 @@ class UnityInstallationFinder {
     fun getApplicationVersion(count: Int): String? {
         val fullVersion = getApplicationVersion()
         return fullVersion?.split('.')?.take(count)?.joinToString(".")
+    }
+
+    // Parses the version, e.g. 6000.3.1f1 -> 6000.3.1. The suffix is dropped
+    fun getApplicationVersionParsed(): Version? {
+        return getApplicationVersion()?.let(Version::parseVersion)
     }
 
     private fun tryGetApplicationVersionFromProtocol() = unityApplicationData?.applicationVersion

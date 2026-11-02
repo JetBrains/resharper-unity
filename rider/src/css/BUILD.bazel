@@ -43,6 +43,7 @@ jvm_library(
         "@community//platform/platform-api:ide",
         "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
         "@community//platform/platform-impl:ide-impl",
+        "@community//platform/util/jdom",
     ],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.css` end

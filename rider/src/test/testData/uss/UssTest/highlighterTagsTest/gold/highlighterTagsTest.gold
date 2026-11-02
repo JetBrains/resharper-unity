@@ -46,3 +46,62 @@
     border-color: rgba(0, 0, 0, 0);
     color: rgb(180, 178, 178);
 }
+
+.unity-2021-3 {
+    rotate: 45deg;
+    scale: 1.5 1.5;
+    translate: 10px 20%;
+    transform-origin: left top;
+    transition: opacity 0.3s ease-in-out-back, width 200ms;
+    transition-property: opacity, width;
+    transition-duration: 0.3s, 1s;
+    transition-delay: 0s;
+    transition-timing-function: ease-in-bounce;
+    text-shadow: 2px 2px 4px black;
+}
+
+.unity-2022-3 {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -unity-slice-scale: 2px;
+}
+
+.unity-6000-0 {
+    white-space: pre-wrap;
+    cursor: not-allowed;
+    -unity-slice-type: tiled;
+    -unity-text-generator: advanced;
+    -unity-editor-text-rendering-mode: bitmap;
+}
+
+.unity-6000-3 {
+    aspect-ratio: 1.5;
+    filter: blur(2px) grayscale(50%) hue-rotate(90deg);
+    -unity-text-auto-size: best-fit 10px 40px;
+    -unity-material: none;
+}
+
+.unity-6000-6 {
+    backdrop-filter: none;
+    animation-play-state: paused;
+    -unity-animation-clip: none;
+}
+
+.unity-7000-0 {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    grid-auto-flow: row-dense;
+    grid-row-start: span 2;
+    gap: 4px 8px;
+    justify-items: center;
+    box-shadow: 2px 2px 4px black;
+    z-index: 3;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    -unity-curvature: 10deg;
+    background-image: linear-gradient(red, blue);
+    opacity: var(--opacity);
+    row-gap: initial;
+}
