@@ -43,7 +43,7 @@ internal class UnityMcpSectionPanel(
         row {
             cell(JBOptionButton(configureAction(row, packageMissing), dropdownActions(row, cli))).gap(RightGap.SMALL)
             status.icon?.let { icon(it).gap(RightGap.SMALL) }
-            if (status.isProblem) comment(status.text) else label(status.text)
+            (if (status.isProblem) comment(status.text) else text(status.text)).wrapBesideControl()
         }
 
         unityMcpRowDetail(row)?.let { detail -> row { comment(detail) } }

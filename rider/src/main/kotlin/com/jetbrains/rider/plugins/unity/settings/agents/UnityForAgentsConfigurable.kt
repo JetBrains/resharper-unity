@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.settings.agents
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.DataManager
-import com.intellij.ide.actions.ShowLogAction
 import com.intellij.ide.trustedProjects.TrustedProjectsDialog
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationActivationListener
@@ -437,7 +436,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
 
             UnityCliOffer.NOT_TRUSTED -> row {
                 button(UnityBundle.message("unity.agents.cli.trust.project")) { trustProject() }.gap(RightGap.SMALL)
-                comment(UnityBundle.message("unity.agents.cli.not.trusted"))
+                comment(UnityBundle.message("unity.agents.cli.not.trusted")).wrapBesideControl()
             }
 
             UnityCliOffer.INSTALL -> {
@@ -455,7 +454,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
 
             UnityCliOffer.LATEST_VERSION_UNKNOWN -> row {
                 button(UnityBundle.message("unity.agents.cli.check.again")) { recheck() }.gap(RightGap.SMALL)
-                comment(UnityBundle.message("unity.agents.cli.latest.unknown"))
+                comment(UnityBundle.message("unity.agents.cli.latest.unknown")).wrapBesideControl()
             }
 
             UnityCliOffer.UPDATE -> row {
@@ -472,7 +471,7 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                     button(UnityBundle.message("unity.agents.cli.copy.command")) {
                         CopyPasteManager.getInstance().setContents(StringSelection(command.orEmpty()))
                     }.enabled(command != null).gap(RightGap.SMALL)
-                    comment(unityCliUpdateByHandMessage(command))
+                    comment(unityCliUpdateByHandMessage(command)).wrapBesideControl()
                 }
             }
 
@@ -490,19 +489,10 @@ internal class UnityForAgentsConfigurable(private val project: Project) : Search
                 }
             }
 
-            UnityCliOffer.FAILED -> {
-                row {
-                    button(UnityBundle.message("unity.agents.cli.try.again")) { retry(presentation) }.gap(RightGap.SMALL)
-                    icon(AllIcons.General.Error).gap(RightGap.SMALL)
-                    comment(unityCliFailureMessage(presentation.failure, presentation.failureExitCode))
-                }
-
-                if (ShowLogAction.isSupported()) {
-                    row {
-                        link(ShowLogAction.getActionName()) { ShowLogAction.showLog() }
-                    }
-                }
-            }
+            UnityCliOffer.FAILED -> failureRows(
+                UnityBundle.message("unity.agents.cli.try.again"),
+                unityCliFailureMessage(presentation.failure, presentation.failureExitCode),
+            ) { retry(presentation) }
         }
     }
 
