@@ -453,18 +453,53 @@ class UnityMcpRowPresentationTest {
         )
         assertEquals(UnityMcpEntry.PRESENT, codexEntry(codexStore("unity.exe")))
         assertEquals(
-            UnityMcpEntry.OTHER_CLI,
+            UnityMcpEntry.ABSENT,
             codexEntry(codexStore("unity123")),
-            "a bare command of another program is not the Unity CLI",
+            "a bare command of another program is another MCP server",
         )
     }
 
+    /** RIDER-144843: the issue shows this server of MCP for Unity under the name that Rider writes. */
     @Test
-    fun `the Codex reader reads an entry with no command and a dotted key as the entry`() {
+    fun `the Codex reader takes another server named unity as no entry`() {
+        val otherServer = "[mcp_servers.unity]\ncommand = \"uvx\"\nargs = [\"mcp-for-unity\"]\n"
+
+        assertEquals(UnityMcpEntry.ABSENT, codexEntry(otherServer))
+        assertEquals(UnityMcpEntry.ABSENT, codexEntry(codexStore("/usr/local/bin/uvx")))
+        assertEquals(UnityMcpEntry.ABSENT, readCodexEntry(otherServer, fileExists = true, unity = null))
+        assertEquals(
+            UnityMcpEntry.ABSENT,
+            codexEntry("[mcp_servers.unity]\nurl = \"http://localhost:8080/mcp\"\n"),
+            "an HTTP server has no command",
+        )
+        assertEquals(
+            UnityMcpEntry.ABSENT,
+            codexEntry("[mcp_servers.unity]\nargs = [\"mcp\"]\n"),
+            "an entry with no command runs no Unity CLI",
+        )
+        assertEquals(
+            UnityMcpEntry.UNREADABLE,
+            codexEntry("[mcp_servers]\nunity = { command = \"uvx\", args = [\"mcp-for-unity\"] }\n"),
+            "an inline unity table is not an answer",
+        )
+    }
+
+    /** On Windows, the PATH lookup can find a wrapper such as `unity.cmd`. The entry that runs the detected Unity CLI is the entry. */
+    @Test
+    fun `the Codex reader takes the detected Unity CLI as the entry under any file name`() {
+        val wrapper = Path.of("/home/tester/bin/unity.cmd")
+        val store = codexStore("/home/tester/bin/unity.cmd")
+
+        assertEquals(UnityMcpEntry.PRESENT, readCodexEntry(store, fileExists = true, unity = wrapper))
+        assertEquals(UnityMcpEntry.ABSENT, codexEntry(store), "a wrapper of another Unity CLI is another program")
+    }
+
+    @Test
+    fun `the Codex reader reads a dotted key and a command it cannot read as the entry`() {
         assertEquals(
             UnityMcpEntry.PRESENT,
-            codexEntry("[mcp_servers.unity]\nargs = [\"mcp\"]\n"),
-            "an entry with no command is still the entry",
+            codexEntry("[mcp_servers.unity]\ncommand = \"\"\"/home/tester/.unity/bin/unity\"\"\"\n"),
+            "a command that is not a one-line string is still the entry",
         )
         assertEquals(
             UnityMcpEntry.PRESENT,
