@@ -117,7 +117,7 @@ class UnityPlayerRuntimeDetector(val project: Project) {
      * On macOS a player is an application bundle, so the caller may name either the inner executable
      * or the bundle itself.
      */
-    private fun resolveNativeLibraryDirectory(exePath: Path): Path? {
+    fun resolveNativeLibraryDirectory(exePath: Path): Path? {
         return when (OS.CURRENT) {
             OS.macOS -> findAppBundle(exePath)?.resolve("Contents/Frameworks")
             OS.Windows, OS.Linux -> exePath.parent
