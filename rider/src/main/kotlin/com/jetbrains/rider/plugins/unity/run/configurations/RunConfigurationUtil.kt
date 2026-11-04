@@ -60,7 +60,7 @@ fun attachToUnityEditor(project: Project) {
     val configurationSettings = getAttachToConfiguration(project) ?: createAttachToConfiguration(project)
     val manager = ActiveDeviceManager.getInstance(project)
     val selectedDevice = manager.getDevice<UnityCurrentProjectEditorDevice>()
-    if (selectedDevice == null) {
+    if (selectedDevice == null || selectedDevice.playOnConnect) {
         val lifetime = UnityProjectLifetimeService.getLifetime(project).createNested()
         lifetime.launch {
             // Get all the devices, then find the single Editor (not EditorAndPlay) device
