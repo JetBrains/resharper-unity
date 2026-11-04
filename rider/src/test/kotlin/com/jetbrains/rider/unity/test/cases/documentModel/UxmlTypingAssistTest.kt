@@ -8,7 +8,7 @@ import com.jetbrains.rider.test.annotations.report.Issue
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.facades.editor.PatchEngineEditorTestMode
-import com.jetbrains.rider.test.junit5.base.PatchEngineEditorTestBase
+import com.jetbrains.rider.test.base.PatchEngineEditorTestBase
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.dumpOpenedEditorFacade
 import com.jetbrains.rider.test.shared.constants.TeamCityTags

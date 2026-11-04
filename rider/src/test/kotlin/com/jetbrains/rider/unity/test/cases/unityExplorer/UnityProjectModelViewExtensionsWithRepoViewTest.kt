@@ -16,7 +16,7 @@ import com.jetbrains.rider.test.annotations.report.SeverityLevel
 import com.jetbrains.rider.test.enums.BuildTool
 import com.jetbrains.rider.test.enums.sdk.SdkVersion
 import com.jetbrains.rider.test.framework.advancedSettings.AdvancedSettingsList
-import com.jetbrains.rider.test.junit5.base.PerTestProjectModelTestBase
+import com.jetbrains.rider.test.base.PerTestProjectModelTestBase
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.callUndo

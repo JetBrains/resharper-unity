@@ -6,8 +6,8 @@ import com.jetbrains.rider.test.annotations.KnownTestAnnotations
 import com.jetbrains.rider.test.annotations.UnityTestSettings
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.framework.frameworkLogger
-import com.jetbrains.rider.test.junit5.base.PerTestSolutionTestBase
-import com.jetbrains.rider.test.junit5.extensions.SuiteLifecycleExtension
+import com.jetbrains.rider.test.base.PerTestSolutionTestBase
+import com.jetbrains.rider.test.extensions.SuiteLifecycleExtension
 import com.jetbrains.rider.test.logging.TestLoggerHelper
 import com.jetbrains.rider.test.scriptingApi.absoluteCanonicalPath
 import com.jetbrains.rider.test.scriptingApi.addArgsForUnityProcess
