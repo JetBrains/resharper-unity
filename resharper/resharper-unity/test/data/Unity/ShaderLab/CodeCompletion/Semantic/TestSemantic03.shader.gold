@@ -1,7 +1,8 @@
 ﻿Completion: Basic
 Count: 8 (filtered)
 Focus: Hard
-Rules: [!"'~] => hide_lookup
+Rules: [!"'(:~] => hide_lookup
+       [=] & prefix="operator" => add_to_prefix
        [\w] => add_to_prefix
 Range: "void frag(in float2 tex: ♦) "
 

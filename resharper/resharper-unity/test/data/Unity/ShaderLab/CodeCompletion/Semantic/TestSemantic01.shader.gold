@@ -1,7 +1,8 @@
 ﻿Completion: Basic
 Count: 20 (filtered)
 Focus: Hard
-Rules: [!"'~] => hide_lookup
+Rules: [!"'(:~] => hide_lookup
+       [=] & prefix="operator" => add_to_prefix
        [\w] => add_to_prefix
 Range: "float4 frag() : ♦ "
 
