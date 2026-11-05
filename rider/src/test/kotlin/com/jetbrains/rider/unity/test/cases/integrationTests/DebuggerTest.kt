@@ -5,8 +5,10 @@ import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.intellij.xdebugger.frame.XValue
 import com.intellij.xdebugger.frame.XValueGroup
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
+import com.jetbrains.rider.debugger.shared.RiderDebuggerLinkProvider
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.addUnityPausepoint
 import com.jetbrains.rider.projectView.solutionDirectoryPath
@@ -23,12 +25,15 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.enums.TuanjieVersion
 import com.jetbrains.rider.test.enums.UnityVersion
 import com.jetbrains.rider.test.reporting.SubsystemConstants
+import com.jetbrains.rider.test.scriptingApi.DebugTestExecutionContext
 import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import com.jetbrains.rider.test.scriptingApi.dumpFullCurrentData
 import com.jetbrains.rider.test.scriptingApi.evaluateExpression
+import com.jetbrains.rider.test.scriptingApi.evaluateNode
 import com.jetbrains.rider.test.scriptingApi.getVirtualFileFromPath
 import com.jetbrains.rider.test.scriptingApi.removeAllBreakpoints
 import com.jetbrains.rider.test.scriptingApi.resumeSession
+import com.jetbrains.rider.test.scriptingApi.runBlockingWithFlushing
 import com.jetbrains.rider.test.scriptingApi.stepInto
 import com.jetbrains.rider.test.scriptingApi.stepOver
 import com.jetbrains.rider.test.scriptingApi.toggleBreakpoint
@@ -42,22 +47,24 @@ import com.jetbrains.rider.unity.test.framework.api.unpause
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPauseMode
 import com.jetbrains.rider.unity.test.framework.api.waitForUnityEditorPlayMode
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
-//import intellij.rider.plugins.unity.debugger.textureVisualizer.RiderTextureDataApi
-//import intellij.rider.plugins.unity.debugger.textureVisualizer.UnityTextureInfo
-//import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureHyperLink
-//import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.RiderTextureDataApi
+import intellij.rider.plugins.unity.debugger.textureVisualizer.common.UnityTextureInfo
+import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureHyperLink
+import intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.UnityTextureLinkProvider
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.fail
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.time.Duration.Companion.minutes
 
 @Subsystem(SubsystemConstants.UNITY_DEBUG)
 @Feature("Debug Unity Editor")
 @Severity(SeverityLevel.CRITICAL)
 @Solution("UnityDebugAndUnitTesting/Project")
 @Tag(TeamCityTags.Plugins.Unity.Integration)
-abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
+abstract class DebuggerTest : IntegrationTestWithUnityProjectBase() {
     @Test // Check 2 breakpoints in simple Unity App
     @ChecklistItems(["Breakpoints/Simple breakpoint"])
     fun checkBreakpoint() {
@@ -106,45 +113,39 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
 
     @Test // Check texture debugging in simple Unity App
     @ChecklistItems(["Breakpoints/Texture breakpoint"])
-    @Mute("RIDER-135697 Unity test for texture visualizer isn't compatible with the new split mode debugger yet")
     fun checkTextureDebugging() {
-        fail("Not supported, see RIDER-135697")
-//        attachDebuggerToUnityEditorAndPlay(
-//            beforeRun = {
-//                toggleBreakpoint("TextureDebuggingScript.cs", 13) //  Debug.Log(texture2D);
-//            },
-//            test = {
-//                waitForPause()
-//                dumpFullCurrentData()
-//                try {
-//                    val stackFrame = (session.currentStackFrame as DotNetStackFrame)
-//
-//                    assertNotNull(stackFrame)
-//
-//                    val valueNode = evaluateNode("texture2D", refreshIfNeeded = true)
-//                    val EP_NAME = ExtensionPointName<XDebuggerNodeLinkActionProvider>("com.intellij.xdebugger.nodeLinkActionProvider")
-//                    val unityTextureExtension = EP_NAME.extensionList.firstOrNull { it is UnityTextureLinkProvider }
-//                    assertNotNull(unityTextureExtension)
-//
-//                    var textureInfo: UnityTextureInfo? = null
-//                    val job = (project as ComponentManagerEx).getCoroutineScope().launch {
-//                        val link = with (unityTextureExtension) {
-//                            provideHyperlink(project, valueNode)
-//                        } as? UnityTextureHyperLink
-//                        assertNotNull(link)
-//                        val result = RiderTextureDataApi.getInstance().evaluateTexture(link.accessorId, 10000)
-//                        textureInfo = result.unityTextureInfo
-//                    }
-//
-//                    pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
-//                        job.isCompleted
-//                    }
-//                    assertNotNull(textureInfo)
-//                    printlnIndented(textureInfo.printToString())
-//                }
-//                finally {
-//                }
-//            }, goldFile = testGoldFile)
+        attachDebuggerToUnityEditorAndPlay(
+            beforeRun = {
+                toggleBreakpoint("TextureDebuggingScript.cs", 13) //  Debug.Log(texture2D);
+            },
+            test = {
+                waitForPause()
+                dumpFullCurrentData()
+                val value = evaluateNode("texture2D", refreshIfNeeded = true) as XValue
+                val provider = RiderDebuggerLinkProvider.EP_NAME.extensionList.filterIsInstance<UnityTextureLinkProvider>().single()
+                val textureInfo = runBlockingWithFlushing("checkTextureDebugging", 1.minutes) {
+                    val link = provider.getAdditionalLink(this, sessionProxy, value) as UnityTextureHyperLink
+                    (val error, val unityTextureInfo) = RiderTextureDataApi.getInstance().evaluateTexture(link.accessorId)
+                    assertNull(error)
+                    assertNotNull(unityTextureInfo)
+                }
+                dumpTextureInfo(textureInfo)
+            }, goldFile = testGoldFile)
+    }
+
+    private fun DebugTestExecutionContext.dumpTextureInfo(info: UnityTextureInfo) {
+        printlnIndented("UnityTextureInfo (")
+        printlnIndented("  width = ${info.width}")
+        printlnIndented("  height = ${info.height}")
+        printlnIndented("  pixels = [")
+        info.pixels.forEach { printlnIndented("    $it") }
+        printlnIndented("  ]")
+        printlnIndented("  originalWidth = ${info.originalWidth}")
+        printlnIndented("  originalHeight = ${info.originalHeight}")
+        printlnIndented("  graphicsTextureFormat = \"${info.graphicsTextureFormat}\"")
+        printlnIndented("  textureName = \"${info.textureName}\"")
+        printlnIndented("  hasAlphaChannel = ${info.hasAlphaChannel}")
+        printlnIndented(")")
     }
 
     @Test // Check Unity pause point in debugging for simple Unity App
@@ -208,10 +209,9 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
     @Test // Simple Stepping test
     @ChecklistItems(["Stepping/Simple Stepping"])
     fun checkSimpleStepping() {
-        var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(
             {
-                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 14) // int binaryNotation = 0b_0001_1110_1000_0100_1000_0000;
+                toggleBreakpoint(project, "NewBehaviourScript.cs", 14) // int binaryNotation = 0b_0001_1110_1000_0100_1000_0000;
             },
             {
                 val toEvaluate = "binaryNotation / 25"
@@ -229,10 +229,9 @@ abstract class DebuggerTest() : IntegrationTestWithUnityProjectBase() {
     @Test // Check simple evaluation
     @ChecklistItems(["Evaluation/Simple evaluation"])
     fun checkSimpleEvaluation() {
-        var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(
             {
-                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 15) //  Debug.Log(binaryNotation);
+                toggleBreakpoint(project, "NewBehaviourScript.cs", 15) //  Debug.Log(binaryNotation);
             },
             {
                 val toEvaluate = "binaryNotation / 25"

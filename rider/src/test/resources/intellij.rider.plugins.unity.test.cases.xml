@@ -2,6 +2,7 @@
   <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
   <dependencies>
     <plugin id="com.jetbrains.rider.fsharp"/>
+    <module name="fleet.rpc"/>
     <module name="intellij.libraries.commons.compress"/>
     <module name="intellij.libraries.commons.logging"/>
     <module name="intellij.libraries.flexmark"/>
@@ -41,9 +42,12 @@
     <module name="intellij.platform.testFramework.junit5"/>
     <module name="intellij.platform.util.ui"/>
     <module name="intellij.rd.client"/>
+    <module name="intellij.rider.debugger.shared"/>
     <module name="intellij.rider.languages"/>
     <module name="intellij.rider.plugins.unity.backend"/>
     <module name="intellij.rider.plugins.unity.css"/>
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.common"/>
+    <module name="intellij.rider.plugins.unity.debugger.textureVisualizer.frontend"/>
     <module name="intellij.rider.plugins.unity.model"/>
     <module name="intellij.rider.test.framework.integration"/>
     <module name="intellij.rider.test.framework.junit"/>

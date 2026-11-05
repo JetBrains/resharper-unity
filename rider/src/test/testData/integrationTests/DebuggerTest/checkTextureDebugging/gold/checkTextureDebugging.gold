@@ -6,6 +6,9 @@ TextureDebuggingScript.Update() in Src.Scripts, Assembly-CSharp.dll
     +this = {TextureDebuggingScript} enabled: true, gameObject: Main Camera
     +texture2D = {Texture2D} Temporary texture for debugging (UnityEngine.Texture2D)
 
+Processing a "texture2D" node with value " Temporary texture for debugging (UnityEngine.Texture2D)"
+
+
 UnityTextureInfo (
   width = 2
   height = 2
