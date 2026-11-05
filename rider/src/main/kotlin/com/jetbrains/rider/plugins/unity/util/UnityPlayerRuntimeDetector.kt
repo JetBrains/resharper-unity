@@ -20,6 +20,7 @@ import kotlin.io.path.exists
 import kotlin.io.path.getLastModifiedTime
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.name
+import kotlin.io.path.nameWithoutExtension
 
 @Service(Service.Level.PROJECT)
 class UnityPlayerRuntimeDetector(val project: Project) {
@@ -53,9 +54,16 @@ class UnityPlayerRuntimeDetector(val project: Project) {
     }
 
     private suspend fun detectInternal(exePath: Path, isEditor: Boolean): ScanOutcome {
-        // in case of editor, the binary itself is supposed to contain the exported symbol,
-        // otherwise we look for the unity player library instead
-        val playerPath = if (isEditor) exePath else resolveUnityPlayerLib(exePath)
+        // in case of editor, the executable itself is supposed to contain the exported symbol on Linux and macOS,
+        // and dll with the same name is supposed to contain the exported symbol on Windows.
+        // Otherwise, we look for the unity player library instead
+
+        val playerPath = when {
+            isEditor && OS.CURRENT != OS.Windows -> exePath
+            isEditor && OS.CURRENT == OS.Windows -> exePath.parent.resolve(exePath.nameWithoutExtension + ".dll")
+            else -> resolveUnityPlayerLib(exePath)
+        }
+
         if (playerPath == null || !playerPath.isRegularFile()) {
             // The IL2CPP guard reads the native library directory, not the player library, so it
             // still answers when the player library is absent.
