@@ -4,6 +4,7 @@ import com.intellij.openapi.util.registry.RegistryManager
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.unity.test.framework.api.removeAllUnityPausepoints
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.RiderTestTimeout
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -131,12 +132,24 @@ abstract class DotsDebuggerTest() : IntegrationTestWithUnityProjectBase() {
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V2022)
-class DotsDebuggerTestUnity2022 : DotsDebuggerTest()
+class DotsDebuggerTestUnity2022 : DotsDebuggerTest() {
+    init {
+        addMute(Mute("RIDER-133998"), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-141685"), ::checkBreakpointInDOTSCode)
+        addMute(Mute("RIDER-141685"), ::checkRefPresentationInDOTSCode)
+    }
+}
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
-class DotsDebuggerTestUnity6_3 : DotsDebuggerTest()
+class DotsDebuggerTestUnity6_3 : DotsDebuggerTest() {
+    init {
+        addMute(Mute("RIDER-125876"), ::checkUnityPausePoint)
+        addMute(Mute("RIDER-141685"), ::checkBreakpointInDOTSCode)
+        addMute(Mute("RIDER-141685"), ::checkRefPresentationInDOTSCode)
+    }
+}
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])

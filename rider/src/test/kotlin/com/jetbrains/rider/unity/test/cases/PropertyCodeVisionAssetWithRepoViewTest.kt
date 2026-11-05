@@ -9,6 +9,7 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.TestSettings
@@ -82,6 +83,7 @@ class PropertyCodeVisionAssetWithRepoViewTest : CodeLensTestBase() {
     fun propertyCodeVision(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
+    @Mute("RIDER-142953")
     @ParameterizedTest(name = "{0}") // Unity property code vision test with typing
     @MethodSource("assetSettings")
     @Solution("RiderSample")

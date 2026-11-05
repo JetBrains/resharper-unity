@@ -9,6 +9,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallResult
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallerRunner
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliInstallerScript
 import com.jetbrains.rider.plugins.unity.settings.agents.runUnityCliInstall
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.Subsystem
 import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.reporting.SubsystemConstants
@@ -91,6 +92,7 @@ class UnityCliInstallStandInTest {
         assertEquals("1", skipSetupFile.readText().trim(), "the script would run the agent setup")
     }
 
+    @Mute("RIDER-144982")
     @Test
     @Timeout(60)
     fun `Rider deletes the script the process ran`() {

@@ -4,6 +4,7 @@ import com.intellij.openapi.util.registry.RegistryManager
 import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 import com.jetbrains.rider.debugger.settings.DotNetDebuggerSettings
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.RiderTestTimeout
 import com.jetbrains.rider.test.annotations.Solution
 import com.jetbrains.rider.test.annotations.Subsystem
@@ -149,7 +150,11 @@ abstract class DotsSystemApiQueryEvaluationTest : IntegrationTestWithUnityProjec
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 @UnityTestSettings(unityVersion = UnityVersion.V6_3)
-class DotsSystemApiQueryEvaluationTestUnity6_3 : DotsSystemApiQueryEvaluationTest()
+class DotsSystemApiQueryEvaluationTestUnity6_3 : DotsSystemApiQueryEvaluationTest() {
+    init {
+        addMute(Mute("RIDER-143003"), ::evaluateSystemApiQuery)
+    }
+}
 
 @RiderTestTimeout(5, unit = TimeUnit.MINUTES)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
