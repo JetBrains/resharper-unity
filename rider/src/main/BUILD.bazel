@@ -39,7 +39,6 @@ jvm_library(
     visibility = ["//visibility:public"],
     runtime_deps = [
         # do not sort,
-        "@community//plugins/gradle/jps-plugin:jps",
         "@community//platform/diff-impl",
         "@community//images",
     ],
