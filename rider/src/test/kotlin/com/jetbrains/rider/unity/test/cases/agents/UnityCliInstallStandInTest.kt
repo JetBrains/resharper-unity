@@ -2,6 +2,7 @@ package com.jetbrains.rider.unity.test.cases.agents
 
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.testFramework.common.timeoutRunBlocking
+import com.intellij.testFramework.common.waitUntil
 import com.intellij.testFramework.junit5.TestApplication
 import com.jetbrains.rider.plugins.unity.settings.agents.UNITY_CLI_CDN_BASE_URL
 import com.jetbrains.rider.plugins.unity.settings.agents.UnityCliFailure
@@ -15,7 +16,6 @@ import com.jetbrains.rider.test.annotations.report.Feature
 import com.jetbrains.rider.test.reporting.SubsystemConstants
 import com.jetbrains.rider.test.shared.constants.TeamCityTags
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -92,7 +92,6 @@ class UnityCliInstallStandInTest {
         assertEquals("1", skipSetupFile.readText().trim(), "the script would run the agent setup")
     }
 
-    @Mute("RIDER-144982")
     @Test
     @Timeout(60)
     fun `Rider deletes the script the process ran`() {
@@ -100,7 +99,9 @@ class UnityCliInstallStandInTest {
 
         run(installer) { Files.exists(cliFile) }
 
-        assertFalse(installer.exists(), "Rider left the installer script behind")
+        timeoutRunBlocking(timeout = 30.seconds) {
+            waitUntil("Rider left the installer script behind") { !installer.exists() }
+        }
     }
 
     private fun install(exitCode: Int, leavesCli: Boolean): UnityCliInstallResult =
