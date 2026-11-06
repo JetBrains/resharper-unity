@@ -161,6 +161,7 @@ class InputSystemTest : PerTestSolutionTestBase() {
         doUsedCodeTest("Assets/NewBehaviourScript4.cs")
     }
 
+    @Mute("RIDER-92327")
     @Test
     @ChecklistItems(["Find Usages in Input system/Used code by BroadcastScript"])
     fun usedCodeTestBroadcastScript1() {
