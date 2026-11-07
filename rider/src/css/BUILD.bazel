@@ -22,10 +22,10 @@ jvm_library(
         ["resources/**/*"],
     ),
     visibility = ["//visibility:public"],
+    runtime_deps = ["@community//libraries/rd/core"],
     deps = [
         # do not sort,
         "@community//platform/core-api:core",
-        "@community//libraries/rd/core",
         "@community//xml/xml-parser:parser",
         "@community//platform/backend/workspace",
         "@community//platform/core-impl",

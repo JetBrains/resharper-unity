@@ -22,6 +22,7 @@ jvm_library(
         ["resources/**/*"],
     ),
     visibility = ["//visibility:public"],
+    runtime_deps = ["//remote-dev/rd-client"],
     deps = [
         # do not sort,
         "@community//platform/kernel/rpc.backend",
@@ -35,7 +36,6 @@ jvm_library(
         "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common",
         "//rider/model/generated",
         "//rider",
-        "//remote-dev/rd-client",
         "//remote-dev/rd-client/debugger",
         "//rider/rdclient-dotnet",
         "//remote-dev/rd-ide-model-generated",
