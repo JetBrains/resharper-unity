@@ -3,7 +3,6 @@ package intellij.rider.plugins.unity.debugger.textureVisualizer.backend
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.reactive.valueOrThrow
-import com.jetbrains.rider.debugger.DelegatedDotNetValue
 import com.jetbrains.rider.debugger.DotNetNamedValue
 import com.jetbrains.rider.debugger.DotNetValue
 import com.jetbrains.rider.debugger.IDotNetValue
@@ -29,7 +28,6 @@ class RiderTextureAccessorImpl(
         val stackFrame = when (dotNetValue) {
             is DotNetValue -> dotNetValue.frame
             is DotNetNamedValue -> dotNetValue.frame
-            is DelegatedDotNetValue -> dotNetValue.value.frame
             else -> error("Unsupported value. Can't get a stack frame")
         }
 
