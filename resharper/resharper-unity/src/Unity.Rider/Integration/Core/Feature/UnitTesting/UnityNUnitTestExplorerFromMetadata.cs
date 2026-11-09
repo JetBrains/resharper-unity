@@ -5,7 +5,6 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.AssemblyToAssemblyResolvers;
 using JetBrains.ProjectModel.Assemblies.Impl;
-using JetBrains.ProjectModel.NuGet.Packaging;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.UnitTestFramework.Exploration;
 using JetBrains.ReSharper.UnitTestFramework.Exploration.Artifacts;
@@ -35,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
             [NotNull] IUnitTestAttributeChecker attributeChecker,
             [NotNull] AssemblyToAssemblyReferencesResolveManager resolveManager,
             [NotNull] ResolveContextManager resolveContextManager,
-            [NotNull] NuGetInstalledPackageChecker installedPackageChecker,
+            [NotNull] UnitTestInstalledPackageChecker installedPackageChecker,
             [NotNull] INUnitTypeOrValuePresenterFactory presenterFactory,
             [NotNull] INUnitVersionDetector nUnitVersionDetector,
             [NotNull] UnitySolutionTracker unitySolutionTracker,
