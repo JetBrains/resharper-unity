@@ -28,7 +28,7 @@ jvm_library(
         "@lib//:kotlin-stdlib",
         "@community//platform/core-api:core",
         "@community//platform/util",
-        "//plugins/air/backend/agent-extensions/skills",
+        "@community//plugins/mcp-server/mcpserver.skills",
         "//dotnet/Plugins/ReSharperUnity/rider/src/main:rider-plugins-unity-backend",
         "@community//libraries/rd/core",
         "//rider/plugins/plugins-appender/mcpServer",

@@ -1,8 +1,8 @@
 package com.jetbrains.rider.plugins.unity.agents
 
-import com.intellij.aiagentextensions.skills.loader.github.GitHubSkillSourceTracker
-import com.intellij.aiagentextensions.skills.settings.EnabledAgentSkillsCounter
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.mcpserver.skills.AgentSkillCatalog
+import com.intellij.mcpserver.skills.SkillWorkspaceContext
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.appender.mcpServer.agentSetup.AgentSetupRow
 import com.jetbrains.rider.plugins.appender.mcpServer.agentSetup.AgentSetupRowLink
@@ -17,6 +17,7 @@ import com.jetbrains.rider.plugins.unity.settings.agents.UnityAgentsSource
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupRowInstallingText
 import com.jetbrains.rider.plugins.unity.settings.agents.unityAgentsSetupRowPresentation
 import org.jetbrains.annotations.Nls
+import java.nio.file.Path
 
 private const val DISMISSED_STEPS_KEY = "rider.unity.agents.setup.widget.dismissed"
 
@@ -82,11 +83,12 @@ internal class UnityAgentSetupRowProvider : AgentSetupRowProvider {
         PropertiesComponent.getInstance(project).getList(DISMISSED_STEPS_KEY).orEmpty()
             .mapNotNullTo(mutableSetOf()) { name -> UnityAgentsSetupStep.entries.firstOrNull { it.name == name } }
 
-    private fun isUnityRegistrySkill(folderName: String?, source: String?): Boolean =
-        folderName != UNITY_CLI_SKILL_NAME && source == UNITY_SKILL_REGISTRY_SOURCE
-
-    private suspend fun countUnitySkills(project: Project): Int = 1 + EnabledAgentSkillsCounter.countEnabledSkills(project) { skill ->
-        val directory = skill.localDirectoryPath
-        isUnityRegistrySkill(directory?.fileName?.toString(), directory?.let(GitHubSkillSourceTracker::readSource))
+    /** The Unity CLI skill and the enabled skills of the Unity registry. Without a skill catalog or a project base path, only the CLI skill counts. */
+    private suspend fun countUnitySkills(project: Project): Int {
+        val context = project.basePath?.let { SkillWorkspaceContext.create(Path.of(it), project) } ?: return 1
+        val registrySkills = AgentSkillCatalog.getInstance()?.enabledSkills(context).orEmpty().count { skill ->
+            skill.directory.fileName?.toString() != UNITY_CLI_SKILL_NAME && UNITY_SKILL_REGISTRY_SOURCE in skill.registrySources
+        }
+        return 1 + registrySkills
     }
 }
