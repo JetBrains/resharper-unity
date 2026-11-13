@@ -1,3 +1,4 @@
+load("@community//platform/build-scripts/bazel-rules:ij_plugin.bzl", "ij_plugin")
 load("@jps_dynamic_deps_ultimate//:targets.bzl", "dev_dist_plugin")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
@@ -35,6 +36,20 @@ jvm_library(
     visibility = ["//visibility:public"],
 )
 ### auto-generated section `build intellij.rider.plugins.unity.debugger.textureVisualizer` end
+
+### auto-generated section `plugin intellij.rider.plugins.unity.debugger.textureVisualizer` start
+ij_plugin(
+    name = "textureVisualizer_plugin",
+    descriptor_module = ":textureVisualizer",
+    content_modules = [
+        # do not sort,
+        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/frontend",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/backend",
+    ],
+    visibility = ["//visibility:public"],
+)
+### auto-generated section `plugin intellij.rider.plugins.unity.debugger.textureVisualizer` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.debugger.textureVisualizer` start
 exports_files(
