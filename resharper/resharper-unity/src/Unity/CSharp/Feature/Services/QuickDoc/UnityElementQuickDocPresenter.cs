@@ -1,5 +1,6 @@
 using System.Xml;
 using JetBrains.Application.UI.Help;
+using JetBrains.Application.UI.PopupLayout;
 using JetBrains.ReSharper.Feature.Services.Navigation;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Providers;
@@ -113,10 +114,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 : null;
         }
 
-        public void OpenInEditor(string navigationId = "")
+        public void OpenInEditor(string navigationId = "", PopupWindowContextSource? windowContext = null)
         {
             var element = myEnvoy.GetValidDeclaredElement();
-            element?.Navigate(true);
+            element?.Navigate(true, windowContext);
         }
 
         public void ReadMore(string navigationId = "")
