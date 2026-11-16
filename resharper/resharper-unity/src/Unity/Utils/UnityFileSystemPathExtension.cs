@@ -11,31 +11,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
 
             var isYaml = sourceFile.ReadBinaryStream(reader =>
             {
-                var headerChars = new char[6];
-                var read = reader.Read(headerChars, 0, headerChars.Length);
-                var isYamlFile = read == headerChars.Length && headerChars[0] == '%'
-                                                            && (IsYamlHeader(headerChars) || IsUnityHeader(headerChars));
+                var headerBytes = reader.ReadBytes(6);
+                var isYamlFile = headerBytes.Length == 6 && headerBytes[0] == (byte)'%'
+                                                         && (IsYamlHeader(headerBytes) || IsUnityHeader(headerBytes));
                 logger.Trace($"Sniffed YAML header for file {sourceFile}: {isYamlFile}");
                 return isYamlFile;
             });
             return isYaml;
         }
 
-        private static bool IsYamlHeader(char[] headerChars)
+        private static bool IsYamlHeader(byte[] headerBytes)
         {
-            return headerChars[1] == 'Y' &&
-                   headerChars[2] == 'A' &&
-                   headerChars[3] == 'M' &&
-                   headerChars[4] == 'L';
+            return headerBytes[1] == (byte)'Y' &&
+                   headerBytes[2] == (byte)'A' &&
+                   headerBytes[3] == (byte)'M' &&
+                   headerBytes[4] == (byte)'L';
         }
 
-        private static bool IsUnityHeader(char[] headerChars)
+        private static bool IsUnityHeader(byte[] headerBytes)
         {
-            return headerChars[1] == 'U' &&
-                   headerChars[2] == 'N' &&
-                   headerChars[3] == 'I' &&
-                   headerChars[4] == 'T' &&
-                   headerChars[5] == 'Y';
+            return headerBytes[1] == (byte)'U' &&
+                   headerBytes[2] == (byte)'N' &&
+                   headerBytes[3] == (byte)'I' &&
+                   headerBytes[4] == (byte)'T' &&
+                   headerBytes[5] == (byte)'Y';
         }
     }
 }
