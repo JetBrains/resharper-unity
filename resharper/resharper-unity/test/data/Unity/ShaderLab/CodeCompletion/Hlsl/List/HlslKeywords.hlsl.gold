@@ -1,5 +1,5 @@
 ﻿Completion: Basic
-Count: 316
+Count: 328
 Focus: Hard
 Rules: [!"'(:~] => hide_lookup
        [=] & prefix="operator" => add_to_prefix
@@ -294,13 +294,18 @@ uint4x3
 uint4x4
                             [NonStatic, NormalSelectionPriority^]
 AppendStructuredBuffer
+BlendState
 Buffer
 ByteAddressBuffer
 ConsumeStructuredBuffer
+DepthStencilState
+GlobalRootSignature
 InputPatch
 LineStream
+LocalRootSignature
 OutputPatch
 PointStream
+ProceduralPrimitiveHitGroup
 RWBuffer
 RWByteAddressBuffer
 RWStructuredBuffer
@@ -309,10 +314,16 @@ RWTexture1DArray
 RWTexture2D
 RWTexture2DArray
 RWTexture3D
+RasterizerState
 RayDesc
 RayQuery
 RaytracingAccelerationStructure
+RaytracingPipelineConfig
+RaytracingPipelineConfig1
+RaytracingShaderConfig
+StateObjectConfig
 StructuredBuffer
+SubobjectToExportsAssociation
 Texture1D
 Texture1DArray
 Texture2D
@@ -322,6 +333,7 @@ Texture2DMSArray
 Texture3D
 TextureCube
 TextureCubeArray
+TriangleHitGroup
 TriangleStream
                             [16]
 SHADER_API_D3D11
@@ -618,13 +630,18 @@ void
 volatile
                             [Light, Generic, Rank=11]
 AppendStructuredBuffer
+BlendState
 Buffer
 ByteAddressBuffer
 ConsumeStructuredBuffer
+DepthStencilState
+GlobalRootSignature
 InputPatch
 LineStream
+LocalRootSignature
 OutputPatch
 PointStream
+ProceduralPrimitiveHitGroup
 RWBuffer
 RWByteAddressBuffer
 RWStructuredBuffer
@@ -633,10 +650,16 @@ RWTexture1DArray
 RWTexture2D
 RWTexture2DArray
 RWTexture3D
+RasterizerState
 RayDesc
 RayQuery
 RaytracingAccelerationStructure
+RaytracingPipelineConfig
+RaytracingPipelineConfig1
+RaytracingShaderConfig
+StateObjectConfig
 StructuredBuffer
+SubobjectToExportsAssociation
 Texture1D
 Texture1DArray
 Texture2D
@@ -646,6 +669,7 @@ Texture2DMSArray
 Texture3D
 TextureCube
 TextureCubeArray
+TriangleHitGroup
 TriangleStream
                             [Light, Generic, Rank=18]
 SHADER_API_D3D11
