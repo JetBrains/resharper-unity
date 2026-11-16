@@ -49,5 +49,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         public IOutputAssembliesInfo? OutputAssembliesInfo => DebuggerSessionOptionsImplementation.OutputAssembliesInfo;
         public bool TrackHandledExceptionsInAsyncCode => DebuggerSessionOptionsImplementation.TrackHandledExceptionsInAsyncCode;
         public SoftUserUnhandledExceptionsMode SoftUserUnhandledExceptionsMode => DebuggerSessionOptionsImplementation.SoftUserUnhandledExceptionsMode;
+         public bool UseActiveTasksInTasksView => DebuggerSessionOptionsImplementation.UseActiveTasksInTasksView;
     }
 }
