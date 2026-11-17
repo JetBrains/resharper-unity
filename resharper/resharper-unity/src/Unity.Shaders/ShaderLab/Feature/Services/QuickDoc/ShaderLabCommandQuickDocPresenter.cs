@@ -1,6 +1,5 @@
 #nullable enable
 using System.Xml;
-using JetBrains.Application.UI.PopupLayout;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
@@ -72,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
 
         public IQuickDocPresenter? Resolve(string id) => null;
 
-        public void OpenInEditor(string navigationId = "", PopupWindowContextSource? windowContext = null) { }
+        public void OpenInEditor(string navigationId = "") { }
 
         public void ReadMore(string navigationId = "")
         {

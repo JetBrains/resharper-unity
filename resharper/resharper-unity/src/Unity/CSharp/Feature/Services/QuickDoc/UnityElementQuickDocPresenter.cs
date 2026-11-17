@@ -16,7 +16,7 @@ using JetBrains.ReSharper.Plugins.Unity.Utils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
-    public class UnityElementQuickDocPresenter : IQuickDocPresenter
+    public class UnityElementQuickDocPresenter : IQuickDocPresenterWithNavigationContext
     {
         private readonly string myDescription;
         private readonly UnityApi myUnityApi;
@@ -114,7 +114,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 : null;
         }
 
-        public void OpenInEditor(string navigationId = "", PopupWindowContextSource? windowContext = null)
+        public void OpenInEditor(string navigationId = "") => OpenInEditor(navigationId, null);
+
+        public void OpenInEditor(string navigationId, PopupWindowContextSource? windowContext)
         {
             var element = myEnvoy.GetValidDeclaredElement();
             element?.Navigate(true, windowContext);
