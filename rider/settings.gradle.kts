@@ -7,7 +7,7 @@ pluginManagement {
     val gradleJvmWrapperVersion: String by settings
 
     repositories {
-        maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
+        maven("https://cache-redirector.jetbrains.com/maven/ultimate-public")
         maven("https://cache-redirector.jetbrains.com/plugins.gradle.org")
         maven("https://cache-redirector.jetbrains.com/maven-central")
 
