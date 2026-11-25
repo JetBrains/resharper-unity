@@ -1,3 +1,4 @@
+load("@community//build:jps_module.bzl", "jps_module")
 load("@community//platform/build-scripts/bazel-rules:content_module_jar.bzl", "content_module_jar")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
@@ -26,11 +27,9 @@ jvm_library(
 ### auto-generated section `build intellij.rider.plugins.unity.frontend` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.frontend` start
-exports_files(
-    [
-        "intellij.rider.plugins.unity.frontend.iml",
-        "resources/intellij.rider.plugins.unity.frontend.xml",
-    ],
-    visibility = ["//visibility:public"],
+jps_module(
+    name = "intellij.rider.plugins.unity.frontend",
+    descriptors = ["resources/intellij.rider.plugins.unity.frontend.xml"],
+    target = "frontend",
 )
 ### auto-generated section `iml intellij.rider.plugins.unity.frontend` end

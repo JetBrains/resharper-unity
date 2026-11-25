@@ -1,3 +1,4 @@
+load("@community//build:jps_module.bzl", "jps_module")
 load("@community//platform/build-scripts/bazel-rules:content_module_jar.bzl", "content_module_jar")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
@@ -36,11 +37,9 @@ jvm_library(
 ### auto-generated section `build intellij.rider.plugins.unity.agents` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.agents` start
-exports_files(
-    [
-        "intellij.rider.plugins.unity.agents.iml",
-        "resources/intellij.rider.plugins.unity.agents.xml",
-    ],
-    visibility = ["//visibility:public"],
+jps_module(
+    name = "intellij.rider.plugins.unity.agents",
+    descriptors = ["resources/intellij.rider.plugins.unity.agents.xml"],
+    target = "agents",
 )
 ### auto-generated section `iml intellij.rider.plugins.unity.agents` end

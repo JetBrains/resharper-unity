@@ -1,3 +1,4 @@
+load("@community//build:jps_module.bzl", "jps_module")
 load("@community//platform/build-scripts/bazel-rules:content_module_jar.bzl", "content_module_jar")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
@@ -49,12 +50,10 @@ jvm_library(
 ### auto-generated section `build intellij.rider.plugins.unity.css` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.css` start
-exports_files(
-    [
-        "intellij.rider.plugins.unity.css.iml",
-        "resources/intellij.rider.plugins.unity.css.xml",
-        "resources/uss/element-descriptors.xml",
-    ],
-    visibility = ["//visibility:public"],
+jps_module(
+    name = "intellij.rider.plugins.unity.css",
+    descriptors = ["resources/intellij.rider.plugins.unity.css.xml"],
+    target = "css",
+    exports = ["resources/uss/element-descriptors.xml"],
 )
 ### auto-generated section `iml intellij.rider.plugins.unity.css` end

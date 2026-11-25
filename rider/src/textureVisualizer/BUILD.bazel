@@ -1,5 +1,6 @@
+load("@community//build:jps_module.bzl", "jps_module")
+load("@community//platform/build-scripts/bazel-rules:dist_plugin.bzl", "dist_plugin")
 load("@community//platform/build-scripts/bazel-rules:ij_plugin.bzl", "ij_plugin")
-load("@jps_dynamic_deps_ultimate//:targets.bzl", "dist_plugin")
 load("@rules_jvm//:jvm.bzl", "jvm_library")
 
 ### auto-generated section `dev intellij.rider.plugins.unity.debugger.textureVisualizer` start
@@ -11,12 +12,23 @@ dist_plugin(
         "intellij.rider.plugins.unity.debugger.textureVisualizer.backend",
     ],
     descriptor = "resources/META-INF/plugin.xml",
+    descriptors = {
+        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/backend:resources/intellij.rider.plugins.unity.debugger.textureVisualizer.backend.xml": "intellij.rider.plugins.unity.debugger.textureVisualizer.backend.xml",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common:resources/intellij.rider.plugins.unity.debugger.textureVisualizer.common.xml": "intellij.rider.plugins.unity.debugger.textureVisualizer.common.xml",
+        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/frontend:resources/intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.xml": "intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.xml",
+    },
     jars = {
         "lib/rider-plugins-unity-debugger-textureVisualizer.jar": ["intellij.rider.plugins.unity.debugger.textureVisualizer"],
     },
     main_module = "intellij.rider.plugins.unity.debugger.textureVisualizer",
     mode_refused_content_modules = {
         "frontend": ["intellij.rider.plugins.unity.debugger.textureVisualizer.backend"],
+    },
+    module_labels = {
+        "intellij.rider.plugins.unity.debugger.textureVisualizer": "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer:textureVisualizer",
+        "intellij.rider.plugins.unity.debugger.textureVisualizer.backend": "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/backend:backend",
+        "intellij.rider.plugins.unity.debugger.textureVisualizer.common": "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common:common",
+        "intellij.rider.plugins.unity.debugger.textureVisualizer.frontend": "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/frontend:frontend",
     },
 )
 ### auto-generated section `dev intellij.rider.plugins.unity.debugger.textureVisualizer` end
@@ -52,11 +64,10 @@ ij_plugin(
 ### auto-generated section `plugin intellij.rider.plugins.unity.debugger.textureVisualizer` end
 
 ### auto-generated section `iml intellij.rider.plugins.unity.debugger.textureVisualizer` start
-exports_files(
-    [
-        "intellij.rider.plugins.unity.debugger.textureVisualizer.iml",
-        "resources/META-INF/plugin.xml",
-    ],
-    visibility = ["//visibility:public"],
+jps_module(
+    name = "intellij.rider.plugins.unity.debugger.textureVisualizer",
+    descriptors = ["resources/META-INF/plugin.xml"],
+    plugin = True,
+    target = "textureVisualizer",
 )
 ### auto-generated section `iml intellij.rider.plugins.unity.debugger.textureVisualizer` end
