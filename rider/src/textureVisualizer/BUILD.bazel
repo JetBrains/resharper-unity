@@ -14,11 +14,6 @@ dist_plugin(
     jars = {"lib/rider-plugins-unity-debugger-textureVisualizer.jar": ["intellij.rider.plugins.unity.debugger.textureVisualizer"]},
     main_module = "intellij.rider.plugins.unity.debugger.textureVisualizer",
     mode_refused_content_modules = {"frontend": ["intellij.rider.plugins.unity.debugger.textureVisualizer.backend"]},
-    module_descriptors = [
-        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/backend:resources/intellij.rider.plugins.unity.debugger.textureVisualizer.backend.xml",
-        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/common:resources/intellij.rider.plugins.unity.debugger.textureVisualizer.common.xml",
-        "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer/frontend:resources/intellij.rider.plugins.unity.debugger.textureVisualizer.frontend.xml",
-    ],
     module_labels = {"intellij.rider.plugins.unity.debugger.textureVisualizer": "//dotnet/Plugins/ReSharperUnity/rider/src/textureVisualizer"},
 )
 ### auto-generated section `dev intellij.rider.plugins.unity.debugger.textureVisualizer` end
