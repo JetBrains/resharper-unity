@@ -171,11 +171,23 @@
                          key="configurable.name.unity.for.agents"
                          nonDefaultProject="true"/>
 
-    <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
-    <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
+    <!--suppress SplitModeXmlApiUsage The page class is in this backend module. -->
+    <!--suppress PluginXmlI18n The page uses the same fixed label. -->
+    <projectConfigurable id="RiderUnityFileTemplatesSettings" parentId="FileTemplatesSettingsId"
+                         instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityFileTemplatesOptionPage"
+                         displayName="Unity" groupWeight="-120" />
+    <!--suppress SplitModeXmlApiUsage The page class is in this backend module. -->
+    <!--suppress PluginXmlI18n The page uses the same fixed label. -->
+    <projectConfigurable id="RiderUnityLiveTemplatesSettings" parentId="LiveTemplatesSettingsId"
+                         instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityLiveTemplatesOptionPage"
+                         displayName="Unity" groupWeight="-120" />
 
     <!-- Group weight to push Unity to the end, passed other languages -->
-    <projectConfigurable parentId="inlay.hints" instance="com.jetbrains.rider.plugins.unity.settings.UnityInlayHintsOptionsPage" groupWeight="-120" />
+    <!--suppress SplitModeXmlApiUsage The page class is in this backend module. -->
+    <!--suppress PluginXmlI18n The page uses the same fixed label. -->
+    <projectConfigurable id="UnityInlayHintsOptions" parentId="inlay.hints"
+                         instance="com.jetbrains.rider.plugins.unity.settings.UnityInlayHintsOptionsPage"
+                         displayName="Unity" groupWeight="-120" />
 
     <spellchecker.bundledDictionaryProvider implementation="com.jetbrains.rider.plugins.unity.spellchecker.UnityBundledDictionaryProvider"/>
 
